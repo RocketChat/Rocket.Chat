@@ -995,7 +995,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sleep(firstDelayInSeconds * 1000);
 
-			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+			await sendAgentMessage(roomId, 'first response from agent', botAgent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -1011,12 +1011,9 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.be.an('array');
 
 			const agentData = result.body.data.find(
-				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === botAgent.user.username,
 			);
 			expect(agentData).to.be.undefined;
-
-			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
-			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
 		});
 
 		it('should correctly associate the first response time to the first agent who responded the room', async () => {

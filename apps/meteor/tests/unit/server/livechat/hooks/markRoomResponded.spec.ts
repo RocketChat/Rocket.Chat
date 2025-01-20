@@ -19,7 +19,7 @@ const settingsGetMock = {
 	get: Sinon.stub(),
 };
 
-const { markRoomResponded } = proxyquire.load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
+const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
 	'../../../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
 	'../../../lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
 	'@rocket.chat/models': models,
@@ -27,7 +27,7 @@ const { markRoomResponded } = proxyquire.load('../../../../../app/livechat/serve
 });
 
 describe('markRoomResponded', () => {
-	beforeEach(async () => {
+	beforeEach(() => {
 		models.LivechatVisitors.isVisitorActiveOnPeriod.reset();
 		models.LivechatVisitors.markVisitorActiveForPeriod.reset();
 		models.LivechatInquiry.markInquiryActiveForPeriod.reset();
@@ -76,7 +76,7 @@ describe('markRoomResponded', () => {
 	});
 
 	it('should return void if message is from bot and setting is enabled', async () => {
-		settingsGetMock.get.withArgs('Omnichannel_Metrics_Ignore_Automatic_Messages').returns(true);
+		settingsGetMock.get.withArgs('Omnichannel_Metrics_Ignore_Automatic_Messages').resolves(true);
 
 		const user = createFakeUser({ roles: ['bot'] });
 		const message = createFakeMessage();
