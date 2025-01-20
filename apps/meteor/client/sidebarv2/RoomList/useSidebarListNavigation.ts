@@ -34,15 +34,15 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.shiftKey) {
-						sidebarListFocusManager.focusPrevious({
+						sidebarListFocusManager?.focusPrevious({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else if (isListItemMenu(e.target)) {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node) && !isCollapseGroup(node),
 						});
 					}
@@ -53,11 +53,11 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.key === 'ArrowUp') {
-						sidebarListFocusManager.focusPrevious({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
+						sidebarListFocusManager?.focusPrevious({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					if (e.key === 'ArrowDown') {
-						sidebarListFocusManager.focusNext({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
+						sidebarListFocusManager?.focusNext({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					lastItemFocused = document.activeElement as HTMLElement;
