@@ -1,5 +1,19 @@
 # @rocket.chat/presence-service
 
+## 0.4.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.5
+  - @rocket.chat/presence@0.2.14
+  - @rocket.chat/core-services@0.7.6
+  - @rocket.chat/model-typings@1.0.5
+  - @rocket.chat/network-broker@0.1.6
+  - @rocket.chat/models@1.0.5
+  </details>
+
 ## 0.4.13
 
 ### Patch Changes
