@@ -215,7 +215,7 @@ export class RestClient implements RestClientInterface {
 				return response;
 			}
 
-			if (response.status !== 400) {
+			if (response.status !== 401) {
 				return Promise.reject(response);
 			}
 
