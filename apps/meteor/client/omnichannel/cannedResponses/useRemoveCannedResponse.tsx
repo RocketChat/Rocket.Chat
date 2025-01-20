@@ -14,7 +14,7 @@ export const useRemoveCannedResponse = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const removeCannedResponse = useMethod('removeCannedResponse');
 
-	const handleDelete = useEffectEvent((id) => {
+	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await removeCannedResponse(id);

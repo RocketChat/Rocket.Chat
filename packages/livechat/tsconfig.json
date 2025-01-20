@@ -7,10 +7,10 @@
 		"checkJs": false,
 		"jsxImportSource": "preact",
 		"paths": {
-			"react": ["./node_modules/preact/compat/"],
-			"react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
-			"react-dom": ["./node_modules/preact/compat/"],
-			"react-dom/*": ["./node_modules/preact/compat/*"]
+			"react": ["../../node_modules/preact/compat/"],
+			"react/jsx-runtime": ["../../node_modules/preact/jsx-runtime"],
+			"react-dom": ["../../node_modules/preact/compat/"],
+			"react-dom/*": ["../../node_modules/preact/compat/*"]
 		}
 	},
 	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts", ".storybook/**/*.ts"],
