@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
@@ -41,14 +41,14 @@ const CallTable = () => {
 		500,
 	);
 
-	const onRowClick = useMutableCallback((id, token) => {
+	const onRowClick = useEffectEvent((id: string, token?: string) => {
 		directoryRoute.push(
 			{
 				tab: 'calls',
 				context: 'info',
 				id,
 			},
-			{ token },
+			token ? { token } : {},
 		);
 	});
 

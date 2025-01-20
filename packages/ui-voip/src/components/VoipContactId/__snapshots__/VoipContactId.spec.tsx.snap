@@ -85,6 +85,7 @@ exports[`renders WithTransfer without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
             >
               <img
+                alt=""
                 aria-hidden="true"
                 class="rcx-avatar__element rcx-avatar__element--x24"
                 data-username="john.doe"
@@ -125,6 +126,7 @@ exports[`renders WithUsername without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
             >
               <img
+                alt=""
                 aria-hidden="true"
                 class="rcx-avatar__element rcx-avatar__element--x24"
                 data-username="john.doe"

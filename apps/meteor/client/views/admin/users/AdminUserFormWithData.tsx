@@ -13,7 +13,7 @@ type AdminUserFormWithDataProps = {
 	onReload: () => void;
 	context: string;
 	roleData: { roles: IRole[] } | undefined;
-	roleError: unknown;
+	roleError: Error | null;
 };
 
 const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {

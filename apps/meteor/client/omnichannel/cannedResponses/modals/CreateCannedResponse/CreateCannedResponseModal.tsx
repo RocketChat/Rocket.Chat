@@ -6,7 +6,19 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
-import CannedResponseForm from '../../components/cannedResponseForm';
+import CannedResponseForm from '../../components/CannedResponseForm';
+
+type CreateCannedResponseModalFormData = {
+	_id: string;
+	shortcut: string;
+	text: string;
+	tags: {
+		label: string;
+		value: string;
+	}[];
+	scope: string;
+	departmentId: string;
+};
 
 const getInitialData = (
 	cannedResponseData: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }) | undefined,
@@ -22,19 +34,17 @@ const getInitialData = (
 	departmentId: cannedResponseData?.departmentId || '',
 });
 
-const CreateCannedResponseModal = ({
-	cannedResponseData,
-	onClose,
-	reloadCannedList,
-}: {
+type CreateCannedResponseModalProps = {
 	cannedResponseData?: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	onClose: () => void;
 	reloadCannedList: () => void;
-}) => {
+};
+
+const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedList }: CreateCannedResponseModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
+	const methods = useForm<CreateCannedResponseModalFormData>({ defaultValues: getInitialData(cannedResponseData) });
 	const {
 		handleSubmit,
 		formState: { isDirty },
@@ -43,10 +53,9 @@ const CreateCannedResponseModal = ({
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const handleCreate = useCallback(
-		async ({ departmentId, ...data }) => {
+		async ({ departmentId, ...data }: CreateCannedResponseModalFormData) => {
 			try {
 				await saveCannedResponse({
-					_id: cannedResponseData?._id,
 					...data,
 					...(departmentId && { departmentId }),
 				});

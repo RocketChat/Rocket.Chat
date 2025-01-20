@@ -2,6 +2,7 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
 
@@ -118,7 +119,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 							help={
 								<span
 									dangerouslySetInnerHTML={{
-										__html: t('Custom_oauth_helper', callbackURL(sectionName)),
+										__html: DOMPurify.sanitize(t('Custom_oauth_helper', callbackURL(sectionName))),
 									}}
 								/>
 							}
