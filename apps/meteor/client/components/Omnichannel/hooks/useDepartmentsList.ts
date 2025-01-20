@@ -1,4 +1,5 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,7 @@ import { RecordList } from '../../../lib/lists/RecordList';
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 import { normalizeDepartments } from '../utils/normalizeDepartments';
 
-type DepartmentsListOptions = {
+export type DepartmentsListOptions = {
 	filter: string;
 	departmentId?: string;
 	onlyMyDepartments?: boolean;
@@ -18,6 +19,7 @@ type DepartmentsListOptions = {
 	enabled?: boolean;
 	showArchived?: boolean;
 	selectedDepartment?: string;
+	onChange?: (value: string) => void;
 };
 
 export const useDepartmentsList = (
@@ -29,6 +31,9 @@ export const useDepartmentsList = (
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
+
 	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
@@ -67,41 +72,21 @@ export const useDepartmentsList = (
 					}),
 				);
 
-			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment ?? '', getDepartment);
-
-			options.haveAll &&
-				normalizedItems.unshift({
-					_id: '',
-					label: t('All'),
-					value: 'all',
-				});
-
-			options.haveNone &&
-				normalizedItems.unshift({
-					_id: '',
-					label: t('None'),
-					value: '',
-				});
+			const normalizedItems = await normalizeDepartments({
+				departments: items,
+				options,
+				getDepartment,
+				dispatchToastMessage,
+				t,
+				queryClient,
+			});
 
 			return {
 				items: normalizedItems,
 				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
-		[
-			getDepartments,
-			options.onlyMyDepartments,
-			options.filter,
-			options.excludeDepartmentId,
-			options.enabled,
-			options.showArchived,
-			options.selectedDepartment,
-			options.haveAll,
-			options.haveNone,
-			options.departmentId,
-			getDepartment,
-			t,
-		],
+		[dispatchToastMessage, getDepartment, getDepartments, options, queryClient, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
