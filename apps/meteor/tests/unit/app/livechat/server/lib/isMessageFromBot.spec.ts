@@ -23,14 +23,14 @@ describe('isMessageFromBot', () => {
 	});
 
 	it('Should return true if user has bot role', async () => {
-		modelsMock.Users.findOneById.resolves(mockUser.roles);
+		modelsMock.Users.findOneById.resolves(mockUser);
 		const result = await isMessageFromBot(mockMessage);
 		expect(result).to.be.true;
 	});
 
 	it('Should return false if user does not have bot role', async () => {
 		mockUser.roles = ['user'];
-		modelsMock.Users.findOneById.resolves(mockUser.roles);
+		modelsMock.Users.findOneById.resolves(mockUser);
 		const result = await isMessageFromBot(mockMessage);
 		expect(result).to.be.false;
 	});
@@ -38,6 +38,6 @@ describe('isMessageFromBot', () => {
 	it('Should throw error when user is not found', async () => {
 		modelsMock.Users.findOneById.resolves(null);
 
-		expect(isMessageFromBot(mockMessage)).to.throw(Error('User mot found'));
+		await expect(isMessageFromBot(mockMessage)).to.be.rejectedWith(Error, 'User not found');
 	});
 });
