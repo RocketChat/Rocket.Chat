@@ -42,7 +42,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users }) => {
+	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
 			await saveAction({ rid, users });
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });

@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldLabel,
@@ -31,6 +31,16 @@ import {
 } from '../../../components/Contextualbar';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
+
+type AgentEditFormData = {
+	name: string | undefined;
+	username: string | undefined;
+	email: string | undefined;
+	departments: string[];
+	status: ILivechatAgentStatus;
+	maxNumberSimultaneousChat: number;
+	voipExtension: string;
+};
 
 type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
@@ -81,7 +91,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 
 	const initialDepartmentValue = useMemo(() => userDepartments.map(({ departmentId }) => departmentId) || [], [userDepartments]);
 
-	const methods = useForm({
+	const methods = useForm<AgentEditFormData>({
 		values: {
 			name,
 			username,
@@ -103,7 +113,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
-	const handleSave = useEffectEvent(async ({ status, departments, ...data }) => {
+	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
 			await saveAgentInfo(agentData._id, data, departments);

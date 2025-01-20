@@ -269,11 +269,6 @@ const RoomBody = (): ReactElement => {
 									onClick={handleJumpToRecentButtonClick}
 									text={t('Jump_to_recent_messages')}
 								/>
-								{!canPreview ? (
-									<div className='content room-not-found error-color'>
-										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
-									</div>
-								) : null}
 								<div
 									className={[
 										'wrapper',

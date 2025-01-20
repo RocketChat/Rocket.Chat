@@ -15,16 +15,28 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const getReadReceiptsFunction = async function (messageId: IMessage['_id'], userId: string): Promise<ReadReceiptType[]> {
+	if (!License.hasModule('message-read-receipt')) {
+		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
+	}
+	check(messageId, String);
+
+	const message = await Messages.findOneById(messageId);
+	if (!message) {
+		throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+			method: 'getReadReceipts',
+		});
+	}
+
+	if (!(await canAccessRoomIdAsync(message.rid, userId))) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getReadReceipts' });
+	}
+
+	return ReadReceipt.getReceipts(message);
+};
+
 Meteor.methods<ServerMethods>({
 	async getReadReceipts({ messageId }) {
-		if (!License.hasModule('message-read-receipt')) {
-			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
-		}
-
-		if (!messageId) {
-			throw new Meteor.Error('error-invalid-message', "The required 'messageId' param is missing.", { method: 'getReadReceipts' });
-		}
-
 		check(messageId, String);
 
 		const uid = Meteor.userId();
@@ -32,17 +44,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getReadReceipts' });
 		}
 
-		const message = await Messages.findOneById(messageId);
-		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
-				method: 'getReadReceipts',
-			});
-		}
-
-		if (!(await canAccessRoomIdAsync(message.rid, uid))) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getReadReceipts' });
-		}
-
-		return ReadReceipt.getReceipts(message);
+		return getReadReceiptsFunction(messageId, uid);
 	},
 });
