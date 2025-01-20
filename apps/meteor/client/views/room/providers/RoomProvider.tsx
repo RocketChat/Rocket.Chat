@@ -174,7 +174,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	return (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
-				<ImageGalleryProvider>
+				<ImageGalleryProvider key={pseudoRoom._id}>
 					<UserCardProvider>
 						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
 					</UserCardProvider>
