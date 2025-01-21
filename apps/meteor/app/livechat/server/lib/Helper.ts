@@ -147,7 +147,7 @@ export const prepareLivechatRoom = async (
 
 export const createLivechatRoom = async (room: InsertionModel<IOmnichannelRoom>, session: ClientSession) => {
 	const result = await LivechatRooms.findOneAndUpdate(
-		room,
+		Object.fromEntries(Object.entries(room).filter(([_, v]) => v != null)),
 		{
 			$set: {},
 		},
@@ -211,26 +211,28 @@ export const createLivechatInquiry = async ({
 	});
 
 	const result = await LivechatInquiry.findOneAndUpdate(
-		{
-			rid,
-			name,
-			ts,
-			department,
-			message: message ?? '',
-			status: initialStatus || LivechatInquiryStatus.READY,
-			v: {
-				_id,
-				username,
-				token,
-				status,
-				...(activity?.length && { activity }),
-			},
-			t: 'l',
-			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		Object.fromEntries(
+			Object.entries({
+				rid,
+				name,
+				ts,
+				department,
+				message: message ?? '',
+				status: initialStatus || LivechatInquiryStatus.READY,
+				v: {
+					_id,
+					username,
+					token,
+					status,
+					...(activity?.length && { activity }),
+				},
+				t: 'l',
+				priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+				estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
-			...extraInquiryInfo,
-		},
+				...extraInquiryInfo,
+			}).filter(([_, v]) => v != null),
+		),
 		{
 			$set: {
 				_id: new ObjectId().toHexString(),
