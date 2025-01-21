@@ -2,17 +2,117 @@ import { AsyncLocalStorage } from 'async_hooks';
 
 import type { IAuditServerUserActor, IServerEvents, ExtractDataToParams, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
+// import { StringMap } from 'esl';
 
 export const asyncLocalStorage = new AsyncLocalStorage<UserChangedLogStore>();
 
-const shouldBeSerialized = (value: any): boolean => {
-	if (value instanceof Object) {
-		return true;
+// const shouldBeSerialized = (value: any): boolean => {
+// 	if (value instanceof Object) {
+// 		return true;
+// 	}
+
+// 	return false;
+// };
+const keysToObfuscate = ['authorizedClients', 'e2e', 'inviteToken', 'oauth'];
+
+type DeepKeys = [string, Array<string | DeepKeys>];
+type ExtractedKeys = Array<string | DeepKeys>;
+
+const extractKeysFromRecord = (a: Record<string, any>, b: Record<string, any>): ExtractedKeys => {
+	const keys: ExtractedKeys = [];
+	for (const key in a) {
+		if (!a.hasOwnProperty(key) && !b.hasOwnProperty(key)) {
+			continue;
+		}
+
+		if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+			keys.push(key);
+			continue;
+		}
+
+		if (Array.isArray(a[key]) || Array.isArray(b[key])) {
+			if (!Array.isArray(a[key]) || !Array.isArray(b[key])) {
+				keys.push(key);
+				continue;
+			}
+			if (a[key].length !== b[key].length) {
+				keys.push(key);
+				continue;
+			}
+			// Not sure if array values should be strictly compared or not
+			if (JSON.stringify(a[key]) !== JSON.stringify(b[key])) {
+				keys.push(key);
+				continue;
+			}
+		}
+
+		if (a[key] instanceof Object) {
+			keys.push([key, extractKeysFromRecord(a[key], b[key])]);
+		}
+
+		if (a[key] !== b[key]) {
+			keys.push(key);
+		}
 	}
 
-	return false;
+	return keys;
 };
 
+const obfuscateServices = (services: Record<string, any>): Record<string, any> => {
+	return Object.fromEntries(
+		Object.keys(services).map((key) => {
+			// Email 2FA is okay, only tells if it's enabled
+			if (key === 'email2fa') {
+				return [key, services[key]];
+			}
+			return [key, '***'];
+		}),
+	);
+};
+
+const buildUserRecord = (
+	keys: ExtractedKeys,
+	originalRecord: Record<string, any>,
+	currentRecord: Record<string, any>,
+): [Record<string, any>, Record<string, any>] => {
+	const record: [Record<string, any>, Record<string, any>] = keys.reduce(
+		(acc, key) => {
+			const actualKey = typeof key === 'string' ? key : key[0];
+			if (keysToObfuscate.includes(actualKey)) {
+				return [
+					{ ...acc[0], [actualKey]: '***' },
+					{ ...acc[1], [actualKey]: '***' },
+				];
+			}
+			if (Array.isArray(key)) {
+				const [field, subFields] = key;
+				const [original, current] = buildUserRecord(subFields, originalRecord[field], currentRecord[field]);
+
+				return [
+					{ ...acc[0], ...original },
+					{ ...acc[1], ...current },
+				];
+			}
+
+			return [
+				{ ...acc[0], [key]: originalRecord[key] },
+				{ ...acc[1], [key]: currentRecord[key] },
+			];
+		},
+		[{}, {}],
+	);
+
+	// Obfuscate all services
+	// TODO: so ugly
+	if (record[0].services && typeof record[0].services === 'object') {
+		record[0].services = obfuscateServices(record[0].services);
+	}
+	if (record[1].services && typeof record[1].services === 'object') {
+		record[1].services = obfuscateServices(record[1].services);
+	}
+
+	return record;
+};
 class UserChangedLogStore {
 	private originalUser: IUser | undefined;
 
@@ -39,33 +139,11 @@ class UserChangedLogStore {
 	}
 
 	private getUserDelta(originalUser: IUser, currentUser: IUser): [Partial<IUser>, Partial<IUser>] {
-		const changedFields = Object.keys(originalUser).filter((_key: unknown) => {
-			const key = _key as keyof IUser;
-			// This is not the most optimal solution as differences in order can affect the result.
-			// It's probably okay, if the order changes, an operation was done to the fields
-			// and we want to audit it.
-			if (shouldBeSerialized(originalUser[key]) || shouldBeSerialized(currentUser[key])) {
-				try {
-					return JSON.stringify(originalUser[key]) !== JSON.stringify(currentUser[key]);
-				} catch {
-					// do nothing
-				}
-			}
-			return originalUser[key] !== currentUser[key];
-		});
+		const changedFields = extractKeysFromRecord(originalUser, currentUser);
 
-		if (changedFields.length) {
-			return changedFields.reduce(
-				(acc, key) => [
-					{ ...acc[0], [key]: originalUser[key as keyof IUser] },
-					{ ...acc[1], [key]: currentUser[key as keyof IUser] },
-				],
-				[{}, {}],
-			);
-		}
+		const [original, current] = buildUserRecord(changedFields, originalUser, currentUser);
 
-		// No changed fields
-		return [{}, {}];
+		return [original, current];
 	}
 
 	private getEventData(originalUser: IUser, currentUser: IUser): ExtractDataToParams<IServerEvents['user.changed']> {
