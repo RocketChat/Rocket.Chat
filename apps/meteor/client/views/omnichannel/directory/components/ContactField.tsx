@@ -24,11 +24,13 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/visitors.info', contact._id], () =>
-		getVisitorInfo({ visitorId: contact._id }),
-	);
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['/v1/livechat/visitors.info', contact._id],
 
-	if (isLoading) {
+		queryFn: () => getVisitorInfo({ visitorId: contact._id }),
+	});
+
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

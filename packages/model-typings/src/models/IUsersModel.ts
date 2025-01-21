@@ -17,7 +17,7 @@ import type {
 	Filter,
 	InsertOneResult,
 	DeleteResult,
-	ModifyResult,
+	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
@@ -251,6 +251,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
 	addRoomByUserIds(uids: string[], rid: string): Promise<UpdateResult>;
 	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
+	addRoomRolePriorityByUserId(userId: string, rid: string, rolePriority: number): Promise<UpdateResult>;
+	removeRoomRolePriorityByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	assignRoomRolePrioritiesByUserIdPriorityMap(rolePrioritiesMap: Record<string, number>, rid: string): Promise<number>;
+	unassignRoomRolePrioritiesByRoomId(rid: string): Promise<UpdateResult>;
 	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
 	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: IPersonalAccessToken }): Promise<UpdateResult>;
 	removePersonalAccessTokenOfUser(data: {
@@ -350,7 +354,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
 	setUsername(userId: string, username: string): Promise<UpdateResult>;
-	setEmail(userId: string, email: string): Promise<UpdateResult>;
+	setEmail(userId: string, email: string, verified?: boolean): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
 	setName(userId: string, name: string): Promise<UpdateResult>;
 	unsetName(userId: string): Promise<UpdateResult>;
@@ -404,7 +408,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
 	countByRole(roleName: string): Promise<number>;
 	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
-	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
+	incrementInvalidEmailCodeAttempt(userId: string): Promise<WithId<IUser> | null>;
 	findOnlineButNotAvailableAgents(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;

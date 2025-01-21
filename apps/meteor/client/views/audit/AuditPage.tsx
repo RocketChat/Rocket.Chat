@@ -43,7 +43,7 @@ const AuditPage = () => {
 							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
 						</Callout>
 					) : null}
-					{auditMutation.isLoading && <MessageListSkeleton messageCount={5} />}
+					{auditMutation.isPending && <MessageListSkeleton messageCount={5} />}
 					{auditMutation.isError && (
 						<States>
 							<StatesIcon name='circle-exclamation' variation='danger' />

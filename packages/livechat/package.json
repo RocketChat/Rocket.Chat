@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.21.0",
+	"version": "1.21.2",
 	"files": [
 		"/build"
 	],
@@ -30,9 +30,9 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage-hooks": "^0.34.0",
+		"@rocket.chat/fuselage-hooks": "^0.34.1",
 		"@rocket.chat/fuselage-tokens": "^0.33.2",
-		"@rocket.chat/logo": "^0.31.31",
+		"@rocket.chat/logo": "^0.31.32",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "^8.4.4",
 		"@storybook/addon-styling-webpack": "~1.0.1",

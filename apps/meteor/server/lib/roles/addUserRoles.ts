@@ -2,6 +2,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 
+import { syncRoomRolePriorityForUserAndRoom } from './syncRoomRolePriority';
 import { validateRoleList } from './validateRoleList';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 
@@ -33,6 +34,7 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'
 
 		if (role.scope === 'Subscriptions' && scope) {
 			const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
+			await syncRoomRolePriorityForUserAndRoom(userId, scope);
 			if (addRolesResponse.modifiedCount) {
 				void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
 			}
