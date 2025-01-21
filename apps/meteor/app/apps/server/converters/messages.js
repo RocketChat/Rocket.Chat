@@ -209,8 +209,8 @@ export class AppMessagesConverter {
 		}
 
 		return attachments.map((attachment) =>
-			Object.assign(
-				{
+			Object.fromEntries(
+				Object.entries({
 					collapsed: attachment.collapsed,
 					color: attachment.color,
 					text: attachment.text,
@@ -239,8 +239,8 @@ export class AppMessagesConverter {
 					actions: attachment.actions,
 					type: attachment.type,
 					description: attachment.description,
-				},
-				attachment._unmappedProperties_,
+					...attachment._unmappedProperties_,
+				}).filter(([, v]) => v != null),
 			),
 		);
 	}
