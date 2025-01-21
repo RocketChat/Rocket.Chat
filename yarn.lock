@@ -7895,7 +7895,6 @@ __metadata:
     typescript: "npm:~5.7.2"
   peerDependencies:
     "@rocket.chat/apps-engine": 1.48.1
-    "@rocket.chat/apps-engine": 1.48.1
     "@rocket.chat/eslint-config": 0.7.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
