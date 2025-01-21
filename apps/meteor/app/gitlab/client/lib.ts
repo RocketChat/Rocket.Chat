@@ -1,9 +1,8 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
-import { settings } from '../../settings/client';
 
 const config: OauthConfig = {
 	serverURL: 'https://gitlab.com',
@@ -19,26 +18,24 @@ const config: OauthConfig = {
 
 const Gitlab = new CustomOAuth('gitlab', config);
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		let anyChange = false;
-		if (settings.get('API_Gitlab_URL')) {
-			config.serverURL = settings.get('API_Gitlab_URL').trim().replace(/\/*$/, '');
-			anyChange = true;
+export const useGitLab = () => {
+	const gitlabApiUrl = useSetting('API_Gitlab_URL') as string;
+	const gitlabIdentiry = useSetting('Accounts_OAuth_Gitlab_identity_path') as string;
+	const mergeUsers = useSetting('Accounts_OAuth_Gitlab_merge_users') as boolean;
+
+	useEffect(() => {
+		if (gitlabApiUrl) {
+			config.serverURL = gitlabApiUrl.trim().replace(/\/*$/, '');
 		}
 
-		if (settings.get('Accounts_OAuth_Gitlab_identity_path')) {
-			config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path').trim() || config.identityPath;
-			anyChange = true;
+		if (gitlabIdentiry) {
+			config.identityPath = gitlabIdentiry.trim() || config.identityPath;
 		}
 
-		if (settings.get('Accounts_OAuth_Gitlab_merge_users')) {
+		if (mergeUsers) {
 			config.mergeUsers = true;
-			anyChange = true;
 		}
 
-		if (anyChange) {
-			Gitlab.configure(config);
-		}
-	});
-});
+		Gitlab.configure(config);
+	}, [gitlabApiUrl, gitlabIdentiry, mergeUsers]);
+};
