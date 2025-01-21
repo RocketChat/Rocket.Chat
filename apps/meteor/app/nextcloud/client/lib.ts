@@ -1,12 +1,8 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { useEffect } from 'react';
-import _ from 'underscore';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
-import { settings } from '../../settings/client';
 
 const config: OauthConfig = {
 	serverURL: '',
