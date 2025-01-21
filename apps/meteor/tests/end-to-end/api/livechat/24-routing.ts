@@ -28,6 +28,131 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
+	// Basically: if there's a bot in the department, it should be assigned to the conversation
+	// No matter what settings workspace has in, as long as the setting to assign new conversations to bots is enabled
+	describe('Bots - Manual selection', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			botUser = { user: bot, credentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+	});
+
+	describe('Bots - Auto selection', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			botUser = { user: bot, credentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+	});
+
+	describe('Bots - Auto selection & Waiting queue', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			botUser = { user: bot, credentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_waiting_queue', true);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_waiting_queue', false);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+	});
+
 	describe('Auto-Selection', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
