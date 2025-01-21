@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -18,10 +17,12 @@ import fileSize from 'filesize';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useState, useEffect, useSyncExternalStore } from 'react';
 
+import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import MessageComposerFileArea from './MessageComposerFileArea';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -43,8 +44,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import FilePreview from './FilePreview/FilePreview';
-import { handleSendFiles } from './HandleFileUploads';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -179,20 +178,8 @@ const MessageBox = ({
 	};
 	const handleRemoveFile = (indexToRemove: number) => {
 		const updatedFiles = [...filesToUpload];
-
-		const element = document.getElementById(`file-preview-${indexToRemove}`);
-		if (element) {
-			element.style.transition = 'opacity 0.3s ease-in-out';
-			element.style.opacity = '0';
-		}
-
-		setTimeout(() => {
-			updatedFiles.splice(indexToRemove, 1);
-			setFilesToUpload(updatedFiles);
-			if (element) {
-				element.style.opacity = '1';
-			}
-		}, 300);
+		updatedFiles.splice(indexToRemove, 1);
+		setFilesToUpload(updatedFiles);
 	};
 
 	const { isMobile } = useLayout();
@@ -497,29 +484,7 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				{isUploading && (
-					<>
-						<Box
-							display='flex'
-							flexDirection='row'
-							overflowX='auto'
-							style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
-						>
-							{filesToUpload.map((file, index) => (
-								<div
-									key={index}
-									id={`file-preview-${index}`}
-									style={{
-										transition: 'opacity 0.3s ease-in-out',
-										opacity: '1',
-									}}
-								>
-									<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
-								</div>
-							))}
-						</Box>
-					</>
-				)}
+				{isUploading && <MessageComposerFileArea filesToUpload={filesToUpload} handleRemoveFile={handleRemoveFile} />}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
