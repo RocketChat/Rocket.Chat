@@ -37,7 +37,7 @@ export const useEmojiOne = () => {
 			// Additional settings -- ascii emojis
 			const ascii = async (): Promise<void> => {
 				if ((await isSetNotNull(() => emoji.packages.emojione)) && emoji.packages.emojione) {
-					if (convertAsciiToEmoji) {
+					if (typeof convertAsciiToEmoji === 'boolean') {
 						emoji.packages.emojione.ascii = convertAsciiToEmoji;
 					} else {
 						emoji.packages.emojione.ascii = true;
