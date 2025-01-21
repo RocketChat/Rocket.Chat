@@ -132,6 +132,11 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		// bots should be able to skip the queue and the routing check
+		if (agent && (await allowAgentSkipQueue(agent))) {
+			return LivechatInquiryStatus.READY;
+		}
+
 		if (settings.get('Livechat_waiting_queue')) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -140,7 +145,7 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
-		if (!agent || !(await allowAgentSkipQueue(agent))) {
+		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
@@ -241,11 +246,13 @@ export class QueueManager {
 			}),
 		);
 
+		logger.info({ msg: 'beforeDelegateAgent', guest, agent });
 		const defaultAgent =
 			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
 				department: guest.department,
 			})) || undefined;
 
+		logger.info({ msg: 'afterDelegateAgent', guest, agent });
 		const department = guest.department && (await getDepartment(guest.department));
 
 		/**
