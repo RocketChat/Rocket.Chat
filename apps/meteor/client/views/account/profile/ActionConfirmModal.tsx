@@ -11,6 +11,7 @@ type ActionConfirmModalProps = {
 	onCancel: () => void;
 };
 
+// TODO: Use react-hook-form
 const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const { t } = useTranslation();
 	const [inputText, setInputText] = useState('');

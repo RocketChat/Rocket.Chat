@@ -240,10 +240,10 @@ class LivechatClass {
 		session: ClientSession,
 	): Promise<{ room: IOmnichannelRoom; closedBy: ChatCloser; removedInquiry: ILivechatInquiryRecord | null }> {
 		const { comment } = params;
-		const { room } = params;
+		const { room, forceClose } = params;
 
-		this.logger.debug(`Attempting to close room ${room._id}`);
-		if (!room || !isOmnichannelRoom(room) || !room.open) {
+		this.logger.debug({ msg: `Attempting to close room`, roomId: room._id, forceClose });
+		if (!room || !isOmnichannelRoom(room) || (!forceClose && !room.open)) {
 			this.logger.debug(`Room ${room._id} is not open`);
 			throw new Error('error-room-closed');
 		}
@@ -292,25 +292,27 @@ class LivechatClass {
 
 		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
-		if (removedInquiry && removedInquiry.deletedCount !== 1) {
+		if (!params.forceClose && removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
-		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
+		if (!params.forceClose && (!updatedRoom || updatedRoom.modifiedCount !== 1)) {
 			throw new Error('Error closing room');
 		}
 
 		const subs = await Subscriptions.countByRoomId(rid, { session });
-		const removedSubs = await Subscriptions.removeByRoomId(rid, {
-			async onTrash(doc) {
-				void notifyOnSubscriptionChanged(doc, 'removed');
-			},
-			session,
-		});
+		if (subs) {
+			const removedSubs = await Subscriptions.removeByRoomId(rid, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				},
+				session,
+			});
 
-		if (removedSubs.deletedCount !== subs) {
-			throw new Error('Error removing subscriptions');
+			if (!params.forceClose && removedSubs.deletedCount !== subs) {
+				throw new Error('Error removing subscriptions');
+			}
 		}
 
 		this.logger.debug(`DB updated for room ${room._id}`);
