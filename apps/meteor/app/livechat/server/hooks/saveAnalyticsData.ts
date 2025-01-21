@@ -64,12 +64,7 @@ const getAnalyticsData = (room: IOmnichannelRoom, now: Date): Record<string, str
 callbacks.add(
 	'afterOmnichannelSaveMessage',
 	async (message, { room, roomUpdater }) => {
-		if (
-			!message ||
-			isEditedMessage(message) ||
-			isSystemMessage(message) ||
-			(settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message)))
-		) {
+		if (!message || isEditedMessage(message) || isSystemMessage(message)) {
 			return message;
 		}
 
@@ -80,6 +75,10 @@ callbacks.add(
 		if (isMessageFromVisitor(message)) {
 			LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
 		} else {
+			if (settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message))) {
+				return message;
+			}
+
 			const analyticsData = getAnalyticsData(room, new Date());
 			LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
 		}
