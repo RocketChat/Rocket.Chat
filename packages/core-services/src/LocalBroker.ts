@@ -79,10 +79,6 @@ export class LocalBroker implements IBroker {
 			throw new Error(`Service ${namespace} already exists`);
 		}
 
-		if (namespace === '') {
-			throw new Error('Service name cannot be empty');
-		}
-
 		const dependencies = [...serviceDependencies, ...this.defaultDependencies].filter((dependency) => dependency !== namespace);
 
 		instance.created();
