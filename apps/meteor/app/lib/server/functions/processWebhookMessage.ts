@@ -135,7 +135,7 @@ export const processWebhookMessage = async function (
 
 		await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 
-		const messageReturn = await sendMessage(user, message, room);
+		const messageReturn = await sendMessage(user, Object.fromEntries(Object.entries(message).filter(([_, v]) => v != null)), room);
 		sentData.push({ channel, message: messageReturn });
 	}
 
