@@ -21,11 +21,12 @@ const Dolphin = new CustomOAuth('dolphin', config);
 
 export const useDolphin = () => {
 	const enabled = useSetting('Accounts_OAuth_Dolphin');
+	const url = useSetting('Accounts_OAuth_Dolphin_URL') as string;
 
 	useEffect(() => {
 		if (enabled) {
-			config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
+			config.serverURL = url;
 			Dolphin.configure(config);
 		}
-	}, [enabled]);
+	}, [enabled, url]);
 };
