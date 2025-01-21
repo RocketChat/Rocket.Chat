@@ -1,8 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -15,11 +14,11 @@ const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void 
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleRemoveClick = useMutableCallback(async () => {
+	const handleRemoveClick = useEffectEvent(async () => {
 		await deleteAction();
 		reload();
 	});
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteManager = async (): Promise<void> => {
 			try {

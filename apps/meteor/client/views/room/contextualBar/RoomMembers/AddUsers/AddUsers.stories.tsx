@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import AddUsers from './AddUsers';
 import { Contextualbar } from '../../../../../components/Contextualbar';

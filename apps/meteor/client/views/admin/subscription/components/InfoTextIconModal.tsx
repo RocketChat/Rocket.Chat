@@ -1,12 +1,12 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
-export type InfoTextIconModalProps = {
+type InfoTextIconModalProps = {
 	title: string;
 	infoText: ReactNode;
 };

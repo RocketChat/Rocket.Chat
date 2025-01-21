@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
@@ -18,15 +17,16 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 	const isCallReady = useIsCallReady();
 
 	const phoneNumber = phones?.length ? phones[0].phoneNumber : undefined;
-	const latestChannel = channels?.reduce((acc, cv) => {
-		if (acc.lastChat && cv.lastChat) {
-			return acc.lastChat.ts > cv.lastChat.ts ? acc : cv;
+	const latestChannel = channels?.sort((a, b) => {
+		if (a.lastChat && b.lastChat) {
+			return a.lastChat.ts > b.lastChat.ts ? -1 : 1;
 		}
-		return acc;
-	});
+
+		return 0;
+	})[0];
 
 	const onRowClick = useEffectEvent(
-		(id) => (): void =>
+		(id: string) => (): void =>
 			directoryRoute.push({
 				id,
 				tab: 'contacts',

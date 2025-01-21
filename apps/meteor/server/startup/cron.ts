@@ -1,5 +1,4 @@
 import { Logger } from '@rocket.chat/logger';
-import { Meteor } from 'meteor/meteor';
 
 import { federationCron } from '../cron/federation';
 import { npsCron } from '../cron/nps';
@@ -12,14 +11,8 @@ import { videoConferencesCron } from '../cron/videoConferences';
 
 const logger = new Logger('SyncedCron');
 
-Meteor.defer(async () => {
-	await startCron();
-
-	await oembedCron();
-	await usageReportCron(logger);
-	await npsCron();
-	await temporaryUploadCleanupCron();
-	await federationCron();
-	await videoConferencesCron();
-	await userDataDownloadsCron();
-});
+export const startCronJobs = async (): Promise<void> => {
+	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron()]);
+	federationCron();
+	userDataDownloadsCron();
+};

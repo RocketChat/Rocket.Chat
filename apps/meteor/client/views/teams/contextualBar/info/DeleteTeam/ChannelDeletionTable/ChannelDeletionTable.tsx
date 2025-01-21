@@ -1,6 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDeletionTableRow from './ChannelDeletionTableRow';

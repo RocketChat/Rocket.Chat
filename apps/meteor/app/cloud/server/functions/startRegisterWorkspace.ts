@@ -5,6 +5,7 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
@@ -15,7 +16,6 @@ export async function startRegisterWorkspace(resend = false) {
 
 		return true;
 	}
-
 	(await Settings.updateValueById('Register_Server', true)).modifiedCount && void notifyOnSettingChangedById('Register_Server');
 
 	const regInfo = await buildWorkspaceRegistrationData(undefined);
@@ -48,7 +48,9 @@ export async function startRegisterWorkspace(resend = false) {
 		return false;
 	}
 
-	await Settings.updateValueById('Cloud_Workspace_Id', payload.id);
+	await updateAuditedBySystem({
+		reason: 'startRegisterWorkspace',
+	})(Settings.updateValueById, 'Cloud_Workspace_Id', payload.id);
 
 	return true;
 }

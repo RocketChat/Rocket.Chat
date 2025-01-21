@@ -2,7 +2,7 @@ import { useToolbar } from '@react-aria/toolbar';
 import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useVoipState } from '@rocket.chat/ui-voip';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
 import {
 	NavBarItemOmniChannelCallDialPad,
@@ -59,7 +59,7 @@ const NavBar = () => {
 						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
 							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
-							<NavBarItemOmnichannelContact title={t('Contacts')} />
+							<NavBarItemOmnichannelContact title={t('Contact_Center')} />
 							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 							<NavBarItemOmnichannelLivechatToggle />
 						</NavBarGroup>

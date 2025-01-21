@@ -1,5 +1,5 @@
 import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import AdminSidebarPages from './AdminSidebarPages';
 import PlanTag from '../../../components/PlanTag';

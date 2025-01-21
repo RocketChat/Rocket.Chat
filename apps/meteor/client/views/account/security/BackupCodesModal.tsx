@@ -1,5 +1,5 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TextCopy from '../../../components/TextCopy';

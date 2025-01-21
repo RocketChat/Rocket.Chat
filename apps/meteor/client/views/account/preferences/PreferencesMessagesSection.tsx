@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldRow, FieldLink, FieldHint, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { FieldRow, FieldLink, FieldHint, FieldLabel, AccordionItem, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +40,7 @@ const PreferencesMessagesSection = () => {
 	const sendOnEnterId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Messages')}>
+		<AccordionItem title={t('Messages')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -206,7 +206,7 @@ const PreferencesMessagesSection = () => {
 					<FieldHint>{t('Enter_Behaviour_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

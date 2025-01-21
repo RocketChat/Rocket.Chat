@@ -4,7 +4,6 @@ import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupInfo } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 import ReactiveUserStatus from '../../../../../../components/UserStatus/ReactiveUserStatus';

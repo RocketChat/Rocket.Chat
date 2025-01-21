@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 type InfiniteListAnchorProps = {
 	loadMore: () => void;

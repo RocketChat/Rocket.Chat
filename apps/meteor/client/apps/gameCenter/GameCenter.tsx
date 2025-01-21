@@ -1,7 +1,7 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
-import type { ReactElement } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useState } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
@@ -18,12 +18,12 @@ const GameCenter = (): ReactElement => {
 
 	const result = useExternalComponentsQuery();
 
-	const handleClose = useMutableCallback((e) => {
+	const handleClose = useEffectEvent((e: MouseEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
 	});
 
-	const handleBack = useMutableCallback((e) => {
+	const handleBack = useEffectEvent((e: MouseEvent) => {
 		setOpenedGame(undefined);
 		preventSyntheticEvent(e);
 	});
@@ -36,7 +36,7 @@ const GameCenter = (): ReactElement => {
 					handleClose={handleClose}
 					handleOpenGame={setOpenedGame}
 					games={result.data}
-					isLoading={result.isLoading}
+					isLoading={result.isPending}
 				/>
 			)}
 

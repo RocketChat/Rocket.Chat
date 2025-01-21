@@ -100,6 +100,20 @@ describe('[Settings]', () => {
 				})
 				.end(done);
 		});
+		it('should return the default values of the settings when includeDefaults is true', async () => {
+			return request
+				.get(api('settings'))
+				.query({ includeDefaults: true })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('settings');
+					expect(res.body).to.have.property('count');
+					expect(res.body.settings[0]).to.have.property('packageValue');
+				});
+		});
 	});
 
 	describe('[/settings/:_id]', () => {

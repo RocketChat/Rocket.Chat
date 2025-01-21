@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
@@ -25,9 +26,12 @@ export async function createTargetPrivateChannel(api: BaseTest['api'], options?:
 	return name;
 }
 
-export async function createTargetTeam(api: BaseTest['api']): Promise<string> {
+export async function createTargetTeam(
+	api: BaseTest['api'],
+	options?: { sidepanel?: IRoom['sidepanel'] } & Omit<GroupsCreateProps, 'name'>,
+): Promise<string> {
 	const name = faker.string.uuid();
-	await api.post('/teams.create', { name, type: 1, members: ['user2', 'user1'] });
+	await api.post('/teams.create', { name, type: 1, members: ['user2', 'user1'], ...options });
 
 	return name;
 }

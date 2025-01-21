@@ -21,7 +21,8 @@ export function useEndpointAction<TMethod extends Method, TPathPattern extends P
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const mutation = useMutation(sendData, {
+	const mutation = useMutation({
+		mutationFn: sendData,
 		onSuccess: () => {
 			if (options.successMessage) {
 				dispatchToastMessage({ type: 'success', message: options.successMessage });

@@ -1,5 +1,5 @@
-import { useRole } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useRole, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getURL } from '../../../../app/utils/client/getURL';
@@ -18,6 +18,22 @@ const AdvancedContactModal = ({ onCancel }: AdvancedContactModalProps) => {
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasLicense);
 	const openExternalLink = useExternalLink();
+	const eventStats = useEndpoint('POST', '/v1/statistics.telemetry');
+
+	const handleUpsellClick = async () => {
+		eventStats({
+			params: [{ eventName: 'updateCounter', settingsId: 'Advanced_Contact_Upsell_Clicks_Count' }],
+		});
+		return handleManageSubscription();
+	};
+
+	useEffect(() => {
+		if (shouldShowUpsell) {
+			eventStats({
+				params: [{ eventName: 'updateCounter', settingsId: 'Advanced_Contact_Upsell_Views_Count' }],
+			});
+		}
+	}, [eventStats, shouldShowUpsell]);
 
 	return (
 		<GenericUpsellModal
@@ -27,7 +43,7 @@ const AdvancedContactModal = ({ onCancel }: AdvancedContactModalProps) => {
 			onClose={onCancel}
 			onCancel={shouldShowUpsell ? onCancel : () => openExternalLink('https://go.rocket.chat/i/omnichannel-docs')}
 			cancelText={!shouldShowUpsell ? t('Learn_more') : undefined}
-			onConfirm={shouldShowUpsell ? handleManageSubscription : undefined}
+			onConfirm={shouldShowUpsell ? handleUpsellClick : undefined}
 			annotation={!shouldShowUpsell && !isAdmin ? t('Ask_enable_advanced_contact_profile') : undefined}
 		/>
 	);

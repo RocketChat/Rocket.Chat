@@ -338,6 +338,7 @@ Accounts.insertUserDoc = async function (options, user) {
 		if (!roles.includes('admin') && !hasAdmin) {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
+				// TODO: audit
 				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
 					void notifyOnSettingChangedById('Show_Setup_Wizard');
 			}
