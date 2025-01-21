@@ -1,6 +1,8 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { useEffect } from 'react';
 import _ from 'underscore';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
@@ -21,20 +23,13 @@ const config: OauthConfig = {
 
 const Nextcloud = new CustomOAuth('nextcloud', config);
 
-const fillServerURL = _.debounce((): void => {
-	const nextcloudURL = settings.get('Accounts_OAuth_Nextcloud_URL');
-	if (!nextcloudURL) {
-		if (nextcloudURL === undefined) {
-			return fillServerURL();
-		}
-		return;
-	}
-	config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
-	return Nextcloud.configure(config);
-}, 100);
+export const useNextcloud = (): void => {
+	const nextcloudURL = useSetting('Accounts_OAuth_Nextcloud_URL') as string;
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		return fillServerURL();
-	});
-});
+	useEffect(() => {
+		if (nextcloudURL) {
+			config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
+			Nextcloud.configure(config);
+		}
+	}, [nextcloudURL]);
+};
