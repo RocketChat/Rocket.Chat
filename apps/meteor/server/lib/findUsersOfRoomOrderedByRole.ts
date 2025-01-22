@@ -38,7 +38,7 @@ export async function findUsersOfRoomOrderedByRole({
 
 	const sortCriteria = {
 		rolePriority: rolePrioritySort ?? 1,
-		statusConnection: -1,
+		status: -1,
 		...(usernameSort
 			? { username: usernameSort }
 			: {
