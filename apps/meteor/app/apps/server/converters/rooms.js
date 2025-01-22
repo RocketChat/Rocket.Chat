@@ -123,9 +123,9 @@ export class AppRoomsConverter {
 			return undefined;
 		}
 
-		const u = this.__getCreator(room.creator?.id);
+		const u = await this.__getCreator(room.creator?.id);
 
-		const v = this.__getVisitor(room);
+		const v = await this.__getVisitor(room);
 
 		const departmentId = await this.__getDepartment(room);
 
