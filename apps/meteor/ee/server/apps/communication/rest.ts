@@ -24,6 +24,7 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
+import { marketplaceErrorHandler } from '../marketplace/MarketplaceErrorHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -566,13 +567,16 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/bundles/${this.urlParams.id}/apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
-							return API.v1.failure();
+							const error = await request.json();
+							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", error);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('bundles/:id/apps', { status: request.status, error }),
+							});
 						}
 						result = await request.json();
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", e.response.data);
-						return API.v1.internalError();
+						return API.v1.internalError({ error: `Error getting the Bundle's Apps from the Marketplace:${e.response.data}` });
 					}
 
 					return API.v1.success({ apps: result });
