@@ -4,6 +4,7 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { tracerSpan } from '@rocket.chat/tracing';
+import type express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -12,6 +13,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
+import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
 
@@ -1129,16 +1131,6 @@ export const API: {
 	default: createApi(),
 };
 
-// register the API to be re-created once the CORS-setting changes.
-settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
-	API.v1 = createApi({
-		version: 'v1',
-		apiPath: '',
-	});
-
-	API.default = createApi();
-});
-
 settings.watch<string>('Accounts_CustomFields', (value) => {
 	if (!value) {
 		return API.v1?.setLimitedCustomFields([]);
@@ -1164,4 +1156,57 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 
 settings.watch<boolean>('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
+});
+
+Meteor.startup(() => {
+	const rootRouter = new Router('/')
+		.use((_req, res, next) => {
+			res.removeHeader('X-Powered-By');
+			next();
+		})
+		.use(
+			API.api
+				.use((req, res, next) => {
+					if (!settings.get('API_Enable_CORS')) {
+						return next();
+					}
+
+					if (!req.headers['access-control-request-method'] && !req.headers.origin) {
+						return next();
+					}
+
+					const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
+
+					const defaultHeaders = {
+						'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+						'Access-Control-Allow-Headers':
+							'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+					};
+
+					if (CORSOriginSetting === '*') {
+						res.setHeader('Access-Control-Allow-Origin', '*');
+						res.setHeader('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
+						res.setHeader('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
+						return next();
+					}
+
+					const origins = CORSOriginSetting.trim()
+						.split(',')
+						.map((origin) => String(origin).trim().toLocaleLowerCase());
+
+					if (!origins.includes(req.headers.origin?.toLocaleLowerCase() || '')) {
+						res.writeHead(403, 'Forbidden');
+						return res.end();
+					}
+
+					res.setHeader('Access-Control-Allow-Origin', req.headers.origin ?? '*');
+					res.setHeader('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
+					res.setHeader('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
+					return next();
+				})
+				.use(API.v1.router),
+		)
+		.use(API.default.router).router;
+
+	(WebApp.connectHandlers as ReturnType<typeof express>).use(rootRouter);
 });
