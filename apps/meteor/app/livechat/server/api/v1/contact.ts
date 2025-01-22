@@ -9,6 +9,7 @@ import {
 	isGETOmnichannelContactsCheckExistenceProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -122,9 +123,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			const contact = await updateContact(
-				Object.fromEntries(Object.entries(this.bodyParams).filter(([_, v]) => v != null)) as unknown as UpdateContactParams,
-			);
+			const contact = await updateContact(removeEmpty(this.bodyParams) as unknown as UpdateContactParams);
 
 			return API.v1.success({ contact });
 		},
