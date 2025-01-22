@@ -97,7 +97,7 @@
 		"@types/chai-datetime": "0.0.39",
 		"@types/chai-dom": "1.11.3",
 		"@types/chai-spies": "~1.0.6",
-		"@types/codemirror": "^5.60.15",
+		"@types/codemirror": "~5.60.15",
 		"@types/cookie": "^0.5.4",
 		"@types/cookie-parser": "^1.4.7",
 		"@types/cors": "^2.8.17",

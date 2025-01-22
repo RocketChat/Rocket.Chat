@@ -8311,7 +8311,7 @@ __metadata:
     "@types/chai-datetime": "npm:0.0.39"
     "@types/chai-dom": "npm:1.11.3"
     "@types/chai-spies": "npm:~1.0.6"
-    "@types/codemirror": "npm:^5.60.15"
+    "@types/codemirror": "npm:~5.60.15"
     "@types/cookie": "npm:^0.5.4"
     "@types/cookie-parser": "npm:^1.4.7"
     "@types/cors": "npm:^2.8.17"
@@ -10998,7 +10998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/codemirror@npm:^5.60.15":
+"@types/codemirror@npm:~5.60.15":
   version: 5.60.15
   resolution: "@types/codemirror@npm:5.60.15"
   dependencies:
