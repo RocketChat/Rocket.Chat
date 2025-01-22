@@ -86,7 +86,7 @@ export class Router<
 		this.middleware = (router: express.Router) => {
 			prev(router);
 			router[method.toLowerCase() as Lowercase<Method>](`${subpath}`, async (req, res) => {
-				const { body, statusCode } = await action.apply({
+				const { body, statusCode, headers } = await action.apply({
 					urlParams: req.params,
 					queryParams: req.query,
 					bodyParams: req.body,
@@ -94,7 +94,7 @@ export class Router<
 					response: res,
 				} as any);
 
-				res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+				res.writeHead(statusCode, { 'Content-Type': 'application/json', ...headers });
 				body && res.write(JSON.stringify(body));
 				res.end();
 			});

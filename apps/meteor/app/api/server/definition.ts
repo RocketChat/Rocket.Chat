@@ -265,6 +265,8 @@ type Results<TResponse extends TypedOptions['response']> = {
 						: K extends 500
 							? InternalError<InferResult<TResponse[500]>>
 							: never;
-}[keyof TResponse];
+}[keyof TResponse] & {
+	headers?: Record<string, string>;
+};
 
 export type TypedAction<TOptions extends TypedOptions> = (this: TypedThis<TOptions>) => PromiseOrValue<Results<TOptions['response']>>;
