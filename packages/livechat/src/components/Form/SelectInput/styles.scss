@@ -1,8 +1,9 @@
-@import '../mixins';
+@use '../mixins';
+@use "../../../styles/colors";
 
-$form-input-select-arrow-size: $form-input-padding;
-$form-input-select-arrow-padding: $form-input-padding;
-$form-input-select-arrow-color: $color-text-light;
+$form-input-select-arrow-size: mixins.$form-input-padding;
+$form-input-select-arrow-padding: mixins.$form-input-padding;
+$form-input-select-arrow-color: colors.$color-text-light;
 
 .select-input {
 	position: relative;
@@ -15,7 +16,7 @@ $form-input-select-arrow-color: $color-text-light;
 
 		padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
 
-		color: $form-input-color;
+		color: mixins.$form-input-color;
 
 		-webkit-appearance: none;
 		-moz-appearance: none;
@@ -26,18 +27,18 @@ $form-input-select-arrow-color: $color-text-light;
 		}
 
 		&--placeholder {
-			color: $form-input-placeholder-color;
+			color: mixins.$form-input-placeholder-color;
 		}
 
 		&--small {
 			padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
 		}
 
-		@include form__input-box;
+		@include mixins.form__input-box;
 	}
 
 	&__option {
-		color: $form-input-color;
+		color: mixins.$form-input-color;
 	}
 
 	&__arrow {

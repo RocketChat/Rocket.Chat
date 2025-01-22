@@ -6,4 +6,5 @@ export interface IImporterShortSelectionItem {
 export interface IImporterShortSelection {
 	users?: IImporterShortSelectionItem;
 	channels?: IImporterShortSelectionItem;
+	contacts?: IImporterShortSelectionItem;
 }

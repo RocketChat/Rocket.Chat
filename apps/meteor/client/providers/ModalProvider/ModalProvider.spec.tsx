@@ -1,7 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, render, screen } from '@testing-library/react';
 import type { ForwardedRef, ReactElement } from 'react';
-import React, { Suspense, createContext, createRef, forwardRef, useContext, useImperativeHandle } from 'react';
+import { Suspense, createContext, createRef, forwardRef, useContext, useImperativeHandle } from 'react';
 
 import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';

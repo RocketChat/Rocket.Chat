@@ -6,7 +6,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe('Omnichannel chat histr', () => {
+test.describe('Omnichannel chat history', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
@@ -18,9 +18,11 @@ test.describe('Omnichannel chat histr', () => {
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
+
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
+
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
@@ -63,10 +65,12 @@ test.describe('Omnichannel chat histr', () => {
 		});
 
 		await test.step('Expect to be able to see conversation history', async () => {
-			await agent.poHomeOmnichannel.btnCurrentChats.click();
-			await expect(agent.poHomeOmnichannel.historyItem).toBeVisible();
-			await agent.poHomeOmnichannel.historyItem.click();
-			await expect(agent.poHomeOmnichannel.historyMessage).toBeVisible();
+			await agent.poHomeOmnichannel.btnContactInfo.click();
+			await agent.poHomeOmnichannel.contacts.contactInfo.tabHistory.click();
+			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyItem).toBeVisible();
+
+			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
+			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
 		});
 	});
 });

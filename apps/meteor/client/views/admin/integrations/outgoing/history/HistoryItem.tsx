@@ -1,8 +1,9 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Button, Icon, Box, Accordion, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import DOMPurify from 'dompurify';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
@@ -35,7 +36,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	const createdAt = typeof _createdAt === 'string' ? _createdAt : (_createdAt as Date).toISOString();
 	const updatedAt = typeof _updatedAt === 'string' ? _updatedAt : (_updatedAt as Date).toISOString();
 
-	const handleClickReplay = useMutableCallback((e) => {
+	const handleClickReplay = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		replayOutgoingIntegration({ integrationId, historyId: _id });
 	});
@@ -51,7 +52,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	const errorStackCode = useHighlightedCode('json', JSON.stringify(errorStack || '', null, 2));
 
 	return (
-		<Accordion.Item
+		<AccordionItem
 			title={
 				<Box display='inline-flex' w='full' flexDirection='row' justifyContent='space-between'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
@@ -111,7 +112,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: dataSentToTriggerCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(dataSentToTriggerCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -123,7 +124,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: prepareSentMessageCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(prepareSentMessageCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -135,7 +136,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: processSentMessageCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processSentMessageCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -157,7 +158,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: httpCallDataCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpCallDataCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -169,7 +170,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: httpErrorCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpErrorCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -181,7 +182,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: httpResultCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(httpResultCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
@@ -193,14 +194,14 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 						<FieldRow>
 							<Box withRichContent w='full'>
 								<pre>
-									<code dangerouslySetInnerHTML={{ __html: errorStackCode }}></code>
+									<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(errorStackCode) }}></code>
 								</pre>
 							</Box>
 						</FieldRow>
 					</Field>
 				)}
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

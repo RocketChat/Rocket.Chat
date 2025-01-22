@@ -1,7 +1,7 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { lazy, useCallback } from 'react';
+import { lazy, useCallback } from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 import LayoutWithSidebarV2 from './LayoutWithSidebarV2';
@@ -29,7 +29,7 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactEl
 	if (require2faSetup) {
 		return (
 			<main id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
-				<div className='rc-old main-content content-background-color'>
+				<div className='main-content content-background-color'>
 					<AccountSecurityPage />
 				</div>
 			</main>

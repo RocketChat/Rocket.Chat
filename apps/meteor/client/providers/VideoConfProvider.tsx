@@ -1,10 +1,11 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { CallPreferences, DirectCallData, IRoom, ProviderCapabilities } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
-import { VideoConfContext } from '../contexts/VideoConfContext';
-import type { DirectCallData, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
@@ -12,6 +13,11 @@ import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConferenc
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const logLevel = useSetting<number>('Log_Level', 0);
+
+	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
 	useEffect(
 		() =>
@@ -21,6 +27,15 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		[handleOpenCall],
 	);
 
+	useEffect(
+		() =>
+			VideoConfManager.on('error', (props) => {
+				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+				dispatchToastMessage({ type: 'error', message });
+			}),
+		[dispatchToastMessage, t],
+	);
+
 	useEffect(() => {
 		VideoConfManager.on('direct/stopped', () => setOutgoing(undefined));
 		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
@@ -28,7 +43,6 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 
 	const contextValue = useMemo(
 		() => ({
-			manager: VideoConfManager,
 			dispatchOutgoing: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: (): void => setOutgoing(undefined),
 			startCall: (rid: IRoom['_id'], confTitle?: string): Promise<void> => VideoConfManager.startCall(rid, confTitle),
@@ -40,6 +54,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
 			setPreferences: (prefs: Partial<(typeof VideoConfManager)['preferences']>): void => VideoConfManager.setPreferences(prefs),
+			loadCapabilities: VideoConfManager.loadCapabilities,
 			queryIncomingCalls: {
 				getSnapshot: (): DirectCallData[] => VideoConfManager.getIncomingDirectCalls(),
 				subscribe: (cb: () => void) => VideoConfManager.on('incoming/changed', cb),

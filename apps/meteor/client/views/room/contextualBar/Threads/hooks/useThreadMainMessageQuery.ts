@@ -94,31 +94,35 @@ export const useThreadMainMessageQuery = (
 		};
 	}, [tmid]);
 
-	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const mainMessage = await getMessage(tmid);
+	return useQuery({
+		queryKey: ['rooms', room._id, 'threads', tmid, 'main-message'] as const,
 
-		if (!mainMessage) {
-			throw new Error('Invalid main message');
-		}
+		queryFn: async ({ queryKey }) => {
+			const mainMessage = await getMessage(tmid);
 
-		const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
-			queryClient.invalidateQueries(queryKey, { exact: true });
-		});
+			if (!mainMessage) {
+				throw new Error('Invalid main message');
+			}
 
-		unsubscribeRef.current =
-			unsubscribeRef.current ||
-			subscribeToMessage(mainMessage, {
-				onMutate: async (message) => {
-					const msg = await onClientMessageReceived(message);
-					queryClient.setQueryData(queryKey, () => msg);
-					debouncedInvalidate();
-				},
-				onDelete: () => {
-					onDelete?.();
-					queryClient.invalidateQueries(queryKey, { exact: true });
-				},
+			const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
+				queryClient.invalidateQueries({ queryKey, exact: true });
 			});
 
-		return mainMessage;
+			unsubscribeRef.current =
+				unsubscribeRef.current ||
+				subscribeToMessage(mainMessage, {
+					onMutate: async (message) => {
+						const msg = await onClientMessageReceived(message);
+						queryClient.setQueryData(queryKey, () => msg);
+						debouncedInvalidate();
+					},
+					onDelete: () => {
+						onDelete?.();
+						queryClient.invalidateQueries({ queryKey, exact: true });
+					},
+				});
+
+			return mainMessage;
+		},
 	});
 };

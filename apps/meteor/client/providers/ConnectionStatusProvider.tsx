@@ -2,7 +2,6 @@ import type { ConnectionStatusContextValue } from '@rocket.chat/ui-contexts';
 import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 

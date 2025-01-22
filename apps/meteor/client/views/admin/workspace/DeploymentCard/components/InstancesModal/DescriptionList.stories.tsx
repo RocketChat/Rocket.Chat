@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
@@ -10,7 +9,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [(fn) => <div className='rc-old'>{fn()}</div>],
+	decorators: [(fn) => <div>{fn()}</div>],
 } satisfies Meta<typeof DescriptionList>;
 
 export const Default: StoryFn<typeof DescriptionList> = (args) => (

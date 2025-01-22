@@ -28,7 +28,6 @@ export type EditableSettingsContextValue = {
 		_id: ISetting['_id'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting['_id'][]];
 	readonly dispatch: (changes: Partial<EditableSetting>[]) => void;
-	readonly isEnterprise: boolean;
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
@@ -37,10 +36,7 @@ export const EditableSettingsContext = createContext<EditableSettingsContextValu
 	queryGroupSections: () => [(): (() => void) => (): void => undefined, (): string[] => []],
 	queryGroupTabs: () => [(): (() => void) => (): void => undefined, (): ISetting['_id'][] => []],
 	dispatch: () => undefined,
-	isEnterprise: false,
 });
-
-export const useIsEnterprise = (): boolean => useContext(EditableSettingsContext).isEnterprise;
 
 export const useEditableSetting = (_id: ISetting['_id']): EditableSetting | undefined => {
 	const { queryEditableSetting } = useContext(EditableSettingsContext);

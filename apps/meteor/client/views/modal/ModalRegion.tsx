@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useCurrentModal, useModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
 import ModalBackdrop from '../../components/ModalBackdrop';
 import ModalPortal from '../../portals/ModalPortal';

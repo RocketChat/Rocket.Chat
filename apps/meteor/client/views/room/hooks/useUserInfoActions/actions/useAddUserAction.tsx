@@ -53,7 +53,7 @@ export const useAddUserAction = (
 
 	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
 
-	const handleAddUser = useEffectEvent(async ({ users }) => {
+	const handleAddUser = useEffectEvent(async ({ users }: { users: string[] }) => {
 		const [username] = users;
 		await inviteUser({ roomId: rid, username });
 		reload?.();

@@ -2,7 +2,7 @@ import { Button, Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallPage from './CallPage';
@@ -87,7 +87,7 @@ const MeetPage = () => {
 							top: '5%',
 							right: '2%',
 						}}
-						className='Self_Video'
+						className='meet__video--self'
 						backgroundColor='dark'
 						alignItems='center'
 					>

@@ -1,14 +1,13 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { useSettings } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import type { FilterOperators } from 'mongodb';
 import type { MutableRefObject, ReactNode } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
 import type { EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 import { EditableSettingsContext } from '../EditableSettingsContext';
@@ -26,7 +25,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 	const settingsCollectionRef = useRef<Mongo.Collection<EditableSetting>>(null) as MutableRefObject<Mongo.Collection<EditableSetting>>;
 	const persistedSettings = useSettings(query);
 
-	const getSettingsCollection = useMutableCallback(() => {
+	const getSettingsCollection = useEffectEvent(() => {
 		if (!settingsCollectionRef.current) {
 			settingsCollectionRef.current = new Mongo.Collection<any>(null);
 		}
@@ -182,7 +181,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 		[getSettingsCollection],
 	);
 
-	const dispatch = useMutableCallback((changes: Partial<EditableSetting>[]): void => {
+	const dispatch = useEffectEvent((changes: Partial<EditableSetting>[]): void => {
 		for (const { _id, ...data } of changes) {
 			if (!_id) {
 				continue;
@@ -193,10 +192,6 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 		Tracker.flush();
 	});
 
-	const { data } = useIsEnterprise();
-
-	const isEnterprise = data?.isEnterprise ?? false;
-
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
 			queryEditableSetting,
@@ -204,9 +199,8 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 			queryGroupSections,
 			queryGroupTabs,
 			dispatch,
-			isEnterprise,
 		}),
-		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise],
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch],
 	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;

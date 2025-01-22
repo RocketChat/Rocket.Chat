@@ -1,8 +1,9 @@
 import type { IOmnichannelRoom, IUser, ILivechatVisitor, IMessage, MessageAttachment, IMessageInbox } from '@rocket.chat/core-typings';
 
-export type GenericCloseRoomParams = {
+type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
 	comment?: string;
+	forceClose?: boolean;
 	options?: {
 		clientAction?: boolean;
 		tags?: string[];

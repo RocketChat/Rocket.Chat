@@ -1,6 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import AssetSettingInput from './AssetSettingInput';
 
@@ -9,8 +8,8 @@ export default {
 	component: AssetSettingInput,
 	decorators: [
 		(fn) => (
-			<div className='rc-old'>
-				<div className='page-settings'>
+			<div>
+				<div>
 					<Field>{fn()}</Field>
 				</div>
 			</div>

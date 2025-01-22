@@ -40,7 +40,7 @@
 		"@babel/plugin-transform-runtime": "~7.25.9",
 		"@babel/preset-env": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/icons": "~0.39.0",
+		"@rocket.chat/icons": "^0.40.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.14",
 		"babel-loader": "~9.2.1",
@@ -52,11 +52,11 @@
 		"ts-jest": "~29.2.5",
 		"ts-loader": "~9.5.1",
 		"ts-node": "~10.9.2",
-		"ts-patch": "~3.2.1",
+		"ts-patch": "^3.2.1",
 		"typescript": "~5.6.3"
 	},
 	"dependencies": {
-		"typia": "~6.11.4"
+		"typia": "~6.12.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"

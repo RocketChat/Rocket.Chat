@@ -19,6 +19,7 @@ addMigration({
 		const isValidAvatarSyncInterval = ldapAvatarSyncInterval && isValidCron(ldapAvatarSyncInterval.value as string);
 		const isValidAutoLogoutInterval = ldapAutoLogoutInterval && isValidCron(ldapAutoLogoutInterval.value as string);
 
+		// TODO audit
 		await Settings.updateOne(
 			{ _id: 'LDAP_Background_Sync_Avatars_Interval' },
 			{ $set: { packageValue: newAvatarSyncPackageValue, ...(!isValidAvatarSyncInterval && { value: newAvatarSyncPackageValue }) } },

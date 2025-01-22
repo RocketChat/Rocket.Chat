@@ -1,7 +1,6 @@
-import { Accordion, Box } from '@rocket.chat/fuselage';
+import { AccordionItem, Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
@@ -36,13 +35,13 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement 
 	);
 
 	return (
-		<Accordion.Item title={title} {...props}>
+		<AccordionItem title={title} {...props}>
 			{release.detailedChangelog?.rendered ? (
 				<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(release.detailedChangelog?.rendered, purifyOptions) }} color='default' />
 			) : (
 				<Box color='default'>{t('No_release_information_provided')}</Box>
 			)}
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

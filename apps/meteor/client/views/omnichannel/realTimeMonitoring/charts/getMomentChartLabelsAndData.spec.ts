@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 
+import 'moment/locale/fa';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 
 moment.tz.setDefault('UTC');

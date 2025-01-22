@@ -97,14 +97,20 @@ export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
 	return setting;
 };
 
-export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
+export const useFeaturePreviewList = (featuresList: FeaturePreviewProps[]) => {
 	const unseenFeatures = enabledDefaultFeatures.filter(
 		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
-		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
-		return { ...defaultFeature, ...features };
+		const feature = featuresList?.find((feature) => feature.name === defaultFeature.name);
+		// overwrite enableQuery and disabled with default value to avoid a migration to remove this from the DB
+		// payload on save now only have `name` and `value`
+		if (feature) {
+			feature.enableQuery = defaultFeature.enableQuery;
+			feature.disabled = defaultFeature.disabled;
+		}
+		return { ...defaultFeature, ...feature };
 	});
 
 	return { unseenFeatures, features: mergedFeatures };

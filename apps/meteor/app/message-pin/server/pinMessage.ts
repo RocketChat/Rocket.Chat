@@ -43,6 +43,81 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export async function pinMessage(originalMessage: IMessage, userId: string, pinnedAt?: Date) {
+	if (!settings.get('Message_AllowPinning')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
+			method: 'pinMessage',
+			action: 'Message_pinning',
+		});
+	}
+
+	if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+	}
+
+	const room = await Rooms.findOneById(originalMessage.rid);
+	if (!room) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+	}
+
+	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+	}
+
+	if (originalMessage.pinned) {
+		return originalMessage;
+	}
+
+	const me = await Users.findOneById(userId);
+	if (!me) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'pinMessage' });
+	}
+
+	originalMessage.pinned = true;
+	originalMessage.pinnedAt = pinnedAt || new Date();
+	originalMessage.pinnedBy = {
+		_id: userId,
+		username: me.username,
+	};
+
+	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
+
+	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+	if (settings.get('Message_Read_Receipt_Store_Users')) {
+		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
+	}
+	if (isTheLastMessage(room, originalMessage)) {
+		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+	}
+
+	const attachments: MessageAttachment[] = [];
+
+	if (Array.isArray(originalMessage.attachments)) {
+		originalMessage.attachments.forEach((attachment) => {
+			if (!isQuoteAttachment(attachment) || shouldAdd(attachments, attachment)) {
+				attachments.push(attachment);
+			}
+		});
+	}
+
+	// App IPostMessagePinned event hook
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+
+	const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
+
+	return Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
+		attachments: [
+			{
+				text: originalMessage.msg,
+				author_name: originalMessage.u.username,
+				author_icon: getUserAvatarURL(originalMessage.u.username),
+				ts: originalMessage.ts,
+				attachments: attachments.map(recursiveRemove),
+			},
+		],
+	});
+}
+
 Meteor.methods<ServerMethods>({
 	async pinMessage(message, pinnedAt) {
 		check(message._id, String);
@@ -54,97 +129,15 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!settings.get('Message_AllowPinning')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
-				method: 'pinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		let originalMessage = await Messages.findOneById(message._id);
-		if (originalMessage == null || originalMessage._id == null) {
+		const originalMessage = await Messages.findOneById(message._id);
+		if (!originalMessage?.rid) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
 				method: 'pinMessage',
 				action: 'Message_pinning',
 			});
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { projection: { _id: 1 } });
-		if (!subscription) {
-			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
-			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
-				method: 'pinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
-		}
-
-		const me = await Users.findOneById(userId);
-		if (!me) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'pinMessage' });
-		}
-
-		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
-			await Messages.cloneAndSaveAsHistoryById(message._id, me);
-		}
-
-		const room = await Rooms.findOneById(originalMessage.rid);
-		if (!room) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
-		}
-
-		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
-		}
-
-		originalMessage.pinned = true;
-		originalMessage.pinnedAt = pinnedAt || new Date();
-		originalMessage.pinnedBy = {
-			_id: userId,
-			username: me.username,
-		};
-
-		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
-
-		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-		if (settings.get('Message_Read_Receipt_Store_Users')) {
-			await ReadReceipts.setPinnedByMessageId(message._id, originalMessage.pinned);
-		}
-		if (isTheLastMessage(room, message)) {
-			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
-			void notifyOnRoomChangedById(room._id);
-		}
-
-		const attachments: MessageAttachment[] = [];
-
-		if (Array.isArray(originalMessage.attachments)) {
-			originalMessage.attachments.forEach((attachment) => {
-				if (!isQuoteAttachment(attachment) || shouldAdd(attachments, attachment)) {
-					attachments.push(attachment);
-				}
-			});
-		}
-
-		// App IPostMessagePinned event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
-
-		const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
-
-		return Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
-			attachments: [
-				{
-					text: originalMessage.msg,
-					author_name: originalMessage.u.username,
-					author_icon: getUserAvatarURL(originalMessage.u.username),
-					ts: originalMessage.ts,
-					attachments: attachments.map(recursiveRemove),
-				},
-			],
-		});
+		return pinMessage(originalMessage, userId, pinnedAt);
 	},
 	async unpinMessage(message) {
 		check(message._id, String);

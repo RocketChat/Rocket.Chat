@@ -2,6 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import { isPOSTomnichannelIntegrations } from '@rocket.chat/rest-typings';
 
 import { trim } from '../../../../../lib/utils/stringUtils';
+import { updateAuditedByUser } from '../../../../../server/settings/lib/auditedSettingUpdates';
 import { API } from '../../../../api/server';
 import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 
@@ -50,7 +51,14 @@ API.v1.addRoute(
 				},
 			].filter(Boolean) as unknown as { _id: string; value: any }[];
 
-			const promises = settingsIds.map((setting) => Settings.updateValueById(setting._id, setting.value));
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
+
+			const promises = settingsIds.map((setting) => auditSettingOperation(Settings.updateValueById, setting._id, setting.value));
 
 			(await Promise.all(promises)).forEach((value, index) => {
 				if (value?.modifiedCount) {

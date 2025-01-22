@@ -27,14 +27,29 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 };
 
 export type UnauthorizedResult<T> = {
-	statusCode: 403;
+	statusCode: 401;
 	body: {
 		success: false;
 		error: T | 'unauthorized';
 	};
 };
 
-export type InternalError<T> = { statusCode: 500; body: { error: T | 'Internal error occured'; success: false } };
+export type ForbiddenResult<T> = {
+	statusCode: 403;
+	body: {
+		success: false;
+		// TODO: MAJOR remove 'unauthorized'
+		error: T | 'forbidden' | 'unauthorized';
+	};
+};
+
+export type InternalError<T> = {
+	statusCode: 500;
+	body: {
+		error: T | 'Internal server error';
+		success: false;
+	};
+};
 
 export type NotFoundResult = {
 	statusCode: 404;
@@ -112,16 +127,7 @@ export type PartialThis = {
 	readonly logger: Logger;
 };
 
-export type UserInfo = IUser & {
-	email?: string;
-	settings: {
-		profile: object;
-		preferences: unknown;
-	};
-	avatarUrl: string;
-};
-
-export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -186,11 +192,11 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 			body: unknown;
 	  };
 
-export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
 
-export type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
+type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
 	| Action<TMethod, TPathPattern, TEndpointOptions>
 	| ({
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;

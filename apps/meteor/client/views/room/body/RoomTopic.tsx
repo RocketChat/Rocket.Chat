@@ -3,7 +3,6 @@ import { isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useSetting, useUserId, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import MarkdownText from '../../../components/MarkdownText';
@@ -51,7 +50,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	if (!topic && !roomLeader) return null;
 
 	return (
-		<RoomBanner className='rcx-header-section' role='note'>
+		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
 			<RoomBannerContent>
 				{roomLeader && !topic && canEdit ? (
 					<Box is='a' href={href}>

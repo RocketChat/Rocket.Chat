@@ -1,8 +1,8 @@
 import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import type { ReactElement, ComponentProps, SetStateAction } from 'react';
-import React, { useMemo } from 'react';
+import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { DateRange } from '../../utils/dateRange';
@@ -117,16 +117,16 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange
 };
 
 const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): ReactElement => {
-	const dispatch = useMutableCallback((action: DateRangeAction): void => {
+	const dispatch = useEffectEvent((action: DateRangeAction): void => {
 		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
 		onChange?.(newRange);
 	});
 
-	const handleChangeStart = useMutableCallback(({ currentTarget }) => {
+	const handleChangeStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
 		dispatch({ newStart: currentTarget.value });
 	});
 
-	const handleChangeEnd = useMutableCallback(({ currentTarget }) => {
+	const handleChangeEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
 		dispatch({ newEnd: currentTarget.value });
 	});
 
