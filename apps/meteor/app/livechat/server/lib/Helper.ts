@@ -31,6 +31,7 @@ import {
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -147,7 +148,7 @@ export const prepareLivechatRoom = async (
 
 export const createLivechatRoom = async (room: InsertionModel<IOmnichannelRoom>, session: ClientSession) => {
 	const result = await LivechatRooms.findOneAndUpdate(
-		Object.fromEntries(Object.entries(room).filter(([_, v]) => v != null)),
+		removeEmpty(room),
 		{
 			$set: {},
 		},
@@ -211,28 +212,26 @@ export const createLivechatInquiry = async ({
 	});
 
 	const result = await LivechatInquiry.findOneAndUpdate(
-		Object.fromEntries(
-			Object.entries({
-				rid,
-				name,
-				ts,
-				department,
-				message: message ?? '',
-				status: initialStatus || LivechatInquiryStatus.READY,
-				v: {
-					_id,
-					username,
-					token,
-					status,
-					...(activity?.length && { activity }),
-				},
-				t: 'l',
-				priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-				estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		removeEmpty({
+			rid,
+			name,
+			ts,
+			department,
+			message: message ?? '',
+			status: initialStatus || LivechatInquiryStatus.READY,
+			v: {
+				_id,
+				username,
+				token,
+				status,
+				...(activity?.length && { activity }),
+			},
+			t: 'l',
+			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
-				...extraInquiryInfo,
-			}).filter(([_, v]) => v != null),
-		),
+			...extraInquiryInfo,
+		}),
 		{
 			$set: {
 				_id: new ObjectId().toHexString(),
