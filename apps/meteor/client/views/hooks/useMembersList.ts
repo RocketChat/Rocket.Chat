@@ -37,8 +37,8 @@ const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 			return isModeratorA ? -1 : 1;
 		}
 
-		if ((a.status === 'online' || b.status === 'online') && a.status !== b.status) {
-			return a.status === 'online' ? -1 : 1;
+		if (a.status !== b.status) {
+			return ((a.status ?? 'offline')?.localeCompare(b.status ?? 'offline') ?? 0) * -1;
 		}
 
 		if (useRealName && a.name && b.name) {
