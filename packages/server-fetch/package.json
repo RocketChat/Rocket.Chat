@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@types/node-fetch": "~2.6.11",
 		"eslint": "~8.45.0",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

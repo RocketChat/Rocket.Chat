@@ -1,6 +1,5 @@
 import { Callout } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { PriorityEditFormProps } from './PriorityEditForm';
@@ -14,9 +13,9 @@ type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 
 function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWithDataProps): ReactElement {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = usePriorityInfo(priorityId);
+	const { data, isLoading, isError } = usePriorityInfo(priorityId);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

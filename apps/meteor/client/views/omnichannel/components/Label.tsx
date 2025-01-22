@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 type LabelProps = ComponentProps<typeof Box>;
 

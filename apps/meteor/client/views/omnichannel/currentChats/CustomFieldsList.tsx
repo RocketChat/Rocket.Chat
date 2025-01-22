@@ -2,7 +2,7 @@ import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import {

@@ -33,11 +33,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 	}
 
 	async started() {
-		settings.watch<boolean>('Livechat_enabled', (enabled) => {
-			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
-		});
-
-		settings.watch<string>('Livechat_Routing_Method', async () => {
+		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
 			this.queueWorker.shouldStart();
 		});
 

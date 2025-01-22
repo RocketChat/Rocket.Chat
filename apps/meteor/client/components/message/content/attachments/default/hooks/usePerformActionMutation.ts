@@ -17,26 +17,30 @@ export const usePerformActionMutation = (
 ): UseMutationResult<void, Error, UsePerfomActionMutationParams> => {
 	const chat = useChat();
 
-	return useMutation(async ({ processingType, msg, mid }) => {
-		if (!chat) {
-			return;
-		}
-
-		switch (processingType) {
-			case 'sendMessage':
-				if (!msg) return;
-				await chat.flows.sendMessage({ text: msg });
+	return useMutation({
+		mutationFn: async ({ processingType, msg, mid }) => {
+			if (!chat) {
 				return;
+			}
 
-			case 'respondWithMessage':
-				if (!msg) return;
-				await chat.composer?.replyWith(msg);
-				return;
+			switch (processingType) {
+				case 'sendMessage':
+					if (!msg) return;
+					await chat.flows.sendMessage({ text: msg });
+					return;
 
-			case 'respondWithQuotedMessage':
-				if (!mid) return;
-				const message = await chat.data.getMessageByID(mid);
-				await chat.composer?.quoteMessage(message);
-		}
-	}, options);
+				case 'respondWithMessage':
+					if (!msg) return;
+					await chat.composer?.replyWith(msg);
+					return;
+
+				case 'respondWithQuotedMessage':
+					if (!mid) return;
+					const message = await chat.data.getMessageByID(mid);
+					await chat.composer?.quoteMessage(message);
+			}
+		},
+
+		...options,
+	});
 };

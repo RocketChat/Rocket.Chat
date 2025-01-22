@@ -10,7 +10,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
+import { Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
@@ -79,13 +79,12 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const computation = Tracker.autorun(() => {
-	const ready = CachedChatRoom.ready.get() && mainReady.get();
-	if (ready !== true) {
+	if (!mainReady.get()) {
 		return;
 	}
 	Tracker.nonreactive(() =>
 		Object.entries(openedRooms).forEach(([typeName, record]) => {
-			if (record.active !== true || record.ready === true) {
+			if (record.active !== true || (record.ready === true && record.streamActive === true)) {
 				return;
 			}
 

@@ -1,7 +1,6 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 type AppsUsageCardSectionProps = {
 	title: ReactNode;
@@ -17,7 +16,7 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 	const labelId = useUniqueId();
 
 	return (
-		<Box fontScale='c1' mb={12} title={tip}>
+		<Box fontScale='c1' mb={12} title={tip} display='flex' flexDirection='column' width='100%'>
 			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 				<div id={labelId}>{title}</div>
 

@@ -1,8 +1,8 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { CachedChatSubscription } from '../../../../app/models/client';
+import { CachedChatRoom, CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { mainReady } from '../../../../app/ui-utils/client';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
@@ -20,6 +20,11 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	useEffect(() => {
 		mainReady.set(ready);
 	}, [ready]);
+
+	useEffect(() => {
+		CachedChatSubscription.listen();
+		CachedChatRoom.listen();
+	}, []);
 
 	if (!ready) {
 		return <PageLoading />;

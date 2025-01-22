@@ -154,7 +154,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			{showFormLogin && (
 				<>
 					<Form.Container>
-						<FieldGroup disabled={loginMutation.isLoading}>
+						<FieldGroup disabled={loginMutation.isPending}>
 							<Field>
 								<FieldLabel required htmlFor={usernameId}>
 									{t('registration.component.form.emailOrUsername')}
@@ -213,11 +213,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								)}
 							</Field>
 						</FieldGroup>
-						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
+						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
 						<ButtonGroup>
-							<Button loading={loginMutation.isLoading} type='submit' primary>
+							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>
@@ -229,7 +229,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Footer>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isLoading} setError={setErrorOnSubmit} />
+			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />
 		</Form>
 	);
 };

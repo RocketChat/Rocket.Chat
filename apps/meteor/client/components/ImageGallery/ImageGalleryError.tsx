@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, ModalBackdrop } from '@rocket.chat/fuselage';
-import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
