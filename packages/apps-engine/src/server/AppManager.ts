@@ -607,7 +607,7 @@ export class AppManager {
         }
 
         descriptor.signature = await this.getSignatureManager().signApp(descriptor);
-        const created = await this.appMetadataStorage.create(descriptor);
+        const created = await this.appMetadataStorage.create(Object.fromEntries(Object.entries(descriptor).filter(([_, v]) => v != null)) as unknown as any);
 
         if (!created) {
             aff.setStorageError('Failed to create the App, the storage did not return it.');
@@ -717,9 +717,9 @@ export class AppManager {
             languageContent: result.languageContent,
             settings: old.settings,
             implemented: result.implemented.getValues(),
-            marketplaceInfo: old.marketplaceInfo,
-            sourcePath: old.sourcePath,
-            permissionsGranted,
+            ...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
+            ...(old.sourcePath && { sourcePath: old.sourcePath }),
+            ...(permissionsGranted && { permissionsGranted }),
         };
 
         try {

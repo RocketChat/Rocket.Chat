@@ -56,22 +56,24 @@ export class AppUsersConverter {
 			return undefined;
 		}
 
-		return {
-			_id: user.id,
-			username: user.username,
-			emails: user.emails,
-			type: user.type,
-			active: user.isEnabled,
-			name: user.name,
-			roles: user.roles,
-			status: user.status,
-			statusConnection: user.statusConnection,
-			utcOffset: user.utfOffset,
-			createdAt: user.createdAt,
-			_updatedAt: user.updatedAt,
-			lastLogin: user.lastLoginAt,
-			appId: user.appId,
-		};
+		return Object.fromEntries(
+			Object.entries({
+				_id: user.id,
+				username: user.username,
+				emails: user.emails,
+				type: user.type,
+				active: user.isEnabled,
+				name: user.name,
+				roles: user.roles,
+				status: user.status,
+				statusConnection: user.statusConnection,
+				utcOffset: user.utfOffset,
+				createdAt: user.createdAt,
+				_updatedAt: user.updatedAt,
+				lastLogin: user.lastLoginAt,
+				appId: user.appId,
+			}).filter(([, v]) => v != null),
+		);
 	}
 
 	_convertUserTypeToEnum(type) {
