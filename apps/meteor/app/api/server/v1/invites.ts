@@ -5,6 +5,7 @@ import {
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
@@ -14,33 +15,94 @@ import { useInviteToken } from '../../../invites/server/functions/useInviteToken
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
 import { API } from '../api';
 
-API.v1.addRoute(
-	'listInvites',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
+API.v1
+	.get(
+		'listInvites',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						invites: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: {
+										type: 'string',
+									},
+									rid: {
+										type: 'string',
+									},
+									createdAt: {
+										type: 'string',
+									},
+									expireAt: {
+										type: 'string',
+									},
+									maxUses: {
+										type: 'number',
+									},
+									uses: {
+										type: 'number',
+									},
+								},
+								required: ['_id', 'rid', 'createdAt', 'expireAt', 'maxUses', 'uses'],
+							},
+						},
+					},
+					required: ['invites'],
+				}),
+			},
+		},
+
+		async function () {
 			const result = await listInvites(this.userId);
 			return API.v1.success(result);
 		},
-	},
-);
+	)
+	.post(
+		'findOrCreateInvite',
+		{
+			authRequired: true,
+			body: isFindOrCreateInviteParams,
+			response: {
+				200: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						_id: {
+							type: 'string',
+						},
+						rid: {
+							type: 'string',
+						},
+						createdAt: {
+							type: 'string',
+						},
+						expireAt: {
+							type: 'string',
+						},
+						maxUses: {
+							type: 'number',
+						},
+						uses: {
+							type: 'number',
+						},
+					},
+					required: ['_id', 'rid', 'createdAt', 'expireAt', 'maxUses', 'uses'],
+				}),
+			},
+		},
 
-API.v1.addRoute(
-	'findOrCreateInvite',
-	{
-		authRequired: true,
-		validateParams: isFindOrCreateInviteParams,
-	},
-	{
-		async post() {
+		async function () {
 			const { rid, days, maxUses } = this.bodyParams;
 
 			return API.v1.success((await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite);
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'removeInvite/:_id',
