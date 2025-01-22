@@ -4,7 +4,6 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { tracerSpan } from '@rocket.chat/tracing';
-import type express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -13,7 +12,6 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
-import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
 
@@ -1166,8 +1164,4 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 
 settings.watch<boolean>('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
-});
-
-Meteor.startup(() => {
-	(WebApp.connectHandlers as ReturnType<typeof express>).use(new Router('/').use(API.api.use(API.v1.router)).router);
 });
