@@ -357,7 +357,18 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
-							marketplaceInfo = (await marketplaceResponse.json()) as any;
+							const parsedMarketplaceResponse = await marketplaceResponse.json();
+
+							// Note: marketplace responds with an array of the marketplace info on the app, but it is expected
+							//       to always have one element since we are fetching a specific app version.
+							if (parsedMarketplaceResponse.length !== 1) {
+								orchestrator
+									.getRocketChatLogger()
+									.error('Error getting the App information from the Marketplace:', parsedMarketplaceResponse);
+								throw new Error('Invalid response from the Marketplace');
+							}
+
+							marketplaceInfo = parsedMarketplaceResponse[0];
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: any) {
 							return API.v1.failure(err.message);
