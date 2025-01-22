@@ -7,9 +7,9 @@ export class Router<
 	TBasePath extends string,
 	TOperations extends {
 		[x: string]: unknown;
-	} = {},
+	} = NonNullable<unknown>,
 > {
-	private middleware: (router: express.Router) => void = () => {};
+	private middleware: (router: express.Router) => void = () => void 0;
 
 	constructor(private base: TBasePath) {}
 

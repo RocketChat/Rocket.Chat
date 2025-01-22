@@ -4,6 +4,7 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { tracerSpan } from '@rocket.chat/tracing';
+import type express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -31,6 +32,7 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
+import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -163,7 +165,9 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		inviteToken: number;
 	};
 
-	constructor(properties: IAPIProperties) {
+	readonly router: Router<any>;
+
+	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		super(properties);
 		this.apiPath = properties.apiPath;
 		this.authMethods = [];
@@ -195,6 +199,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			services: 0,
 			inviteToken: 0,
 		};
+
+		this.router = new Router(`/${this._config.apiPath!}`.replace(/\/$/, '').replaceAll('//', '/'));
+
+		if (useDefaultAuth) {
+			this._initAuth();
+		}
 	}
 
 	public setLimitedCustomFields(customFields: string[]): void {
@@ -742,26 +752,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
-
-				WebApp.connectHandlers[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
-					`/${this._config.apiPath}/${route}`.replaceAll('//', '/'),
-					async (req, res, ...args) => {
-						const { body, statusCode } = await (
-							operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>
-						).action.apply(
-							{
-								urlParams: req.params,
-								queryParams: req.query,
-								bodyParams: req.body,
-								request: req,
-								response: res,
-							},
-							[req, res, ...args],
-						);
-						res.writeHead(statusCode, this._config.defaultHeaders);
-						body && res.write(JSON.stringify(body));
-						res.end();
-					},
+				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
+					`/${route}`.replaceAll('//', '/'),
+					{} as any,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 			});
 		});
@@ -1083,7 +1077,7 @@ const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Rest
 	this.done();
 };
 
-const createApi = function _createApi(options: { version?: string } = {}): APIClass {
+const createApi = function _createApi(options: { version?: string; apiPath?: string } = {}): APIClass {
 	return new APIClass(
 		Object.assign(
 			{
@@ -1099,6 +1093,7 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 };
 
 export const API: {
+	api: Router<'/api'>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
@@ -1128,7 +1123,9 @@ export const API: {
 } = {
 	getUserAuth,
 	ApiClass: APIClass,
+	api: new Router('/api'),
 	v1: createApi({
+		apiPath: '',
 		version: 'v1',
 	}),
 	default: createApi(),
@@ -1138,6 +1135,7 @@ export const API: {
 settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
 	API.v1 = createApi({
 		version: 'v1',
+		apiPath: '',
 	});
 
 	API.default = createApi();
@@ -1168,4 +1166,8 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 
 settings.watch<boolean>('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
+});
+
+Meteor.startup(() => {
+	(WebApp.connectHandlers as ReturnType<typeof express>).use(new Router('/').use(API.api.use(API.v1.router)).router);
 });
