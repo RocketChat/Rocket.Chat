@@ -4056,6 +4056,115 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@napi-rs/canvas-android-arm64@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-android-arm64@npm:0.1.65"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-arm64@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-darwin-arm64@npm:0.1.65"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-darwin-x64@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-darwin-x64@npm:0.1.65"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-arm-gnueabihf@npm:0.1.65"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-gnu@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-arm64-gnu@npm:0.1.65"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-arm64-musl@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-arm64-musl@npm:0.1.65"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-riscv64-gnu@npm:0.1.65"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-gnu@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-x64-gnu@npm:0.1.65"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-linux-x64-musl@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-linux-x64-musl@npm:0.1.65"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas-win32-x64-msvc@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas-win32-x64-msvc@npm:0.1.65"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@napi-rs/canvas@npm:^0.1.65":
+  version: 0.1.65
+  resolution: "@napi-rs/canvas@npm:0.1.65"
+  dependencies:
+    "@napi-rs/canvas-android-arm64": "npm:0.1.65"
+    "@napi-rs/canvas-darwin-arm64": "npm:0.1.65"
+    "@napi-rs/canvas-darwin-x64": "npm:0.1.65"
+    "@napi-rs/canvas-linux-arm-gnueabihf": "npm:0.1.65"
+    "@napi-rs/canvas-linux-arm64-gnu": "npm:0.1.65"
+    "@napi-rs/canvas-linux-arm64-musl": "npm:0.1.65"
+    "@napi-rs/canvas-linux-riscv64-gnu": "npm:0.1.65"
+    "@napi-rs/canvas-linux-x64-gnu": "npm:0.1.65"
+    "@napi-rs/canvas-linux-x64-musl": "npm:0.1.65"
+    "@napi-rs/canvas-win32-x64-msvc": "npm:0.1.65"
+  dependenciesMeta:
+    "@napi-rs/canvas-android-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-arm64":
+      optional: true
+    "@napi-rs/canvas-darwin-x64":
+      optional: true
+    "@napi-rs/canvas-linux-arm-gnueabihf":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-arm64-musl":
+      optional: true
+    "@napi-rs/canvas-linux-riscv64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-gnu":
+      optional: true
+    "@napi-rs/canvas-linux-x64-musl":
+      optional: true
+    "@napi-rs/canvas-win32-x64-msvc":
+      optional: true
+  checksum: 10/71ab1c29a9f15bd5ca0406dced5e3e939b6645b1eb79e3c26cd17695b41db61d6b3640cd54460b667abf234dab0b0217eb792900459a75d9f95f9d76e4f83b54
+  languageName: node
+  linkType: hard
+
 "@napi-rs/pinyin-android-arm-eabi@npm:1.7.0":
   version: 1.7.0
   resolution: "@napi-rs/pinyin-android-arm-eabi@npm:1.7.0"
@@ -8577,7 +8686,7 @@ __metadata:
     outdent: "npm:~0.8.0"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
-    pdfjs-dist: "npm:^2.16.105"
+    pdfjs-dist: "npm:^4.2.67"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
     playwright-qase-reporter: "npm:^1.2.2"
@@ -9461,6 +9570,7 @@ __metadata:
     "@rocket.chat/ui-contexts": 14.0.1
     react: ~17.0.2
     react-dom: ^17.0.2
+    use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -15391,16 +15501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.2, braces@npm:~3.0.2":
-  version: 3.0.2
-  resolution: "braces@npm:3.0.2"
-  dependencies:
-    fill-range: "npm:^7.0.1"
-  checksum: 10/966b1fb48d193b9d155f810e5efd1790962f2c4e0829f8440b8ad236ba009222c501f70185ef732fef17a4c490bb33a03b90dab0631feafbdf447da91e8165b1
-  languageName: node
-  linkType: hard
-
-"braces@npm:^3.0.3":
+"braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
   dependencies:
@@ -19043,13 +19144,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dommatrix@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "dommatrix@npm:1.0.3"
-  checksum: 10/1645c5857db8a25aa85e737fad9a4913edd581c852c619e0122e1848e23ffbc4249f06dc99b4d841a840f9bf421c965ace4862a86b3f6789d727c1323c6becc9
-  languageName: node
-  linkType: hard
-
 "dompurify@npm:^3.2.0":
   version: 3.2.0
   resolution: "dompurify@npm:3.2.0"
@@ -21395,15 +21489,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fill-range@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "fill-range@npm:7.0.1"
-  dependencies:
-    to-regex-range: "npm:^5.0.1"
-  checksum: 10/e260f7592fd196b4421504d3597cc76f4a1ca7a9488260d533b611fc3cefd61e9a9be1417cb82d3b01ad9f9c0ff2dbf258e1026d2445e26b0cf5148ff4250429
-  languageName: node
-  linkType: hard
-
 "fill-range@npm:^7.1.1":
   version: 7.1.1
   resolution: "fill-range@npm:7.1.1"
@@ -23409,8 +23494,8 @@ __metadata:
   linkType: hard
 
 "http-proxy-middleware@npm:^2.0.3":
-  version: 2.0.6
-  resolution: "http-proxy-middleware@npm:2.0.6"
+  version: 2.0.7
+  resolution: "http-proxy-middleware@npm:2.0.7"
   dependencies:
     "@types/http-proxy": "npm:^1.17.8"
     http-proxy: "npm:^1.18.1"
@@ -23422,7 +23507,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/express":
       optional: true
-  checksum: 10/768e7ae5a422bbf4b866b64105b4c2d1f468916b7b0e9c96750551c7732383069b411aa7753eb7b34eab113e4f77fb770122cb7fb9c8ec87d138d5ddaafda891
+  checksum: 10/4a51bf612b752ad945701995c1c029e9501c97e7224c0cf3f8bf6d48d172d6a8f2b57c20fec469534fdcac3aa8a6f332224a33c6b0d7f387aa2cfff9b67216fd
   languageName: node
   linkType: hard
 
@@ -27876,17 +27961,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "micromatch@npm:4.0.5"
-  dependencies:
-    braces: "npm:^3.0.2"
-    picomatch: "npm:^2.3.1"
-  checksum: 10/a749888789fc15cac0e03273844dbd749f9f8e8d64e70c564bcf06a033129554c789bb9e30d7566d7ff6596611a08e58ac12cf2a05f6e3c9c47c50c4c7e12fa2
-  languageName: node
-  linkType: hard
-
-"micromatch@npm:^4.0.8":
+"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5, micromatch@npm:^4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -30445,18 +30520,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pdfjs-dist@npm:^2.16.105":
-  version: 2.16.105
-  resolution: "pdfjs-dist@npm:2.16.105"
+"pdfjs-dist@npm:^4.2.67":
+  version: 4.10.38
+  resolution: "pdfjs-dist@npm:4.10.38"
   dependencies:
-    dommatrix: "npm:^1.0.3"
-    web-streams-polyfill: "npm:^3.2.1"
-  peerDependencies:
-    worker-loader: ^3.0.8
-  peerDependenciesMeta:
-    worker-loader:
+    "@napi-rs/canvas": "npm:^0.1.65"
+  dependenciesMeta:
+    "@napi-rs/canvas":
       optional: true
-  checksum: 10/329d95c3e59e450423213f4ed22a6eca03cd549ad28edae526224360d28b362e21d05fc524f11d4056cca0218b5375887bd7e9114e8f7ae64e32538f27bb4e16
+  checksum: 10/2fee929540863a32a368c02fe445550ce6f0992a08ccfaa05f2e2e185e8ac98b43eda6f88c94c366b86fe99149478eeff7ebb57793270b030c7af54169a4a54c
   languageName: node
   linkType: hard
 
@@ -38848,13 +38920,6 @@ __metadata:
     node-fetch: "npm:^2.6.0"
     valid-data-url: "npm:^3.0.0"
   checksum: 10/179ee600b6d73d889ff4a9944553b6096384b837f97b75cddde3a15bb8847a6116d4bfc4bd54ca171bd34f81cb7c8b669162433207fb748f3e2704e63e3a97f9
-  languageName: node
-  linkType: hard
-
-"web-streams-polyfill@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "web-streams-polyfill@npm:3.2.1"
-  checksum: 10/08fcf97b7883c1511dd3da794f50e9bde75a660884783baaddb2163643c21a94086f394dc4bd20dff0f55c98d98d60c4bea05a5809ef5005bdf835b63ada8900
   languageName: node
   linkType: hard
 

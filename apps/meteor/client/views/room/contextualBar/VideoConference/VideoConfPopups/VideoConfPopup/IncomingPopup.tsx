@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
+	useVideoConfSetPreferences,
 	VideoConfPopup,
 	VideoConfPopupContent,
 	VideoConfPopupControllers,
@@ -18,7 +19,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 
