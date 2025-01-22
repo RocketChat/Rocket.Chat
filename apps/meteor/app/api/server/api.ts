@@ -12,6 +12,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
+import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
 
@@ -580,35 +581,24 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							...getRestPayload(this.request.body),
 						});
 
-						// If the endpoint requires authentication only if anonymous read is disabled, load the user info if it was provided
-						if (!options.authRequired && options.authOrAnonRequired) {
-							const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
-							if (userId && userToken) {
-								this.user = await Users.findOne(
-									{
-										'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
-										'_id': userId,
-									},
-									{
-										projection: getDefaultUserFields(),
-									},
-								);
+						if (options.authRequired || options.authOrAnonRequired) {
+							const user = await api.authenticatedRoute(this.request);
+							this.user = user;
+							this.userId = this.user?._id;
+							this.token = this.request.headers['x-auth-token'] && Accounts._hashLoginToken(this.request.headers['x-auth-token']);
+						}
 
-								this.userId = this.user?._id;
+						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+							const result = api.unauthorized('You must be logged in to do this.');
+							// compatibility with the old API
+							// TODO: MAJOR
+							if (!applyBreakingChanges) {
+								Object.assign(result.body, {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								});
 							}
-
-							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-								const result = api.unauthorized('You must be logged in to do this.');
-								// compatibility with the old API
-								// TODO: MAJOR
-								if (!applyBreakingChanges) {
-									Object.assign(result.body, {
-										status: 'error',
-										message: 'You must be logged in to do this.',
-									});
-								}
-								return result;
-							}
+							return result;
 						}
 
 						const objectForRateLimitMatch = {
@@ -752,9 +742,28 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
-			});
 
-			super.addRoute(route, options, operations);
+				WebApp.connectHandlers[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
+					`/${this._config.apiPath}/${route}`.replaceAll('//', '/'),
+					async (req, res, ...args) => {
+						const { body, statusCode } = await (
+							operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>
+						).action.apply(
+							{
+								urlParams: req.params,
+								queryParams: req.query,
+								bodyParams: req.body,
+								request: req,
+								response: res,
+							},
+							[req, res, ...args],
+						);
+						res.writeHead(statusCode, this._config.defaultHeaders);
+						body && res.write(JSON.stringify(body));
+						res.end();
+					},
+				);
+			});
 		});
 	}
 
