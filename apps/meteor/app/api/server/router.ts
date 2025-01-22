@@ -3,6 +3,7 @@ import express from 'express';
 
 import type { TypedAction, TypedOptions } from './definition';
 
+export type ExtractRouterEndpoints<TRoute extends Router<any, any>> = TRoute extends Router<any, infer TOperations> ? TOperations : never;
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -11,7 +12,7 @@ export class Router<
 > {
 	private middleware: (router: express.Router) => void = () => void 0;
 
-	constructor(private base: TBasePath) {}
+	constructor(readonly base: TBasePath) {}
 
 	public typedRoutes: Record<string, Record<string, unknown>> = {};
 
@@ -85,7 +86,8 @@ export class Router<
 		const prev = this.middleware;
 		this.middleware = (router: express.Router) => {
 			prev(router);
-			router[method.toLowerCase() as Lowercase<Method>](`${subpath}`, async (req, res) => {
+			// console.log('MIDDLEWARE', method, subpath);
+			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
 				const { body, statusCode, headers } = await action.apply({
 					urlParams: req.params,
 					queryParams: req.query,
@@ -93,8 +95,13 @@ export class Router<
 					request: req,
 					response: res,
 				} as any);
-
-				res.writeHead(statusCode, { 'Content-Type': 'application/json', ...headers });
+				res.writeHead(statusCode, {
+					...res.header,
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-store',
+					'Pragma': 'no-cache',
+					...headers,
+				});
 				body && res.write(JSON.stringify(body));
 				res.end();
 			});
@@ -163,19 +170,32 @@ export class Router<
 		return this.method('DELETE', subpath, options, action);
 	}
 
+	use<FN extends (req: express.Request, res: express.Response, next: express.NextFunction) => void>(fn: FN): Router<TBasePath, TOperations>;
+
 	use<IRouter extends Router<any, any>>(
 		innerRouter: IRouter,
-	): IRouter extends Router<any, infer IOperations> ? Router<TBasePath, TOperations | ConcatPathOptions<TBasePath, IOperations>> : never {
-		this.typedRoutes = {
-			...this.typedRoutes,
-			...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
-		};
+	): IRouter extends Router<any, infer IOperations> ? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>> : never;
 
-		const prev = this.middleware;
-		this.middleware = (router: express.Router) => {
-			prev(router);
-			router.use(innerRouter.base, innerRouter.router);
-		};
+	use(innerRouter: any): any {
+		if (innerRouter instanceof Router) {
+			this.typedRoutes = {
+				...this.typedRoutes,
+				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
+			};
+
+			const prev = this.middleware;
+			this.middleware = (router: express.Router) => {
+				prev(router);
+				router.use(innerRouter.base, innerRouter.router);
+			};
+		}
+		if (typeof innerRouter === 'function') {
+			const prev = this.middleware;
+			this.middleware = (router: express.Router) => {
+				prev(router);
+				router.use(innerRouter);
+			};
+		}
 		return this as any;
 	}
 
@@ -196,6 +216,19 @@ type ConcatPathOptions<
 	TOptions extends {
 		[x: string]: unknown;
 	},
-> = Prettify<{
-	[x in keyof TOptions]: x extends 'path' ? (TOptions[x] extends string ? `${TPath}${TOptions[x]}` : never) : TOptions[x];
-}>;
+	TOther extends {
+		[x: string]: unknown;
+	},
+> = Prettify<
+	Filter<
+		{
+			[x in keyof TOptions]: x extends 'path' ? (TOptions[x] extends string ? `${TPath}${TOptions[x]}` : never) : TOptions[x];
+		} & TOther
+	>
+>;
+
+type Filter<
+	TOther extends {
+		[x: string]: unknown;
+	},
+> = TOther extends { method: Method; path: string } ? TOther : never;
