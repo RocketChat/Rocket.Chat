@@ -150,15 +150,11 @@ export class AppRoomsConverter {
 			sysMes = room.displaySystemMessages;
 		}
 
-		let msgs;
-		if (typeof room.messageCount !== 'undefined') {
-			msgs = room.messageCount;
-		}
-
 		const newRoom = {
 			...(room.id && { _id: room.id }),
 			t: room.type,
 			ts: room.createdAt,
+			msgs: room.messageCount || 0,
 			_updatedAt: room.updatedAt,
 			...(room.displayName && { fname: room.displayName }),
 			...(room.type !== 'd' && { name: room.slugifiedName }),
@@ -166,7 +162,6 @@ export class AppRoomsConverter {
 			...(_default && { default: _default }),
 			...(ro && { ro }),
 			...(sysMes && { sysMes }),
-			...(msgs && { msgs }),
 			...(u && { u }),
 			...(v && { v }),
 			...(departmentId && { departmentId }),
