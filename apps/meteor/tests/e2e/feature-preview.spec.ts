@@ -272,7 +272,7 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+			await poHomeChannel.tabs.channels.inputChannels.pressSequentially(targetChannel);
 			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
 			await poHomeChannel.tabs.channels.btnAdd.click();
 			await poHomeChannel.content.waitForChannel();
@@ -288,7 +288,7 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+			await poHomeChannel.tabs.channels.inputChannels.pressSequentially(targetChannel);
 			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
 			await poHomeChannel.tabs.channels.btnAdd.click();
 
