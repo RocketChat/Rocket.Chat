@@ -45,6 +45,16 @@ export interface VoIPUserConfiguration {
 	 * @defaultValue undefined
 	 */
 	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
+
+	/**
+	 * The id of the rocket.chat user that is using this extension
+	 */
+	userId: string;
+
+	/**
+	 * The url of the rocket.chat workspace this user is connecting from
+	 */
+	siteUrl: string;
 }
 
 export interface IMediaStreamRenderer {

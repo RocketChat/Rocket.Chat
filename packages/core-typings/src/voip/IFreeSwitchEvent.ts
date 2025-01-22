@@ -1,30 +1,57 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 
 export interface IFreeSwitchEvent extends IRocketChatRecord {
-	channelUniqueId?: string;
 	eventName: string;
 	detaildEventName: string;
 
 	sequence?: string;
-	state?: string;
-	previousCallState?: string;
-	callState?: string;
-	timestamp?: string;
-
 	firedAt?: Date;
-	answerState?: string;
-	hangupCause?: string;
 
 	referencedIds?: string[];
 	receivedAt?: Date;
 
-	channelName?: string;
-	direction?: string;
-
-	caller?: IFreeSwitchEventCaller;
+	channel?: IFreeSwitchEventChannel;
 	call?: IFreeSwitchEventCall;
+	caller?: IFreeSwitchEventCaller;
+	callee?: IFreeSwitchEventCallee;
 
-	eventData: Record<string, string>;
+	rocketChatVariables?: Record<string, IFreeSwitchEventRocketChatVariable | undefined>;
+	users: IFreeSwitchEventCallUser[];
+
+	raw: Record<string, string>;
+}
+
+export interface IFreeSwitchEventChannel {
+	uniqueId?: string;
+	hitDialplan?: boolean;
+	name?: string;
+	state?: string;
+
+	contact?: string;
+}
+
+export interface IFreeSwitchEventRocketChatVariable {
+	userId?: string;
+	contact?: string;
+	sipjsId?: string;
+	extension?: string;
+	workspaceUrl?: string;
+	calleeExtension?: string;
+}
+
+export interface IFreeSwitchEventUser {
+	type: 'extension' | 'contact' | 'uid' | 'voicemail' | 'unknown';
+	value: string;
+}
+
+export interface IFreeSwitchEventCallUser {
+	uid?: string;
+	workspaceUrl?: string;
+	presumedWorkspaceUrl?: string;
+	identifiers: IFreeSwitchEventUser[];
+	reached?: boolean;
+	channelUniqueId?: string;
+	isVoicemail?: boolean;
 }
 
 export interface IFreeSwitchEventCall {
@@ -32,82 +59,25 @@ export interface IFreeSwitchEventCall {
 	answerState?: string;
 	state?: string;
 	previousState?: string;
-	presenceId?: string;
 	sipId?: string;
 	authorized?: string;
 	hangupCause?: string;
 	duration?: number;
+	direction?: string;
 
-	from?: {
-		user?: string;
-		stripped?: string;
-		port?: string;
-		uri?: string;
-		host?: string;
-		full?: string;
-
-		userId?: string;
-	};
-
-	req?: {
-		user?: string;
-		port?: string;
-		uri?: string;
-		host?: string;
-
-		userId?: string;
-	};
-
-	to?: {
-		user?: string;
-		port?: string;
-		uri?: string;
-		full?: string;
-		dialedExtension?: string;
-		dialedUser?: string;
-
-		userId?: string;
-	};
-
-	contact?: {
-		user?: string;
-		uri?: string;
-		host?: string;
-
-		userId?: string;
-	};
-
-	via?: {
-		full?: string;
-		host?: string;
-		rport?: string;
-
-		userId?: string;
-	};
+	originator?: string;
+	originatee?: string;
 }
 
 export interface IFreeSwitchEventCaller {
 	uniqueId?: string;
 	direction?: string;
-	username?: string;
-	networkAddr?: string;
-	ani?: string;
-	destinationNumber?: string;
-	source?: string;
 	context?: string;
 	name?: string;
-	number?: string;
 
-	originalCaller?: {
-		name?: string;
-		number?: string;
-	};
-	privacy?: {
-		hideName?: string;
-		hideNumber?: string;
-	};
-	channel?: {
-		name?: string;
-		createdTime?: string;
-	};
+	from?: IFreeSwitchEventCallUser;
+}
+
+export interface IFreeSwitchEventCallee {
+	to?: IFreeSwitchEventCallUser;
 }

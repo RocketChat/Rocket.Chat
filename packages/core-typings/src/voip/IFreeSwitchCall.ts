@@ -1,6 +1,12 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
-import type { IFreeSwitchEventCall, IFreeSwitchEventCaller } from './IFreeSwitchEvent';
+import type {
+	IFreeSwitchEventCall,
+	IFreeSwitchEventCallee,
+	IFreeSwitchEventCaller,
+	IFreeSwitchEventCallUser,
+	IFreeSwitchEventChannel,
+} from './IFreeSwitchEvent';
 
 export interface IFreeSwitchCall extends IRocketChatRecord {
 	UUID: string;
@@ -13,6 +19,9 @@ export interface IFreeSwitchCall extends IRocketChatRecord {
 	voicemail?: boolean;
 	duration?: number;
 	startedAt?: Date;
+
+	workspaces?: string[];
+	users?: IFreeSwitchEventCallUser[];
 }
 
 const knownEventTypes = [
@@ -57,9 +66,14 @@ export type IFreeSwitchCallEvent = {
 	channelUniqueId?: string;
 	timestamp?: string;
 	firedAt?: Date;
+	channel?: IFreeSwitchEventChannel;
 	caller?: IFreeSwitchEventCaller;
+	callee?: IFreeSwitchEventCallee;
 	call?: IFreeSwitchEventCall;
 
-	otherType?: string;
-	otherChannelId?: string;
+	workspaces?: string[];
+
+	raw?: Record<string, string>;
+	eventId: string;
+	extraEvents?: IFreeSwitchCallEvent[];
 };
