@@ -8642,7 +8642,7 @@ __metadata:
     image-size: "npm:^1.1.1"
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
-    is-svg: "npm:^4.4.0"
+    is-svg: "npm:^5.1.0"
     isolated-vm: "npm:5.0.1"
     jest: "npm:~29.7.0"
     jschardet: "npm:^3.1.4"
@@ -21201,36 +21201,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^3.19.0":
-  version: 3.21.1
-  resolution: "fast-xml-parser@npm:3.21.1"
-  dependencies:
-    strnum: "npm:^1.0.4"
-  bin:
-    xml2js: cli.js
-  checksum: 10/f9adbd8ae772473e7dec92bccfe93d3a752deec66c3d89479746ef01bfa12788bc4e5e611ec0250f69d85cc07a560e33a8d8c679673a8a69bb6e8da0234a9d40
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.1.3, fast-xml-parser@npm:^4.2.2":
-  version: 4.5.0
-  resolution: "fast-xml-parser@npm:4.5.0"
+"fast-xml-parser@npm:^4.1.3, fast-xml-parser@npm:^4.2.2, fast-xml-parser@npm:^4.2.4, fast-xml-parser@npm:^4.4.1":
+  version: 4.5.1
+  resolution: "fast-xml-parser@npm:4.5.1"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/dc9571c10e7b57b5be54bcd2d92f50c446eb42ea5df347d253e94dd14eb99b5300a6d172e840f151e0721933ca2406165a8d9b316a6d777bf0596dc4fe1df756
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.2.4":
-  version: 4.3.2
-  resolution: "fast-xml-parser@npm:4.3.2"
-  dependencies:
-    strnum: "npm:^1.0.5"
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 10/cb3d9ad7d5508e7ec1e6ee4b4753f659c7b7c93c3eb76439cb03072532d07521d53a7e35f243b490dce3fcc16519415bf1f99c6a1004a6de1dccd3d3647c336f
+  checksum: 10/17ce5908e798de1b6d12a39d26f04ac3b582ea9ce28f3a6e3b9c401edcb74790f28df84d75377608af53308ff8caad2b244ba1283cc4b5b4cf4cc7bd532a9983
   languageName: node
   linkType: hard
 
@@ -25005,20 +24983,20 @@ __metadata:
   linkType: hard
 
 "is-svg@npm:^4.2.1":
-  version: 4.3.2
-  resolution: "is-svg@npm:4.3.2"
-  dependencies:
-    fast-xml-parser: "npm:^3.19.0"
-  checksum: 10/b3bce2395e25a0127e65e33fbfd8654225c303f7b45005af8eea69cc0870e252d8a01d62fd333c27247eadd38720b5459d623c292e02c14e328bf4970da891c7
-  languageName: node
-  linkType: hard
-
-"is-svg@npm:^4.4.0":
   version: 4.4.0
   resolution: "is-svg@npm:4.4.0"
   dependencies:
     fast-xml-parser: "npm:^4.1.3"
   checksum: 10/cd5a0ba1af653e4897721913b0b80de968fa5b19eb1a592412f4672d3a1203935d183c2a9dbf61d68023739ee43d3761ea795ae1a9f618c6098a9e89eacdd256
+  languageName: node
+  linkType: hard
+
+"is-svg@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "is-svg@npm:5.1.0"
+  dependencies:
+    fast-xml-parser: "npm:^4.4.1"
+  checksum: 10/9ea9a076cce6c77fd4b2d7422be7e411f253f25c013eff8d6c21b324dfc31e27c1d31ed4dde993970e091f1317263a0470fcc02e8c0e876157fcc9efcce31389
   languageName: node
   linkType: hard
 
@@ -36093,7 +36071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^1.0.4, strnum@npm:^1.0.5":
+"strnum@npm:^1.0.5":
   version: 1.0.5
   resolution: "strnum@npm:1.0.5"
   checksum: 10/d3117975db8372d4d7b2c07601ed2f65bf21cc48d741f37a8617b76370d228f2ec26336e53791ebc3638264d23ca54e6c241f57f8c69bd4941c63c79440525ca
