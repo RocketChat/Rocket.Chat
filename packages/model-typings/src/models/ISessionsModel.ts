@@ -150,7 +150,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 
-	getLoggedInByUserIdAndSessionId<T extends ISession = ISession>(
+	getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
 		userId: string,
 		sessionId: string,
 		options?: FindOptions<T>,

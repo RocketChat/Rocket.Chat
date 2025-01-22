@@ -1617,7 +1617,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		);
 	}
 
-	async getLoggedInByUserIdAndSessionId<T extends ISession = ISession>(
+	async getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
 		userId: string,
 		sessionId: string,
 		options?: FindOptions<T>,
