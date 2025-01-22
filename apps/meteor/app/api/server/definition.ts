@@ -4,7 +4,6 @@ import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, U
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
-import type { APIClass } from './api';
 import type { ITwoFactorOptions } from '../../2fa/server/code';
 
 export type SuccessResult<T> = {
@@ -233,6 +232,7 @@ export type TypedOptions = {
 type TypedThis<TOptions extends TypedOptions> = {
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
+	urlParams: Record<string, string>;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**
@@ -268,5 +268,3 @@ type Results<TResponse extends TypedOptions['response']> = {
 }[keyof TResponse];
 
 export type TypedAction<TOptions extends TypedOptions> = (this: TypedThis<TOptions>) => PromiseOrValue<Results<TOptions['response']>>;
-
-export type ExtractEndpoints<R extends APIClass> = R extends APIClass<any, infer Endpoints> ? Prettify<Endpoints> : never;
