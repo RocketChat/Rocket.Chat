@@ -236,7 +236,7 @@ export const createRoom = async <T extends RoomType>(
 	);
 
 	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
-		Object.assign(roomProps, Object.fromEntries(Object.entries(eventResult).filter(([_, v]) => v != null)));
+		Object.assign(roomProps, eventResult);
 	}
 
 	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
