@@ -20,7 +20,6 @@ import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannels
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
 import { registerContact } from '../../lib/contacts/registerContact';
-import type { UpdateContactParams } from '../../lib/contacts/updateContact';
 import { updateContact } from '../../lib/contacts/updateContact';
 
 API.v1.addRoute(
@@ -123,7 +122,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			const contact = await updateContact(removeEmpty(this.bodyParams) as unknown as UpdateContactParams);
+			const contact = await updateContact(removeEmpty(this.bodyParams));
 
 			return API.v1.success({ contact });
 		},
