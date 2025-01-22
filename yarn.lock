@@ -8642,7 +8642,7 @@ __metadata:
     image-size: "npm:^1.1.1"
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
-    is-svg: "npm:^4.4.0"
+    is-svg: "npm:^5.1.0"
     isolated-vm: "npm:5.0.1"
     jest: "npm:~29.7.0"
     jschardet: "npm:^3.1.4"
@@ -15501,16 +15501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.2, braces@npm:~3.0.2":
-  version: 3.0.2
-  resolution: "braces@npm:3.0.2"
-  dependencies:
-    fill-range: "npm:^7.0.1"
-  checksum: 10/966b1fb48d193b9d155f810e5efd1790962f2c4e0829f8440b8ad236ba009222c501f70185ef732fef17a4c490bb33a03b90dab0631feafbdf447da91e8165b1
-  languageName: node
-  linkType: hard
-
-"braces@npm:^3.0.3":
+"braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
   dependencies:
@@ -21201,36 +21192,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^3.19.0":
-  version: 3.21.1
-  resolution: "fast-xml-parser@npm:3.21.1"
-  dependencies:
-    strnum: "npm:^1.0.4"
-  bin:
-    xml2js: cli.js
-  checksum: 10/f9adbd8ae772473e7dec92bccfe93d3a752deec66c3d89479746ef01bfa12788bc4e5e611ec0250f69d85cc07a560e33a8d8c679673a8a69bb6e8da0234a9d40
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.1.3, fast-xml-parser@npm:^4.2.2":
-  version: 4.5.0
-  resolution: "fast-xml-parser@npm:4.5.0"
+"fast-xml-parser@npm:^4.1.3, fast-xml-parser@npm:^4.2.2, fast-xml-parser@npm:^4.2.4, fast-xml-parser@npm:^4.4.1":
+  version: 4.5.1
+  resolution: "fast-xml-parser@npm:4.5.1"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/dc9571c10e7b57b5be54bcd2d92f50c446eb42ea5df347d253e94dd14eb99b5300a6d172e840f151e0721933ca2406165a8d9b316a6d777bf0596dc4fe1df756
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.2.4":
-  version: 4.3.2
-  resolution: "fast-xml-parser@npm:4.3.2"
-  dependencies:
-    strnum: "npm:^1.0.5"
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 10/cb3d9ad7d5508e7ec1e6ee4b4753f659c7b7c93c3eb76439cb03072532d07521d53a7e35f243b490dce3fcc16519415bf1f99c6a1004a6de1dccd3d3647c336f
+  checksum: 10/17ce5908e798de1b6d12a39d26f04ac3b582ea9ce28f3a6e3b9c401edcb74790f28df84d75377608af53308ff8caad2b244ba1283cc4b5b4cf4cc7bd532a9983
   languageName: node
   linkType: hard
 
@@ -21495,15 +21464,6 @@ __metadata:
     repeat-string: "npm:^1.6.1"
     to-regex-range: "npm:^2.1.0"
   checksum: 10/68be23b3c40d5a3fd2847ce18e3a5eac25d9f4c05627291e048ba1346ed0e429668b58a3429e61c0db9fa5954c4402fe99322a65d8a0eb06ebed8d3a18fbb09a
-  languageName: node
-  linkType: hard
-
-"fill-range@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "fill-range@npm:7.0.1"
-  dependencies:
-    to-regex-range: "npm:^5.0.1"
-  checksum: 10/e260f7592fd196b4421504d3597cc76f4a1ca7a9488260d533b611fc3cefd61e9a9be1417cb82d3b01ad9f9c0ff2dbf258e1026d2445e26b0cf5148ff4250429
   languageName: node
   linkType: hard
 
@@ -25005,20 +24965,20 @@ __metadata:
   linkType: hard
 
 "is-svg@npm:^4.2.1":
-  version: 4.3.2
-  resolution: "is-svg@npm:4.3.2"
-  dependencies:
-    fast-xml-parser: "npm:^3.19.0"
-  checksum: 10/b3bce2395e25a0127e65e33fbfd8654225c303f7b45005af8eea69cc0870e252d8a01d62fd333c27247eadd38720b5459d623c292e02c14e328bf4970da891c7
-  languageName: node
-  linkType: hard
-
-"is-svg@npm:^4.4.0":
   version: 4.4.0
   resolution: "is-svg@npm:4.4.0"
   dependencies:
     fast-xml-parser: "npm:^4.1.3"
   checksum: 10/cd5a0ba1af653e4897721913b0b80de968fa5b19eb1a592412f4672d3a1203935d183c2a9dbf61d68023739ee43d3761ea795ae1a9f618c6098a9e89eacdd256
+  languageName: node
+  linkType: hard
+
+"is-svg@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "is-svg@npm:5.1.0"
+  dependencies:
+    fast-xml-parser: "npm:^4.4.1"
+  checksum: 10/9ea9a076cce6c77fd4b2d7422be7e411f253f25c013eff8d6c21b324dfc31e27c1d31ed4dde993970e091f1317263a0470fcc02e8c0e876157fcc9efcce31389
   languageName: node
   linkType: hard
 
@@ -27979,17 +27939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "micromatch@npm:4.0.5"
-  dependencies:
-    braces: "npm:^3.0.2"
-    picomatch: "npm:^2.3.1"
-  checksum: 10/a749888789fc15cac0e03273844dbd749f9f8e8d64e70c564bcf06a033129554c789bb9e30d7566d7ff6596611a08e58ac12cf2a05f6e3c9c47c50c4c7e12fa2
-  languageName: node
-  linkType: hard
-
-"micromatch@npm:^4.0.8":
+"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5, micromatch@npm:^4.0.8":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -36093,7 +36043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^1.0.4, strnum@npm:^1.0.5":
+"strnum@npm:^1.0.5":
   version: 1.0.5
   resolution: "strnum@npm:1.0.5"
   checksum: 10/d3117975db8372d4d7b2c07601ed2f65bf21cc48d741f37a8617b76370d228f2ec26336e53791ebc3638264d23ca54e6c241f57f8c69bd4941c63c79440525ca
