@@ -1321,7 +1321,7 @@ describe('LIVECHAT - dashboards', function () {
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '7.50' },
+				{ title: 'Conversations_per_day', value: '8.00' },
 				// { title: 'Busiest_time', value: '' },
 			];
 
