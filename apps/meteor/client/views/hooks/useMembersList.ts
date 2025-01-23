@@ -18,7 +18,7 @@ const endpointsByRoomType = {
 	c: '/v1/rooms.membersOrderedByRole',
 } as const;
 
-type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
 
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 	return members.sort((a, b) => {
