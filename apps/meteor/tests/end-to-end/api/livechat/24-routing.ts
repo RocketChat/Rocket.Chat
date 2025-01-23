@@ -69,20 +69,43 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			expect(room.servedBy).to.be.undefined;
 		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy).to.be.undefined;
+			});
+		});
 	});
 
 	describe('Bots - Auto selection', () => {
 		let botUser: { user: IUser; credentials: Credentials };
+		let otherUser: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 		let testDepartment2: ILivechatDepartment;
 		before(async () => {
 			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
 			const credentials = await login(bot.username, password);
 
+			const other = await createUser({ roles: ['livechat-agent'] });
+			const otherCredentials = await login(other.username, password);
+
+			await makeAgentAvailable(otherCredentials);
+
 			botUser = { user: bot, credentials };
+			otherUser = { user: other, credentials: otherCredentials };
 		});
 		before(async () => {
-			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }, { agentId: otherUser.user._id }]);
 			testDepartment2 = await createDepartment();
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
@@ -108,6 +131,22 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const room = await createLivechatRoom(visitor.token);
 
 			expect(room.servedBy).to.be.undefined;
+		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy?._id).to.be.equal(otherUser.user._id);
+			});
 		});
 	});
 
@@ -150,6 +189,22 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const room = await createLivechatRoom(visitor.token);
 
 			expect(room.servedBy).to.be.undefined;
+		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy).to.be.undefined;
+			});
 		});
 	});
 
