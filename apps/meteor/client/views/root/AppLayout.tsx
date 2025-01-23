@@ -6,6 +6,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useOTR } from './hooks/useOTR';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
@@ -28,6 +29,8 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
+
+	useOTR();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
