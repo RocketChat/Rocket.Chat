@@ -70,7 +70,7 @@ const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2
 };
 
 export class E2ERoom extends Emitter {
-	state: any = undefined;
+	state: E2ERoomState = E2ERoomState.NOT_STARTED;
 
 	[PAUSED]: boolean | undefined = undefined;
 
@@ -90,7 +90,7 @@ export class E2ERoom extends Emitter {
 
 	sessionKeyExportedString: string | undefined;
 
-	sessionKeyExported: any;
+	sessionKeyExported: JsonWebKey | undefined;
 
 	constructor(userId: string, room: IRoom) {
 		super();
@@ -418,12 +418,15 @@ export class E2ERoom extends Emitter {
 			await this.createNewGroupKey();
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
-			await sdk.rest.post('/v1/e2e.updateGroupKey', {
-				rid: this.roomId,
-				uid: this.userId,
-				key: await this.encryptGroupKeyForParticipant(e2e.publicKey!),
-			} as any);
-			await this.encryptKeyForOtherParticipants();
+			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+			if (myKey) {
+				await sdk.rest.post('/v1/e2e.updateGroupKey', {
+					rid: this.roomId,
+					uid: this.userId,
+					key: myKey,
+				});
+				await this.encryptKeyForOtherParticipants();
+			}
 		} catch (error) {
 			this.error('Error exporting group key: ', error);
 			throw error;
@@ -453,7 +456,7 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	onRoomKeyReset(keyID: any) {
+	onRoomKeyReset(keyID: string) {
 		this.log(`Room keyID was reset. New keyID: ${keyID} Previous keyID: ${this.keyID}`);
 		this.setState(E2ERoomState.WAITING_KEYS);
 		this.keyID = keyID;
@@ -474,15 +477,27 @@ export class E2ERoom extends Emitter {
 				return;
 			}
 
-			const usersSuggestedGroupKeys = { [this.roomId]: [] as any[] };
+			const usersSuggestedGroupKeys: Record<
+				string,
+				{
+					_id: IUser['_id'];
+					key: string;
+					oldKeys: ISubscription['suggestedOldRoomKeys'];
+				}[]
+			> = { [this.roomId]: [] };
 			for await (const user of users) {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+				if (!encryptedGroupKey) {
+					return;
+				}
 				if (decryptedOldGroupKeys) {
 					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
-					usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
-					continue;
+					if (oldKeys) {
+						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
+						continue;
+					}
 				}
-				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey });
+				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys: undefined });
 			}
 
 			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
@@ -738,7 +753,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.READY);
 	}
 
-	onStateChange(cb: () => any) {
+	onStateChange(cb: () => void) {
 		this.on('STATE_CHANGED', cb);
 		return () => this.off('STATE_CHANGED', cb);
 	}
