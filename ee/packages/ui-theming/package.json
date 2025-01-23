@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.60.1",
+		"@rocket.chat/fuselage": "^0.60.2",
 		"@rocket.chat/fuselage-hooks": "^0.34.1",
 		"@rocket.chat/icons": "^0.40.0",
 		"@rocket.chat/ui-contexts": "workspace:~",
