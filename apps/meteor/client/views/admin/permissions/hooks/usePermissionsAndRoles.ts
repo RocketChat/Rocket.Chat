@@ -1,19 +1,39 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { Permissions, Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
-export const usePermissionsAndRoles = (
+export const usePermissionsAndRoles = ({
 	type = 'permissions',
 	filter = '',
 	limit = 25,
 	skip = 0,
-): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
+	setCurrent,
+}: {
+	type: string;
+	filter: string;
+	limit: number;
+	skip: number;
+	setCurrent: (current: number) => void;
+}): {
+	permissions: IPermission[];
+	total: number;
+	roleList: IRole[];
+	reload: () => void;
+} => {
 	const filteredIds = useFilteredPermissions({ filter });
+	const previousFilter = useRef('');
+
+	useEffect(() => {
+		if (filter !== previousFilter.current) {
+			setCurrent(0);
+			previousFilter.current = filter;
+		}
+	}, [filter, setCurrent]);
 
 	const selector = useMemo(() => {
 		return {
@@ -22,17 +42,15 @@ export const usePermissionsAndRoles = (
 		};
 	}, [filteredIds, type]);
 
-	const getPermissions = useCallback(
-		() =>
-			Permissions.find(selector, {
-				sort: {
-					_id: 1,
-				},
-				skip,
-				limit,
-			}),
-		[selector, skip, limit],
-	);
+	const getPermissions = useCallback(() => {
+		return Permissions.find(selector, {
+			sort: {
+				_id: 1,
+			},
+			skip,
+			limit,
+		});
+	}, [selector, skip, limit]);
 
 	const getTotalPermissions = useCallback(() => Permissions.find(selector).count(), [selector]);
 
