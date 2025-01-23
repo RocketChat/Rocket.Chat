@@ -8,6 +8,7 @@ import type { Filter } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addAllUserToRoomFn } from '../../../../server/methods/addAllUserToRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -122,7 +123,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await Meteor.callAsync('addAllUserToRoom', findResult.rid, this.bodyParams.activeUsersOnly);
+			await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === 'true' || activeUsersOnly === 1);
 
 			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
