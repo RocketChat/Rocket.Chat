@@ -189,7 +189,7 @@
 		"nyc": "^15.1.0",
 		"outdent": "~0.8.0",
 		"pino-pretty": "^7.6.1",
-		"playwright-qase-reporter": "^1.2.2",
+		"playwright-qase-reporter": "^2.0.16",
 		"postcss": "~8.4.49",
 		"postcss-custom-properties": "^14.0.4",
 		"postcss-easy-import": "^4.0.0",
