@@ -431,6 +431,16 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('total');
 				});
 		});
+
+		it('should paginate', async () => {
+			const {
+				body: { channels: channels1 },
+			} = await request.get(api('channels.list')).set(credentials);
+			const {
+				body: { channels: channels2 },
+			} = await request.get(api('channels.list')).set(credentials).query({ offset: 1 });
+			expect(channels1).to.not.deep.equal(channels2);
+		});
 	});
 
 	it('/channels.list.joined', (done) => {
