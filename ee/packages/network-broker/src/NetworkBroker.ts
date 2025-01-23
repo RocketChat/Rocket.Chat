@@ -85,7 +85,10 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const dependencies = [...serviceDependencies, ...this.defaultDependencies].filter((dependency) => dependency !== name);
+		const dependencies = [
+			...serviceDependencies,
+			...(name === 'settings' ? [] : this.defaultDependencies),
+		].filter((dependency) => dependency !== name);
 
 		const service: ServiceSchema = {
 			name,
