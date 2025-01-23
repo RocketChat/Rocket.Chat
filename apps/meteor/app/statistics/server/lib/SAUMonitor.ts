@@ -128,9 +128,26 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
-			const { id: sessionId } = connection;
 
-			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
+			if (!userId) {
+				logger.warn(`Received 'accounts.logout' event without 'userId'`);
+				return;
+			}
+
+			const { id: sessionId } = connection;
+			if (!sessionId) {
+				logger.warn(`Received 'accounts.logout' event without 'sessionId'`);
+				return;
+			}
+
+			const session = await Sessions.getLoggedInByUserIdAndSessionId<Pick<ISession, 'loginToken'>>(userId, sessionId, {
+				projection: { loginToken: 1 },
+			});
+			if (!session?.loginToken) {
+				throw new Error('Session not found');
+			}
+
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: session.loginToken, userId });
 		});
 	}
 
