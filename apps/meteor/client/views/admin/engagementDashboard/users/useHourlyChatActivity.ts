@@ -21,6 +21,16 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 				start: day.toISOString(),
 			});
 
+			if (utc) {
+				response.hours = response.hours.map((hours) => {
+					const newDay = moment().hour(hours.hour).subtract(displacement, 'days').toDate();
+					return {
+						hour: moment.utc(newDay, 'HH').hour(),
+						users: hours.users,
+					};
+				});
+			}
+
 			return response
 				? {
 						...response,
