@@ -99,12 +99,12 @@ const MessagesSentSection = (): ReactElement => {
 										axisTop={null}
 										axisRight={null}
 										axisBottom={
-											(values.length === 7 && {
+											(values.length <= 31 && {
 												tickSize: 0,
 												// TODO: Get it from theme
 												tickPadding: 4,
 												tickRotation: 0,
-												format: (date): string => moment(date).format('dddd'),
+												format: (date): string => moment(date).format('dddd').substring(0, 3),
 											}) ||
 											null
 										}
