@@ -8539,7 +8539,6 @@ __metadata:
     "@types/sinon": "npm:^10.0.20"
     "@types/speakeasy": "npm:^2.0.10"
     "@types/strict-uri-encode": "npm:^2.0.2"
-    "@types/string-strip-html": "npm:^5.0.1"
     "@types/supertest": "npm:^6.0.2"
     "@types/supports-color": "npm:~7.2.1"
     "@types/textarea-caret": "npm:^3.0.3"
@@ -8728,7 +8727,7 @@ __metadata:
     storybook: "npm:^8.4.4"
     stream-buffers: "npm:^3.0.3"
     strict-uri-encode: "npm:^2.0.0"
-    string-strip-html: "npm:^13.4.8"
+    string-strip-html: "npm:^8.5.0"
     stylelint: "npm:^16.10.0"
     stylelint-config-rational-order: "npm:^0.1.2"
     stylelint-config-standard: "npm:^36.0.1"
@@ -12736,15 +12735,6 @@ __metadata:
   version: 2.0.2
   resolution: "@types/strict-uri-encode@npm:2.0.2"
   checksum: 10/e395868cc1cd49537be56d2f43b417ddc11559f807d5e1402d180870d0e2872fbe4d35765de1bbec76b939faf77cfdb13aec715d9946f6675e17073169a70dcd
-  languageName: node
-  linkType: hard
-
-"@types/string-strip-html@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@types/string-strip-html@npm:5.0.1"
-  dependencies:
-    string-strip-html: "npm:*"
-  checksum: 10/583dad05f107d5abe04135df903debc861223a6d700b4b0aa051af434dcdf738906c08c046f91360f1a28af94536e99a067570241d0b513ec8fb0965880544b6
   languageName: node
   linkType: hard
 
@@ -21227,17 +21217,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^3.19.0":
-  version: 3.21.1
-  resolution: "fast-xml-parser@npm:3.21.1"
-  dependencies:
-    strnum: "npm:^1.0.4"
-  bin:
-    xml2js: cli.js
-  checksum: 10/f9adbd8ae772473e7dec92bccfe93d3a752deec66c3d89479746ef01bfa12788bc4e5e611ec0250f69d85cc07a560e33a8d8c679673a8a69bb6e8da0234a9d40
-  languageName: node
-  linkType: hard
-
 "fast-xml-parser@npm:^4.1.3":
   version: 4.5.0
   resolution: "fast-xml-parser@npm:4.5.0"
@@ -21245,11 +21224,11 @@ __metadata:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10/17ce5908e798de1b6d12a39d26f04ac3b582ea9ce28f3a6e3b9c401edcb74790f28df84d75377608af53308ff8caad2b244ba1283cc4b5b4cf4cc7bd532a9983
+  checksum: 10/dc9571c10e7b57b5be54bcd2d92f50c446eb42ea5df347d253e94dd14eb99b5300a6d172e840f151e0721933ca2406165a8d9b316a6d777bf0596dc4fe1df756
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.4.1":
+"fast-xml-parser@npm:^4.2.4, fast-xml-parser@npm:^4.4.1":
   version: 4.5.1
   resolution: "fast-xml-parser@npm:4.5.1"
   dependencies:
@@ -33848,6 +33827,7 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
+    string-strip-html: "npm:^13.4.8"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.3.3"
   languageName: unknown
@@ -35663,7 +35643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-strip-html@npm:*, string-strip-html@npm:^13.4.8":
+"string-strip-html@npm:^13.4.8":
   version: 13.4.8
   resolution: "string-strip-html@npm:13.4.8"
   dependencies:
@@ -35675,6 +35655,13 @@ __metadata:
     ranges-push: "npm:^7.0.15"
     string-left-right: "npm:^6.0.17"
   checksum: 10/7441f2950865827e41ce55cdc6cfb7a5bdcca6b91f73d5dbbc4a66402fef499df02f92e22206123af2d02c62b85c2695c4f2cf9972b5ef73f9f88a90c00d454e
+  languageName: node
+  linkType: hard
+
+"string-strip-html@npm:^8.5.0":
+  version: 8.5.0
+  resolution: "string-strip-html@npm:8.5.0"
+  checksum: 10/3a6eadd222eb2b623cf69812ac744fa62ae630f34af28a6584164df04d4e1b2bbe48caacf78d901a234356594be713e91116722f40f7068eeffec31da84b43be
   languageName: node
   linkType: hard
 
