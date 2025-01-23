@@ -5,7 +5,9 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type express from 'express';
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
@@ -24,6 +26,7 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
+import { Router } from '../../../../app/api/server/router';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -54,7 +57,8 @@ export class AppsRestApi {
 			enableCors: false,
 			auth: API.getUserAuth(),
 		});
-		this.addManagementRoutes();
+		await this.addManagementRoutes();
+		(WebApp.connectHandlers as ReturnType<typeof express>).use(new Router('/').use(this.api.router).router);
 	}
 
 	addManagementRoutes() {
