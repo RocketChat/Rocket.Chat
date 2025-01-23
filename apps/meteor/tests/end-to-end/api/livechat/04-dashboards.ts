@@ -933,9 +933,17 @@ describe('LIVECHAT - dashboards', function () {
 			agent = await createAnOnlineAgent();
 			forwardAgent = await createAnOnlineAgent();
 			botAgent = await createBotAgent();
+
+			await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
 		});
 
-		after(async () => Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]));
+		after(async () =>
+			Promise.all([
+				deleteUser(agent.user),
+				deleteUser(forwardAgent.user),
+				updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
+			]),
+		);
 
 		it('should return no average response time for an agent if no response has been sent in the period', async () => {
 			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
@@ -987,8 +995,6 @@ describe('LIVECHAT - dashboards', function () {
 		});
 
 		it("should not consider bot messages in agent's first response time metric if setting is enabled", async () => {
-			await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
-
 			const response = await startANewLivechatRoomAndTakeIt({ agent: botAgent.credentials });
 
 			roomId = response.room._id;
