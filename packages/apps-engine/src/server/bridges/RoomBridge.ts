@@ -12,6 +12,7 @@ export type GetMessagesOptions = {
     limit: number;
     skip: number;
     sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
+    includeThreads: boolean;
 };
 
 export abstract class RoomBridge extends BaseBridge {
