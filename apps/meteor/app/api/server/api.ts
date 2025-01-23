@@ -758,6 +758,22 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		});
 	}
 
+	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
+		const { 'x-user-id': userId, 'x-auth-token': userToken } = req.headers;
+		if (userId && userToken) {
+			return Users.findOne(
+				{
+					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'_id': userId,
+				},
+				{
+					projection: getDefaultUserFields(),
+				},
+			);
+		}
+		return null;
+	}
+
 	public updateRateLimiterDictionaryForRoute(route: string, numRequestsAllowed: number, intervalTimeInMS?: number): void {
 		if (rateLimiterDictionary[route]) {
 			rateLimiterDictionary[route].options.numRequestsAllowed =
