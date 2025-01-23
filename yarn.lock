@@ -8586,7 +8586,7 @@ __metadata:
     adm-zip: "npm:0.5.16"
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:~3.0.1"
-    apn: "npm:^2.2.0"
+    apn: "npm:2.2.0"
     archiver: "npm:^7.0.1"
     asterisk-manager: "npm:^0.2.0"
     atlassian-crowd-patched: "npm:^0.5.1"
@@ -14165,7 +14165,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apn@npm:^2.2.0":
+"apn@npm:2.2.0":
   version: 2.2.0
   resolution: "apn@npm:2.2.0"
   dependencies:

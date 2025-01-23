@@ -302,7 +302,7 @@
 		"adm-zip": "0.5.16",
 		"ajv": "^8.17.1",
 		"ajv-formats": "~3.0.1",
-		"apn": "^2.2.0",
+		"apn": "2.2.0",
 		"archiver": "^7.0.1",
 		"asterisk-manager": "^0.2.0",
 		"atlassian-crowd-patched": "^0.5.1",
