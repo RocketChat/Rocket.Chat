@@ -32,7 +32,7 @@ type EditRoomProps = {
 	onDelete: () => void;
 };
 
-type EditRoomFormValues = {
+type EditRoomFormData = {
 	roomName: IRoom['name'];
 	roomTopic: string;
 	roomType: IRoom['t'];
@@ -47,7 +47,7 @@ type EditRoomFormValues = {
 	archived: boolean;
 };
 
-const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormValues => ({
+const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormData => ({
 	roomName: room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room),
 	roomType: room.t,
 	readOnly: !!room.ro,
@@ -73,7 +73,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		reset,
 		handleSubmit,
 		formState: { isDirty, errors, dirtyFields },
-	} = useForm({ values: getInitialValues(room) });
+	} = useForm<EditRoomFormData>({ values: getInitialValues(room) });
 
 	const {
 		canViewName,
@@ -96,17 +96,16 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
-		delete data.favorite;
 
 		try {
 			await saveAction({
+				...data,
 				rid: room._id,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
-				...data,
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
@@ -117,7 +116,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		}
 	});
 
-	const handleSave = useEffectEvent((data) =>
+	const handleSave = useEffectEvent((data: EditRoomFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 

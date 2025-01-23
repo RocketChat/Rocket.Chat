@@ -1,5 +1,6 @@
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -10,6 +11,7 @@ import {
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
+	isRoomsMembersOrderedByRoleProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -17,6 +19,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
@@ -26,6 +29,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
@@ -853,6 +857,58 @@ API.v1.addRoute(
 				});
 			}
 			return API.v1.forbidden();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.membersOrderedByRole',
+	{ authRequired: true, validateParams: isRoomsMembersOrderedByRoleProps },
+	{
+		async get() {
+			const findResult = await findRoomByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, this.user))) {
+				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
+			}
+
+			if (!isPublicRoom(findResult) && !isPrivateRoom(findResult)) {
+				return API.v1.failure('error-room-type-not-supported');
+			}
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			// Ensures that role priorities for the specified room are synchronized correctly.
+			// This function acts as a soft migration. If the `roomRolePriorities` field
+			// for the room has already been created and is up-to-date, no updates will be performed.
+			// If not, it will synchronize the role priorities of the users of the room.
+			await syncRolePrioritiesForRoomIfRequired(findResult._id);
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			const { status, filter } = this.queryParams;
+
+			const { members, total } = await findUsersOfRoomOrderedByRole({
+				rid: findResult._id,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				sort,
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
 		},
 	},
 );

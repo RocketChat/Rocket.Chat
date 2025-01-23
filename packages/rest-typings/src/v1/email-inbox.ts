@@ -41,9 +41,9 @@ type EmailInboxProps = {
 	name: string;
 	email: string;
 	active: boolean; // POST method
-	description: string;
-	senderInfo: string;
-	department: string;
+	description?: string;
+	senderInfo?: string;
+	department?: string;
 	smtp: {
 		password: string;
 		port: number;

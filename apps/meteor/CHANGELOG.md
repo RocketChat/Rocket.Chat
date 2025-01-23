@@ -1,5 +1,50 @@
 # @rocket.chat/meteor
 
+## 7.2.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34918](https://github.com/RocketChat/Rocket.Chat/pull/34918) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior when running microservices that caused queue worker to process just the first 60 seconds of request.
+
+  This was due to a mistakenly bound context. Queue Worker was changed to start doing work only after it received the first request.
+
+  However, with the introduction of ASL and actual context on calls, the worker registration was absorbing the context of the call that created them, causing service calls happening inside the callbacks to fail because of a timeout.
+
+- ([#34946](https://github.com/RocketChat/Rocket.Chat/pull/34946) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes SlackBridge service failing to connect to multiple slack workspaces
+
+- <details><summary>Updated dependencies [f9e531fce6c0a9e8b9e1836eecfea189f6626bea]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.3.9
+  - @rocket.chat/core-typings@7.2.1
+  - @rocket.chat/rest-typings@7.2.1
+  - @rocket.chat/license@1.0.3
+  - @rocket.chat/pdf-worker@0.2.9
+  - @rocket.chat/presence@0.2.12
+  - @rocket.chat/api-client@0.2.12
+  - @rocket.chat/apps@0.2.3
+  - @rocket.chat/core-services@0.7.4
+  - @rocket.chat/cron@0.1.12
+  - @rocket.chat/freeswitch@1.1.1
+  - @rocket.chat/fuselage-ui-kit@14.0.1
+  - @rocket.chat/gazzodown@14.0.1
+  - @rocket.chat/model-typings@1.2.1
+  - @rocket.chat/ui-contexts@14.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.4
+  - @rocket.chat/models@1.1.1
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/ui-avatar@10.0.1
+  - @rocket.chat/ui-client@14.0.1
+  - @rocket.chat/ui-video-conf@14.0.1
+  - @rocket.chat/ui-voip@4.0.1
+  - @rocket.chat/web-ui-registration@14.0.1
+  - @rocket.chat/instance-status@0.1.12
+  </details>
+
 ## 7.2.0
 
 ### Minor Changes

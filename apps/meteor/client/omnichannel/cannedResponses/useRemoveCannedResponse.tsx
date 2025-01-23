@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ export const useRemoveCannedResponse = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const removeCannedResponse = useMethod('removeCannedResponse');
 
-	const handleDelete = useMutableCallback((id) => {
+	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await removeCannedResponse(id);

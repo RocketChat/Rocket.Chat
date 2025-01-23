@@ -216,6 +216,7 @@ export interface IUser extends IRocketChatRecord {
 	_pendingAvatarUrl?: string;
 	requirePasswordChange?: boolean;
 	requirePasswordChangeReason?: string;
+	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 }
 

@@ -1187,6 +1187,10 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$pullAll: { __rooms: rids },
+				$unset: rids.reduce((acc, rid) => {
+					acc[`roomRolePriorities.${rid}`] = '';
+					return acc;
+				}, {}),
 			},
 		);
 	}
@@ -1363,6 +1367,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$pull: { __rooms: rid },
+				$unset: { [`roomRolePriorities.${rid}`]: '' },
 			},
 			options,
 		);
@@ -1518,6 +1523,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$set: { __rooms: [] },
+				$unset: { roomRolePriorities: '' },
 			},
 		);
 	}
@@ -1530,6 +1536,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$pull: { __rooms: rid },
+				$unset: { [`roomRolePriorities.${rid}`]: '' },
 			},
 		);
 	}
@@ -1565,6 +1572,64 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$pullAll: { __rooms: rids },
+				$unset: rids.reduce((acc, rid) => {
+					acc[`roomRolePriorities.${rid}`] = '';
+					return acc;
+				}, {}),
+			},
+		);
+	}
+
+	addRoomRolePriorityByUserId(userId, rid, priority) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					[`roomRolePriorities.${rid}`]: priority,
+				},
+			},
+		);
+	}
+
+	removeRoomRolePriorityByUserId(userId, rid) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$unset: {
+					[`roomRolePriorities.${rid}`]: '',
+				},
+			},
+		);
+	}
+
+	async assignRoomRolePrioritiesByUserIdPriorityMap(userIdAndrolePriorityMap, rid) {
+		const bulk = this.col.initializeUnorderedBulkOp();
+
+		for (const [userId, priority] of Object.entries(userIdAndrolePriorityMap)) {
+			bulk.find({ _id: userId }).updateOne({ $set: { [`roomRolePriorities.${rid}`]: priority } });
+		}
+
+		if (bulk.length > 0) {
+			const result = await bulk.execute();
+			return result.modifiedCount;
+		}
+
+		return 0;
+	}
+
+	unassignRoomRolePrioritiesByRoomId(rid) {
+		return this.updateMany(
+			{
+				__rooms: rid,
+			},
+			{
+				$unset: {
+					[`roomRolePriorities.${rid}`]: '',
+				},
 			},
 		);
 	}

@@ -1,6 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
@@ -14,11 +15,11 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async () => {
+	const handleRemoveClick = useEffectEvent(async () => {
 		removeCurrentChatMutation.mutate(_id);
 	});
 
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteAgent = async (): Promise<void> => {
 			try {
