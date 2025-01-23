@@ -365,6 +365,10 @@ export class HomeContent {
 		return this.page.locator('.rcx-videoconf-message-block');
 	}
 
+	get videoConfMessageBlockAvatars(): Locator {
+		return this.videoConfMessageBlock.getByLabel('figure');
+	}
+
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
