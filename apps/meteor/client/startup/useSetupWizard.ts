@@ -1,4 +1,5 @@
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import { hasRole } from '../../app/authorization/client';
 import { router } from '../providers/RouterProvider';
@@ -9,8 +10,9 @@ export const useSetupWizard = (): void => {
 
 	const isWizardInProgress = userId && hasRole(userId, 'admin') && setupWizardState === 'in_progress';
 	const mustRedirect = (!userId && setupWizardState === 'pending') || isWizardInProgress;
-
-	if (mustRedirect) {
-		router.navigate('/setup-wizard');
-	}
+	useEffect(() => {
+		if (mustRedirect) {
+			router.navigate('/setup-wizard');
+		}
+	}, [mustRedirect]);
 };
