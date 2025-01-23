@@ -88,21 +88,36 @@ export class Router<
 			prev(router);
 			// console.log('MIDDLEWARE', method, subpath);
 			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
-				const { body, statusCode, headers } = await action.apply({
+				const {
+					body,
+					statusCode = 200,
+					headers = {},
+				} = await action.apply({
 					urlParams: req.params,
 					queryParams: req.query,
 					bodyParams: req.body,
 					request: req,
 					response: res,
 				} as any);
-				res.writeHead(statusCode, {
-					...res.header,
-					'Content-Type': 'application/json',
-					'Cache-Control': 'no-store',
-					'Pragma': 'no-cache',
-					...headers,
-				});
-				body && res.write(JSON.stringify(body));
+
+				const responseHeaders = Object.fromEntries(
+					Object.entries({
+						...res.header,
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store',
+						'Pragma': 'no-cache',
+						...headers,
+					}).map(([key, value]) => [key.toLowerCase(), value]),
+				);
+
+				res.writeHead(statusCode, responseHeaders);
+
+				if (responseHeaders['content-type']?.match(/json|javascript/) !== null) {
+					body !== undefined && res.write(JSON.stringify(body));
+				} else {
+					body !== undefined && res.write(body);
+				}
+
 				res.end();
 			});
 		};
