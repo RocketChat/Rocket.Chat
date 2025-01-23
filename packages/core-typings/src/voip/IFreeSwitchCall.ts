@@ -1,16 +1,10 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
-import type {
-	IFreeSwitchEventCall,
-	IFreeSwitchEventCallee,
-	IFreeSwitchEventCaller,
-	IFreeSwitchEventCallUser,
-	IFreeSwitchEventChannel,
-} from './IFreeSwitchEvent';
+import type { IFreeSwitchEventCall, IFreeSwitchEventCallUser, IFreeSwitchEventChannel } from './IFreeSwitchEvent';
 
 export interface IFreeSwitchCall extends IRocketChatRecord {
 	UUID: string;
-	channels: string[];
+	channels: IFreeSwitchEventChannel[];
 	events: IFreeSwitchCallEvent[];
 	from?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'freeSwitchExtension'>;
 	to?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'freeSwitchExtension'>;
@@ -67,8 +61,8 @@ export type IFreeSwitchCallEvent = {
 	timestamp?: string;
 	firedAt?: Date;
 	channel?: IFreeSwitchEventChannel;
-	caller?: IFreeSwitchEventCaller;
-	callee?: IFreeSwitchEventCallee;
+	caller?: IFreeSwitchEventCallUser;
+	callee?: IFreeSwitchEventCallUser;
 	call?: IFreeSwitchEventCall;
 
 	workspaces?: string[];

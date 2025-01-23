@@ -7,6 +7,7 @@ import { parseEventCallData } from './parseEventCallData';
 import { parseEventCallee } from './parseEventCallee';
 import { parseEventCaller } from './parseEventCaller';
 import { parseEventChannel } from './parseEventChannel';
+import { parseEventLinkedChannels } from './parseEventLinkedChannels';
 import { parseRocketChatVariables } from './parseRocketChatVariables';
 import { parseTimestamp } from './parseTimestamp';
 
@@ -43,6 +44,15 @@ export async function parseEventData(
 		return;
 	}
 
+	// Ignore direct calls to voicemail
+	const direction = eventData['Call-Direction'] || eventData['Caller-Direction'];
+	if (
+		direction === 'inbound' &&
+		(eventData['Caller-Destination-Number'] === 'voicemail' || eventData['Channel-Name']?.includes('voicemail'))
+	) {
+		return;
+	}
+
 	const detaildEventName = getDetailedEventName(eventName, eventData);
 
 	const otherLegUniqueId = eventData['Other-Leg-Unique-ID'];
@@ -56,10 +66,11 @@ export async function parseEventData(
 	const loadUsers = eventName !== 'CHANNEL_DESTROY';
 
 	const channel = parseEventChannel(eventData);
+	const otherChannels = parseEventLinkedChannels(eventData);
 	const call = parseEventCallData(eventData);
 	const caller = (loadUsers && parseEventCaller(eventData)) || undefined;
 	const callee = (loadUsers && parseEventCallee(eventData)) || undefined;
-	const users = [caller?.from, callee?.to].filter((u) => u) as IFreeSwitchEventCallUser[];
+	const users = [caller, callee].filter((u) => u) as IFreeSwitchEventCallUser[];
 
 	const rocketChatVariables = parseRocketChatVariables(eventData, users);
 
@@ -70,6 +81,9 @@ export async function parseEventData(
 		firedAt,
 		referencedIds,
 		receivedAt: new Date(),
+		callerContext: eventData['Caller-Context'],
+		callerName: eventData['Caller-Caller-ID-Name'],
+
 		channel,
 		caller,
 		callee,
@@ -77,5 +91,6 @@ export async function parseEventData(
 		users,
 		raw: eventData,
 		rocketChatVariables,
+		...(otherChannels.length && { otherChannels }),
 	}) as Omit<IFreeSwitchEvent, '_id' | '_updatedAt'>;
 }

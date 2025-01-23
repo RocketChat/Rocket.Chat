@@ -1,9 +1,25 @@
-import type { IFreeSwitchEventCallee } from '@rocket.chat/core-typings';
+import type { IFreeSwitchEventCallUser } from '@rocket.chat/core-typings';
 
 import { makeEventCallUser } from './makeEventCallUser';
 import { makeEventUser } from './makeEventUser';
 
-export function parseEventCallee(eventData: Record<string, string>): Partial<IFreeSwitchEventCallee> {
+function shouldIgnoreEvent(eventData: Record<string, string>): boolean {
+	const eventName = eventData['Event-Name'];
+	if (['CHANNEL_DESTROY', 'CHANNEL_OUTGOING'].includes(eventName)) {
+		return true;
+	}
+	if (eventName === 'CHANNEL_STATE' && eventData['Channel-State'] === 'CS_DESTROY') {
+		return true;
+	}
+
+	return false;
+}
+
+export function parseEventCallee(eventData: Record<string, string>): IFreeSwitchEventCallUser | undefined {
+	if (shouldIgnoreEvent(eventData)) {
+		return;
+	}
+
 	const eventName = eventData['Event-Name'];
 	const callId = eventData['Channel-Call-UUID'];
 	const uniqueId = eventData['Unique-ID'];
@@ -20,18 +36,16 @@ export function parseEventCallee(eventData: Record<string, string>): Partial<IFr
 
 	const isNewTransfer = eventName === 'CHANNEL_OUTGOING' && isCallChannel;
 	const isTransferHangup = ['CHANNEL_HANGUP', 'CHANNEL_HANGUP_COMPLETE'].includes(eventName) && isTransferCallChannel;
+	const destinationNumber = eventData['Caller-Destination-Number'];
+	const channelName = eventData['Caller-Channel-Name'];
 
-	const ignoreEvent = eventName === 'CHANNEL_DESTROY';
+	const isVoicemail = destinationNumber === 'voicemail' || channelName?.includes('voicemail');
 
-	if (ignoreEvent) {
-		return {};
-	}
-
-	const toUser = makeEventCallUser(
-		isNewTransfer
+	return makeEventCallUser(
+		isNewTransfer && !isVoicemail
 			? []
 			: [
-					...(!['CHANNEL_BRIDGE', 'CHANNEL_UNBRIDGE'].includes(eventName) && !isTransferHangup
+					...(!['CHANNEL_BRIDGE', 'CHANNEL_UNBRIDGE'].includes(eventName) && !isTransferHangup && !isVoicemail
 						? [
 								...(callerDirection === 'inbound' ? [makeEventUser('extension', eventData.variable_sip_to_user)] : []),
 								...(callerDirection === 'outbound' ? [makeEventUser('contact', eventData.variable_sip_to_user)] : []),
@@ -46,15 +60,10 @@ export function parseEventCallee(eventData: Record<string, string>): Partial<IFr
 
 					...(otherType === 'originator' ? [makeEventUser('extension', eventData['Other-Leg-Destination-Number'])] : []),
 					...(otherType === 'originatee' ? [makeEventUser('contact', eventData['Other-Leg-Destination-Number'])] : []),
+					...(!otherType && isVoicemail && callerDirection === 'inbound'
+						? [makeEventUser('channel', eventData.variable_other_loopback_leg_uuid)]
+						: []),
+					...(callerDirection === 'outbound' && !isTransferCallChannel ? [makeEventUser('channel', eventData['Unique-ID'])] : []),
 				],
 	);
-
-	if (toUser && callerDirection === 'outbound' && !isTransferCallChannel) {
-		// toUser.reached = true;
-		toUser.channelUniqueId = eventData['Unique-ID'];
-	}
-
-	return {
-		to: toUser,
-	};
 }

@@ -125,6 +125,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 				return;
 			}
 
+			console.log(error);
 			throw error;
 		}
 	}

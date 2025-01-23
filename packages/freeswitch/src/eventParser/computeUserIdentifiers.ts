@@ -8,6 +8,11 @@ export function computeUserIdentifiers(identifiers: (IFreeSwitchEventUser | unde
 			continue;
 		}
 
+		// One user can't have more than one extension
+		if (id.type === 'extension' && newIdentifiers.some((id2) => id2.type === id.type)) {
+			continue;
+		}
+
 		newIdentifiers.push(id);
 	}
 

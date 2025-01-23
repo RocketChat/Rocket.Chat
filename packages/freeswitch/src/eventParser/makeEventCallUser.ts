@@ -10,7 +10,7 @@ export function makeEventCallUser(
 	const filteredIdentifiers = computedIdentifiers.filter(({ type, value }) => type !== 'voicemail' && value !== 'voicemail');
 	const isVoicemail = computedIdentifiers.length > filteredIdentifiers.length;
 
-	if (!filteredIdentifiers.length && !data?.uid) {
+	if (!computedIdentifiers.length && !data?.uid) {
 		return undefined;
 	}
 

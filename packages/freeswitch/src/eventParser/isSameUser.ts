@@ -22,6 +22,10 @@ export function isSameUser(user1: IFreeSwitchEventCallUser, user2: IFreeSwitchEv
 		if (user2Identifiers.some((id) => id.value === identifier.value && (!strict || id.type === identifier.type))) {
 			return true;
 		}
+
+		if (identifier.type === 'extension' && user2Identifiers.some((id) => id.type === 'extension')) {
+			return false;
+		}
 	}
 
 	return false;

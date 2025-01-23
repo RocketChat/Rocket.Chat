@@ -1,15 +1,10 @@
-import type {
-	IFreeSwitchCall,
-	IFreeSwitchCallEvent,
-	IFreeSwitchEvent,
-	IFreeSwitchEventCallUser,
-	IFreeSwitchEventChannel,
-} from '@rocket.chat/core-typings';
+import type { IFreeSwitchCall, IFreeSwitchCallEvent, IFreeSwitchEvent, IFreeSwitchEventCallUser } from '@rocket.chat/core-typings';
 
 import { computeCallDuration } from './computeCallDuration';
 import { getCallEventType } from './getCallEventType';
 import { getPreferableUserFromUserList } from './getPreferableUserFromUserList';
 import { getRelevantRawData } from './getRelevantRawData';
+import { mergeCallChannelData } from './mergeCallChannelData';
 import { mergeCallUserData } from './mergeCallUserData';
 
 function sortEvents(allEvents: IFreeSwitchEvent[]): IFreeSwitchEvent[] {
@@ -33,19 +28,14 @@ function sortEvents(allEvents: IFreeSwitchEvent[]): IFreeSwitchEvent[] {
 
 async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
 	isValidCall: boolean;
-	callChannels: string[];
 	callEvents: IFreeSwitchCallEvent[];
 	startedAt: Date | undefined;
 }> {
 	const callEvents: IFreeSwitchCallEvent[] = [];
-	const callChannels: string[] = [];
 	let startedAt: Date | undefined;
 	let isValidCall = false;
 
 	for await (const event of sortedEvents) {
-		if (event.channel?.uniqueId && !callChannels.includes(event.channel.uniqueId)) {
-			callChannels.push(event.channel.uniqueId);
-		}
 		if (event.firedAt && (!startedAt || (event.firedAt && event.firedAt < startedAt))) {
 			startedAt = event.firedAt;
 		}
@@ -84,7 +74,6 @@ async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
 
 	return {
 		isValidCall,
-		callChannels,
 		callEvents,
 		startedAt,
 	};
@@ -103,9 +92,11 @@ export async function computeCallFromParsedEvents(
 > {
 	const sortedEvents = sortEvents(allEvents);
 
-	const callers = mergeCallUserData(sortedEvents.map(({ caller }) => caller?.from && { ...caller.from }));
-	const callees = mergeCallUserData(sortedEvents.map(({ callee }) => callee?.to && { ...callee.to }));
-	const channels = sortedEvents.map(({ channel }) => channel).filter((c) => c) as IFreeSwitchEventChannel[];
+	const callers = mergeCallUserData(sortedEvents.map(({ caller }) => caller));
+	const callees = mergeCallUserData(sortedEvents.map(({ callee }) => callee));
+	const directChannels = sortedEvents.map(({ channel }) => channel);
+	const linkedChannels = sortedEvents.map(({ otherChannels }) => otherChannels).flat();
+	const channels = mergeCallChannelData(directChannels, linkedChannels);
 
 	const caller = getPreferableUserFromUserList(callers);
 	const callee = getPreferableUserFromUserList(callees);
@@ -115,7 +106,7 @@ export async function computeCallFromParsedEvents(
 	// when a call enters the voicemail, freeswitch creates separate channels for it, with 'voicemail' in their names
 	const hasVoicemailChannel = channels.some(({ name }) => name?.includes('voicemail'));
 	const hasVoicemailCallee = callees.some(({ isVoicemail }) => isVoicemail);
-	const { isValidCall, callChannels, callEvents, startedAt } = await iterateOverEvents(sortedEvents);
+	const { isValidCall, callEvents, startedAt } = await iterateOverEvents(sortedEvents);
 
 	if (!isValidCall) {
 		return undefined;
@@ -133,7 +124,7 @@ export async function computeCallFromParsedEvents(
 
 	return {
 		UUID: callUUID,
-		channels: callChannels,
+		channels,
 		events: callEvents,
 		voicemail: hasVoicemailCallee || hasVoicemailChannel,
 		startedAt,
@@ -144,15 +135,4 @@ export async function computeCallFromParsedEvents(
 		direction,
 		duration: computeCallDuration(callEvents),
 	};
-
-	// // A call has 2 channels at max
-	// // If it has 3 or more channels, it's a forwarded call
-	// if (call.channels.length >= 3) {
-	// 	const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
-	// 	if (originalCalls.length) {
-	// 		call.forwardedFrom = originalCalls;
-	// 	}
-	// }
-
-	// await FreeSwitchCall.registerCall(call);
 }

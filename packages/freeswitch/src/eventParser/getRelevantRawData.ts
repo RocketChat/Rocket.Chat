@@ -57,6 +57,8 @@ const relevantKeys = [
 	'variable_dialed_extension',
 	'variable_originating_leg_uuid',
 	'variable_bridge_uuid',
+	'variable_other_loopback_leg_uuid',
+	'variable_other_loopback_from_uuid',
 ];
 
 export function getRelevantRawData(raw: Record<string, string>): Record<string, string> {

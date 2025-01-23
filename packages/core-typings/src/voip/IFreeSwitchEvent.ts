@@ -10,13 +10,18 @@ export interface IFreeSwitchEvent extends IRocketChatRecord {
 	referencedIds?: string[];
 	receivedAt?: Date;
 
+	callerContext?: string;
+	callerName?: string;
+
 	channel?: IFreeSwitchEventChannel;
 	call?: IFreeSwitchEventCall;
-	caller?: IFreeSwitchEventCaller;
-	callee?: IFreeSwitchEventCallee;
+	caller?: IFreeSwitchEventCallUser;
+	callee?: IFreeSwitchEventCallUser;
 
 	rocketChatVariables?: Record<string, IFreeSwitchEventRocketChatVariable | undefined>;
 	users: IFreeSwitchEventCallUser[];
+
+	otherChannels?: IFreeSwitchEventChannel[];
 
 	raw: Record<string, string>;
 }
@@ -27,20 +32,30 @@ export interface IFreeSwitchEventChannel {
 	name?: string;
 	state?: string;
 
+	type?: string;
+
 	contact?: string;
+
+	callDirection?: string;
+	callerDirection?: string;
+	callerLogicalDirection?: string;
+	callerUniqueId?: string;
+
+	bridgedTo?: string[];
+	originator?: string;
+	originatees?: string[];
 }
 
 export interface IFreeSwitchEventRocketChatVariable {
 	userId?: string;
 	contact?: string;
-	sipjsId?: string;
 	extension?: string;
 	workspaceUrl?: string;
 	calleeExtension?: string;
 }
 
 export interface IFreeSwitchEventUser {
-	type: 'extension' | 'contact' | 'uid' | 'voicemail' | 'unknown';
+	type: 'extension' | 'contact' | 'uid' | 'voicemail' | 'channel' | 'unknown';
 	value: string;
 }
 
@@ -64,20 +79,4 @@ export interface IFreeSwitchEventCall {
 	hangupCause?: string;
 	duration?: number;
 	direction?: string;
-
-	originator?: string;
-	originatee?: string;
-}
-
-export interface IFreeSwitchEventCaller {
-	uniqueId?: string;
-	direction?: string;
-	context?: string;
-	name?: string;
-
-	from?: IFreeSwitchEventCallUser;
-}
-
-export interface IFreeSwitchEventCallee {
-	to?: IFreeSwitchEventCallUser;
 }
