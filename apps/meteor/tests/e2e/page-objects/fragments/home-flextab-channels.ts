@@ -31,6 +31,10 @@ export class HomeFlextabChannels {
 		return this.channelsTab.getByRole('list');
 	}
 
+	getListboxOption(name: string): Locator {
+		return this.page.getByRole('listbox').getByRole('option', { name });
+	}
+
 	channelOption(name: string) {
 		return this.channelsTab.locator('li', { hasText: name });
 	}

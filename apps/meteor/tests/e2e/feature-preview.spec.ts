@@ -272,8 +272,14 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.pressSequentially(targetChannel);
-			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
+
 			await poHomeChannel.tabs.channels.btnAdd.click();
 			await poHomeChannel.content.waitForChannel();
 
@@ -288,8 +294,13 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.pressSequentially(targetChannel);
-			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
 			await poHomeChannel.tabs.channels.btnAdd.click();
 
 			const sidepanelTeamItem = poHomeChannel.sidepanel.getItemByName(sidepanelTeam);
