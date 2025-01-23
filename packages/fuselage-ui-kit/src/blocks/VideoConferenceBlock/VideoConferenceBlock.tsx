@@ -1,8 +1,10 @@
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import {
   useGoToRoom,
+  useSetting,
   useTranslation,
   useUserId,
+  useUserPreference,
 } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
@@ -20,7 +22,7 @@ import {
   VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
-import { useContext, memo } from 'react';
+import { useContext, memo, useCallback } from 'react';
 
 import { UiKitContext } from '../..';
 import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
@@ -39,6 +41,8 @@ const VideoConferenceBlock = ({
   const surfaceType = useSurfaceType();
   const userId = useUserId();
   const goToRoom = useGoToRoom();
+  const displayAvatars = useUserPreference<boolean>('displayAvatars');
+  const showRealName = useSetting('UI_Use_Real_Name');
 
   const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
@@ -97,6 +101,23 @@ const VideoConferenceBlock = ({
     }
   };
 
+  const getMessageFooterText = useCallback(
+    (usersCount: number): string => {
+      if (!displayAvatars) {
+        return t('__usersCount__joined', {
+          count: usersCount,
+        });
+      }
+
+      return usersCount > MAX_USERS
+        ? t('plus__usersCount__joined', {
+            count: usersCount - MAX_USERS,
+          })
+        : t('joined');
+    },
+    [displayAvatars, t],
+  );
+
   if (result.isPending || result.isError) {
     // TODO: error handling
     return <VideoConfMessageSkeleton />;
@@ -104,6 +125,21 @@ const VideoConferenceBlock = ({
 
   const { data } = result;
   const isUserCaller = data.createdBy._id === userId;
+
+  const messageFooterText = getMessageFooterText(data.users.length);
+
+  const joinedUsernames = [...data.users]
+    .splice(0, MAX_USERS)
+    .map(({ name, username }) => (showRealName ? name : username))
+    .join(', ');
+
+  const iconTitle =
+    data.users.length > MAX_USERS
+      ? t('__usernames__and__count__more_joined', {
+          usernames: joinedUsernames,
+          count: data.users.length - MAX_USERS,
+        })
+      : t('__usernames__joined', { usernames: joinedUsernames });
 
   const actions = (
     <VideoConfMessageActions>
@@ -147,13 +183,14 @@ const VideoConferenceBlock = ({
           {data.type !== 'direct' &&
             (data.users.length ? (
               <>
-                <VideoConfMessageUserStack users={data.users} />
+                <VideoConfMessageUserStack
+                  displayAvatars={displayAvatars}
+                  showRealName={showRealName}
+                  iconTitle={iconTitle}
+                  users={data.users}
+                />
                 <VideoConfMessageFooterText>
-                  {data.users.length > MAX_USERS
-                    ? t('__usersCount__member_joined', {
-                        usersCount: data.users.length - MAX_USERS,
-                      })
-                    : t('joined')}
+                  {messageFooterText}
                 </VideoConfMessageFooterText>
               </>
             ) : (
@@ -205,13 +242,14 @@ const VideoConferenceBlock = ({
         </VideoConfMessageButton>
         {Boolean(data.users.length) && (
           <>
-            <VideoConfMessageUserStack users={data.users} />
+            <VideoConfMessageUserStack
+              displayAvatars={displayAvatars}
+              showRealName={showRealName}
+              users={data.users}
+              iconTitle={iconTitle}
+            />
             <VideoConfMessageFooterText>
-              {data.users.length > MAX_USERS
-                ? t('__usersCount__member_joined', {
-                    count: data.users.length - MAX_USERS,
-                  })
-                : t('joined')}
+              {messageFooterText}
             </VideoConfMessageFooterText>
           </>
         )}
