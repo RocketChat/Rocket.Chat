@@ -1,7 +1,7 @@
-import { useStream, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { UserStatus } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { useStream } from '@rocket.chat/ui-contexts';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import React from 'react';
 
 import type { RoomMember } from './useMembersList';
 import { useMembersList } from './useMembersList';
@@ -14,38 +14,39 @@ type MembersPage = {
 		_id: string;
 		username: string;
 		roles: string[];
-		status: string;
+		status?: UserStatus;
 	}>;
 };
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useStream: jest.fn(),
-	useEndpoint: jest.fn(),
-	useSetting: jest.fn(),
-}));
+jest.mock('@rocket.chat/ui-contexts', () => {
+	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
 
-const createTestQueryClient = () =>
-	new QueryClient({
-		defaultOptions: {
-			queries: {
-				retry: false,
-			},
-		},
-	});
+	return {
+		__esModule: true,
+		...originalModule,
+		useStream: jest.fn(),
+	};
+});
 
 const mockUseStream = useStream as jest.MockedFunction<typeof useStream>;
-const mockUseEndpoint = useEndpoint as jest.MockedFunction<typeof useEndpoint>;
-const mockUseSetting = useSetting as jest.MockedFunction<typeof useSetting>;
+const mockDMMembersEndpoint = jest.fn();
+const mockRoomMembersEndpoint = jest.fn();
 
 describe('useMembersList', () => {
-	let queryClient: QueryClient;
-
-	const wrapper = ({ children }: { children: React.ReactNode }) => (
-		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-	);
-
 	let fakeMembersPage1: MembersPage;
 	let fakeMembersPage2: MembersPage;
+
+	const wrapper = mockAppRoot()
+		.withJohnDoe()
+		.withSetting('UI_Use_Real_Name', false)
+		.withEndpoint('GET', '/v1/im.members', (_params) => {
+			mockDMMembersEndpoint();
+			return fakeMembersPage1 as any;
+		})
+		.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', (_params) => {
+			mockRoomMembersEndpoint();
+			return fakeMembersPage1 as any;
+		});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -55,8 +56,8 @@ describe('useMembersList', () => {
 			count: 20,
 			total: 40,
 			members: [
-				{ _id: 'user1', username: 'alex', roles: ['owner'], status: 'online' },
-				{ _id: 'user2', username: 'john', roles: ['moderator'], status: 'offline' },
+				{ _id: 'user1', username: 'alex', roles: ['owner'], status: UserStatus.ONLINE },
+				{ _id: 'user2', username: 'john', roles: ['moderator'], status: UserStatus.OFFLINE },
 			],
 		};
 
@@ -65,35 +66,15 @@ describe('useMembersList', () => {
 			count: 20,
 			total: 40,
 			members: [
-				{ _id: 'user3', username: 'chris', roles: [], status: 'online' },
-				{ _id: 'user4', username: 'zoe', roles: [], status: 'offline' },
+				{ _id: 'user3', username: 'chris', roles: [], status: UserStatus.ONLINE },
+				{ _id: 'user4', username: 'zoe', roles: [], status: UserStatus.OFFLINE },
 			],
 		};
 
-		queryClient = createTestQueryClient();
-
 		mockUseStream.mockReturnValue(() => () => undefined);
-
-		mockUseSetting.mockImplementation((setting) => {
-			if (setting === 'UI_Use_Real_Name') {
-				return false;
-			}
-			return undefined;
-		});
-
-		mockUseEndpoint.mockImplementation(() => {
-			return async () => fakeMembersPage1;
-		});
 	});
 
 	it('fetches members using the correct endpoint for roomType c', async () => {
-		mockUseEndpoint.mockImplementation(((_method: 'GET', path: string) => {
-			if (path === '/v1/rooms.membersOrderedByRole') {
-				return async () => fakeMembersPage1;
-			}
-			return async () => ({ members: [] });
-		}) as unknown as typeof useEndpoint);
-
 		const { result } = renderHook(
 			() =>
 				useMembersList({
@@ -103,23 +84,19 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper },
+			{ legacyRoot: true, wrapper: wrapper.build() },
 		);
 
 		await expect(result.current.isLoading).toBe(true);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
+		expect(mockDMMembersEndpoint).not.toHaveBeenCalled();
+		expect(mockRoomMembersEndpoint).toHaveBeenCalled();
+
 		expect(result.current.data?.pages[0].members).toHaveLength(fakeMembersPage1.members.length);
 	});
 
 	it('fetches members using the correct endpoint for roomType p', async () => {
-		mockUseEndpoint.mockImplementation(((_method: 'GET', path: string) => {
-			if (path === '/v1/rooms.membersOrderedByRole') {
-				return async () => fakeMembersPage1;
-			}
-			return async () => ({ members: [] });
-		}) as unknown as typeof useEndpoint);
-
 		const { result } = renderHook(
 			() =>
 				useMembersList({
@@ -129,24 +106,20 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'p',
 				}),
-			{ legacyRoot: true, wrapper },
+			{ legacyRoot: true, wrapper: wrapper.build() },
 		);
 
 		expect(result.current.isLoading).toBe(true);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+		expect(mockRoomMembersEndpoint).toHaveBeenCalled();
+		expect(mockDMMembersEndpoint).not.toHaveBeenCalled();
+
 		expect(result.current.data?.pages[0].members).toHaveLength(fakeMembersPage1.members.length);
 	});
 
 	it('fetches from /v1/im.members if roomType is d', async () => {
-		mockUseEndpoint.mockImplementation(((_method: 'GET', path: string) => {
-			if (path === '/v1/im.members') {
-				return async () => fakeMembersPage1;
-			}
-			// fallback
-			return async () => ({ members: [] });
-		}) as unknown as typeof useEndpoint);
-
 		const { result } = renderHook(
 			() =>
 				useMembersList({
@@ -156,31 +129,18 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'd',
 				}),
-			{ legacyRoot: true, wrapper },
+			{ legacyRoot: true, wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+		expect(mockDMMembersEndpoint).toHaveBeenCalled();
+		expect(mockRoomMembersEndpoint).not.toHaveBeenCalled();
+
 		expect(result.current.data?.pages[0].members).toHaveLength(fakeMembersPage1.members.length);
 	});
 
 	it('applies pagination with fetchNextPage', async () => {
-		mockUseEndpoint.mockImplementation(() => {
-			return async ({ offset }: { offset: number }) => {
-				if (offset === 0) {
-					return fakeMembersPage1;
-				}
-				if (offset === 20) {
-					return fakeMembersPage2;
-				}
-				return {
-					members: [],
-					offset,
-					count: 20,
-					total: 40,
-				};
-			};
-		});
-
 		const { result } = renderHook(
 			() =>
 				useMembersList({
@@ -190,7 +150,25 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper },
+			{
+				legacyRoot: true,
+				wrapper: wrapper
+					.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', ({ offset }) => {
+						if (offset === 0) {
+							return fakeMembersPage1 as any;
+						}
+						if (offset === 20) {
+							return fakeMembersPage2 as any;
+						}
+						return {
+							members: [],
+							offset,
+							count: 20,
+							total: 40,
+						};
+					})
+					.build(),
+			},
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -220,7 +198,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper },
+			{ legacyRoot: true, wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(subscribeMock).toHaveBeenCalledWith('roles-change', expect.any(Function)));
@@ -241,9 +219,6 @@ describe('useMembersList', () => {
 		});
 		mockUseStream.mockReturnValue(subscribeMock);
 
-		// user2 starts with roles ['moderator']
-		mockUseEndpoint.mockReturnValueOnce(async () => fakeMembersPage1);
-
 		const { result } = renderHook(
 			() =>
 				useMembersList({
@@ -253,7 +228,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper },
+			{ legacyRoot: true, wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -282,15 +257,13 @@ describe('useMembersList', () => {
 			count: 4,
 			total: 4,
 			members: [
-				{ _id: 'u1', username: 'michael', roles: ['owner'], status: 'offline' },
-				{ _id: 'u2', username: 'karl', roles: ['moderator'], status: 'online' },
-				{ _id: 'u3', username: 'bob', roles: ['moderator'], status: 'offline' },
-				{ _id: 'u4', username: 'alex', roles: [], status: 'offline' },
-				{ _id: 'u5', username: 'john', roles: [], status: 'online' },
+				{ _id: 'u1', username: 'michael', roles: ['owner'], status: UserStatus.OFFLINE },
+				{ _id: 'u2', username: 'karl', roles: ['moderator'], status: UserStatus.ONLINE },
+				{ _id: 'u3', username: 'bob', roles: ['moderator'], status: UserStatus.OFFLINE },
+				{ _id: 'u4', username: 'alex', roles: [], status: UserStatus.OFFLINE },
+				{ _id: 'u5', username: 'john', roles: [], status: UserStatus.ONLINE },
 			],
 		};
-
-		mockUseEndpoint.mockReturnValueOnce(async () => customPage);
 
 		let rolesChangeCallback: ((payload: any) => void) | undefined;
 		mockUseStream.mockReturnValue((eventName, cb) => {
@@ -311,7 +284,7 @@ describe('useMembersList', () => {
 				}),
 			{
 				legacyRoot: true,
-				wrapper,
+				wrapper: wrapper.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', (_params) => customPage as any).build(),
 			},
 		);
 
