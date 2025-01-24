@@ -4,6 +4,7 @@ import express from 'express';
 import type { TypedAction, TypedOptions } from './definition';
 
 export type ExtractRouterEndpoints<TRoute extends Router<any, any>> = TRoute extends Router<any, infer TOperations> ? TOperations : never;
+
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -74,7 +75,7 @@ export class Router<
 		method: Method,
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): Router<
 		TBasePath,
 		| TOperations
@@ -128,7 +129,7 @@ export class Router<
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): Router<
 		TBasePath,
 		| TOperations
@@ -143,7 +144,7 @@ export class Router<
 	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): Router<
 		TBasePath,
 		| TOperations
@@ -158,7 +159,7 @@ export class Router<
 	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): Router<
 		TBasePath,
 		| TOperations
@@ -173,7 +174,7 @@ export class Router<
 	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): Router<
 		TBasePath,
 		| TOperations

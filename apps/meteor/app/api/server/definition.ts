@@ -229,10 +229,11 @@ export type TypedOptions = {
 	tags?: string[];
 } & Options;
 
-type TypedThis<TOptions extends TypedOptions> = {
+export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
+	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
-	urlParams: Record<string, string>;
+	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**
@@ -269,4 +270,6 @@ type Results<TResponse extends TypedOptions['response']> = {
 	headers?: Record<string, string>;
 };
 
-export type TypedAction<TOptions extends TypedOptions> = (this: TypedThis<TOptions>) => PromiseOrValue<Results<TOptions['response']>>;
+export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
+	this: TypedThis<TOptions, TPath>,
+) => PromiseOrValue<Results<TOptions['response']>>;

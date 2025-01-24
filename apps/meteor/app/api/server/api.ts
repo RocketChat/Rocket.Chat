@@ -12,7 +12,6 @@ import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
-import { Restivus } from 'meteor/rocketchat:restivus';
 import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
@@ -28,6 +27,7 @@ import type {
 	Options,
 	PartialThis,
 	SuccessResult,
+	TypedThis,
 	UnauthorizedResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
@@ -920,11 +920,15 @@ export class APIClass<TBasePath extends string = ''> {
 			},
 		);
 
-		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
+		const logout = async function <
+			This extends TypedThis<{
+				authRequired: true;
+				response: any;
+			}>,
+		>(this: This): Promise<{ status: string; data: { message: string } }> {
 			// Remove the given auth token from the user's account
-			const authToken = this.request.headers['x-auth-token'];
-			const hashedToken = Accounts._hashLoginToken(authToken);
-			const tokenLocation = self._config?.auth?.token;
+			const hashedToken = this.token;
+			const tokenLocation = 'services.resume.loginTokens.hashedToken';
 			const index = tokenLocation?.lastIndexOf('.') || 0;
 			const tokenPath = tokenLocation?.substring(0, index) || '';
 			const tokenFieldName = tokenLocation?.substring(index + 1) || '';
@@ -932,9 +936,8 @@ export class APIClass<TBasePath extends string = ''> {
 			tokenToRemove[tokenFieldName] = hashedToken;
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
-
 			await Users.updateOne(
-				{ _id: this.user._id },
+				{ _id: this.userId },
 				{
 					$pull: tokenRemovalQuery,
 				},
@@ -943,14 +946,14 @@ export class APIClass<TBasePath extends string = ''> {
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.user._id, { projection: { [tokenPath]: 1 } });
+				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {
 					return;
 				}
 
 				const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
 
-				return { clientAction: 'updated', id: this.user._id, diff };
+				return { clientAction: 'updated', id: this.userId, diff };
 			});
 
 			const response = {
@@ -960,13 +963,6 @@ export class APIClass<TBasePath extends string = ''> {
 				},
 			};
 
-			// Call the logout hook with the authenticated user attached
-			const extraData = self._config.onLoggedOut?.call(this);
-			if (extraData != null) {
-				_.extend(response.data, {
-					extra: extraData,
-				});
-			}
 			return response;
 		};
 
@@ -984,10 +980,10 @@ export class APIClass<TBasePath extends string = ''> {
 				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
-					return logout.call(this as unknown as Restivus) as any;
+					return logout.call(this as any) as any;
 				},
 				async post() {
-					return logout.call(this as unknown as Restivus) as any;
+					return logout.call(this as any) as any;
 				},
 			},
 		);
