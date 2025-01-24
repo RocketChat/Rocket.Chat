@@ -1075,6 +1075,17 @@ Meteor.startup(() => {
 		})
 		.use(
 			API.api
+				.use(
+					express.json({
+						limit: '50mb',
+					}),
+				)
+				.use(
+					express.urlencoded({
+						extended: true,
+						limit: '50mb',
+					}),
+				)
 				.use((req, res, next) => {
 					if (!settings.get('API_Enable_CORS')) {
 						return next();
