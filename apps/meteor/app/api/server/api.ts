@@ -4,7 +4,7 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { tracerSpan } from '@rocket.chat/tracing';
-import type express from 'express';
+import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -1075,17 +1075,6 @@ Meteor.startup(() => {
 		})
 		.use(
 			API.api
-				.use(
-					express.json({
-						limit: '50mb',
-					}),
-				)
-				.use(
-					express.urlencoded({
-						extended: true,
-						limit: '50mb',
-					}),
-				)
 				.use((req, res, next) => {
 					if (!settings.get('API_Enable_CORS')) {
 						return next();
@@ -1130,3 +1119,17 @@ Meteor.startup(() => {
 
 	(WebApp.connectHandlers as ReturnType<typeof express>).use(rootRouter);
 });
+
+(WebApp.connectHandlers as ReturnType<typeof express>)
+	.use(
+		express.json({
+			limit: '50mb',
+		}),
+	)
+	.use(
+		express.urlencoded({
+			extended: true,
+			limit: '50mb',
+		}),
+	)
+	.use(express.query({}));
