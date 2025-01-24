@@ -98,10 +98,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getNextLeastBusyAgent(
 		department: any,
 		ignoreAgentId: any,
+		isEnabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[]; count: number }>;
 	getLastAvailableAgentRouted(
 		department: any,
 		ignoreAgentId: any,
+		isEnabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[] }>;
 
 	setLastRoutingTime(userId: any): Promise<number>;
@@ -274,7 +276,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
 	countAgents(): Promise<number>;
-	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
+	getNextAgent(
+		ignoreAgentId?: string,
+		extraQuery?: Filter<IUser>,
+		enabledWhenAgentIdle?: boolean,
+	): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;

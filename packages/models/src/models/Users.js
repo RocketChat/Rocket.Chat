@@ -483,16 +483,10 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department, ignoreAgentId) {
+	async getNextLeastBusyAgent(department, ignoreAgentId, isEnabledWhenAgentIdle) {
+		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
 		const aggregate = [
-			{
-				$match: {
-					status: { $exists: true, $ne: 'offline' },
-					statusLivechat: 'available',
-					roles: 'livechat-agent',
-					...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
-				},
-			},
+			{ $match: match },
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
@@ -549,16 +543,10 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	async getLastAvailableAgentRouted(department, ignoreAgentId) {
+	async getLastAvailableAgentRouted(department, ignoreAgentId, isEnabledWhenAgentIdle) {
+		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
 		const aggregate = [
-			{
-				$match: {
-					status: { $exists: true, $ne: 'offline' },
-					statusLivechat: 'available',
-					roles: 'livechat-agent',
-					...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
-				},
-			},
+			{ $match: match },
 			{
 				$lookup: {
 					from: 'rocketchat_livechat_department_agents',
@@ -1748,7 +1736,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId, extraQuery) {
+	async getNextAgent(ignoreAgentId, extraQuery, enabledWhenAgentIdle) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
 		const unavailableAgents = (await this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
@@ -1758,7 +1746,7 @@ export class UsersRaw extends BaseRaw {
 			username: { $nin: unavailableAgents },
 		};
 
-		const query = queryStatusAgentOnline(extraFilters);
+		const query = queryStatusAgentOnline(extraFilters, enabledWhenAgentIdle);
 
 		const sort = {
 			livechatCount: 1,
