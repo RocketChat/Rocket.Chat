@@ -994,91 +994,6 @@ export class APIClass<TBasePath extends string = ''> {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args: any[]): {
-	token: string;
-	user: (this: Restivus) => Promise<{ userId: string; token: string }>;
-} {
-	const invalidResults = [undefined, null, false];
-	return {
-		token: 'services.resume.loginTokens.hashedToken',
-		async user() {
-			if (this.bodyParams?.payload) {
-				this.bodyParams = JSON.parse(this.bodyParams.payload);
-			}
-
-			for await (const method of API.v1?.authMethods || []) {
-				if (typeof method === 'function') {
-					const result = await method.apply(this, args);
-					if (!invalidResults.includes(result)) {
-						return result;
-					}
-				}
-			}
-
-			let token;
-			if (this.request.headers['x-auth-token']) {
-				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
-			}
-
-			this.token = token || '';
-
-			return {
-				userId: this.request.headers['x-user-id'],
-				token,
-			};
-		},
-	};
-};
-
-const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Restivus): Promise<void> {
-	// check if a pre-flight request
-	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
-		this.done();
-		return;
-	}
-
-	if (!settings.get('API_Enable_CORS')) {
-		this.response.writeHead(405);
-		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-		this.done();
-		return;
-	}
-
-	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
-
-	const defaultHeaders = {
-		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-		'Access-Control-Allow-Headers':
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
-	};
-
-	if (CORSOriginSetting === '*') {
-		this.response.writeHead(200, {
-			'Access-Control-Allow-Origin': '*',
-			...defaultHeaders,
-		});
-		this.done();
-		return;
-	}
-
-	const origins = CORSOriginSetting.trim()
-		.split(',')
-		.map((origin) => String(origin).trim().toLocaleLowerCase());
-
-	// if invalid origin reply without required CORS headers
-	if (!origins.includes(this.request.headers.origin)) {
-		this.done();
-		return;
-	}
-
-	this.response.writeHead(200, {
-		'Access-Control-Allow-Origin': this.request.headers.origin,
-		'Vary': 'Origin',
-		...defaultHeaders,
-	});
-	this.done();
-};
-
 const createApi = function _createApi(options: { version?: string; apiPath?: string } = {}): APIClass {
 	return new APIClass(
 		Object.assign(
@@ -1086,7 +1001,6 @@ const createApi = function _createApi(options: { version?: string; apiPath?: str
 				apiPath: 'api/',
 				useDefaultAuth: true,
 				prettyJson: process.env.NODE_ENV === 'development',
-				defaultOptionsEndpoint,
 			},
 			options,
 		) as IAPIProperties,
