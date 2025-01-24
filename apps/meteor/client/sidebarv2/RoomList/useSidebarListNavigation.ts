@@ -1,5 +1,5 @@
-import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
+import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
 const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-collapse-group__bar');
@@ -7,7 +7,7 @@ const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.co
 
 /**
  * Custom hook to provide the sidebar navigation by keyboard.
- * @param ref - A ref to the message list DOM element.
+ * @returns ref - A ref to the message list DOM element.
  */
 export const useSidebarListNavigation = () => {
 	const sidebarListFocusManager = useFocusManager();
