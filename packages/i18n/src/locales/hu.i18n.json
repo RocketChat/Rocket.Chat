@@ -4,8 +4,6 @@
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} üres szoba automatikusan eltávolításra kerül:<br/> {{rooms}}.",
   "__count__message_pruned_one": "{{count}} üzenet törölve",
   "__count__message_pruned_other": "{{count}} üzenet törölve",
-  "__usersCount__member_joined_one": "+ {{count}} tag csatlakozott",
-  "__usersCount__member_joined_other": "+ {{count}} tag csatlakozott",
   "__usersCount__people_will_be_invited": "{{usersCount}} személy lesz meghívva",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} többé már nem {{role}} {{user_by}} által",
   "__username__was_set__role__by__user_by_": "{{username}} most már {{role}} {{user_by}} által",
