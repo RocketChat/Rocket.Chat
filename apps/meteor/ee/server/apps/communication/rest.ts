@@ -55,7 +55,6 @@ export class AppsRestApi {
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
-			auth: API.getUserAuth(),
 		});
 		await this.addManagementRoutes();
 		(WebApp.connectHandlers as ReturnType<typeof express>).use(new Router('/').use(this.api.router).router);

@@ -54,8 +54,6 @@ const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
-	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
-	defaultOptionsEndpoint?: () => Promise<void>;
 	version?: string;
 	enableCors?: boolean;
 	apiPath?: string;
@@ -1089,7 +1087,6 @@ const createApi = function _createApi(options: { version?: string; apiPath?: str
 				useDefaultAuth: true,
 				prettyJson: process.env.NODE_ENV === 'development',
 				defaultOptionsEndpoint,
-				auth: getUserAuth(),
 			},
 			options,
 		) as IAPIProperties,
@@ -1100,7 +1097,6 @@ export const API: {
 	api: Router<'/api'>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
 	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
@@ -1125,7 +1121,6 @@ export const API: {
 		};
 	};
 } = {
-	getUserAuth,
 	ApiClass: APIClass,
 	api: new Router('/api'),
 	v1: createApi({
