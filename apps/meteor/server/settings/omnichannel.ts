@@ -230,13 +230,6 @@ export const createOmniSettings = () =>
 
 		await this.add('Livechat_guest_count', 1, { type: 'int', group: 'Omnichannel', hidden: true });
 
-		await this.add('Livechat_Room_Count', 1, {
-			type: 'int',
-			group: 'Omnichannel',
-			i18nLabel: 'Livechat_room_count',
-			hidden: true,
-		});
-
 		await this.add('Livechat_enabled_when_agent_idle', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
