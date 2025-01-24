@@ -2,7 +2,7 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Fragment } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -76,6 +76,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
+	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
 
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
@@ -119,7 +120,8 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validateEmailFormat = async (emailValue: string) => {
 		const currentEmails = emails.map(({ address }) => address);
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
+		const emailAlreadyExists = await checkExistenceEndpoint({ email: emailValue });
+		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1 || emailAlreadyExists.exists;
 
 		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
