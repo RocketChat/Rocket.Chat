@@ -43,7 +43,7 @@ async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
 		const workspaces = [...new Set((event.users || []).map(({ workspaceUrl }) => workspaceUrl).filter((w) => w) as string[])];
 		const eventType = getCallEventType(event);
 
-		if (['RINGING', 'ANSWER', 'CREATE', 'BRIDGE'].includes(eventType)) {
+		if (['RINGING', 'ANSWER', 'CREATE', 'BRIDGE', 'RING_WAIT'].includes(eventType)) {
 			isValidCall = true;
 		}
 

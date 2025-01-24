@@ -13,7 +13,6 @@ export function mergeUsers(
 	const uid = target.uid || source.uid;
 	const workspaceUrl = target.workspaceUrl || source.workspaceUrl;
 	const reached = target.reached || source.reached;
-	const channelUniqueId = target.channelUniqueId || source.channelUniqueId;
 	const presumedWorkspaceUrl = target.presumedWorkspaceUrl || source.presumedWorkspaceUrl;
 	const isVoicemail = target.isVoicemail || source.isVoicemail;
 
@@ -22,7 +21,6 @@ export function mergeUsers(
 		target.uid = uid;
 		target.workspaceUrl = workspaceUrl;
 		target.reached = reached;
-		target.channelUniqueId = channelUniqueId;
 		target.presumedWorkspaceUrl = presumedWorkspaceUrl;
 		target.isVoicemail = isVoicemail;
 
@@ -40,7 +38,6 @@ export function mergeUsers(
 		uid,
 		workspaceUrl,
 		reached,
-		channelUniqueId,
 		isVoicemail,
 
 		...(presumedWorkspaceUrl && presumedWorkspaceUrl !== workspaceUrl && { presumedWorkspaceUrl }),

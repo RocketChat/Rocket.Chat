@@ -65,7 +65,6 @@ export interface IFreeSwitchEventCallUser {
 	presumedWorkspaceUrl?: string;
 	identifiers: IFreeSwitchEventUser[];
 	reached?: boolean;
-	channelUniqueId?: string;
 	isVoicemail?: boolean;
 }
 
