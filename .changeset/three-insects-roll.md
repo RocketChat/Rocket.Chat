@@ -11,6 +11,6 @@ the type definition doesnt consider null/empty results
 	};
 ```
 
-the code returns `ILivechatTag | { body: null }` witch is weird/wrong.
+the code returns `ILivechatTag | { body: null }` which is weird/wrong.
 
 now if we cannot find the tag returns a 404 result
