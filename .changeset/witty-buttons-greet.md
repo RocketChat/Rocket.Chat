@@ -1,4 +1,4 @@
 ---
 "@rocket.chat/meteor": patch
 ---
-Fixes issue with some charts on engagement dashboard not using utc and missing data visualizers
+Fixes issue with some charts on engagement dashboard not showing local time and missing data visualizers
