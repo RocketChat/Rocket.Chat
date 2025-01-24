@@ -698,6 +698,7 @@ test.describe('OC - Livechat API', () => {
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
 			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -723,8 +724,9 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async () => {
+		test.afterAll(async ({ api }) => {
 			await agent.delete();
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
 		});
 
 		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {
@@ -856,6 +858,7 @@ test.describe('OC - Livechat API', () => {
 			const newVisitor = createFakeVisitor();
 
 			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await poAuxContext.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
 
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);
 
