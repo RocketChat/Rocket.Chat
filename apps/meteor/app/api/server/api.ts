@@ -140,8 +140,12 @@ const generateConnection = (
 
 let prometheusAPIUserAgent = false;
 
-export class APIClass<TBasePath extends string = ''> extends Restivus {
+export class APIClass<TBasePath extends string = ''> {
 	protected apiPath?: string;
+
+	protected readonly version?: string;
+
+	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
 	public authMethods: ((...args: any[]) => any)[];
 
@@ -168,8 +172,9 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	readonly router: Router<any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
-		super(properties);
-		this.apiPath = properties.apiPath;
+		this.version = properties.version;
+
+		this.apiPath = [properties.apiPath, properties.version].filter(Boolean).join('/').replaceAll('//', '/');
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -200,7 +205,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			inviteToken: 0,
 		};
 
-		this.router = new Router(`/${this._config.apiPath!}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();
@@ -230,11 +235,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	protected shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
-		const { version } = this._config;
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
-			Boolean(version) &&
+			Boolean(this.version) &&
 			!process.env.TEST_MODE &&
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
@@ -398,14 +402,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	public reloadRoutesToRefreshRateLimiter(): void {
-		const { version } = this._config;
 		this._routes.forEach((route) => {
 			if (this.shouldAddRateLimitToRoute(route.options)) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
 					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
 					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
-					apiVersion: version,
+					apiVersion: this.version,
 				});
 			}
 		});
@@ -536,13 +539,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		if (!Array.isArray(subpaths)) {
 			subpaths = [subpaths];
 		}
-		const { version } = this._config;
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: subpaths,
 				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
 				endpoints: operations as unknown as string[],
-				apiVersion: version,
+				apiVersion: this.version,
 			});
 		}
 		subpaths.forEach((route) => {
@@ -570,7 +572,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 					async function _internalRouteActionHandler() {
 						const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 							method,
-							version,
+							version: api.version,
 							...(prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] }),
 							entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 						});
@@ -757,6 +759,11 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 					{} as any,
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
+				this._routes.push({
+					path: route,
+					options: _options,
+					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, string>,
+				});
 			});
 		});
 	}
@@ -882,15 +889,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 						this.userId = this.user._id;
 
-						const extraData = self._config.onLoggedIn?.call(this);
-
 						return self.success({
 							status: 'success',
 							data: {
 								userId: this.userId,
 								authToken: auth.token,
 								me: await getUserInfo(this.user || ({} as IUser)),
-								...(extraData && { extra: extraData }),
 							},
 						});
 					} catch (error) {
