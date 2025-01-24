@@ -1,7 +1,7 @@
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
-import get from 'lodash.get';
+import { get } from 'lodash';
 import mem from 'mem';
 
 const placeholderFields = {

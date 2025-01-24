@@ -1,7 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
-import escape from 'lodash.escape';
+import { escape } from 'lodash';
 
 import { trim } from '../../../../../lib/utils/stringUtils';
 import { getRoleIds } from '../../../../authorization/server/functions/getRoles';

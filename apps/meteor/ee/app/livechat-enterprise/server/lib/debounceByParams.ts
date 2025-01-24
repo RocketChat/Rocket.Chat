@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import mem from 'mem';
 
 interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
