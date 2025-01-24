@@ -1,6 +1,7 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
@@ -314,7 +315,7 @@ export class AppsRestApi {
 				},
 				async post() {
 					let buff;
-					let marketplaceInfo;
+					let marketplaceInfo: IMarketplaceInfo[] | undefined;
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
@@ -368,7 +369,7 @@ export class AppsRestApi {
 								throw new Error('Invalid response from the Marketplace');
 							}
 
-							marketplaceInfo = parsedMarketplaceResponse[0];
+							marketplaceInfo = parsedMarketplaceResponse;
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: any) {
 							return API.v1.failure(err.message);
