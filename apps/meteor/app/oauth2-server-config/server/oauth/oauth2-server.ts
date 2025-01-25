@@ -1,7 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { Request, Response } from 'express';
+import type express from 'express';
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
 import { API } from '../../../api/server';
@@ -70,3 +72,5 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 API.v1.addAuthMethod(async function () {
 	return oAuth2ServerAuth(this.request);
 });
+
+(WebApp.connectHandlers as ReturnType<typeof express>).use(oauth2server.app);
