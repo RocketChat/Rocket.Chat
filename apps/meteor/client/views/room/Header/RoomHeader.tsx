@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
-import MultiDeleteButton from './MultiDeleteButton';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
@@ -67,7 +66,6 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderPro
 			{slots?.posContent}
 			<Suspense fallback={null}>
 				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
-					<MultiDeleteButton roomId={room._id} />
 					{slots?.toolbox?.pre}
 					{slots?.toolbox?.content || roomToolbox || <RoomToolbox />}
 					{slots?.toolbox?.pos}
