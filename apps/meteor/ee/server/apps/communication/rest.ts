@@ -52,6 +52,7 @@ export class AppsRestApi {
 	async loadAPI() {
 		this.api = new API.ApiClass({
 			version: 'apps',
+			apiPath: '/api',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
