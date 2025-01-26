@@ -6,9 +6,7 @@ callbacks.add(
 	async (options) => {
 		const { room } = options;
 
-		const queueInfo = await getLivechatQueueInfo(room);
-		const customFields = await getLivechatCustomFields();
-
+		const [queueInfo, customFields] = await Promise.all([getLivechatQueueInfo(room), getLivechatCustomFields()]);
 		return {
 			...(queueInfo && { queueInfo }),
 			...(customFields && { customFields }),
