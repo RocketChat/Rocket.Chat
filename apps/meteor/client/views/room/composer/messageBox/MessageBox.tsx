@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import { memo, useRef, useReducer, useCallback } from 'react';
+import { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -44,6 +44,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import MessageBoxPreview from './MessageBoxPreview';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -170,6 +171,10 @@ const MessageBox = ({
 			previewUrls,
 			isSlashCommandAllowed,
 		});
+	});
+	const [quote, setQuote] = useState<boolean>(false);
+	const handlePreviewMessage = useEffectEvent(() => {
+		setQuote(!quote);
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
@@ -360,10 +365,12 @@ const MessageBox = ({
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+	const text = chat.composer?.text ?? '';
 
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
+			{quote && <MessageBoxPreview text={text} />}
 			{shouldPopupPreview && popup && (
 				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
 			)}
@@ -413,6 +420,12 @@ const MessageBox = ({
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
+						/>
+						<MessageComposerAction
+							icon='eye'
+							disabled={isRecording || !canSend || !text.trim()}
+							onClick={handlePreviewMessage}
+							title={t('Preview')}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
