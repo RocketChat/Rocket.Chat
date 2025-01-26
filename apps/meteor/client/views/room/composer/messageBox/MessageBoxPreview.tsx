@@ -1,13 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-
 import type { ReactElement } from 'react';
 import { memo } from 'react';
-import MarkdownText from '/client/components/MarkdownText';
 
-interface MessageBoxPreviewProps {
+import MarkdownText from '../../../../components/MarkdownText';
+
+type MessageBoxPreviewProps = {
 	text: string;
-}
+};
 
 const MessageBoxPreview = ({ text }: MessageBoxPreviewProps): ReactElement | null => {
 	const previewStyles = css`
