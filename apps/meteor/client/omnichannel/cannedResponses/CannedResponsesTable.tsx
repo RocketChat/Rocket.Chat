@@ -64,7 +64,7 @@ const CannedResponsesTable = () => {
 
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/canned-responses/new'));
 
-	const onRowClick = useEffectEvent((id, scope) => (): void => {
+	const onRowClick = useEffectEvent((id: string, scope: string) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
 			return dispatchToastMessage({
 				type: 'error',

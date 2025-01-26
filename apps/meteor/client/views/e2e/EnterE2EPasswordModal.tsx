@@ -1,7 +1,7 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import DOMPurify from 'dompurify';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent, FormEvent, ReactElement } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ const EnterE2EPasswordModal = ({
 		[setPassword],
 	);
 
-	const handleConfirm = useEffectEvent((e): void => {
+	const handleConfirm = useEffectEvent((e: FormEvent): void => {
 		e.preventDefault();
 		if (password === '') {
 			setPasswordError(t('Invalid_pass'));

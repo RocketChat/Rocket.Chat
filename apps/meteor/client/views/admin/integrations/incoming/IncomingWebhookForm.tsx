@@ -24,6 +24,7 @@ import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
@@ -36,7 +37,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		control,
 		watch,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<EditIncomingWebhookFormData>();
 	const { alias, emoji, avatar } = watch();
 
 	const url = absoluteUrl(`hooks/${webhookData?._id}/${webhookData?.token}`);

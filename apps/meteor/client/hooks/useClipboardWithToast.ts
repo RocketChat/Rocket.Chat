@@ -9,6 +9,6 @@ export default function useClipboardWithToast(text: string): UseClipboardReturn 
 
 	return useClipboard(text, {
 		onCopySuccess: useEffectEvent(() => dispatchToastMessage({ type: 'success', message: t('Copied') })),
-		onCopyError: useEffectEvent((e) => dispatchToastMessage({ type: 'error', message: e })),
+		onCopyError: useEffectEvent((e?: Error) => dispatchToastMessage({ type: 'error', message: e })),
 	});
 }

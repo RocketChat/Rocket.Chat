@@ -56,7 +56,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	}, [reload, refetch]);
 
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/sla-policies/new'));
-	const onRowClick = useEffectEvent((id) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>

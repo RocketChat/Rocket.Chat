@@ -39,7 +39,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const debouncedFilter = useDebouncedValue('', 500);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const showFilePreviews = useEffectEvent(async (accountId, nodes) => {
+	const showFilePreviews = useEffectEvent(async (accountId: string, nodes: (IWebdavNode & { preview?: string })[] | undefined) => {
 		if (!Array.isArray(nodes) || !nodes.length) {
 			return;
 		}

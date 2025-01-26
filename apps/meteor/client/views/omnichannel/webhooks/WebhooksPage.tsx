@@ -35,10 +35,10 @@ type SendOnOptions =
 	| 'Livechat_webhook_on_visitor_message'
 	| 'Livechat_webhook_on_agent_message';
 
-type WebhookFormValues = {
-	Livechat_webhookUrl: string | undefined;
-	Livechat_secret_token: string | undefined;
-	Livechat_http_timeout: string | undefined;
+type WebhooksPageFormData = {
+	Livechat_webhookUrl: string;
+	Livechat_secret_token: string;
+	Livechat_http_timeout: string;
 	sendOn: SendOnOptions[];
 };
 
@@ -64,7 +64,7 @@ const getInitialValues = ({
 	Livechat_webhook_on_visitor_message,
 	Livechat_webhook_on_agent_message,
 	Livechat_http_timeout,
-}: WebhooksPageProps['settings']): WebhookFormValues => {
+}: WebhooksPageProps['settings']): WebhooksPageFormData => {
 	const mappedSendOptions = reduceSendOptions({
 		Livechat_webhook_on_start,
 		Livechat_webhook_on_close,
@@ -81,7 +81,7 @@ const getInitialValues = ({
 		Livechat_secret_token,
 		Livechat_http_timeout,
 		sendOn: mappedSendOptions,
-	} as WebhookFormValues;
+	} as WebhooksPageFormData;
 };
 
 const WebhooksPage = ({ settings }: WebhooksPageProps) => {
@@ -117,13 +117,13 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 		[t],
 	);
 
-	const handleSave = useEffectEvent(async (values) => {
+	const handleSave = useEffectEvent(async (values: WebhooksPageFormData) => {
 		const { sendOn, Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout } = values;
 		try {
 			await save({
 				LivechatWebhookUrl: Livechat_webhookUrl,
 				LivechatSecretToken: Livechat_secret_token,
-				LivechatHttpTimeout: Livechat_http_timeout,
+				LivechatHttpTimeout: parseInt(Livechat_http_timeout, 10),
 				LivechatWebhookOnStart: sendOn.includes('Livechat_webhook_on_start'),
 				LivechatWebhookOnClose: sendOn.includes('Livechat_webhook_on_close'),
 				LivechatWebhookOnChatTaken: sendOn.includes('Livechat_webhook_on_chat_taken'),

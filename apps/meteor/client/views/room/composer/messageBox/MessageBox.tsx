@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -148,7 +148,7 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useEffectEvent((e) => {
+	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -293,7 +293,7 @@ const MessageBox = ({
 		mutationFn: async () => onJoin?.(),
 	});
 
-	const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = useEffectEvent((event) => {
+	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLTextAreaElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {
