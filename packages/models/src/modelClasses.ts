@@ -14,6 +14,8 @@ export * from './models/EmailInbox';
 export * from './models/EmailMessageHistory';
 export * from './models/EmojiCustom';
 export * from './models/ExportOperations';
+export * from './models/FreeSwitchCall';
+export * from './models/FreeSwitchEvent';
 export * from './models/FederationKeys';
 export * from './models/FederationRoomEvents';
 export * from './models/FederationServers';

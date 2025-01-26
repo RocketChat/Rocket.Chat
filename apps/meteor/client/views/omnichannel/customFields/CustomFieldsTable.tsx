@@ -28,7 +28,7 @@ const CustomFieldsTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
 
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/customfields/new'));
-	const onRowClick = useEffectEvent((id) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
 
 	const handleDelete = useRemoveCustomField();
 

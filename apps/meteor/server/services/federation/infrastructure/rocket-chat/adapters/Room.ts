@@ -17,6 +17,7 @@ import {
 import { settings } from '../../../../../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../../../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';
+import { syncRoomRolePriorityForUserAndRoom } from '../../../../../lib/roles/syncRoomRolePriority';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
@@ -340,6 +341,8 @@ export class RocketChatRoomAdapter {
 				);
 			}
 		}
+
+		await syncRoomRolePriorityForUserAndRoom(uid, rid);
 
 		if (settings.get('UI_DisplayRoles')) {
 			this.notifyUIAboutRoomRolesChange(targetFederatedUser, federatedRoom, toAdd, toRemove);

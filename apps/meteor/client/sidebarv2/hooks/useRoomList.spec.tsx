@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomList } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
-import { VideoConfContext } from '../../contexts/VideoConfContext';
 
 const user = createFakeUser({
 	active: true,
