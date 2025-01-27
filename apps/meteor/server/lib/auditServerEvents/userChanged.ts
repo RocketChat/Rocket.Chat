@@ -124,7 +124,7 @@ const buildUserRecord = (
 
 	return record;
 };
-class UserChangedLogStore {
+export class UserChangedLogStore {
 	private originalUser: IUser | undefined;
 
 	private currentUser: IUser | undefined;
