@@ -2,11 +2,12 @@ import { Button, Modal } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
+import { modalStore } from '../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -97,13 +98,20 @@ const GenericModal = ({
 		onClose?.();
 	});
 
-	useEffect(
-		() => () => {
+	const handleDismiss = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onDismiss?.();
+	});
+
+	useEffect(() => {
+		const thisModal = modalStore.current;
+
+		return () => {
+			if (thisModal === modalStore.current) return;
 			if (!dismissedRef.current) return;
-			onDismiss?.();
-		},
-		[onDismiss],
-	);
+			handleDismiss();
+		};
+	}, [handleDismiss]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>

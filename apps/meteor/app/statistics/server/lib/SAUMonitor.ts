@@ -1,7 +1,7 @@
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
-import { Sessions, Users } from '@rocket.chat/models';
+import { Sessions, Users, aggregates } from '@rocket.chat/models';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
@@ -9,7 +9,6 @@ import UAParser from 'ua-parser-js';
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { aggregates } from '../../../../server/models/raw/Sessions';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
 
 type DateObj = { day: number; month: number; year: number };
@@ -128,9 +127,26 @@ export class SAUMonitorClass {
 			if (!this.isRunning()) {
 				return;
 			}
-			const { id: sessionId } = connection;
 
-			await Sessions.logoutBySessionIdAndUserId({ sessionId, userId });
+			if (!userId) {
+				logger.warn(`Received 'accounts.logout' event without 'userId'`);
+				return;
+			}
+
+			const { id: sessionId } = connection;
+			if (!sessionId) {
+				logger.warn(`Received 'accounts.logout' event without 'sessionId'`);
+				return;
+			}
+
+			const session = await Sessions.getLoggedInByUserIdAndSessionId<Pick<ISession, 'loginToken'>>(userId, sessionId, {
+				projection: { loginToken: 1 },
+			});
+			if (!session?.loginToken) {
+				throw new Error('Session not found');
+			}
+
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: session.loginToken, userId });
 		});
 	}
 

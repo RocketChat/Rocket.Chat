@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.6.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,14 +17,14 @@
     "@lezer/highlight": "^1.2.1",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.60.0",
-    "@rocket.chat/fuselage-hooks": "^0.34.0",
+    "@rocket.chat/fuselage": "^0.60.1",
+    "@rocket.chat/fuselage-hooks": "^0.34.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/fuselage-toastbar": "^0.33.0",
     "@rocket.chat/fuselage-tokens": "^0.33.2",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
-    "@rocket.chat/icons": "~0.39.0",
-    "@rocket.chat/logo": "^0.31.31",
+    "@rocket.chat/icons": "^0.40.0",
+    "@rocket.chat/logo": "^0.31.32",
     "@rocket.chat/styled": "~0.31.25",
     "@rocket.chat/ui-avatar": "workspace:^",
     "@rocket.chat/ui-contexts": "workspace:~",
@@ -42,9 +42,9 @@
   },
   "devDependencies": {
     "@types/lodash": "~4.17.13",
-    "@types/react": "~17.0.80",
+    "@types/react": "~17.0.83",
     "@types/react-beautiful-dnd": "^13.1.8",
-    "@types/react-dom": "~17.0.25",
+    "@types/react-dom": "~17.0.26",
     "@typescript-eslint/eslint-plugin": "~5.60.1",
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "^4.3.3",
@@ -52,7 +52,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "typescript": "~5.7.2",
-    "vite": "^5.4.11"
+    "vite": "^5.4.14"
   },
   "volta": {
     "extends": "../../package.json"

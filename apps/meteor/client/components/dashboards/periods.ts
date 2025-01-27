@@ -23,6 +23,11 @@ const lastNDays =
 		return { start, end };
 	};
 
+const getLast6Months = () => {
+	const last6Months = moment().subtract(6, 'months');
+	return moment().diff(last6Months, 'days');
+};
+
 const periods = [
 	{
 		key: 'today',
@@ -32,7 +37,7 @@ const periods = [
 	{
 		key: 'this week',
 		label: label('This_week'),
-		range: lastNDays(7),
+		range: lastNDays(moment().day()),
 	},
 	{
 		key: 'last 7 days',
@@ -47,7 +52,7 @@ const periods = [
 	{
 		key: 'this month',
 		label: label('This_month'),
-		range: lastNDays(30),
+		range: lastNDays(moment().date()),
 	},
 	{
 		key: 'last 30 days',
@@ -62,12 +67,12 @@ const periods = [
 	{
 		key: 'last 6 months',
 		label: label('Last_6_months'),
-		range: lastNDays(180),
+		range: lastNDays(getLast6Months()),
 	},
 	{
-		key: 'last year',
-		label: label('Last_year'),
-		range: lastNDays(365),
+		key: 'this year',
+		label: label('This_year'),
+		range: lastNDays(moment().dayOfYear()),
 	},
 ] as const;
 

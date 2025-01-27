@@ -2,9 +2,9 @@ import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement, AllHTMLAttributes } from 'react';
-import React, { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
 
@@ -38,9 +38,10 @@ const UserAutoCompleteMultipleFederated = ({
 	const debouncedFilter = useDebouncedValue(filter, 500);
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-	const { data } = useQuery(
-		['users.autocomplete', debouncedFilter],
-		async () => {
+	const { data } = useQuery({
+		queryKey: ['users.autocomplete', debouncedFilter],
+
+		queryFn: async () => {
 			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
 			const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
@@ -52,8 +53,9 @@ const UserAutoCompleteMultipleFederated = ({
 
 			return options;
 		},
-		{ keepPreviousData: true },
-	);
+
+		placeholderData: keepPreviousData,
+	});
 
 	const options = useMemo(() => data || [], [data]);
 

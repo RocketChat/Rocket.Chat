@@ -23,8 +23,8 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: department });
 	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: servedBy });
 
-	const { data: departmentData } = useQuery(['getDepartmentDataForFilter', department], () => getDepartment({}));
-	const { data: agentData } = useQuery(['getAgentDataForFilter', servedBy], () => getAgent());
+	const { data: departmentData } = useQuery({ queryKey: ['getDepartmentDataForFilter', department], queryFn: () => getDepartment({}) });
+	const { data: agentData } = useQuery({ queryKey: ['getAgentDataForFilter', servedBy], queryFn: () => getAgent() });
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {

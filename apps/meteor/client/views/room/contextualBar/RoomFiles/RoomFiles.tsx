@@ -1,8 +1,8 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
-import type { FormEvent } from 'react';
-import React, { useMemo } from 'react';
+import type { ChangeEvent } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -24,7 +24,7 @@ type RoomFilesProps = {
 	filesItems: IUploadWithUser[];
 	loadMoreItems: (start: number, end: number) => void;
 	setType: (value: any) => void;
-	setText: (e: FormEvent<HTMLElement>) => void;
+	setText: (e: ChangeEvent<HTMLInputElement>) => void;
 	total: number;
 	onClickClose: () => void;
 	onClickDelete: (id: IUpload['_id']) => void;

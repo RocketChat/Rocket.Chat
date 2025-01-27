@@ -1,13 +1,14 @@
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 
 type CustomSoundRowProps = {
-	onClick: (soundId: string) => () => void;
+	onClick: (soundId: ICustomSound['_id']) => () => void;
 	sound: {
 		name: string;
 		_id: string;
@@ -20,7 +21,7 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps): ReactElement =
 	const customSound = useCustomSound();
 
 	const handleToggle = useCallback(
-		(sound) => {
+		(sound: ICustomSound['_id']) => {
 			setPlayAudio(!isPlay);
 			if (!isPlay) {
 				return customSound.play(sound);
