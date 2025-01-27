@@ -141,7 +141,7 @@ export const NoAvatars: StoryFn<typeof VideoConfMessage> = () => (
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
 			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageUserStack displayAvatars={false} users={fakeUsers} />
+			<VideoConfMessageUserStack users={fakeUsers} />
 			<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
 		</VideoConfMessageFooter>
 	</VideoConfMessage>
