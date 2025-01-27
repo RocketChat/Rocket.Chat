@@ -233,6 +233,7 @@ test.describe('OC - Livechat API', () => {
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
 			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -266,6 +267,7 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
 			await Promise.all([...departments.map((department) => department.delete())]);
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
 		});
 
 		// clearBusinessUnit
