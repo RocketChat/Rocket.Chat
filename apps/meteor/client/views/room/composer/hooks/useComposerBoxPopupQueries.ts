@@ -1,5 +1,6 @@
 import type { QueriesResults } from '@tanstack/react-query';
 import { keepPreviousData, useQueries } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 import { useEnablePopupPreview } from './useEnablePopupPreview';
 import { slashCommands } from '../../../../../app/utils/client/slashCommand';
@@ -7,6 +8,11 @@ import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
 export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+	const [counter, setCounter] = useState(0);
+
+	useEffect(() => {
+		setCounter(0);
+	}, [popup, filter]);
 
 	const enableQuery =
 		!popup ||
@@ -17,10 +23,16 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 
 	const fetchData = async (source: 'local' | 'server') => {
 		if (source === 'local' && popup?.getItemsFromLocal) {
-			return popup.getItemsFromLocal(filter);
+			const items = await popup.getItemsFromLocal(filter);
+
+			if (items.length < 5) {
+				setCounter(1);
+			}
+
+			return items;
 		}
 
-		if (source === 'server' && popup?.getItemsFromServer) {
+		if (counter > 0 && source === 'server' && popup?.getItemsFromServer) {
 			return popup.getItemsFromServer(filter);
 		}
 
