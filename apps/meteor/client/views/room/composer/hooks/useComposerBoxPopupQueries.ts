@@ -32,7 +32,7 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 			return items;
 		}
 
-		if (counter > 0 && source === 'server' && popup?.getItemsFromServer) {
+		if (source === 'server' && popup?.getItemsFromServer) {
 			return popup.getItemsFromServer(filter);
 		}
 
@@ -44,7 +44,7 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 			queries: (['local', 'server'] as const).map((source) => ({
 				queryKey: ['message-popup', source, filter, popup],
 				queryFn: () => fetchData(source),
-				enabled: enableQuery,
+				enabled: source === 'local' ? enableQuery : counter > 0,
 			})),
 		}) as QueriesResults<T[]>,
 		suspended: !enableQuery,
