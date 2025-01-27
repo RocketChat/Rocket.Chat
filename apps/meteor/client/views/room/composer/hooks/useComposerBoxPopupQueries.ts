@@ -7,12 +7,13 @@ import { slashCommands } from '../../../../../app/utils/client/slashCommand';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
 export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
-	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 	const [counter, setCounter] = useState(0);
 
 	useEffect(() => {
 		setCounter(0);
 	}, [popup, filter]);
+
+	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
 	const enableQuery =
 		!popup ||
@@ -21,33 +22,31 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 			slashCommands.commands[(filter as any)?.cmd].providesPreview) ||
 		shouldPopupPreview;
 
-	const fetchData = async (source: 'local' | 'server') => {
-		if (source === 'local' && popup?.getItemsFromLocal) {
-			const items = await popup.getItemsFromLocal(filter);
+	const queries = useQueries({
+		queries: [
+			{
+				placeholderData: keepPreviousData,
+				queryKey: ['message-popup', 'local', filter, popup],
+				queryFn: () => popup?.getItemsFromLocal && popup.getItemsFromLocal(filter),
+				enabled: enableQuery,
+			},
+			{
+				placeholderData: keepPreviousData,
+				queryKey: ['message-popup', 'server', filter, popup],
+				queryFn: () => popup?.getItemsFromServer && popup.getItemsFromServer(filter),
+				enabled: counter > 0,
+			},
+		],
+	}) as QueriesResults<T[]>;
 
-			if (items.length < 5) {
-				setCounter(1);
-			}
-
-			return items;
+	useEffect(() => {
+		if (Array.isArray(queries[0].data) && queries[0].data.length < 5) {
+			setCounter(1);
 		}
-
-		if (source === 'server' && popup?.getItemsFromServer) {
-			return popup.getItemsFromServer(filter);
-		}
-
-		return [];
-	};
+	}, [queries]);
 
 	return {
-		queries: useQueries({
-			queries: (['local', 'server'] as const).map((source) => ({
-				queryKey: ['message-popup', source, filter, popup],
-				queryFn: () => fetchData(source),
-				enabled: source === 'local' ? enableQuery : counter > 0,
-			})),
-		}) as QueriesResults<T[]>,
+		queries,
 		suspended: !enableQuery,
-		placeholderData: keepPreviousData,
 	};
 };
