@@ -2,7 +2,6 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
-import { settings } from '../../settings/client';
 
 const config = {
 	serverURL: '',
