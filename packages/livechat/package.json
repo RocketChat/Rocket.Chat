@@ -114,7 +114,8 @@
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"storybook-dark-mode": "^4.0.2",
-		"whatwg-fetch": "^3.6.20"
+		"whatwg-fetch": "^3.6.20",
+		"dompurify": "^3.2.3"
 	},
 	"browserslist": [
 		"last 2 versions",
