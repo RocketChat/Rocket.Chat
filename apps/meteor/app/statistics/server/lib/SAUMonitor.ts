@@ -143,7 +143,8 @@ export class SAUMonitorClass {
 				projection: { loginToken: 1 },
 			});
 			if (!session?.loginToken) {
-				throw new Error('Session not found');
+				logger.error('Session not found during logout', { userId, sessionId });
+				return;
 			}
 
 			await Sessions.logoutBySessionIdAndUserId({ loginToken: session.loginToken, userId });
