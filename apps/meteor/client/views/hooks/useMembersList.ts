@@ -20,6 +20,8 @@ const endpointsByRoomType = {
 
 export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
 
+type MembersListPage = { members: RoomMember[]; count: number; total: number; offset: number };
+
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 	return members.sort((a, b) => {
 		const aRoles = a.roles ?? [];
@@ -61,12 +63,12 @@ const updateMemberInCache = (
 ) => {
 	queryClient.setQueryData(
 		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
-		(oldData: InfiniteData<{ members: RoomMember[] }>) => {
+		(oldData: InfiniteData<MembersListPage>) => {
 			if (!oldData) {
 				return oldData;
 			}
 
-			const newPages = oldData.pages.map((page) => {
+			const allMembers = oldData.pages.flatMap((page) => {
 				const members = page.members.map((member) => {
 					if (member._id === memberId) {
 						member.roles = member.roles ?? [];
@@ -78,10 +80,19 @@ const updateMemberInCache = (
 					}
 					return member;
 				});
-				return {
+				return members;
+			});
+
+			const sortedMembers = getSortedMembers(allMembers, useRealName);
+
+			const newPages = oldData.pages.map((page) => {
+				const { count, offset } = page;
+				const newPage = {
 					...page,
-					members: getSortedMembers(members, useRealName),
+					members: sortedMembers.slice(offset, offset + count),
 				};
+
+				return newPage;
 			});
 
 			return {
@@ -121,7 +132,7 @@ export const useMembersList = (options: MembersListOptions) => {
 			return getMembers({
 				roomId: options.rid,
 				offset: start,
-				count: 20,
+				count: options.limit,
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});

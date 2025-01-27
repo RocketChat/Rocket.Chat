@@ -53,8 +53,8 @@ describe('useMembersList', () => {
 
 		fakeMembersPage1 = {
 			offset: 0,
-			count: 20,
-			total: 40,
+			count: 2,
+			total: 4,
 			members: [
 				{ _id: 'user1', username: 'alex', roles: ['owner'], status: UserStatus.ONLINE },
 				{ _id: 'user2', username: 'john', roles: ['moderator'], status: UserStatus.OFFLINE },
@@ -62,9 +62,9 @@ describe('useMembersList', () => {
 		};
 
 		fakeMembersPage2 = {
-			offset: 20,
-			count: 20,
-			total: 40,
+			offset: 2,
+			count: 2,
+			total: 4,
 			members: [
 				{ _id: 'user3', username: 'chris', roles: [], status: UserStatus.ONLINE },
 				{ _id: 'user4', username: 'zoe', roles: [], status: UserStatus.OFFLINE },
@@ -80,7 +80,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'c',
 				}),
@@ -102,7 +102,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'p',
 				}),
@@ -125,7 +125,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'directRoomId',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'd',
 				}),
@@ -146,7 +146,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'c',
 				}),
@@ -157,14 +157,14 @@ describe('useMembersList', () => {
 						if (offset === 0) {
 							return fakeMembersPage1 as any;
 						}
-						if (offset === 20) {
+						if (offset === 2) {
 							return fakeMembersPage2 as any;
 						}
 						return {
 							members: [],
 							offset,
-							count: 20,
-							total: 40,
+							count: 2,
+							total: 4,
 						};
 					})
 					.build(),
@@ -194,7 +194,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'c',
 				}),
@@ -224,7 +224,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 2,
 					debouncedText: '',
 					roomType: 'c',
 				}),
@@ -254,8 +254,8 @@ describe('useMembersList', () => {
 	it('sorts members list cache by "roles > status > username/name" logic on roles-change', async () => {
 		const customPage = {
 			offset: 0,
-			count: 4,
-			total: 4,
+			count: 5,
+			total: 5,
 			members: [
 				{ _id: 'u1', username: 'michael', roles: ['owner'], status: UserStatus.OFFLINE },
 				{ _id: 'u2', username: 'karl', roles: ['moderator'], status: UserStatus.ONLINE },
@@ -278,7 +278,7 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 20,
+					limit: 5,
 					debouncedText: '',
 					roomType: 'c',
 				}),
@@ -309,5 +309,95 @@ describe('useMembersList', () => {
 			memberIds = result.current.data?.pages[0].members.map((m) => m._id);
 			expect(memberIds).toEqual(['u1', 'u2', 'u4', 'u3', 'u5']);
 		});
+	});
+
+	it('re-sorts members globally across multiple pages on roles-change and verifies exact array match', async () => {
+		const firstPage = {
+			offset: 0,
+			count: 2,
+			total: 4,
+			members: [
+				{ _id: 'userA', username: 'adam', roles: ['owner'], status: UserStatus.OFFLINE },
+				{ _id: 'userB', username: 'bea', roles: ['moderator'], status: UserStatus.OFFLINE },
+			],
+		};
+
+		const secondPage = {
+			offset: 2,
+			count: 2,
+			total: 4,
+			members: [
+				{ _id: 'userC', username: 'charlie', roles: [], status: UserStatus.ONLINE },
+				{ _id: 'userD', username: 'david', roles: [], status: UserStatus.OFFLINE },
+			],
+		};
+
+		let rolesChangeCallback: ((payload: any) => void) | undefined;
+
+		mockUseStream.mockReturnValue((eventName, cb) => {
+			if (eventName === 'roles-change') {
+				rolesChangeCallback = cb as any;
+			}
+			return () => undefined;
+		});
+
+		const testWrapper = wrapper.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', ({ offset }) => {
+			if (offset === 0) {
+				return firstPage as any;
+			}
+			if (offset === 2) {
+				return secondPage as any;
+			}
+			return { offset, count: 2, total: 4, members: [] } as any;
+		});
+
+		const { result } = renderHook(
+			() =>
+				useMembersList({
+					rid: 'room123',
+					type: 'all',
+					limit: 2,
+					debouncedText: '',
+					roomType: 'c',
+				}),
+			{ legacyRoot: true, wrapper: testWrapper.build() },
+		);
+
+		// Page 1
+		await waitFor(() => expect(result.current.isLoading).toBe(false));
+		expect(result.current.data?.pages).toHaveLength(1);
+		expect(result.current.data?.pages[0].members.map((m) => m._id)).toStrictEqual(['userA', 'userB']);
+
+		// Page 2
+		await act(async () => {
+			await result.current.fetchNextPage();
+		});
+
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false));
+		await waitFor(() => expect(result.current.data?.pages).toHaveLength(2));
+		expect(result.current.data?.pages[1].members.map((m) => m._id)).toStrictEqual(['userC', 'userD']);
+
+		// Give userC the "owner" role
+		await act(async () => {
+			await rolesChangeCallback?.({
+				type: 'added',
+				scope: 'room123',
+				u: { _id: 'userC' },
+				_id: 'owner',
+			});
+		});
+
+		expect(result.current.data?.pages).toHaveLength(2);
+
+		const userC = result.current.data?.pages.flatMap((page) => page.members).find((m) => m._id === 'userC') as RoomMember | null;
+		await waitFor(() => expect(userC?.roles).toContain('owner'));
+
+		// userC now has 'owner' + ONLINE => sits at the top after sorting
+		// then userA (owner), then userB (moderator), then userD (member)
+		expect(result.current.data?.pages[0].members).toHaveLength(2);
+		expect(result.current.data?.pages[1].members).toHaveLength(2);
+
+		await waitFor(() => expect(result.current.data?.pages[0].members.map((m) => m._id)).toStrictEqual(['userC', 'userA']));
+		await waitFor(() => expect(result.current.data?.pages[1].members.map((m) => m._id)).toStrictEqual(['userB', 'userD']));
 	});
 });
