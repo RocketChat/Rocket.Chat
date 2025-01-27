@@ -332,7 +332,7 @@
 		"dompurify": "^3.2.0",
 		"ejson": "^2.2.3",
 		"emailreplyparser": "^0.0.5",
-		"emoji-toolkit": "^7.0.1",
+		"emoji-toolkit": "^9.0.1",
 		"emojione": "^4.5.0",
 		"esl": "^11.2.1",
 		"eventemitter3": "^5.0.1",
