@@ -47,7 +47,11 @@ const extractKeysFromRecord = (a: Record<string, any>, b: Record<string, any>): 
 		}
 
 		if (a[key] instanceof Object) {
-			keys.push([key, extractKeysFromRecord(a[key], b[key])]);
+			const deepKeys = extractKeysFromRecord(a[key], b[key]);
+			if (deepKeys.length) {
+				keys.push([key, deepKeys]);
+			}
+			continue;
 		}
 
 		if (a[key] !== b[key]) {
@@ -89,8 +93,8 @@ const buildUserRecord = (
 				const [original, current] = buildUserRecord(subFields, originalRecord[field], currentRecord[field]);
 
 				return [
-					{ ...acc[0], ...original },
-					{ ...acc[1], ...current },
+					{ ...acc[0], [field]: original },
+					{ ...acc[1], [field]: current },
 				];
 			}
 
@@ -140,7 +144,6 @@ class UserChangedLogStore {
 
 	private getUserDelta(originalUser: IUser, currentUser: IUser): [Partial<IUser>, Partial<IUser>] {
 		const changedFields = extractKeysFromRecord(originalUser, currentUser);
-
 		const [original, current] = buildUserRecord(changedFields, originalUser, currentUser);
 
 		return [original, current];
