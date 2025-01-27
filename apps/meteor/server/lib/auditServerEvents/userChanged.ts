@@ -46,6 +46,13 @@ const extractKeysFromRecord = (a: Record<string, any>, b: Record<string, any>): 
 			}
 		}
 
+		if (a[key] instanceof Date) {
+			if (a[key].getTime() !== b[key].getTime()) {
+				keys.push(key);
+				continue;
+			}
+		}
+
 		if (a[key] instanceof Object) {
 			const deepKeys = extractKeysFromRecord(a[key], b[key]);
 			if (deepKeys.length) {
