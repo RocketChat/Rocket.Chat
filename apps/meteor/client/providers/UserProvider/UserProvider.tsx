@@ -1,7 +1,7 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { UserContext, useEndpoint } from '@rocket.chat/ui-contexts';
+import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
@@ -18,6 +18,7 @@ import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCl
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
+import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
@@ -47,6 +48,9 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
+	const [, setSamlInviteToken] = useSamlInviteToken();
+	const samlCredentialToken = useSearchParameter('saml_idp_credentialToken');
+	const inviteTokenHash = useRouteParameter('hash');
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -93,6 +97,12 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			setPreferedLanguage(user.language);
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
+
+	useEffect(() => {
+		if (!samlCredentialToken && !inviteTokenHash) {
+			setSamlInviteToken(null);
+		}
+	}, [inviteTokenHash, samlCredentialToken, setSamlInviteToken]);
 
 	const queryClient = useQueryClient();
 

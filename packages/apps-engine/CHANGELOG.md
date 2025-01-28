@@ -1,5 +1,53 @@
 # @rocket.chat/apps-engine
 
+## 1.48.1
+
+### Patch Changes
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+-   ([#34172](https://github.com/RocketChat/Rocket.Chat/pull/34172)) Fixes the subprocess restarting routine failing to correctly restart apps in some cases
+
+-   ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Adds simple app subprocess metrics report
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Attempts to restart an app subprocess if the spawn command fails
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Fixes an issue while collecting the error message from a failed restart attempt of an app subprocess
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Prevents app:getStatus requests from timing out in some cases
+
+## 1.48.1-rc.1
+
+### Patch Changes
+
+-   ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+## 1.48.1-rc.0
+
+### Patch Changes
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+-   ([#34172](https://github.com/RocketChat/Rocket.Chat/pull/34172)) Fixes the subprocess restarting routine failing to correctly restart apps in some cases
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Adds simple app subprocess metrics report
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Attempts to restart an app subprocess if the spawn command fails
+
+-   ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Fixes an issue while collecting the error message from a failed restart attempt of an app subprocess
+
+-   ([#34106](https://github.com/RocketChat/Rocket.Chat/pull/34106)) Prevents app:getStatus requests from timing out in some cases
+
 ## 1.48.0
 
 ### Minor Changes

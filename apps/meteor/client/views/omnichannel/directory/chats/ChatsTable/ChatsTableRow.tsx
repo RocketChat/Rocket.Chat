@@ -36,7 +36,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 
-	const onRowClick = useEffectEvent((id) =>
+	const onRowClick = useEffectEvent((id: string) =>
 		directoryRoute.push({
 			tab: 'chats',
 			context: 'info',
