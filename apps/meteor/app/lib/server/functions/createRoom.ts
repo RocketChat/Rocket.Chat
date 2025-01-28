@@ -1,11 +1,9 @@
-/* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { removeEmpty } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
@@ -251,7 +249,7 @@ export const createRoom = async <T extends RoomType>(
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
 
-	const room = await Rooms.createWithFullRoomData(removeEmpty(roomProps));
+	const room = await Rooms.createWithFullRoomData(roomProps);
 
 	void notifyOnRoomChanged(room, 'inserted');
 
