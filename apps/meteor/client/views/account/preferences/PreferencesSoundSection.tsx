@@ -71,9 +71,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel aria-describedby={`${callRingerVolumeId}-hint`}>
-						{t('Call_ringer_volume')}
-					</FieldLabel>
+					<FieldLabel aria-describedby={`${callRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
 					<FieldHint id={`${callRingerVolumeId}-hint`} mbe={4}>
 						{t('Call_ringer_volume_hint')}
 					</FieldHint>
