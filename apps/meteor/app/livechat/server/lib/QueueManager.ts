@@ -246,13 +246,11 @@ export class QueueManager {
 			}),
 		);
 
-		logger.info({ msg: 'beforeDelegateAgent', guest, agent });
 		const defaultAgent =
 			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
 				department: guest.department,
 			})) || undefined;
 
-		logger.info({ msg: 'afterDelegateAgent', guest, agent });
 		const department = guest.department && (await getDepartment(guest.department));
 
 		/**
