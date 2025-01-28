@@ -86,9 +86,9 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 					xmlnsXlink='http://www.w3.org/1999/xlink'
 					style={{ display: 'none' }}
 					dangerouslySetInnerHTML={{
-						__html: DOMPurify.sanitize(svgIcons.join(''), {
+						__html: DOMPurify.sanitize(`<svg>${svgIcons.join('')}</svg>`, {
 							USE_PROFILES: { svg: true, svgFilters: true },
-						}),
+						}).slice(5, -6),
 					}}
 				/>,
 				document.body,
