@@ -1,5 +1,5 @@
-import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
+import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item');
 const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item__menu');
