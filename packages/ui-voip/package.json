@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
-		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
+		"@tanstack/react-query": "~5.65.1",
 		"react-i18next": "~13.2.2",
 		"sip.js": "^0.21.2"
 	},
