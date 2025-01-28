@@ -12,7 +12,7 @@ test.describe('video conference ringing', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 
-	// test.skip(!IS_EE, 'Enterprise Only');
+	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -31,7 +31,7 @@ test.describe('video conference ringing', () => {
 		await auxContext.page.close();
 	});
 
-	test('expect is ringing in direct', async () => {
+	test('should show call is ringing in direct', async () => {
 		await poHomeChannel.sidenav.openChat('user2');
 
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
@@ -43,18 +43,16 @@ test.describe('video conference ringing', () => {
 		await expect(auxContext.poHomeChannel.content.videoConfRingCallText('Incoming call from')).toBeVisible();
 
 		await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
-
-		await auxContext.page.close();
 	});
 
-	test('expect call to be ringing/dialing according to volume preference', async ({ page }) => {
+	test('should call to be ringing/dialing according to volume preference', async () => {
 		await poHomeChannel.sidenav.userProfileMenu.click();
 		await poHomeChannel.sidenav.accountPreferencesOption.click();
 
 		await poAccountProfile.preferencesSoundAccordionOption.click();
 		await poAccountProfile.preferencesCallRingerVolumeSlider.fill('50');
 
-		await poAccountProfile.preferencesBtnSubmit.click();
+		await poAccountProfile.btnSaveChanges.click();
 		await poAccountProfile.btnClose.click();
 
 		await auxContext.poHomeChannel.sidenav.userProfileMenu.click();
@@ -63,7 +61,7 @@ test.describe('video conference ringing', () => {
 		await auxContext.poAccountProfile.preferencesSoundAccordionOption.click();
 		await auxContext.poAccountProfile.preferencesCallRingerVolumeSlider.fill('25');
 
-		await auxContext.poAccountProfile.preferencesBtnSubmit.click();
+		await auxContext.poAccountProfile.btnSaveChanges.click();
 		await auxContext.poAccountProfile.btnClose.click();
 
 		await poHomeChannel.sidenav.openChat('user2');
@@ -73,17 +71,12 @@ test.describe('video conference ringing', () => {
 		await poHomeChannel.content.menuItemVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 
-		console.log(
-			await poHomeChannel.videoConfRingtoneVolume.evaluate((el: HTMLAudioElement) => ({
-				volume: el.volume,
-				currentTime: el.currentTime,
-				duration: el.duration,
-				paused: el.paused,
-				muted: el.muted,
-				src: el.src,
-				readyState: el.readyState,
-				networkState: el.networkState,
-			})),
-		);
+		await expect(auxContext.poHomeChannel.content.getIncomingCallByName('user1')).toBeVisible();
+
+		const dialToneVolume = await poHomeChannel.audioVideoConfDialtone.evaluate((el: HTMLAudioElement) => el.volume);
+		const ringToneVolume = await auxContext.poHomeChannel.audioVideoConfRingtone.evaluate((el: HTMLAudioElement) => el.volume);
+
+		expect(dialToneVolume).toBe(0.5);
+		expect(ringToneVolume).toBe(0.25);
 	});
 });

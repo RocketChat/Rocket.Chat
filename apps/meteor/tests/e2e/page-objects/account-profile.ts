@@ -28,6 +28,7 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
 
+	// TODO: remove this locator
 	get btnSubmit(): Locator {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
