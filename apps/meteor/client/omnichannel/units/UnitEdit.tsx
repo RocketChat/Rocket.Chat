@@ -14,7 +14,7 @@ import {
 	FieldRow,
 	CheckOption,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -33,6 +33,19 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
+
+type UnitEditFormData = {
+	name: string;
+	visibility: string;
+	departments: {
+		value: string;
+		label: string;
+	}[];
+	monitors: {
+		value: string;
+		label: string;
+	}[];
+};
 
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
@@ -97,7 +110,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		formState: { errors, isDirty },
 		handleSubmit,
 		watch,
-	} = useForm({
+	} = useForm<UnitEditFormData>({
 		mode: 'onBlur',
 		values: {
 			name: unitData?.name || '',
@@ -127,7 +140,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		return [...mappedMonitorsItems, ...pending];
 	}, [monitors, monitorsItems]);
 
-	const handleSave = useMutableCallback(async ({ name, visibility }) => {
+	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
 		const monitorsData = monitors.map((monitor) => ({

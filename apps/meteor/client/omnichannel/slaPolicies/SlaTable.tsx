@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
@@ -55,8 +55,8 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
-	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/sla-policies/new'));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>

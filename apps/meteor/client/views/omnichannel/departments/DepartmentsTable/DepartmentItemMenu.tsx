@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -32,7 +32,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		_id,
 	});
 
-	const handleEdit = useMutableCallback(() => {
+	const handleEdit = useEffectEvent(() => {
 		route.push({ context: 'edit', id: _id });
 	});
 
@@ -42,7 +42,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		});
 	}, [queryClient]);
 
-	const handleToggleArchive = useMutableCallback(async () => {
+	const handleToggleArchive = useEffectEvent(async () => {
 		try {
 			await toggleArchive();
 			dispatchToastMessage({ type: 'success', message: archived ? t('Department_unarchived') : t('Department_archived') });
@@ -55,7 +55,7 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 		}
 	});
 
-	const handlePermanentDepartmentRemoval = useMutableCallback(() => {
+	const handlePermanentDepartmentRemoval = useEffectEvent(() => {
 		setModal(<RemoveDepartmentModal _id={_id} reset={handleReload} onClose={() => setModal(null)} name={name} />);
 	});
 

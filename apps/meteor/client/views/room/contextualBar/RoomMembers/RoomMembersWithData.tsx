@@ -1,8 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
@@ -60,7 +60,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const openUserInfo = useMutableCallback((e) => {
+	const openUserInfo = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		const { userid } = e.currentTarget.dataset;
 		setState({
 			tab: ROOM_MEMBERS_TABS.INFO,
@@ -68,11 +68,11 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		});
 	});
 
-	const openInvite = useMutableCallback(() => {
+	const openInvite = useEffectEvent(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.INVITE });
 	});
 
-	const openAddUser = useMutableCallback(() => {
+	const openAddUser = useEffectEvent(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.ADD });
 	});
 
