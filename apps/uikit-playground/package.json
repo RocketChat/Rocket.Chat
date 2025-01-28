@@ -17,11 +17,11 @@
     "@lezer/highlight": "^1.2.1",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.60.1",
-    "@rocket.chat/fuselage-hooks": "^0.34.1",
+    "@rocket.chat/fuselage": "~0.60.3",
+    "@rocket.chat/fuselage-hooks": "~0.34.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
-    "@rocket.chat/fuselage-toastbar": "^0.33.0",
-    "@rocket.chat/fuselage-tokens": "^0.33.2",
+    "@rocket.chat/fuselage-toastbar": "~0.33.1",
+    "@rocket.chat/fuselage-tokens": "~0.33.2",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
     "@rocket.chat/icons": "^0.40.0",
     "@rocket.chat/logo": "^0.31.32",
@@ -52,7 +52,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "typescript": "~5.7.2",
-    "vite": "^5.4.11"
+    "vite": "^5.4.14"
   },
   "volta": {
     "extends": "../../package.json"
