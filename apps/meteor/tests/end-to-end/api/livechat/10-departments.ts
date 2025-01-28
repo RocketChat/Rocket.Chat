@@ -453,6 +453,35 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('DELETE livechat/department/:_id', () => {
+		before(async () => {
+			await updateSetting('Omnichannel_enable_department_removal', true);
+		});
+		after(async () => {
+			await updateSetting('Omnichannel_enable_department_removal', false);
+		});
+
+		describe('With setting disabled', () => {
+			before(async () => {
+				await updateSetting('Omnichannel_enable_department_removal', false);
+			});
+			after(async () => {
+				await updateSetting('Omnichannel_enable_department_removal', true);
+			});
+
+			it('should not allow to remove a department if setting is disabled', async () => {
+				const department = await createDepartment();
+				await request
+					.delete(api(`livechat/department/${department._id}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-department-removal-disabled');
+					});
+			});
+		});
+
 		it('should return unauthorized error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-livechat-departments', []);
 			await updatePermission('remove-livechat-department', []);
