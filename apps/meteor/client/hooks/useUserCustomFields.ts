@@ -27,6 +27,11 @@ export const useUserCustomFields = (customFields: CustomField): CustomFieldDispl
 		return undefined;
 	}
 
+	if (!Array.isArray(customFieldsToShowObj)) {
+		console.warn('Invalid customFieldsToShowInUserInfo value');
+		return undefined;
+	}
+
 	const customFieldsToShow = customFieldsToShowObj.map((value) => {
 		if (!value) {
 			return undefined;

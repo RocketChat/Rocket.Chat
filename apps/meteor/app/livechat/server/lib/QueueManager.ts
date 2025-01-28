@@ -328,8 +328,6 @@ export class QueueManager {
 		// All the actions that happened inside createLivechatRoom are now outside this transaction
 		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		// TODO: investigate if this setting is actually useful somewhere
-		await LivechatRooms.updateRoomCount();
 		await callbacks.run('livechat.newRoom', room);
 		await Message.saveSystemMessageAndNotifyUser(
 			'livechat-started',
