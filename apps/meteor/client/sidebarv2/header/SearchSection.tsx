@@ -94,7 +94,7 @@ const SearchSection = () => {
 			'Shift+$mod+K': (event) => {
 				event.preventDefault();
 				setRecentButtonPressed(true);
-				focusManager.focusNext({ accept: (node) => isRecentButton(node) });
+				focusManager?.focusNext({ accept: (node) => isRecentButton(node) });
 			},
 			'Escape': (event) => {
 				event.preventDefault();
