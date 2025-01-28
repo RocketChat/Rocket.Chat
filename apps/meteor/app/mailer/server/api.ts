@@ -5,7 +5,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import juice from 'juice';
 import { Email } from 'meteor/email';
 import { Meteor } from 'meteor/meteor';
-import stripHtml from 'string-strip-html';
+import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';

@@ -1,5 +1,5 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { usePruneWarningMessage } from './usePruneWarningMessage';
 import { createRenteionPolicySettingsMock as createMock } from '../../tests/mocks/client/mockRetentionPolicySettings';
@@ -40,8 +40,8 @@ describe('usePruneWarningMessage hook', () => {
 				}),
 			});
 			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
-			jest.advanceTimersByTime(31 * 60 * 1000);
-			expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM');
+			await jest.advanceTimersByTimeAsync(31 * 60 * 1000);
+			await waitFor(() => expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM'));
 		});
 
 		it('Should return the default warning with precision set to every_hour', () => {
