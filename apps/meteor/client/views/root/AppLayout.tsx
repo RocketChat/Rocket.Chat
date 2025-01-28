@@ -11,7 +11,7 @@ import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
-import { useSetupWizard } from '../../startup/useSetupWizard';
+import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
 	useEffect(() => {
@@ -30,7 +30,7 @@ const AppLayout = () => {
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
 
-	useSetupWizard();
+	useRedirectToSetupWizard();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
