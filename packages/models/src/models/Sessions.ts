@@ -1442,8 +1442,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 
 		const now = new Date();
 
+		const query = { instanceId, sessionId, year, month, day, logoutAt: { $exists: false } };
+
 		return this.updateOne(
-			{ instanceId, sessionId, year, month, day },
+			query,
 			{
 				$set: data,
 				$setOnInsert: {
