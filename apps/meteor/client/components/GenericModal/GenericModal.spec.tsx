@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,11 +13,13 @@ const renderModal = (modalElement: ReactElement) => {
 		result: { current: setModal },
 	} = renderHook(() => useSetModal(), {
 		legacyRoot: true,
-		wrapper: ({ children }) => (
-			<Suspense fallback={null}>
-				<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
-			</Suspense>
-		),
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<Suspense fallback={null}>
+					<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
+				</Suspense>
+			))
+			.build(),
 	});
 
 	act(() => {
