@@ -18,7 +18,13 @@ const createContact = (generateToken = false) => ({
 
 const NEW_CONTACT = createContact();
 const EDIT_CONTACT = createContact();
-const EXISTING_CONTACT = createContact(true);
+const EXISTING_CONTACT = {
+	id: undefined,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
+	emails: [faker.internet.email().toLowerCase()],
+	phones: [faker.phone.number('+############')],
+	token: undefined,
+};
 const NEW_CUSTOM_FIELD = {
 	searchable: true,
 	field: 'hiddenCustomField',
@@ -45,6 +51,7 @@ const ERROR = {
 	nameRequired: 'Name required',
 	invalidEmail: 'Invalid email address',
 	emailRequired: 'Email required',
+	emailAlreadyExists: 'Email already exists',
 	phoneRequired: 'Phone required',
 };
 
@@ -56,8 +63,7 @@ test.describe('Omnichannel Contact Center', () => {
 
 	test.beforeAll(async ({ api }) => {
 		// Add a contact
-		const { id: _, ...data } = EXISTING_CONTACT;
-		await api.post('/omnichannel/contacts', data);
+		await api.post('/omnichannel/contacts', EXISTING_CONTACT);
 
 		if (IS_EE) {
 			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
@@ -65,9 +71,10 @@ test.describe('Omnichannel Contact Center', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// Remove added contacts
-		await api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`);
+		// Remove added contact
 		await api.delete(`/livechat/visitor/${NEW_CONTACT.token}`);
+		await api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`);
+
 		if (IS_EE) {
 			await api.post('method.call/livechat:removeCustomField', { message: NEW_CUSTOM_FIELD.field });
 		}
@@ -85,6 +92,14 @@ test.describe('Omnichannel Contact Center', () => {
 			.then((res) => {
 				NEW_CONTACT.token = res.contacts?.[0]?.token;
 				NEW_CONTACT.id = res.contacts?.[0]?._id;
+			});
+
+		await api
+			.get('/omnichannel/contacts.search', { searchText: EXISTING_CONTACT.phones[0] })
+			.then((res) => res.json())
+			.then((res) => {
+				EXISTING_CONTACT.token = res.contacts?.[0]?.token;
+				EXISTING_CONTACT.id = res.contacts?.[0]?._id;
 			});
 	});
 
@@ -122,11 +137,24 @@ test.describe('Omnichannel Contact Center', () => {
 			await expect(poContacts.newContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
+		await test.step('validate email is duplicated', async () => {
+			await poContacts.newContact.inputEmail.fill(EXISTING_CONTACT.emails[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('validate email is required', async () => {
+			await poContacts.newContact.inputEmail.clear();
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailRequired)).toBeVisible();
+		});
+
 		await test.step('input email', async () => {
 			await poContacts.newContact.inputEmail.fill(NEW_CONTACT.email);
 			await page.keyboard.press('Tab');
 			await expect(poContacts.newContact.getErrorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.getErrorMessage(ERROR.emailRequired)).not.toBeVisible();
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailAlreadyExists)).not.toBeVisible();
 		});
 
 		await test.step('input phone', async () => {
@@ -173,9 +201,21 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('validate email format', async () => {
-			await poContacts.contactInfo.inputEmail.fill('invalidemail');
+			await poContacts.newContact.inputEmail.fill('invalidemail');
 			await page.keyboard.press('Tab');
-			await expect(poContacts.contactInfo.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
+			await expect(poContacts.newContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
+		});
+
+		await test.step('validate email is duplicated', async () => {
+			await poContacts.newContact.inputEmail.fill(EXISTING_CONTACT.emails[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('validate email is required', async () => {
+			await poContacts.newContact.inputEmail.clear();
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailRequired)).toBeVisible();
 		});
 
 		await test.step('validate name is required', async () => {
@@ -199,6 +239,7 @@ test.describe('Omnichannel Contact Center', () => {
 			await page.keyboard.press('Tab');
 			await expect(poContacts.newContact.getErrorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.getErrorMessage(ERROR.emailRequired)).not.toBeVisible();
+			await expect(poContacts.newContact.getErrorMessage(ERROR.emailAlreadyExists)).not.toBeVisible();
 		});
 
 		await test.step('save new contact ', async () => {

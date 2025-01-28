@@ -120,12 +120,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validateEmailFormat = async (emailValue: string) => {
 		const currentEmails = emails.map(({ address }) => address);
-		const emailAlreadyExists = await checkExistenceEndpoint({ email: emailValue });
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1 || emailAlreadyExists.exists;
 
 		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
+
+		const emailAlreadyExists = await checkExistenceEndpoint({ email: emailValue });
+		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1 || emailAlreadyExists.exists;
 
 		return !isDuplicated ? true : t('Email_already_exists');
 	};
