@@ -7,7 +7,7 @@ import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
-import { useNextcloud } from '../../../app/nextcloud/client/lib';
+import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
