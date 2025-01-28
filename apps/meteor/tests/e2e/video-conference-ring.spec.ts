@@ -45,24 +45,20 @@ test.describe('video conference ringing', () => {
 		await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
 	});
 
-	test('should call to be ringing/dialing according to volume preference', async () => {
+	const changeCallRingerVolumeFromHome = async (poHomeChannel: HomeChannel, poAccountProfile: AccountProfile, volume: string) => {
 		await poHomeChannel.sidenav.userProfileMenu.click();
 		await poHomeChannel.sidenav.accountPreferencesOption.click();
 
 		await poAccountProfile.preferencesSoundAccordionOption.click();
-		await poAccountProfile.preferencesCallRingerVolumeSlider.fill('50');
+		await poAccountProfile.preferencesCallRingerVolumeSlider.fill(volume);
 
 		await poAccountProfile.btnSaveChanges.click();
 		await poAccountProfile.btnClose.click();
+	};
 
-		await auxContext.poHomeChannel.sidenav.userProfileMenu.click();
-		await auxContext.poHomeChannel.sidenav.accountPreferencesOption.click();
-
-		await auxContext.poAccountProfile.preferencesSoundAccordionOption.click();
-		await auxContext.poAccountProfile.preferencesCallRingerVolumeSlider.fill('25');
-
-		await auxContext.poAccountProfile.btnSaveChanges.click();
-		await auxContext.poAccountProfile.btnClose.click();
+	test('should be ringing/dialing according to volume preference', async () => {
+		await changeCallRingerVolumeFromHome(poHomeChannel, poAccountProfile, '50');
+		await changeCallRingerVolumeFromHome(auxContext.poHomeChannel, auxContext.poAccountProfile, '25');
 
 		await poHomeChannel.sidenav.openChat('user2');
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
@@ -78,5 +74,9 @@ test.describe('video conference ringing', () => {
 
 		expect(dialToneVolume).toBe(0.5);
 		expect(ringToneVolume).toBe(0.25);
+
+		await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
+		await changeCallRingerVolumeFromHome(poHomeChannel, poAccountProfile, '100');
+		await changeCallRingerVolumeFromHome(auxContext.poHomeChannel, auxContext.poAccountProfile, '100');
 	});
 });
