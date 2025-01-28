@@ -25,7 +25,7 @@ export class LocalBroker implements IBroker {
 
 	private services = new Map<string, ExtendedServiceClass>();
 
-	private flattenedDependencies: Set<string> = new Set();
+	private pendingServices: Set<string> = new Set();
 
 	private defaultDependencies = ['settings'];
 
@@ -73,14 +73,19 @@ export class LocalBroker implements IBroker {
 	 * Creates a service and adds it to the local broker. In case of the broker is already started, it will start the service automatically.
 	 */
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
-		const namespace = instance.getName() ?? '';
+		const serviceName = instance.getName();
 
-		if (this.services.has(namespace)) {
-			throw new Error(`Service ${namespace} already exists`);
+		if (!serviceName || serviceName === '') {
+			throw new Error('Service name cannot be empty');
 		}
 
-		const dependencies = [...serviceDependencies, ...(namespace === 'settings' ? [] : this.defaultDependencies)].filter(
-			(dependency) => dependency !== namespace,
+		if (this.services.has(serviceName)) {
+			throw new Error(`Service ${serviceName} already exists`);
+		}
+
+		// TODO: find a better way to handle default dependencies and avoid loops
+		const dependencies = [...serviceDependencies, ...(serviceName === 'settings' ? [] : this.defaultDependencies)].filter(
+			(dependency) => dependency !== serviceName,
 		);
 
 		instance.created();
@@ -97,12 +102,11 @@ export class LocalBroker implements IBroker {
 				continue;
 			}
 			const i = instance as any;
-			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
+			this.methods.set(`${serviceName}.${method}`, i[method].bind(i));
 		}
 
-		const service = { instance, dependencies, isStarted: false };
-		this.services.set(namespace, service);
-		this.flattenDependencies(service);
+		this.services.set(serviceName, { instance, dependencies, isStarted: false });
+		this.registerPendingServices(Array.from(new Set([serviceName, ...dependencies])));
 
 		if (this.started) {
 			void this.start();
@@ -139,30 +143,23 @@ export class LocalBroker implements IBroker {
 	}
 
 	/**
-	 * Flattens dependencies of a service and updates the flattenedDependencies set.
+	 * Registers services to be started. We're assuming that each service will only have one level of dependencies.
 	 */
-	private flattenDependencies(service: ExtendedServiceClass): void {
-		if (service.dependencies.length === 0) {
-			return;
-		}
-
-		this.flattenedDependencies.add(service.instance.getName() ?? '');
-
-		// We're assuming that each service will only have one level of dependencies
-		for (const dependency of service.dependencies) {
-			this.flattenedDependencies.add(dependency);
+	private registerPendingServices(services: string[] = []): void {
+		for (const service of services) {
+			this.pendingServices.add(service);
 		}
 	}
 
 	/**
-	 * Gets all services that are in the flattenedDependencies set and enriches them with the service instance. In case of the service is not found, it will return the dependency name.
+	 * Removes a service from the pending services set.
 	 */
-	private getFlattenedServices(): (ExtendedServiceClass | string)[] {
-		return Array.from(this.flattenedDependencies).map((dependency: string) => this.services.get(dependency) ?? dependency);
+	private removePendingService(service: string): void {
+		this.pendingServices.delete(service);
 	}
 
-	private async startService(service: ExtendedServiceClass | string): Promise<void> {
-		const serviceName = typeof service === 'string' ? service : service.instance.getName();
+	private async startService(service: ExtendedServiceClass): Promise<void> {
+		const serviceName = service.instance.getName();
 
 		if (typeof service === 'string') {
 			logger.debug(`Service ${serviceName} is not in the services map. Bringing it back to queue`);
@@ -177,15 +174,16 @@ export class LocalBroker implements IBroker {
 		const pendingDependencies = service.dependencies.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted);
 		if (pendingDependencies.length > 0) {
 			logger.debug(
-				`Service ${service.instance.getName()} has dependencies that are not started yet, bringing it back to queue: ${pendingDependencies.join(', ')}`,
+				`Service ${serviceName} has dependencies that are not started yet, bringing it back to queue: ${pendingDependencies.join(', ')}`,
 			);
 			return;
 		}
 
 		await service.instance.started();
-		this.services.set(service.instance.getName() ?? '', { ...service, isStarted: true });
+		this.services.set(serviceName, { ...service, isStarted: true });
+		this.removePendingService(serviceName);
 
-		logger.debug(`Service ${service.instance.getName()} successfully started`);
+		logger.debug(`Service ${serviceName} successfully started`);
 	}
 
 	async start(): Promise<void> {
@@ -195,12 +193,9 @@ export class LocalBroker implements IBroker {
 			const intervalId = setInterval(async () => {
 				const elapsed = Date.now() - startTime;
 
-				const services = this.getFlattenedServices();
+				const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
 
-				const availableServices = services.filter((s): s is ExtendedServiceClass => typeof s !== 'string' && s.isStarted);
-				const allServicesReady = availableServices.length === this.flattenedDependencies.size;
-
-				if (allServicesReady) {
+				if (this.pendingServices.size === 0) {
 					logger.debug(`All services available: ${availableServices.map((s) => s.instance.getName()).join(', ')}`);
 					clearInterval(intervalId);
 					return resolve();
@@ -208,19 +203,19 @@ export class LocalBroker implements IBroker {
 
 				if (elapsed > TIMEOUT) {
 					clearInterval(intervalId);
-					const unstartedServices = services
-						.filter((s) => typeof s === 'string' || !s.isStarted)
-						.map((s) => (typeof s === 'string' ? s : s.instance.getName()));
-					logger.error(`Timeout while waiting for LocalBroker services: ${unstartedServices.join(', ')}`);
-					return reject(new Error(`Timeout while waiting for LocalBroker services: ${unstartedServices.join(', ')}`));
+					const pendingServices = Array.from(this.pendingServices).join(', ');
+					logger.error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
+					return reject(new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`));
 				}
 
-				const servicesToStart = services.filter((s): s is ExtendedServiceClass => typeof s !== 'string' && !s.isStarted);
-				for (const service of servicesToStart) {
-					void this.startService(service);
+				for (const service of Array.from(this.pendingServices)) {
+					const serviceInstance = this.services.get(service);
+					if (serviceInstance) {
+						void this.startService(serviceInstance);
+					}
 				}
 
-				logger.debug(`Waiting for services... ${availableServices.length}/${this.flattenedDependencies.size} ready`);
+				logger.debug(`Waiting for ${this.pendingServices.size} pending services`);
 			}, INTERVAL);
 		});
 	}
