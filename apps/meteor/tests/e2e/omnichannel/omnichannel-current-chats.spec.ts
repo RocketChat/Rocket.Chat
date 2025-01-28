@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
+import { BASE_API_URL, IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelCurrentChats } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
@@ -146,7 +146,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		expect(results.violations).toEqual([]);
 	});
 
-	test('OC - Current chats - Filters', async ({ page }) => {
+	test('OC - Current chats - Filters', async ({ page, request }) => {
 		const [departmentA, departmentB] = departments.map(({ data }) => data);
 
 		await test.step('expect to filter by guest', async () => {
@@ -236,10 +236,26 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
 		});
 
-		await test.step('expect department filter to show selected value after page reload', async () => {
+		await test.step('expect department filter value to persist after page reload', async () => {
 			await poCurrentChats.selectDepartment(departmentA.name);
 			await page.reload();
 			await expect(poCurrentChats.inputDepartmentValue).toContainText(departmentA.name);
+		});
+
+		await test.step('expect filter to reset and show toast if selected department was deleted', async () => {
+			await poCurrentChats.selectDepartment(departmentA.name);
+
+			await request.delete(`${BASE_API_URL}/livechat/department/${departmentA._id}`, {
+				headers: {
+					'X-Auth-Token': Users.admin.data.loginToken,
+					'X-User-Id': Users.admin.data._id,
+				},
+			});
+
+			await page.reload();
+
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--info')).toBeVisible();
+			await expect(poCurrentChats.inputDepartmentValue).toContainText('All');
 		});
 
 		// TODO: Unit test await test.step('expect to filter by period', async () => {});
