@@ -108,14 +108,14 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort, includeThreads } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
 
-		const threadFilterQuery = includeThreads ? {} : { tmid: { $exists: false } };
+		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
 
 		// We support only one field for now
 		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
@@ -281,7 +281,7 @@ export class AppRoomBridge extends RoomBridge {
 				skip: options.skip,
 				sort,
 			},
-			options.includeThreads,
+			options.showThreadMessages,
 		);
 
 		const messages = await cursor.toArray();
