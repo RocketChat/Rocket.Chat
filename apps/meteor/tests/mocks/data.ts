@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
 import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
-import type { LicenseInfo, App, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { LicenseInfo, App, IMessage, IRoom, ISubscription, IUser, VideoConferenceType } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
@@ -283,4 +283,20 @@ export function createFakeVisitor() {
 		name: pullNextVisitorName(),
 		email: faker.internet.email(),
 	} as const;
+}
+
+export function createFakeVideoConfCall({ type }: { type: VideoConferenceType }) {
+	return {
+		type,
+		_id: faker.database.mongodbObjectId(),
+		status: 0,
+		createdBy: {
+			_id: faker.database.mongodbObjectId(),
+			username: faker.internet.userName(),
+			name: faker.person.fullName(),
+		},
+		_updatedAt: faker.date.recent(),
+		createdAt: faker.date.recent(),
+		providerName: faker.company.name(),
+	};
 }
