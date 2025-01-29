@@ -218,6 +218,7 @@ export interface IUser extends IRocketChatRecord {
 	requirePasswordChangeReason?: string;
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
+	__rooms?: string[];
 }
 
 export interface IRegisterUser extends IUser {

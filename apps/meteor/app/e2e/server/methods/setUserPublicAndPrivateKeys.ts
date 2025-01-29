@@ -11,6 +11,10 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+const isKeysResult = (result: object): result is { public_key: string; private_key: string } => {
+	return 'private_key' in result && 'public_key' in result;
+};
+
 Meteor.methods<ServerMethods>({
 	async 'e2e.setUserPublicAndPrivateKeys'(keyPair) {
 		const userId = Meteor.userId();
@@ -24,7 +28,7 @@ Meteor.methods<ServerMethods>({
 		if (!keyPair.force) {
 			const keys = await Users.fetchKeysByUserId(userId);
 
-			if (keys.private_key && keys.public_key) {
+			if (isKeysResult(keys)) {
 				throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
 					method: 'e2e.setUserPublicAndPrivateKeys',
 				});
