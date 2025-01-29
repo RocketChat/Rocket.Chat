@@ -56,6 +56,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 			try {
 				await saveCannedResponse({
 					...data,
+					_id: cannedResponseData?._id ?? data._id,
 					...(departmentId && { departmentId }),
 				});
 				dispatchToastMessage({

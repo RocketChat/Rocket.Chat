@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
@@ -7,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
 
 type AddExistingModalFormData = {
-	rooms: string[];
+	rooms: IRoom['_id'][];
 };
 
 type AddExistingModalProps = {
