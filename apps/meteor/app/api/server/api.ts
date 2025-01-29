@@ -3,7 +3,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { tracerSpan } from '@rocket.chat/tracing';
 import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
@@ -33,11 +32,12 @@ import type {
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { cors } from './middlewares/cors';
+import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
+import { tracerSpanMiddleware } from './middlewares/tracer';
 import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
-import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
@@ -570,20 +570,6 @@ export class APIClass<TBasePath extends string = ''> {
 					async function _internalRouteActionHandler() {
 						this.requestIp = getRequestIP(this.request);
 
-						const startTime = Date.now();
-
-						const log = logger.logger.child({
-							method: this.request.method,
-							url: this.request.url,
-							userId: this.request.headers['x-user-id'],
-							userAgent: this.request.headers['user-agent'],
-							length: this.request.headers['content-length'],
-							host: this.request.headers.host,
-							referer: this.request.headers.referer,
-							remoteIP: this.requestIp,
-							...getRestPayload(this.request.body),
-						});
-
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute(this.request);
 							this.user = user;
@@ -677,34 +663,8 @@ export class APIClass<TBasePath extends string = ''> {
 							this.queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
-							result = await tracerSpan(
-								`${this.request.method} ${this.request.url}`,
-								{
-									attributes: {
-										url: this.request.url,
-										route: this.request.route,
-										method: this.request.method,
-										userId: this.userId,
-									},
-								},
-								async (span) => {
-									if (span) {
-										this.response.setHeader('X-Trace-Id', span.spanContext().traceId);
-									}
-
-									const result =
-										(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
-
-									span?.setAttribute('status', result.statusCode);
-
-									return result;
-								},
-							);
-
-							log.http({
-								status: result.statusCode,
-								responseTime: Date.now() - startTime,
-							});
+							result =
+								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -726,12 +686,6 @@ export class APIClass<TBasePath extends string = ''> {
 										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
-
-							log.http({
-								err: e,
-								status: result.statusCode,
-								responseTime: Date.now() - startTime,
-							});
 						} finally {
 							delete Accounts._accountData[connection.id];
 						}
@@ -1061,7 +1015,9 @@ Meteor.startup(() => {
 		.use(
 			API.api
 				.use(cors(settings))
+				.use(loggerMiddleware(logger))
 				.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
+				.use(tracerSpanMiddleware)
 				.use(API.v1.router),
 		)
 		.use(API.default.router).router;
