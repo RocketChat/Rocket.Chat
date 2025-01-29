@@ -42,6 +42,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	let departmentId: string;
 
 	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 		await deleteDepartment(departmentId);
 	});
 
@@ -100,6 +101,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('GET livechat/department', () => {
