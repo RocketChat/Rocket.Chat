@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { useCallback, useEffect } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 const ee = new Emitter<{
 	change: void;

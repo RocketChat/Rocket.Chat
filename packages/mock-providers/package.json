@@ -7,14 +7,12 @@
 		"@rocket.chat/i18n": "workspace:~",
 		"@storybook/react": "^8.4.4",
 		"i18next": "~23.4.9",
-		"react-i18next": "~13.2.2",
-		"use-sync-external-store": "~1.2.2"
+		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:*",
 		"@tanstack/react-query": "~5.65.1",
-		"@types/use-sync-external-store": "^0.0.6",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"typescript": "~5.7.2"

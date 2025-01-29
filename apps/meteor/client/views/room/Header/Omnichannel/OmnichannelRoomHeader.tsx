@@ -1,7 +1,6 @@
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { HeaderToolbar } from '../../../../components/Header';
 import SidebarToggler from '../../../../components/SidebarToggler';

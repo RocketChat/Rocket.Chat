@@ -1,5 +1,4 @@
-import { useEffect, Suspense } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
