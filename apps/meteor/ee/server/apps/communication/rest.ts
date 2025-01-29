@@ -212,25 +212,21 @@ export class AppsRestApi {
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
 						try {
-							const request = await fetch(`${baseUrl}/v1/apps`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
-							result = await request.json();
+							const apps = await fetchMarketplaceApps({});
+							return API.v1.success(apps);
 						} catch (e) {
-							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-						}
+							orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', e);
+							if (e instanceof MarketplaceConnectionError) {
+								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+							}
 
-						return API.v1.success(result);
+							if (e instanceof MarketplaceAppsError) {
+								return API.v1.failure({ error: e.message });
+							}
+
+							return API.v1.internalError();
+						}
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
