@@ -125,10 +125,17 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			return t('error-invalid-email-address');
 		}
 
-		const emailAlreadyExists = await checkExistenceEndpoint({ email: emailValue });
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1 || emailAlreadyExists.exists;
+		if (currentEmails.filter((email) => email === emailValue).length > 1) {
+			return t('Email_already_exists');
+		}
 
-		return !isDuplicated ? true : t('Email_already_exists');
+		const initialEmails = initialValue.emails.map(({ address }) => address);
+
+		if (!initialEmails.includes(emailValue) && (await checkExistenceEndpoint({ email: emailValue })).exists) {
+			return t('Email_already_exists');
+		}
+
+		return true;
 	};
 
 	const validatePhone = async (phoneValue: string) => {
