@@ -1,5 +1,4 @@
-import { useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useContext, useMemo, useSyncExternalStore } from 'react';
 
 import { UserPresenceContext } from '../contexts/UserPresenceContext';
 import type { UserPresence } from '../lib/presence';

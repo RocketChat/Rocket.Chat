@@ -1,9 +1,12 @@
 import { Button } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, ComponentProps<typeof Button>>(
-	function MessageFooterCalloutAction(props, ref): ReactElement {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface MessageFooterCalloutActionProps extends ComponentProps<typeof Button> {}
+
+const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, MessageFooterCalloutActionProps>(
+	function MessageFooterCalloutAction(props, ref) {
 		return <Button mi={4} ref={ref} primary small flexShrink={0} {...props} />;
 	},
 );
