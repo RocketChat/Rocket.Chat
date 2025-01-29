@@ -33,6 +33,7 @@ import type {
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { cors } from './middlewares/cors';
+import { metricsMiddleware } from './middlewares/metrics';
 import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -137,12 +138,10 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-let prometheusAPIUserAgent = false;
-
 export class APIClass<TBasePath extends string = ''> {
 	protected apiPath?: string;
 
-	protected readonly version?: string;
+	readonly version?: string;
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
@@ -569,13 +568,6 @@ export class APIClass<TBasePath extends string = ''> {
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
-							method,
-							version: api.version,
-							...(prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] }),
-							entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
-						});
-
 						this.requestIp = getRequestIP(this.request);
 
 						const startTime = Date.now();
@@ -743,10 +735,6 @@ export class APIClass<TBasePath extends string = ''> {
 						} finally {
 							delete Accounts._accountData[connection.id];
 						}
-
-						rocketchatRestApiEnd({
-							status: result.statusCode,
-						});
 
 						return result;
 					};
@@ -1064,17 +1052,18 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.watch<boolean>('Prometheus_API_User_Agent', (value) => {
-	prometheusAPIUserAgent = value;
-});
-
 Meteor.startup(() => {
 	const rootRouter = new Router('/')
 		.use((_req, res, next) => {
 			res.removeHeader('X-Powered-By');
 			next();
 		})
-		.use(API.api.use(cors(settings)).use(API.v1.router))
+		.use(
+			API.api
+				.use(cors(settings))
+				.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
+				.use(API.v1.router),
+		)
 		.use(API.default.router).router;
 
 	(WebApp.connectHandlers as ReturnType<typeof express>).use(rootRouter);
