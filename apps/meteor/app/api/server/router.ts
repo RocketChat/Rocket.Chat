@@ -93,13 +93,16 @@ export class Router<
 					body,
 					statusCode = 200,
 					headers = {},
-				} = await action.apply({
-					urlParams: req.params,
-					queryParams: req.query,
-					bodyParams: req.body,
-					request: req,
-					response: res,
-				} as any);
+				} = await action.apply(
+					{
+						urlParams: req.params,
+						queryParams: req.query,
+						bodyParams: req.body,
+						request: req,
+						response: res,
+					} as any,
+					[req],
+				);
 
 				const responseHeaders = Object.fromEntries(
 					Object.entries({
@@ -202,7 +205,7 @@ export class Router<
 			const prev = this.middleware;
 			this.middleware = (router: express.Router) => {
 				prev(router);
-				router.use(innerRouter.base, innerRouter.router);
+				router.use(innerRouter.router);
 			};
 		}
 		if (typeof innerRouter === 'function') {
@@ -218,7 +221,10 @@ export class Router<
 	get router(): express.Router {
 		// eslint-disable-next-line new-cap
 		const router = express.Router();
-		this.middleware(router);
+		// eslint-disable-next-line new-cap
+		const innerRouter = express.Router();
+		this.middleware(innerRouter);
+		router.use(this.base, innerRouter);
 		return router;
 	}
 }

@@ -272,4 +272,5 @@ type Results<TResponse extends TypedOptions['response']> = {
 
 export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
 	this: TypedThis<TOptions, TPath>,
+	request: Request,
 ) => PromiseOrValue<Results<TOptions['response']>>;
