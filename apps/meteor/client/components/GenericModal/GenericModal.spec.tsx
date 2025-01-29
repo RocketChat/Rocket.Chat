@@ -11,7 +11,6 @@ const renderModal = (modalElement: ReactElement) => {
 	const {
 		result: { current: setModal },
 	} = renderHook(() => useSetModal(), {
-		legacyRoot: true,
 		wrapper: ({ children }) => (
 			<Suspense fallback={null}>
 				<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
