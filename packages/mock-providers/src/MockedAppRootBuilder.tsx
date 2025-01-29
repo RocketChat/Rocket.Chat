@@ -31,9 +31,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
 import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { MockedDeviceContext } from './MockedDeviceContext';
 
