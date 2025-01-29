@@ -42,8 +42,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 	let departmentId: string;
 
 	after(async () => {
-		await updateSetting('Omnichannel_enable_department_removal', false);
 		await deleteDepartment(departmentId);
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	it('should create a new department', async () => {
