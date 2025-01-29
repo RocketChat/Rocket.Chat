@@ -1,13 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
-import type { FilterOperators, FindCursor } from 'mongodb';
+import type { FindCursor, FindOptions, Filter } from 'mongodb';
 
 import { settings } from '../../app/settings/server';
 
 type FindUsersParam = {
 	rid: string;
-	status?: FilterOperators<string>;
+	status?: Filter<IUser>['status'];
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -15,7 +15,7 @@ type FindUsersParam = {
 };
 
 export function findUsersOfRoom({ rid, status, skip = 0, limit = 0, filter = '', sort }: FindUsersParam): FindPaginated<FindCursor<IUser>> {
-	const options = {
+	const options: FindOptions<IUser> = {
 		projection: {
 			name: 1,
 			username: 1,
