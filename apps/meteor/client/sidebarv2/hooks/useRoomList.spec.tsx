@@ -104,7 +104,6 @@ it('should return roomList, groupsCount and groupsList', async () => {
 			current: { roomList, groupsList, groupsCount },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({}).build(),
 	});
 
@@ -119,7 +118,6 @@ it('should return groupsCount with the correct count', async () => {
 			current: { groupsCount, roomList },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({}).build(),
 	});
 
@@ -135,7 +133,6 @@ it('should return roomList with the subscribed rooms and the correct length', as
 			current: { roomList },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({}).build(),
 	});
 	expect(roomList).toContain(fakeRooms[0]);
@@ -148,7 +145,6 @@ it('should return groupsList with "Conversations" if preference sidebarGroupByTy
 			current: { groupsList },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({}).build(),
 	});
 	expect(groupsList).toContain('Conversations');
@@ -161,7 +157,6 @@ it('should return groupsList with "Teams" if sidebarGroupByType is enabled and r
 			current: { groupsList, groupsCount },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 
@@ -176,7 +171,6 @@ it('should return groupsList with "Favorites" if sidebarShowFavorites is enabled
 			current: { groupsList, groupsCount },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarShowFavorites: true, sidebarGroupByType: true }).build(),
 	});
 
@@ -191,7 +185,6 @@ it('should return groupsList with "Discussions" if isDiscussionEnabled is enable
 			current: { groupsList, groupsCount },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ isDiscussionEnabled: true, sidebarGroupByType: true }).build(),
 	});
 
@@ -202,7 +195,6 @@ it('should return groupsList with "Discussions" if isDiscussionEnabled is enable
 
 it('should return groupsList without "Discussions" if isDiscussionEnabled is disabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ isDiscussionEnabled: false, sidebarGroupByType: true }).build(),
 	});
 	expect(result.current.groupsList).not.toContain('Discussions');
@@ -214,7 +206,6 @@ it('should remove corresponding items from roomList and return groupCount 0 when
 			current: { roomList, groupsCount, groupsList },
 		},
 	} = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 	const channelsIndex = groupsList.indexOf('Channels');
@@ -224,7 +215,6 @@ it('should remove corresponding items from roomList and return groupCount 0 when
 
 it('should always return groupsCount and groupsList with the same length', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 	expect(result.current.groupsCount.length).toEqual(result.current.groupsList.length);
@@ -232,7 +222,6 @@ it('should always return groupsCount and groupsList with the same length', async
 
 it('should return "Unread" group with the correct items if sidebarShowUnread is enabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarShowUnread: true, sidebarGroupByType: true }).build(),
 	});
 	const unreadIndex = result.current.groupsList.indexOf('Unread');
@@ -242,7 +231,6 @@ it('should return "Unread" group with the correct items if sidebarShowUnread is 
 
 it('should not include unread room in unread group if hideUnreadStatus is enabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({
 			sidebarShowUnread: true,
 			sidebarGroupByType: true,
@@ -261,7 +249,6 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 
 it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
 	});
 
@@ -281,7 +268,6 @@ it('should add to unread group when has thread unread, even if alert is false', 
 	} as unknown as SubscriptionWithRoom;
 
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({
 			sidebarGroupByType: true,
 			sidebarShowUnread: true,
@@ -299,7 +285,6 @@ it('should not add room to unread group if thread unread is an empty array', asy
 	} as unknown as SubscriptionWithRoom;
 
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		legacyRoot: true,
 		wrapper: getWrapperSettings({
 			sidebarGroupByType: true,
 			sidebarShowUnread: true,

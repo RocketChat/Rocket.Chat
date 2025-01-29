@@ -19,7 +19,7 @@ export default {
 	component: MessageComposer,
 } satisfies Meta<typeof MessageComposer>;
 
-const _MessageToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => (
+const MessageToolbarActions = () => (
 	<MessageComposerToolbarActions>
 		<MessageComposerAction icon='emoji' />
 		<MessageComposerActionsDivider />
@@ -40,11 +40,13 @@ const _MessageToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = ()
 	</MessageComposerToolbarActions>
 );
 
+export const MessageToolberActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+
 export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
-			<_MessageToolbarActions />
+			<MessageToolbarActions />
 		</MessageComposerToolbar>
 	</MessageComposer>
 );
@@ -64,7 +66,7 @@ export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
 		<MessageComposer>
 			<MessageComposerInput placeholder='Text' value='Lorem ipsum dolor' />
 			<MessageComposerToolbar>
-				<_MessageToolbarActions />
+				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
 					<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
 				</MessageComposerToolbarSubmit>
@@ -77,7 +79,7 @@ export const MessageComposerWithSubmitActions: StoryFn<typeof MessageComposer> =
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
-			<_MessageToolbarActions />
+			<MessageToolbarActions />
 			<MessageComposerToolbarSubmit>
 				<Button small>Preview</Button>
 				<Button primary small>
