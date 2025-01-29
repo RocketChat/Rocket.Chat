@@ -21,13 +21,13 @@ const ModalRegion = (): ReactElement | null => {
 
 	return (
 		<ModalPortal>
-			<Suspense fallback={null}>
-				<ModalBackdrop onDismiss={handleDismiss}>
+			<ModalBackdrop onDismiss={handleDismiss}>
+				<Suspense fallback={null}>
 					<FocusScope contain restoreFocus autoFocus>
-						<Suspense fallback={<div />}>{currentModal}</Suspense>
+						{currentModal}
 					</FocusScope>
-				</ModalBackdrop>
-			</Suspense>
+				</Suspense>
+			</ModalBackdrop>
 		</ModalPortal>
 	);
 };
