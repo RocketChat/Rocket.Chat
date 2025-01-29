@@ -70,7 +70,7 @@ const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2
 };
 
 export class E2ERoom extends Emitter {
-	state: E2ERoomState = E2ERoomState.NOT_STARTED;
+	state: any = undefined;
 
 	[PAUSED]: boolean | undefined = undefined;
 
