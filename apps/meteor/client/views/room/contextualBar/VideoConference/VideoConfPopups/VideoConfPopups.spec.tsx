@@ -16,7 +16,6 @@ test('should render video conference incoming popup', async () => {
 			.withEndpoint('GET', '/v1/video-conference.info', () => fakeDirectVideoConfCall as any)
 			.withIncomingCalls([fakeIncomingCall])
 			.build(),
-		legacyRoot: true,
 	});
 
 	expect(await screen.findByRole('dialog')).toBeInTheDocument();
