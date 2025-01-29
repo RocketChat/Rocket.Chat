@@ -33,6 +33,8 @@ RUN set -x \
     # && npm install isolated-vm@4.6.0 \
     # && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # # End hack for isolated-vm
+    && cd /app/bundle/programs/server/npm/node_modules/meteor/webapp \
+    && npm install useragent-ng@2.4.4 --no-save \
     && cd /app/bundle/programs/server/npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \
