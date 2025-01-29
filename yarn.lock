@@ -8367,7 +8367,6 @@ __metadata:
     "@types/textarea-caret": "npm:^3.0.3"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@types/underscore": "npm:^1.13.0"
-    "@types/use-sync-external-store": "npm:^0.0.6"
     "@types/uuid": "npm:^10.0.0"
     "@types/xml-crypto": "npm:~1.4.6"
     "@types/xml-encryption": "npm:~1.2.4"
@@ -8573,7 +8572,6 @@ __metadata:
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
     url-polyfill: "npm:^1.1.12"
-    use-sync-external-store: "npm:^1.2.2"
     uuid: "npm:^11.0.3"
     webdav: "npm:^4.11.4"
     xml-crypto: "npm:~3.1.0"
@@ -8593,13 +8591,11 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:*"
     "@storybook/react": "npm:^8.4.4"
     "@tanstack/react-query": "npm:~5.65.1"
-    "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
     react: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     typescript: "npm:~5.7.2"
-    use-sync-external-store: "npm:~1.2.2"
   peerDependencies:
     "@tanstack/react-query": "*"
     react: "*"
@@ -9270,13 +9266,11 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/react": "npm:~18.3.17"
     "@types/react-dom": "npm:~18.3.5"
-    "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     react: "npm:~18.3.1"
     typescript: "npm:~5.7.2"
-    use-sync-external-store: "npm:^1.2.2"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
@@ -9285,7 +9279,6 @@ __metadata:
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:^"
     react: ~17.0.2
-    use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -9390,7 +9383,6 @@ __metadata:
     "@rocket.chat/ui-contexts": 14.0.1
     react: ~17.0.2
     react-dom: ^17.0.2
-    use-sync-external-store: ^1.2.0
   languageName: unknown
   linkType: soft
 
@@ -38405,7 +38397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.2, use-sync-external-store@npm:~1.2.2":
+"use-sync-external-store@npm:1.2.2":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"
   peerDependencies:
