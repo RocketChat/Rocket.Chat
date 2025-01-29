@@ -84,7 +84,7 @@ describe('LIVECHAT - rooms', () => {
 		room = await createLivechatRoom(visitor.token);
 	});
 	after(async () => {
-		await updateSetting('Omnichannel_enable_department_removal', true);
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/room', () => {
