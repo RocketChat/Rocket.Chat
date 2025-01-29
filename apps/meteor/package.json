@@ -361,7 +361,7 @@
 		"is-svg": "^5.1.0",
 		"isolated-vm": "5.0.1",
 		"jschardet": "^3.1.4",
-		"jsdom": "^16.7.0",
+		"jsdom": "^20.0.3",
 		"jsrsasign": "^11.1.0",
 		"juice": "^8.1.0",
 		"katex": "~0.16.21",
