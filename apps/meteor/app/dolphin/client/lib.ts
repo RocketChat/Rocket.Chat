@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
-import { settings } from '../../settings/client';
 
 const config = {
 	serverURL: '',
@@ -19,11 +18,14 @@ const config = {
 
 const Dolphin = new CustomOAuth('dolphin', config);
 
-Meteor.startup(() =>
-	Tracker.autorun(() => {
-		if (settings.get('Accounts_OAuth_Dolphin_URL')) {
-			config.serverURL = settings.get('Accounts_OAuth_Dolphin_URL');
-			return Dolphin.configure(config);
+export const useDolphin = () => {
+	const enabled = useSetting('Accounts_OAuth_Dolphin');
+	const url = useSetting('Accounts_OAuth_Dolphin_URL') as string;
+
+	useEffect(() => {
+		if (enabled) {
+			config.serverURL = url;
+			Dolphin.configure(config);
 		}
-	}),
-);
+	}, [enabled, url]);
+};
