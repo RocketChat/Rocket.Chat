@@ -40,7 +40,7 @@ describe('useGetMore', () => {
 
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
 
-		const { unmount } = renderHook(() => useGetMore('room-id', atBottomRef), { legacyRoot: true });
+		const { unmount } = renderHook(() => useGetMore('room-id', atBottomRef));
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
 		expect(RoomHistoryManager.getMore).toHaveBeenCalledWith('room-id');
@@ -72,7 +72,7 @@ describe('useGetMore', () => {
 		};
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
 
-		renderHook(() => useGetMore('room-id', atBottomRef), { legacyRoot: true });
+		renderHook(() => useGetMore('room-id', atBottomRef));
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
 		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id', atBottomRef);
