@@ -15,9 +15,10 @@ export const metricsMiddleware =
 			entrypoint: path.startsWith('method.call') ? decodeURIComponent(req.url.slice(8)) : path,
 		});
 
-		await next();
-
-		rocketchatRestApiEnd({
-			status: res.statusCode,
+		res.once('finish', () => {
+			rocketchatRestApiEnd({
+				status: res.statusCode,
+			});
 		});
+		next();
 	};

@@ -18,8 +18,11 @@ export const tracerSpanMiddleware = async (req: Request, res: Response, next: Ne
 					res.setHeader('X-Trace-Id', span.spanContext().traceId);
 				}
 
-				await next();
+				next();
 
+				await new Promise((resolve) => {
+					res.once('finish', resolve);
+				});
 				span?.setAttribute('status', res.statusCode);
 			},
 		);

@@ -17,11 +17,12 @@ export const loggerMiddleware = (logger: Logger) => async (req: Request, res: Re
 		remoteIP: req.ip,
 		...getRestPayload(req.body),
 	});
-
-	await next();
-
-	log.http({
-		status: res.statusCode,
-		responseTime: Date.now() - startTime,
+	res.once('finish', () => {
+		log.http({
+			status: res.statusCode,
+			responseTime: Date.now() - startTime,
+		});
 	});
+
+	next();
 };
