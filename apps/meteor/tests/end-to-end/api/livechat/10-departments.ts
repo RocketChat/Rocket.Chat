@@ -458,13 +458,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('DELETE livechat/department/:_id', () => {
-		before(async () => {
-			await updateSetting('Omnichannel_enable_department_removal', true);
-		});
-		after(async () => {
-			await updateSetting('Omnichannel_enable_department_removal', false);
-		});
-
 		describe('With setting disabled', () => {
 			before(async () => {
 				await updateSetting('Omnichannel_enable_department_removal', false);
