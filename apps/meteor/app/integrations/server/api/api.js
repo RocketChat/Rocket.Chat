@@ -277,11 +277,7 @@ class WebHookAPI extends APIClass {
 			};
 		}
 
-		const user = await Users.findOne({
-			_id: request.integration.userId,
-		});
-
-		return user;
+		return Users.findOneById(request.integration.userId);
 	}
 
 	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
