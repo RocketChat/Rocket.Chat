@@ -1,18 +1,17 @@
 import { isOTRMessage } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
-import OTR from '../../app/otr/client/OTR';
-import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { t } from '../../app/utils/lib/i18n';
-import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../lib/onClientMessageReceived';
+import OTR from '../../../../app/otr/client/OTR';
+import { OtrRoomState } from '../../../../app/otr/lib/OtrRoomState';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../../app/utils/lib/i18n';
+import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const uid = Meteor.userId();
-
+export const useOTR = () => {
+	const uid = useUserId();
+	useEffect(() => {
 		if (!uid) {
 			return;
 		}
@@ -25,11 +24,11 @@ Meteor.startup(() => {
 			const otrRoom = OTR.getInstanceByRoomId(uid, data.roomId);
 			otrRoom?.onUserStream(type, data);
 		});
-	});
+
+		return sdk.stop('notify-user', `${uid}/otr`);
+	}, [uid]);
 
 	onClientBeforeSendMessage.use(async (message) => {
-		const uid = Meteor.userId();
-
 		if (!uid) {
 			return message;
 		}
@@ -44,8 +43,6 @@ Meteor.startup(() => {
 	});
 
 	onClientMessageReceived.use(async (message) => {
-		const uid = Meteor.userId();
-
 		if (!uid) {
 			return message;
 		}
@@ -78,7 +75,7 @@ Meteor.startup(() => {
 				if (ack === otrAck.text) {
 					return { ...message, _id, t: 'otr-ack', msg };
 				}
-			} else if (userId !== Meteor.userId()) {
+			} else if (userId !== uid) {
 				const encryptedAck = await otrRoom.encryptText(ack);
 
 				void sdk.call('updateOTRAck', { message, ack: encryptedAck });
@@ -90,4 +87,4 @@ Meteor.startup(() => {
 
 		return message;
 	});
-});
+};
