@@ -8527,7 +8527,7 @@ __metadata:
     stylelint-selector-bem-pattern: "npm:^4.0.1"
     supertest: "npm:^7.0.0"
     supports-color: "npm:~7.2.0"
-    suretype: "npm:^3.3.1"
+    suretype: "npm:~3.3.1"
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -36264,7 +36264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"suretype@npm:^3.3.1":
+"suretype@npm:~3.3.1":
   version: 3.3.1
   resolution: "suretype@npm:3.3.1"
   dependencies:
