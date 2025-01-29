@@ -53,7 +53,12 @@ const permitedMutations: Mutations = {
 	],
 };
 
-const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2ERoomState | false => {
+const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERoomState): E2ERoomState | false => {
+	// When state is undefined, allow it to be moved
+	if (!currentState) {
+		return nextState;
+	}
+
 	if (currentState === nextState) {
 		return nextState === E2ERoomState.ERROR ? E2ERoomState.ERROR : false;
 	}
@@ -70,7 +75,7 @@ const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2
 };
 
 export class E2ERoom extends Emitter {
-	state: any = undefined;
+	state: E2ERoomState | undefined = undefined;
 
 	[PAUSED]: boolean | undefined = undefined;
 
@@ -329,6 +334,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const room = Rooms.findOne({ _id: this.roomId })!;
 			if (!room.e2eKeyId) {
 				this.setState(E2ERoomState.CREATING_KEYS);
