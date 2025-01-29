@@ -1,5 +1,19 @@
 # @rocket.chat/queue-worker
 
+## 0.4.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f9e531fce6c0a9e8b9e1836eecfea189f6626bea]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.3.9
+  - @rocket.chat/core-typings@7.2.1
+  - @rocket.chat/core-services@0.7.4
+  - @rocket.chat/model-typings@1.2.1
+  - @rocket.chat/network-broker@0.1.4
+  - @rocket.chat/models@1.1.1
+  </details>
+
 ## 0.4.11
 
 ### Patch Changes

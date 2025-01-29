@@ -11,6 +11,7 @@ import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { calculateRoomRolePriorityFromRoles, syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -48,6 +49,7 @@ async function createUsersSubscriptions({
 		};
 
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, owner, extra);
+		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
 
 		if (insertedId) {
 			await notifyOnRoomChanged(room, 'inserted');
@@ -59,6 +61,8 @@ async function createUsersSubscriptions({
 	const subs = [];
 
 	const memberIds = [];
+
+	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
 	const membersCursor = Users.findUsersByUsernames<Pick<IUser, '_id' | 'username' | 'settings' | 'federated' | 'roles'>>(members, {
 		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
@@ -95,6 +99,10 @@ async function createUsersSubscriptions({
 				...getDefaultSubscriptionPref(member),
 			},
 		});
+
+		if (extra.roles) {
+			memberIdAndRolePriorityMap[member._id] = calculateRoomRolePriorityFromRoles(extra.roles);
+		}
 	}
 
 	if (!['d', 'l'].includes(room.t)) {
@@ -102,6 +110,7 @@ async function createUsersSubscriptions({
 	}
 
 	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
+	await Users.assignRoomRolePrioritiesByUserIdPriorityMap(memberIdAndRolePriorityMap, room._id);
 
 	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
