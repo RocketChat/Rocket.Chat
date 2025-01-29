@@ -1104,7 +1104,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			// Exclude away users
 			status: UserStatus.ONLINE,
 			// Exclude users that are already available, maybe due to other business hour
-			statusLivechat: ILivechatAgentStatus.AVAILABLE,
+			statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
 		};
 
 		return this.find<T>(query);
