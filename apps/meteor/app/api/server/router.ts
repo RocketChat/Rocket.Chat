@@ -85,7 +85,6 @@ export class Router<
 		const prev = this.middleware;
 		this.middleware = (router: express.Router) => {
 			prev(router);
-			// console.log('MIDDLEWARE', method, subpath);
 			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
 				const {
 					body,
