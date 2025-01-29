@@ -1007,22 +1007,19 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 Meteor.startup(() => {
-	const rootRouter = new Router('/')
-		.use((_req, res, next) => {
-			res.removeHeader('X-Powered-By');
-			next();
-		})
-		.use(
-			API.api
-				.use(cors(settings))
-				.use(loggerMiddleware(logger))
-				.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
-				.use(tracerSpanMiddleware)
-				.use(API.v1.router),
-		)
-		.use(API.default.router).router;
-
-	(WebApp.connectHandlers as ReturnType<typeof express>).use(rootRouter);
+	(WebApp.connectHandlers as ReturnType<typeof express>).use(
+		API.api
+			.use((_req, res, next) => {
+				res.removeHeader('X-Powered-By');
+				next();
+			})
+			.use(cors(settings))
+			.use(loggerMiddleware(logger))
+			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
+			.use(tracerSpanMiddleware)
+			.use(API.v1.router)
+			.use(API.default.router).router,
+	);
 });
 
 (WebApp.connectHandlers as ReturnType<typeof express>)

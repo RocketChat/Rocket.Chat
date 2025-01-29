@@ -3,8 +3,6 @@ import express from 'express';
 
 import type { TypedAction, TypedOptions } from './definition';
 
-export type ExtractRouterEndpoints<TRoute extends Router<any, any>> = TRoute extends Router<any, infer TOperations> ? TOperations : never;
-
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -254,3 +252,5 @@ type Filter<
 		[x: string]: unknown;
 	},
 > = TOther extends { method: Method; path: string } ? TOther : never;
+
+export type ExtractRouterEndpoints<TRoute extends Router<any, any>> = TRoute extends Router<any, infer TOperations> ? TOperations : never;

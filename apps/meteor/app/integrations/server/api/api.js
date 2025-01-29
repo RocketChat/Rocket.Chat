@@ -5,7 +5,6 @@ import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
-import { Router } from '../../../api/server/router';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
@@ -465,5 +464,5 @@ Api.addRoute(
 );
 
 Meteor.startup(() => {
-	WebApp.connectHandlers.use(new Router('/').use(Api.router).router);
+	WebApp.connectHandlers.use(Api.router.router);
 });

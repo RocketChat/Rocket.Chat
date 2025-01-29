@@ -26,7 +26,6 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
-import { Router } from '../../../../app/api/server/router';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -58,7 +57,7 @@ export class AppsRestApi {
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as ReturnType<typeof express>).use(new Router('/').use(this.api.router).router);
+		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
