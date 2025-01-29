@@ -132,6 +132,11 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		// bots should be able to skip the queue and the routing check
+		if (agent && (await allowAgentSkipQueue(agent))) {
+			return LivechatInquiryStatus.READY;
+		}
+
 		if (settings.get('Livechat_waiting_queue')) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -140,7 +145,7 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
-		if (!agent || !(await allowAgentSkipQueue(agent))) {
+		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
