@@ -980,7 +980,9 @@ export const API: {
 		apiPath: '',
 		version: 'v1',
 	}),
-	default: createApi(),
+	default: createApi({
+		apiPath: '',
+	}),
 };
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
