@@ -13,19 +13,24 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { ignoreUser } from '../../../../server/methods/ignoreUser';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
-import { pinMessage } from '../../../message-pin/server/pinMessage';
+import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
+import { starMessage } from '../../../message-star/server/starMessage';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
+import { followMessage } from '../../../threads/server/methods/followMessage';
+import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -128,7 +133,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "msgId" query parameter must be provided.');
 			}
 
-			const msg = await Meteor.callAsync('getSingleMessage', this.queryParams.msgId);
+			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
 
 			if (!msg) {
 				return API.v1.failure();
@@ -274,7 +279,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.callAsync('starMessage', {
+			await starMessage(this.userId, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
@@ -300,7 +305,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.callAsync('unpinMessage', msg);
+			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
 		},
@@ -322,7 +327,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.callAsync('starMessage', {
+			await starMessage(this.userId, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
@@ -442,7 +447,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
 			}
 
-			await Meteor.callAsync('ignoreUser', { rid, userId, ignore });
+			await ignoreUser(this.userId, { rid, userId, ignore });
 
 			return API.v1.success();
 		},
@@ -719,7 +724,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await Meteor.callAsync('followMessage', { mid });
+			await followMessage(this.userId, { mid });
 
 			return API.v1.success();
 		},
@@ -737,7 +742,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await Meteor.callAsync('unfollowMessage', { mid });
+			await unfollowMessage(this.userId, { mid });
 
 			return API.v1.success();
 		},
