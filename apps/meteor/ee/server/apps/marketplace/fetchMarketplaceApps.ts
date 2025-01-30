@@ -134,7 +134,7 @@ const fetchMarketplaceAppsSchema = v.array(
 	}),
 );
 
-const assertWorkspaceCommPayload = compile(fetchMarketplaceAppsSchema);
+const assertMarketplaceAppsSchema = compile(fetchMarketplaceAppsSchema);
 
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
 	const baseUrl = Apps.getMarketplaceUrl();
@@ -158,7 +158,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	if (request.status === 200) {
 		const response = await request.json();
-		assertWorkspaceCommPayload(response);
+		assertMarketplaceAppsSchema(response);
 		return response;
 	}
 
