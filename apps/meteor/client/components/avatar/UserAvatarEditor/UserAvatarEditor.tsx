@@ -1,10 +1,9 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useState, useCallback } from 'react';
+import { useId, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -28,7 +27,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
-	const imageUrlField = useUniqueId();
+	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
