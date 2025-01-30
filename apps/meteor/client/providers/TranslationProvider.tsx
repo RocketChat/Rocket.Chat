@@ -8,7 +8,7 @@ import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { getURL } from '../../app/utils/client';
@@ -169,12 +169,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
-			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
-				en: key,
-				name: getLanguageName(key, language),
-				ogName: getLanguageName(key, key),
-				key,
-			})),
+			...[...new Set([...i18nextInstance.languages, ...languages])]
+				.map((key) => ({
+					en: key,
+					name: getLanguageName(key, language),
+					ogName: getLanguageName(key, key),
+					key,
+				}))
+				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
 		],
 		[language, i18nextInstance],
 	);

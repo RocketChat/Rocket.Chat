@@ -52,7 +52,7 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	get infoContactEmail(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-email"]');
+		return this.page.getByRole('dialog').locator('p[data-type="email"]');
 	}
 
 	get infoContactName(): Locator {

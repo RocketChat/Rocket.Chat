@@ -16,7 +16,6 @@ import {
 	Accordion,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -27,7 +26,7 @@ import {
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -194,15 +193,15 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
 	);
 
-	const createChannelFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const federatedId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createChannelFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const federatedId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal

@@ -4,7 +4,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
-import React, { useMemo, memo } from 'react';
+import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
@@ -152,7 +152,7 @@ const SettingsGroupPage = ({
 							</Box>
 						)}
 
-						<Accordion className='page-settings'>{children}</Accordion>
+						<Accordion>{children}</Accordion>
 					</Box>
 				</PageScrollableContentWithShadow>
 			)}

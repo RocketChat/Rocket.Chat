@@ -1,9 +1,9 @@
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { Box, Icon, Palette, StatusBullet } from '@rocket.chat/fuselage';
+import { Icon, Palette } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
@@ -13,7 +13,10 @@ type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 	showUnprioritized?: boolean;
 };
 
-const PRIORITY_ICONS: Record<number, { iconName: Keys; color: string }> = {
+export const PRIORITY_ICONS: Record<number, { iconName: Keys; color?: string }> = {
+	[LivechatPriorityWeight.NOT_SPECIFIED]: {
+		iconName: 'circle-unfilled',
+	},
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
 		color: Palette.badge['badge-background-level-4'].toString(),
@@ -51,12 +54,8 @@ export const PriorityIcon = ({ level, size = 20, showUnprioritized = false, ...p
 		return dirty ? name : t(i18n as TranslationKey);
 	}, [level, priorities, t]);
 
-	if (showUnprioritized && level === LivechatPriorityWeight.NOT_SPECIFIED) {
-		return (
-			<Box is='i' mi='4px' title={t('Unprioritized')}>
-				<StatusBullet status='offline' />
-			</Box>
-		);
+	if (!showUnprioritized && level === LivechatPriorityWeight.NOT_SPECIFIED) {
+		return null;
 	}
 
 	return iconName ? <Icon {...props} name={iconName} color={color} size={size} title={name} /> : null;

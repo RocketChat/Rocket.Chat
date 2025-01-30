@@ -1,6 +1,5 @@
 import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -14,8 +13,8 @@ type AddLinkComposerActionModalProps = {
 
 const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLinkComposerActionModalProps) => {
 	const { t } = useTranslation();
-	const textField = useUniqueId();
-	const urlField = useUniqueId();
+	const textField = useId();
+	const urlField = useId();
 
 	const { handleSubmit, setFocus, control } = useForm({
 		mode: 'onBlur',

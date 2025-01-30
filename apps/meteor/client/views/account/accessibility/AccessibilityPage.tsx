@@ -3,6 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
 	Accordion,
+	AccordionItem,
 	Box,
 	Button,
 	ButtonGroup,
@@ -15,11 +16,10 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -47,13 +47,13 @@ const AccessibilityPage = () => {
 		[t],
 	);
 
-	const pageFormId = useUniqueId();
-	const fontSizeId = useUniqueId();
-	const mentionsWithSymbolId = useUniqueId();
-	const clockModeId = useUniqueId();
-	const hideUsernamesId = useUniqueId();
-	const hideRolesId = useUniqueId();
-	const linkListId = useUniqueId();
+	const pageFormId = useId();
+	const fontSizeId = useId();
+	const mentionsWithSymbolId = useId();
+	const clockModeId = useId();
+	const hideUsernamesId = useId();
+	const hideRolesId = useId();
+	const linkListId = useId();
 
 	const {
 		formState: { isDirty, dirtyFields, isSubmitting },
@@ -109,7 +109,7 @@ const AccessibilityPage = () => {
 						</ul>
 					</Box>
 					<Accordion>
-						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
+						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
@@ -131,8 +131,8 @@ const AccessibilityPage = () => {
 									</Field>
 								);
 							})}
-						</Accordion.Item>
-						<Accordion.Item title={t('Adjustable_layout')}>
+						</AccordionItem>
+						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
@@ -151,7 +151,7 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
+										<FieldLabel htmlFor={mentionsWithSymbolId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'
@@ -220,7 +220,7 @@ const AccessibilityPage = () => {
 									</Field>
 								)}
 							</FieldGroup>
-						</Accordion.Item>
+						</AccordionItem>
 					</Accordion>
 				</Box>
 			</PageScrollableContentWithShadow>

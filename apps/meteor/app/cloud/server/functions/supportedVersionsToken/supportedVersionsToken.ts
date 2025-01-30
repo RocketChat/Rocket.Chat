@@ -12,6 +12,7 @@ import { supportedVersions as supportedVersionsFromBuild } from '../../../../uti
 import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
+import { updateAuditedBySystem } from '../../../../../server/settings/lib/auditedSettingUpdates';
 
 declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
@@ -66,7 +67,15 @@ const cacheValueInSettings = <T extends SettingValue>(
 		SystemLogger.debug(`Resetting cached value ${key} in settings`);
 		const value = await fn();
 
-		(await Settings.updateValueById(key, value)).modifiedCount && void notifyOnSettingChangedById(key);
+		if (
+			(
+				await updateAuditedBySystem({
+					reason: 'cacheValueInSettings reset',
+				})(Settings.updateValueById, key, value)
+			).modifiedCount
+		) {
+			void notifyOnSettingChangedById(key);
+		}
 
 		return value;
 	};

@@ -1,14 +1,18 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
+
+type CustomUserStatusFormFormData = {
+	name: string;
+	statusType: string;
+};
 
 type CustomUserStatusFormProps = {
 	onClose: () => void;
@@ -18,29 +22,34 @@ type CustomUserStatusFormProps = {
 
 const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFormProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, name, statusType } = status || {};
+	const { _id } = status || {};
 	const setModal = useSetModal();
 	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const formId = useUniqueId();
+	const formId = useId();
 
 	const {
 		register,
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
+	} = useForm<CustomUserStatusFormFormData>({
 		defaultValues: { name: status?.name ?? '', statusType: status?.statusType ?? '' },
 		mode: 'all',
 	});
 
-	const saveStatus = useEndpoint('POST', _id ? '/v1/custom-user-status.update' : '/v1/custom-user-status.create');
+	const createStatus = useEndpoint('POST', '/v1/custom-user-status.create');
+	const updateStatus = useEndpoint('POST', '/v1/custom-user-status.update');
 	const deleteStatus = useEndpoint('POST', '/v1/custom-user-status.delete');
 
 	const handleSave = useCallback(
-		async (data) => {
+		async (data: CustomUserStatusFormFormData) => {
 			try {
-				await saveStatus({ _id, name, statusType, ...data });
+				if (status?._id) {
+					await updateStatus({ _id: status?._id, ...data });
+				} else {
+					await createStatus({ ...data });
+				}
 
 				dispatchToastMessage({
 					type: 'success',
@@ -53,7 +62,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[saveStatus, _id, name, statusType, route, dispatchToastMessage, t, onReload],
+		[status?._id, dispatchToastMessage, t, onReload, route, updateStatus, createStatus],
 	);
 
 	const handleDeleteStatus = useCallback(() => {
@@ -63,7 +72,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteStatus({ customUserStatusId: _id || '' });
+				await deleteStatus({ customUserStatusId: status?._id ?? '' });
 				dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Has_Been_Deleted') });
 				onReload();
 				route.push({});
@@ -74,12 +83,12 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			}
 		};
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_User_Status_Delete_Warning')}
-			</GenericModal>
-		));
-	}, [_id, route, deleteStatus, dispatchToastMessage, onReload, setModal, t]);
+			</GenericModal>,
+		);
+	}, [status?._id, route, deleteStatus, dispatchToastMessage, onReload, setModal, t]);
 
 	const presenceOptions: SelectOption[] = [
 		['online', t('Online')],

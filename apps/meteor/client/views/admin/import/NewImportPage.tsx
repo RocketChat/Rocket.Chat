@@ -1,10 +1,10 @@
 import { Box, Button, ButtonGroup, Callout, Chip, Field, Margins, Select, InputBox, TextInput, UrlInput } from '@rocket.chat/fuselage';
-import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
@@ -21,7 +21,9 @@ function NewImportPage() {
 	const [fileType, setFileType] = useSafely(useState('upload'));
 
 	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isLoading: isLoadingImporters } = useQuery(['importers'], async () => listImportersEndpoint(), {
+	const { data: importers, isPending: isLoadingImporters } = useQuery({
+		queryKey: ['importers'],
+		queryFn: async () => listImportersEndpoint(),
 		refetchOnWindowFocus: false,
 	});
 
@@ -175,9 +177,9 @@ function NewImportPage() {
 		}
 	};
 
-	const importerKeySelectId = useUniqueId();
-	const fileTypeSelectId = useUniqueId();
-	const fileSourceInputId = useUniqueId();
+	const importerKeySelectId = useId();
+	const fileTypeSelectId = useId();
+	const fileSourceInputId = useId();
 	const handleImportButtonClick =
 		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
 		(fileType === 'url' && handleFileUrlImportButtonClick) ||
@@ -185,7 +187,7 @@ function NewImportPage() {
 		undefined;
 
 	return (
-		<Page className='page-settings'>
+		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (

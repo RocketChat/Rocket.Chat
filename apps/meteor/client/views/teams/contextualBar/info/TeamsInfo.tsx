@@ -1,10 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useTeamActions } from './useTeamActions';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -25,105 +26,23 @@ import {
 } from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
-import type { Action } from '../../../hooks/useActionSpread';
-import { useActionSpread } from '../../../hooks/useActionSpread';
+import { useSplitRoomActions } from '../../../room/contextualBar/Info/hooks/useSplitRoomActions';
 import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	onClickHide?: () => void;
-	onClickClose?: () => void;
-	onClickLeave?: () => void;
 	onClickEdit?: () => void;
-	onClickDelete?: () => void;
+	onClickClose?: () => void;
 	onClickViewChannels: () => void;
-	onClickConvertToChannel?: () => void;
 };
 
-const TeamsInfo = ({
-	room,
-	onClickHide,
-	onClickClose,
-	onClickLeave,
-	onClickEdit,
-	onClickDelete,
-	onClickViewChannels,
-	onClickConvertToChannel,
-}: TeamsInfoProps): ReactElement => {
+const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);
+	const memoizedActions = useTeamActions(room, { onClickEdit });
 
-	const memoizedActions = useMemo(
-		() => ({
-			...(onClickEdit && {
-				edit: {
-					label: t('Edit'),
-					action: onClickEdit,
-					icon: 'edit' as const,
-				},
-			}),
-			...(onClickDelete && {
-				delete: {
-					label: t('Delete'),
-					action: onClickDelete,
-					icon: 'trash' as const,
-				},
-			}),
-			...(onClickConvertToChannel && {
-				convertToChannel: {
-					label: t('Convert_to_channel'),
-					action: onClickConvertToChannel,
-					icon: 'hash' as const,
-				},
-			}),
-			...(onClickHide && {
-				hide: {
-					label: t('Hide'),
-					action: onClickHide,
-					icon: 'eye-off' as const,
-				},
-			}),
-			...(onClickLeave && {
-				leave: {
-					label: t('Leave'),
-					action: onClickLeave,
-					icon: 'sign-out' as const,
-				},
-			}),
-		}),
-		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete, onClickConvertToChannel],
-	);
-
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
-
-	const menu = useMemo(() => {
-		if (!menuOptions) {
-			return null;
-		}
-
-		return (
-			<Menu
-				small={false}
-				flexShrink={0}
-				flexGrow={0}
-				key='menu'
-				maxHeight='initial'
-				title={t('More')}
-				secondary
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-				options={menuOptions}
-			/>
-		);
-	}, [t, menuOptions]);
-
-	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
-			<InfoPanelAction key={key} label={label as string} onClick={action} icon={icon} />
-		);
-
-		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu]);
+	const { buttons: actions, menu } = useSplitRoomActions(memoizedActions);
 
 	return (
 		<>
@@ -139,7 +58,20 @@ const TeamsInfo = ({
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanelAvatar>
 
-						<InfoPanelActionGroup>{actions}</InfoPanelActionGroup>
+						<InfoPanelActionGroup>
+							{actions.items.map(({ id, content, icon, onClick }) => (
+								<InfoPanelAction key={id} label={content} onClick={onClick} icon={icon} />
+							))}
+							{menu && (
+								<GenericMenu
+									title={t('More')}
+									placement='bottom-end'
+									detached
+									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
+									sections={menu}
+								/>
+							)}
+						</InfoPanelActionGroup>
 					</InfoPanelSection>
 
 					<InfoPanelSection>

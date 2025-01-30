@@ -14,10 +14,10 @@ import {
 	FieldRow,
 	CheckOption,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';
@@ -33,6 +33,19 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
+
+type UnitEditFormData = {
+	name: string;
+	visibility: string;
+	departments: {
+		value: string;
+		label: string;
+	}[];
+	monitors: {
+		value: string;
+		label: string;
+	}[];
+};
 
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
@@ -97,7 +110,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		formState: { errors, isDirty },
 		handleSubmit,
 		watch,
-	} = useForm({
+	} = useForm<UnitEditFormData>({
 		mode: 'onBlur',
 		values: {
 			name: unitData?.name || '',
@@ -127,7 +140,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		return [...mappedMonitorsItems, ...pending];
 	}, [monitors, monitorsItems]);
 
-	const handleSave = useMutableCallback(async ({ name, visibility }) => {
+	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
 		const monitorsData = monitors.map((monitor) => ({
@@ -138,18 +151,20 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		try {
 			await saveUnit(_id as unknown as string, { name, visibility }, monitorsData, departmentsData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-units']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-units'],
+			});
 			router.navigate('/omnichannel/units');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const visibilityField = useUniqueId();
-	const departmentsField = useUniqueId();
-	const monitorsField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const visibilityField = useId();
+	const departmentsField = useId();
+	const monitorsField = useId();
 
 	return (
 		<Contextualbar data-qa-id='units-contextual-bar'>

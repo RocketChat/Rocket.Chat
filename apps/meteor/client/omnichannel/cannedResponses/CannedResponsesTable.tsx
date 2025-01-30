@@ -1,9 +1,9 @@
 import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
@@ -52,17 +52,19 @@ const CannedResponsesTable = () => {
 		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
 	);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess } = useQuery(['getCannedResponses', query], () => getCannedResponses(query), {
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['getCannedResponses', query],
+		queryFn: () => getCannedResponses(query),
 		refetchOnWindowFocus: false,
 	});
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/canned-responses/new'));
 
-	const onRowClick = useMutableCallback((id, scope) => (): void => {
+	const onRowClick = useEffectEvent((id: string, scope: string) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
 			return dispatchToastMessage({
 				type: 'error',

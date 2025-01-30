@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useInstallApp } from './hooks/useInstallApp';
@@ -28,7 +27,7 @@ const AppInstallPage = () => {
 		});
 	}, [router]);
 
-	const fileField = useUniqueId();
+	const fileField = useId();
 
 	return (
 		<Page flexDirection='column'>

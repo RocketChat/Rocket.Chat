@@ -4,6 +4,7 @@ import type { IRoom } from '../rooms';
 import type { BlockBuilder } from '../uikit';
 import type { IBotUser } from '../users/IBotUser';
 import type { AppVideoConference } from '../videoConferences';
+import type { IContactCreator } from './IContactCreator';
 import type { IDiscussionBuilder } from './IDiscussionBuilder';
 import type { IEmailCreator } from './IEmailCreator';
 import type { ILivechatCreator } from './ILivechatCreator';
@@ -30,6 +31,11 @@ export interface IModifyCreator {
      * Gets the creator object responsible for email sending
      */
     getEmailCreator(): IEmailCreator;
+
+    /**
+     * Gets the creator object responsible for contact related operations.
+     */
+    getContactCreator(): IContactCreator;
 
     /**
      * @deprecated please prefer the rocket.chat/ui-kit components

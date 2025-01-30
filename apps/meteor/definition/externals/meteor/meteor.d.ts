@@ -60,6 +60,9 @@ declare module 'meteor/meteor' {
 		}
 
 		interface IMeteorConnection {
+			httpHeaders: Record<string, any>;
+			referer: string;
+			clientAddress: string;
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;

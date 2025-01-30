@@ -1,8 +1,8 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
-import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, memo, useMemo, useRef } from 'react';
+import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupProps<
@@ -33,7 +33,7 @@ function ComposerBoxPopup<
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
 }: ComposerBoxPopupProps<T>): ReactElement | null {
 	const { t } = useTranslation();
-	const id = useUniqueId();
+	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
 	const popupSizes = useContentBoxSize(composerBoxPopupRef);
 

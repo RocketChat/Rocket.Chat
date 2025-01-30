@@ -1,9 +1,10 @@
-import type { IImportRecord, IImportUser, IImportMessage, IImportChannel } from '@rocket.chat/core-typings';
+import type { IImportRecord, IImportUser, IImportMessage, IImportChannel, IImportContact } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { ImportData } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
+import { ContactConverter } from './converters/ContactConverter';
 import { ConverterCache } from './converters/ConverterCache';
 import { type MessageConversionCallbacks, MessageConverter } from './converters/MessageConverter';
 import type { RecordConverter, RecordConverterOptions } from './converters/RecordConverter';
@@ -21,6 +22,8 @@ export class ImportDataConverter {
 
 	protected _messageConverter: MessageConverter;
 
+	protected _contactConverter: ContactConverter;
+
 	protected _cache = new ConverterCache();
 
 	public get options(): ConverterOptions {
@@ -34,6 +37,7 @@ export class ImportDataConverter {
 		};
 
 		this.initializeUserConverter(logger);
+		this.initializeContactConverter(logger);
 		this.initializeRoomConverter(logger);
 		this.initializeMessageConverter(logger);
 	}
@@ -74,6 +78,14 @@ export class ImportDataConverter {
 		this._userConverter = new UserConverter(userOptions, logger, this._cache);
 	}
 
+	protected initializeContactConverter(logger: Logger): void {
+		const contactOptions = {
+			...this.getRecordConverterOptions(),
+		};
+
+		this._contactConverter = new ContactConverter(contactOptions, logger, this._cache);
+	}
+
 	protected initializeRoomConverter(logger: Logger): void {
 		const roomOptions = {
 			...this.getRecordConverterOptions(),
@@ -90,6 +102,10 @@ export class ImportDataConverter {
 		this._messageConverter = new MessageConverter(messageOptions, logger, this._cache);
 	}
 
+	async addContact(data: IImportContact): Promise<void> {
+		return this._contactConverter.addObject(data);
+	}
+
 	async addUser(data: IImportUser): Promise<void> {
 		return this._userConverter.addObject(data);
 	}
@@ -102,6 +118,10 @@ export class ImportDataConverter {
 		return this._messageConverter.addObject(data, {
 			useQuickInsert: useQuickInsert || undefined,
 		});
+	}
+
+	async convertContacts(callbacks: IConversionCallbacks): Promise<void> {
+		return this._contactConverter.convertData(callbacks);
 	}
 
 	async convertUsers(callbacks: IConversionCallbacks): Promise<void> {
@@ -118,6 +138,7 @@ export class ImportDataConverter {
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
 		await this.convertUsers(callbacks);
+		await this.convertContacts(callbacks);
 		await this.convertChannels(startedByUserId, callbacks);
 		await this.convertMessages(callbacks);
 

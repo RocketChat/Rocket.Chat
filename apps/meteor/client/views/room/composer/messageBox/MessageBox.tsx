@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -15,9 +15,8 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import fileSize from 'filesize';
-import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import { memo, useRef, useReducer, useCallback, useState, useEffect, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -212,7 +211,11 @@ const MessageBox = ({
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
-			if (node === null || chat.composer) {
+			if (node === null && chat.composer) {
+				return chat.setComposerAPI();
+			}
+
+			if (chat.composer) {
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID));
@@ -224,7 +227,7 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
+	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -236,7 +239,7 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useMutableCallback(() => {
+	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading) {
 			setIsUploading(!isUploading);
 			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
@@ -266,7 +269,7 @@ const MessageBox = ({
 		}
 	};
 
-	const handler = useMutableCallback((event: KeyboardEvent) => {
+	const handler = useEffectEvent((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -372,9 +375,11 @@ const MessageBox = ({
 
 	const format = useFormatDateAndTime();
 
-	const joinMutation = useMutation(async () => onJoin?.());
+	const joinMutation = useMutation({
+		mutationFn: async () => onJoin?.(),
+	});
 
-	const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLTextAreaElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {
@@ -546,7 +551,7 @@ const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isLoading}>
+							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isPending}>
 								{t('Join')}
 							</MessageComposerButton>
 						)}

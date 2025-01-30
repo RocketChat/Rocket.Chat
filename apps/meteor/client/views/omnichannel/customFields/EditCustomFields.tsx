@@ -13,10 +13,10 @@ import {
 	ToggleSwitch,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import {
@@ -29,6 +29,20 @@ import {
 } from '../../../components/Contextualbar';
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
+
+export type EditCustomFieldsFormData = {
+	field: string;
+	label: string;
+	scope: 'visitor' | 'room';
+	visibility: boolean;
+	searchable: boolean;
+	regexp: string;
+	type: string;
+	required: boolean;
+	defaultValue: string;
+	options: string;
+	public: boolean;
+};
 
 const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | undefined) => ({
 	field: customFieldData?._id || '',
@@ -53,7 +67,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 
 	const handleDelete = useRemoveCustomField();
 
-	const methods = useForm({ mode: 'onBlur', values: getInitialValues(customFieldData) });
+	const methods = useForm<EditCustomFieldsFormData>({ mode: 'onBlur', values: getInitialValues(customFieldData) });
 	const {
 		control,
 		handleSubmit,
@@ -62,7 +76,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 
 	const saveCustomField = useMethod('livechat:saveCustomField');
 
-	const handleSave = useMutableCallback(async ({ visibility, ...data }) => {
+	const handleSave = useEffectEvent(async ({ visibility, ...data }: EditCustomFieldsFormData) => {
 		try {
 			await saveCustomField(customFieldData?._id as unknown as string, {
 				visibility: visibility ? 'visible' : 'hidden',
@@ -70,7 +84,9 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-customFields']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-customFields'],
+			});
 			router.navigate('/omnichannel/customfields');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -85,13 +101,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 		[t],
 	);
 
-	const formId = useUniqueId();
-	const fieldField = useUniqueId();
-	const labelField = useUniqueId();
-	const scopeField = useUniqueId();
-	const visibilityField = useUniqueId();
-	const searchableField = useUniqueId();
-	const regexpField = useUniqueId();
+	const formId = useId();
+	const fieldField = useId();
+	const labelField = useId();
+	const scopeField = useId();
+	const visibilityField = useId();
+	const searchableField = useId();
+	const regexpField = useId();
 
 	return (
 		<Contextualbar>

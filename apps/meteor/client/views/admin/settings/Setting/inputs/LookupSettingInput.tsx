@@ -1,7 +1,6 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import type { AsyncState } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';

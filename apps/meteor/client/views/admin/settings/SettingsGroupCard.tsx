@@ -1,11 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Box, Card, CardTitle, CardBody, CardControls } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { useId, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -26,8 +24,8 @@ type SettingsGroupCardProps = {
 const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps): ReactElement => {
 	const { t, i18n } = useTranslation();
 	const router = useRouter();
-	const cardId = useUniqueId();
-	const descriptionId = useUniqueId();
+	const cardId = useId();
+	const descriptionId = useId();
 
 	return (
 		<Card data-qa-id={id} aria-labelledby={cardId} aria-describedby={descriptionId} {...props} height='full' role='region'>

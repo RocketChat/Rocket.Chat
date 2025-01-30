@@ -11,6 +11,7 @@ import type {
     IUserRead,
     IVideoConferenceRead,
 } from '../../definition/accessors';
+import type { IContactRead } from '../../definition/accessors/IContactRead';
 import type { IOAuthAppsReader } from '../../definition/accessors/IOAuthAppsReader';
 import type { IRoleRead } from '../../definition/accessors/IRoleRead';
 import type { IThreadRead } from '../../definition/accessors/IThreadRead';
@@ -27,6 +28,7 @@ export class Reader implements IRead {
         private upload: IUploadRead,
         private cloud: ICloudWorkspaceRead,
         private videoConf: IVideoConferenceRead,
+        private contactRead: IContactRead,
 
         private oauthApps: IOAuthAppsReader,
         private thread: IThreadRead,
@@ -83,5 +85,9 @@ export class Reader implements IRead {
 
     public getRoleReader(): IRoleRead {
         return this.role;
+    }
+
+    public getContactReader(): IContactRead {
+        return this.contactRead;
     }
 }

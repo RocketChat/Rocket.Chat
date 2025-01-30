@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import type { AriaButtonProps } from 'react-aria';
 import { useTranslation } from 'react-i18next';
 

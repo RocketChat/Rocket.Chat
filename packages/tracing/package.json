@@ -7,7 +7,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"ts-jest": "~29.2.5",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

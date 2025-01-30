@@ -1,7 +1,7 @@
 import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
@@ -24,14 +24,15 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
 	}, []);
 
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		async (name, soundFile): Promise<string | undefined> => {
+		// FIXME
+		async (name: string, soundFile: any) => {
 			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 

@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useSyncExternalStore } from 'react';
 
 import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';
 import { subscribeToAdminSidebarItems, getAdminSidebarItems } from '../sidebarItems';
