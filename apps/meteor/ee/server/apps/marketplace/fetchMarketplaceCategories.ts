@@ -5,7 +5,7 @@ import { v, compile } from 'suretype';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError } from './MarketplaceAppsError';
+import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
 
 const fetchMarketplaceCategoriesSchema = v.array(
 	v.object({
