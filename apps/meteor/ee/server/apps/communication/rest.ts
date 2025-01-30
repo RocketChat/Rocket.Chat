@@ -1,6 +1,7 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
@@ -314,7 +315,7 @@ export class AppsRestApi {
 				},
 				async post() {
 					let buff;
-					let marketplaceInfo;
+					let marketplaceInfo: IMarketplaceInfo[] | undefined;
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
@@ -361,7 +362,15 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
-							marketplaceInfo = (await marketplaceResponse.json()) as any;
+							marketplaceInfo = await marketplaceResponse.json();
+
+							// Note: marketplace responds with an array of the marketplace info on the app, but it is expected
+							// to always have one element since we are fetching a specific app version.
+							if (!Array.isArray(marketplaceInfo) || marketplaceInfo?.length !== 1) {
+								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', marketplaceInfo);
+								throw new Error('Invalid response from the Marketplace');
+							}
+
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: unknown) {
 							let message;
