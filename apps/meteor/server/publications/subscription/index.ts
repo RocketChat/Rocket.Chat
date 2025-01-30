@@ -12,7 +12,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const subscriptionsGet = async (
+export const getSubscriptions = async (
 	uid: string,
 	updatedAt?: Date,
 ): Promise<ISubscription[] | { update: ISubscription[]; remove: { _id: string; _deletedAt: Date }[] }> => {
@@ -50,6 +50,6 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		return subscriptionsGet(uid, updatedAt);
+		return getSubscriptions(uid, updatedAt);
 	},
 });

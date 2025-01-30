@@ -8,7 +8,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
-import { subscriptionsGet } from '../../../../server/publications/subscription';
+import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
 import { API } from '../api';
 
@@ -30,7 +30,7 @@ API.v1.addRoute(
 				updatedSinceDate = new Date(updatedSince as string);
 			}
 
-			const result = await subscriptionsGet(this.userId, updatedSinceDate);
+			const result = await getSubscriptions(this.userId, updatedSinceDate);
 
 			return API.v1.success(
 				Array.isArray(result)

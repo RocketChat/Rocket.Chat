@@ -48,7 +48,6 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: IMessa
 		projection: {
 			u: 1,
 			rid: 1,
-			file: 1,
 			ts: 1,
 		},
 	});
