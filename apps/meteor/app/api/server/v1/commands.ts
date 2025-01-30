@@ -8,6 +8,8 @@ import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
+import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
 
 API.v1.addRoute(
 	'commands.get',
@@ -257,7 +259,7 @@ API.v1.addRoute(
 
 			const params = query.params ? query.params : '';
 
-			const preview = await Meteor.callAsync('getSlashCommandPreviews', {
+			const preview = await getSlashCommandPreviews({
 				cmd,
 				params,
 				msg: { rid: query.roomId },
@@ -320,15 +322,14 @@ API.v1.addRoute(
 				...(body.tmid && { tmid: body.tmid }),
 			};
 
-			await Meteor.callAsync(
-				'executeSlashCommandPreview',
+			await executeSlashCommandPreview(
 				{
 					cmd,
 					params,
 					msg,
+					triggerId: body.triggerId,
 				},
 				body.previewItem,
-				body.triggerId,
 			);
 
 			return API.v1.success();
