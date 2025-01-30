@@ -1,10 +1,10 @@
 import { Box, Button, ButtonGroup, Callout, Chip, Field, Margins, Select, InputBox, TextInput, UrlInput } from '@rocket.chat/fuselage';
-import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
@@ -177,9 +177,9 @@ function NewImportPage() {
 		}
 	};
 
-	const importerKeySelectId = useUniqueId();
-	const fileTypeSelectId = useUniqueId();
-	const fileSourceInputId = useUniqueId();
+	const importerKeySelectId = useId();
+	const fileTypeSelectId = useId();
+	const fileSourceInputId = useId();
 	const handleImportButtonClick =
 		(fileType === 'upload' && handleFileUploadImportButtonClick) ||
 		(fileType === 'url' && handleFileUrlImportButtonClick) ||
