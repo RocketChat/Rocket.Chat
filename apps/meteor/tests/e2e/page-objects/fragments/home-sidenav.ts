@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
 	get userProfileMenu(): Locator {
