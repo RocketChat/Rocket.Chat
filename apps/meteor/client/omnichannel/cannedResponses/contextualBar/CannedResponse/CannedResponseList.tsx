@@ -27,11 +27,11 @@ type CannedResponseListProps = {
 	loading: boolean;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLOrSVGElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
-	onClickItem: (data: any) => void;
+	onClickItem: (data: any) => void; // FIXME: fix typings
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;

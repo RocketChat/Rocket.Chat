@@ -30,7 +30,7 @@ import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import UploadProgressIndicator from './UploadProgressIndicator';
+import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
@@ -239,18 +239,20 @@ const RoomBody = (): ReactElement => {
 										triggerProps={triggerProps}
 									/>
 								) : null}
-								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
-									{uploads.map((upload) => (
-										<UploadProgressIndicator
-											key={upload.id}
-											id={upload.id}
-											name={upload.name}
-											percentage={upload.percentage}
-											error={upload.error instanceof Error ? upload.error.message : undefined}
-											onClose={handleUploadProgressClose}
-										/>
-									))}
-								</div>
+								{uploads.length > 0 && (
+									<UploadProgressContainer>
+										{uploads.map((upload) => (
+											<UploadProgressIndicator
+												key={upload.id}
+												id={upload.id}
+												name={upload.name}
+												percentage={upload.percentage}
+												error={upload.error instanceof Error ? upload.error.message : undefined}
+												onClose={handleUploadProgressClose}
+											/>
+										))}
+									</UploadProgressContainer>
+								)}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
 										count={unread}
@@ -269,11 +271,6 @@ const RoomBody = (): ReactElement => {
 									onClick={handleJumpToRecentButtonClick}
 									text={t('Jump_to_recent_messages')}
 								/>
-								{!canPreview ? (
-									<div className='content room-not-found error-color'>
-										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
-									</div>
-								) : null}
 								<div
 									className={[
 										'wrapper',

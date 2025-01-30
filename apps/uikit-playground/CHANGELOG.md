@@ -1,5 +1,93 @@
 # @rocket.chat/uikit-playground
 
+## 0.6.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.1
+  - @rocket.chat/fuselage-ui-kit@14.0.1
+  - @rocket.chat/ui-contexts@14.0.1
+  - @rocket.chat/ui-avatar@10.0.1
+  </details>
+
+## 0.6.2
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, c43220dcd8c1df86a6143d6553964ad2173903b3, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@14.0.0
+  - @rocket.chat/core-typings@7.2.0
+  - @rocket.chat/ui-contexts@14.0.0
+  - @rocket.chat/ui-avatar@10.0.0
+  </details>
+
+## 0.6.2-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.3
+  - @rocket.chat/ui-contexts@14.0.0-rc.3
+  - @rocket.chat/ui-avatar@10.0.0-rc.3
+  </details>
+
+## 0.6.2-rc.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.2
+  - @rocket.chat/ui-contexts@14.0.0-rc.2
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/ui-avatar@10.0.0-rc.2
+  </details>
+
+## 0.6.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.1
+  - @rocket.chat/ui-contexts@14.0.0-rc.1
+  - @rocket.chat/ui-avatar@10.0.0-rc.1
+  </details>
+
+## 0.6.2-rc.0
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.0
+  - @rocket.chat/core-typings@7.2.0-rc.0
+  - @rocket.chat/ui-contexts@14.0.0-rc.0
+  - @rocket.chat/ui-avatar@10.0.0-rc.0
+  </details>
+
 ## 0.6.1
 
 ### Patch Changes

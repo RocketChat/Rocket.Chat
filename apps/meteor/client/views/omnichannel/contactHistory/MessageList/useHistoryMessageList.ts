@@ -31,7 +31,7 @@ export const useHistoryMessageList = (
 	}, [options, reload]);
 
 	const fetchMessages = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { messages, total } = await getMessages({
 				...(options.filter && { searchTerm: options.filter }),
 				offset: start,

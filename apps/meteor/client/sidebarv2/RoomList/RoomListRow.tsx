@@ -1,9 +1,9 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 

@@ -37,7 +37,7 @@ type QuoteAttachmentProps = {
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const formatTime = useTimeAgo();
-	const displayAvatarPreference = useUserPreference('displayAvatars');
+	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
 	return (
 		<>

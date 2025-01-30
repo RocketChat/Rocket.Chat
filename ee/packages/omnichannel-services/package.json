@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.7",
+	"version": "0.3.9",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -43,5 +43,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"volta": {
+		"extends": "../../../package.json"
+	}
 }

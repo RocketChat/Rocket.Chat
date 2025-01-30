@@ -1,5 +1,75 @@
 # @rocket.chat/core-typings
 
+## 7.2.1
+
+## 7.2.0
+
+### Minor Changes
+
+- ([#34004](https://github.com/RocketChat/Rocket.Chat/pull/34004)) Allows Rocket.Chat to store call events.
+
+- ([#33895](https://github.com/RocketChat/Rocket.Chat/pull/33895)) Adds statistics related to the new **Contact Identification** feature:
+  - `totalContacts`: Total number of contacts;
+  - `totalUnknownContacts`: Total number of unknown contacts;
+  - `totalMergedContacts`: Total number of merged contacts;
+  - `totalConflicts`: Total number of merge conflicts;
+  - `totalResolvedConflicts`: Total number of resolved conflicts;
+  - `totalBlockedContacts`: Total number of blocked contacts;
+  - `totalPartiallyBlockedContacts`: Total number of partially blocked contacts;
+  - `totalFullyBlockedContacts`: Total number of fully blocked contacts;
+  - `totalVerifiedContacts`: Total number of verified contacts;
+  - `avgChannelsPerContact`: Average number of channels per contact;
+  - `totalContactsWithoutChannels`: Number of contacts without channels;
+  - `totalImportedContacts`: Total number of imported contacts;
+  - `totalUpsellViews`: Total number of "Advanced Contact Management" Upsell CTA views;
+  - `totalUpsellClicks`: Total number of "Advanced Contact Management" Upsell CTA clicks;
+- ([#33549](https://github.com/RocketChat/Rocket.Chat/pull/33549)) Adds a new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+## 7.2.0-rc.3
+
+## 7.2.0-rc.2
+
+## 7.2.0-rc.1
+
+## 7.2.0-rc.0
+
+### Minor Changes
+
+- ([#34004](https://github.com/RocketChat/Rocket.Chat/pull/34004)) Allows Rocket.Chat to store call events.
+
+- ([#33895](https://github.com/RocketChat/Rocket.Chat/pull/33895)) Adds statistics related to the new **Contact Identification** feature:
+  - `totalContacts`: Total number of contacts;
+  - `totalUnknownContacts`: Total number of unknown contacts;
+  - `totalMergedContacts`: Total number of merged contacts;
+  - `totalConflicts`: Total number of merge conflicts;
+  - `totalResolvedConflicts`: Total number of resolved conflicts;
+  - `totalBlockedContacts`: Total number of blocked contacts;
+  - `totalPartiallyBlockedContacts`: Total number of partially blocked contacts;
+  - `totalFullyBlockedContacts`: Total number of fully blocked contacts;
+  - `totalVerifiedContacts`: Total number of verified contacts;
+  - `avgChannelsPerContact`: Average number of channels per contact;
+  - `totalContactsWithoutChannels`: Number of contacts without channels;
+  - `totalImportedContacts`: Total number of imported contacts;
+  - `totalUpsellViews`: Total number of "Advanced Contact Management" Upsell CTA views;
+  - `totalUpsellClicks`: Total number of "Advanced Contact Management" Upsell CTA clicks;
+- ([#33549](https://github.com/RocketChat/Rocket.Chat/pull/33549)) Adds a new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
 ## 7.1.0
 
 ### Minor Changes

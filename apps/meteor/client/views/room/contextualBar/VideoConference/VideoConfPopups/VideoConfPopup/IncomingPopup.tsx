@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
+	useVideoConfSetPreferences,
 	VideoConfPopup,
 	VideoConfPopupContent,
 	VideoConfPopupControllers,
@@ -18,7 +19,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
 
@@ -41,7 +41,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const showMic = Boolean(value?.capabilities?.mic);
 	const showCam = Boolean(value?.capabilities?.cam);
 
-	const handleJoinCall = useMutableCallback(() => {
+	const handleJoinCall = useEffectEvent(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});
