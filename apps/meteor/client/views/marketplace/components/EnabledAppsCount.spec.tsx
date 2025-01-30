@@ -14,7 +14,6 @@ describe('in private context', () => {
 					Private_Apps_Count_Enabled_other: '{{count}} private apps enabled',
 				})
 				.build(),
-			legacyRoot: true,
 		});
 
 		expect(screen.getByText('1 private app enabled')).toBeInTheDocument();
@@ -31,7 +30,6 @@ describe('in private context', () => {
 					Private_Apps_Count_Enabled_other: '{{count}} private apps enabled',
 				})
 				.build(),
-			legacyRoot: true,
 		});
 
 		expect(screen.getByText('0 private apps enabled')).toBeInTheDocument();
@@ -50,7 +48,6 @@ describe.each(['explore', 'installed', 'premium', 'requested'] as const)('in %s 
 					Apps_Count_Enabled_other: '{{count}} apps enabled',
 				})
 				.build(),
-			legacyRoot: true,
 		});
 
 		expect(screen.getByText('1 app enabled')).toBeInTheDocument();
