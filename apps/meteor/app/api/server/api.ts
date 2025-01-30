@@ -469,8 +469,8 @@ export class APIClass<TBasePath extends string = ''> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
-		const code = String(request.headers['x-2fa-code']);
-		const method = String(request.headers['x-2fa-method']);
+		const code = request.headers['x-2fa-code'] ? String(request.headers['x-2fa-code']) : undefined;
+		const method = request.headers['x-2fa-method'] ? String(request.headers['x-2fa-method']) : undefined;
 
 		await checkCodeForUser({
 			user: userId,
