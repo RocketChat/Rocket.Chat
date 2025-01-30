@@ -4,13 +4,13 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import express from 'express';
+import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
-import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
@@ -96,10 +96,11 @@ const rateLimiterDictionary: Record<
 > = {};
 
 const getRequestIP = (req: Request): string | null => {
-	const socket = req.socket || req.connection?.socket;
-	const remoteAddress =
-		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null));
-	let forwardedFor = req.headers['x-forwarded-for'];
+	const socket = req.socket || (req.connection as any)?.socket;
+	const remoteAddress = String(
+		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null)),
+	);
+	const forwardedFor = String(req.headers['x-forwarded-for']);
 
 	if (!socket) {
 		return remoteAddress || forwardedFor || null;
@@ -114,12 +115,12 @@ const getRequestIP = (req: Request): string | null => {
 		return remoteAddress;
 	}
 
-	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
-	if (httpForwardedCount > forwardedFor.length) {
+	const forwardedForIPs = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedForIPs.length) {
 		return remoteAddress;
 	}
 
-	return forwardedFor[forwardedFor.length - httpForwardedCount];
+	return forwardedForIPs[forwardedForIPs.length - httpForwardedCount];
 };
 
 const generateConnection = (
@@ -383,7 +384,7 @@ export class APIClass<TBasePath extends string = ''> {
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? '');
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 
@@ -468,8 +469,8 @@ export class APIClass<TBasePath extends string = ''> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
-		const code = request.headers['x-2fa-code'];
-		const method = request.headers['x-2fa-method'];
+		const code = String(request.headers['x-2fa-code']);
+		const method = String(request.headers['x-2fa-method']);
 
 		await checkCodeForUser({
 			user: userId,
@@ -710,7 +711,10 @@ export class APIClass<TBasePath extends string = ''> {
 	}
 
 	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const { 'x-user-id': userId, 'x-auth-token': userToken } = req.headers;
+		const { 'x-user-id': userId } = req.headers;
+
+		const userToken = String(req.headers['x-auth-token']);
+
 		if (userId && userToken) {
 			return Users.findOne(
 				{
