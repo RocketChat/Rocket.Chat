@@ -14,6 +14,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 import { ignoreUser } from '../../../../server/methods/ignoreUser';
+import { messageSearch } from '../../../../server/methods/messageSearch';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -227,7 +228,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 			}
 
-			const result = (await Meteor.callAsync('messageSearch', searchText, roomId, count, offset)).message.docs;
+			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
+			if (searchResult === false) {
+				return API.v1.failure();
+			}
+			if (!searchResult.message) {
+				return API.v1.failure();
+			}
+			const result = searchResult.message.docs;
 
 			return API.v1.success({
 				messages: await normalizeMessagesForUser(result, this.userId),
