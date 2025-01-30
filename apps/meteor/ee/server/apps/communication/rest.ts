@@ -26,6 +26,7 @@ import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -132,27 +133,21 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+						const categories = await fetchMarketplaceCategories();
+						return API.v1.success(categories);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
-					} catch (e: any) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
 
-					return API.v1.success(result);
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure({ error: err.message });
+						}
+
+						return API.v1.internalError();
+					}
 				},
 			},
 		);
@@ -231,26 +226,21 @@ export class AppsRestApi {
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
 						try {
-							const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
+							const categories = await fetchMarketplaceCategories();
+							return API.v1.success(categories);
+						} catch (err) {
+							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
+							if (err instanceof MarketplaceConnectionError) {
+								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
-							result = await request.json();
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e);
+
+							if (err instanceof MarketplaceAppsError) {
+								return API.v1.failure({ error: err.message });
+							}
+
 							return API.v1.internalError();
 						}
-
-						return API.v1.success(result);
 					}
 
 					if (
