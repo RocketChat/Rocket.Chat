@@ -1,9 +1,8 @@
 import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { getButtonStyle } from './getButtonStyle';
@@ -54,7 +53,7 @@ const KeyboardCode = new Map<string, number>([
 ]);
 
 const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
-	const id = `modal_id_${useUniqueId()}`;
+	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
 
 	useEffect(() => {
