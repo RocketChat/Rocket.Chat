@@ -12,8 +12,10 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
+@model()
 export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFreeSwitchCallModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFreeSwitchCall>>) {
 		super(db, 'freeswitch_calls', trash);

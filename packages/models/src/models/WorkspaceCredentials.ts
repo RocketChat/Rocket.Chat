@@ -3,7 +3,9 @@ import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, Filter, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> implements IWorkspaceCredentialsModel {
 	constructor(db: Db) {
 		super(db, 'workspace_credentials');

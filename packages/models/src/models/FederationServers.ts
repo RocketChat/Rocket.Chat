@@ -4,7 +4,9 @@ import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { Users } from '../index';
+import { model } from '../proxify';
 
+@model()
 export class FederationServersRaw extends BaseRaw<IFederationServer> implements IFederationServersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFederationServer>>) {
 		super(db, 'federation_servers', trash);

@@ -2,7 +2,9 @@ import type { IAppLogsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, Filter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 	constructor(db: Db) {
 		super(db, 'apps_logs', undefined, { _updatedAtIndexOptions: { expireAfterSeconds: 60 * 60 * 24 * 30 } });

@@ -5,7 +5,9 @@ import type { Collection, FindCursor, Db, Document, FindOptions, IndexDescriptio
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INpsVote>>) {
 		super(db, 'nps_vote', trash);

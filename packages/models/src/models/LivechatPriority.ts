@@ -4,7 +4,9 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Db, UpdateFilter, WithId, IndexDescription, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 // TODO need to define type for LivechatPriority object
 export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements ILivechatPriorityModel {
 	constructor(db: Db) {

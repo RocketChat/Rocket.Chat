@@ -3,7 +3,9 @@ import type { ICredentialTokensModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class CredentialTokensRaw extends BaseRaw<ICredentialToken> implements ICredentialTokensModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICredentialToken>>) {
 		super(db, 'credential_tokens', trash);

@@ -15,7 +15,9 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
 		super(db, 'settings', trash);

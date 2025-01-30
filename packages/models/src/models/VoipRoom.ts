@@ -5,7 +5,9 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IVoipRoom>>) {
 		super(db, 'room', trash);

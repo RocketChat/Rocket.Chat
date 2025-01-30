@@ -3,7 +3,9 @@ import type { IStatisticsModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 	constructor(db: Db) {
 		super(db, 'statistics');

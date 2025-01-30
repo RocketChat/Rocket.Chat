@@ -3,7 +3,9 @@ import type { INotificationQueueModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class NotificationQueueRaw extends BaseRaw<INotification> implements INotificationQueueModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INotification>>) {
 		super(db, 'notification_queue', trash);

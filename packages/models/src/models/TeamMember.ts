@@ -14,7 +14,9 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeamMember>>) {
 		super(db, 'team_member', trash);

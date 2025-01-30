@@ -4,7 +4,9 @@ import type { IBannersModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IBanner>>) {
 		super(db, 'banner', trash);

@@ -3,7 +3,9 @@ import type { IPushTokenModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel {
 	constructor(db: Db) {
 		super(db, '_raix_push_app_tokens', undefined, {

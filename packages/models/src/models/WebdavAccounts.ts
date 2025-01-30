@@ -3,7 +3,9 @@ import type { IWebdavAccountsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, DeleteResult, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebdavAccountsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IWebdavAccount>>) {
 		super(db, 'webdav_accounts', trash);

@@ -3,7 +3,9 @@ import type { IAvatarsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, FindOptions } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
+import { model } from '../proxify';
 
+@model()
 export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IAvatar>>) {
 		super(db, 'avatars', trash);

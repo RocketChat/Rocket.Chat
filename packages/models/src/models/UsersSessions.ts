@@ -3,7 +3,9 @@ import type { IUsersSessionsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, Collection, Db, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSessionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserSession>>) {
 		super(db, 'usersSessions', trash, {

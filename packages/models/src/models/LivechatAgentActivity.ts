@@ -4,8 +4,10 @@ import moment from 'moment';
 import type { AggregationCursor, Collection, Document, FindCursor, Db, WithId, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
+@model()
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {
 		super(db, 'livechat_agent_activity', trash);

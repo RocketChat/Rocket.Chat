@@ -3,7 +3,9 @@ import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typin
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCustomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IEmojiCustom>>) {
 		super(db, 'custom_emoji', trash);

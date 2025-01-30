@@ -3,7 +3,9 @@ import type { ILivechatCustomFieldModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, IndexDescription, FindOptions, FindCursor, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implements ILivechatCustomFieldModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatCustomField>>) {
 		super(db, 'livechat_custom_field', trash);

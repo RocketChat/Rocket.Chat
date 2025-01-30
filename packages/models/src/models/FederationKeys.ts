@@ -4,7 +4,9 @@ import type { Db, Collection } from 'mongodb';
 import NodeRSA from 'node-rsa';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFederationKeysModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<FederationKey>>) {
 		super(db, 'federation_keys', trash);

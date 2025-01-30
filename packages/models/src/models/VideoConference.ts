@@ -21,7 +21,9 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVideoConferenceModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<VideoConference>>) {
 		super(db, 'video_conference', trash);

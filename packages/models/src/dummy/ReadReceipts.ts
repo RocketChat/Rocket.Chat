@@ -3,7 +3,9 @@ import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { FindCursor, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
 import { BaseDummy } from './BaseDummy';
+import { model } from '../proxify';
 
+@model()
 export class ReadReceiptsDummy extends BaseDummy<ReadReceipt> implements IReadReceiptsModel {
 	constructor() {
 		super('read_receipts');

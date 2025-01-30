@@ -20,7 +20,9 @@ import { ObjectId } from 'mongodb';
 
 import { Settings } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
 		super(db, 'livechat_visitor', trash);

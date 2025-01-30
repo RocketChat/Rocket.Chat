@@ -3,7 +3,9 @@ import type { IExportOperationsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IExportOperationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IExportOperation>>) {
 		super(db, 'export_operations', trash);

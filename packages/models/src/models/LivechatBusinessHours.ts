@@ -4,6 +4,7 @@ import type { ILivechatBusinessHoursModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
 interface IWorkHoursCronJobsItem {
 	day: string;
@@ -15,6 +16,7 @@ export interface IWorkHoursCronJobsWrapper {
 	finish: IWorkHoursCronJobsItem[];
 }
 
+@model()
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> implements ILivechatBusinessHoursModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatBusinessHour>>) {
 		super(db, 'livechat_business_hours', trash);

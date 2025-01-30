@@ -2,7 +2,9 @@ import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, Filter, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class AppsPersistenceModel extends BaseRaw<any> implements IAppsPersistenceModel {
 	constructor(db: Db) {
 		super(db, 'apps_persistence');

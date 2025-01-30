@@ -5,7 +5,9 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
+import { model } from '../proxify';
 
+@model()
 export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUpload>>) {
 		super(db, 'uploads', trash);

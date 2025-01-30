@@ -32,11 +32,13 @@ import type {
 
 import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
  */
+@model({ trashCollection: true })
 export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILivechatRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
 		super(db, 'room', trash);

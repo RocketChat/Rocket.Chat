@@ -3,7 +3,9 @@ import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ITeam>>) {
 		super(db, 'team', trash);

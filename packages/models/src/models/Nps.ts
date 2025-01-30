@@ -4,7 +4,9 @@ import type { INpsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, Document, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class NpsRaw extends BaseRaw<INps> implements INpsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<INps>>) {
 		super(db, 'nps', trash);

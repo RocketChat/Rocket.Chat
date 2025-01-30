@@ -4,7 +4,9 @@ import { SHA256 } from '@rocket.chat/sha256';
 import type { IndexDescription, Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class FederationEventsModel extends BaseRaw<IFederationEvent> {
 	constructor(db: Db, nameOrModel: string) {
 		super(db, nameOrModel);

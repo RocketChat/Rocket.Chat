@@ -10,8 +10,10 @@ import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
+@model()
 export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements IModerationReportsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModerationReport>>) {
 		super(db, 'moderation_reports', trash);
