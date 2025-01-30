@@ -8,6 +8,8 @@ import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
@@ -20,13 +22,11 @@ import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/MarketplaceAppsError';
 import { notifyAppInstall } from '../marketplace/appInstall';
+import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
-import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -113,7 +113,6 @@ export class AppsRestApi {
 						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
 						return API.v1.success(apps);
 					} catch (err) {
-						orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', err);
 						if (err instanceof MarketplaceConnectionError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
@@ -217,7 +216,6 @@ export class AppsRestApi {
 							const apps = await fetchMarketplaceApps();
 							return API.v1.success(apps);
 						} catch (e) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', e);
 							if (e instanceof MarketplaceConnectionError) {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 							}
