@@ -2,15 +2,15 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { createMockFreeSwitchExtensionDetails, createMockVoipIncomingSession } from '../../../tests/mocks';
 import VoipIncomingView from './VoipIncomingView';
+import { createMockFreeSwitchExtensionDetails, createMockVoipIncomingSession } from '../../../tests/mocks';
 
 const appRoot = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
 const incomingSession = createMockVoipIncomingSession();
 
 it('should properly render incoming view', async () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build(), legacyRoot: true });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build() });
 
 	expect(screen.getByText('Incoming_call...')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
@@ -18,7 +18,7 @@ it('should properly render incoming view', async () => {
 });
 
 it('should only enable incoming actions', () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build(), legacyRoot: true });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build() });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Decline' })).toBeEnabled();
@@ -29,7 +29,7 @@ it('should only enable incoming actions', () => {
 });
 
 it('should properly interact with the voice call session', async () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build(), legacyRoot: true });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build() });
 
 	await userEvent.click(screen.getByRole('button', { name: 'Decline' }));
 	await userEvent.click(screen.getByRole('button', { name: 'Accept' }));

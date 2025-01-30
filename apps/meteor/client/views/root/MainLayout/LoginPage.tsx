@@ -9,7 +9,7 @@ import LoggedOutBanner from '../../../components/deviceManagement/LoggedOutBanne
 
 const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; children?: ReactNode }): ReactElement => {
 	const { t } = useTranslation();
-	const showForcedLogoutBanner = useSession('force_logout') as boolean;
+	const showForcedLogoutBanner = useSession('force_logout') as boolean | undefined;
 	const iframeLoginUrl = useIframeLogin();
 
 	if (iframeLoginUrl) {
