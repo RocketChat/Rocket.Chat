@@ -213,7 +213,7 @@ export class AppsRestApi {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						try {
-							const apps = await fetchMarketplaceApps({});
+							const apps = await fetchMarketplaceApps();
 							return API.v1.success(apps);
 						} catch (e) {
 							orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', e);

@@ -136,7 +136,7 @@ const fetchMarketplaceAppsSchema = v.array(
 
 const assertWorkspaceCommPayload = compile(fetchMarketplaceAppsSchema);
 
-export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams): Promise<App[]> {
+export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
 	const baseUrl = Apps.getMarketplaceUrl();
 	const headers = getMarketplaceHeaders();
 	const token = await getWorkspaceAccessToken();
