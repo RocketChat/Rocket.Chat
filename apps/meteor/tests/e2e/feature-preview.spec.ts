@@ -128,6 +128,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(async () => {
 				await collapser.focus();
+				await expect(collapser).toBeFocused();
 				await page.keyboard.press('ArrowDown');
 				await expect(nextItem).toBeFocused();
 			}).toPass();
