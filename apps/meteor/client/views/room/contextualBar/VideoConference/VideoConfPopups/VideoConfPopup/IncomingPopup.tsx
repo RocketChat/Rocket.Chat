@@ -17,7 +17,6 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
@@ -36,11 +35,10 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
 
-	const query = useMemo(() => ({ callId: id }), [id]);
 	const videoConfInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const { data, isPending, isSuccess } = useQuery({
-		queryKey: ['getVideoConferenceInfo', query],
-		queryFn: async () => videoConfInfo(query),
+		queryKey: ['getVideoConferenceInfo', id],
+		queryFn: async () => videoConfInfo({ callId: id }),
 	});
 
 	const showMic = Boolean(data?.capabilities?.mic);
