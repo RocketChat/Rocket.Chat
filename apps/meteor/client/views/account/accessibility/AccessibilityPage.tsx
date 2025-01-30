@@ -152,7 +152,7 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
+										<FieldLabel htmlFor={mentionsWithSymbolId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'
