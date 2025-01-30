@@ -11,8 +11,8 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-const isKeysResult = (result: object): result is { public_key: string; private_key: string } => {
-	return 'private_key' in result && 'public_key' in result;
+const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
+	return result.private_key && result.public_key;
 };
 
 Meteor.methods<ServerMethods>({
