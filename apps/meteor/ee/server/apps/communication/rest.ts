@@ -1,12 +1,15 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
@@ -19,14 +22,12 @@ import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/MarketplaceAppsError';
 import { notifyAppInstall } from '../marketplace/appInstall';
-import type { AppServerOrchestrator } from '../orchestrator';
-import { Apps } from '../orchestrator';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
+import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
+import type { AppServerOrchestrator } from '../orchestrator';
+import { Apps } from '../orchestrator';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -113,7 +114,6 @@ export class AppsRestApi {
 						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
 						return API.v1.success(apps);
 					} catch (err) {
-						orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', err);
 						if (err instanceof MarketplaceConnectionError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
@@ -211,7 +211,6 @@ export class AppsRestApi {
 							const apps = await fetchMarketplaceApps();
 							return API.v1.success(apps);
 						} catch (e) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps from the Marketplace:', e);
 							if (e instanceof MarketplaceConnectionError) {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 							}
@@ -280,7 +279,7 @@ export class AppsRestApi {
 				},
 				async post() {
 					let buff;
-					let marketplaceInfo;
+					let marketplaceInfo: IMarketplaceInfo[] | undefined;
 					let permissionsGranted;
 
 					if (this.bodyParams.url) {
@@ -323,7 +322,15 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await downloadResponse.arrayBuffer());
-							marketplaceInfo = (await marketplaceResponse.json()) as any;
+							marketplaceInfo = await marketplaceResponse.json();
+
+							// Note: marketplace responds with an array of the marketplace info on the app, but it is expected
+							// to always have one element since we are fetching a specific app version.
+							if (!Array.isArray(marketplaceInfo) || marketplaceInfo?.length !== 1) {
+								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', marketplaceInfo);
+								throw new Error('Invalid response from the Marketplace');
+							}
+
 							permissionsGranted = this.bodyParams.permissionsGranted;
 						} catch (err: any) {
 							return API.v1.failure(err.message);

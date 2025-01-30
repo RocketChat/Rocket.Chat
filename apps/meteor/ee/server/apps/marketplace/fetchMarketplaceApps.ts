@@ -5,7 +5,7 @@ import { v, compile } from 'suretype';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError } from './MarketplaceAppsError';
+import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
 
 type FetchMarketplaceAppsParams = {
 	endUserID?: string;
@@ -134,7 +134,7 @@ const fetchMarketplaceAppsSchema = v.array(
 	}),
 );
 
-const assertWorkspaceCommPayload = compile(fetchMarketplaceAppsSchema);
+const assertMarketplaceAppsSchema = compile(fetchMarketplaceAppsSchema);
 
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
 	const baseUrl = Apps.getMarketplaceUrl();
@@ -158,11 +158,14 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	if (request.status === 200) {
 		const response = await request.json();
-		assertWorkspaceCommPayload(response);
+		assertMarketplaceAppsSchema(response);
 		return response;
 	}
 
 	const response = await request.json();
+
+	Apps.getRocketChatLogger().error('Failed to fetch marketplace apps', response);
+
 	if (request.status === 400 && response.code === 200) {
 		throw new MarketplaceAppsError('Marketplace_Invalid_Apps_Engine_Version');
 	}
