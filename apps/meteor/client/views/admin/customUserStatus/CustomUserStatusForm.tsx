@@ -1,10 +1,9 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -27,7 +26,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const setModal = useSetModal();
 	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const formId = useUniqueId();
+	const formId = useId();
 
 	const {
 		register,

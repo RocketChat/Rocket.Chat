@@ -1,8 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +41,7 @@ const AccountIntegrationsPage = () => {
 		removeMutation.mutate({ accountSelected });
 	});
 
-	const accountSelectedId = useUniqueId();
+	const accountSelectedId = useId();
 
 	return (
 		<Page>
