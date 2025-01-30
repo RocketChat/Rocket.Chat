@@ -619,6 +619,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						let result;
 
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						this.connection = connection;
 
 						try {
 							if (options.deprecation) {
