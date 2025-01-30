@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -13,7 +13,7 @@ export const useRemoveUnit = () => {
 	const queryClient = useQueryClient();
 	const removeUnit = useMethod('livechat:removeUnit');
 
-	const handleDelete = useMutableCallback((id) => {
+	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteAgent = async () => {
 			try {
 				await removeUnit(id);

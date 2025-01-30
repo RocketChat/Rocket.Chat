@@ -1,5 +1,4 @@
-import { useCallback, useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useContext, useMemo, useSyncExternalStore } from 'react';
 
 import type { IRoles } from '../AuthorizationContext';
 import { AuthorizationContext } from '../AuthorizationContext';
