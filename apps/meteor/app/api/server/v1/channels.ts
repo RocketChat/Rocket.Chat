@@ -27,16 +27,27 @@ import { Meteor } from 'meteor/meteor';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { addAllUserToRoomFn } from '../../../../server/methods/addAllUserToRoom';
+import { addRoomLeader } from '../../../../server/methods/addRoomLeader';
+import { addRoomModerator } from '../../../../server/methods/addRoomModerator';
+import { addRoomOwner } from '../../../../server/methods/addRoomOwner';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { removeRoomLeader } from '../../../../server/methods/removeRoomLeader';
+import { removeRoomModerator } from '../../../../server/methods/removeRoomModerator';
+import { removeRoomOwner } from '../../../../server/methods/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
+import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
+import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -116,7 +127,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.callAsync('archiveRoom', findResult._id);
+			await executeArchiveRoom(this.userId, findResult._id);
 
 			return API.v1.success();
 		},
@@ -140,7 +151,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
 			}
 
-			await Meteor.callAsync('unarchiveRoom', findResult._id);
+			await executeUnarchiveRoom(this.userId, findResult._id);
 
 			return API.v1.success();
 		},
@@ -193,7 +204,7 @@ API.v1.addRoute(
 		async get() {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await Meteor.callAsync('getRoomRoles', findResult._id);
+			const roles = await executeGetRoomRoles(findResult._id, this.userId);
 
 			return API.v1.success({
 				roles,
@@ -352,7 +363,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
 			}
 
-			await Meteor.callAsync('openRoom', findResult._id);
+			await openRoom(this.userId, findResult._id);
 
 			return API.v1.success();
 		},
@@ -415,19 +426,13 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await Meteor.callAsync('getUserMentionsByChannel', {
-				roomId,
-				options: {
-					sort: sort || { ts: 1 },
-					skip: offset,
-					limit: count,
-				},
+			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+				sort: sort || { ts: 1 },
+				skip: offset,
+				limit: count,
 			});
 
-			const allMentions = await Meteor.callAsync('getUserMentionsByChannel', {
-				roomId,
-				options: {},
-			});
+			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
 
 			return API.v1.success({
 				mentions,
@@ -546,7 +551,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('addRoomModerator', findResult._id, user._id);
+			await addRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -562,7 +567,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('addRoomOwner', findResult._id, user._id);
+			await addRoomOwner(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1156,7 +1161,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('removeRoomModerator', findResult._id, user._id);
+			await removeRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1172,7 +1177,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('removeRoomOwner', findResult._id, user._id);
+			await removeRoomOwner(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1369,7 +1374,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('addRoomLeader', findResult._id, user._id);
+			await addRoomLeader(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1385,7 +1390,7 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
-			await Meteor.callAsync('removeRoomLeader', findResult._id, user._id);
+			await removeRoomLeader(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
 		},
