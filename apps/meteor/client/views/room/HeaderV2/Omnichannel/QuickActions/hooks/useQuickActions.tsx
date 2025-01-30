@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -51,7 +51,7 @@ export const useQuickActions = (): {
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
-	const getVisitorEmail = useMutableCallback(async () => {
+	const getVisitorEmail = useEffectEvent(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
@@ -232,7 +232,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useMutableCallback(async (id: string) => {
+	const handleAction = useEffectEvent(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -352,7 +352,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useMutableCallback((actionId: string) => {
+	const actionDefault = useEffectEvent((actionId: string) => {
 		handleAction(actionId);
 	});
 

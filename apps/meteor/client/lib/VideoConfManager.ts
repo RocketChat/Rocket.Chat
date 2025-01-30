@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { CallPreferences, DirectCallData, DirectCallParams, IRoom, IUser, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -17,30 +17,9 @@ const CALL_TIMEOUT = 10000;
 // How long are we gonna wait for a link after accepting an incoming call
 const ACCEPT_TIMEOUT = 5000;
 
-type DirectCallParams = {
-	uid: IUser['_id'];
-	rid: IRoom['_id'];
-	callId: string;
-};
-
-export type DirectCallData = DirectCallParams & {
-	dismissed: boolean;
-};
-
 type IncomingDirectCall = DirectCallParams & {
 	timeout: ReturnType<typeof setTimeout> | undefined;
 	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
-};
-
-export type CallPreferences = {
-	mic?: boolean;
-	cam?: boolean;
-};
-
-export type ProviderCapabilities = {
-	mic?: boolean;
-	cam?: boolean;
-	title?: boolean;
 };
 
 type CurrentCallParams = {
