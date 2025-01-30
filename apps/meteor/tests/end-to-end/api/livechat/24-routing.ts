@@ -376,6 +376,46 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
+		describe('with setting Omnichannel_contact_manager_routing disabled', () => {
+			let testDepartment2: ILivechatDepartment;
+			before(async () => {
+				await updateSetting('Omnichannel_contact_manager_routing', false);
+				// We should update the count of the user
+			});
+			after(async () => {
+				await updateSetting('Omnichannel_contact_manager_routing', true);
+			});
+
+			before(async () => {
+				// This will deprioritize the CM from normal routing. So the test is predictable
+				// IF the setting is off, the CM will be treated as a normal agent
+				// IF the setting is on, the CM will be treated as a CM and no matter the count it will get assigned
+				testDepartment2 = await createDepartment([{ agentId: testUser.user._id }, { agentId: testUser3.user._id, count: 10000 }]);
+
+				const visitorName = faker.person.fullName();
+				visitorEmail = faker.internet.email().toLowerCase();
+				await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: visitorName,
+						emails: [visitorEmail],
+						phones: [],
+						contactManager: testUser3.user._id,
+					});
+			});
+
+			it('should not route to contact manager if it is online but setting is off', async () => {
+				const visitor = await createVisitor(testDepartment2._id, faker.person.fullName(), visitorEmail);
+				const room = await createLivechatRoom(visitor.token);
+
+				await sleep(5000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.servedBy).to.be.an('object').that.has.property('_id').that.is.not.equal(testUser3.user._id);
+			});
+		});
 	});
 	describe('Load Balancing', () => {
 		before(async () => {
