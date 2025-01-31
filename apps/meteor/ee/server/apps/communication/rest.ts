@@ -344,12 +344,16 @@ export class AppsRestApi {
 							const [downloadResponse, marketplaceResponse] = await Promise.all([
 								fetch(`${baseUrl}/v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
 									headers,
+								}).catch((cause) => {
+									throw new Error('App package download failed', { cause });
 								}),
 								fetch(`${baseUrl}/v1/apps/${this.bodyParams.appId}?appVersion=${this.bodyParams.version}`, {
 									headers: {
 										Authorization: `Bearer ${marketplaceToken}`,
 										...headers,
 									},
+								}).catch((cause) => {
+									throw new Error('App metadata download failed', { cause });
 								}),
 							]);
 
@@ -368,8 +372,17 @@ export class AppsRestApi {
 							}
 
 							permissionsGranted = this.bodyParams.permissionsGranted;
-						} catch (err: any) {
-							return API.v1.failure(err.message);
+						} catch (err: unknown) {
+							let message;
+
+							if (err instanceof Error) {
+								orchestrator.getRocketChatLogger().error('Error installing app from marketplace: ', err.message, err.cause);
+								message = err.message;
+							} else {
+								message = err;
+							}
+
+							return API.v1.failure({ error: message });
 						}
 					} else {
 						const app = await getUploadFormData(
