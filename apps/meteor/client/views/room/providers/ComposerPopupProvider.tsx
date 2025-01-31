@@ -36,6 +36,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const suggestionsCount = useSetting('Number_of_users_autocomplete_suggestions', 5);
 	const cannedResponseEnabled = useSetting('Canned_Responses_Enable', true);
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
+	const [, setPreviewTitle] = useLocalStorage('composer.preview.title', '');
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
 	const { t, i18n } = useTranslation();
@@ -361,6 +362,9 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
 					const result = await call({ cmd, params, msg: { rid, tmid } });
+
+					setPreviewTitle(result?.i18nTitle ?? '');
+
 					return (
 						result?.items.map((item) => ({
 							_id: item.id,
@@ -371,7 +375,20 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 			}),
 		].filter(Boolean);
-	}, [t, i18n, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
+	}, [
+		t,
+		useEmoji,
+		encrypted,
+		cannedResponseEnabled,
+		isOmnichannel,
+		suggestionsCount,
+		userSpotlight,
+		rid,
+		recentEmojis,
+		i18n,
+		call,
+		setPreviewTitle,
+	]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

@@ -1,7 +1,9 @@
 import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
@@ -26,7 +28,10 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 ) {
 	const id = useId();
 	const chat = useChat();
+	const { t } = useTranslation();
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
+	const [previewTitle, setPreviewTitle] = useLocalStorage('composer.preview.title', '');
+
 	useImperativeHandle(
 		ref,
 		() => ({
@@ -90,14 +95,23 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		}
 	}, [focused]);
 
+	useEffect(() => {
+		return () => setPreviewTitle('');
+	}, [setPreviewTitle]);
+
 	if (suspended) {
 		return null;
 	}
 
 	return (
 		<Box position='relative'>
-			<Tile display='flex' padding={8} role='menu' mbe={8} aria-labelledby={id}>
-				<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
+			<Tile padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
+				{previewTitle && (
+					<Box bg='tint' pi={16} pb={8} id={id}>
+						{t(previewTitle)}
+					</Box>
+				)}
+				<Box padding={8} role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
 					{isLoading &&
 						Array(5)
 							.fill(5)
