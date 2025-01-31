@@ -609,6 +609,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								}
 								return result;
 							}
+							if (!this.user.username && !options.incompleteUserAllowed) {
+								return {
+									statusCode: 401,
+									body: {
+										status: 'error',
+										message: 'You must have a username to do this.',
+									},
+								};
+							}
 						}
 
 						const objectForRateLimitMatch = {
