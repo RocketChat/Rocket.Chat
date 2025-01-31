@@ -192,9 +192,20 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 			body: unknown;
 	  };
 
-type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
+
+export type InnerAction<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+	Action<TMethod, TPathPattern, TOptions> extends (this: infer This) => infer Result
+		? This extends ActionThis<TMethod, TPathPattern, TOptions>
+			? (this: Mutable<This>) => Result
+			: never
+		: never;
+
+type Mutable<Immutable> = {
+	-readonly [key in keyof Immutable]: Immutable[key];
+};
 
 type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
 	| Action<TMethod, TPathPattern, TEndpointOptions>
@@ -246,6 +257,8 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
+
+	requestIp?: string;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;

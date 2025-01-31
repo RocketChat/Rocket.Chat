@@ -20,6 +20,7 @@ import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } fro
 import type {
 	FailureResult,
 	ForbiddenResult,
+	InnerAction,
 	InternalError,
 	NotFoundResult,
 	Operations,
@@ -362,7 +363,7 @@ export class APIClass<TBasePath extends string = ''> {
 		return rateLimiterDictionary[route];
 	}
 
-	protected async shouldVerifyRateLimit(route: string, userId: string): Promise<boolean> {
+	protected async shouldVerifyRateLimit(route: string, userId?: string): Promise<boolean> {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
@@ -375,7 +376,7 @@ export class APIClass<TBasePath extends string = ''> {
 		objectForRateLimitMatch: RateLimiterOptionsToCheck,
 		_: any,
 		response: Response,
-		userId: string,
+		userId?: string,
 	): Promise<void> {
 		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
 			return;
@@ -569,13 +570,14 @@ export class APIClass<TBasePath extends string = ''> {
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.requestIp = getRequestIP(this.request);
+						this.requestIp = getRequestIP(this.request)!;
 
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute(this.request);
-							this.user = user;
-							this.userId = this.user?._id;
-							this.token = this.request.headers['x-auth-token'] && Accounts._hashLoginToken(this.request.headers['x-auth-token']);
+							this.user = user!;
+							this.userId = String(this.request.headers['x-user-id']);
+							this.token = (this.request.headers['x-auth-token'] &&
+								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
 						}
 
 						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
@@ -627,7 +629,7 @@ export class APIClass<TBasePath extends string = ''> {
 									!(await checkPermissionsForInvocation(
 										this.userId,
 										_options.permissionsRequired as PermissionsPayload,
-										this.request.method,
+										this.request.method as Method,
 									))
 								) {
 									if (applyBreakingChanges) {
@@ -650,19 +652,21 @@ export class APIClass<TBasePath extends string = ''> {
 							Accounts._accountData[connection.id] = {
 								connection,
 							};
-							Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-							await api.processTwoFactor({
-								userId: this.userId,
-								request: this.request,
-								invocation: invocation as unknown as Record<string, any>,
-								options: _options,
-								connection: connection as unknown as IMethodConnection,
-							});
+							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
+
+							this.userId &&
+								(await api.processTwoFactor({
+									userId: this.userId,
+									request: this.request,
+									invocation: invocation as unknown as Record<string, any>,
+									options: _options,
+									connection: connection as unknown as IMethodConnection,
+								}));
 
 							this.queryOperations = options.queryOperations;
-							this.queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
+							(this as any).queryFields = options.queryFields;
+							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
 
 							result =
 								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
@@ -692,7 +696,7 @@ export class APIClass<TBasePath extends string = ''> {
 						}
 
 						return result;
-					};
+					} as InnerAction<any, any, any>;
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
