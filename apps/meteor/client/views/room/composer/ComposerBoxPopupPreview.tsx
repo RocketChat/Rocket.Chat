@@ -1,9 +1,7 @@
 import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import type { ForwardedRef } from 'react';
+import type { ForwardedRef, ReactNode } from 'react';
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
@@ -11,13 +9,14 @@ import { useChat } from '../contexts/ChatContext';
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 
 type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
+	title?: ReactNode;
 	rid: string;
 	tmid?: string;
 	suspended?: boolean;
 };
 
 const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
-	{ focused, items, rid, tmid, select, suspended }: ComposerBoxPopupPreviewProps,
+	{ focused, items, title, rid, tmid, select, suspended }: ComposerBoxPopupPreviewProps,
 	ref: ForwardedRef<
 		| {
 				getFilter?: () => unknown;
@@ -28,9 +27,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 ) {
 	const id = useId();
 	const chat = useChat();
-	const { t } = useTranslation();
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
-	const [previewTitle, setPreviewTitle] = useLocalStorage('composer.preview.title', '');
 
 	useImperativeHandle(
 		ref,
@@ -95,10 +92,6 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		}
 	}, [focused]);
 
-	useEffect(() => {
-		return () => setPreviewTitle('');
-	}, [setPreviewTitle]);
-
 	if (suspended) {
 		return null;
 	}
@@ -106,9 +99,9 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 	return (
 		<Box position='relative'>
 			<Tile padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
-				{previewTitle && (
+				{title && (
 					<Box bg='tint' pi={16} pb={8} id={id}>
-						{t(previewTitle)}
+						{title}
 					</Box>
 				)}
 				<Box display='flex' padding={8}>

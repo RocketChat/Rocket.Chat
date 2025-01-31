@@ -377,6 +377,7 @@ const MessageBox = ({
 					select={select}
 					items={items as any}
 					focused={focused as any}
+					title={popup.title}
 					renderItem={popup.renderItem}
 					ref={commandsRef}
 					rid={room._id}
