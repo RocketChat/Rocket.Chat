@@ -15,45 +15,55 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const executeDeleteUser = async (fromUserId: IUser['_id'], userId: IUser['_id'], confirmRelinquish = false): Promise<boolean> => {
+	check(userId, String);
+	if ((await hasPermissionAsync(fromUserId, 'delete-user')) !== true) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'deleteUser',
+		});
+	}
+
+	const user = await Users.findOneById(userId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
+			method: 'deleteUser',
+		});
+	}
+
+	if (user.type === 'app') {
+		throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
+			method: 'deleteUser',
+		});
+	}
+
+	const adminCount = await Users.col.countDocuments({ roles: 'admin' });
+
+	const userIsAdmin = user.roles?.indexOf('admin') > -1;
+
+	if (adminCount === 1 && userIsAdmin) {
+		throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
+			method: 'deleteUser',
+			action: 'Remove_last_admin',
+		});
+	}
+
+	await deleteUser(userId, confirmRelinquish, fromUserId);
+
+	// App IPostUserDeleted event hook
+	await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(fromUserId) });
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async deleteUser(userId, confirmRelinquish = false) {
-		check(userId, String);
 		const uid = Meteor.userId();
-		if (!uid || (await hasPermissionAsync(uid, 'delete-user')) !== true) {
+		if (!uid) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
 		}
 
-		const user = await Users.findOneById(userId);
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
-				method: 'deleteUser',
-			});
-		}
-
-		if (user.type === 'app') {
-			throw new Meteor.Error('error-cannot-delete-app-user', 'Deleting app user is not allowed', {
-				method: 'deleteUser',
-			});
-		}
-
-		const adminCount = await Users.col.countDocuments({ roles: 'admin' });
-
-		const userIsAdmin = user.roles?.indexOf('admin') > -1;
-
-		if (adminCount === 1 && userIsAdmin) {
-			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-				method: 'deleteUser',
-				action: 'Remove_last_admin',
-			});
-		}
-
-		await deleteUser(userId, confirmRelinquish, uid);
-
-		// App IPostUserDeleted event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });
-
-		return true;
+		return executeDeleteUser(uid, userId, confirmRelinquish);
 	},
 });

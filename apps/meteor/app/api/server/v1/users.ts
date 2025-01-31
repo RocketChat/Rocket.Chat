@@ -28,7 +28,14 @@ import type { Filter } from 'mongodb';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
+import { executeDeleteUser } from '../../../../server/methods/deleteUser';
+import { registerUser } from '../../../../server/methods/registerUser';
+import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
+import { resetAvatar } from '../../../../server/methods/resetAvatar';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
+import { sendForgotPasswordEmail } from '../../../../server/methods/sendForgotPasswordEmail';
+import { executeSetUserActiveStatus } from '../../../../server/methods/setUserActiveStatus';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -36,7 +43,9 @@ import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
@@ -48,6 +57,7 @@ import { validateNameChars } from '../../../lib/server/functions/validateNameCha
 import { validateUsername } from '../../../lib/server/functions/validateUsername';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
+import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
@@ -83,7 +93,11 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const suggestions = await Meteor.callAsync('getAvatarSuggestion');
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+			const suggestions = await getAvatarSuggestionForUser(user);
 
 			return API.v1.success({ suggestions });
 		},
@@ -114,7 +128,7 @@ API.v1.addRoute(
 					confirmRelinquish,
 				} = this.bodyParams;
 
-				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
 			}
 			const { fields } = await this.parseJsonQuery();
 
@@ -307,7 +321,7 @@ API.v1.addRoute(
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
-				await Meteor.callAsync('setUserActiveStatus', userId, this.bodyParams.active);
+				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
 			}
 
 			const { fields } = await this.parseJsonQuery();
@@ -330,7 +344,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await Meteor.callAsync('deleteUser', user._id, confirmRelinquish);
+			await executeDeleteUser(this.userId, user._id, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -352,7 +366,7 @@ API.v1.addRoute(
 
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await Meteor.callAsync('deleteUserOwnAccount', password, confirmRelinquish);
+			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -371,7 +385,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
+			await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
 			if (!user) {
@@ -655,10 +669,14 @@ API.v1.addRoute(
 			}
 
 			// Register the user
-			const userId = await Meteor.callAsync('registerUser', {
+			const userId = await registerUser({
 				...params,
 				...(secretURL && { secretURL }),
 			});
+
+			if (typeof userId !== 'string') {
+				return API.v1.failure('Error creating user');
+			}
 
 			// Now set their username
 			const { fields } = await this.parseJsonQuery();
@@ -686,12 +704,12 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				await Meteor.callAsync('resetAvatar');
+				await resetAvatar(this.userId, this.userId);
 			} else if (
 				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
 				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
 			) {
-				await Meteor.callAsync('resetAvatar', user._id);
+				await resetAvatar(this.userId, user._id);
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
 					method: 'users.resetAvatar',
@@ -752,7 +770,7 @@ API.v1.addRoute(
 				return API.v1.failure("The 'email' param is required");
 			}
 
-			await Meteor.callAsync('sendForgotPasswordEmail', email.toLowerCase());
+			await sendForgotPasswordEmail(email.toLowerCase());
 			return API.v1.success();
 		},
 	},
@@ -763,7 +781,11 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const result = await Meteor.callAsync('getUsernameSuggestion');
+			const user = await Users.findOneById(this.userId, { projection: { name: 1, emails: 1, services: 1 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+			const result = await generateUsernameSuggestion(user);
 
 			return API.v1.success({ result });
 		},
@@ -953,7 +975,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
@@ -1020,7 +1042,11 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { fullExport = false } = this.queryParams;
-			const result = (await Meteor.callAsync('requestDataDownload', { fullExport: fullExport === 'true' })) as {
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+			const result = (await requestDataDownload({ userData: user, fullExport: fullExport === 'true' })) as {
 				requested: boolean;
 				exportOperation: IExportOperation;
 			};
