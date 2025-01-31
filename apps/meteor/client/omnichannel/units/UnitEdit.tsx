@@ -14,10 +14,10 @@ import {
 	FieldRow,
 	CheckOption,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';
@@ -160,11 +160,11 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const visibilityField = useUniqueId();
-	const departmentsField = useUniqueId();
-	const monitorsField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const visibilityField = useId();
+	const departmentsField = useId();
+	const monitorsField = useId();
 
 	return (
 		<Contextualbar data-qa-id='units-contextual-bar'>

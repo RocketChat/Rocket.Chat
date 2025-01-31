@@ -1,6 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useContext, useMemo, useSyncExternalStore } from 'react';
 
 import type { Fields, Sort } from '../UserContext';
 import { UserContext } from '../UserContext';

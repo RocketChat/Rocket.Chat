@@ -1,10 +1,9 @@
 import { Divider, Modal, ButtonGroup, Button, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
 import MatrixFederationSearch from './MatrixFederationSearch';
@@ -62,8 +61,8 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	const { data, isPending: isLoadingServerList } = useMatrixServerList();
 
-	const titleId = useUniqueId();
-	const serverNameId = useUniqueId();
+	const titleId = useId();
+	const serverNameId = useId();
 
 	return (
 		<Modal maxHeight='x600' open aria-labelledby={titleId}>

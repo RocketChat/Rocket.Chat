@@ -6,7 +6,6 @@ export default {
 	setupFilesAfterEnv: [...client.setupFilesAfterEnv],
 	moduleNameMapper: {
 		'^react($|/.+)': '<rootDir>/../../node_modules/react$1',
-		'^react-dom/client$': '<rootDir>/../../node_modules/react-dom$1',
 		'^react-dom($|/.+)': '<rootDir>/../../node_modules/react-dom$1',
 		'^react-i18next($|/.+)': '<rootDir>/../../node_modules/react-i18next$1',
 	},
