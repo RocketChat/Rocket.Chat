@@ -10,6 +10,7 @@ import MainLayout from '../views/root/MainLayout';
 
 const AuditPage = lazy(() => import('../views/audit/AuditPage'));
 const AuditLogPage = lazy(() => import('../views/audit/AuditLogPage'));
+const SecurityLogsPage = lazy(() => import('../views/audit/SecurityLogsPage'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -20,6 +21,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'audit-log': {
 			pathname: '/audit-log';
 			pattern: '/audit-log';
+		};
+		'security-logs': {
+			pathname: '/security-logs';
+			pattern: '/security-logs';
 		};
 	}
 }
@@ -53,6 +58,17 @@ onToggledFeature('auditing', {
 					<MainLayout>
 						<PermissionGuard permission='can-audit-log'>
 							<AuditLogPage />
+						</PermissionGuard>
+					</MainLayout>,
+				),
+			},
+			{
+				path: '/security-logs',
+				id: 'security-logs',
+				element: appLayout.wrap(
+					<MainLayout>
+						<PermissionGuard permission='can-audit-log'>
+							<SecurityLogsPage />
 						</PermissionGuard>
 					</MainLayout>,
 				),

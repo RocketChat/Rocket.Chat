@@ -1,0 +1,127 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r0:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r0:-title"
+              >
+                Setting_change
+              </h2>
+            </div>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+            >
+              Timestamp
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
+            >
+              March 20th 2025, 5:17:46 pm
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+            >
+              Actor
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-f04nzc"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+              >
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="rcx-avatar__element rcx-avatar__element--x24"
+                  data-username="John Doe"
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  title="John Doe"
+                />
+              </figure>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mrdogu"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-19jm8yv"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                  >
+                    John Doe
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+            >
+              Setting
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
+            >
+              Show_message_in_email_notification
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+            >
+              Changed_from
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
+            >
+              false
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+            >
+              Changed_to
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
+            >
+              true
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          />
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
