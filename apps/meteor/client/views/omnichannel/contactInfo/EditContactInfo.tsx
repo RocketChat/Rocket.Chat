@@ -139,9 +139,18 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validatePhone = async (phoneValue: string) => {
 		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
-		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		return !isDuplicated ? true : t('Phone_already_exists');
+		if (currentPhones.filter((phone) => phone === phoneValue).length > 1) {
+			return t('Phone_already_exists');
+		}
+
+		const initialPhones = initialValue.phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (!initialPhones.includes(phoneValue) && (await checkExistenceEndpoint({ phone: phoneValue })).exists) {
+			return t('Phone_already_exists');
+		}
+
+		return true;
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);

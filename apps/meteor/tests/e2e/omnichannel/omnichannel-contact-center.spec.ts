@@ -53,6 +53,7 @@ const ERROR = {
 	emailRequired: 'Email required',
 	emailAlreadyExists: 'Email already exists',
 	phoneRequired: 'Phone required',
+	phoneAlreadyExists: 'Phone already exists',
 };
 
 test.use({ storageState: Users.admin.state });
@@ -157,8 +158,14 @@ test.describe('Omnichannel Contact Center', () => {
 			await expect(poContacts.newContact.getErrorMessage(ERROR.emailAlreadyExists)).not.toBeVisible();
 		});
 
-		await test.step('input phone', async () => {
+		await test.step('validate phone is duplicated', async () => {
 			await poContacts.newContact.btnAddPhone.click();
+			await poContacts.newContact.inputPhone.fill(EXISTING_CONTACT.phones[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.phoneAlreadyExists)).toBeVisible();
+		});
+
+		await test.step('input phone', async () => {
 			await poContacts.newContact.inputPhone.fill(NEW_CONTACT.phone);
 			await page.keyboard.press('Tab');
 			await expect(poContacts.newContact.getErrorMessage(ERROR.phoneRequired)).not.toBeVisible();
@@ -226,6 +233,12 @@ test.describe('Omnichannel Contact Center', () => {
 
 		await test.step('edit name', async () => {
 			await poContacts.contactInfo.inputName.fill(EDIT_CONTACT.name);
+		});
+
+		await test.step('validate phone is duplicated', async () => {
+			await poContacts.newContact.inputPhone.fill(EXISTING_CONTACT.phones[0]);
+			await page.keyboard.press('Tab');
+			await expect(poContacts.newContact.getErrorMessage(ERROR.phoneAlreadyExists)).toBeVisible();
 		});
 
 		await test.step('input phone ', async () => {
