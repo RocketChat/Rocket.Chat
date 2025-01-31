@@ -3,7 +3,9 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { tracerSpan } from '@rocket.chat/tracing';
+import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -26,6 +28,8 @@ import type {
 	Options,
 	PartialThis,
 	SuccessResult,
+	TypedAction,
+	TypedOptions,
 	UnauthorizedResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
@@ -137,7 +141,14 @@ const generateConnection = (
 
 let prometheusAPIUserAgent = false;
 
-export class APIClass<TBasePath extends string = ''> extends Restivus {
+export class APIClass<
+	TBasePath extends string = '',
+	TOperations extends {
+		[x: string]: unknown;
+	} = {},
+> extends Restivus {
+	public typedRoutes: Record<string, Record<string, unknown>> = {};
+
 	protected apiPath?: string;
 
 	public authMethods: ((...args: any[]) => any)[];
@@ -484,6 +495,182 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
 	}
 
+	private registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
+		method: Method,
+		subpath: TSubPathPattern,
+		options: TOptions,
+	): void {
+		const { authRequired, validateParams } = options;
+
+		const opt = {
+			authRequired,
+			...(validateParams &&
+				method.toLowerCase() === 'get' &&
+				('GET' in validateParams
+					? { query: validateParams.GET }
+					: {
+							query: validateParams as ValidateFunction<any>,
+						})),
+
+			...(validateParams &&
+				method.toLowerCase() === 'post' &&
+				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
+
+			...(validateParams &&
+				method.toLowerCase() === 'put' &&
+				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
+			...(validateParams &&
+				method.toLowerCase() === 'delete' &&
+				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
+
+			tags: ['Missing Documentation'],
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean' },
+						error: { type: 'string' },
+					},
+					required: ['success'],
+				}),
+			},
+		};
+
+		this.registerTypedRoutes(method, subpath, opt);
+	}
+
+	private registerTypedRoutes<
+		TSubPathPattern extends string,
+		TOptions extends TypedOptions,
+		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
+	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
+		const path = `/${this._config.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
+		this.typedRoutes = this.typedRoutes || {};
+		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		const { query, authRequired, response, body, tags, ...rest } = options;
+		this.typedRoutes[path][method.toLowerCase()] = {
+			...(response && {
+				responses: Object.fromEntries(
+					Object.entries(response).map(([status, schema]) => [
+						status,
+						{
+							description: '',
+							content: {
+								'application/json': 'schema' in schema ? { schema: schema.schema } : schema,
+							},
+						},
+					]),
+				),
+			}),
+			...(query && {
+				parameters: [
+					{
+						schema: query.schema,
+						in: 'query',
+						name: 'query',
+						required: true,
+					},
+				],
+			}),
+			...(body && {
+				requestBody: {
+					required: true,
+					content: {
+						'application/json': { schema: body.schema },
+					},
+				},
+			}),
+			...(authRequired && {
+				...rest,
+				security: [
+					{
+						userId: [],
+						authToken: [],
+					},
+				],
+			}),
+			tags,
+		};
+	}
+
+	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		method: Method,
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: Method;
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		this.addRoute([subpath], { ...options }, { [method.toLowerCase()]: { action } } as any);
+		this.registerTypedRoutes(method, subpath, options);
+		return this;
+	}
+
+	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'GET';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('GET', subpath, options, action);
+	}
+
+	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'POST';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('POST', subpath, options, action);
+	}
+
+	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'PUT';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('PUT', subpath, options, action);
+	}
+
+	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'DELETE';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('DELETE', subpath, options, action);
+	}
+
 	addRoute<TSubPathPattern extends string>(
 		subpath: TSubPathPattern,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
@@ -752,8 +939,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
-			});
 
+				this.registerTypedRoutesLegacy(method as Method, route, {
+					...options,
+					...operations[method as keyof Operations<TPathPattern, TOptions>],
+				});
+			});
 			super.addRoute(route, options, operations);
 		});
 	}
@@ -1058,19 +1249,15 @@ const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Rest
 	this.done();
 };
 
-const createApi = function _createApi(options: { version?: string } = {}): APIClass {
-	return new APIClass(
-		Object.assign(
-			{
-				apiPath: 'api/',
-				useDefaultAuth: true,
-				prettyJson: process.env.NODE_ENV === 'development',
-				defaultOptionsEndpoint,
-				auth: getUserAuth(),
-			},
-			options,
-		) as IAPIProperties,
-	);
+const createApi = function _createApi(options: { version?: string; useDefaultAuth?: true } = {}): APIClass {
+	return new APIClass({
+		apiPath: 'api/',
+		useDefaultAuth: false,
+		prettyJson: process.env.NODE_ENV === 'development',
+		defaultOptionsEndpoint,
+		auth: getUserAuth(),
+		...options,
+	});
 };
 
 export const API: {
@@ -1105,6 +1292,7 @@ export const API: {
 	ApiClass: APIClass,
 	v1: createApi({
 		version: 'v1',
+		useDefaultAuth: true,
 	}),
 	default: createApi(),
 };
