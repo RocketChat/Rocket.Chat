@@ -51,6 +51,11 @@ describe('Cors middleware', () => {
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'CORS test successful');
 		expect(response.headers).toHaveProperty('access-control-allow-origin', '*');
+		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
+		expect(response.headers).toHaveProperty(
+			'access-control-allow-headers',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+		);
 	});
 
 	it('should handle CORS if enabled to specific origin', async () => {
@@ -97,6 +102,11 @@ describe('Cors middleware', () => {
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'CORS test successful');
 		expect(response.headers).toHaveProperty('access-control-allow-origin', 'http://localhost');
+		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
+		expect(response.headers).toHaveProperty(
+			'access-control-allow-headers',
+			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+		);
 	});
 
 	it('should not handle CORS if origin is not allowed', async () => {
@@ -180,8 +190,8 @@ describe('Cors middleware', () => {
 
 		const response = await request(app).get('/api/test').set('origin', 'http://localhost');
 
-		expect(response.statusCode).toBe(200);
-		expect(response.body).toHaveProperty('message', 'CORS test successful');
+		expect(response.statusCode).toBe(405);
+		expect(response.text).toBe('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
 		expect(response.headers).not.toHaveProperty('access-control-allow-origin');
 	});
 });
