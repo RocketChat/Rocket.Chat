@@ -24,15 +24,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	 */
 	query: Record<string, unknown>;
 }> {
-	const {
-		request: { path: route },
-		userId,
-		queryParams: params,
-		logger,
-		queryFields,
-		queryOperations,
-		response,
-	} = api;
+	const { userId, queryParams: params, logger, queryFields, queryOperations, response } = api;
 
 	let sort;
 	if (params.sort) {
@@ -60,7 +52,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields && isUnsafeQueryParamsAllowed) {
 		try {
-			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
+			apiDeprecationLogger.parameter(api.request.url, 'fields', '8.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
@@ -99,7 +91,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 
 	// Limit the fields by default
 	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
-	if (route.includes('/v1/users.')) {
+	if (api.request.url.includes('/v1/users.')) {
 		if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
@@ -109,7 +101,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 
 	let query: Record<string, any> = {};
 	if (params.query && isUnsafeQueryParamsAllowed) {
-		apiDeprecationLogger.parameter(route, 'query', '8.0.0', response, messageGenerator);
+		apiDeprecationLogger.parameter(api.request.url, 'query', '8.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
@@ -125,7 +117,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	if (typeof query === 'object') {
 		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 
-		if (route.includes('/v1/users.')) {
+		if (api.request.url.includes('/v1/users.')) {
 			if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {

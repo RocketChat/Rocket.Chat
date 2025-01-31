@@ -33,27 +33,16 @@ describe('Router use method', () => {
 			},
 		);
 
-		app.use(
-			api
-				.use(
-					v1
-						.use((req, _res, next) => {
-							(req as any).customProperty = 'customValue';
-							next();
-						})
-						.use(test),
-				)
-				.use(v2.use(test)).router,
-		);
+		app.use(api.use(v1.use(test)).use(v2.use(test)).router);
 
 		const response1 = await request(app).get('/api/v1/test');
 
 		expect(response1.statusCode).toBe(200);
-		expect(response1.body).toHaveProperty('customProperty', 'customValue');
+		expect(response1.headers).toHaveProperty('x-api-version', 'v1');
 
 		const response2 = await request(app).get('/api/v2/test');
 
 		expect(response2.statusCode).toBe(200);
-		expect(response2.body).not.toHaveProperty('customProperty', 'customValue');
+		expect(response2.headers).not.toHaveProperty('x-api-version');
 	});
 });
