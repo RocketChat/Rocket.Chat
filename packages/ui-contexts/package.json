@@ -11,13 +11,11 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
-		"@types/use-sync-external-store": "^0.0.6",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"react": "~18.3.1",
-		"typescript": "~5.7.2",
-		"use-sync-external-store": "^1.2.2"
+		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -26,8 +24,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"react": "~17.0.2",
-		"use-sync-external-store": "^1.2.0"
+		"react": "~17.0.2"
 	},
 	"dependencies": {
 		"@rocket.chat/password-policies": "workspace:^"
