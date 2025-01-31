@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
 import RoomHeader from './RoomHeader';
 import type { RoomHeaderProps } from './RoomHeader';

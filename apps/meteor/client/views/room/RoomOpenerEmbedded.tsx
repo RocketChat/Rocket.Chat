@@ -4,9 +4,10 @@ import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
 import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
@@ -16,6 +17,7 @@ import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePrevi
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 
@@ -41,26 +43,25 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const rid = data?.rid;
-	const { refetch } = useQuery(
-		['subscriptions', rid],
-		() => {
+	const { data: subscription, refetch } = useQuery({
+		queryKey: ['subscriptions', rid] as const,
+		queryFn: () => {
 			if (!rid) {
 				throw new Error('Room not found');
 			}
 			return getSubscription({ roomId: rid });
 		},
-		{
-			enabled: !!rid,
-			suspense: true,
-			onSuccess({ subscription }) {
-				if (!subscription) {
-					throw new Error('Room not found');
-				}
-				CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
-				LegacyRoomManager.computation.invalidate();
-			},
-		},
-	);
+		enabled: !!rid,
+	});
+
+	useEffect(() => {
+		if (!subscription) {
+			return;
+		}
+
+		CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+		LegacyRoomManager.computation.invalidate();
+	}, [subscription]);
 
 	useEffect(() => {
 		if (!uid) {
@@ -105,6 +106,10 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 
 						if (error instanceof RoomNotFoundError) {
 							return <RoomNotFound />;
+						}
+
+						if (error instanceof NotSubscribedToRoomError) {
+							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
 						}
 
 						if (error instanceof NotAuthorizedError) {

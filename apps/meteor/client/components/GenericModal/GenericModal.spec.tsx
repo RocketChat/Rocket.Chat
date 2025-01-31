@@ -2,7 +2,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
 import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';

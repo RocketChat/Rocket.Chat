@@ -14,12 +14,11 @@ import {
 	useMethod,
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { queryClient } from '../../../lib/queryClient';
 
 type RegisterUsernamePayload = {
 	username: Exclude<IUser['username'], undefined>;
@@ -43,7 +42,10 @@ const RegisterUsername = () => {
 	const setUsername = useMethod('setUsername');
 	const saveCustomFields = useMethod('saveCustomFields');
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
-	const { data, isLoading } = useQuery(['suggestion'], async () => usernameSuggestion());
+	const { data, isLoading } = useQuery({
+		queryKey: ['suggestion'],
+		queryFn: async () => usernameSuggestion(),
+	});
 
 	const {
 		register,
@@ -63,6 +65,8 @@ const RegisterUsername = () => {
 		}
 	});
 
+	const queryClient = useQueryClient();
+
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
@@ -70,7 +74,7 @@ const RegisterUsername = () => {
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
-			queryClient.invalidateQueries(['users.info']);
+			queryClient.invalidateQueries({ queryKey: ['users.info'] });
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {

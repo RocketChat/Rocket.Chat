@@ -1,6 +1,5 @@
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useSetModal, useUser } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';

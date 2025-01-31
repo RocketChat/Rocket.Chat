@@ -1,8 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { CheckBox, Icon, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -17,7 +16,7 @@ type ChannelDesertionTableRowProps = {
 const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }: ChannelDesertionTableRowProps): ReactElement => {
 	const { name, fname, ts, isLastOwner } = room;
 	const formatDate = useFormatDateAndTime();
-	const handleChange = useMutableCallback(() => onChange(room));
+	const handleChange = useEffectEvent(() => onChange(room));
 
 	return (
 		<GenericTableRow action>

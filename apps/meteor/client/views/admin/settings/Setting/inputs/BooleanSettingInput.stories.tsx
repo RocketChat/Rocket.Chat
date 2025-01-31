@@ -1,6 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import BooleanSettingInput from './BooleanSettingInput';
 

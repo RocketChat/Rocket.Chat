@@ -5262,7 +5262,6 @@
   "view-livechat-room-closed-same-department_description": "Behörighet att visa livechattrum som stängts av en annan agent inom samma avdelning",
   "view-livechat-room-customfields": "Visa anpassade fält för Omnichannel-rum",
   "view-livechat-room-customfields_description": "Behörighet att visa anpassade fält för livechattrum",
-  "view-livechat-rooms": "Visa Omnichannel-rum",
   "view-livechat-rooms_description": "Tillstånd att se andra Omnichannel-rum",
   "view-livechat-triggers": "Visa utlösare för Omnichannel",
   "view-livechat-triggers_description": "Behörighet att visa utlösare för livechatt",
