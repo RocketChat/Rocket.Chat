@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
+import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 type IncomingPopupProps = {
 	id: string;
@@ -35,11 +36,15 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const { t } = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const roomName = useVideoConfRoomName(room);
 
 	const params = useMemo(() => ({ callId: id }), [id]);
 	const { phase, value } = useEndpointData('/v1/video-conference.info', { params });
 	const showMic = Boolean(value?.capabilities?.mic);
 	const showCam = Boolean(value?.capabilities?.cam);
+
+	const dialogLabel =
+		room.t === 'd' ? `${t('Incoming_call_from__roomName__', { roomName })}` : `${t('Incoming_call_from__roomName__', { roomName })}`;
 
 	const handleJoinCall = useEffectEvent(() => {
 		setPreferences(controllersConfig);
@@ -47,7 +52,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	});
 
 	return (
-		<VideoConfPopup position={position}>
+		<VideoConfPopup position={position} id={id} aria-label={dialogLabel}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{phase === AsyncStatePhase.LOADING && <Skeleton />}
