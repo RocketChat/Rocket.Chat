@@ -408,7 +408,6 @@ export class APIClass<TBasePath extends string = ''> {
 					routes: [route.path],
 					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
 					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
-					apiVersion: this.version,
 				});
 			}
 		});
@@ -418,12 +417,10 @@ export class APIClass<TBasePath extends string = ''> {
 		routes,
 		rateLimiterOptions,
 		endpoints,
-		apiVersion,
 	}: {
 		routes: string[];
 		rateLimiterOptions: RateLimiterOptions | boolean;
 		endpoints: string[];
-		apiVersion?: string;
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
@@ -451,7 +448,7 @@ export class APIClass<TBasePath extends string = ''> {
 				);
 			});
 		};
-		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
+		routes.map((route) => this.namedRoutes(route, endpoints)).map(addRateLimitRuleToEveryRoute);
 	}
 
 	public async processTwoFactor({
@@ -484,18 +481,14 @@ export class APIClass<TBasePath extends string = ''> {
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string, apiVersion?: string): string {
-		let prefix = `/${this.apiPath || ''}`;
-		if (apiVersion) {
-			prefix += `${apiVersion}/`;
-		}
-		return `${prefix}${route}${method}`;
+	protected getFullRouteName(route: string, method: string): string {
+		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
-	protected namedRoutes(route: string, endpoints: Record<string, string> | string[], apiVersion?: string): string[] {
+	protected namedRoutes(route: string, endpoints: Record<string, string> | string[]): string[] {
 		const routeActions: string[] = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
 
-		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
+		return routeActions.map((action) => this.getFullRouteName(route, action));
 	}
 
 	addRoute<TSubPathPattern extends string>(
@@ -544,7 +537,6 @@ export class APIClass<TBasePath extends string = ''> {
 				routes: subpaths,
 				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
 				endpoints: operations as unknown as string[],
-				apiVersion: this.version,
 			});
 		}
 		subpaths.forEach((route) => {
@@ -595,7 +587,7 @@ export class APIClass<TBasePath extends string = ''> {
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `${this.request.route.path}${this.request.method.toLowerCase()}`,
+							route: `/${api.apiPath}${this.request.route.path}${this.request.method.toLowerCase()}`,
 						};
 
 						let result;
