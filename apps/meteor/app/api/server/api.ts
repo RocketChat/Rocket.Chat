@@ -593,7 +593,7 @@ export class APIClass<TBasePath extends string = ''> {
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `${this.request.route}${this.request.method.toLowerCase()}`,
+							route: `${this.request.route.path}${this.request.method.toLowerCase()}`,
 						};
 
 						let result;
