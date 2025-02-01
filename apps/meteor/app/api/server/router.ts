@@ -334,7 +334,10 @@ export class Router<
 						c.set('route', `${c.var.route || ''}${this.base}`);
 						return next();
 					})
-					.route(this.base, this.honoRouter),
+					.route(this.base, this.honoRouter)
+					.options('*', (c) => {
+						return c.body('OK');
+					}),
 			),
 		);
 		return router;
