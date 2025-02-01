@@ -18,19 +18,18 @@ export const cors =
 				res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
 			}
 
-			next();
+			await next();
 			return;
 		}
 
 		// check if a pre-flight request
 		if (!req.header('access-control-request-method') && !req.header('origin')) {
-			next();
+			await next();
 			return;
 		}
 
 		if (!settings.get('API_Enable_CORS')) {
-			c.body('CORS not enabled. Go to "Admin > General > REST Api" to enable it.', 405);
-			return;
+			return c.body('CORS not enabled. Go to "Admin > General > REST Api" to enable it.', 405);
 		}
 
 		const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
@@ -39,7 +38,7 @@ export const cors =
 			res.headers.set('Access-Control-Allow-Origin', '*');
 			res.headers.set('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
 			res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
-			next();
+			await next();
 			return;
 		}
 
@@ -59,5 +58,5 @@ export const cors =
 		res.headers.set('Access-Control-Allow-Origin', originHeader);
 		res.headers.set('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
 		res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
-		next();
+		await next();
 	};

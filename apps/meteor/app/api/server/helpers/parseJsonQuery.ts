@@ -24,7 +24,15 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	 */
 	query: Record<string, unknown>;
 }> {
-	const { userId, queryParams: params, logger, queryFields, queryOperations, response } = api;
+	const {
+		userId,
+		queryParams: params,
+		logger,
+		queryFields,
+		queryOperations,
+		response,
+		request: { route },
+	} = api;
 
 	let sort;
 	if (params.sort) {
