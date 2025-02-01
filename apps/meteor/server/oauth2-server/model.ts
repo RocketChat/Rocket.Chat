@@ -1,4 +1,3 @@
-import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
 import type {
 	AuthorizationCode,
 	AuthorizationCodeModel,
@@ -9,6 +8,7 @@ import type {
 	Token,
 	User,
 } from '@node-oauth/oauth2-server';
+import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
 
 export type ModelConfig = {
 	debug?: boolean;
