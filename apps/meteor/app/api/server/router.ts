@@ -239,26 +239,20 @@ export class Router<
 	}
 
 	get honoRouter(): Hono {
-		const router = new Hono();
+		const router = new Hono().basePath(this.base).use(`${this.base}/*`, (c, next) => {
+			c.set('route', `${c.var.route || ''}${this.base}`);
+			return next();
+		});
 		this.middleware(router);
-		return router;
+		return router.options('*', (c) => {
+			return c.body('OK');
+		});
 	}
 
 	get router(): express.Router {
 		// eslint-disable-next-line new-cap
 		const router = express.Router();
-		const hono = new Hono();
-		router.use(
-			this.base,
-			honoAdapter(
-				hono
-					.use(`${this.base}/*`, (c, next) => {
-						c.set('route', `${c.var.route || ''}${this.base}`);
-						return next();
-					})
-					.route(this.base, this.honoRouter),
-			),
-		);
+		router.use(this.base, honoAdapter(this.honoRouter));
 		return router;
 	}
 }
