@@ -9,7 +9,10 @@ describe('Router use method', () => {
 		const ajv = new Ajv();
 		const app = express();
 		const api = new Router('/api');
-		const v1 = new Router('/v1');
+		const v1 = new Router('/v1').use(async (x, next) => {
+			x.header('x-api-version', 'v1');
+			await next();
+		});
 		const v2 = new Router('/v2');
 		const test = new Router('/test').get(
 			'/',
