@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { TextInput, ButtonGroup, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { VerticalWizardLayout, Form } from '@rocket.chat/layout';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -15,7 +14,7 @@ import {
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -28,7 +27,7 @@ const RegisterUsername = () => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const logout = useLogout();
-	const formLabelId = useUniqueId();
+	const formLabelId = useId();
 	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');

@@ -18,7 +18,7 @@ import {
 	Skeleton,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useUniqueId, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -31,7 +31,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -176,18 +176,18 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		return handleCreateUser.mutateAsync({ ...userFormData, fields: '' });
 	});
 
-	const nameId = useUniqueId();
-	const usernameId = useUniqueId();
-	const emailId = useUniqueId();
-	const verifiedId = useUniqueId();
-	const statusTextId = useUniqueId();
-	const bioId = useUniqueId();
-	const nicknameId = useUniqueId();
-	const passwordId = useUniqueId();
-	const rolesId = useUniqueId();
-	const joinDefaultChannelsId = useUniqueId();
-	const sendWelcomeEmailId = useUniqueId();
-	const setRandomPasswordId = useUniqueId();
+	const nameId = useId();
+	const usernameId = useId();
+	const emailId = useId();
+	const verifiedId = useId();
+	const statusTextId = useId();
+	const bioId = useId();
+	const nicknameId = useId();
+	const passwordId = useId();
+	const rolesId = useId();
+	const joinDefaultChannelsId = useId();
+	const sendWelcomeEmailId = useId();
+	const setRandomPasswordId = useId();
 
 	const [showCustomFields, setShowCustomFields] = useState(true);
 
