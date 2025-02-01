@@ -70,7 +70,7 @@ export async function getUploadFormData<
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
-	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
+	const bb = busboy({ headers: Object.fromEntries(request.headers.entries()), defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
 	let uploadedFile: UploadResultWithOptionalFile<K> | undefined = {
