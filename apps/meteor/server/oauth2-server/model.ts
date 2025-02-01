@@ -8,7 +8,7 @@ import type {
 	RefreshTokenModel,
 	Token,
 	User,
-} from 'oauth2-server';
+} from '@node-oauth/oauth2-server';
 
 export type ModelConfig = {
 	debug?: boolean;
