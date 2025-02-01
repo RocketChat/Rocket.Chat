@@ -23,7 +23,7 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 			if (isPromptButton(formatter)) {
 				return formatter.prompt(composer);
 			}
-			composer.wrapSelection(formatter.pattern);
+			composer.toggleSelectionWrap(formatter.pattern);
 		};
 
 		return {

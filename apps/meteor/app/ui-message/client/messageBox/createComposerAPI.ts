@@ -260,6 +260,43 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 	};
 
+	const toggleSelectionWrap = (pattern: string): void => {
+		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
+		const initText = input.value.slice(0, selectionStart);
+		const selectedText = input.value.slice(selectionStart, selectionEnd);
+		const finalText = input.value.slice(selectionEnd);
+		
+		focus();
+		
+		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
+		
+		const hasStartPattern = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const hasEndPattern = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
+		
+		if (hasStartPattern && hasEndPattern) {
+			// Unwrap text
+			input.value = 
+				initText.slice(0, initText.length - startPattern.length) + 
+				selectedText + 
+				finalText.slice(endPattern.length);
+			
+			input.selectionStart = selectionStart - startPattern.length;
+			input.selectionEnd = input.selectionStart + selectedText.length;
+		} else {
+			// Wrap text
+			const wrappedText = startPattern + selectedText + endPattern;
+			input.value = initText + wrappedText + finalText;
+			
+			input.selectionStart = selectionStart + startPattern.length;
+			input.selectionEnd = input.selectionStart + selectedText.length;
+		}
+		
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+		focus();
+	};
+	
 	const insertNewLine = (): void => insertText('\n');
 
 	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
@@ -314,6 +351,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		},
 		release,
 		wrapSelection,
+		toggleSelectionWrap,
 		get text(): string {
 			return input.value;
 		},

@@ -66,7 +66,7 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 		return false;
 	}
 
-	composer.wrapSelection(formatter.pattern);
+	composer.toggleSelectionWrap(formatter.pattern);
 	return true;
 };
 
@@ -359,7 +359,7 @@ const MessageBox = ({
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
-
+	
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
