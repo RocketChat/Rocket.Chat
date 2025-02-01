@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import type { UserPresence } from '../lib/presence';
 import { Presence } from '../lib/presence';
