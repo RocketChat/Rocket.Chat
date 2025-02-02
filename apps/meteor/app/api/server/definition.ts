@@ -137,7 +137,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			? T
 			: TOptions extends { validateParams: { GET: ValidateFunction<infer T> } }
 				? T
-				: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number }
+				: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number; typeGroup?: string; name?: string }
 		: Record<string, string>;
 	// TODO make it unsafe
 	readonly bodyParams: TMethod extends 'GET'
