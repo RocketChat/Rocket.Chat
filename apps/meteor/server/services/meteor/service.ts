@@ -146,14 +146,22 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 				if (clientAction === 'removed') {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks.removed?.(id);
+						try {
+							callbacks.removed?.(id);
+						} catch (error) {
+							console.error(error);
+						}
 					});
 					return;
 				}
 
 				if (data) {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+						try {
+							callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+						} catch (error) {
+							console.error(error);
+						}
 					});
 				}
 			});
