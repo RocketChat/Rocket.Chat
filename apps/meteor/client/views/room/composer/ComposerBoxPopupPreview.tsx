@@ -12,7 +12,7 @@ type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPrevie
 	title?: ReactNode;
 	rid: string;
 	tmid?: string;
-	suspended?: boolean;
+	suspended: boolean;
 };
 
 const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
