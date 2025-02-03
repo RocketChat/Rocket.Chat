@@ -3648,6 +3648,8 @@ describe('[Rooms]', () => {
 		let customRole: IRole;
 
 		let ownerCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let memberUser1Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let memberUser2Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 
 		before(async () => {
 			[ownerUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
@@ -3657,7 +3659,11 @@ describe('[Rooms]', () => {
 				createUser({ username: `d_${Random.id()}` }),
 			]);
 
-			ownerCredentials = await login(ownerUser.username, password);
+			[ownerCredentials, memberUser1Credentials, memberUser2Credentials] = await Promise.all([
+				login(ownerUser.username, password),
+				login(memberUser1.username, password),
+				login(memberUser2.username, password),
+			]);
 
 			customRole = await createCustomRole({
 				name: `customRole.${Random.id()}`,
@@ -3846,6 +3852,41 @@ describe('[Rooms]', () => {
 			expect(second.username).to.equal(moderatorUser.username);
 			expect(third.username).to.equal(memberUser1.username);
 			expect(fourth.username).to.equal(memberUser2.username);
+		});
+
+		describe('Sort by user status', () => {
+			before(async () => {
+				await request.post(api('settings/Accounts_AllowUserStatusMessageChange')).set(credentials).send({ value: true }).expect(200);
+
+				await Promise.all([
+					request.post(api('users.setStatus')).set(memberUser1Credentials).send({ status: 'offline', userId: memberUser1._id }).expect(200),
+					request.post(api('users.setStatus')).set(memberUser2Credentials).send({ status: 'online', userId: memberUser2._id }).expect(200),
+				]);
+			});
+
+			// Skipping resetting setting Accounts_AllowUserStatusMessageChange as default value is true
+			after(() =>
+				request.post(api('users.setStatus')).set(memberUser2Credentials).send({ status: 'offline', userId: memberUser2._id }).expect(200),
+			);
+
+			it('should sort by user status after user role', async () => {
+				const response = await request
+					.get(api('rooms.membersOrderedByRole'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				const [first, second, third, fourth] = response.body.members;
+
+				expect(first.username).to.equal(ownerUser.username); // since owner
+				expect(second.username).to.equal(moderatorUser.username); // siince moderator
+				expect(third.username).to.equal(memberUser2.username); // since online
+				expect(fourth.username).to.equal(memberUser1.username); // since offline
+			});
 		});
 
 		describe('Additional Visibility Tests', () => {
