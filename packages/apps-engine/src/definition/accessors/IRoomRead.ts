@@ -48,6 +48,7 @@ export interface IRoomRead {
      *                - limit: The maximum number of messages to retrieve. Maximum 100
      *                - skip: The number of messages to skip (for pagination).
      *                - sort: An object defining the sorting order of the messages. Each key is a field to sort by, and the value is either "asc" for ascending order or "desc" for descending order.
+     *                - showThreadMessages: Whether to include thread messages in the results. Defaults to true.
      * @returns A Promise that resolves to an array of IMessage objects representing the messages in the room.
      */
     getMessages(roomId: string, options?: Partial<GetMessagesOptions>): Promise<Array<IMessageRaw>>;
@@ -100,6 +101,7 @@ export interface IRoomRead {
      *                - limit: The maximum number of messages to retrieve. If more than 100 is passed, it defaults to 100.
      *                - skip: The number of messages to skip (for pagination).
      *                - sort: An object defining the sorting order of the messages. Each key is a field to sort by, and the value is either 'asc' for ascending order or 'desc' for descending order.
+     *                - showThreadMessages: Whether to include thread messages in the results. Defaults to true.
      * @returns A Promise that resolves to an array of IMessage objects representing the unread messages for the specified user in the specified room.
      */
     getUnreadByUser(roomId: string, uid: string, options?: Partial<GetMessagesOptions>): Promise<IMessageRaw[]>;
