@@ -1,10 +1,10 @@
 import { Box, Button, Field, FieldError, FieldHint, FieldLabel, FieldRow, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ type ActionExternaServicelUrlType = ComponentProps<typeof Field> & {
 export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ...props }: ActionExternaServicelUrlType) => {
 	const { t } = useTranslation();
 
-	const serviceUrlFieldId = useUniqueId();
+	const serviceUrlFieldId = useId();
 	const serviceUrlFieldName = `actions.${index}.params.serviceUrl` as const;
 	const serviceTimeoutFieldName = `actions.${index}.params.serviceTimeout` as const;
 

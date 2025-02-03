@@ -78,7 +78,7 @@ export class Sidebar {
 	async markItemAsUnread(item: Locator): Promise<void> {
 		await item.hover();
 		await item.focus();
-		await item.locator('.rcx-sidebar-item__menu').click();
+		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
 	}
 
