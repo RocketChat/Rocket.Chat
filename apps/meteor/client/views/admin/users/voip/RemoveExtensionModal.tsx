@@ -1,7 +1,7 @@
 import { Button, Modal, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RemoveExtensionModalProps = {
@@ -20,9 +20,9 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 
 	const removeExtension = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 
-	const modalTitleId = useUniqueId();
-	const userFieldId = useUniqueId();
-	const freeExtensionNumberId = useUniqueId();
+	const modalTitleId = useId();
+	const userFieldId = useId();
+	const freeExtensionNumberId = useId();
 
 	const handleRemoveExtension = useMutation({
 		mutationFn: (username: string) => removeExtension({ username }),

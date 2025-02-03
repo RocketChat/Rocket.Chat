@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import GenericModal from '../../../../components/GenericModal';
 import CannedResponseForm from '../../components/CannedResponseForm';
 
-type CreateCannedResponseModalFormData = {
+export type CreateCannedResponseModalFormData = {
 	_id: string;
 	shortcut: string;
 	text: string;
@@ -57,6 +57,7 @@ const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedLi
 			try {
 				await saveCannedResponse({
 					...data,
+					_id: cannedResponseData?._id ?? data._id,
 					...(departmentId && { departmentId }),
 				});
 				dispatchToastMessage({

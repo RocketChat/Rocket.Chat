@@ -1,7 +1,6 @@
 import type { ISettingBase, ISettingColor, ISetting } from '@rocket.chat/core-typings';
 import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
 
 export type EditableSetting = (ISettingBase | ISettingColor) & {
 	disabled: boolean;

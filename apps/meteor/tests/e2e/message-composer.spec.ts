@@ -104,4 +104,15 @@ test.describe.serial('message-composer', () => {
 			await poHomeChannel.composer.fill('');
 		});
 	});
+
+	test('should list popup items correctly', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @rocket.cat');
+
+			await expect(poHomeChannel.composerBoxPopup.getByText('rocket.cat')).toBeVisible();
+		});
+	});
 });
