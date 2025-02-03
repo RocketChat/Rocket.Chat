@@ -34,7 +34,7 @@ const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
 	}
 
 	function handleSeconds(e: any) {
-		const { value } = e.target.value;
+		const { value } = e.target;
 		setSeconds(value === '' ? 0 : Number(value));
 	}
 
