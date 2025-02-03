@@ -23,10 +23,22 @@ const lastNDays =
 		return { start, end };
 	};
 
-const getLast6Months = () => {
-	const last6Months = moment().subtract(6, 'months');
-	return moment().diff(last6Months, 'days');
-};
+export const getClosedPeriod =
+	(
+		startOf: 'year' | 'month' | 'week',
+		subtract = 0,
+	): ((utc: boolean) => {
+		start: Date;
+		end: Date;
+	}) =>
+	(utc): { start: Date; end: Date } => {
+		const date = utc ? new Date() : moment(new Date()).utc().toDate();
+
+		const start = moment(date).subtract(subtract, 'months').startOf(startOf).toDate();
+		const end = moment(date).endOf('day').toDate();
+
+		return { start, end };
+	};
 
 const periods = [
 	{
@@ -37,7 +49,7 @@ const periods = [
 	{
 		key: 'this week',
 		label: label('This_week'),
-		range: lastNDays(moment().day()),
+		range: getClosedPeriod('week'),
 	},
 	{
 		key: 'last 7 days',
@@ -52,7 +64,7 @@ const periods = [
 	{
 		key: 'this month',
 		label: label('This_month'),
-		range: lastNDays(moment().date()),
+		range: getClosedPeriod('month'),
 	},
 	{
 		key: 'last 30 days',
@@ -67,12 +79,12 @@ const periods = [
 	{
 		key: 'last 6 months',
 		label: label('Last_6_months'),
-		range: lastNDays(getLast6Months()),
+		range: getClosedPeriod('month', 6),
 	},
 	{
 		key: 'this year',
 		label: label('This_year'),
-		range: lastNDays(moment().dayOfYear()),
+		range: getClosedPeriod('year'),
 	},
 ] as const;
 
@@ -82,7 +94,7 @@ export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
-		throw new Error(`"${key}" is not a valid period key`);
+		return periods[0];
 	}
 
 	return period;
@@ -98,7 +110,7 @@ export const getPeriodRange = (
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
-		throw new Error(`"${key}" is not a valid period key`);
+		return periods[0].range(utc);
 	}
 
 	return period.range(utc);
