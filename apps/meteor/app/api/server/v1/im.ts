@@ -232,8 +232,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { typeGroup, name } = this.queryParams as { typeGroup?: string; name?: string };
 			const { sort, fields, query } = await this.parseJsonQuery();
-
 			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
@@ -241,7 +241,11 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
+			const ourQuery = Object.assign({}, query, {
+				rid: room._id,
+				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
+			});
 
 			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },

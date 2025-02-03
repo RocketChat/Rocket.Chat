@@ -12,7 +12,11 @@ export type DmFileProps = PaginatedRequest<
 		| {
 				username: string;
 		  }
-	) & { fields?: string }
+	) & {
+		fields?: string;
+		typeGroup?: string;
+		name?: string;
+	}
 >;
 
 export const isDmFileProps = ajv.compile<DmFileProps>({
@@ -35,6 +39,12 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 				offset: {
 					type: 'number',
 				},
+				typeGroup: {
+					type: 'string',
+				},
+				name: {
+					type: 'string',
+				},
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -56,6 +66,12 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 				},
 				offset: {
 					type: 'number',
+				},
+				typeGroup: {
+					type: 'string',
+				},
+				name: {
+					type: 'string',
 				},
 			},
 			required: ['username'],
