@@ -119,7 +119,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{ $set: { ...data, unknown: false, ...(data.channels && { preRegistration: !data.channels.length }) } },
 			{ returnDocument: 'after', ...options },
 		);
-		return updatedValue.value as ILivechatContact;
+		return updatedValue as ILivechatContact;
 	}
 
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
@@ -282,7 +282,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	async addEmail(contactId: string, email: string): Promise<ILivechatContact | null> {
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
-		return updatedContact.value;
+		return updatedContact;
 	}
 
 	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number> {

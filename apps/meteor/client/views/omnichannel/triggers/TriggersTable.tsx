@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -20,7 +20,7 @@ const TriggersTable = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const handleAddNew = useMutableCallback(() => {
+	const handleAddNew = useEffectEvent(() => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 

@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { useE2EERoom } from './useE2EERoom';
 import type { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';

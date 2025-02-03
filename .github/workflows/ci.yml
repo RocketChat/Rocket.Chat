@@ -199,7 +199,7 @@ jobs:
         uses: ./.github/actions/setup-node
         if: github.event.action != 'closed'
         with:
-          node-version: 20.18.0
+          node-version: 22.11.0
           deno-version: 1.37.1
           cache-modules: true
           install: true
@@ -898,21 +898,6 @@ jobs:
 
           # Makes build fail if the release isn't there
           curl --fail https://releases.rocket.chat/$RC_VERSION/info
-
-  trigger-dependent-workflows:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    needs:
-      - services-docker-image-publish
-      - docker-image-publish
-    steps:
-      - name: Send context to seperate pipeline
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DISTRIBUTION_TOKEN }}
-          event-type: new_release
-          repository: RocketChat/public-releases
-          client-payload: '{"tag": "${{ github.ref_name }}"}'
 
   docs-update:
     name: Update Version Durability

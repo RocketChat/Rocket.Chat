@@ -115,11 +115,11 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 			setModal(null);
 		};
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Emoji_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [setModal, deleteAction, _id, dispatchToastMessage, t, onChange, close]);
 
 	const handleChangeAliases = useCallback(

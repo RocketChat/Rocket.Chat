@@ -1,9 +1,9 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import { useId, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UsersInRoleTable from './UsersInRoleTable';
@@ -33,8 +33,8 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const addUserToRoleEndpoint = useEndpoint('POST', '/v1/roles.addUserToRole');
 
 	const { rid } = watch();
-	const roomFieldId = useUniqueId();
-	const usersFieldId = useUniqueId();
+	const roomFieldId = useId();
+	const usersFieldId = useId();
 
 	const handleAdd = useEffectEvent(async ({ users, rid }: UsersInRolePayload) => {
 		try {

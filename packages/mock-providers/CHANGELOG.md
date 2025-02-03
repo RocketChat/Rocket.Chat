@@ -1,5 +1,53 @@
 # @rocket.chat/mock-providers
 
+## 0.1.7
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c8e8518011b8b7d318a2bb2f26b897b196421d76, c75d771c410579d3d7eaabb379871456ded1b111, c0fa1c884cccab47f4e68dd81457c424cf176f11, 3c237b25b27782db2e54c4c294140b1c8cd9b31a]:</summary>
+
+  - @rocket.chat/i18n@1.3.0
+  </details>
+
+## 0.1.7-rc.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c8e8518011b8b7d318a2bb2f26b897b196421d76, c75d771c410579d3d7eaabb379871456ded1b111, 3c237b25b27782db2e54c4c294140b1c8cd9b31a]:</summary>
+
+  - @rocket.chat/i18n@1.3.0-rc.0
+  </details>
+
+## 0.1.6
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, f23e71166a2dfee0e3394e49cac95c48e5eb62e5, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f90b1c99bdf4d89350a70c9ef4c2d12ed3784fd8, a129e3e1c9ba5930906ef609d7573e5708d336f0, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 2d41274ae21ec51e7382da92e2f4e0c36186f814]:</summary>
+
+  - @rocket.chat/i18n@1.2.0
+  </details>
+
+## 0.1.6-rc.1
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+## 0.1.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, f23e71166a2dfee0e3394e49cac95c48e5eb62e5, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f90b1c99bdf4d89350a70c9ef4c2d12ed3784fd8, a129e3e1c9ba5930906ef609d7573e5708d336f0, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 2d41274ae21ec51e7382da92e2f4e0c36186f814]:</summary>
+
+  - @rocket.chat/i18n@1.2.0-rc.0
+  </details>
+
 ## 0.1.5
 
 ### Patch Changes

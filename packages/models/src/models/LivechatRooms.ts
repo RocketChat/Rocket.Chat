@@ -30,7 +30,6 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
-import { Settings } from '../index';
 import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -1905,11 +1904,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.findOne(query, options);
-	}
-
-	async updateRoomCount() {
-		const livechatCount = await Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
-		return livechatCount.value;
 	}
 
 	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {

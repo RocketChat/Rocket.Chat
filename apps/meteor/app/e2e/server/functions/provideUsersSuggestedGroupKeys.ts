@@ -22,12 +22,7 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { value } = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(
-				user._id,
-				roomId,
-				user.key,
-				parseOldKeysDates(user.oldKeys),
-			);
+			const value = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(user._id, roomId, user.key, parseOldKeysDates(user.oldKeys));
 			if (!value) {
 				continue;
 			}
