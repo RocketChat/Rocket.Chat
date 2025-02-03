@@ -29,7 +29,7 @@ export function addSettings(): Promise<void> {
 
 				await this.add('VoIP_TeamCollab_FreeSwitch_Password', '', {
 					type: 'password',
-					public: true,
+					secret: true,
 					invalidValue: '',
 				});
 
