@@ -3,15 +3,15 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { tracerSpan } from '@rocket.chat/tracing';
+import express from 'express';
+import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
-import type { Request, Response } from 'meteor/rocketchat:restivus';
-import { Restivus } from 'meteor/rocketchat:restivus';
+import { WebApp } from 'meteor/webapp';
 import semver from 'semver';
 import _ from 'underscore';
 
@@ -20,19 +20,25 @@ import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } fro
 import type {
 	FailureResult,
 	ForbiddenResult,
+	InnerAction,
 	InternalError,
 	NotFoundResult,
 	Operations,
 	Options,
 	PartialThis,
 	SuccessResult,
+	TypedThis,
 	UnauthorizedResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
+import { cors } from './middlewares/cors';
+import { loggerMiddleware } from './middlewares/logger';
+import { metricsMiddleware } from './middlewares/metrics';
+import { tracerSpanMiddleware } from './middlewares/tracer';
+import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
-import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
@@ -51,8 +57,6 @@ const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
-	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
-	defaultOptionsEndpoint?: () => Promise<void>;
 	version?: string;
 	enableCors?: boolean;
 	apiPath?: string;
@@ -93,10 +97,11 @@ const rateLimiterDictionary: Record<
 > = {};
 
 const getRequestIP = (req: Request): string | null => {
-	const socket = req.socket || req.connection?.socket;
-	const remoteAddress =
-		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null));
-	let forwardedFor = req.headers['x-forwarded-for'];
+	const socket = req.socket || (req.connection as any)?.socket;
+	const remoteAddress = String(
+		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null)),
+	);
+	const forwardedFor = String(req.headers['x-forwarded-for']);
 
 	if (!socket) {
 		return remoteAddress || forwardedFor || null;
@@ -111,12 +116,12 @@ const getRequestIP = (req: Request): string | null => {
 		return remoteAddress;
 	}
 
-	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
-	if (httpForwardedCount > forwardedFor.length) {
+	const forwardedForIPs = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedForIPs.length) {
 		return remoteAddress;
 	}
 
-	return forwardedFor[forwardedFor.length - httpForwardedCount];
+	return forwardedForIPs[forwardedForIPs.length - httpForwardedCount];
 };
 
 const generateConnection = (
@@ -135,10 +140,12 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-let prometheusAPIUserAgent = false;
-
-export class APIClass<TBasePath extends string = ''> extends Restivus {
+export class APIClass<TBasePath extends string = ''> {
 	protected apiPath?: string;
+
+	readonly version?: string;
+
+	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
 	public authMethods: ((...args: any[]) => any)[];
 
@@ -162,9 +169,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		inviteToken: number;
 	};
 
-	constructor(properties: IAPIProperties) {
-		super(properties);
-		this.apiPath = properties.apiPath;
+	readonly router: Router<any>;
+
+	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
+		this.version = properties.version;
+
+		this.apiPath = [properties.apiPath, properties.version].filter(Boolean).join('/').replaceAll('//', '/');
 		this.authMethods = [];
 		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
@@ -194,6 +204,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			services: 0,
 			inviteToken: 0,
 		};
+
+		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+
+		if (useDefaultAuth) {
+			this._initAuth();
+		}
 	}
 
 	public setLimitedCustomFields(customFields: string[]): void {
@@ -219,11 +235,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	protected shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
-		const { version } = this._config;
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
-			Boolean(version) &&
+			Boolean(this.version) &&
 			!process.env.TEST_MODE &&
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
@@ -348,7 +363,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		return rateLimiterDictionary[route];
 	}
 
-	protected async shouldVerifyRateLimit(route: string, userId: string): Promise<boolean> {
+	protected async shouldVerifyRateLimit(route: string, userId?: string): Promise<boolean> {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
@@ -361,7 +376,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		objectForRateLimitMatch: RateLimiterOptionsToCheck,
 		_: any,
 		response: Response,
-		userId: string,
+		userId?: string,
 	): Promise<void> {
 		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
 			return;
@@ -370,7 +385,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
+		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? '');
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
 		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
 
@@ -387,14 +402,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	public reloadRoutesToRefreshRateLimiter(): void {
-		const { version } = this._config;
 		this._routes.forEach((route) => {
 			if (this.shouldAddRateLimitToRoute(route.options)) {
 				this.addRateLimiterRuleForRoutes({
 					routes: [route.path],
 					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
 					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
-					apiVersion: version,
 				});
 			}
 		});
@@ -404,12 +417,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		routes,
 		rateLimiterOptions,
 		endpoints,
-		apiVersion,
 	}: {
 		routes: string[];
 		rateLimiterOptions: RateLimiterOptions | boolean;
 		endpoints: string[];
-		apiVersion?: string;
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
@@ -437,7 +448,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				);
 			});
 		};
-		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
+		routes.map((route) => this.namedRoutes(route, endpoints)).map(addRateLimitRuleToEveryRoute);
 	}
 
 	public async processTwoFactor({
@@ -456,8 +467,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
-		const code = request.headers['x-2fa-code'];
-		const method = request.headers['x-2fa-method'];
+		const code = request.headers['x-2fa-code'] ? String(request.headers['x-2fa-code']) : undefined;
+		const method = request.headers['x-2fa-method'] ? String(request.headers['x-2fa-method']) : undefined;
 
 		await checkCodeForUser({
 			user: userId,
@@ -470,18 +481,14 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string, apiVersion?: string): string {
-		let prefix = `/${this.apiPath || ''}`;
-		if (apiVersion) {
-			prefix += `${apiVersion}/`;
-		}
-		return `${prefix}${route}${method}`;
+	protected getFullRouteName(route: string, method: string): string {
+		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
-	protected namedRoutes(route: string, endpoints: Record<string, string> | string[], apiVersion?: string): string[] {
+	protected namedRoutes(route: string, endpoints: Record<string, string> | string[]): string[] {
 		const routeActions: string[] = Array.isArray(endpoints) ? endpoints : Object.keys(endpoints);
 
-		return routeActions.map((action) => this.getFullRouteName(route, action, apiVersion));
+		return routeActions.map((action) => this.getFullRouteName(route, action));
 	}
 
 	addRoute<TSubPathPattern extends string>(
@@ -525,13 +532,11 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		if (!Array.isArray(subpaths)) {
 			subpaths = [subpaths];
 		}
-		const { version } = this._config;
 		if (this.shouldAddRateLimitToRoute(options)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: subpaths,
 				rateLimiterOptions: options.rateLimiterOptions || defaultRateLimiterOptions,
 				endpoints: operations as unknown as string[],
-				apiVersion: version,
 			});
 		}
 		subpaths.forEach((route) => {
@@ -557,63 +562,32 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
-							method,
-							version,
-							...(prometheusAPIUserAgent && { user_agent: this.request.headers['user-agent'] }),
-							entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
-						});
+						this.requestIp = getRequestIP(this.request)!;
 
-						this.requestIp = getRequestIP(this.request);
+						if (options.authRequired || options.authOrAnonRequired) {
+							const user = await api.authenticatedRoute(this.request);
+							this.user = user!;
+							this.userId = String(this.request.headers['x-user-id']);
+							this.token = (this.request.headers['x-auth-token'] &&
+								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
+						}
 
-						const startTime = Date.now();
-
-						const log = logger.logger.child({
-							method: this.request.method,
-							url: this.request.url,
-							userId: this.request.headers['x-user-id'],
-							userAgent: this.request.headers['user-agent'],
-							length: this.request.headers['content-length'],
-							host: this.request.headers.host,
-							referer: this.request.headers.referer,
-							remoteIP: this.requestIp,
-							...getRestPayload(this.request.body),
-						});
-
-						// If the endpoint requires authentication only if anonymous read is disabled, load the user info if it was provided
-						if (!options.authRequired && options.authOrAnonRequired) {
-							const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
-							if (userId && userToken) {
-								this.user = await Users.findOne(
-									{
-										'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
-										'_id': userId,
-									},
-									{
-										projection: getDefaultUserFields(),
-									},
-								);
-
-								this.userId = this.user?._id;
+						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+							const result = api.unauthorized('You must be logged in to do this.');
+							// compatibility with the old API
+							// TODO: MAJOR
+							if (!applyBreakingChanges) {
+								Object.assign(result.body, {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								});
 							}
-
-							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-								const result = api.unauthorized('You must be logged in to do this.');
-								// compatibility with the old API
-								// TODO: MAJOR
-								if (!applyBreakingChanges) {
-									Object.assign(result.body, {
-										status: 'error',
-										message: 'You must be logged in to do this.',
-									});
-								}
-								return result;
-							}
+							return result;
 						}
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `${this.request.route}${this.request.method.toLowerCase()}`,
+							route: `/${api.apiPath}${this.request.route.path}${this.request.method.toLowerCase()}`,
 						};
 
 						let result;
@@ -647,7 +621,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									!(await checkPermissionsForInvocation(
 										this.userId,
 										_options.permissionsRequired as PermissionsPayload,
-										this.request.method,
+										this.request.method as Method,
 									))
 								) {
 									if (applyBreakingChanges) {
@@ -670,48 +644,24 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							Accounts._accountData[connection.id] = {
 								connection,
 							};
-							Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-							await api.processTwoFactor({
-								userId: this.userId,
-								request: this.request,
-								invocation: invocation as unknown as Record<string, any>,
-								options: _options,
-								connection: connection as unknown as IMethodConnection,
-							});
+							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
+
+							this.userId &&
+								(await api.processTwoFactor({
+									userId: this.userId,
+									request: this.request,
+									invocation: invocation as unknown as Record<string, any>,
+									options: _options,
+									connection: connection as unknown as IMethodConnection,
+								}));
 
 							this.queryOperations = options.queryOperations;
-							this.queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
+							(this as any).queryFields = options.queryFields;
+							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
 
-							result = await tracerSpan(
-								`${this.request.method} ${this.request.url}`,
-								{
-									attributes: {
-										url: this.request.url,
-										route: this.request.route,
-										method: this.request.method,
-										userId: this.userId,
-									},
-								},
-								async (span) => {
-									if (span) {
-										this.response.setHeader('X-Trace-Id', span.spanContext().traceId);
-									}
-
-									const result =
-										(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
-
-									span?.setAttribute('status', result.statusCode);
-
-									return result;
-								},
-							);
-
-							log.http({
-								status: result.statusCode,
-								responseTime: Date.now() - startTime,
-							});
+							result =
+								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -733,29 +683,46 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
-
-							log.http({
-								err: e,
-								status: result.statusCode,
-								responseTime: Date.now() - startTime,
-							});
 						} finally {
 							delete Accounts._accountData[connection.id];
 						}
 
-						rocketchatRestApiEnd({
-							status: result.statusCode,
-						});
-
 						return result;
-					};
+					} as InnerAction<any, any, any>;
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
+				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
+					`/${route}`.replaceAll('//', '/'),
+					{} as any,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
+				);
+				this._routes.push({
+					path: route,
+					options: _options,
+					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, string>,
+				});
 			});
-
-			super.addRoute(route, options, operations);
 		});
+	}
+
+	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
+		const { 'x-user-id': userId } = req.headers;
+
+		const userToken = String(req.headers['x-auth-token']);
+
+		if (userId && userToken) {
+			return Users.findOne(
+				{
+					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'_id': userId,
+				},
+				{
+					projection: getDefaultUserFields(),
+				},
+			);
+		}
+		return null;
 	}
 
 	public updateRateLimiterDictionaryForRoute(route: string, numRequestsAllowed: number, intervalTimeInMS?: number): void {
@@ -863,15 +830,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 						this.userId = this.user._id;
 
-						const extraData = self._config.onLoggedIn?.call(this);
-
 						return self.success({
 							status: 'success',
 							data: {
 								userId: this.userId,
 								authToken: auth.token,
 								me: await getUserInfo(this.user || ({} as IUser)),
-								...(extraData && { extra: extraData }),
 							},
 						});
 					} catch (error) {
@@ -899,11 +863,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			},
 		);
 
-		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
+		const logout = async function <
+			This extends TypedThis<{
+				authRequired: true;
+				response: any;
+			}>,
+		>(this: This): Promise<{ status: string; data: { message: string } }> {
 			// Remove the given auth token from the user's account
-			const authToken = this.request.headers['x-auth-token'];
-			const hashedToken = Accounts._hashLoginToken(authToken);
-			const tokenLocation = self._config?.auth?.token;
+			const hashedToken = this.token;
+			const tokenLocation = 'services.resume.loginTokens.hashedToken';
 			const index = tokenLocation?.lastIndexOf('.') || 0;
 			const tokenPath = tokenLocation?.substring(0, index) || '';
 			const tokenFieldName = tokenLocation?.substring(index + 1) || '';
@@ -911,9 +879,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			tokenToRemove[tokenFieldName] = hashedToken;
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
-
 			await Users.updateOne(
-				{ _id: this.user._id },
+				{ _id: this.userId },
 				{
 					$pull: tokenRemovalQuery,
 				},
@@ -922,14 +889,14 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.user._id, { projection: { [tokenPath]: 1 } });
+				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {
 					return;
 				}
 
 				const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
 
-				return { clientAction: 'updated', id: this.user._id, diff };
+				return { clientAction: 'updated', id: this.userId, diff };
 			});
 
 			const response = {
@@ -939,13 +906,6 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				},
 			};
 
-			// Call the logout hook with the authenticated user attached
-			const extraData = self._config.onLoggedOut?.call(this);
-			if (extraData != null) {
-				_.extend(response.data, {
-					extra: extraData,
-				});
-			}
 			return response;
 		};
 
@@ -963,110 +923,23 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
-					return logout.call(this as unknown as Restivus) as any;
+					return logout.call(this as any) as any;
 				},
 				async post() {
-					return logout.call(this as unknown as Restivus) as any;
+					return logout.call(this as any) as any;
 				},
 			},
 		);
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args: any[]): {
-	token: string;
-	user: (this: Restivus) => Promise<{ userId: string; token: string }>;
-} {
-	const invalidResults = [undefined, null, false];
-	return {
-		token: 'services.resume.loginTokens.hashedToken',
-		async user() {
-			if (this.bodyParams?.payload) {
-				this.bodyParams = JSON.parse(this.bodyParams.payload);
-			}
-
-			for await (const method of API.v1?.authMethods || []) {
-				if (typeof method === 'function') {
-					const result = await method.apply(this, args);
-					if (!invalidResults.includes(result)) {
-						return result;
-					}
-				}
-			}
-
-			let token;
-			if (this.request.headers['x-auth-token']) {
-				token = Accounts._hashLoginToken(this.request.headers['x-auth-token']);
-			}
-
-			this.token = token || '';
-
-			return {
-				userId: this.request.headers['x-user-id'],
-				token,
-			};
-		},
-	};
-};
-
-const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Restivus): Promise<void> {
-	// check if a pre-flight request
-	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
-		this.done();
-		return;
-	}
-
-	if (!settings.get('API_Enable_CORS')) {
-		this.response.writeHead(405);
-		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-		this.done();
-		return;
-	}
-
-	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
-
-	const defaultHeaders = {
-		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-		'Access-Control-Allow-Headers':
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
-	};
-
-	if (CORSOriginSetting === '*') {
-		this.response.writeHead(200, {
-			'Access-Control-Allow-Origin': '*',
-			...defaultHeaders,
-		});
-		this.done();
-		return;
-	}
-
-	const origins = CORSOriginSetting.trim()
-		.split(',')
-		.map((origin) => String(origin).trim().toLocaleLowerCase());
-
-	// if invalid origin reply without required CORS headers
-	if (!origins.includes(this.request.headers.origin)) {
-		this.done();
-		return;
-	}
-
-	this.response.writeHead(200, {
-		'Access-Control-Allow-Origin': this.request.headers.origin,
-		'Vary': 'Origin',
-		...defaultHeaders,
-	});
-	this.done();
-};
-
-const createApi = function _createApi(options: { version?: string } = {}): APIClass {
+const createApi = function _createApi(options: { version?: string; apiPath?: string } = {}): APIClass {
 	return new APIClass(
 		Object.assign(
 			{
 				apiPath: 'api/',
 				useDefaultAuth: true,
 				prettyJson: process.env.NODE_ENV === 'development',
-				defaultOptionsEndpoint,
-				auth: getUserAuth(),
 			},
 			options,
 		) as IAPIProperties,
@@ -1074,9 +947,9 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 };
 
 export const API: {
+	api: Router<'/api'>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
 	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
@@ -1101,22 +974,16 @@ export const API: {
 		};
 	};
 } = {
-	getUserAuth,
 	ApiClass: APIClass,
+	api: new Router('/api'),
 	v1: createApi({
+		apiPath: '',
 		version: 'v1',
 	}),
-	default: createApi(),
+	default: createApi({
+		apiPath: '',
+	}),
 };
-
-// register the API to be re-created once the CORS-setting changes.
-settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
-	API.v1 = createApi({
-		version: 'v1',
-	});
-
-	API.default = createApi();
-});
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
 	if (!value) {
@@ -1141,6 +1008,32 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.watch<boolean>('Prometheus_API_User_Agent', (value) => {
-	prometheusAPIUserAgent = value;
+Meteor.startup(() => {
+	(WebApp.connectHandlers as ReturnType<typeof express>).use(
+		API.api
+			.use((_req, res, next) => {
+				res.removeHeader('X-Powered-By');
+				next();
+			})
+			.use(cors(settings))
+			.use(loggerMiddleware(logger))
+			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
+			.use(tracerSpanMiddleware)
+			.use(API.v1.router)
+			.use(API.default.router).router,
+	);
 });
+
+(WebApp.connectHandlers as ReturnType<typeof express>)
+	.use(
+		express.json({
+			limit: '50mb',
+		}),
+	)
+	.use(
+		express.urlencoded({
+			extended: true,
+			limit: '50mb',
+		}),
+	)
+	.use(express.query({}));

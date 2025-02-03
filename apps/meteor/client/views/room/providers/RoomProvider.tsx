@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import { useMemo, memo, useEffect, useCallback } from 'react';
 
@@ -37,14 +36,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const resultFromServer = useRoomInfoEndpoint(rid);
 
 	const resultFromLocal = useRoomQuery(rid);
-
-	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const router = useRouter();
-	useEffect(() => {
-		if (resultFromLocal.isSuccess && !resultFromLocal.data) {
-			router.navigate('/home');
-		}
-	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
 
 	const subscriptionQuery = useReactiveQuery(subscriptionsQueryKeys.subscription(rid), () => Subscriptions.findOne({ rid }) ?? null);
 
