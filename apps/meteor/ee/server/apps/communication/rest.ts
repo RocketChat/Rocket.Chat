@@ -24,6 +24,7 @@ import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { fetchMarketplaceFeaturedApps } from '../marketplace/fetchMarketplaceFeaturedApps';
 import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -568,27 +569,20 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/featured-apps`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
-							return API.v1.failure();
+						const result = await fetchMarketplaceFeaturedApps();
+						return API.v1.success(result);
+					} catch (err) {
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
-					} catch (e) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
 
-					return API.v1.success(result);
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure({ error: err.message });
+						}
+
+						return API.v1.internalError();
+					}
 				},
 			},
 		);
