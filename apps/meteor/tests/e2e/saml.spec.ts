@@ -18,6 +18,8 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
+const KEY = 'fuselage-sessionStorage-saml_invite_token';
+
 const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
@@ -394,11 +396,26 @@ test.describe('SAML', () => {
 		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
 		await doLoginStep(page, 'samluser1', null);
 
 		await test.step('expect to be redirected to the invited room after succesful login', async () => {
 			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+			expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 		});
+	});
+
+	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
+		await page.goto(`/home`);
+		await doLoginStep(page, 'samluser2');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 	});
 
 	test('Redirect to home after login when no redirectUrl is provided', async ({ page }) => {
@@ -407,6 +424,45 @@ test.describe('SAML', () => {
 		await test.step('expect to be redirected to the homepage after succesful login', async () => {
 			await expect(page).toHaveURL('/home');
 		});
+	});
+
+	test('Respect redirectUrl on multiple parallel logins', async ({ page, browser }) => {
+		const page2 = await browser.newPage();
+		const poRegistration2 = new Registration(page2);
+
+		await page2.goto(`/home`);
+		await expect(page2).toHaveURL('/home');
+
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+		await poRegistration.btnLoginWithSaml.click();
+		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+		await expect(poRegistration2.btnLoginWithSaml).toBeVisible();
+		await poRegistration2.btnLoginWithSaml.click();
+		await expect(page2).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await page.getByLabel('Username').fill('samluser1');
+		await page.getByLabel('Password').fill('password');
+		await page.locator('role=button[name="Login"]').click();
+
+		await page2.getByLabel('Username').fill('samluser2');
+		await page2.getByLabel('Password').fill('password');
+		await page2.locator('role=button[name="Login"]').click();
+
+		await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+		await expect(page2).toHaveURL('/home');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await page2.close();
 	});
 
 	test.fixme('User Merge - By Custom Identifier', async () => {

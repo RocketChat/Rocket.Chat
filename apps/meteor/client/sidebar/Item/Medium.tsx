@@ -1,5 +1,4 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { memo, useState } from 'react';
 
@@ -20,17 +19,11 @@ type MediumProps = {
 const Medium = ({ icon, title = '', avatar, actions, href, badges, unread, menu, ...props }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-
-	const handleMenu = useEffectEvent((e) => {
-		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
-	});
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
-	};
+	const handleFocus = () => setMenuVisibility(true);
+	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<Sidebar.Item {...props} href={href} clickable={!!href}>
+		<Sidebar.Item {...props} href={href} clickable={!!href} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Wrapper>
@@ -41,7 +34,7 @@ const Medium = ({ icon, title = '', avatar, actions, href, badges, unread, menu,
 				</Sidebar.Item.Wrapper>
 				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 				{menu && (
-					<Sidebar.Item.Menu {...handleMenuEvent}>
+					<Sidebar.Item.Menu>
 						{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
 					</Sidebar.Item.Menu>
 				)}

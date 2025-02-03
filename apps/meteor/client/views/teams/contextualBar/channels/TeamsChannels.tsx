@@ -65,7 +65,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useEffectEvent((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {

@@ -1,5 +1,19 @@
 # @rocket.chat/apps-engine
 
+## 1.48.2
+
+### Patch Changes
+
+-   ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+-   ([#35009](https://github.com/RocketChat/Rocket.Chat/pull/35009)) Fix an issue with apps installations via Marketplace
+
+## 1.48.2-rc.0
+
+### Patch Changes
+
+-   ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
 ## 1.48.1
 
 ### Patch Changes
