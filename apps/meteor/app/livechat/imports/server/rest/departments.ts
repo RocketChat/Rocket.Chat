@@ -88,6 +88,22 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'livechat/department/isDepartmentCreationAvailable',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
+		},
+	},
+	{
+		async get() {
+			const available = await isDepartmentCreationAvailable();
+			return API.v1.success({ isDepartmentCreationAvailable: available });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'livechat/department/:_id',
 	{
 		authRequired: true,
@@ -303,21 +319,6 @@ API.v1.addRoute(
 					fields,
 				}),
 			);
-		},
-	},
-);
-API.v1.addRoute(
-	'livechat/department/isDepartmentCreationAvailable',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
-		},
-	},
-	{
-		async get() {
-			const available = await isDepartmentCreationAvailable();
-			return API.v1.success({ isDepartmentCreationAvailable: available });
 		},
 	},
 );
