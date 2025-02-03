@@ -1,5 +1,5 @@
 import { NumberInput, FieldRow, FieldLabel } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,26 +8,36 @@ type IdleTimeEditorProps = {
 };
 
 const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
+
 	const { t } = useTranslation();
-	const [hours, setHours] = useState<number>(0);
-	const [minutes, setMinutes] = useState<number>(5);
-	const [seconds, setSeconds] = useState<number>(0);
+	const [hours, setHours] = useState<number>(() => Number(localStorage.getItem('idleHours')) || 0);
+	const [minutes, setMinutes] = useState<number>(() => Number(localStorage.getItem('idleMinutes')) || 5);
+	const [seconds, setSeconds] = useState<number>(() => Number(localStorage.getItem('idleSeconds')) || 0);
+
+	useEffect(() => {
+		localStorage.setItem('idleHours', String(hours));
+		localStorage.setItem('idleMinutes', String(minutes));
+		localStorage.setItem('idleSeconds', String(seconds));
+	}, [hours, minutes, seconds]);
 	const [finalSecondCount, setFinalSecondCount] = useState<number | undefined>(hours * 3600 + minutes * 60 + seconds);
 
-	const idleTimeLimitHrs = useUniqueId();
-	const idleTimeLimitMin = useUniqueId();
-	const idleTimeLimitSec = useUniqueId();
+	const idleTimeLimitHrs = useId();
+	const idleTimeLimitMin = useId();
+	const idleTimeLimitSec = useId();
 
 	function handleHours(e: any) {
-		setHours(Number(e.target.value));
+		const value = e.target.value;
+		setHours(value === '' ? 0 : Number(value));
 	}
 
 	function handleMinutes(e: any) {
-		setMinutes(Number(e.target.value));
+		const value = e.target.value;
+		setMinutes(value === '' ? 0 : Number(value));
 	}
 
 	function handleSeconds(e: any) {
-		setSeconds(Number(e.target.value));
+		const value = e.target.value;
+		setSeconds(value === '' ? 0 : Number(value));
 	}
 
 	useEffect(() => {
