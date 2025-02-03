@@ -45,6 +45,10 @@ export class HomeChannel {
 		return this.page.locator('textarea[name="msg"]');
 	}
 
+	get composerBoxPopup(): Locator {
+		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
+	}
+
 	get userCardToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
 	}
