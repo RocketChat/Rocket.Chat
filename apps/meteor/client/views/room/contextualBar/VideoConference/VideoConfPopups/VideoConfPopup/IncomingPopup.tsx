@@ -43,16 +43,13 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const showMic = Boolean(value?.capabilities?.mic);
 	const showCam = Boolean(value?.capabilities?.cam);
 
-	const dialogLabel =
-		room.t === 'd' ? `${t('Incoming_call_from__roomName__', { roomName })}` : `${t('Incoming_call_from__roomName__', { roomName })}`;
-
 	const handleJoinCall = useEffectEvent(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});
 
 	return (
-		<VideoConfPopup position={position} id={id} aria-label={dialogLabel}>
+		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{phase === AsyncStatePhase.LOADING && <Skeleton />}
