@@ -1,6 +1,5 @@
 import { NumberInput, FieldRow, FieldLabel } from '@rocket.chat/fuselage';
-import { useId } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type IdleTimeEditorProps = {
@@ -8,7 +7,6 @@ type IdleTimeEditorProps = {
 };
 
 const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
-
 	const { t } = useTranslation();
 	const [hours, setHours] = useState<number>(() => Number(localStorage.getItem('idleHours')) || 0);
 	const [minutes, setMinutes] = useState<number>(() => Number(localStorage.getItem('idleMinutes')) || 5);
@@ -26,17 +24,17 @@ const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
 	const idleTimeLimitSec = useId();
 
 	function handleHours(e: any) {
-		const value = e.target.value;
+		const { value } = e.target;
 		setHours(value === '' ? 0 : Number(value));
 	}
 
 	function handleMinutes(e: any) {
-		const value = e.target.value;
+		const { value } = e.target;
 		setMinutes(value === '' ? 0 : Number(value));
 	}
 
 	function handleSeconds(e: any) {
-		const value = e.target.value;
+		const { value } = e.target.value;
 		setSeconds(value === '' ? 0 : Number(value));
 	}
 
