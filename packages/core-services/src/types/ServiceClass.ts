@@ -46,7 +46,7 @@ export interface IServiceClass {
 }
 
 export abstract class ServiceClass implements IServiceClass {
-	protected name: string;
+	protected abstract name: string;
 
 	protected events = new EventEmitter();
 
@@ -55,7 +55,6 @@ export abstract class ServiceClass implements IServiceClass {
 	protected api?: IApiService;
 
 	constructor() {
-		this.name = this.getName();
 		this.emit = this.emit.bind(this);
 	}
 
