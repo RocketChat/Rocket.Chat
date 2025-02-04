@@ -979,7 +979,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projections: { username: 1 } });
 
 			if (!user) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'rooms.close' });
+				return API.v1.failure('Invalid user');
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
