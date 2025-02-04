@@ -20,7 +20,7 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertAppRoom(room) {
+	async convertAppRoom(room, isPartial) {
 		if (!room) {
 			return undefined;
 		}
@@ -81,6 +81,26 @@ export class AppRoomsConverter {
 			contactId = contact._id;
 		}
 
+		let _default;
+		if (typeof room.isDefault !== 'undefined') {
+			_default = room.isDefault;
+		}
+
+		let ro;
+		if (typeof room.isReadOnly !== 'undefined') {
+			ro = room.isReadOnly;
+		}
+
+		let sysMes;
+		if (typeof room.displaySystemMessages !== 'undefined') {
+			sysMes = room.displaySystemMessages;
+		}
+
+		let msgs;
+		if (typeof room.messageCount !== 'undefined') {
+			msgs = room.messageCount;
+		}
+
 		const newRoom = {
 			...(room.id && { _id: room.id }),
 			fname: room.displayName,
@@ -88,17 +108,17 @@ export class AppRoomsConverter {
 			t: room.type,
 			u,
 			v,
+			ro,
+			sysMes,
+			msgs,
 			departmentId,
 			servedBy,
 			closedBy,
 			members: room.members,
 			uids: room.userIds,
-			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
-			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
-			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
+			default: _default,
 			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
 			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
-			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
 			closedAt: room.closedAt,
@@ -115,7 +135,17 @@ export class AppRoomsConverter {
 			}),
 		};
 
-		return Object.assign(newRoom, room._unmappedProperties_);
+		if (isPartial) {
+			Object.entries(newRoom).forEach(([key, value]) => {
+				if (typeof value === 'undefined') {
+					delete newRoom[key];
+				}
+			});
+		} else {
+			Object.assign(newRoom, room._unmappedProperties_);
+		}
+
+		return newRoom;
 	}
 
 	async convertRoom(originalRoom) {
@@ -238,6 +268,7 @@ export class AppRoomsConverter {
 				if (originalRoom.closer === 'user') {
 					return this.orch.getConverters().get('users').convertById(closedBy._id);
 				}
+
 				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
 			servedBy: async (room) => {

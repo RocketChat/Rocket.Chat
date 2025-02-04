@@ -36,6 +36,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setDisplayName(name: string): IRoomBuilder {
         this.room.displayName = name;
         this.changes.displayName = name;
+
         return this;
     }
 
@@ -169,5 +170,9 @@ export class RoomBuilder implements IRoomBuilder {
 
     public getRoom(): IRoom {
         return this.room;
+    }
+
+    public getChanges() {
+        return structuredClone(this.changes);
     }
 }

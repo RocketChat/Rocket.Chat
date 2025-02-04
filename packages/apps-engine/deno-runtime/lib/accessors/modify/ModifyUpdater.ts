@@ -121,33 +121,35 @@ export class ModifyUpdater implements IModifyUpdater {
     }
 
     private async _finishRoom(builder: IRoomBuilder): Promise<void> {
-        const result = builder.getRoom();
+        const room = builder.getRoom();
 
-        if (!result.id) {
+        if (!room.id) {
             throw new Error("Invalid room, can't update a room without an id.");
         }
 
-        if (!result.type) {
+        if (!room.type) {
             throw new Error('Invalid type assigned to the room.');
         }
 
-        if (result.type !== RoomType.LIVE_CHAT) {
-            if (!result.creator || !result.creator.id) {
+        if (room.type !== RoomType.LIVE_CHAT) {
+            if (!room.creator || !room.creator.id) {
                 throw new Error('Invalid creator assigned to the room.');
             }
 
-            if (!result.slugifiedName || !result.slugifiedName.trim()) {
+            if (!room.slugifiedName || !room.slugifiedName.trim()) {
                 throw new Error('Invalid slugifiedName assigned to the room.');
             }
         }
 
-        if (!result.displayName || !result.displayName.trim()) {
+        if (!room.displayName || !room.displayName.trim()) {
             throw new Error('Invalid displayName assigned to the room.');
         }
 
+        const changes = { id: room.id, ...builder.getChanges() };
+
         await this.senderFn({
             method: 'bridges:getRoomBridge:doUpdate',
-            params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+            params: [changes, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
         });
     }
 }
