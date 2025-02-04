@@ -979,17 +979,17 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projections: { username: 1 } });
 
 			if (!user) {
-				return API.v1.failure('Invalid user');
+				return API.v1.failure('error-invalid-user');
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
 
 			if (!subscription) {
-				return API.v1.failure(`The user is not subscribed to the room`);
+				return API.v1.failure(`error-invalid-subscription`);
 			}
 
 			if (!subscription.open) {
-				return API.v1.failure(`The room, ${subscription.name}, is already closed`);
+				return API.v1.failure('error-room-already-closed');
 			}
 
 			await hideRoomMethod(this.userId, roomId);
