@@ -32,7 +32,7 @@ export const getClosedPeriod =
 		end: Date;
 	}) =>
 	(utc): { start: Date; end: Date } => {
-		const date = utc ? new Date() : moment(new Date()).utc().toDate();
+		const date = utc ? moment(new Date()).utc().toDate() : new Date();
 
 		const start = moment(date).subtract(subtract, 'months').startOf(startOf).toDate();
 		const end = moment(date).endOf('day').toDate();
