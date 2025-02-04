@@ -982,7 +982,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
 
 			if (!subscription) {
 				return API.v1.failure(`error-invalid-subscription`);
