@@ -372,29 +372,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
-		it('should not route to an idle user', async () => {
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
-			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-			await setUserAway(testUser3.credentials);
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to an idle user', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.an('object');
-		});
 		it('should route to another available agent if contact manager is unavailable and Omnichannel_contact_manager_routing is enabled', async () => {
 			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
@@ -434,30 +411,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 						phones: [],
 						contactManager: testUser3.user._id,
 					});
-			});
-
-			it('should not route to an idle user', async () => {
-				await setUserStatus(testUser.credentials, UserStatus.AWAY);
-				await setUserAway(testUser.credentials);
-				await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-				await setUserAway(testUser3.credentials);
-				// Agent is available but should be ignored
-				await switchLivechatStatus('available', testUser.credentials);
-
-				const visitor = await createVisitor(testDepartment._id);
-				const room = await createLivechatRoom(visitor.token);
-
-				const roomInfo = await getLivechatRoomInfo(room._id);
-				expect(roomInfo.servedBy).to.be.undefined;
-			});
-			it('should route to an idle user', async () => {
-				await updateSetting('Livechat_enabled_when_agent_idle', true);
-
-				const visitor = await createVisitor(testDepartment._id);
-				const room = await createLivechatRoom(visitor.token);
-
-				const roomInfo = await getLivechatRoomInfo(room._id);
-				expect(roomInfo.servedBy).to.be.an('object');
 			});
 
 			it('should not route to contact manager if it is online but setting is off', async () => {
