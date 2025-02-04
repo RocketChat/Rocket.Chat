@@ -12,7 +12,6 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -24,7 +23,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -132,12 +131,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const nameId = useUniqueId();
-	const usernameId = useUniqueId();
-	const nicknameId = useUniqueId();
-	const statusTextId = useUniqueId();
-	const bioId = useUniqueId();
-	const emailId = useUniqueId();
+	const nameId = useId();
+	const usernameId = useId();
+	const nicknameId = useId();
+	const statusTextId = useId();
+	const bioId = useId();
+	const emailId = useId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
