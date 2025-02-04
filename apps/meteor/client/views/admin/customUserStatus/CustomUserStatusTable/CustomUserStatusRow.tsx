@@ -1,5 +1,4 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
 import type { CSSProperties, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +30,7 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): Rea
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='default' style={style}>
-				{t(UserStatus[statusType.toUpperCase() as keyof typeof UserStatus])}
+				{t(statusType)}
 			</GenericTableCell>
 		</GenericTableRow>
 	);
