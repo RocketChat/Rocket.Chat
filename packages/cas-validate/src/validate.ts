@@ -176,8 +176,13 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 		...(renew ? { renew: 1 } : {}),
 	};
 
+	let fullPathname = `${pathname}/${validatePath}`;
+	if (pathname?.endsWith('/')) {
+		fullPathname = pathname + validatePath;
+	}
+
 	const queryPath = url.format({
-		pathname: `${pathname}/${validatePath}`,
+		pathname: fullPathname,
 		query,
 	});
 
@@ -218,6 +223,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 						}
 					}
 
+					console.error(response);
 					return callback(new Error('Bad response format.'));
 				}
 
