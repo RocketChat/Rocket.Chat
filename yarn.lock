@@ -8571,6 +8571,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:*"
+    "@rocket.chat/ui-video-conf": "workspace:*"
     "@storybook/react": "npm:^8.5.3"
     "@tanstack/react-query": "npm:~5.65.1"
     eslint: "npm:~8.45.0"
@@ -9320,7 +9321,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
+"@rocket.chat/ui-video-conf@workspace:*, @rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
   dependencies:
