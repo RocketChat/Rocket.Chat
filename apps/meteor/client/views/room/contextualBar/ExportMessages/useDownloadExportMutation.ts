@@ -8,7 +8,9 @@ import { Messages } from '../../../../../app/models/client';
 import { downloadJsonAs } from '../../../../lib/download';
 import { useRoom } from '../../contexts/RoomContext';
 
-const messagesFields: FindOptions<IMessage> = { projection: { _id: 1, ts: 1, u: 1, msg: 1, _updatedAt: 1, tlm: 1, replies: 1, tmid: 1 } };
+const messagesFields: FindOptions<IMessage> = {
+	projection: { _id: 1, ts: 1, u: 1, msg: 1, _updatedAt: 1, tlm: 1, replies: 1, tmid: 1, attachments: 1 },
+};
 
 export const useDownloadExportMutation = () => {
 	const { t } = useTranslation();
