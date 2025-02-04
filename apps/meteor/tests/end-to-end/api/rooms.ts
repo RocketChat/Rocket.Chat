@@ -4251,7 +4251,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', `The room, ${roomName}, is already closed`);
+					expect(res.body).to.have.property('error', `error-room-already-closed`);
 				});
 		});
 
@@ -4287,7 +4287,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The user is not subscribed to the room');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				});
 		});
 
@@ -4297,7 +4297,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
-				.expect(403)
+				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
