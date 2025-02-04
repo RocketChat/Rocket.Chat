@@ -4230,8 +4230,8 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: roomA._id });
 		});
 
-		it('should close the room', (done) => {
-			void request
+		it('should close the room', async () => {
+			await request
 				.post(api('rooms.close'))
 				.set(credentials)
 				.send({ roomId: roomA._id })
@@ -4239,12 +4239,11 @@ describe('[Rooms]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
 
-		it('should be already closed', (done) => {
-			void request
+		it('should be already closed', async () => {
+			await request
 				.post(api('rooms.close'))
 				.set(credentials)
 				.send({ roomId: roomA._id })
@@ -4253,12 +4252,11 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', `The room, ${roomName}, is already closed`);
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if roomId is not provided', (done) => {
-			void request
+		it('should fail if roomId is not provided', async () => {
+			await request
 				.post(api('rooms.close'))
 				.set(credentials)
 				.send()
@@ -4266,24 +4264,22 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return 401 if user is not logged in', (done) => {
-			void request
+		it('should return 401 if user is not logged in', async () => {
+			await request
 				.post(api('rooms.close'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+				});
 		});
 
-		it('should fail if user not subscribed to the room', (done) => {
-			void request
+		it('should fail if user not subscribed to the room', async () => {
+			await request
 				.post(api('rooms.close'))
 				.set(nonMemberCredentials)
 				.send({ roomId: roomA._id })
@@ -4292,12 +4288,11 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'The user is not subscribed to the room');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return forbidden if user does not have access to the room', (done) => {
-			void request
+		it('should return forbidden if user does not have access to the room', async () => {
+			await request
 				.post(api('rooms.close'))
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
@@ -4305,8 +4300,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 	});
 });
