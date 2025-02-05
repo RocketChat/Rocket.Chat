@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import RoomOpener from '../../../room/RoomOpener';
 

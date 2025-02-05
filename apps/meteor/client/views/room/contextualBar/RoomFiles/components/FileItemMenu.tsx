@@ -1,9 +1,8 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import React, { memo, useEffect } from 'react';
+import { memo, useEffect, useId } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
@@ -36,7 +35,7 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 
 	const { controller } = navigator?.serviceWorker || {};
 
-	const uid = useUniqueId();
+	const uid = useId();
 
 	useEffect(
 		() =>

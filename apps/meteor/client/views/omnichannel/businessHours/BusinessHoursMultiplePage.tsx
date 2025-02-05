@@ -1,15 +1,15 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { lazy, useMemo } from 'react';
+import { lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
+const BusinessHoursTable = lazy(() => import('../../../omnichannel/businessHours/BusinessHoursTable'));
+
 const BusinessHoursMultiplePage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
-
-	const BusinessHoursTable = useMemo(() => lazy(() => import('../../../omnichannel/businessHours/BusinessHoursTable')), []);
 
 	return (
 		<Page>

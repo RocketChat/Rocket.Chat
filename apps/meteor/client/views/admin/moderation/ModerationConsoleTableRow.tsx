@@ -1,5 +1,4 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import ModerationConsoleActions from './ModerationConsoleActions';
 import UserColumn from './helpers/UserColumn';

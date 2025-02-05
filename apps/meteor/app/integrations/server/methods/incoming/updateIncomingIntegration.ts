@@ -1,11 +1,12 @@
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Babel } from 'meteor/babel-compiler';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
@@ -164,7 +165,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Roles.addUserRoles(user._id, ['bot']);
+		await addUserRolesAsync(user._id, ['bot']);
 
 		const updatedIntegration = await Integrations.findOneAndUpdate(
 			{ _id: integrationId },
@@ -193,10 +194,10 @@ Meteor.methods<ServerMethods>({
 			},
 		);
 
-		if (updatedIntegration.value) {
-			void notifyOnIntegrationChanged(updatedIntegration.value);
+		if (updatedIntegration) {
+			void notifyOnIntegrationChanged(updatedIntegration);
 		}
 
-		return updatedIntegration.value;
+		return updatedIntegration;
 	},
 });

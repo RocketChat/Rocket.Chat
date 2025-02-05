@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
@@ -10,13 +10,13 @@ import {
 	useEndpoint,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
+import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 import GenericModal from '../../../../components/GenericModal';
-import type { Action } from '../../../hooks/useActionSpread';
 
-export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): Action | undefined => {
+export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const userRoute = useRoute('admin-users');
@@ -56,7 +56,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 			onChange,
 		);
 
-	const confirmDeleteUser = useMutableCallback(() => {
+	const confirmDeleteUser = useEffectEvent(() => {
 		setModal(
 			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={(): void => setModal()} confirmText={t('Delete')}>
 				{t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
@@ -67,8 +67,9 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 	return canDeleteUser
 		? {
 				icon: 'trash',
-				label: t('Delete'),
-				action: confirmDeleteUser,
+				content: t('Delete'),
+				onClick: confirmDeleteUser,
+				variant: 'danger',
 			}
 		: undefined;
 };

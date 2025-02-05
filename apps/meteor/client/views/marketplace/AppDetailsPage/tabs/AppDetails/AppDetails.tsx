@@ -2,7 +2,6 @@ import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';

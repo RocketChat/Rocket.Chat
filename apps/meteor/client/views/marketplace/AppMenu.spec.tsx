@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import AppMenu from './AppMenu';
 import { mockedAppsContext } from '../../../tests/mocks/client/marketplace';
@@ -12,7 +11,6 @@ describe('without app details', () => {
 		const app = createFakeApp();
 
 		render(<AppMenu app={app} isAppDetailsPage={false} />, {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/count', async () => ({
 					maxMarketplaceApps: faker.number.int({ min: 0 }),

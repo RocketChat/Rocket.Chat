@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { useCallback, useEffect } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 const ee = new Emitter<{
 	change: void;
@@ -13,7 +12,7 @@ const titles = new Set<{
 
 const useReactiveDocumentTitle = (): string =>
 	useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
+		useCallback((callback: () => void) => ee.on('change', callback), []),
 		(): string =>
 			Array.from(titles)
 				.reverse()
@@ -23,7 +22,7 @@ const useReactiveDocumentTitle = (): string =>
 
 const useReactiveDocumentTitleKey = (): string =>
 	useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
+		useCallback((callback: () => void) => ee.on('change', callback), []),
 		(): string =>
 			Array.from(titles)
 				.filter(({ refocus }) => refocus)

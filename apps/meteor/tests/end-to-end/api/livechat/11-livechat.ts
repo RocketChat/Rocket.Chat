@@ -1,10 +1,17 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import {
+	addOrRemoveAgentFromDepartment,
+	createDepartmentWithAnOfflineAgent,
+	createDepartmentWithAnOnlineAgent,
+	deleteDepartment,
+} from '../../../data/livechat/department';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -12,17 +19,24 @@ import {
 	closeOmnichannelRoom,
 	sendMessage,
 	deleteVisitor,
+	createDepartment,
 } from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
+import type { WithRequiredProperty } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', () => {
 	before((done) => getCredentials(done));
+	before(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
 
 	after(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_offline_email', '');
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/offline.message', () => {
@@ -71,6 +85,38 @@ describe('LIVECHAT - Utils', () => {
 	});
 
 	describe('livechat/config', () => {
+		let emptyDepartment: ILivechatDepartment;
+		let forwardDepartment: ILivechatDepartment;
+		let testDepartment: ILivechatDepartment;
+		let agent: { user: WithRequiredProperty<IUser, 'username'>; credentials: Credentials };
+		let agent2: { user: WithRequiredProperty<IUser, 'username'>; credentials: Credentials };
+
+		before(async () => {
+			if (!IS_EE) {
+				return;
+			}
+
+			emptyDepartment = await createDepartment();
+			({ department: forwardDepartment, agent } = await createDepartmentWithAnOnlineAgent());
+			({ department: testDepartment, agent: agent2 } = await createDepartmentWithAnOfflineAgent({
+				departmentsAllowedToForward: [forwardDepartment._id],
+			}));
+		});
+
+		after(() => {
+			if (!IS_EE) {
+				return;
+			}
+
+			return Promise.all([
+				deleteDepartment(emptyDepartment._id),
+				deleteDepartment(forwardDepartment._id),
+				deleteDepartment(testDepartment._id),
+				deleteUser(agent.user),
+				deleteUser(agent2.user),
+			]);
+		});
+
 		it('should return enabled: false if livechat is disabled', async () => {
 			await updateSetting('Livechat_enabled', false);
 			const { body } = await request.get(api('livechat/config')).set(credentials);
@@ -170,6 +216,34 @@ describe('LIVECHAT - Utils', () => {
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('room');
 			expect(body.config.room).to.have.property('_id', newRoom._id);
+		});
+		(IS_EE ? it : it.skip)('should return list of departments with at least one agent', async () => {
+			const { body } = await request.get(api('livechat/config')).set(credentials);
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('departments');
+			expect(body.config.departments).to.be.an('array').with.lengthOf.at.least(2);
+
+			expect(body.config.departments).to.not.deep.include({
+				_id: emptyDepartment._id,
+				name: emptyDepartment.name,
+				showOnRegistration: emptyDepartment.showOnRegistration,
+				showOnOfflineForm: emptyDepartment.showOnOfflineForm,
+			});
+			expect(body.config.departments).to.deep.include({
+				_id: forwardDepartment._id,
+				name: forwardDepartment.name,
+				showOnRegistration: forwardDepartment.showOnRegistration,
+				showOnOfflineForm: forwardDepartment.showOnOfflineForm,
+			});
+			expect(body.config.departments).to.deep.include({
+				_id: testDepartment._id,
+				name: testDepartment.name,
+				showOnRegistration: testDepartment.showOnRegistration,
+				showOnOfflineForm: testDepartment.showOnOfflineForm,
+				departmentsAllowedToForward: [forwardDepartment._id],
+			});
 		});
 	});
 

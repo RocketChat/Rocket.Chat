@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import type { Upload } from '../../../../lib/chats/Upload';

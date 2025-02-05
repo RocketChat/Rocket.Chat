@@ -4,7 +4,7 @@ import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.ch
 import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ElementType, ReactElement } from 'react';
-import React, { memo, useRef } from 'react';
+import { memo, useRef } from 'react';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';

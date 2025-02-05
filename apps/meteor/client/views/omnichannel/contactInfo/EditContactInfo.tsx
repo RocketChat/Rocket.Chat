@@ -1,10 +1,9 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -79,7 +78,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
-	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
 		enabled: canViewCustomFields,
 	});
@@ -155,10 +154,10 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		return createContact.mutate(payload);
 	};
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const emailField = useUniqueId();
-	const phoneField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const emailField = useId();
+	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
 		return (

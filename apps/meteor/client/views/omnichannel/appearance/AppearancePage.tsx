@@ -1,8 +1,8 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useId } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +46,7 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 
 	const saveAction = useEndpoint('POST', '/v1/livechat/appearance');
 
-	const methods = useForm({ defaultValues: reduceAppearance(settings) });
+	const methods = useForm<LivechatAppearanceSettings>({ defaultValues: reduceAppearance(settings) });
 	const {
 		reset,
 		formState: { isDirty },
@@ -56,7 +56,7 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 
 	const currentData = watch();
 
-	const handleSave = useMutableCallback(async (data) => {
+	const handleSave = useEffectEvent(async (data: LivechatAppearanceSettings) => {
 		const mappedAppearance = Object.entries(data)
 			.map(([_id, value]) => ({ _id, value }))
 			.filter((item) => item.value !== undefined) as {
@@ -74,7 +74,7 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 		}
 	});
 
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page>
