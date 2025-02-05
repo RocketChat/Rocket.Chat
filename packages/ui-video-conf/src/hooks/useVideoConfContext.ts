@@ -1,5 +1,4 @@
-import { useContext } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useContext, useMemo, useSyncExternalStore } from 'react';
 
 import { VideoConfContext } from '../VideoConfContext';
 
@@ -25,25 +24,35 @@ export const useVideoConfLoadCapabilities = () => useVideoConfContext().loadCapa
 
 export const useVideoConfIncomingCalls = () => {
 	const { queryIncomingCalls } = useVideoConfContext();
-	return useSyncExternalStore(queryIncomingCalls.subscribe, queryIncomingCalls.getSnapshot);
+
+	const [subscribe, getSnapshot] = useMemo(() => queryIncomingCalls(), [queryIncomingCalls]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useVideoConfIsRinging = () => {
 	const { queryRinging } = useVideoConfContext();
-	return useSyncExternalStore(queryRinging.subscribe, queryRinging.getSnapshot);
+
+	const [subscribe, getSnapshot] = useMemo(() => queryRinging(), [queryRinging]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useVideoConfIsCalling = () => {
 	const { queryCalling } = useVideoConfContext();
-	return useSyncExternalStore(queryCalling.subscribe, queryCalling.getSnapshot);
+
+	const [subscribe, getSnapshot] = useMemo(() => queryCalling(), [queryCalling]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useVideoConfCapabilities = () => {
 	const { queryCapabilities } = useVideoConfContext();
-	return useSyncExternalStore(queryCapabilities.subscribe, queryCapabilities.getSnapshot);
+
+	const [subscribe, getSnapshot] = useMemo(() => queryCapabilities(), [queryCapabilities]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
 export const useVideoConfPreferences = () => {
 	const { queryPreferences } = useVideoConfContext();
-	return useSyncExternalStore(queryPreferences.subscribe, queryPreferences.getSnapshot);
+
+	const [subscribe, getSnapshot] = useMemo(() => queryPreferences(), [queryPreferences]);
+	return useSyncExternalStore(subscribe, getSnapshot);
 };

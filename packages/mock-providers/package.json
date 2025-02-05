@@ -1,22 +1,21 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/i18n": "workspace:~",
-		"@storybook/react": "^8.4.4",
+		"@storybook/react": "^8.5.3",
 		"i18next": "~23.4.9",
-		"react-i18next": "~13.2.2",
-		"use-sync-external-store": "~1.2.2"
+		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:*",
-		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
-		"@types/use-sync-external-store": "^0.0.6",
+		"@rocket.chat/ui-video-conf": "workspace:*",
+		"@tanstack/react-query": "~5.65.1",
 		"eslint": "~8.45.0",
-		"react": "~17.0.2",
+		"react": "~18.3.1",
 		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
