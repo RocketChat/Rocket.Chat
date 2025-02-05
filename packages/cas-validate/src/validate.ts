@@ -176,10 +176,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 		...(renew ? { renew: 1 } : {}),
 	};
 
-	let fullPathname = `${pathname}/${validatePath}`;
-	if (pathname?.endsWith('/')) {
-		fullPathname = pathname + validatePath;
-	}
+	const fullPathname = pathname?.endsWith('/') ? pathname + validatePath : `${pathname}/${validatePath}`;
 
 	const queryPath = url.format({
 		pathname: fullPathname,
