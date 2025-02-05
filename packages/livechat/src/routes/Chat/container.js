@@ -2,6 +2,7 @@ import { Component } from 'preact';
 import { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
 
+import Chat from './component';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
@@ -24,7 +25,6 @@ import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import store from '../../store';
-import Chat from './component';
 
 const ChatWrapper = ({ children, rid }) => {
 	useRoomMessagesSubscription(rid);
@@ -230,29 +230,39 @@ class ChatContainer extends Component {
 	onFinishChat = async () => {
 		const { i18n } = this.props;
 
+		console.log('Opening confirmation modal');
 		const { success } = await ModalManager.confirm({
 			text: i18n.t('are_you_sure_you_want_to_finish_this_chat'),
 		});
 
 		if (!success) {
+			console.log('Finish chat action cancelled');
 			return;
 		}
+
+		console.log('Finish chat action confirmed');
 
 		const { alerts, dispatch, room } = this.props;
 		const { _id: rid } = room || {};
 
+		console.log('Finish chat room', rid);
+
 		await dispatch({ loading: true });
 		try {
 			if (!rid) {
+				console.log('Room not found');
 				throw new Error('error-room-not-found');
 			}
 
 			await Livechat.closeChat({ rid });
 		} catch (error) {
+			console.log('Failed to close chat');
 			console.error(error);
 			const alert = { id: createToken(), children: i18n.t('error_closing_chat'), error: true, timeout: 0 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		} finally {
+			console.log('Finish chat action finally');
+
 			await dispatch({ loading: false });
 			await closeChat();
 		}

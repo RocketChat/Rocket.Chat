@@ -20,6 +20,7 @@ import Triggers from './triggers';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	console.log('Post finish chat action');
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
