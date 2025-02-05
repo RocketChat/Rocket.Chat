@@ -29,10 +29,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', () => {
 	before((done) => getCredentials(done));
+	before(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
 
 	after(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_offline_email', '');
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/offline.message', () => {
