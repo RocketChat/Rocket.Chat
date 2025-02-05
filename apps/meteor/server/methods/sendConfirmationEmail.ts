@@ -10,8 +10,6 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 	check(to, String);
 
-	methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
-
 	const email = to.trim();
 
 	const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1 } });
@@ -33,6 +31,8 @@ export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 
 Meteor.methods<ServerMethods>({
 	async sendConfirmationEmail(to) {
+		methodDeprecationLogger.method('sendConfirmationEmail', '7.0.0');
+
 		return sendConfirmationEmail(to);
 	},
 });
