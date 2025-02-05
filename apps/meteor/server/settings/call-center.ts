@@ -106,7 +106,7 @@ export const createCallCenterSettings = () =>
 
 				await this.add('VoIP_Management_Server_Password', '', {
 					type: 'password',
-					public: true,
+					secret: true,
 					enableQuery: {
 						_id: 'VoIP_Enabled',
 						value: true,
