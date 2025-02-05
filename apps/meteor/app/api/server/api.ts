@@ -412,7 +412,7 @@ export class APIClass<TBasePath extends string = ''> {
 						endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
 					}),
 				).catch((error) => {
-					console.error(error);
+					console.error(error.message);
 				});
 			}
 		});
@@ -431,10 +431,10 @@ export class APIClass<TBasePath extends string = ''> {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
+			throw new Meteor.Error(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint`);
+			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {
