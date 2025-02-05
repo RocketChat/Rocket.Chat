@@ -9,7 +9,27 @@ import { downloadJsonAs } from '../../../../lib/download';
 import { useRoom } from '../../contexts/RoomContext';
 
 const messagesFields: FindOptions<IMessage> = {
-	projection: { _id: 1, ts: 1, u: 1, msg: 1, _updatedAt: 1, tlm: 1, replies: 1, tmid: 1, attachments: 1 },
+	projection: {
+		'_id': 1,
+		'ts': 1,
+		'u': 1,
+		'msg': 1,
+		'_updatedAt': 1,
+		'tlm': 1,
+		'replies': 1,
+		'tmid': 1,
+		'attachments.ts': 1,
+		'attachments.title': 1,
+		'attachments.title_link': 1,
+		'attachments.title_link_download': 1,
+		'attachments.image_dimensions': 1,
+		'attachments.image_preview': 1,
+		'attachments.image_url': 1,
+		'attachments.image_type': 1,
+		'attachments.image_size': 1,
+		'attachments.type': 1,
+		'attachments.description': 1,
+	},
 };
 
 export const useDownloadExportMutation = () => {
@@ -22,7 +42,28 @@ export const useDownloadExportMutation = () => {
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {
 			const messages = Messages.find(
 				{
-					$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
+					$and: [
+						{
+							$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
+						},
+						{
+							$or: [
+								{
+									attachments: {
+										$exists: true,
+										$elemMatch: {
+											type: 'file',
+										},
+									},
+								},
+								{
+									attachments: {
+										$exists: false,
+									},
+								},
+							],
+						},
+					],
 				},
 				messagesFields,
 			).fetch();
