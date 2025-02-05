@@ -67,3 +67,15 @@ export const withDebouncing =
 
 		return Object.assign(debounced, { cancel });
 	};
+
+// export const withThrottling =
+// 	({ wait, leading, trailing }: { wait: number; leading?: boolean; trailing?: boolean }) =>
+// 	<TFunction extends (...args: any[]) => any>(fn: TFunction) => {
+// 		return Object.assign(fn, { cancel: () => null });
+// 	};
+
+// export const withDebouncing =
+// 	({ wait, immediate }: { wait: number; immediate?: boolean }) =>
+// 	<TFunction extends (...args: any[]) => any>(fn: TFunction) => {
+// 		return Object.assign(fn, { cancel: () => null });
+// 	};

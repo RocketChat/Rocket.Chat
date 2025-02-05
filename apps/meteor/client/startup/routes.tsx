@@ -135,10 +135,30 @@ router.defineRoutes([
 	{
 		path: '/home',
 		id: 'home',
+		element: appLayout.wrap(<div></div>),
+	},
+	{
+		path: '/home/1',
+		id: 'home1',
 		element: appLayout.wrap(
-			<MainLayout>
-				<HomePage />
-			</MainLayout>,
+			<div className='outer - 1'>
+				<div className='inner - 1'>test 1</div>
+				<div className='inner - 1'>test 1</div>
+				<div className='inner - 1'>test 1</div>
+				<div className='inner - 1'>test 1</div>
+			</div>,
+		),
+	},
+	{
+		path: '/home/2',
+		id: 'home2',
+		element: appLayout.wrap(
+			<div className='outer - 2'>
+				<div className='inner - 2'>test 2</div>
+				<div className='inner - 2'>test 2</div>
+				<div className='inner - 2'>test 2</div>
+				<div className='inner - 2'>test 2</div>
+			</div>,
 		),
 	},
 	{

@@ -43,7 +43,20 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
+// let nodes = null;
+// const saveNode = (node: string) => {
+// 	Array.isArray(nodes) ? nodes.push(node) : (nodes = [node]);
+// };
+// console.log('get nodes', () => nodes);
+// console.log('clear nodes', () => {
+// 	nodes = null;
+// });
+// console.log('test remove nodes', () => {
+// 	nodes.forEach((node) => node?.remove());
+// 	nodes = null;
+// });
 const RoomBody = (): ReactElement => {
+	// console.trace('RoomBody');
 	const chat = useChat();
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -99,7 +112,7 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
-	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
+	// const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
@@ -116,7 +129,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
-	const { messageListRef } = useMessageListNavigation();
+	// const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
@@ -127,7 +140,7 @@ const RoomBody = (): ReactElement => {
 		});
 
 	const innerRef = useMergedRefs(
-		dateScrollInnerRef,
+		// dateScrollInnerRef,
 		innerBoxRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
@@ -136,7 +149,7 @@ const RoomBody = (): ReactElement => {
 		unreadBarInnerRef,
 		getMoreInnerRef,
 		selectAndScrollRef,
-		messageListRef,
+		// messageListRef,
 	);
 
 	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
@@ -218,7 +231,7 @@ const RoomBody = (): ReactElement => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
-			<Box key={room._id} className={['main-content-flex', listStyle]}>
+			<Box key={room._id} className={['main-content-flex']}>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -261,7 +274,7 @@ const RoomBody = (): ReactElement => {
 									/>
 								)}
 
-								<BubbleDate ref={bubbleRef} {...bubbleDate} />
+								{/* <BubbleDate ref={bubbleRef} {...bubbleDate} /> */}
 							</Box>
 
 							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>

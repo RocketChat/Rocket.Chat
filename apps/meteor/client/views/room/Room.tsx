@@ -21,7 +21,7 @@ import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
-
+console.log('maybe room?');
 const Room = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();
@@ -34,64 +34,64 @@ const Room = (): ReactElement => {
 	return (
 		<ChatProvider>
 			<MessageHighlightProvider>
-				<FocusScope>
-					<DateListProvider>
-						<RoomLayout
-							data-qa-rc-room={room._id}
-							aria-label={
-								room.t === 'd'
-									? t('Conversation_with__roomName__', { roomName: room.name })
-									: t('Channel__roomName__', { roomName: room.name })
-							}
-							header={
+				{/* <FocusScope> */}
+				<DateListProvider>
+					<RoomLayout
+						data-qa-rc-room={room._id}
+						aria-label={
+							room.t === 'd'
+								? t('Conversation_with__roomName__', { roomName: room.name })
+								: t('Channel__roomName__', { roomName: room.name })
+						}
+						header={
+							<>
+								<FeaturePreview feature='newNavigation'>
+									<FeaturePreviewOn>
+										<HeaderV2 room={room} />
+									</FeaturePreviewOn>
+									<FeaturePreviewOff>
+										<Header room={room} />
+									</FeaturePreviewOff>
+								</FeaturePreview>
+							</>
+						}
+						body={
+							shouldDisplayE2EESetup ? (
+								<RoomE2EESetup />
+							) : (
 								<>
 									<FeaturePreview feature='newNavigation'>
 										<FeaturePreviewOn>
-											<HeaderV2 room={room} />
+											<RoomBodyV2 />
 										</FeaturePreviewOn>
 										<FeaturePreviewOff>
-											<Header room={room} />
+											<RoomBody />
 										</FeaturePreviewOff>
 									</FeaturePreview>
 								</>
-							}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
-								)
-							}
-							aside={
-								(toolbox.tab?.tabComponent && (
-									<ErrorBoundary fallback={null}>
-										<SelectedMessagesProvider>
-											<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
-										</SelectedMessagesProvider>
-									</ErrorBoundary>
-								)) ||
-								(contextualBarView && (
-									<ErrorBoundary fallback={null}>
-										<SelectedMessagesProvider>
-											<Suspense fallback={<ContextualbarSkeleton />}>
-												<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
-											</Suspense>
-										</SelectedMessagesProvider>
-									</ErrorBoundary>
-								))
-							}
-						/>
-					</DateListProvider>
-				</FocusScope>
+							)
+						}
+						aside={
+							(toolbox.tab?.tabComponent && (
+								<ErrorBoundary fallback={null}>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
+									</SelectedMessagesProvider>
+								</ErrorBoundary>
+							)) ||
+							(contextualBarView && (
+								<ErrorBoundary fallback={null}>
+									<SelectedMessagesProvider>
+										<Suspense fallback={<ContextualbarSkeleton />}>
+											<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
+										</Suspense>
+									</SelectedMessagesProvider>
+								</ErrorBoundary>
+							))
+						}
+					/>
+				</DateListProvider>
+				{/* </FocusScope> */}
 			</MessageHighlightProvider>
 		</ChatProvider>
 	);

@@ -26,7 +26,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
-		<MessageListProvider messageListRef={messageListRef}>
+		<MessageListProvider /*  messageListRef={messageListRef} */>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);

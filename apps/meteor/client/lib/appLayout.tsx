@@ -15,7 +15,14 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 
 	getSnapshot = (): AppLayoutDescriptor => this.descriptor;
 
-	subscribe = (onStoreChange: () => void): (() => void) => this.on('update', onStoreChange);
+	subscribe = (onStoreChange: () => void): (() => void) => {
+		console.count('sub');
+		const off = this.on('update', onStoreChange);
+		return () => {
+			console.count('unsub');
+			return off();
+		};
+	};
 
 	setCurrentValue(descriptor: AppLayoutDescriptor): void {
 		this.descriptor = descriptor;

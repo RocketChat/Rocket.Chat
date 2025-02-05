@@ -117,6 +117,7 @@ const navigate = (
 
 const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
+window.routeSubscribers = routesSubscribers;
 
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
@@ -175,6 +176,7 @@ const getRoutes = () => routes;
 
 const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
 	routesSubscribers.add(onRoutesChange);
+	console.log(onRoutesChange);
 
 	onRoutesChange();
 

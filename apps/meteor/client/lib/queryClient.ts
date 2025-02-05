@@ -11,3 +11,5 @@ export const queryClient = new QueryClient({
 		},
 	},
 });
+window.queryClient = queryClient;
+// console.log('queryClient', queryClient);

@@ -214,11 +214,11 @@ const createStreamManager = () => {
 		}
 	};
 
-	return { stream, stopAll };
+	return { stream, stopAll, getStreams: () => streams };
 };
 
 export const createSDK = (rest: RestClientInterface) => {
-	const { stream, stopAll } = createStreamManager();
+	const { stream, stopAll, getStreams } = createStreamManager();
 
 	const publish = (name: string, args: unknown[]) => {
 		Meteor.call(`stream-${name}`, ...args);
@@ -229,6 +229,7 @@ export const createSDK = (rest: RestClientInterface) => {
 	};
 
 	return {
+		getStreams,
 		rest,
 		stop: stopAll,
 		stream,
@@ -238,3 +239,4 @@ export const createSDK = (rest: RestClientInterface) => {
 };
 
 export const sdk = createSDK(APIClient);
+window.sdkClient = sdk;

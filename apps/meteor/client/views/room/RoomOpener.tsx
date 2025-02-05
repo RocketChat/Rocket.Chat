@@ -17,6 +17,7 @@ import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomEr
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 
+console.log('maybe?');
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
 const Room = lazy(() => import('./Room'));
