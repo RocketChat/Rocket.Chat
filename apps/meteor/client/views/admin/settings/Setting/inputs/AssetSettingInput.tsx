@@ -1,8 +1,8 @@
-import { Box, Button, Field, FieldLabel, FieldRow, Icon } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, Field, FieldLabel, FieldRow, Icon, Palette } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
-import React from 'react';
 
 import './AssetSettingInput.styles.css';
 import type { SettingInputProps } from './types';
@@ -54,13 +54,52 @@ function AssetSettingInput({ _id, label, value, asset, required, disabled, fileC
 		}
 	};
 
+	const settingsFilePreview = css`
+		display: flex;
+		align-items: center;
+
+		& input[type='file'] {
+			position: absolute !important;
+			z-index: 10000;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			cursor: pointer;
+			opacity: 0;
+
+			& * {
+				cursor: pointer;
+			}
+		}
+
+		& .preview {
+			overflow: hidden;
+			width: 100px;
+			height: 40px;
+			margin-right: 0.75rem;
+			border-width: 1px;
+			border-color: ${Palette.stroke['stroke-light']};
+			border-radius: 4px;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: contain;
+
+			&.no-file {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+		}
+	`;
+
 	return (
 		<Field>
 			<FieldLabel htmlFor={_id} title={_id} required={required}>
 				{label}
 			</FieldLabel>
 			<FieldRow>
-				<div className='settings-file-preview'>
+				<Box className={settingsFilePreview}>
 					{value?.url ? (
 						<div
 							className='preview'
@@ -81,17 +120,11 @@ function AssetSettingInput({ _id, label, value, asset, required, disabled, fileC
 						) : (
 							<Box position='relative' className={`rcx-button rcx-button--primary ${disabled ? 'is-disabled' : ''}`}>
 								{t('Select_file')}
-								<input
-									className='asset-setting-input__input'
-									type='file'
-									accept={`.${fileConstraints?.extensions?.join(', .')}`}
-									onChange={handleUpload}
-									disabled={disabled}
-								/>
+								<input type='file' accept={`.${fileConstraints?.extensions?.join(', .')}`} onChange={handleUpload} disabled={disabled} />
 							</Box>
 						)}
 					</div>
-				</div>
+				</Box>
 			</FieldRow>
 		</Field>
 	);

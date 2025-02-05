@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import { useAutoSequence } from '../../stories/hooks/useAutoSequence';

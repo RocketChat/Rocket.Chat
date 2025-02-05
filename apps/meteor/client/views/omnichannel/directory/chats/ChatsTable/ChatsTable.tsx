@@ -1,7 +1,7 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
-import React, { useState, useMemo } from 'react';
+import { hashKey } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChatFilterByText from './ChatsTableFilter';
@@ -42,8 +42,8 @@ const ChatsTable = () => {
 
 	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

@@ -1,6 +1,6 @@
-import { Box, Card, CardBody, CardControls, CardTitle } from '@rocket.chat/fuselage';
+import { Card, CardControls, CardTitle } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
 
@@ -17,16 +17,13 @@ export type CardProps = {
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
 	const { title, infoText, upgradeButton } = card;
+
 	return (
 		<Card height='full'>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
-			<CardBody>
-				<Box h='full' w='full'>
-					{children}
-				</Box>
-			</CardBody>
+			{children}
 			{upgradeButton && <CardControls>{upgradeButton}</CardControls>}
 		</Card>
 	);

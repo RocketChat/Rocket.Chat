@@ -1,8 +1,7 @@
 import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
@@ -25,7 +24,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		| undefined
 	>,
 ) {
-	const id = useUniqueId();
+	const id = useId();
 	const chat = useChat();
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
 	useImperativeHandle(

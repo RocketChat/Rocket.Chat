@@ -1,7 +1,7 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
@@ -57,32 +57,42 @@ const InterchangeableChart = ({
 
 	const loadData = useMethod('livechat:getAnalyticsChartData');
 
-	const draw = useMutableCallback(async (params) => {
-		try {
-			const tooltipCallbacks = getChartTooltips(chartName);
-			if (!params?.daterange?.from || !params?.daterange?.to) {
-				return;
+	const draw = useEffectEvent(
+		async (params: {
+			daterange: {
+				from: string;
+				to: string;
+			};
+			chartOptions: {
+				name: string;
+			};
+		}) => {
+			try {
+				const tooltipCallbacks = getChartTooltips(chartName);
+				if (!params?.daterange?.from || !params?.daterange?.to) {
+					return;
+				}
+				const result = await loadData(params);
+				if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
+					throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
+				}
+				(context.current || typeof context.current === 'undefined') &&
+					canvas.current &&
+					(context.current = await drawLineChart(
+						canvas.current,
+						context.current,
+						[result.chartLabel],
+						result.dataLabels,
+						[result.dataPoints],
+						{
+							tooltipCallbacks,
+						},
+					));
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-			const result = await loadData(params);
-			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
-				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
-			}
-			(context.current || typeof context.current === 'undefined') &&
-				canvas.current &&
-				(context.current = await drawLineChart(
-					canvas.current,
-					context.current,
-					[result.chartLabel],
-					result.dataLabels,
-					[result.dataPoints],
-					{
-						tooltipCallbacks,
-					},
-				));
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+		},
+	);
 
 	useEffect(() => {
 		draw({

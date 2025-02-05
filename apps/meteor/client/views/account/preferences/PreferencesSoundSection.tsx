@@ -1,8 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { AccordionItem, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesSoundSection = () => {
@@ -13,15 +12,15 @@ const PreferencesSoundSection = () => {
 	const { control, watch } = useFormContext();
 	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
 
-	const newRoomNotificationId = useUniqueId();
-	const newMessageNotificationId = useUniqueId();
-	const muteFocusedConversationsId = useUniqueId();
-	const masterVolumeId = useUniqueId();
-	const notificationsSoundVolumeId = useUniqueId();
-	const voipRingerVolumeId = useUniqueId();
+	const newRoomNotificationId = useId();
+	const newMessageNotificationId = useId();
+	const muteFocusedConversationsId = useId();
+	const masterVolumeId = useId();
+	const notificationsSoundVolumeId = useId();
+	const voipRingerVolumeId = useId();
 
 	return (
-		<Accordion.Item title={t('Sound')}>
+		<AccordionItem title={t('Sound')}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel aria-describedby={`${masterVolumeId}-hint`}>{t('Master_volume')}</FieldLabel>
@@ -150,7 +149,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

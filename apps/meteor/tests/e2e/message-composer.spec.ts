@@ -32,7 +32,7 @@ test.describe.serial('message-composer', () => {
 		await page.setViewportSize({ width: 768, height: 600 });
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(5);
+		await expect(poHomeChannel.composerToolbarActions).toHaveCount(6);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
@@ -102,6 +102,17 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.composer).toHaveValue('/gimme ');
 
 			await poHomeChannel.composer.fill('');
+		});
+	});
+
+	test('should list popup items correctly', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @rocket.cat');
+
+			await expect(poHomeChannel.composerBoxPopup.getByText('rocket.cat')).toBeVisible();
 		});
 	});
 });

@@ -1,12 +1,13 @@
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
@@ -154,7 +155,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		}
 	}
 
-	await Roles.addUserRoles(user._id, ['bot']);
+	await addUserRolesAsync(user._id, ['bot']);
 
 	const { insertedId } = await Integrations.insertOne(integrationData);
 

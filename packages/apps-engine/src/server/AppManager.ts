@@ -39,7 +39,7 @@ import { AppInstallationSource } from './storage/IAppStorageItem';
 
 export interface IAppInstallParameters {
     enable: boolean;
-    marketplaceInfo?: IMarketplaceInfo;
+    marketplaceInfo?: IMarketplaceInfo[];
     permissionsGranted?: Array<IPermission>;
     user: IUser;
 }
@@ -271,7 +271,7 @@ export class AppManager {
                 const prl = new ProxiedApp(this, item, {
                     // Maybe we should have an "EmptyRuntime" class for this?
                     getStatus() {
-                        return AppStatus.COMPILER_ERROR_DISABLED;
+                        return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
                     },
                 } as unknown as DenoRuntimeSubprocessController);
 
@@ -877,13 +877,13 @@ export class AppManager {
                 }
 
                 const appStorageItem = app.getStorageItem();
-                const subscriptionInfo = appStorageItem.marketplaceInfo?.subscriptionInfo;
+                const { subscriptionInfo } = appStorageItem.marketplaceInfo?.[0] || {};
 
                 if (subscriptionInfo && subscriptionInfo.license.license === appInfo.subscriptionInfo.license.license) {
                     return;
                 }
 
-                appStorageItem.marketplaceInfo.subscriptionInfo = appInfo.subscriptionInfo;
+                appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
 
                 return this.appMetadataStorage.update(appStorageItem);
             }),
@@ -1035,6 +1035,10 @@ export class AppManager {
             result = false;
 
             await app.setStatus(status, silenceStatus);
+
+            // If some error has happened in initialization, like license or installations invalidation
+            // we need to store this on the DB regardless of what the parameter requests
+            saveToDb = true;
         }
 
         if (saveToDb) {
@@ -1113,6 +1117,10 @@ export class AppManager {
             }
 
             console.error(e);
+
+            // If some error has happened during enabling, like license or installations invalidation
+            // we need to store this on the DB regardless of what the parameter requests
+            saveToDb = true;
         }
 
         if (enable) {

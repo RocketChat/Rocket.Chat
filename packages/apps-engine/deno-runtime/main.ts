@@ -22,6 +22,7 @@ import apiHandler from './handlers/api-handler.ts';
 import handleApp from './handlers/app/handler.ts';
 import handleScheduler from './handlers/scheduler-handler.ts';
 import registerErrorListeners from './error-handlers.ts';
+import { sendMetrics } from './lib/metricsCollector.ts';
 
 type Handlers = {
     app: typeof handleApp;
@@ -103,7 +104,8 @@ async function main() {
         try {
             // Process PING command first as it is not JSON RPC
             if (message === COMMAND_PING) {
-                Messenger.pongResponse();
+                void Messenger.pongResponse();
+                void sendMetrics();
                 continue;
             }
 

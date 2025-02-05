@@ -16,7 +16,6 @@ import './messageObserve';
 import './messageTypes';
 import './notifications';
 import './otr';
-import './readReceipt';
 import './reloadRoomAfterLogin';
 import './roles';
 import './rootUrlChange';

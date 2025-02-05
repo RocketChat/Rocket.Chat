@@ -1,7 +1,7 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -47,7 +47,7 @@ function CodeMirror({
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const editorRef = useRef<EditorFromTextArea | null>(null);
-	const handleChange = useMutableCallback(onChange);
+	const handleChange = useEffectEvent(onChange);
 
 	useEffect(() => {
 		if (editorRef.current) {

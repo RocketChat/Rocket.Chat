@@ -2,7 +2,7 @@ import { Box, Chip, Button, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import AssignAgentButton from './AssignAgentButton';
 import AssignAgentModal from './AssignAgentModal';
@@ -35,7 +35,10 @@ const VoipExtensionsPage = () => {
 	);
 
 	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extensions');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['omnichannel-extensions', query], async () => getExtensions(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery({
+		queryKey: ['omnichannel-extensions', query],
+		queryFn: async () => getExtensions(query),
+	});
 
 	const headers = (
 		<>

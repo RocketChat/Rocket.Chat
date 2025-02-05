@@ -9,27 +9,26 @@ import {
 	SidebarV2ItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { HTMLAttributes } from 'react';
-import React, { memo, useState } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
 	icon?: IconName;
 	title: string;
-	avatar?: React.ReactNode | boolean;
-	actions?: React.ReactNode;
+	avatar?: ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	time?: any;
-	menu?: () => React.ReactNode;
-	subtitle?: React.ReactNode;
-	badges?: React.ReactNode;
+	menu?: () => ReactNode;
+	subtitle?: ReactNode;
+	badges?: ReactNode;
 	unread?: boolean;
 	selected?: boolean;
 	menuOptions?: any;
-	titleIcon?: React.ReactNode;
+	titleIcon?: ReactNode;
 	threadUnread?: boolean;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -53,32 +52,24 @@ const Extended = ({
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-
-	const handleMenu = useEffectEvent((e) => {
-		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
-	});
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
-	};
+	const handleFocus = () => setMenuVisibility(true);
+	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props}>
+		<SidebarV2Item href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
-
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
 					{icon && icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
-
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
 					{badges && badges}
 					{actions && actions}
 					{menu && (
-						<SidebarV2ItemMenu {...handleMenuEvent}>
+						<SidebarV2ItemMenu>
 							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 						</SidebarV2ItemMenu>
 					)}

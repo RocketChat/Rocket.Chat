@@ -76,11 +76,15 @@ describe('LIVECHAT - rooms', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/room', () => {
@@ -154,7 +158,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('unauthorized');
+					expect(res.body).to.have.property('error', 'unauthorized');
 				});
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -2369,6 +2373,41 @@ describe('LIVECHAT - rooms', () => {
 			expect(room).to.have.property('closer', 'user');
 			expect(inqForRoom).to.be.null;
 			expect(sub.body.subscription).to.be.null;
+		});
+
+		describe('Force closing', () => {
+			after(async () => {
+				await updateSetting('Omnichannel_allow_force_close_conversations', false);
+			});
+			it('should not allow force closing if setting Omnichannel_allow_force_close_conversations is off', async () => {
+				const visitor = await createVisitor();
+				const { _id } = await createLivechatRoom(visitor.token);
+				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' });
+
+				// Room closed, try to close again should return an error
+				const result = await request
+					.post(api('livechat/room.closeByUser'))
+					.set(credentials)
+					.send({ rid: _id, comment: 'test', forceClose: true });
+
+				expect(result.body).to.have.property('success', false);
+				expect(result.body).to.have.property('error', 'error-room-already-closed');
+			});
+			it('should allow to force close a conversation (even if the conversation is already closed)', async () => {
+				await updateSetting('Omnichannel_allow_force_close_conversations', true);
+
+				const visitor = await createVisitor();
+				const { _id } = await createLivechatRoom(visitor.token);
+				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' });
+
+				// Room closed, try to force close again should work
+				const result = await request
+					.post(api('livechat/room.closeByUser'))
+					.set(credentials)
+					.send({ rid: _id, comment: 'test', forceClose: true });
+
+				expect(result.body).to.have.property('success', true);
+			});
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {

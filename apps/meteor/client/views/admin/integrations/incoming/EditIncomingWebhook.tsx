@@ -1,8 +1,7 @@
 import type { IIncomingIntegration, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import IncomingWebhookForm from './IncomingWebhookForm';
@@ -12,7 +11,21 @@ import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
 
-const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined) => ({
+export type EditIncomingWebhookFormData = {
+	enabled: boolean;
+	channel: string;
+	username: string;
+	name: string;
+	alias: string;
+	avatar: string;
+	emoji: string;
+	scriptEnabled: boolean;
+	scriptEngine: 'isolated-vm';
+	overrideDestinationChannelEnabled: boolean;
+	script: string;
+};
+
+const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined): EditIncomingWebhookFormData => ({
 	enabled: webhookData?.enabled ?? true,
 	channel: webhookData?.channel.join(', ') ?? '',
 	username: webhookData?.username ?? '',
@@ -28,7 +41,11 @@ const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefin
 
 const INCOMING_TYPE = 'webhook-incoming';
 
-const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
+type EditIncomingWebhookProps = {
+	webhookData?: Serialized<IIncomingIntegration>;
+};
+
+const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
@@ -38,7 +55,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const updateIntegration = useUpdateIntegration(INCOMING_TYPE);
 	const createIntegration = useCreateIntegration(INCOMING_TYPE);
 
-	const methods = useForm({ mode: 'onBlur', values: getInitialValue(webhookData) });
+	const methods = useForm<EditIncomingWebhookFormData>({ mode: 'onBlur', values: getInitialValue(webhookData) });
 
 	const {
 		reset,
@@ -63,7 +80,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	}, [webhookData?._id, deleteIntegration, setModal, t]);
 
 	const handleSave = useCallback(
-		async (formValues) => {
+		async (formValues: EditIncomingWebhookFormData) => {
 			if (webhookData?._id) {
 				return updateIntegration.mutate({ integrationId: webhookData?._id, type: INCOMING_TYPE, ...formValues });
 			}
@@ -73,7 +90,7 @@ const EditIncomingWebhook = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		[webhookData?._id, updateIntegration, createIntegration],
 	);
 
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page flexDirection='column'>

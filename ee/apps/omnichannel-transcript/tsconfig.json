@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"strictPropertyInitialization": false,
-		"outDir": "./dist",
+		"outDir": "./dist/ee/apps/omnichannel-transcript/src",
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],
