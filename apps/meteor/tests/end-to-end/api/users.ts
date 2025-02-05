@@ -173,7 +173,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 	await connection
 		.db()
 		.collection('users')
-		.updateOne({ _id: userId }, { $set: { ...userData } });
+		.updateOne({ _id: userId as any }, { $set: { ...userData } });
 
 	await connection.close();
 };

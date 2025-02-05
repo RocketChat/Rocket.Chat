@@ -2,8 +2,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement } from 'react';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
@@ -27,7 +27,7 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import UploadProgressIndicator from './UploadProgressIndicator';
+import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useBannerSection } from './hooks/useBannerSection';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
@@ -144,8 +144,8 @@ const RoomBody = (): ReactElement => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
 
-	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
-		(e): void => {
+	const handleCloseFlexTab = useCallback(
+		(e: MouseEvent<HTMLElement>): void => {
 			/*
 			 * check if the element is a button or anchor
 			 * it considers the role as well
@@ -211,18 +211,20 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
-									{uploads.map((upload) => (
-										<UploadProgressIndicator
-											key={upload.id}
-											id={upload.id}
-											name={upload.name}
-											percentage={upload.percentage}
-											error={upload.error instanceof Error ? upload.error.message : undefined}
-											onClose={handleUploadProgressClose}
-										/>
-									))}
-								</div>
+								{uploads.length > 0 && (
+									<UploadProgressContainer>
+										{uploads.map((upload) => (
+											<UploadProgressIndicator
+												key={upload.id}
+												id={upload.id}
+												name={upload.name}
+												percentage={upload.percentage}
+												error={upload.error instanceof Error ? upload.error.message : undefined}
+												onClose={handleUploadProgressClose}
+											/>
+										))}
+									</UploadProgressContainer>
+								)}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
 										count={unread}

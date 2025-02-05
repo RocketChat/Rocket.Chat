@@ -2,8 +2,8 @@ import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashQueryKey, useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
@@ -45,12 +45,14 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['omnichannel', 'managers', 'livechat-manager', query], async () =>
-		getManagers(query),
-	);
+	const { data, isLoading, isSuccess, refetch } = useQuery({
+		queryKey: ['omnichannel', 'managers', 'livechat-manager', query],
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+		queryFn: async () => getManagers(query),
+	});
+
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

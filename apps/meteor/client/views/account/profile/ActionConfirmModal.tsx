@@ -1,5 +1,6 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import React, { useState, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -10,13 +11,14 @@ type ActionConfirmModalProps = {
 	onCancel: () => void;
 };
 
+// TODO: Use react-hook-form
 const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const { t } = useTranslation();
 	const [inputText, setInputText] = useState('');
 	const [inputError, setInputError] = useState<string | undefined>();
 
 	const handleChange = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			e.target.value !== '' && setInputError(undefined);
 			setInputText(e.currentTarget.value);
 		},
@@ -24,7 +26,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 	);
 
 	const handleSave = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			e.preventDefault();
 			if (inputText === '') {
 				setInputError(t('Invalid_field'));

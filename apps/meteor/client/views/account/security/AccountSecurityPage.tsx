@@ -1,8 +1,7 @@
 import { Box, Accordion, AccordionItem, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ChangePassword from './ChangePassword';
@@ -37,7 +36,7 @@ const AccountSecurityPage = (): ReactElement => {
 	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
 	const showEmailTwoFactor = twoFactorByEmailEnabled && isEmail2FAAllowed;
 
-	const passwordFormId = useUniqueId();
+	const passwordFormId = useId();
 
 	return (
 		<Page>

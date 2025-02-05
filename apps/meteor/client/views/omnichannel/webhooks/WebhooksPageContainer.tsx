@@ -2,7 +2,6 @@ import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typin
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import WebhooksPage from './WebhooksPage';
@@ -21,9 +20,13 @@ const WebhooksPageContainer = () => {
 
 	const getIntegrationsSettings = useEndpoint('GET', '/v1/livechat/integrations.settings');
 
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/integrations.settings'], async () => {
-		const { settings, success } = await getIntegrationsSettings();
-		return { settings: reduceSettings(settings), success };
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['/v1/livechat/integrations.settings'],
+
+		queryFn: async () => {
+			const { settings, success } = await getIntegrationsSettings();
+			return { settings: reduceSettings(settings), success };
+		},
 	});
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
@@ -32,7 +35,7 @@ const WebhooksPageContainer = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (isLoading) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 

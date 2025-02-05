@@ -1,8 +1,8 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import React, { useRef } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
@@ -19,8 +19,8 @@ type AppsPageContentBodyProps = {
 	}>;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
-	onSetItemsPerPage: React.Dispatch<React.SetStateAction<25 | 50 | 100>>;
-	onSetCurrent: React.Dispatch<React.SetStateAction<number>>;
+	onSetItemsPerPage: Dispatch<SetStateAction<25 | 50 | 100>>;
+	onSetCurrent: Dispatch<SetStateAction<number>>;
 	paginationProps: {
 		itemsPerPageLabel: () => string;
 		showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
@@ -41,7 +41,7 @@ const AppsPageContentBody = ({
 }: AppsPageContentBodyProps) => {
 	const { t } = useTranslation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
-	const appsListId = useUniqueId();
+	const appsListId = useId();
 
 	return (
 		<>

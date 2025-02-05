@@ -1,9 +1,8 @@
 import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { memo, useEffect } from 'react';
+import { memo, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
@@ -73,9 +72,9 @@ const FileUploadModal = ({
 		}
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
-	const fileUploadFormId = useUniqueId();
-	const fileNameField = useUniqueId();
-	const fileDescriptionField = useUniqueId();
+	const fileUploadFormId = useId();
+	const fileNameField = useId();
+	const fileDescriptionField = useId();
 
 	return (
 		<Modal

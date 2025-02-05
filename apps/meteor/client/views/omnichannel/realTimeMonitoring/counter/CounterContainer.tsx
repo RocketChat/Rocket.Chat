@@ -2,7 +2,7 @@ import type { Box } from '@rocket.chat/fuselage';
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CounterItem from './CounterItem';

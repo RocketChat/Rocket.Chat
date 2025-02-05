@@ -1,6 +1,6 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import CustomHomePage from './CustomHomePage';
 import DefaultHomePage from './DefaultHomePage';

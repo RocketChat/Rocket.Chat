@@ -1,6 +1,6 @@
-import type { IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Avatar } from '@rocket.chat/fuselage';
-import React from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
@@ -10,8 +10,8 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RoomTags from '../../../RoomTags';
 
 type ChannelsTableRowProps = {
-	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
-	room: IRoom & { belongsTo?: ITeam };
+	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => void;
+	room: Serialized<IRoom & { belongsTo?: string }>;
 	mediaQuery: boolean;
 };
 
