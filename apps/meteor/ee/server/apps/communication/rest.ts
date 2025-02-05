@@ -6,7 +6,9 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type express from 'express';
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
@@ -50,12 +52,13 @@ export class AppsRestApi {
 	async loadAPI() {
 		this.api = new API.ApiClass({
 			version: 'apps',
+			apiPath: '/api',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
-			auth: API.getUserAuth(),
 		});
-		this.addManagementRoutes();
+		await this.addManagementRoutes();
+		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
