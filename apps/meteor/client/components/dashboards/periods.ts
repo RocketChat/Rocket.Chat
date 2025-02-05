@@ -32,12 +32,24 @@ export const getClosedPeriod =
 		end: Date;
 	}) =>
 	(utc): { start: Date; end: Date } => {
-		const date = utc ? moment(new Date()).utc().toDate() : new Date();
+		const date = new Date();
+		const offsetForMoment = -(date.getTimezoneOffset() / 60);
+		let start = moment(date).utc();
+		let end = moment(date).utc();
 
-		const start = moment(date).subtract(subtract, 'months').startOf(startOf).toDate();
-		const end = moment(date).endOf('day').toDate();
+		start.subtract(subtract, 'months');
 
-		return { start, end };
+		if (!utc) {
+			start = start.utcOffset(offsetForMoment);
+			end = end.utcOffset(offsetForMoment);
+		}
+
+		// moment.toDate() can only return the date in localtime, that's why we do the new Date conversion
+		// https://github.com/moment/moment-timezone/issues/644
+		return {
+			start: new Date(start.startOf(startOf).format('YYYY-MM-DD HH:mm:ss')),
+			end: new Date(end.endOf('day').format('YYYY-MM-DD HH:mm:ss')),
+		};
 	};
 
 const periods = [
