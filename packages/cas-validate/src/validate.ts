@@ -223,7 +223,6 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 						}
 					}
 
-					console.error(response);
 					return callback(new Error('Bad response format.'));
 				}
 
