@@ -9,9 +9,10 @@ type FormattingToolbarDropdownProps = {
 	composer: ComposerAPI;
 	items: FormattingButton[];
 	disabled: boolean;
+	toggleFormatting: boolean;
 };
 
-const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingToolbarDropdownProps) => {
+const FormattingToolbarDropdown = ({ composer, items, disabled, toggleFormatting }: FormattingToolbarDropdownProps) => {
 	const { t } = useTranslation();
 
 	const formattingItems: GenericMenuItemProps[] = items.map((formatter) => {
@@ -23,7 +24,11 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 			if (isPromptButton(formatter)) {
 				return formatter.prompt(composer);
 			}
-			composer.toggleSelectionWrap(formatter.pattern);
+			if (toggleFormatting) {
+				composer.toggleSelectionWrap(formatter.pattern);
+				return;
+			}
+			composer.wrapSelection(formatter.pattern);
 		};
 
 		return {

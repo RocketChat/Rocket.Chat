@@ -1235,6 +1235,7 @@
   "Conversations_per_day": "Conversations per Day",
   "Convert": "Convert",
   "Convert_Ascii_Emojis": "Convert ASCII to Emoji",
+  "Toggle_Formatting": "Toggle markdown formatting",
   "Convert_to_channel": "Convert to Channel",
   "Converting_channel_to_a_team": "You are converting this Channel to a Team. All members will be kept.",
   "Converted__roomName__to_team": "<strong>converted</strong> #{{roomName}} to a Team",

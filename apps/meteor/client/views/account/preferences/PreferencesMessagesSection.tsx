@@ -31,6 +31,7 @@ const PreferencesMessagesSection = () => {
 	const alsoSendThreadToChannelId = useId();
 	const useEmojisId = useId();
 	const convertAsciiEmojiId = useId();
+	const toggleFormattingId = useId();
 	const autoImageLoadId = useId();
 	const saveMobileBandwidthId = useId();
 	const collapseMediaByDefaultId = useId();
@@ -119,6 +120,18 @@ const PreferencesMessagesSection = () => {
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
 								<ToggleSwitch id={convertAsciiEmojiId} ref={ref} checked={value} onChange={onChange} />
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={toggleFormattingId}>{t('Toggle_Formatting')}</FieldLabel>
+						<Controller
+							name='toggleFormatting'
+							control={control}
+							render={({ field: { value, onChange, ref } }) => (
+								<ToggleSwitch id={toggleFormattingId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
