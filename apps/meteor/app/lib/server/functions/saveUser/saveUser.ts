@@ -17,7 +17,7 @@ import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMet
 import { generatePassword } from '../../lib/generatePassword';
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { passwordPolicy } from '../../lib/passwordPolicy';
-import { saveCustomFields } from "../saveCustomFields";
+import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
 import { setStatusText } from '../setStatusText';
