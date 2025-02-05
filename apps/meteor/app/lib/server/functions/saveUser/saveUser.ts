@@ -5,21 +5,22 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
-import { generatePassword } from '../../lib/generatePassword';
-import { notifyOnUserChange } from '../../lib/notifyListener';
-import { passwordPolicy } from '../../lib/passwordPolicy';
-import { saveUserIdentity } from '../saveUserIdentity';
-import { setEmail } from '../setEmail';
-import { setStatusText } from '../setStatusText';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { callbacks } from '../../../../../lib/callbacks';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
+import { generatePassword } from '../../lib/generatePassword';
+import { notifyOnUserChange } from '../../lib/notifyListener';
+import { passwordPolicy } from '../../lib/passwordPolicy';
+import { saveCustomFields } from "../saveCustomFields";
+import { saveUserIdentity } from '../saveUserIdentity';
+import { setEmail } from '../setEmail';
+import { setStatusText } from '../setStatusText';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -44,6 +45,8 @@ export type SaveUserData = {
 
 	joinDefaultChannels?: boolean;
 	sendWelcomeEmail?: boolean;
+
+	customFields?: Record<string, any>;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -140,6 +143,10 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 
 	if (typeof userData.verified === 'boolean' && !userData.email) {
 		updater.set('emails.0.verified', userData.verified);
+	}
+
+	if (userData.customFields) {
+		await saveCustomFields(userData._id, userData.customFields, updater);
 	}
 
 	await Users.updateFromUpdater({ _id: userData._id }, updater);
