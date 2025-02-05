@@ -291,7 +291,7 @@ jobs:
         working-directory: ./apps/meteor
         run: |
           yarn prepare
-          yarn playwright test tests/e2e/omnichannel/omnichannel-livechat-tab-communication.spec.ts
+          yarn playwright test tests/e2e/omnichannel/omnichannel-livechat-tab-communication
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
