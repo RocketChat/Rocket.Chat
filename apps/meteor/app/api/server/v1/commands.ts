@@ -1,15 +1,14 @@
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
+import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
-import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
 
 API.v1.addRoute(
 	'commands.get',

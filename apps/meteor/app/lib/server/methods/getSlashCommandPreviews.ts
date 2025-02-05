@@ -34,7 +34,7 @@ export const getSlashCommandPreviews = async (command: {
 	}
 
 	return slashCommands.getPreviews(command.cmd, command.params, command.msg);
-}
+};
 
 Meteor.methods<ServerMethods>({
 	async getSlashCommandPreviews(command) {

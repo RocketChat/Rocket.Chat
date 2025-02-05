@@ -48,7 +48,7 @@ export const executeSlashCommandPreview = async (
 	}
 
 	return slashCommands.executePreview(command.cmd, command.params, command.msg, preview, command.triggerId);
-}
+};
 
 Meteor.methods<ServerMethods>({
 	executeSlashCommandPreview(command, preview) {
@@ -58,6 +58,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		 return executeSlashCommandPreview(command, preview);
+		return executeSlashCommandPreview(command, preview);
 	},
 });
