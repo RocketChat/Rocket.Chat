@@ -1,7 +1,7 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement,useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadCsvAs } from '../../lib/download';
@@ -27,23 +27,26 @@ const DownloadDataButton = <H extends readonly string[]>({
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleClick = (): void => {
+	const handleClick = useCallback(async (): Promise<void> => {
 		if (!dataAvailable) {
 			return;
 		}
 
-		Promise.resolve(dataExtractor())
-			.then((data) => {
-				if (!data) {
-					return;
-				}
+		try {
+			const data = await Promise.resolve(dataExtractor());
+			if (!data ) {
+				dispatchToastMessage({ type: 'warning', message: t('No_data_available') });
+				return;
+			}
 
-				downloadCsvAs([headers, ...data], attachmentName);
-			})
-			.catch((error) => {
-				dispatchToastMessage({ type: 'error', message: error });
+			downloadCsvAs([headers, ...data], attachmentName);
+		} catch (error) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Error_downloading_data', { error: String(error) }),
 			});
-	};
+		}
+	}, [dataAvailable, dataExtractor, headers, attachmentName, dispatchToastMessage, t]);
 
 	return (
 		<IconButton
