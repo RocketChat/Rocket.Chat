@@ -1334,7 +1334,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.onHold = { $ne: true };
 		}
 
-		console.log(JSON.stringify(query));
 		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
