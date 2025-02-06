@@ -16,37 +16,54 @@ import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
 import Triggers from './triggers';
+import RoomNotFoundError from '../helpers/errors';
 
 const commands = new Commands();
 
-export const closeChat = async ({ transcriptRequested } = {}) => {
+export const closeChat = async ({ t: messageType, transcriptRequested } = {}) => {
 	console.log('Post finish chat action');
-	if (!transcriptRequested) {
-		await handleTranscript();
+
+	try {
+		const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
+		if (!room) {
+			throw new RoomNotFoundError('closeChat called without a room');
+		}
+
+		if (!transcriptRequested) {
+			await handleTranscript();
+		}
+
+		await store.setState({ room: null, renderedTriggers: [] });
+
+		if (clearLocalStorageWhenChatEnded) {
+			// exclude UI-affecting flags
+			const { iframe: currentIframe } = store.state;
+			const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
+			initial.iframe = { ...currentIframe, guest: { department } };
+			await store.setState(initial);
+		}
+
+		await Triggers.processTrigger('after-guest-registration');
+
+		await loadConfig();
+		parentCall('callback', 'chat-ended');
+		route('/chat-finished');
+		console.log('closeChat: normal flow completed');
+	} catch (e) {
+		const isRoomNotFound = e instanceof RoomNotFoundError;
+		const isChatClosed = messageType === 'livechat-close';
+
+		if (isRoomNotFound && isChatClosed) {
+			console.log('Room not found, redirecting to chat-finished');
+			parentCall('callback', 'chat-ended');
+			route('/chat-finished');
+		}
+
+		if (e instanceof Error) {
+			console.warn(e.message);
+		}
 	}
-
-	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
-
-	if (!room) {
-		console.warn('closeChat called without a room');
-		return;
-	}
-
-	await store.setState({ room: null, renderedTriggers: [] });
-
-	if (clearLocalStorageWhenChatEnded) {
-		// exclude UI-affecting flags
-		const { iframe: currentIframe } = store.state;
-		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
-		initial.iframe = { ...currentIframe, guest: { department } };
-		await store.setState(initial);
-	}
-
-	await Triggers.processTrigger('after-guest-registration');
-
-	await loadConfig();
-	parentCall('callback', 'chat-ended');
-	route('/chat-finished');
 };
 
 const getVideoConfMessageData = (message) =>
@@ -356,10 +373,10 @@ export const defaultRoomParams = () => {
 	return params;
 };
 
-store.on('change', ([state, prevState]) => {
+store.on('change', async ([state, prevState]) => {
 	// Cross-tab communication
 	// Detects when a room is created and then route to the correct container
-	if (prevState.room?._id !== state.room?._id) {
+	if (!prevState.room?._id && state.room?._id) {
 		route('/');
 	}
 });
