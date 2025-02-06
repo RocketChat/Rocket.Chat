@@ -51,6 +51,8 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	});
 
 	const handleRecord = useEffectEvent(async () => {
+		chat?.composer?.setRecordingMode(true);
+
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
