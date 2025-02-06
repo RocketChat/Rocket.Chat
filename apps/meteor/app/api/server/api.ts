@@ -3,8 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import express from 'express';
-import type { Request, Response } from 'express';
+import type express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -97,31 +96,33 @@ const rateLimiterDictionary: Record<
 > = {};
 
 const getRequestIP = (req: Request): string | null => {
-	const socket = req.socket || (req.connection as any)?.socket;
-	const remoteAddress = String(
-		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null)),
-	);
-	const forwardedFor = String(req.headers['x-forwarded-for']);
+	const forwardedFor = req.headers.get('x-forwarded-for');
+	const remoteAddress = req.headers.get('x-real-ip');
+	return remoteAddress || forwardedFor || null;
 
-	if (!socket) {
-		return remoteAddress || forwardedFor || null;
-	}
+	// const socket = req.socket || req.connection?.socket;
+	// const remoteAddress =
+	// 	req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null));
 
-	const httpForwardedCount = parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0;
-	if (httpForwardedCount <= 0) {
-		return remoteAddress;
-	}
+	// if (!socket) {
+	// 	return remoteAddress || forwardedFor || null;
+	// }
 
-	if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
-		return remoteAddress;
-	}
+	// const httpForwardedCount = parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0;
+	// if (httpForwardedCount <= 0) {
+	// 	return remoteAddress;
+	// }
 
-	const forwardedForIPs = forwardedFor.trim().split(/\s*,\s*/);
-	if (httpForwardedCount > forwardedForIPs.length) {
-		return remoteAddress;
-	}
+	// if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
+	// 	return remoteAddress;
+	// }
 
-	return forwardedForIPs[forwardedForIPs.length - httpForwardedCount];
+	// forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
+	// if (httpForwardedCount > forwardedFor.length) {
+	// 	return remoteAddress;
+	// }
+
+	// return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
 const generateConnection = (
@@ -385,9 +386,12 @@ export class APIClass<TBasePath extends string = ''> {
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? '');
-		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
-		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
+		response.headers.set(
+			'X-RateLimit-Limit',
+			String(rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? ''),
+		);
+		response.headers.set('X-RateLimit-Remaining', String(attemptResult.numInvocationsLeft));
+		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
 			throw new Meteor.Error(
@@ -467,8 +471,8 @@ export class APIClass<TBasePath extends string = ''> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
-		const code = request.headers['x-2fa-code'] ? String(request.headers['x-2fa-code']) : undefined;
-		const method = request.headers['x-2fa-method'] ? String(request.headers['x-2fa-method']) : undefined;
+		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
+		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
 
 		await checkCodeForUser({
 			user: userId,
@@ -567,9 +571,10 @@ export class APIClass<TBasePath extends string = ''> {
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute(this.request);
 							this.user = user!;
-							this.userId = String(this.request.headers['x-user-id']);
-							this.token = (this.request.headers['x-auth-token'] &&
-								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
+							this.userId = String(this.request.headers.get('x-user-id'));
+							this.userId = this.user?._id;
+							const authToken = this.request.headers.get('x-auth-token');
+							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
 						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
@@ -587,7 +592,7 @@ export class APIClass<TBasePath extends string = ''> {
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${api.apiPath}${this.request.route.path}${this.request.method.toLowerCase()}`,
+							route: `/${route}${this.request.method.toLowerCase()}`,
 						};
 
 						let result;
@@ -707,9 +712,11 @@ export class APIClass<TBasePath extends string = ''> {
 	}
 
 	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const { 'x-user-id': userId } = req.headers;
+		const headers = Object.fromEntries(req.headers.entries());
 
-		const userToken = String(req.headers['x-auth-token']);
+		const { 'x-user-id': userId } = headers;
+
+		const userToken = String(headers['x-auth-token']);
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -748,7 +755,7 @@ export class APIClass<TBasePath extends string = ''> {
 				return bodyParams;
 			}
 
-			const code = bodyCode || request.headers['x-2fa-code'];
+			const code = bodyCode || request.headers.get('x-2fa-code');
 
 			const auth: Record<string, any> = {
 				password,
@@ -1009,12 +1016,8 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 Meteor.startup(() => {
-	(WebApp.connectHandlers as ReturnType<typeof express>).use(
+	(WebApp.rawConnectHandlers as ReturnType<typeof express>).use(
 		API.api
-			.use((_req, res, next) => {
-				res.removeHeader('X-Powered-By');
-				next();
-			})
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
@@ -1023,17 +1026,3 @@ Meteor.startup(() => {
 			.use(API.default.router).router,
 	);
 });
-
-(WebApp.connectHandlers as ReturnType<typeof express>)
-	.use(
-		express.json({
-			limit: '50mb',
-		}),
-	)
-	.use(
-		express.urlencoded({
-			extended: true,
-			limit: '50mb',
-		}),
-	)
-	.use(express.query({}));

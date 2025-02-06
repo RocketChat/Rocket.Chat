@@ -76,7 +76,7 @@ API.v1.addRoute(
 				const roomInfo = {
 					source: {
 						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
 							: { type: OmnichannelSourceType.API }),
 					},
 				};

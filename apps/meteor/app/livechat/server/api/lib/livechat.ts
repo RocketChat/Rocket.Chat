@@ -92,10 +92,10 @@ export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: 
 	return normalizeAgent(agentId);
 }
 
-export function normalizeHttpHeaderData(headers: Record<string, string | string[] | undefined> = {}): {
+export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	httpHeaders: Record<string, string | string[] | undefined>;
 } {
-	const httpHeaders = Object.assign({}, headers);
+	const httpHeaders = Object.fromEntries(headers.entries());
 	return { httpHeaders };
 }
 

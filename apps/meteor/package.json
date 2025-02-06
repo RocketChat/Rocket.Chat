@@ -349,6 +349,7 @@
 		"he": "^1.2.0",
 		"highlight.js": "^11.10.0",
 		"hljs9": "npm:highlight.js@^9.18.5",
+		"hono": "^4.6.19",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
 		"i18next-http-backend": "^1.4.5",
