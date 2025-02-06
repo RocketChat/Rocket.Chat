@@ -156,6 +156,7 @@ describe('miscellaneous', () => {
 					// 'clockMode',
 					'useEmojis',
 					'convertAsciiEmoji',
+					'toggleFormatting',
 					'saveMobileBandwidth',
 					'collapseMediaByDefault',
 					'autoImageLoad',
