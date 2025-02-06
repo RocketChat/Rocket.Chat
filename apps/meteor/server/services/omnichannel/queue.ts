@@ -2,6 +2,7 @@ import { ServiceStarter } from '@rocket.chat/core-services';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
@@ -93,7 +94,11 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		// And we get tracing :)
 		const queues = await this.getActiveQueues();
 		for await (const queue of queues) {
-			await this.checkQueue(queue);
+			await tracerSpan(
+				'omnichannel.queue',
+				{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
+				() => this.checkQueue(queue),
+			);
 		}
 		this.scheduleExecution();
 	}

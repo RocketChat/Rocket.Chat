@@ -27,13 +27,13 @@ const validateMaxChats = async ({
 	};
 }) => {
 	if (!inquiry?._id || !agent?.agentId) {
-		cbLogger.debug({ msg: 'No inquiry or agent provided', inquiry, agent });
+		cbLogger.debug('No inquiry or agent provided');
 		throw new Error('No inquiry or agent provided');
 	}
 	const { agentId } = agent;
 
 	if (!(await Livechat.checkOnlineAgents(undefined, agent))) {
-		cbLogger.debug({ msg: 'Provided agent is not online', agentId });
+		cbLogger.debug('Provided agent is not online');
 		throw new Error('Provided agent is not online');
 	}
 
