@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject, UIEvent } from 'react';
-import { useLayoutEffect, useState, useEffect, useRef, useMemo } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
@@ -44,7 +44,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
 
 	const emojiCategories = getCategoriesList();
-	const categoriesMap = useMemo(() => emojiCategories.map((category) => category.key), [emojiCategories]);
 
 	const canManageEmoji = usePermission('manage-emoji');
 	const customEmojiRoute = useRoute('emoji-custom');
@@ -130,10 +129,16 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	useEffect(() => {
-		if (currentCategory !== 'recent') {
-			handleGoToCategory(categoriesMap.indexOf(currentCategory));
+		let unmounted = false;
+
+		if (!unmounted) {
+			setCurrentCategory('recent');
 		}
-	}, [categoriesMap, currentCategory]);
+
+		return () => {
+			unmounted = true;
+		};
+	}, [setCurrentCategory]);
 
 	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
