@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../../settings/server';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -163,6 +164,12 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
+
+			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
+
+			if (!isRemoveEnabled) {
+				return API.v1.failure('error-department-removal-disabled');
+			}
 
 			await removeDepartment(this.urlParams._id);
 
