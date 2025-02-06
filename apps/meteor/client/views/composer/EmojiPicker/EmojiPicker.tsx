@@ -129,15 +129,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	useEffect(() => {
-		let unmounted = false;
-
-		if (!unmounted) {
-			setCurrentCategory('recent');
-		}
-
-		return () => {
-			unmounted = true;
-		};
+		setCurrentCategory('recent');
 	}, [setCurrentCategory]);
 
 	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
