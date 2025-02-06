@@ -71,11 +71,11 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
-	return new Promise((resolve, reject) => {
+	return new Promise<void>((resolve, reject) => {
 		const stream = createWriteStream(fileName, { encoding: 'utf8' });
 
-		stream.on('finish', resolve);
-		stream.on('error', reject);
+		stream.on('finish', () => resolve());
+		stream.on('error', (error) => reject(error));
 
 		stream.write('<!DOCTYPE html>\n');
 		stream.write('<meta http-equiv="content-type" content="text/html; charset=utf-8">\n');
