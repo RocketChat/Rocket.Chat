@@ -11,7 +11,6 @@ import ModalRegion from '../../views/modal/ModalRegion';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {
-		legacyRoot: true,
 		wrapper: ({ children }) => <Suspense fallback={null}>{children}</Suspense>,
 	});
 

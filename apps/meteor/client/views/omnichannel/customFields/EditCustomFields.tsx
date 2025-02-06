@@ -13,10 +13,10 @@ import {
 	ToggleSwitch,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import {
@@ -101,13 +101,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 		[t],
 	);
 
-	const formId = useUniqueId();
-	const fieldField = useUniqueId();
-	const labelField = useUniqueId();
-	const scopeField = useUniqueId();
-	const visibilityField = useUniqueId();
-	const searchableField = useUniqueId();
-	const regexpField = useUniqueId();
+	const formId = useId();
+	const fieldField = useId();
+	const labelField = useId();
+	const scopeField = useId();
+	const visibilityField = useId();
+	const searchableField = useId();
+	const regexpField = useId();
 
 	return (
 		<Contextualbar>

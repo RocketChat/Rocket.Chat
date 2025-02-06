@@ -8,7 +8,6 @@
 
 rocketchat:ddp
 rocketchat:mongo-config
-rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version

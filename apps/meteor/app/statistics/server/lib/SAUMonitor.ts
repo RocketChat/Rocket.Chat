@@ -30,6 +30,8 @@ const getUserRoles = mem(
 	{ maxAge: 5000 },
 );
 
+const isProdEnv = process.env.NODE_ENV === 'production';
+
 /**
  * Server Session Monitor for SAU(Simultaneously Active Users) based on Meteor server sessions
  */
@@ -143,7 +145,11 @@ export class SAUMonitorClass {
 				projection: { loginToken: 1 },
 			});
 			if (!session?.loginToken) {
-				throw new Error('Session not found');
+				if (!isProdEnv) {
+					throw new Error('Session not found during logout');
+				}
+				logger.error('Session not found during logout', { userId, sessionId });
+				return;
 			}
 
 			await Sessions.logoutBySessionIdAndUserId({ loginToken: session.loginToken, userId });
