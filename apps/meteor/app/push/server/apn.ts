@@ -1,5 +1,5 @@
-import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import apn from '@parse/node-apn';
+import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
