@@ -1,4 +1,5 @@
 import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import { LivechatUnit } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
@@ -22,6 +23,9 @@ declare module '@rocket.chat/rest-typings' {
 			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
+		'/v1/livechat/units.user': {
+			GET: () => { units: IOmnichannelBusinessUnit[] };
+		};
 	}
 }
 
@@ -40,6 +44,17 @@ API.v1.addRoute(
 					unitId,
 				}),
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/units.user',
+	{ authRequired: true },
+	{
+		async get() {
+			// Units the user monitors + departments the user is part of
+			return API.v1.success({ units: await (await LivechatUnit.findUnitsByMonitorId(this.userId)).toArray() });
 		},
 	},
 );

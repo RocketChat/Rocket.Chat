@@ -1261,7 +1261,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}: {
 		agents?: string[];
 		roomName?: string;
-		departmentId?: string;
+		departmentId?: string | string[];
 		open?: boolean;
 		served?: boolean;
 		createdAt?: { start?: Date; end?: Date };
@@ -1280,7 +1280,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
 			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
-			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(departmentId && departmentId !== 'undefined' && { departmentId: { $in: ([] as string[]).concat(departmentId) } }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
@@ -1334,6 +1334,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.onHold = { $ne: true };
 		}
 
+		console.log(JSON.stringify(query));
 		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
 			skip: options.offset,
