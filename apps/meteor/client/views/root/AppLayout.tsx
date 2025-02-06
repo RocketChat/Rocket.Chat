@@ -6,6 +6,7 @@ import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
@@ -29,6 +30,7 @@ const AppLayout = () => {
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
 
+	useLivechatEnterprise();
 	useNextcloud();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
