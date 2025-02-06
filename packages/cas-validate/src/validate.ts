@@ -1,5 +1,6 @@
 import type { IncomingMessage } from 'http';
 import https from 'https';
+import type { ParsedUrlQueryInput } from 'querystring';
 import url from 'url';
 
 import type { Cheerio, CheerioAPI } from 'cheerio';
@@ -149,6 +150,19 @@ function parseAttributes(elemSuccess: Cheerio<any>, cheerio: CheerioAPI): Record
 	return attributes;
 }
 
+export function getQueryPath(
+	partialPathname: string,
+	validatePath: string,
+	query: string | ParsedUrlQueryInput | null | undefined,
+): string {
+	const pathname = partialPathname?.endsWith('/') ? partialPathname + validatePath : `${partialPathname}/${validatePath}`;
+
+	return url.format({
+		pathname,
+		query,
+	});
+}
+
 export function validate(options: CasOptions, ticket: string, callback: CasCallback, renew = false): void {
 	if (!options.base_url) {
 		throw new Error('Required CAS option `base_url` missing.');
@@ -176,12 +190,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 		...(renew ? { renew: 1 } : {}),
 	};
 
-	const fullPathname = pathname?.endsWith('/') ? pathname + validatePath : `${pathname}/${validatePath}`;
-
-	const queryPath = url.format({
-		pathname: fullPathname,
-		query,
-	});
+	const queryPath = getQueryPath(pathname ?? '/', validatePath, query);
 
 	const req = https.get(
 		{
