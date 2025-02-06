@@ -16,7 +16,6 @@ const defaultProps = {
 
 it('should show Undo request button when roomOpen is true and transcriptRequest exist', async () => {
 	render(<FileUploadModal {...defaultProps} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withTranslations('en', 'core', {
 				Cannot_upload_file_character_limit: 'Cannot upload file, description is over the {{count}} character limit',

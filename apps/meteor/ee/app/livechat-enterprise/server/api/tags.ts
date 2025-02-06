@@ -35,12 +35,16 @@ API.v1.addRoute(
 		async get() {
 			const { tagId } = this.urlParams;
 
-			return API.v1.success(
-				await findTagById({
-					userId: this.userId,
-					tagId,
-				}),
-			);
+			const tag = await findTagById({
+				userId: this.userId,
+				tagId,
+			});
+
+			if (!tag) {
+				return API.v1.notFound('Tag not found');
+			}
+
+			return API.v1.success(tag);
 		},
 	},
 );
