@@ -115,7 +115,7 @@ const MessageBox = ({
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
-	const toggleFormatting = useUserPreference<boolean>('toggleFormatting') || true;
+	const toggleFormatting = !!useUserPreference<boolean>('toggleFormatting');
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
@@ -412,11 +412,18 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction
+					<MessageComposerAction
 							icon='emoji'
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
+						/>
+						<MessageComposerActionsDivider />
+						<MessageComposerAction
+							icon='eye'
+							disabled={!useEmojis || isRecording || !canSend}
+							onClick={handleOpenEmojiPicker}
+							title={t('Preview')}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
