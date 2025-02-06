@@ -42,28 +42,7 @@ export const useDownloadExportMutation = () => {
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {
 			const messages = Messages.find(
 				{
-					$and: [
-						{
-							$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
-						},
-						{
-							$or: [
-								{
-									attachments: {
-										$exists: true,
-										$elemMatch: {
-											type: 'file',
-										},
-									},
-								},
-								{
-									attachments: {
-										$exists: false,
-									},
-								},
-							],
-						},
-					],
+					$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
 				},
 				messagesFields,
 			).fetch();
