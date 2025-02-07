@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { NetworkBroker } from './NetworkBroker';
+import { MoleculerBroker } from './MoleculerBroker';
 
 const {
 	MS_NAMESPACE = '',
@@ -148,4 +148,4 @@ const network = new ServiceBroker({
 	},
 });
 
-export const broker = new NetworkBroker(network);
+export const broker = new MoleculerBroker(network);

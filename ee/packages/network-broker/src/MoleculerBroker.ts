@@ -17,7 +17,7 @@ const lifecycle: { [k: string]: string } = {
 	stopped: 'stopped',
 };
 
-export class NetworkBroker implements IBroker {
+export class MoleculerBroker implements IBroker {
 	private broker: ServiceBroker;
 
 	private started: Promise<boolean> = Promise.resolve(false);
