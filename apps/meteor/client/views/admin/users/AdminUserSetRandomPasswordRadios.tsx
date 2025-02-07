@@ -1,6 +1,6 @@
 import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import DOMPurify from 'dompurify';
+import { useId } from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ const AdminUserSetRandomPasswordRadios = ({
 }: AdminUserSetRandomPasswordProps) => {
 	const { t } = useTranslation();
 
-	const setPasswordManuallyId = useUniqueId();
+	const setPasswordManuallyId = useId();
 
 	const handleSetRandomPasswordChange = (onChange: (...event: any[]) => void, value: boolean) => {
 		setValue('requirePasswordChange', value);

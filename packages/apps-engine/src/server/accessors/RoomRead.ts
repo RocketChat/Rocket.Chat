@@ -33,6 +33,7 @@ export class RoomRead implements IRoomRead {
         }
 
         options.limit ??= 100;
+        options.showThreadMessages ??= true;
 
         if (options.sort) {
             this.validateSort(options.sort);
@@ -62,7 +63,7 @@ export class RoomRead implements IRoomRead {
     }
 
     public async getUnreadByUser(roomId: string, uid: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
-        const { limit = 100, sort = { createdAt: 'asc' }, skip = 0 } = options;
+        const { limit = 100, sort = { createdAt: 'asc' }, skip = 0, showThreadMessages = true } = options;
 
         if (typeof roomId !== 'string' || roomId.trim().length === 0) {
             throw new Error('Invalid roomId: must be a non-empty string');
@@ -74,7 +75,7 @@ export class RoomRead implements IRoomRead {
 
         this.validateSort(sort);
 
-        const completeOptions: GetMessagesOptions = { limit, sort, skip };
+        const completeOptions: GetMessagesOptions = { limit, sort, skip, showThreadMessages };
 
         return this.roomBridge.doGetUnreadByUser(roomId, uid, completeOptions, this.appId);
     }

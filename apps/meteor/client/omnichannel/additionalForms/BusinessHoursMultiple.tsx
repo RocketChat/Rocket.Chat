@@ -1,5 +1,5 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import type { ComponentProps } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +16,9 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 	} = useFormContext<BusinessHoursFormData>();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const departmentsField = useUniqueId();
+	const enabledField = useId();
+	const nameField = useId();
+	const departmentsField = useId();
 
 	if (!hasLicense) {
 		return null;
