@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
+import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import { memo } from 'react';
 
@@ -26,7 +27,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		}
 	`;
 
-	const emojiElement = <div dangerouslySetInnerHTML={{ __html: image }} />;
+	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton

@@ -1,4 +1,13 @@
-import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
+import type {
+	CallPreferences,
+	DirectCallData,
+	IRoom,
+	ISetting,
+	IUser,
+	ProviderCapabilities,
+	Serialized,
+	SettingValue,
+} from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
@@ -15,14 +24,15 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
 import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { MockedDeviceContext } from './MockedDeviceContext';
 
@@ -90,12 +100,56 @@ export class MockedAppRootBuilder {
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
 		queryPreference: () => [() => () => undefined, () => undefined],
-		queryRoom: () => [() => () => undefined, () => undefined],
+		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => undefined],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
 	};
+
+	private videoConf: ContextType<typeof VideoConfContext> = {
+		queryIncomingCalls: () => [() => () => undefined, () => []],
+		queryRinging: () => [() => () => undefined, () => false],
+		queryCalling: () => [() => () => undefined, () => false],
+		dispatchOutgoing(_options: Omit<VideoConfPopupPayload, 'id'>): void {
+			throw new Error('Function not implemented.');
+		},
+		dismissOutgoing(): void {
+			throw new Error('Function not implemented.');
+		},
+		startCall(_rid: IRoom['_id'], _title?: string): void {
+			throw new Error('Function not implemented.');
+		},
+		acceptCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		joinCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		dismissCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		rejectIncomingCall(_callId: string): void {
+			throw new Error('Function not implemented.');
+		},
+		abortCall(): void {
+			throw new Error('Function not implemented.');
+		},
+		setPreferences(_prefs: { mic?: boolean; cam?: boolean }): void {
+			throw new Error('Function not implemented.');
+		},
+		loadCapabilities(): Promise<void> {
+			throw new Error('Function not implemented.');
+		},
+		queryCapabilities(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] {
+			throw new Error('Function not implemented.');
+		},
+		queryPreferences(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] {
+			throw new Error('Function not implemented.');
+		},
+	};
+
+	private room: IRoom | undefined = undefined;
 
 	private subscriptions: SubscriptionWithRoom[] = [];
 
@@ -279,6 +333,12 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withRoom(room: IRoom): this {
+		this.room = room;
+
+		return this;
+	}
+
 	withRole(role: string): this {
 		if (!this.user.user) {
 			throw new Error('user is not defined');
@@ -347,6 +407,26 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withIncomingCalls(calls: DirectCallData[]): this {
+		if (!this.videoConf) {
+			throw Error('videoConf is not defined');
+		}
+
+		const innerFn = this.videoConf.queryIncomingCalls;
+
+		const outerFn = (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => DirectCallData[]] => {
+			if (calls.length) {
+				return [() => () => undefined, () => calls];
+			}
+
+			return innerFn();
+		};
+
+		this.videoConf.queryIncomingCalls = outerFn;
+
+		return this;
+	}
+
 	withOpenModal(modal: ReactNode) {
 		this.modal.currentModal = { component: modal };
 
@@ -402,7 +482,19 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers, audioInputDevices, audioOutputDevices } = this;
+		const {
+			connectionStatus,
+			server,
+			router,
+			settings,
+			user,
+			videoConf,
+			i18n,
+			authorization,
+			wrappers,
+			audioInputDevices,
+			audioOutputDevices,
+		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -500,19 +592,19 @@ export class MockedAppRootBuilder {
 																	notifyIdle: () => undefined,
 																}}
 															>
-																{/* <VideoConfProvider>
-																	<CallProvider>
+																<VideoConfContext.Provider value={videoConf}>
+																	{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																{wrappers.reduce<ReactNode>(
-																	(children, wrapper) => wrapper(children),
-																	<>
-																		{children}
-																		{modal.currentModal.component}
-																	</>,
-																)}
-																{/* 		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>*/}
+																	{wrappers.reduce<ReactNode>(
+																		(children, wrapper) => wrapper(children),
+																		<>
+																			{children}
+																			{modal.currentModal.component}
+																		</>,
+																	)}
+																	{/* </OmnichannelProvider>
+																	</CallProvider> */}
+																</VideoConfContext.Provider>
 															</ActionManagerContext.Provider>
 															{/* 		</UserPresenceProvider>
 																</OmnichannelRoomIconProvider>

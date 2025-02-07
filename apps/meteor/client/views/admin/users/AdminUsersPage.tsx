@@ -115,8 +115,12 @@ const AdminUsersPage = (): ReactElement => {
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
 					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
-						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={preventAction.length}>
-							Your workspace exceeded the <>{{ val: preventAction.map(toTranslationKey) }}</> license limit.
+						<Trans
+							i18nKey='subscription.callout.description.limitsExceeded'
+							count={preventAction.length}
+							values={{ val: preventAction.map(toTranslationKey) }}
+						>
+							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
 							<ExternalLink
 								to={manageSubscriptionUrl({
 									target: 'callout',

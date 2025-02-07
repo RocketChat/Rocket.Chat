@@ -1,20 +1,23 @@
 import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
 import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 
@@ -33,11 +36,14 @@ const isDirectOrOmnichannelRoom = (type: RoomType) => type === 'd' || type === '
 
 const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
+	const uid = useUserId();
 
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 
+	const subscribeToNotifyUser = useStream('notify-user');
+
 	const rid = data?.rid;
-	const { data: subscription } = useQuery({
+	const { data: subscription, refetch } = useQuery({
 		queryKey: ['subscriptions', rid] as const,
 		queryFn: () => {
 			if (!rid) {
@@ -54,7 +60,23 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 		}
 
 		CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+		LegacyRoomManager.computation.invalidate();
 	}, [subscription]);
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
+			if (event !== 'inserted') {
+				return;
+			}
+
+			if (sub.rid === rid) {
+				refetch();
+			}
+		});
+	}, [refetch, rid, subscribeToNotifyUser, uid]);
 
 	const { t } = useTranslation();
 
@@ -84,6 +106,10 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 
 						if (error instanceof RoomNotFoundError) {
 							return <RoomNotFound />;
+						}
+
+						if (error instanceof NotSubscribedToRoomError) {
+							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
 						}
 
 						if (error instanceof NotAuthorizedError) {
