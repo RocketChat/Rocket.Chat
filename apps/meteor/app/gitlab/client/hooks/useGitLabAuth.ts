@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
+import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
 
 const config: OauthConfig = {
 	serverURL: 'https://gitlab.com',
@@ -18,10 +18,10 @@ const config: OauthConfig = {
 
 const Gitlab = new CustomOAuth('gitlab', config);
 
-export const useGitLab = () => {
+export const useGitLabAuth = () => {
 	const gitlabApiUrl = useSetting('API_Gitlab_URL') as string;
 	const gitlabIdentiry = useSetting('Accounts_OAuth_Gitlab_identity_path') as string;
-	const mergeUsers = useSetting('Accounts_OAuth_Gitlab_merge_users') as boolean;
+	const gitlabMergeUsers = useSetting('Accounts_OAuth_Gitlab_merge_users', false);
 
 	useEffect(() => {
 		if (gitlabApiUrl) {
@@ -32,10 +32,10 @@ export const useGitLab = () => {
 			config.identityPath = gitlabIdentiry.trim() || config.identityPath;
 		}
 
-		if (mergeUsers) {
+		if (gitlabMergeUsers) {
 			config.mergeUsers = true;
 		}
 
 		Gitlab.configure(config);
-	}, [gitlabApiUrl, gitlabIdentiry, mergeUsers]);
+	}, [gitlabApiUrl, gitlabIdentiry, gitlabMergeUsers]);
 };

@@ -7,7 +7,7 @@ import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
-import { useGitLab } from '../../../app/gitlab/client/lib';
+import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
@@ -30,7 +30,7 @@ const AppLayout = () => {
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
 
-	useGitLab();
+	useGitLabAuth();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
