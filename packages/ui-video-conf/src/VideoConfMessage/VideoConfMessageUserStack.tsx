@@ -7,10 +7,9 @@ const MAX_USERS = 3;
 
 type VideoConfMessageUserStackProps = {
 	users: Serialized<IVideoConferenceUser>[];
-	iconTitle?: string;
 };
 
-const VideoConfMessageUserStack = ({ users, iconTitle }: VideoConfMessageUserStackProps): ReactElement => {
+const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps): ReactElement => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useSetting('UI_Use_Real_Name');
 	const getUserAvatarPath = useUserAvatarPath();
@@ -31,7 +30,7 @@ const VideoConfMessageUserStack = ({ users, iconTitle }: VideoConfMessageUserSta
 					))}
 				</Box>
 			)}
-			{!displayAvatars && <Icon size='x20' title={iconTitle} name='user' />}
+			{!displayAvatars && <Icon size='x20' name='user' />}
 		</Box>
 	);
 };

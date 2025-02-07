@@ -130,7 +130,7 @@ const VideoConferenceBlock = ({
     .map(({ name, username }) => (showRealName ? name || username : username))
     .join(', ');
 
-  const iconTitle =
+  const title =
     data.users.length > MAX_USERS
       ? t('__usernames__and__count__more_joined', {
           usernames: joinedNamesOrUsernames,
@@ -180,11 +180,8 @@ const VideoConferenceBlock = ({
           {data.type !== 'direct' &&
             (data.users.length ? (
               <>
-                <VideoConfMessageUserStack
-                  iconTitle={iconTitle}
-                  users={data.users}
-                />
-                <VideoConfMessageFooterText>
+                <VideoConfMessageUserStack users={data.users} />
+                <VideoConfMessageFooterText title={title}>
                   {messageFooterText}
                 </VideoConfMessageFooterText>
               </>
@@ -237,11 +234,8 @@ const VideoConferenceBlock = ({
         </VideoConfMessageButton>
         {Boolean(data.users.length) && (
           <>
-            <VideoConfMessageUserStack
-              users={data.users}
-              iconTitle={iconTitle}
-            />
-            <VideoConfMessageFooterText>
+            <VideoConfMessageUserStack users={data.users} />
+            <VideoConfMessageFooterText title={title}>
               {messageFooterText}
             </VideoConfMessageFooterText>
           </>
