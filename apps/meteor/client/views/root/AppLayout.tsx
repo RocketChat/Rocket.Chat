@@ -5,6 +5,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
@@ -29,7 +30,7 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
-
+	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
 	useNextcloud();
 
