@@ -27,6 +27,7 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
+import { marketplaceErrorHandler } from '../marketplace/MarketplaceErrorHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -134,14 +135,13 @@ export class AppsRestApi {
 						}
 
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+							const response = await request.json();
+							orchestrator.getRocketChatLogger().error('Error getting the Apps:', response);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/apps', { status: request.status, error: response }),
+							});
 						}
 						result = await request.json();
-
-						if (!request.ok) {
-							throw new Error(result.error);
-						}
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -167,11 +167,13 @@ export class AppsRestApi {
 					let result;
 					try {
 						const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
-						}
 						result = await request.json();
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error getting the Apps categories:', result);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/categories', { status: request.status, error: result }),
+							});
+						}
 					} catch (e: any) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -245,11 +247,14 @@ export class AppsRestApi {
 						let result;
 						try {
 							const request = await fetch(`${baseUrl}/v1/apps`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
 							result = await request.json();
+
+							if (request.status !== 200) {
+								orchestrator.getRocketChatLogger().error('Error getting the Apps:', result);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v1/apps', { status: request.status, error: result }),
+								});
+							}
 						} catch (e) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 						}
@@ -268,11 +273,14 @@ export class AppsRestApi {
 						let result;
 						try {
 							const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
 							result = await request.json();
+
+							if (request.status !== 200) {
+								orchestrator.getRocketChatLogger().error('Error getting the Apps:', result);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v1/categories', { status: request.status, error: result }),
+								});
+							}
 						} catch (e: any) {
 							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e);
 							return API.v1.internalError();
@@ -359,6 +367,25 @@ export class AppsRestApi {
 									throw new Error('App metadata download failed', { cause });
 								}),
 							]);
+
+							if (downloadResponse.status !== 200) {
+								const error = await downloadResponse.json();
+								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', error);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v2/apps/:id/download/:version', {
+										status: downloadResponse.status,
+										error,
+									}),
+								});
+							}
+
+							if (marketplaceResponse.status !== 200) {
+								const error = await marketplaceResponse.json();
+								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', error);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v1/apps/:id', { status: marketplaceResponse.status, error }),
+								});
+							}
 
 							if (downloadResponse.headers.get('content-type') !== 'application/zip') {
 								throw new Error('Invalid url. It doesn\'t exist or is not "application/zip".');
@@ -591,13 +618,16 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/bundles/${this.urlParams.id}/apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
-							return API.v1.failure();
+							const error = await request.json();
+							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", error);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/bundles/:id/apps', { status: request.status, error }),
+							});
 						}
 						result = await request.json();
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", e.response.data);
-						return API.v1.internalError();
+						return API.v1.internalError({ error: `Error getting the Bundle's Apps from the Marketplace:${e.response.data}` });
 					}
 
 					return API.v1.success({ apps: result });
@@ -622,8 +652,11 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/featured-apps`, { headers });
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
-							return API.v1.failure();
+							const requestError = await request.json();
+							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', requestError);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/featured-apps', { status: request.status, error: requestError }),
+							});
 						}
 						result = await request.json();
 					} catch (e) {
@@ -653,8 +686,11 @@ export class AppsRestApi {
 						try {
 							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', await request.json());
-								return API.v1.failure();
+								const response = await request.json();
+								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', response);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v1/apps/:id', { status: request.status, error: response }),
+								});
 							}
 							result = await request.json();
 						} catch (e) {
@@ -678,9 +714,12 @@ export class AppsRestApi {
 							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
 								headers,
 							});
+							result = await request.json();
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', await request.json());
-								return API.v1.failure();
+								orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', result);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v1/apps/:id/latest', { status: request.status, error: result }),
+								});
 							}
 							result = await request.json();
 						} catch (e) {
@@ -728,8 +767,14 @@ export class AppsRestApi {
 							);
 
 							if (response.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', await response.text());
-								return API.v1.failure();
+								const error = await response.json();
+								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', error);
+								return API.v1.failure({
+									error: marketplaceErrorHandler.handleMarketplaceError('v2/apps/:id/download/:version', {
+										status: response.status,
+										error,
+									}),
+								});
 							}
 
 							if (response.headers.get('content-type') !== 'application/zip') {
@@ -859,22 +904,18 @@ export class AppsRestApi {
 					}
 
 					let result;
-					let statusCode;
 					try {
 						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}`, { headers });
-						statusCode = request.status;
 						result = await request.json();
 
-						if (!request.ok) {
-							throw new Error(result.error);
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/apps/:id', { status: request.status, error: result }),
+							});
 						}
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
-
-					if (!result || statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result);
-						return API.v1.failure();
 					}
 
 					return API.v1.success({ apps: result });
@@ -938,11 +979,19 @@ export class AppsRestApi {
 					}
 
 					let result;
-					let statusCode;
 					try {
 						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
-						statusCode = request.status;
 						result = await request.json();
+
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/workspaces/:id/apps/:appId', {
+									status: request.status,
+									error: result,
+								}),
+							});
+						}
 
 						if (!request.ok) {
 							throw new Error(result.error);
@@ -950,11 +999,6 @@ export class AppsRestApi {
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e);
 						return API.v1.internalError();
-					}
-
-					if (statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result);
-						return API.v1.failure();
 					}
 
 					await Apps.updateAppsMarketplaceInfo([result]);
@@ -1007,6 +1051,13 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
 						const data = await request.json();
+
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error getting the screenshots from the Marketplace:', data);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/apps/:id/screenshots', { status: request.status, error: data }),
+							});
+						}
 
 						return API.v1.success({
 							screenshots: data,
@@ -1229,6 +1280,13 @@ export class AppsRestApi {
 						});
 						const result = await request.json();
 
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error getting the App Requests from the Marketplace:', result.error);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/app-request', { status: request.status, error: result.error }),
+							});
+						}
+
 						if (!request.ok) {
 							throw new Error(result.error);
 						}
@@ -1258,6 +1316,17 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/app-request/stats`, { headers });
 						const result = await request.json();
+
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', result.error);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/app-request/stats', {
+									status: request.status,
+									error: result.error,
+								}),
+							});
+						}
+
 						if (!request.ok) {
 							throw new Error(result.error);
 						}
@@ -1293,6 +1362,16 @@ export class AppsRestApi {
 							body: { ids: unseenRequests },
 						});
 						const result = await request.json();
+
+						if (request.status !== 200) {
+							orchestrator.getRocketChatLogger().error('Error marking app requests as seen', result.error);
+							return API.v1.failure({
+								error: marketplaceErrorHandler.handleMarketplaceError('v1/app-request/markAsSeen', {
+									status: request.status,
+									error: result.error,
+								}),
+							});
+						}
 
 						if (!request.ok) {
 							throw new Error(result.error);
