@@ -1,8 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TFunction } from 'i18next';
 import type { MouseEvent } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useId, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadAs } from '../lib/download';
@@ -44,7 +43,7 @@ export const forAttachmentDownload = (uid: string, href: string, controller?: Se
 export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 	const { controller } = navigator?.serviceWorker || {};
 
-	const uid = useUniqueId();
+	const uid = useId();
 
 	const { t } = useTranslation();
 

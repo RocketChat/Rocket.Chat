@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.3.0-develop",
+	"version": "7.4.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -17,11 +17,11 @@
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.9",
+		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.3.3"
+		"turbo": "^2.3.4"
 	},
 	"workspaces": [
 		"apps/*",

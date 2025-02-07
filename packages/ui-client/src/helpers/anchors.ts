@@ -20,6 +20,10 @@ const setAnchorRefCount = (anchorElement: HTMLElement, refCount: number): void =
 
 export const refAnchorElement = (anchorElement: HTMLElement): void => {
 	setAnchorRefCount(anchorElement, getAnchorRefCount(anchorElement) + 1);
+
+	if (anchorElement.parentElement !== document.body) {
+		document.body.appendChild(anchorElement);
+	}
 };
 
 export const unrefAnchorElement = (anchorElement: HTMLElement): void => {

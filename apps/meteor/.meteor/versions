@@ -38,7 +38,7 @@ geojson-utils@1.0.12
 github-oauth@1.4.2
 google-oauth@1.4.5
 hot-code-push@1.0.5
-http@1.4.4
+http@3.0.0
 id-map@1.2.0
 inter-process-messaging@0.1.2
 kadira:flow-router@2.12.1
@@ -74,7 +74,6 @@ retry@1.1.1
 rocketchat:ddp@0.0.1
 rocketchat:livechat@0.0.1
 rocketchat:mongo-config@0.0.1
-rocketchat:restivus@1.1.0
 rocketchat:streamer@1.1.0
 rocketchat:user-presence@2.6.3
 rocketchat:version@1.0.0
