@@ -25,6 +25,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -101,10 +102,17 @@ API.v1.addRoute(
 			if (userData.name && !validateNameChars(userData.name)) {
 				return API.v1.failure('Name contains invalid characters');
 			}
+			const auditStore = new UserChangedAuditStore({
+				_id: this.bodyParams.userId,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+				username: (await Meteor.userAsync())?.username || '',
+			});
 
-			const updater = Users.getUpdater();
-			await saveUser(this.userId, userData, updater);
+			const _updater = Users.getUpdater();
+			await saveUser(this.userId, userData, { _updater, auditStore });
 
+			// Waiting for customfields refactor to be merged, then this will be audited within saveUser function
 			if (this.bodyParams.data.customFields) {
 				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
 			}
@@ -117,7 +125,20 @@ API.v1.addRoute(
 				} = this.bodyParams;
 
 				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+				// This has no other use than for auditing active status changes
+				// 'setUserActiveStatus' has a lot of side effects making it difficult to use updater
+				// This updater should have been already commited by this point
+				_updater.set('active', active);
 			}
+
+			if (this.bodyParams.data.password || this.bodyParams.data.setRandomPassword) {
+				// Password is also not tracker by updater
+				_updater.set('services', { password: {} });
+			}
+
+			auditStore.setUpdateFilter(_updater._getUpdateFilter());
+			void auditStore.commitAuditEvent();
+
 			const { fields } = await this.parseJsonQuery();
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
