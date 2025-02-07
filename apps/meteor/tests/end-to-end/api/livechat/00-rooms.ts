@@ -191,7 +191,8 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "departmentId" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ 'departmentId[]': 'marcos' })
+				// it accepts an array now!
+				.query({ departmentId: { test: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
