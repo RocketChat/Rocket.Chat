@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import VideoConfPopups from './VideoConfPopups';
 import { createFakeRoom } from '../../../../../../tests/mocks/data';
@@ -18,6 +18,5 @@ test('should render video conference incoming popup', async () => {
 			.build(),
 	});
 
-	await waitFor(() => screen.findByRole('dialog'));
-	expect(screen.getByRole('dialog')).toBeInTheDocument();
+	expect(await screen.findByRole('dialog')).toBeInTheDocument();
 });
