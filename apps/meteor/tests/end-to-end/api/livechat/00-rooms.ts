@@ -457,6 +457,8 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.length).to.be.equal(2);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return rooms with the given department and the given status', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
@@ -501,6 +503,8 @@ describe('LIVECHAT - rooms', () => {
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms served by the given agents', async () => {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
@@ -526,6 +530,8 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.length).to.be.equal(2);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
@@ -629,7 +635,14 @@ describe('LIVECHAT - rooms', () => {
 				await restorePermissionToRoles('view-livechat-rooms');
 			});
 			after(async () => {
-				await Promise.all([deleteUser(user), deleteUser(user), deleteUnit(unit), deleteUnit(unit2)]);
+				await Promise.all([
+					deleteUser(user),
+					deleteUser(user),
+					deleteUnit(unit),
+					deleteUnit(unit2),
+					deleteDepartment(department._id),
+					deleteDepartment(department2._id),
+				]);
 			});
 
 			it('should return valid list of rooms for monitor', () => {
