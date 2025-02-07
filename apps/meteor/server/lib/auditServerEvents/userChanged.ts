@@ -82,9 +82,18 @@ export class UserChangedAuditStore {
 			}
 
 			if (key === 'services') {
+				const changedServices = Object.keys(updateFilter.$set?.[key] || {}).map((serviceKey) => [
+					serviceKey,
+					value[serviceKey as keyof typeof value],
+				]);
+
+				if (!changedServices.length) {
+					return acc;
+				}
+
 				return {
 					...acc,
-					[key]: obfuscateServices(value as Record<string, any>),
+					[key]: obfuscateServices(Object.fromEntries(changedServices) as Record<string, any>),
 				};
 			}
 
