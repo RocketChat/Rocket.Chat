@@ -39,7 +39,6 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
-import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
@@ -292,16 +291,8 @@ API.v1.addRoute(
 				return API.v1.failure('Name contains invalid characters');
 			}
 
-			if (this.bodyParams.customFields) {
-				validateCustomFields(this.bodyParams.customFields);
-			}
-
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
-			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
 				await Meteor.callAsync('setUserActiveStatus', userId, this.bodyParams.active);
