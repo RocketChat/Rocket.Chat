@@ -82,11 +82,11 @@ export class PushClass {
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
 			// TODO: Remove this after the legacy provider is removed
-			const useLegacyProvider = settings.get('Push_UseLegacy')
+			const useLegacyProvider = settings.get('Push_UseLegacy');
 
 			if (!useLegacyProvider) {
 				// override this.options.gcm.apiKey with the oauth2 token
-				const { projectId, token} = this._getNativeNotificationAuthorizationCredentials();
+				const { projectId, token } = this._getNativeNotificationAuthorizationCredentials();
 				const sendCGMOptions = {
 					...this.options,
 					gcm: {
