@@ -1,5 +1,46 @@
 # @rocket.chat/meteor
 
+## 7.2.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34973](https://github.com/RocketChat/Rocket.Chat/pull/34973) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes SAML login redirecting to wrong room when using an invite link.
+
+- ([#35058](https://github.com/RocketChat/Rocket.Chat/pull/35058) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior in Omnichannel that was causing bot agents to be waiting in the queue, when they should always skip it.
+
+- ([#35099](https://github.com/RocketChat/Rocket.Chat/pull/35099) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with the retention policy max age settings not maintaning it's previous value when upgrading from version < 6.10
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.2
+  - @rocket.chat/rest-typings@7.2.2
+  - @rocket.chat/license@1.0.4
+  - @rocket.chat/omnichannel-services@0.3.10
+  - @rocket.chat/pdf-worker@0.2.10
+  - @rocket.chat/presence@0.2.13
+  - @rocket.chat/api-client@0.2.13
+  - @rocket.chat/apps@0.2.4
+  - @rocket.chat/core-services@0.7.5
+  - @rocket.chat/cron@0.1.13
+  - @rocket.chat/freeswitch@1.1.2
+  - @rocket.chat/fuselage-ui-kit@14.0.2
+  - @rocket.chat/gazzodown@14.0.2
+  - @rocket.chat/model-typings@1.2.2
+  - @rocket.chat/ui-contexts@14.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.5
+  - @rocket.chat/models@1.1.2
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/ui-avatar@10.0.2
+  - @rocket.chat/ui-client@14.0.2
+  - @rocket.chat/ui-video-conf@14.0.2
+  - @rocket.chat/ui-voip@4.0.2
+  - @rocket.chat/web-ui-registration@14.0.2
+  - @rocket.chat/instance-status@0.1.13
+  </details>
+
 ## 7.2.1
 
 ### Patch Changes
