@@ -1,27 +1,27 @@
 import { faker } from '@faker-js/faker';
 import type { IAuditServerUserActor, IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
+import { UpdaterImpl } from '@rocket.chat/models';
 
-import { UserChangedLogStore } from './userChanged';
+import { UserChangedAuditStore } from './userChanged';
 import { createFakeUser } from '../../../tests/mocks/data';
 
-const createChangedUserAndActor = (
-	changes: Partial<IUser>,
-	overrides?: Partial<IUser>,
-): [IUser, IUser, Omit<IAuditServerUserActor, 'type'>] => {
+const makeFakeActor = (): Omit<IAuditServerUserActor, 'type'> => {
+	return {
+		ip: faker.internet.ip(),
+		useragent: faker.internet.userAgent(),
+		_id: faker.database.mongodbObjectId(),
+		username: faker.internet.userName(),
+	};
+};
+
+const createUserAndUpdater = (overrides?: Partial<IUser>): [IUser, Updater<IUser>, Omit<IAuditServerUserActor, 'type'>] => {
 	const originalUser = createFakeUser(overrides);
-	const currentUser: IUser = {
-		...originalUser,
-		...changes,
-	};
+	const updater = new UpdaterImpl<IUser>();
 
-	const actor: Omit<IAuditServerUserActor, 'type'> = {
-		ip: 'actorIp',
-		useragent: 'actorUserAgent',
-		_id: 'actorId',
-		username: 'actorUsername',
-	};
+	const actor = makeFakeActor();
 
-	return [originalUser, currentUser, actor];
+	return [originalUser, updater, actor];
 };
 
 const createEmailsField = (address?: string, verified = true) => {
@@ -34,6 +34,15 @@ const createEmailsField = (address?: string, verified = true) => {
 		],
 	};
 };
+
+jest.mock('@rocket.chat/models', () => {
+	return {
+		UpdaterImpl: jest.requireActual('@rocket.chat/models').UpdaterImpl,
+		ServerEvents: {
+			createAuditServerEvent: (...args: any) => args,
+		},
+	};
+});
 
 const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e2e' | 'oauth'> => {
 	return {
@@ -83,152 +92,155 @@ const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e
 };
 
 const getObfuscatedFields = (email2faState: { enabled: boolean; changedAt: Date }) => ({
-	e2e: '***',
-	oauth: '***',
-	inviteToken: '***',
+	e2e: '****',
+	oauth: '****',
+	inviteToken: '****',
 	services: {
-		password: '***',
+		password: '****',
 		email2fa: email2faState,
-		email: '***',
-		resume: '***',
+		email: '****',
+		resume: '****',
 	},
 });
 
 describe('userChanged audit module', () => {
 	it('should build event with only name and username fields', async () => {
-		const store = new UserChangedLogStore();
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
 
-		const [originalUser, currentUser, actor] = createChangedUserAndActor(
-			{
-				username: 'newUsername',
-				name: 'newName',
-			},
-			{ ...createEmailsField() },
-		);
+		const store = new UserChangedAuditStore(actor);
 
-		store.setOriginalUser(originalUser as IUser);
-		store.setCurrentUser(currentUser as IUser);
-		store.setActor(actor);
+		const [newUsername, newName] = [faker.internet.userName(), faker.person.fullName()];
 
-		const event = store.buildEvent();
+		updater.set('username', newUsername);
+		updater.set('name', newName);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
 
 		expect(event).toEqual([
 			'user.changed',
 			{
-				user: { _id: currentUser._id, username: currentUser.username },
-				previous: { username: originalUser.username, name: originalUser.name },
-				current: { username: currentUser.username, name: currentUser.name },
+				user: { _id: user._id, username: user.username },
+				user_data: { username: user.username, name: user.name },
+				operation: { $set: { username: newUsername, name: newName } },
 			},
-			{
-				ip: 'actorIp',
-				useragent: 'actorUserAgent',
-				_id: 'actorId',
-				username: 'actorUsername',
-				type: 'user',
-			},
+			{ ...actor, type: 'user' },
 		]);
 	});
+
 	it('should build event with only emails field', async () => {
-		const store = new UserChangedLogStore();
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField() });
 
-		const [originalUser, currentUser, actor] = createChangedUserAndActor(
-			{
-				...createEmailsField(),
-			},
-			{ ...createEmailsField() },
-		);
+		const store = new UserChangedAuditStore(actor);
 
-		store.setOriginalUser(originalUser as IUser);
-		store.setCurrentUser(currentUser as IUser);
-		store.setActor(actor);
+		const newEmailsField = createEmailsField();
 
-		const event = store.buildEvent();
+		updater.set('emails', newEmailsField.emails);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
 
 		expect(event).toEqual([
 			'user.changed',
 			{
-				user: { _id: currentUser._id, username: currentUser.username },
-				previous: { emails: originalUser.emails },
-				current: { emails: currentUser.emails },
+				user: { _id: user._id, username: user.username },
+				operation: { $set: { ...newEmailsField } },
+				user_data: { emails: user.emails },
 			},
-			{
-				ip: 'actorIp',
-				useragent: 'actorUserAgent',
-				_id: 'actorId',
-				username: 'actorUsername',
-				type: 'user',
-			},
+			{ ...actor, type: 'user' },
 		]);
 	});
+
 	it('should build event with every changed field', async () => {
-		const store = new UserChangedLogStore();
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField(), active: false });
 
-		const [originalUser, currentUser, actor] = createChangedUserAndActor(
-			{
-				...createFakeUser(),
-				...createEmailsField(),
-				type: 'bot',
-				active: true,
-				roles: ['user', 'bot'],
-			},
-			{ ...createEmailsField(), active: false },
-		);
+		const changes = {
+			...createFakeUser(),
+			...createEmailsField(),
+			type: 'bot',
+			active: true,
+		};
 
-		store.setOriginalUser(originalUser as IUser);
-		store.setCurrentUser(currentUser as IUser);
-		store.setActor(actor);
+		Object.entries(changes).forEach(([key, value]: any) => {
+			updater.set(key, value);
+		});
 
-		const event = store.buildEvent();
+		updater.addToSet('roles', 'user');
+		updater.addToSet('roles', 'bot');
+
+		const store = new UserChangedAuditStore(actor);
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
 
 		expect(event).toEqual([
 			'user.changed',
 			{
-				user: { _id: currentUser._id, username: currentUser.username },
-				previous: originalUser,
-				current: currentUser,
+				user: { _id: user._id, username: user.username },
+				user_data: user,
+				operation: {
+					$set: {
+						...changes,
+					},
+					$addToSet: {
+						roles: { $each: ['user', 'bot'] },
+					},
+				},
 			},
 			{
-				ip: 'actorIp',
-				useragent: 'actorUserAgent',
-				_id: 'actorId',
-				username: 'actorUsername',
+				...actor,
 				type: 'user',
 			},
 		]);
 	});
 	it('should obfuscate sensitive fields', async () => {
-		const store = new UserChangedLogStore();
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField(), ...createObfuscatedFields(false), active: false });
 
-		const [originalUser, currentUser, actor] = createChangedUserAndActor(
-			{
-				...createFakeUser(),
-				...createEmailsField(),
-				...createObfuscatedFields(true),
-				type: 'bot',
-				active: true,
-				roles: ['user', 'bot'],
-			},
-			{ ...createEmailsField(), ...createObfuscatedFields(false), active: false },
-		);
+		const store = new UserChangedAuditStore(actor);
 
-		store.setOriginalUser(originalUser as IUser);
-		store.setCurrentUser(currentUser as IUser);
-		store.setActor(actor);
+		const changes = {
+			...createFakeUser(),
+			...createEmailsField(),
+			...createObfuscatedFields(true),
+			type: 'bot',
+			active: true,
+		};
 
-		const event = store.buildEvent();
+		Object.entries(changes).forEach(([key, value]: any) => {
+			updater.set(key, value);
+		});
+
+		updater.addToSet('roles', 'user');
+		updater.addToSet('roles', 'bot');
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
 
 		expect(event).toEqual([
 			'user.changed',
 			{
-				user: { _id: currentUser._id, username: currentUser.username },
-				previous: { ...originalUser, ...getObfuscatedFields(originalUser.services?.email2fa as any) },
-				current: { ...currentUser, ...getObfuscatedFields(currentUser.services?.email2fa as any) },
+				user: { _id: user._id, username: user.username },
+				user_data: { ...user, ...getObfuscatedFields(user.services?.email2fa as any) },
+				operation: {
+					$set: {
+						...changes,
+						...getObfuscatedFields(changes.services?.email2fa as any),
+					},
+					$addToSet: {
+						roles: { $each: ['user', 'bot'] },
+					},
+				},
 			},
 			{
-				ip: 'actorIp',
-				useragent: 'actorUserAgent',
-				_id: 'actorId',
-				username: 'actorUsername',
+				...actor,
 				type: 'user',
 			},
 		]);
