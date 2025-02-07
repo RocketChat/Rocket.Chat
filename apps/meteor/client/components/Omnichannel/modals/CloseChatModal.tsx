@@ -80,7 +80,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
 				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,

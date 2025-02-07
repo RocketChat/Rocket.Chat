@@ -1,7 +1,7 @@
 import { isE2EEMessage, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCopyAction } from './useCopyAction';
@@ -82,7 +82,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 
 	const actionButtonApps = useMessageActionAppsActionButtons(message, context);
 
-	const id = useUniqueId();
+	const id = useId();
 	const { t } = useTranslation();
 
 	if (data.length === 0) {
