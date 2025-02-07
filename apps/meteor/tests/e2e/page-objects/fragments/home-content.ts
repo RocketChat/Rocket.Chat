@@ -112,6 +112,10 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
+	get fileUploadModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'File Upload' });
+	}
+
 	get modalFilePreview(): Locator {
 		return this.page.locator(
 			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
