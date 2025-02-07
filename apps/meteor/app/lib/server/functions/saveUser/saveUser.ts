@@ -1,6 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -49,7 +50,7 @@ export type SaveUserData = {
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
 
-export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
+export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData, _updater?: Updater<IUser>) {
 	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -85,7 +86,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	await validateUserEditing(userId, userData);
 
 	// update user
-	const updater = Users.getUpdater();
+	const updater = _updater || Users.getUpdater();
 
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (

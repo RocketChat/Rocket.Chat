@@ -102,7 +102,8 @@ API.v1.addRoute(
 				return API.v1.failure('Name contains invalid characters');
 			}
 
-			await saveUser(this.userId, userData);
+			const updater = Users.getUpdater();
+			await saveUser(this.userId, userData, updater);
 
 			if (this.bodyParams.data.customFields) {
 				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
