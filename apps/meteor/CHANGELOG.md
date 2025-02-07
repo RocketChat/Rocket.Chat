@@ -1,5 +1,48 @@
 # @rocket.chat/meteor
 
+## 7.3.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35112](https://github.com/RocketChat/Rocket.Chat/pull/35112) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the queue processing of Omnichannel's waiting queue focusing on 3 main areas:
+  - Changes the way we fetch the queue list to not append the public queue by default. This makes the server to not run the public queue always (as it is now) even if there was no work to be done.
+  - Changes how the queue executes: previously, it was executed in a kind of chain: We fetched a list of "queues", then we took one, processed it, and after that we scheduled the next run, which could take some time. Now, every TIMEOUT, server will try to process all the queues, 1 by 1, and then schedule the next run for all queues after TIMEOUT. This should speed up chat assignment and reduce waiting time when waiting queue is enabled.
+  - Removes the unlockAndRequeue and replcaes it with just unlock. This change shouldn't be noticeable. The original idea of the requeueing was to iterate over the inquiries when 1 wasn't being able to be taken. Idea was to avoid blocking the queue by rotating them instead of fetching the same until it gets routed, however this never worked cause we never modified the global sorting for the inquiries and it kept using the ts as the sorting, which returned always the oldest and ignored the requeing. So we're removing those extra steps as well.
+- ([#35096](https://github.com/RocketChat/Rocket.Chat/pull/35096) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior in Omnichannel that was causing bot agents to be waiting in the queue, when they should always skip it.
+
+- <details><summary>Updated dependencies [b7905dfebe48d27d0d774fb23cc579ea9dfd01f4]:</summary>
+
+  - @rocket.chat/model-typings@1.3.1
+  - @rocket.chat/models@1.2.1
+  - @rocket.chat/omnichannel-services@0.3.11
+  - @rocket.chat/apps@0.2.5
+  - @rocket.chat/presence@0.2.14
+  - @rocket.chat/core-services@0.7.6
+  - @rocket.chat/cron@0.1.14
+  - @rocket.chat/instance-status@0.1.14
+  - @rocket.chat/network-broker@0.1.6
+  - @rocket.chat/core-typings@7.3.1
+  - @rocket.chat/rest-typings@7.3.1
+  - @rocket.chat/license@1.0.5
+  - @rocket.chat/pdf-worker@0.2.11
+  - @rocket.chat/api-client@0.2.14
+  - @rocket.chat/freeswitch@1.2.1
+  - @rocket.chat/fuselage-ui-kit@15.0.1
+  - @rocket.chat/gazzodown@15.0.1
+  - @rocket.chat/ui-contexts@15.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@11.0.1
+  - @rocket.chat/ui-client@15.0.1
+  - @rocket.chat/ui-video-conf@15.0.1
+  - @rocket.chat/ui-voip@5.0.1
+  - @rocket.chat/web-ui-registration@15.0.1
+  </details>
+
 ## 7.3.0
 
 ### Minor Changes
