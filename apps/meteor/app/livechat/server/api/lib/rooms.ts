@@ -3,7 +3,6 @@ import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { FilterOperators } from 'mongodb';
 
 export async function findRooms({
 	agents,
