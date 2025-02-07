@@ -56,8 +56,8 @@ export const closeChat = async ({ t: messageType, transcriptRequested } = {}) =>
 
 		if (isRoomNotFound && isChatClosed) {
 			console.log('Room not found, redirecting to chat-finished');
-			parentCall('callback', 'chat-ended');
-			route('/chat-finished');
+			// parentCall('callback', 'chat-ended');
+			// route('/chat-finished');
 		}
 
 		if (e instanceof Error) {
