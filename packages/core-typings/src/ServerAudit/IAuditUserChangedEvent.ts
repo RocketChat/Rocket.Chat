@@ -1,3 +1,5 @@
+import type { UpdateFilter } from 'mongodb';
+
 import type { IAuditServerEventType } from '../IServerEvent';
 import type { IUser } from '../IUser';
 import type { DeepPartial } from '../utils';
@@ -16,12 +18,12 @@ interface IServerEventUserChanged
 				};
 		  }
 		| {
-				key: 'previous';
+				key: 'user_data';
 				value: DeepPartial<IUser>;
 		  }
 		| {
-				key: 'current';
-				value: DeepPartial<IUser>;
+				key: 'operation';
+				value: UpdateFilter<IUser>;
 		  }
 	> {
 	t: 'user.changed';
