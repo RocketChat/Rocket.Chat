@@ -4,7 +4,7 @@ import type Moleculer from 'moleculer';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { NetworkBroker } from './NetworkBroker';
+import { MoleculerBroker } from './MoleculerBroker';
 
 const {
 	MS_NAMESPACE = '',
@@ -151,5 +151,5 @@ export function startBroker(options: Moleculer.BrokerOptions = {}): NetworkBroke
 		...options,
 	});
 
-	return new NetworkBroker(network);
+	return new MoleculerBroker(network);
 }

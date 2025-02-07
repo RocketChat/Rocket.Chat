@@ -2,7 +2,7 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { NetworkBroker } from './NetworkBroker';
+import { MoleculerBroker } from './MoleculerBroker';
 import { BrokerMocked } from '../../../../apps/meteor/tests/mocks/server/BrokerMocked';
 
 class DelayedStopBroker extends BrokerMocked {
@@ -17,7 +17,7 @@ class DelayedStopBroker extends BrokerMocked {
 	}
 }
 
-const broker = new NetworkBroker(new DelayedStopBroker() as any);
+const broker = new MoleculerBroker(new DelayedStopBroker() as any);
 
 describe('NetworkBroker', () => {
 	it('should wait services to be fully destroyed', async () => {
