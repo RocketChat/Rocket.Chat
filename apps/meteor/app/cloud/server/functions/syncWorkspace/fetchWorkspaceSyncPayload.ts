@@ -1,17 +1,15 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { settings } from '../../../../settings/server';
 
-const workspaceSyncPayloadSchema = v.object({
-	workspaceId: v.string().required(),
-	publicKey: v.string(),
-	license: v.string().required(),
+const workspaceSyncPayloadSchema = z.object({
+	workspaceId: z.string(),
+	publicKey: z.string().optional(),
+	license: z.string(),
 });
-
-const assertWorkspaceSyncPayload = compile(workspaceSyncPayloadSchema);
 
 export async function fetchWorkspaceSyncPayload({
 	token,
@@ -36,7 +34,7 @@ export async function fetchWorkspaceSyncPayload({
 
 	const payload = await response.json();
 
-	assertWorkspaceSyncPayload(payload);
+	workspaceSyncPayloadSchema.parse(payload);
 
 	return payload;
 }
