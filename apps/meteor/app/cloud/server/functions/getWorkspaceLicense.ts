@@ -16,7 +16,6 @@ const workspaceLicensePayloadSchema = z.object({
 	address: z.string(),
 	license: z.string(),
 	updatedAt: z.string().datetime(),
-	modules: z.string().optional(),
 	expireAt: z.string().datetime(),
 });
 
@@ -42,7 +41,11 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 
 	const payload = await response.json();
 
-	workspaceLicensePayloadSchema.parse(payload);
+	const validateSchema = workspaceLicensePayloadSchema.safeParse(payload);
+
+	if (!validateSchema.success) {
+		console.error('workspaceLicensePayloadSchema failed type validation', validateSchema.error.errors);
+	}
 
 	return payload;
 };

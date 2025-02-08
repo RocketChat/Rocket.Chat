@@ -131,7 +131,11 @@ const fetchWorkspaceClientPayload = async ({
 		return undefined;
 	}
 
-	workspaceClientPayloadSchema.parse(payload);
+	const validateSchema = workspaceClientPayloadSchema.safeParse(payload);
+
+	if (!validateSchema.success) {
+		console.error('workspaceClientPayloadSchema failed type validation', validateSchema.error.errors);
+	}
 
 	return payload;
 };
