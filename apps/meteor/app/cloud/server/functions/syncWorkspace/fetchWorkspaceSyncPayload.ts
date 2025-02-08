@@ -34,10 +34,10 @@ export async function fetchWorkspaceSyncPayload({
 
 	const payload = await response.json();
 
-	const validateSchema = workspaceSyncPayloadSchema.safeParse(payload);
+	const assertWorkspaceSyncPayload = workspaceSyncPayloadSchema.safeParse(payload);
 
-	if (!validateSchema.success) {
-		console.error('workspaceSyncPayloadSchema failed type validation', validateSchema.error.errors);
+	if (!assertWorkspaceSyncPayload.success) {
+		console.error('workspaceSyncPayloadSchema failed type validation', assertWorkspaceSyncPayload.error.errors);
 	}
 
 	return payload;

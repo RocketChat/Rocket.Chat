@@ -70,10 +70,10 @@ const fetchCloudAnnouncementsSync = async ({
 
 	const payload = await response.json();
 
-	const validateSchema = workspaceCommPayloadSchema.safeParse(payload);
+	const assertWorkspaceCommPayload = workspaceCommPayloadSchema.safeParse(payload);
 
-	if (!validateSchema.success) {
-		console.error('workspaceCommPayloadSchema failed type validation', validateSchema.error.errors);
+	if (!assertWorkspaceCommPayload.success) {
+		console.error('workspaceCommPayloadSchema failed type validation', assertWorkspaceCommPayload.error.errors);
 	}
 
 	return payload;

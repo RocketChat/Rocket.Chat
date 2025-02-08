@@ -17,85 +17,67 @@ import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleC
 const workspaceClientPayloadSchema = z.object({
 	workspaceId: z.string(),
 	publicKey: z.string().optional(),
-	trial: z.object({
-		trialing: z.boolean(),
-		trialID: z.string(),
-		startDate: z.string().datetime(),
-		endDate: z.string().datetime(),
-		marketing: z.object({
-			utmContent: z.string(),
-			utmMedium: z.string(),
-			utmSource: z.string(),
-			utmCampaign: z.string(),
-		}),
-		downgradesToPlan: z.object({
-			id: z.string(),
-		}),
-		trialRequested: z.boolean(),
-		upgradedEligible: z.boolean(),
-		optOutOfJourney: z.boolean(),
-		plan: z.object({
-			id: z.string(),
-		}),
-		claims: z.object({
-			maxSeats: z.number().int(),
-			maxmac: z.number().int(),
-		}),
-		source: z.string(),
-		lastEmailSentTag: z.string(),
-	}),
-	nps: z
+	trial: z
 		.object({
-			id: z.string(),
-			startAt: z.string().datetime(),
-			expireAt: z.string().datetime(),
+			trialing: z.boolean(),
+			trialID: z.string(),
+			endDate: z.string().datetime(),
+			marketing: z.object({
+				utmContent: z.string(),
+				utmMedium: z.string(),
+				utmSource: z.string(),
+				utmCampaign: z.string(),
+			}),
+			DowngradesToPlan: z.object({
+				id: z.string(),
+			}),
+			trialRequested: z.boolean(),
 		})
 		.optional(),
-	banners: z
-		.array(
+	nps: z.object({
+		id: z.string(),
+		startAt: z.string().datetime(),
+		expireAt: z.string().datetime(),
+	}),
+	banners: z.array(
+		z.object({
+			_id: z.string(),
+			_updatedAt: z.string().datetime(),
+			platform: z.array(z.string()),
+			expireAt: z.string().datetime(),
+			startAt: z.string().datetime(),
+			roles: z.array(z.string()).optional(),
+			createdBy: z.object({
+				_id: z.string(),
+				username: z.string().optional(),
+			}),
+			createdAt: z.string().datetime(),
+			view: z.any(),
+			active: z.boolean().optional(),
+			inactivedAt: z.string().datetime().optional(),
+			snapshot: z.string().optional(),
+		}),
+	),
+	announcements: z.object({
+		create: z.array(
 			z.object({
 				_id: z.string(),
 				_updatedAt: z.string().datetime(),
-				platform: z.array(z.string()),
+				selector: z.object({
+					roles: z.array(z.string()),
+				}),
+				platform: z.array(z.enum(['web', 'mobile'])),
 				expireAt: z.string().datetime(),
 				startAt: z.string().datetime(),
-				roles: z.array(z.string()).optional(),
-				createdBy: z.object({
-					_id: z.string(),
-					username: z.string().optional(),
-				}),
+				createdBy: z.enum(['cloud', 'system']),
 				createdAt: z.string().datetime(),
-				view: z.unknown(),
-				active: z.boolean().optional(),
-				inactivedAt: z.string().datetime().optional(),
-				snapshot: z.string().optional(),
+				dictionary: z.record(z.record(z.string())),
+				view: z.any(),
+				surface: z.enum(['banner', 'modal']),
 			}),
-		)
-		.optional(),
-	announcements: z
-		.object({
-			create: z
-				.array(
-					z.object({
-						_id: z.string(),
-						_updatedAt: z.string().datetime(),
-						selector: z.object({
-							roles: z.array(z.string()),
-						}),
-						platform: z.array(z.enum(['web', 'mobile'])),
-						expireAt: z.string().datetime(),
-						startAt: z.string().datetime(),
-						createdBy: z.enum(['cloud', 'system']),
-						createdAt: z.string().datetime(),
-						dictionary: z.record(z.record(z.string())),
-						view: z.unknown(),
-						surface: z.enum(['banner', 'modal']),
-					}),
-				)
-				.optional(),
-			delete: z.array(z.string()),
-		})
-		.optional(),
+		),
+		delete: z.array(z.string()),
+	}),
 });
 
 /** @deprecated */
@@ -131,10 +113,10 @@ const fetchWorkspaceClientPayload = async ({
 		return undefined;
 	}
 
-	const validateSchema = workspaceClientPayloadSchema.safeParse(payload);
+	const assertWorkspaceClientPayload = workspaceClientPayloadSchema.safeParse(payload);
 
-	if (!validateSchema.success) {
-		console.error('workspaceClientPayloadSchema failed type validation', validateSchema.error.errors);
+	if (!assertWorkspaceClientPayload.success) {
+		console.error('workspaceClientPayloadSchema failed type validation', assertWorkspaceClientPayload.error.errors);
 	}
 
 	return payload;
