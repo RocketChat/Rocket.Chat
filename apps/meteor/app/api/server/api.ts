@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { wrapExceptions } from '@rocket.chat/tools';
 import express from 'express';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
@@ -404,10 +405,14 @@ export class APIClass<TBasePath extends string = ''> {
 	public reloadRoutesToRefreshRateLimiter(): void {
 		this._routes.forEach((route) => {
 			if (this.shouldAddRateLimitToRoute(route.options)) {
-				this.addRateLimiterRuleForRoutes({
-					routes: [route.path],
-					rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
-					endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
+				wrapExceptions(() =>
+					this.addRateLimiterRuleForRoutes({
+						routes: [route.path],
+						rateLimiterOptions: route.options.rateLimiterOptions || defaultRateLimiterOptions,
+						endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
+					}),
+				).catch((error) => {
+					console.error(error.message);
 				});
 			}
 		});
@@ -426,10 +431,10 @@ export class APIClass<TBasePath extends string = ''> {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error('You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint');
+			throw new Meteor.Error(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error('You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint');
+			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {

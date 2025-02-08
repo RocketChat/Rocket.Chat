@@ -26,6 +26,6 @@ export function createFakeIncomingCall({ rid }: { rid: IRoom['_id'] }) {
 		rid,
 		uid,
 		callId,
-		dismissed: faker.helpers.arrayElement([true, false]),
+		dismissed: false,
 	};
 }
