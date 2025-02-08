@@ -116,7 +116,7 @@ const fetchWorkspaceClientPayload = async ({
 	const assertWorkspaceClientPayload = workspaceClientPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceClientPayload.success) {
-		console.error('workspaceClientPayloadSchema failed type validation', assertWorkspaceClientPayload.error.errors);
+		throw new CloudWorkspaceConnectionError('Invalid response from Rocket.Chat Cloud');
 	}
 
 	return payload;
