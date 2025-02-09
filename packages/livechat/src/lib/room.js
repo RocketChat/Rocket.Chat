@@ -16,57 +16,33 @@ import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
 import Triggers from './triggers';
-import { RoomNotFoundError, ConcurrencyError } from '../helpers/errors';
-import { OperationLock } from '../helpers/operationLock';
 
 const commands = new Commands();
-const closeChatLock = new OperationLock('closeTab');
 export const closeChat = async ({ transcriptRequested } = {}) => {
 	console.log('Post finish chat action', Date.now());
 
-	try {
-		// This prevents race conditions with cross-tab communication
-		if (!closeChatLock.acquire()) {
-			throw new ConcurrencyError();
-		}
+	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
 
-		const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
-
-		if (!room) {
-			throw new RoomNotFoundError();
-		}
-
-		if (!transcriptRequested) {
-			await handleTranscript();
-		}
-
-		await store.setState({ room: null, renderedTriggers: [] });
-
-		if (clearLocalStorageWhenChatEnded) {
-			// exclude UI-affecting flags
-			const { iframe: currentIframe } = store.state;
-			const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
-			initial.iframe = { ...currentIframe, guest: { department } };
-			await store.setState(initial);
-		}
-
-		await Triggers.processTrigger('after-guest-registration');
-
-		await loadConfig();
-		parentCall('callback', 'chat-ended');
-		route('/chat-finished');
-		console.log('Close room procedure completed successfuly');
-	} catch (e) {
-		if (e instanceof RoomNotFoundError) {
-			console.warn('closeChat called without a room');
-		}
-
-		if (e instanceof ConcurrencyError) {
-			console.warn('closeChat is already in progress');
-		}
-	} finally {
-		closeChatLock.release();
+	if (!transcriptRequested) {
+		await handleTranscript();
 	}
+
+	await store.setState({ room: null, renderedTriggers: [] });
+
+	if (clearLocalStorageWhenChatEnded) {
+		// exclude UI-affecting flags
+		const { iframe: currentIframe } = store.state;
+		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
+		initial.iframe = { ...currentIframe, guest: { department } };
+		await store.setState(initial);
+	}
+
+	await Triggers.processTrigger('after-guest-registration');
+
+	await loadConfig();
+	parentCall('callback', 'chat-ended');
+	route('/chat-finished');
+	console.log('Close room procedure completed successfuly');
 };
 
 const getVideoConfMessageData = (message) =>
