@@ -1,7 +1,11 @@
-class RoomNotFoundError extends Error {
+export class RoomNotFoundError extends Error {
 	constructor(message?: string) {
 		super(message ?? 'Room not found');
 	}
 }
 
-export default RoomNotFoundError;
+export class ConcurrencyError extends Error {
+	constructor(message?: string) {
+		super(message ?? 'Operation is already in progress');
+	}
+}

@@ -16,18 +16,24 @@ import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
 import Triggers from './triggers';
-import RoomNotFoundError from '../helpers/errors';
+import { RoomNotFoundError, ConcurrencyError } from '../helpers/errors';
+import { OperationLock } from '../helpers/operationLock';
 
 const commands = new Commands();
-
-export const closeChat = async ({ t: messageType, transcriptRequested } = {}) => {
-	console.log('Post finish chat action');
+const closeChatLock = new OperationLock('closeTab');
+export const closeChat = async ({ transcriptRequested } = {}) => {
+	console.log('Post finish chat action', Date.now());
 
 	try {
+		// This prevents race conditions with cross-tab communication
+		if (!closeChatLock.acquire()) {
+			throw new ConcurrencyError();
+		}
+
 		const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
 
 		if (!room) {
-			throw new RoomNotFoundError('closeChat called without a room');
+			throw new RoomNotFoundError();
 		}
 
 		if (!transcriptRequested) {
@@ -49,20 +55,17 @@ export const closeChat = async ({ t: messageType, transcriptRequested } = {}) =>
 		await loadConfig();
 		parentCall('callback', 'chat-ended');
 		route('/chat-finished');
-		console.log('closeChat: normal flow completed');
+		console.log('Close room procedure completed successfuly');
 	} catch (e) {
-		const isRoomNotFound = e instanceof RoomNotFoundError;
-		const isChatClosed = messageType === 'livechat-close';
-
-		if (isRoomNotFound && isChatClosed) {
-			console.log('Room not found, redirecting to chat-finished');
-			// parentCall('callback', 'chat-ended');
-			// route('/chat-finished');
+		if (e instanceof RoomNotFoundError) {
+			console.warn('closeChat called without a room');
 		}
 
-		if (e instanceof Error) {
-			console.warn(e.message);
+		if (e instanceof ConcurrencyError) {
+			console.warn('closeChat is already in progress');
 		}
+	} finally {
+		closeChatLock.release();
 	}
 };
 
@@ -375,8 +378,17 @@ export const defaultRoomParams = () => {
 
 store.on('change', async ([state, prevState]) => {
 	// Cross-tab communication
+
+	//  Detects when a room removed and then routes to /chat-finished
+	if (prevState.room?._id && !state.room?._id) {
+		console.log('Room was removed from the store. Redirecting to /chat-finished');
+		parentCall('callback', 'chat-ended');
+		route('/chat-finished');
+	}
+
 	// Detects when a room is created and then route to the correct container
 	if (!prevState.room?._id && state.room?._id) {
+		console.log('Room was added to the store. Redirecting to /');
 		route('/');
 	}
 });

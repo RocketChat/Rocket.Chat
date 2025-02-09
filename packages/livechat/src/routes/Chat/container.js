@@ -23,7 +23,7 @@ import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
-import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import { initRoom, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import store from '../../store';
 
 const ChatWrapper = ({ children, rid }) => {
@@ -264,7 +264,6 @@ class ChatContainer extends Component {
 			console.log('Finish chat action finally');
 
 			await dispatch({ loading: false });
-			await closeChat();
 		}
 	};
 
