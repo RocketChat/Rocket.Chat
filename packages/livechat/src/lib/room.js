@@ -354,16 +354,8 @@ export const defaultRoomParams = () => {
 
 store.on('change', async ([state, prevState]) => {
 	// Cross-tab communication
-
-	//  Detects when a room removed and then routes to /chat-finished
-	if (prevState.room?._id && !state.room?._id) {
-		console.log('Room was removed from the store. Redirecting to /chat-finished');
-		parentCall('callback', 'chat-ended');
-		route('/chat-finished');
-	}
-
 	// Detects when a room is created and then route to the correct container
-	if (!prevState.room?._id && state.room?._id) {
+	if (prevState.room?._id !== state.room?._id) {
 		console.log('Room was added to the store. Redirecting to /');
 		route('/');
 	}
