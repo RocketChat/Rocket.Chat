@@ -670,11 +670,11 @@ const membersOrderedByRoleRolePropsSchema = {
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
-type RoomsCloseProps = {
+type RoomsHideProps = {
 	roomId: string;
 };
 
-const roomsCloseSchema = {
+const roomsHideSchema = {
 	type: 'object',
 	properties: {
 		roomId: {
@@ -686,7 +686,7 @@ const roomsCloseSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsCloseProps = ajv.compile<RoomsCloseProps>(roomsCloseSchema);
+export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
@@ -865,7 +865,7 @@ export type RoomsEndpoints = {
 		}>;
 	};
 
-	'/v1/rooms.close': {
-		POST: (params: RoomsCloseProps) => void;
+	'/v1/rooms.hide': {
+		POST: (params: RoomsHideProps) => void;
 	};
 };

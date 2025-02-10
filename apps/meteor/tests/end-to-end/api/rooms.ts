@@ -4205,10 +4205,10 @@ describe('[Rooms]', () => {
 		});
 	});
 
-	describe('/rooms.close', () => {
+	describe('/rooms.hide', () => {
 		let roomA: IRoom;
 		let roomB: IRoom;
-		const roomName = `rooms.close.test.${Date.now()}`;
+		const roomName = `rooms.hide.test.${Date.now()}`;
 		let memberA: TestUser<IUser>;
 		let memberB: TestUser<IUser>;
 		let nonMember: TestUser<IUser>;
@@ -4230,9 +4230,9 @@ describe('[Rooms]', () => {
 			await deleteRoom({ type: 'c', roomId: roomA._id });
 		});
 
-		it('should close the room', async () => {
+		it('should hide the room', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.set(credentials)
 				.send({ roomId: roomA._id })
 				.expect('Content-Type', 'application/json')
@@ -4242,9 +4242,9 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should be already closed', async () => {
+		it('should be already hidden', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.set(credentials)
 				.send({ roomId: roomA._id })
 				.expect('Content-Type', 'application/json')
@@ -4257,7 +4257,7 @@ describe('[Rooms]', () => {
 
 		it('should fail if roomId is not provided', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.set(credentials)
 				.send()
 				.expect('Content-Type', 'application/json')
@@ -4269,7 +4269,7 @@ describe('[Rooms]', () => {
 
 		it('should return 401 if user is not logged in', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
@@ -4280,7 +4280,7 @@ describe('[Rooms]', () => {
 
 		it('should fail if user not subscribed to the room', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.set(nonMemberCredentials)
 				.send({ roomId: roomA._id })
 				.expect('Content-Type', 'application/json')
@@ -4293,7 +4293,7 @@ describe('[Rooms]', () => {
 
 		it('should return forbidden if user does not have access to the room', async () => {
 			await request
-				.post(api('rooms.close'))
+				.post(api('rooms.hide'))
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')

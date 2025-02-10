@@ -12,7 +12,7 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
-	isRoomsCloseProps,
+	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -966,8 +966,8 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.close',
-	{ authRequired: true, validateParams: isRoomsCloseProps },
+	'rooms.hide',
+	{ authRequired: true, validateParams: isRoomsHideProps },
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
