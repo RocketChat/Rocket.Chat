@@ -976,7 +976,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const user = await Users.findOneById(this.userId, { projections: { username: 1 } });
+			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
 
 			if (!user) {
 				return API.v1.failure('error-invalid-user');
