@@ -48,6 +48,7 @@ export class AppMessagesConverter {
 			attachments: getAttachments,
 			sender: 'u',
 			threadMsgCount: 'tcount',
+			t: 't',
 		};
 
 		return transformMappedData(message, map);
@@ -91,6 +92,7 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
+			t: 't',
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
@@ -181,6 +183,7 @@ export class AppMessagesConverter {
 			...('threadId' in message && { tmid: message.threadId }),
 			rid: room._id,
 			u,
+			t: message.t,
 			msg: message.text,
 			ts: message.createdAt || new Date(),
 			_updatedAt: message.updatedAt || new Date(),

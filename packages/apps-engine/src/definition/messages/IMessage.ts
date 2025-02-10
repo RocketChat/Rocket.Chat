@@ -6,6 +6,7 @@ import type { IUser, IUserLookup } from '../users';
 import type { IMessageAttachment } from './IMessageAttachment';
 import type { IMessageFile } from './IMessageFile';
 import type { IMessageReactions } from './IMessageReaction';
+import type { MessageTypesValues } from './MessageTypesValues';
 
 export interface IMessage {
     id?: string;
@@ -31,4 +32,5 @@ export interface IMessage {
     pinned?: boolean;
     pinnedAt?: Date;
     pinnedBy?: IUserLookup;
+    t?: MessageTypesValues;
 }
