@@ -13,6 +13,7 @@ import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
+import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
 	useEffect(() => {
@@ -30,6 +31,7 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
+	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
 	useNextcloud();
