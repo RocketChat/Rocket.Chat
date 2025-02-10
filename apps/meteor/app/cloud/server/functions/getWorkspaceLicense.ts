@@ -44,7 +44,7 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 	const assertWorkspaceLicensePayload = workspaceLicensePayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceLicensePayload.success) {
-		console.error('workspaceLicensePayloadSchema failed type validation', assertWorkspaceLicensePayload.error.errors);
+		SystemLogger.error({ msg: 'workspaceLicensePayloadSchema failed type validation', errors: assertWorkspaceLicensePayload.error.errors });
 	}
 
 	return payload;
