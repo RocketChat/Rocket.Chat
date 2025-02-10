@@ -87,7 +87,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	}
 
 	isSvgImage(buff: Buffer): boolean {
-		return isSvg(buff);
+		return isSvg(buff.toString('utf-8'));
 	}
 
 	stripExifFromBuffer(buffer: Buffer): Promise<Buffer> {

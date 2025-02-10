@@ -84,7 +84,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is ESTABLISHED', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		await act(async () => {
 			await result?.current?.action?.();
@@ -96,7 +96,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is ESTABLISHING', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHING });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		act(() => {
 			result?.current?.action?.();
@@ -108,7 +108,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is REQUESTED', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.REQUESTED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		act(() => {
 			result?.current?.action?.();
@@ -120,7 +120,7 @@ describe('useE2EERoomAction', () => {
 	it('should open Enable E2EE confirmation modal', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.NOT_STARTED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 		act(() => {
 			result?.current?.action?.();
 		});

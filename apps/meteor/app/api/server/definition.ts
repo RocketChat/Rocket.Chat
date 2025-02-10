@@ -51,11 +51,11 @@ export type InternalError<T> = {
 	};
 };
 
-export type NotFoundResult = {
+export type NotFoundResult<T = string> = {
 	statusCode: 404;
 	body: {
 		success: false;
-		error: string;
+		error: T;
 	};
 };
 
@@ -192,9 +192,20 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 			body: unknown;
 	  };
 
-type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
+
+export type InnerAction<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+	Action<TMethod, TPathPattern, TOptions> extends (this: infer This) => infer Result
+		? This extends ActionThis<TMethod, TPathPattern, TOptions>
+			? (this: Mutable<This>) => Result
+			: never
+		: never;
+
+type Mutable<Immutable> = {
+	-readonly [key in keyof Immutable]: Immutable[key];
+};
 
 type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
 	| Action<TMethod, TPathPattern, TEndpointOptions>
@@ -202,6 +213,77 @@ type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpoi
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
 	  } & { twoFactorRequired: boolean });
 
+type ActionOperation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions extends Options = object> = {
+	action: Action<TMethod, TPathPattern, TEndpointOptions>;
+} & TEndpointOptions;
+
 export type Operations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
 	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
 };
+
+export type ActionOperations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
+	[M in MethodOf<TPathPattern> as Lowercase<M>]: ActionOperation<Uppercase<M>, TPathPattern, TOptions>;
+};
+
+export type TypedOptions = {
+	response: {
+		200: ValidateFunction;
+		300?: ValidateFunction;
+		400?: ValidateFunction;
+		401?: ValidateFunction;
+		403?: ValidateFunction;
+		404?: ValidateFunction;
+		500?: ValidateFunction;
+	};
+	query?: ValidateFunction;
+	body?: ValidateFunction;
+	tags?: string[];
+} & Options;
+
+export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	userId: TOptions['authRequired'] extends true ? string : string | undefined;
+	token: TOptions['authRequired'] extends true ? string : string | undefined;
+	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
+	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
+	parseJsonQuery(): Promise<{
+		sort: Record<string, 1 | -1>;
+		/**
+		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
+		fields: Record<string, 0 | 1>;
+		/**
+		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
+		query: Record<string, unknown>;
+	}>;
+	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
+
+	requestIp?: string;
+};
+
+type PromiseOrValue<T> = T | Promise<T>;
+
+type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
+
+type Results<TResponse extends TypedOptions['response']> = {
+	[K in keyof TResponse]: K extends 200
+		? SuccessResult<InferResult<TResponse[200]>>
+		: K extends 400
+			? FailureResult<InferResult<TResponse[400]>>
+			: K extends 401
+				? UnauthorizedResult<InferResult<TResponse[401]>>
+				: K extends 403
+					? ForbiddenResult<InferResult<TResponse[403]>>
+					: K extends 404
+						? NotFoundResult<InferResult<TResponse[404]>>
+						: K extends 500
+							? InternalError<InferResult<TResponse[500]>>
+							: never;
+}[keyof TResponse] & {
+	headers?: Record<string, string>;
+};
+
+export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
+	this: TypedThis<TOptions, TPath>,
+	request: Request,
+) => PromiseOrValue<Results<TOptions['response']>>;

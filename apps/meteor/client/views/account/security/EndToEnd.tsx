@@ -1,10 +1,9 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useId, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
@@ -67,9 +66,9 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 		}
 	}, [password, resetField]);
 
-	const passwordId = useUniqueId();
-	const e2ePasswordExplanationId = useUniqueId();
-	const passwordConfirmId = useUniqueId();
+	const passwordId = useId();
+	const e2ePasswordExplanationId = useId();
+	const passwordConfirmId = useId();
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>

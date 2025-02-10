@@ -205,7 +205,7 @@ export class Twilio implements ISMSProvider {
 		let persistentAction;
 		if (extraData?.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
-			persistentAction = `geo:${latitude},${longitude}`;
+			persistentAction = [`geo:${latitude},${longitude}`];
 			body = i18n.t('Location', { lng: defaultLanguage });
 		}
 

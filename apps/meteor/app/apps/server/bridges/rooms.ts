@@ -108,12 +108,14 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
+
+		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
 
 		// We support only one field for now
 		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
@@ -128,6 +130,7 @@ export class AppRoomBridge extends RoomBridge {
 			rid: roomId,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			...threadFilterQuery,
 		};
 
 		const cursor = Messages.find(query, messageQueryOptions);
@@ -268,10 +271,18 @@ export class AppRoomBridge extends RoomBridge {
 
 		const sort: Sort = options.sort?.createdAt ? { ts: options.sort.createdAt } : { ts: 1 };
 
-		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
-			...options,
-			sort,
-		});
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			roomId,
+			lastSeen,
+			new Date(),
+			[],
+			{
+				limit: options.limit,
+				skip: options.skip,
+				sort,
+			},
+			options.showThreadMessages,
+		);
 
 		const messages = await cursor.toArray();
 		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));

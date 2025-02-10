@@ -1,6 +1,5 @@
-import type { CallPreferences, DirectCallData, IRoom, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactElement, ReactNode } from 'react';
 import { useState, useMemo, useEffect } from 'react';
@@ -41,40 +40,23 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
 	}, []);
 
-	const contextValue = useMemo(
+	const contextValue = useMemo<VideoConfContextValue>(
 		() => ({
-			dispatchOutgoing: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
-			dismissOutgoing: (): void => setOutgoing(undefined),
-			startCall: (rid: IRoom['_id'], confTitle?: string): Promise<void> => VideoConfManager.startCall(rid, confTitle),
-			acceptCall: (callId: string): void => VideoConfManager.acceptIncomingCall(callId),
-			joinCall: (callId: string): Promise<void> => VideoConfManager.joinCall(callId),
-			dismissCall: (callId: string): void => {
-				VideoConfManager.dismissIncomingCall(callId);
-			},
-			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
-			abortCall: (): void => VideoConfManager.abortCall(),
-			setPreferences: (prefs: Partial<(typeof VideoConfManager)['preferences']>): void => VideoConfManager.setPreferences(prefs),
+			dispatchOutgoing: (option) => setOutgoing({ ...option, id: option.rid }),
+			dismissOutgoing: () => setOutgoing(undefined),
+			startCall: (rid, confTitle) => VideoConfManager.startCall(rid, confTitle),
+			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
+			joinCall: (callId) => VideoConfManager.joinCall(callId),
+			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
+			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),
+			abortCall: () => VideoConfManager.abortCall(),
+			setPreferences: (prefs) => VideoConfManager.setPreferences(prefs),
 			loadCapabilities: VideoConfManager.loadCapabilities,
-			queryIncomingCalls: {
-				getSnapshot: (): DirectCallData[] => VideoConfManager.getIncomingDirectCalls(),
-				subscribe: (cb: () => void) => VideoConfManager.on('incoming/changed', cb),
-			},
-			queryRinging: {
-				getSnapshot: (): boolean => VideoConfManager.isRinging(),
-				subscribe: (cb: () => void) => VideoConfManager.on('ringing/changed', cb),
-			},
-			queryCalling: {
-				getSnapshot: (): boolean => VideoConfManager.isCalling(),
-				subscribe: (cb: () => void) => VideoConfManager.on('calling/changed', cb),
-			},
-			queryCapabilities: {
-				getSnapshot: (): ProviderCapabilities => VideoConfManager.capabilities,
-				subscribe: (cb: () => void) => VideoConfManager.on('capabilities/changed', cb),
-			},
-			queryPreferences: {
-				getSnapshot: (): CallPreferences => VideoConfManager.preferences,
-				subscribe: (cb: () => void) => VideoConfManager.on('preference/changed', cb),
-			},
+			queryIncomingCalls: () => [(cb) => VideoConfManager.on('incoming/changed', cb), () => VideoConfManager.getIncomingDirectCalls()],
+			queryRinging: () => [(cb) => VideoConfManager.on('ringing/changed', cb), () => VideoConfManager.isRinging()],
+			queryCalling: () => [(cb) => VideoConfManager.on('calling/changed', cb), () => VideoConfManager.isCalling()],
+			queryCapabilities: () => [(cb) => VideoConfManager.on('capabilities/changed', cb), () => VideoConfManager.capabilities],
+			queryPreferences: () => [(cb) => VideoConfManager.on('preference/changed', cb), () => VideoConfManager.preferences],
 		}),
 		[],
 	);

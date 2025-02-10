@@ -1,5 +1,5 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import type { ReactNode } from 'react';
 
 const GenericResourceUsage = ({
@@ -22,7 +22,7 @@ const GenericResourceUsage = ({
 	variant?: 'warning' | 'danger' | 'success';
 	tooltip?: string;
 }) => {
-	const labelId = useUniqueId();
+	const labelId = useId();
 
 	return (
 		<Box

@@ -1,5 +1,5 @@
-import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
+import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item');
 const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item__menu');
@@ -33,15 +33,15 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.shiftKey) {
-						sidebarListFocusManager.focusPrevious({
+						sidebarListFocusManager?.focusPrevious({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node),
 						});
 					} else if (isListItemMenu(e.target)) {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node),
 						});
 					} else {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node),
 						});
 					}
@@ -49,11 +49,11 @@ export const useSidebarListNavigation = () => {
 
 				if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 					if (e.key === 'ArrowUp') {
-						sidebarListFocusManager.focusPrevious({ accept: (node) => isListItem(node) });
+						sidebarListFocusManager?.focusPrevious({ accept: (node) => isListItem(node) });
 					}
 
 					if (e.key === 'ArrowDown') {
-						sidebarListFocusManager.focusNext({ accept: (node) => isListItem(node) });
+						sidebarListFocusManager?.focusNext({ accept: (node) => isListItem(node) });
 					}
 
 					lastItemFocused = document.activeElement as HTMLElement;

@@ -38,7 +38,8 @@ export const _canEnableApp = async ({ Apps, License }: _canEnableAppDependencies
 				throw new Error('license-prevented');
 			}
 
-			if (app.marketplaceInfo?.isEnterpriseOnly && !License.hasValidLicense()) {
+			const marketplaceInfo = app.marketplaceInfo?.[0];
+			if (marketplaceInfo?.isEnterpriseOnly && !License.hasValidLicense()) {
 				throw new Error('invalid-license');
 			}
 

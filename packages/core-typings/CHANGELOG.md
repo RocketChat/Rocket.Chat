@@ -1,5 +1,35 @@
 # @rocket.chat/core-typings
 
+## 7.3.0
+
+### Minor Changes
+
+- ([#34948](https://github.com/RocketChat/Rocket.Chat/pull/34948)) Adds voice calls data to statistics
+
+### Patch Changes
+
+- ([#34887](https://github.com/RocketChat/Rocket.Chat/pull/34887)) Fixes an issue where the system would throw the error: 'GUI Application error' while uninstalling an app(when on the requests tab).
+
+## 7.3.0-rc.5
+
+## 7.3.0-rc.4
+
+## 7.3.0-rc.3
+
+## 7.3.0-rc.2
+
+## 7.3.0-rc.1
+
+## 7.3.0-rc.0
+
+### Minor Changes
+
+- ([#34948](https://github.com/RocketChat/Rocket.Chat/pull/34948)) Adds voice calls data to statistics
+
+### Patch Changes
+
+- ([#34887](https://github.com/RocketChat/Rocket.Chat/pull/34887)) Fixes an issue where the system would throw the error: 'GUI Application error' while uninstalling an app(when on the requests tab).
+
 ## 7.2.1
 
 ## 7.2.0

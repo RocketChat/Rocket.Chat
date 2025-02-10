@@ -9,7 +9,7 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
-import stripHtml from 'string-strip-html';
+import { stripHtml } from 'string-strip-html';
 
 import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';

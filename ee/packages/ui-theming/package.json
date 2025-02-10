@@ -1,20 +1,20 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.60.1",
-		"@rocket.chat/fuselage-hooks": "^0.34.1",
+		"@rocket.chat/fuselage": "~0.60.3",
+		"@rocket.chat/fuselage-hooks": "~0.34.1",
 		"@rocket.chat/icons": "^0.40.0",
 		"@rocket.chat/ui-contexts": "workspace:~",
-		"@types/react": "~17.0.83",
+		"@types/react": "~18.3.17",
 		"eslint": "~8.45.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-react": "~7.37.2",
 		"eslint-plugin-react-hooks": "~5.0.0",
 		"eslint-plugin-testing-library": "^6.4.0",
-		"react": "~17.0.2",
+		"react": "~18.3.1",
 		"react-docgen-typescript-plugin": "~1.0.8",
 		"typescript": "~5.7.2"
 	},
@@ -34,7 +34,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"volta": {
 		"extends": "../../../package.json"

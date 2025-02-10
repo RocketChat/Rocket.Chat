@@ -27,3 +27,4 @@ import './sendPdfTranscriptOnClose';
 import './applyRoomRestrictions';
 import './afterTagRemoved';
 import './manageDepartmentUnit';
+import './autoCloseQueued';

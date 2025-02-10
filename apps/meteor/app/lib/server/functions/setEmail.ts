@@ -9,6 +9,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 
 let html = '';
 Meteor.startup(() => {
@@ -93,7 +94,7 @@ const _setEmail = async function (
 		email,
 	};
 	if (shouldSendVerificationEmail === true) {
-		await Meteor.callAsync('sendConfirmationEmail', result.email);
+		await sendConfirmationEmail(result.email);
 	}
 	return result;
 };

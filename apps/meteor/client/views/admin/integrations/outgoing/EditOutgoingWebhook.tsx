@@ -1,8 +1,7 @@
 import type { IOutgoingIntegration, OutgoingIntegrationEvent, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import OutgoingWebhookForm from './OutgoingWebhookForm';
@@ -74,7 +73,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 
 	const tab = useRouteParameter('type');
 
-	const defaultToken = useUniqueId();
+	const defaultToken = useId();
 
 	const methods = useForm<EditOutgoingWebhookFormData>({ mode: 'onBlur', values: getInitialValue(webhookData, defaultToken) });
 	const {
@@ -124,7 +123,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 		[webhookData?._id, createIntegration, updateIntegration, triggerWords, urls],
 	);
 
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page flexDirection='column'>

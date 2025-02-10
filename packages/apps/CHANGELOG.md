@@ -1,5 +1,77 @@
 # @rocket.chat/apps
 
+## 0.2.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [79cba772bd8ae0a1e084687b47e05f312e85078a, 5506c406f4a22145ece065ad2b797225e94423ca, 8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, c0fa1c884cccab47f4e68dd81457c424cf176f11, b4ce5797b7fc52e851aa4afc54c4617fc12cbf72]:</summary>
+
+  - @rocket.chat/model-typings@1.3.0
+  - @rocket.chat/apps-engine@1.48.2
+  - @rocket.chat/core-typings@7.3.0
+  </details>
+
+## 0.2.4-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.5
+  - @rocket.chat/model-typings@1.3.0-rc.5
+  </details>
+
+## 0.2.4-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.4
+  - @rocket.chat/model-typings@1.3.0-rc.4
+  </details>
+
+## 0.2.4-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.3
+  - @rocket.chat/model-typings@1.3.0-rc.3
+  </details>
+
+## 0.2.4-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.2
+  - @rocket.chat/model-typings@1.3.0-rc.2
+  </details>
+
+## 0.2.4-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.1
+  - @rocket.chat/model-typings@1.3.0-rc.1
+  </details>
+
+## 0.2.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [79cba772bd8ae0a1e084687b47e05f312e85078a, 5506c406f4a22145ece065ad2b797225e94423ca, 8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, b4ce5797b7fc52e851aa4afc54c4617fc12cbf72]:</summary>
+
+  - @rocket.chat/model-typings@1.3.0-rc.0
+  - @rocket.chat/apps-engine@1.48.2-rc.0
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  </details>
+
 ## 0.2.3
 
 ### Patch Changes

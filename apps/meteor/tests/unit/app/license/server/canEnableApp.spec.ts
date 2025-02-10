@@ -95,7 +95,7 @@ describe('canEnableApp', () => {
 
 		const app = getDefaultApp();
 		app.installationSource = AppInstallationSource.MARKETPLACE;
-		app.marketplaceInfo = { isEnterpriseOnly: true } as IMarketplaceInfo;
+		app.marketplaceInfo = [{ isEnterpriseOnly: true } as IMarketplaceInfo];
 
 		const deps = { Apps: AppsMock, License };
 

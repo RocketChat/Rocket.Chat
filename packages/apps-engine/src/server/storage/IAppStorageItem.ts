@@ -19,7 +19,7 @@ export interface IAppStorageItem {
     languageContent: { [key: string]: object };
     settings: { [id: string]: ISetting };
     implemented: { [int: string]: boolean };
-    marketplaceInfo?: IMarketplaceInfo;
+    marketplaceInfo?: IMarketplaceInfo[];
     permissionsGranted?: Array<IPermission>;
     signature?: string;
     migrated?: boolean;

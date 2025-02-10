@@ -17,7 +17,6 @@ import {
 	AccordionItem,
 	Divider,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
@@ -28,7 +27,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import { memo, useEffect, useMemo } from 'react';
+import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
@@ -161,16 +160,16 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		}
 	};
 
-	const createTeamFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
-	const showChannelsId = useUniqueId();
-	const showDiscussionsId = useUniqueId();
+	const createTeamFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
+	const showChannelsId = useId();
+	const showDiscussionsId = useId();
 
 	return (
 		<Modal

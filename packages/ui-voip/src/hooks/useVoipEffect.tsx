@@ -1,5 +1,4 @@
-import { useCallback, useContext, useRef } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useContext, useRef, useSyncExternalStore } from 'react';
 
 import { VoipContext } from '../contexts/VoipContext';
 import type VoIPClient from '../lib/VoipClient';

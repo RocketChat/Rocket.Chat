@@ -2,8 +2,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { createMockFreeSwitchExtensionDetails, createMockVoipOngoingSession } from '../../../tests/mocks';
 import VoipOngoingView from './VoipOngoingView';
+import { createMockFreeSwitchExtensionDetails, createMockVoipOngoingSession } from '../../../tests/mocks';
 
 const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 it('should properly render ongoing view', async () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
 
 	expect(screen.getByText('00:00')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
@@ -33,7 +33,7 @@ it('should display on hold and muted', () => {
 	ongoingSession.isMuted = true;
 	ongoingSession.isHeld = true;
 
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
 
 	expect(screen.getByText('On_Hold')).toBeInTheDocument();
 	expect(screen.getByText('Muted')).toBeInTheDocument();
@@ -43,7 +43,7 @@ it('should display on hold and muted', () => {
 });
 
 it('should only enable ongoing call actions', () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Turn_off_microphone' })).toBeEnabled();
@@ -54,7 +54,7 @@ it('should only enable ongoing call actions', () => {
 });
 
 it('should properly interact with the voice call session', async () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
 
 	await user.click(screen.getByRole('button', { name: 'Turn_off_microphone' }));
 	expect(ongoingSession.mute).toHaveBeenCalled();

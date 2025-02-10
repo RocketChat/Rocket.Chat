@@ -25,6 +25,7 @@ import type {
 	IndexDescription,
 	UpdateResult,
 	OptionalId,
+	FindOptions,
 } from 'mongodb';
 
 import { getCollectionName } from '../index';
@@ -1441,8 +1442,10 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 
 		const now = new Date();
 
+		const query = { instanceId, sessionId, year, month, day, logoutAt: { $exists: false } };
+
 		return this.updateOne(
-			{ instanceId, sessionId, year, month, day },
+			query,
 			{
 				$set: data,
 				$setOnInsert: {
@@ -1534,19 +1537,12 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	}
 
 	async logoutBySessionIdAndUserId({
-		sessionId,
+		loginToken,
 		userId,
 	}: {
-		sessionId: ISession['sessionId'];
+		loginToken: ISession['loginToken'];
 		userId: IUser['_id'];
 	}): Promise<UpdateResult | Document> {
-		const query = {
-			sessionId,
-			userId,
-			logoutAt: { $exists: false },
-		};
-		const session = await this.findOne<Pick<ISession, 'loginToken'>>(query, { projection: { loginToken: 1 } });
-
 		const logoutAt = new Date();
 		const updateObj = {
 			$set: {
@@ -1556,7 +1552,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		};
 
-		return this.updateMany({ userId, loginToken: session?.loginToken }, updateObj);
+		return this.updateMany({ userId, loginToken }, updateObj);
 	}
 
 	async logoutByloginTokenAndUserId({
@@ -1621,5 +1617,13 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				},
 			},
 		);
+	}
+
+	async getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
+		userId: string,
+		sessionId: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne({ userId, sessionId, logoutAt: { $exists: false } }, options);
 	}
 }

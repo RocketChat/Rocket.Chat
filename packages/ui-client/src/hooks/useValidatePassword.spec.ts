@@ -17,7 +17,6 @@ const settingsMockWrapper = mockAppRoot()
 
 it("should return `false` if password doesn't match all the requirements", async () => {
 	const { result } = renderHook(async () => useValidatePassword('secret'), {
-		legacyRoot: true,
 		wrapper: settingsMockWrapper,
 	});
 
@@ -27,7 +26,6 @@ it("should return `false` if password doesn't match all the requirements", async
 
 it('should return `true` if password matches all the requirements', async () => {
 	const { result } = renderHook(async () => useValidatePassword('5kgnGPq^&t4DSYW!SH#4N'), {
-		legacyRoot: true,
 		wrapper: settingsMockWrapper,
 	});
 

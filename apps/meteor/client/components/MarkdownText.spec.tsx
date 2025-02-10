@@ -43,7 +43,6 @@ const markdownText = `
 it('should render html elements as expected using default parser', async () => {
 	const { container } = render(<MarkdownText content={markdownText} variant='document' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const normalizedHtml = normalizeHtml(container.innerHTML);
@@ -73,7 +72,6 @@ it('should render html elements as expected using default parser', async () => {
 it('should render html elements as expected using inline parser', async () => {
 	const { container } = render(<MarkdownText content={markdownText} variant='inline' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const normalizedHtml = normalizeHtml(container.innerHTML);

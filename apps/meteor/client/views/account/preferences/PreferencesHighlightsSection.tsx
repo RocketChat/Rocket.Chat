@@ -1,5 +1,5 @@
 import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, TextAreaInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ const PreferencesHighlightsSection = () => {
 	const { t } = useTranslation();
 	const { register } = useFormContext();
 
-	const highlightsId = useUniqueId();
+	const highlightsId = useId();
 
 	return (
 		<AccordionItem title={t('Highlights')}>

@@ -8,7 +8,7 @@ exports[`renders StartCall without crashing 1`] = `
     >
       <div
         aria-label="Start Call"
-        class="rcx-css-1meucp3"
+        class="rcx-css-5tiw1q"
         role="dialog"
       >
         <div

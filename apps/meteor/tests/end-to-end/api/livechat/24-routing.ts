@@ -28,6 +28,186 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
+	// Basically: if there's a bot in the department, it should be assigned to the conversation
+	// No matter what settings workspace has in, as long as the setting to assign new conversations to bots is enabled
+	describe('Bots - Manual selection', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			botUser = { user: bot, credentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy).to.be.undefined;
+			});
+		});
+	});
+
+	describe('Bots - Auto selection', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let otherUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			const other = await createUser({ roles: ['livechat-agent'] });
+			const otherCredentials = await login(other.username, password);
+
+			await makeAgentAvailable(otherCredentials);
+
+			botUser = { user: bot, credentials };
+			otherUser = { user: other, credentials: otherCredentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }, { agentId: otherUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy?._id).to.be.equal(otherUser.user._id);
+			});
+		});
+	});
+
+	describe('Bots - Auto selection & Waiting queue', () => {
+		let botUser: { user: IUser; credentials: Credentials };
+		let testDepartment: ILivechatDepartment;
+		let testDepartment2: ILivechatDepartment;
+		before(async () => {
+			const bot = await createUser({ roles: ['bot', 'livechat-agent'] });
+			const credentials = await login(bot.username, password);
+
+			botUser = { user: bot, credentials };
+		});
+		before(async () => {
+			testDepartment = await createDepartment([{ agentId: botUser.user._id }]);
+			testDepartment2 = await createDepartment();
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			await updateSetting('Livechat_waiting_queue', true);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+		});
+
+		after(async () => {
+			await deleteUser(botUser.user);
+			await updateSetting('Livechat_waiting_queue', false);
+			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			await updateSetting('Livechat_accept_chats_with_no_agents', false);
+		});
+
+		it('should assign conversation to bot', async () => {
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy?._id).to.be.equal(botUser.user._id);
+		});
+		it('should not assign conversation to bot if department has no bots', async () => {
+			const visitor = await createVisitor(testDepartment2._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.servedBy).to.be.undefined;
+		});
+
+		describe('with setting disabled', () => {
+			before(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', false);
+			});
+			after(async () => {
+				await updateSetting('Livechat_assign_new_conversation_to_bot', true);
+			});
+
+			it('should not assign conversation to bot', async () => {
+				const visitor = await createVisitor(testDepartment._id);
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.servedBy).to.be.undefined;
+			});
+		});
+	});
+
 	describe('Auto-Selection', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
@@ -77,7 +257,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 		before(async () => {
 			testDepartment = await createDepartment([{ agentId: testUser.user._id }, { agentId: testUser3.user._id }]);
-			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
 
 			const visitorName = faker.person.fullName();
 			visitorEmail = faker.internet.email().toLowerCase();
@@ -92,14 +271,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		after(async () =>
-			Promise.all([
-				deleteUser(testUser.user),
-				deleteUser(testUser2.user),
-				deleteUser(testUser3.user),
-				updateSetting('Livechat_assign_new_conversation_to_bot', false),
-			]),
-		);
+		after(async () => Promise.all([deleteUser(testUser.user), deleteUser(testUser2.user), deleteUser(testUser3.user)]));
 
 		it('should route a room to an available agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
@@ -124,20 +296,17 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.not.be.equal(testUser2.user._id);
 		});
-		(IS_EE ? it : it.skip)(
-			'should route to contact manager if it is online and Livechat_assign_new_conversation_to_bot is enabled',
-			async () => {
-				const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
-				const room = await createLivechatRoom(visitor.token);
+		it('should route to contact manager if it is online and Omnichannel_contact_manager_routing is enabled', async () => {
+			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
+			const room = await createLivechatRoom(visitor.token);
 
-				await sleep(5000);
+			await sleep(5000);
 
-				const roomInfo = await getLivechatRoomInfo(room._id);
+			const roomInfo = await getLivechatRoomInfo(room._id);
 
-				expect(roomInfo.servedBy).to.be.an('object');
-				expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
-			},
-		);
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
+		});
 		it('should fail to start a conversation if there is noone available and Livechat_accept_chats_with_no_agents is false', async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 			await makeAgentUnavailable(testUser.credentials);
@@ -195,21 +364,58 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
-		(IS_EE ? it : it.skip)(
-			'should route to another available agent if contact manager is unavailable and Livechat_assign_new_conversation_to_bot is enabled',
-			async () => {
-				await makeAgentAvailable(testUser.credentials);
-				const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
+		it('should route to another available agent if contact manager is unavailable and Omnichannel_contact_manager_routing is enabled', async () => {
+			await makeAgentAvailable(testUser.credentials);
+			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
+			const room = await createLivechatRoom(visitor.token);
+
+			await sleep(5000);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+		});
+		describe('with setting Omnichannel_contact_manager_routing disabled', () => {
+			let testDepartment2: ILivechatDepartment;
+			before(async () => {
+				await updateSetting('Omnichannel_contact_manager_routing', false);
+				// We should update the count of the user
+			});
+			after(async () => {
+				await updateSetting('Omnichannel_contact_manager_routing', true);
+			});
+
+			before(async () => {
+				// This will deprioritize the CM from normal routing. So the test is predictable
+				// IF the setting is off, the CM will be treated as a normal agent
+				// IF the setting is on, the CM will be treated as a CM and no matter the count it will get assigned
+				testDepartment2 = await createDepartment([{ agentId: testUser.user._id }, { agentId: testUser3.user._id, count: 10000 }]);
+
+				const visitorName = faker.person.fullName();
+				visitorEmail = faker.internet.email().toLowerCase();
+				await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: visitorName,
+						emails: [visitorEmail],
+						phones: [],
+						contactManager: testUser3.user._id,
+					});
+			});
+
+			it('should not route to contact manager if it is online but setting is off', async () => {
+				const visitor = await createVisitor(testDepartment2._id, faker.person.fullName(), visitorEmail);
 				const room = await createLivechatRoom(visitor.token);
 
 				await sleep(5000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
 
-				expect(roomInfo.servedBy).to.be.an('object');
-				expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
-			},
-		);
+				expect(roomInfo.servedBy).to.be.an('object').that.has.property('_id').that.is.not.equal(testUser3.user._id);
+			});
+		});
 	});
 	describe('Load Balancing', () => {
 		before(async () => {

@@ -1,9 +1,9 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +44,7 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 	}, [debouncedOnSearch, searchText, globalSearch]);
 
 	const globalSearchEnabled = provider.settings.GlobalSearchEnabled;
-	const globalSearchToggleId = useUniqueId();
+	const globalSearchToggleId = useId();
 
 	const { t } = useTranslation();
 

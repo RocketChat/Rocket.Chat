@@ -7,7 +7,7 @@ export type VideoConfPopupPayload = {
 	isReceiving?: boolean;
 };
 
-type VideoConfContextValue = {
+export type VideoConfContextValue = {
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
@@ -18,26 +18,11 @@ type VideoConfContextValue = {
 	abortCall: () => void;
 	setPreferences: (prefs: { mic?: boolean; cam?: boolean }) => void;
 	loadCapabilities: () => Promise<void>;
-	queryIncomingCalls: {
-		subscribe: (cb: () => void) => () => void;
-		getSnapshot: () => DirectCallData[];
-	};
-	queryRinging: {
-		subscribe: (cb: () => void) => () => void;
-		getSnapshot: () => boolean;
-	};
-	queryCalling: {
-		subscribe: (cb: () => void) => () => void;
-		getSnapshot: () => boolean;
-	};
-	queryCapabilities: {
-		subscribe: (cb: () => void) => () => void;
-		getSnapshot: () => ProviderCapabilities;
-	};
-	queryPreferences: {
-		subscribe: (cb: () => void) => () => void;
-		getSnapshot: () => CallPreferences;
-	};
+	queryIncomingCalls: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => DirectCallData[]];
+	queryRinging: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
+	queryCalling: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
+	queryCapabilities: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities];
+	queryPreferences: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences];
 };
 
 export const VideoConfContext = createContext<VideoConfContextValue | undefined>(undefined);
