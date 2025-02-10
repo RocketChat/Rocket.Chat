@@ -77,7 +77,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	}
 
 	if (!isUpdateUserData(userData)) {
-		return saveNewUser(userData, sendPassword);
+		const updater = Users.getUpdater();
+
+		return saveNewUser(userData, sendPassword, updater);
 	}
 
 	await validateUserEditing(userId, userData);
