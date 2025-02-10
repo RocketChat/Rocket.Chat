@@ -1,58 +1,7 @@
 import EJSON from 'ejson';
 import fetch from 'node-fetch';
-import type { RequestInit, Response } from 'node-fetch';
 
-import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
-import type { NativeNotificationParameters } from './push';
-
-type FCMDataField = Record<string, any>;
-
-type FCMNotificationField = {
-	title: string;
-	body: string;
-	image?: string;
-};
-
-type FCMMessage = {
-	notification?: FCMNotificationField;
-	data?: FCMDataField;
-	token?: string;
-	to?: string;
-	android?: {
-		collapseKey?: string;
-		priority?: 'HIGH' | 'NORMAL';
-		ttl?: string;
-		restrictedPackageName?: string;
-		data?: FCMDataField;
-		notification?: FCMNotificationField;
-		fcm_options?: {
-			analytics_label?: string;
-		};
-		direct_boot_ok?: boolean;
-	};
-	webpush?: {
-		headers?: FCMDataField;
-		data?: FCMDataField;
-		notification?: FCMNotificationField;
-		fcm_options?: {
-			link?: string;
-			analytics_label?: string;
-		};
-	};
-	fcm_options?: {
-		analytics_label?: string;
-	};
-};
-
-// https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
-type FCMError = {
-	error: {
-		code: number;
-		message: string;
-		status: string;
-	};
-};
 
 /**
  * Set at least a 10 second timeout on send requests before retrying.
@@ -63,7 +12,7 @@ type FCMError = {
  * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
  * - For 500 errors: retry with exponential backoff.
  */
-async function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
+async function fetchWithRetry(url, options, retries = 0) {
 	const MAX_RETRIES = 5;
 	const response = await fetch(url, options);
 
@@ -90,15 +39,15 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 0): P
 		return fetchWithRetry(url, options, retries + 1);
 	}
 
-	const error: FCMError = await response.json();
+	const error = await response.json();
 	logger.error('sendFCM error', error);
 
 	return response;
 }
 
-function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): { message: FCMMessage }[] {
+function getFCMMessagesFromPushData(userTokens, notification) {
 	// first we will get the `data` field from the notification
-	const data: FCMDataField = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
+	const data = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 	// Set image
 	if (notification.gcm?.image) {
@@ -127,13 +76,13 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	}
 
 	// then we will create the notification field
-	const notificationField: FCMNotificationField = {
+	const notificationField = {
 		title: notification.title,
 		body: notification.text,
 	};
 
 	// then we will create the message
-	const message: FCMMessage = {
+	const message = {
 		notification: notificationField,
 		data,
 		android: {
@@ -145,7 +94,7 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	return userTokens.map((token) => ({ message: { ...message, token } }));
 }
 
-export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
+export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }) {
 	// We don't use these parameters, but we need to keep them to keep the function signature
 	// TODO: Remove them when we remove the old sendGCM function
 	_replaceToken;
@@ -164,7 +113,7 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 		'Content-Type': 'application/json',
 		'Authorization': `Bearer ${options.gcm.apiKey}`,
 		'access_token_auth': true,
-	} as Record<string, any>;
+	};
 
 	if (!options.gcm.projectNumber.trim()) {
 		logger.error('sendFCM error: GCM project number is missing');
