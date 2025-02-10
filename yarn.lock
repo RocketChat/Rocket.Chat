@@ -7566,6 +7566,7 @@ __metadata:
   dependencies:
     cheerio: "npm:1.0.0"
     eslint: "npm:~8.45.0"
+    jest: "npm:^29.7.0"
     typescript: "npm:~5.7.2"
   languageName: unknown
   linkType: soft
