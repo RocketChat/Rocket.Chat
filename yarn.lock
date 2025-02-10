@@ -7955,7 +7955,7 @@ __metadata:
     highlight.js: "npm:^11.10.0"
     identity-obj-proxy: "npm:^3.0.0"
     jest: "npm:~29.7.0"
-    katex: "npm:~0.16.11"
+    katex: "npm:~0.16.21"
     outdent: "npm:^0.8.0"
     react-aria: "npm:~3.23.1"
     react-dom: "npm:~18.3.1"
@@ -25239,7 +25239,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"katex@npm:~0.16.11, katex@npm:~0.16.21":
+"katex@npm:~0.16.21":
   version: 0.16.21
   resolution: "katex@npm:0.16.21"
   dependencies:
