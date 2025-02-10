@@ -73,7 +73,7 @@ const fetchCloudAnnouncementsSync = async ({
 	const assertWorkspaceCommPayload = workspaceCommPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceCommPayload.success) {
-		console.error('workspaceCommPayloadSchema failed type validation', assertWorkspaceCommPayload.error.errors);
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceCommPayload.error.errors });
 	}
 
 	return payload;

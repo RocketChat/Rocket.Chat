@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { settings } from '../../../../settings/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 
 const workspaceSyncPayloadSchema = z.object({
 	workspaceId: z.string(),
@@ -37,7 +38,7 @@ export async function fetchWorkspaceSyncPayload({
 	const assertWorkspaceSyncPayload = workspaceSyncPayloadSchema.safeParse(payload);
 
 	if (!assertWorkspaceSyncPayload.success) {
-		console.error('workspaceSyncPayloadSchema failed type validation', assertWorkspaceSyncPayload.error.errors);
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceSyncPayload.error.errors });
 	}
 
 	return payload;
