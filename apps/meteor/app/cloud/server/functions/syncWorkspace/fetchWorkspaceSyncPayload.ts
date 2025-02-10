@@ -3,8 +3,8 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { z } from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
-import { settings } from '../../../../settings/server';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { settings } from '../../../../settings/server';
 
 const workspaceSyncPayloadSchema = z.object({
 	workspaceId: z.string(),
