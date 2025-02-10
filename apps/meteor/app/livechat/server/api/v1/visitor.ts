@@ -9,6 +9,23 @@ import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
+const validateRequiredCustomFields = async (customFields: string[], livechatCustomFields: ILivechatCustomField[]) => {
+	const errors: string[] = [];
+	const requiredCustomFields = livechatCustomFields.filter((field) => field.required);
+
+	requiredCustomFields.forEach((field) => {
+		if (!customFields.find((f) => f === field._id)) {
+			errors.push(field._id);
+		}
+	});
+
+	if (errors.length > 0) {
+		throw new Meteor.Error('error-missing-required-custom-fields', `Missing required custom fields: ${errors.join(', ')}`, {
+			method: 'livechat/visitor',
+		});
+	}
+};
+
 API.v1.addRoute(
 	'livechat/visitor',
 	{
@@ -79,28 +96,32 @@ API.v1.addRoute(
 			);
 
 			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-				const keys = customFields.map((field) => field.key);
 				const errors: string[] = [];
+				const keys = customFields.map((field) => field.key);
 
+				const livechatCustomFields = await LivechatCustomField.findByScope(
+					'visitor',
+					{ projection: { _id: 1, required: 1 } },
+					false,
+				).toArray();
+				await validateRequiredCustomFields(keys, livechatCustomFields);
+
+				const matchingCustomFields = livechatCustomFields.filter((field) => keys.includes(field._id));
 				const processedKeys = await Promise.all(
-					await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
-						projection: { _id: 1 },
-					})
-						.map(async (field) => {
-							const customField = customFields.find((f) => f.key === field._id);
-							if (!customField) {
-								return;
-							}
+					matchingCustomFields.map(async (field) => {
+						const customField = customFields.find((f) => f.key === field._id);
+						if (!customField) {
+							return;
+						}
 
-							const { key, value, overwrite } = customField;
-							// TODO: Change this to Bulk update
-							if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-								errors.push(key);
-							}
+						const { key, value, overwrite } = customField;
+						// TODO: Change this to Bulk update
+						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+							errors.push(key);
+						}
 
-							return key;
-						})
-						.toArray(),
+						return key;
+					}),
 				);
 
 				if (processedKeys.length !== keys.length) {
