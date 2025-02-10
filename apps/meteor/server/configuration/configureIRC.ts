@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 
-import Bridge from './irc-bridge';
-import { settings } from '../../settings/server';
+import Bridge from '../../app/irc/server/irc-bridge';
+import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 
-if (!!settings.get('IRC_Enabled') === true) {
+export async function configureIRC(settings: ICachedSettings): Promise<void> {
+	if (!settings.get('IRC_Enabled')) {
+		return;
+	}
+
 	// Normalize the config values
 	const config = {
 		server: {
@@ -20,8 +24,5 @@ if (!!settings.get('IRC_Enabled') === true) {
 	};
 
 	Meteor.ircBridge = new Bridge(config);
-
-	Meteor.startup(async () => {
-		await Meteor.ircBridge.init();
-	});
+	await Meteor.ircBridge.init();
 }
