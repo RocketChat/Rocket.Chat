@@ -14,8 +14,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const getSingleMessage = async (userId: string, mid: IMessage['_id']): Promise<IMessage | null> => {
-	check(mid, String);
-
 	const msg = await Messages.findOneById(mid);
 
 	if (!msg?.rid) {
@@ -31,6 +29,8 @@ export const getSingleMessage = async (userId: string, mid: IMessage['_id']): Pr
 
 Meteor.methods<ServerMethods>({
 	async getSingleMessage(mid) {
+		check(mid, String);
+
 		const uid = Meteor.userId();
 
 		if (!uid) {

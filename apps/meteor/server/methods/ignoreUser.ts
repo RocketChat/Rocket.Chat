@@ -16,10 +16,6 @@ export const ignoreUser = async (
 	fromUserId: string,
 	{ rid, userId: ignoredUser, ignore }: { rid: string; userId: string; ignore?: boolean },
 ): Promise<boolean> => {
-	check(ignoredUser, String);
-	check(rid, String);
-	check(ignore, Boolean);
-
 	const [subscription, subscriptionIgnoredUser] = await Promise.all([
 		Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId),
 		Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser),
@@ -48,6 +44,10 @@ export const ignoreUser = async (
 
 Meteor.methods<ServerMethods>({
 	async ignoreUser({ rid, userId: ignoredUser, ignore = true }) {
+		check(ignoredUser, String);
+		check(rid, String);
+		check(ignore, Boolean);
+
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
