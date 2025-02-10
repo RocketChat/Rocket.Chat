@@ -2235,6 +2235,7 @@
   "error-room-does-not-exist": "This room does not exist",
   "error-role-already-present": "A role with this name already exists",
   "error-room-already-closed": "Room is already closed",
+  "error-room-already-hidden": "Room is already hidden",
   "error-room-is-not-closed": "Room is not closed",
   "error-room-onHold": "Error! Room is On Hold",
   "error-room-is-already-on-hold": "Error! Room is already On Hold",

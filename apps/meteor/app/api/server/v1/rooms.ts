@@ -989,7 +989,7 @@ API.v1.addRoute(
 			}
 
 			if (!subscription.open) {
-				return API.v1.failure('error-room-already-closed');
+				return API.v1.failure('error-room-already-hidden');
 			}
 
 			await hideRoomMethod(this.userId, roomId);
