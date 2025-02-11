@@ -1,13 +1,22 @@
 import './serviceWorker';
 import './startup/accounts';
 
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
 FlowRouter.wait();
 
-FlowRouter.notFound = {
+FlowRouter.route('*', {
 	action: () => undefined,
-};
+});
+
+Meteor.startup(() => {
+	FlowRouter.initialize({
+		hashbang: false,
+		page: {
+			click: true,
+		},
+	});
+});
 
 import('./polyfills')
 	.then(() => import('./meteorOverrides'))
