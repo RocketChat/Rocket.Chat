@@ -1,3 +1,5 @@
+import { Apps } from '@rocket.chat/apps';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
@@ -150,6 +152,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		const createdMessage = await Messages.findOneById(insertedId);
 		if (!createdMessage) {
 			throw new Error('Failed to find the created message.');
+		}
+
+		if (Apps.self?.isLoaded()) {
+			void Apps.getBridges()?.getListenerBridge().systemMessageEvent(AppInterface.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });

@@ -26,6 +26,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageStarred:
 				case AppInterface.IPostMessageReported:
 					return 'messageEvent';
+				case AppInterface.IPostSystemMessageSent:
+					return 'systemMessageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
 				case AppInterface.IPreRoomCreateModify:
@@ -66,6 +68,12 @@ export class AppListenerBridge {
 
 	async defaultEvent(inte, payload) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
+	}
+
+	async systemMessageEvent(inte, payload) {
+		const msg = await this.orch.getConverters().get('messages').convertSystemMessage(payload);
+		console.log('systemMessageEvent', inte, msg);
+		return this.orch.getManager().getListenerManager().executeListener(inte, msg);
 	}
 
 	async messageEvent(inte, message, ...payload) {

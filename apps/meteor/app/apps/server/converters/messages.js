@@ -18,7 +18,7 @@ export class AppMessagesConverter {
 		return this.convertMessage(msg);
 	}
 
-	async convertMessageRaw(msgObj) {
+	async convertMessageRaw(msgObj, extraFields = {}) {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -48,6 +48,7 @@ export class AppMessagesConverter {
 			attachments: getAttachments,
 			sender: 'u',
 			threadMsgCount: 'tcount',
+			...extraFields,
 		};
 
 		return transformMappedData(message, map);
@@ -241,6 +242,14 @@ export class AppMessagesConverter {
 				attachment._unmappedProperties_,
 			),
 		);
+	}
+
+	async convertSystemMessage(message) {
+		if (!message) {
+			return undefined;
+		}
+
+		return this.convertMessageRaw(message, { type: 't' });
 	}
 
 	async _convertAttachmentsToApp(attachments) {
