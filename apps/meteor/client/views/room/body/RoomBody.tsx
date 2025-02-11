@@ -109,9 +109,10 @@ const RoomBody = (): ReactElement => {
 	const {
 		uploads,
 		isUploading,
+		hasUploads,
 		handleUploadFiles,
 		// handleUploadProgressClose,
-		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
+		targetDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
@@ -299,6 +300,7 @@ const RoomBody = (): ReactElement => {
 									onUploadFiles={handleUploadFiles}
 									uploads={uploads}
 									isUploading={isUploading}
+									hasUploads={hasUploads}
 									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}

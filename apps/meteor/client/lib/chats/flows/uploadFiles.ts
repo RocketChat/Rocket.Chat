@@ -4,9 +4,11 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { e2e } from '../../../../app/e2e/client';
 import { settings } from '../../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
+import { dispatchToastMessage } from '../../toast';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -24,6 +26,13 @@ const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number
 };
 
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
+	if (chat?.uploads.get().length > 10) {
+		return dispatchToastMessage({
+			type: 'error',
+			message: t('You_cant_upload_more_than__count__files', { count: 10 }),
+		});
+	}
+
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 
 	const msg = await prependReplies('', replies);
@@ -47,7 +56,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 			getContent,
 			fileContent,
 		);
-		chat.composer?.clear();
+		// chat.composer?.clear();
 		// imperativeModal.close();
 		uploadNextFile();
 	};
@@ -335,5 +344,5 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	};
 
 	uploadNextFile();
-	// resetFileInput?.();
+	resetFileInput?.();
 };

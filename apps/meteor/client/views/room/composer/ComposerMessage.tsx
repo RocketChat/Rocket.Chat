@@ -14,6 +14,7 @@ import type { Upload } from '../../../lib/chats/Upload';
 export type ComposerMessageProps = {
 	uploads: readonly Upload[];
 	isUploading: boolean;
+	hasUploads: boolean;
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;

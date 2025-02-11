@@ -95,6 +95,7 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 	uploads: readonly Upload[];
 	isUploading: boolean;
+	hasUploads: boolean;
 };
 
 const MessageBox = ({
@@ -110,6 +111,7 @@ const MessageBox = ({
 	previewUrls,
 	uploads,
 	isUploading,
+	hasUploads,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -165,9 +167,8 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	// TODO: change to something like `hasUploads`
 	const handleSendMessage = useEffectEvent(() => {
-		if (isUploading) {
+		if (hasUploads) {
 			return chat?.flows.confirmFiles();
 		}
 		const text = chat.composer?.text ?? '';
@@ -356,6 +357,7 @@ const MessageBox = ({
 	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
+	const shouldDisableDueUploads = !hasUploads || isUploading;
 
 	return (
 		<>
@@ -409,7 +411,7 @@ const MessageBox = ({
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				{isUploading && (
+				{hasUploads && (
 					<MessageComposerFileArea
 						uploads={uploads}
 						onEdit={chat.uploads.editUploadFileName}
@@ -457,10 +459,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing && !isUploading)}
+									disabled={!canSend || (!typing && !isEditing && shouldDisableDueUploads)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing || isUploading}
-									info={typing || isEditing || isUploading}
+									secondary={typing || isEditing || !shouldDisableDueUploads}
+									info={typing || isEditing || !shouldDisableDueUploads}
 								/>
 							</>
 						)}
