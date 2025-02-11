@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ const useVoipMenuOptions = () => {
 	const { t } = useTranslation();
 	const { uids = [] } = useRoom();
 	const ownUserId = useUserId();
-
+	const canStartVoiceCall = usePermission('view-user-voip-extension');
 	const dispatchWarning = useVoipWarningModal();
 
 	const [isMicPermissionDenied] = useMediaPermissions('microphone');
@@ -55,6 +55,10 @@ const useVoipMenuOptions = () => {
 	});
 
 	return useMemo(() => {
+		if (!canStartVoiceCall) {
+			return undefined;
+		}
+
 		const items: GenericMenuItemProps[] = [
 			{
 				id: 'start-voip-call',
@@ -76,7 +80,7 @@ const useVoipMenuOptions = () => {
 			order: 4,
 			allowed,
 		};
-	}, [disabled, title, t, handleOnClick, allowed]);
+	}, [disabled, title, t, handleOnClick, allowed, canStartVoiceCall]);
 };
 
 export default useVoipMenuOptions;

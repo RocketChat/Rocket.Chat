@@ -83,7 +83,7 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					{onConfirm && isAdmin && hasModule && (
 						<Button primary onClick={onConfirm}>
-							{t('Open_settings')}
+							{t('Go_to_settings')}
 						</Button>
 					)}
 					{isAdmin && !hasModule && (
