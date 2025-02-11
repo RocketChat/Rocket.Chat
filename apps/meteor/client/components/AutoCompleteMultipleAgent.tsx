@@ -53,7 +53,9 @@ const AutoCompleteAgent = ({
 			error={error}
 			placeholder={placeholder}
 			onChange={onChange}
+			width='100%'
 			flexShrink={0}
+			flexGrow={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
