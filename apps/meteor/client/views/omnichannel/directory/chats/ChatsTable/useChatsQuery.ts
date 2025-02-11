@@ -18,6 +18,7 @@ type CurrentChatQuery = {
 	sort: string;
 	count?: number;
 	queued?: boolean;
+	units?: string[];
 };
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
@@ -28,7 +29,7 @@ export const useChatsQuery = () => {
 
 	return useCallback(
 		(
-			{ guest, servedBy, department, status, from, to, tags, ...customFields }: ChatsFiltersQuery,
+			{ guest, servedBy, department, status, from, to, tags, units, ...customFields }: ChatsFiltersQuery,
 			[column, direction]: [string, 'asc' | 'desc'],
 			current: number,
 			itemsPerPage: 25 | 50 | 100,
@@ -64,16 +65,20 @@ export const useChatsQuery = () => {
 				query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
 			}
 
-			if (canViewLivechatRooms && servedBy && servedBy[0].value !== 'all') {
+			if (canViewLivechatRooms && servedBy?.length) {
 				query.agents = servedBy.map((s) => s.value as string);
 			}
 
-			if (department && department[0].value !== 'all') {
+			if (department?.length) {
 				query.departmentId = department.map((d) => d.value as string);
 			}
 
 			if (tags && tags.length > 0) {
 				query.tags = tags.map((tag) => tag.value);
+			}
+
+			if (units?.length) {
+				query.units = units.map((u) => u.value as string);
 			}
 
 			if (customFields && Object.keys(customFields).length > 0) {

@@ -10,17 +10,19 @@ export type ChatsFiltersQuery = {
 	from: string;
 	to: string;
 	tags: { _id: string; label: string; value: string }[];
+	units?: PaginatedMultiSelectOption[];
 	[key: string]: unknown;
 };
 
 export const initialValues: ChatsFiltersQuery = {
 	guest: '',
-	servedBy: [{ value: 'all', label: 'all' }],
+	servedBy: [],
 	status: 'all',
-	department: [{ value: 'all', label: 'all' }],
+	department: [],
 	from: '',
 	to: '',
 	tags: [],
+	units: [],
 };
 
 export type ChatsContextValue = {

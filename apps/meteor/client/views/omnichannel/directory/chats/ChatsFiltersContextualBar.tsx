@@ -16,6 +16,8 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import AutoCompleteUnits from '../../../../omnichannel/additionalForms/Units';
 import { CurrentChatTags } from '../../additionalForms';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
@@ -28,6 +30,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const { t } = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
+	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });
@@ -126,6 +129,18 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 						/>
 					</FieldRow>
 				</Field>
+				{isEnterprise && (
+					<Field>
+						<FieldLabel>{t('Units')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='units'
+								control={control}
+								render={({ field: { value, onChange } }) => <AutoCompleteUnits value={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+					</Field>
+				)}
 				{canViewCustomFields &&
 					contactCustomFields?.map((customField) => {
 						if (customField.type === 'select') {

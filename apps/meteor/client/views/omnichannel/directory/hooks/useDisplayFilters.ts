@@ -17,9 +17,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
-	const { guest, servedBy, status, department, from, to, tags, ...customFields } = filtersQuery;
-
-	console.log(JSON.stringify(department));
+	const { guest, servedBy, status, department, from, to, tags, units, ...customFields } = filtersQuery;
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {
@@ -33,10 +31,11 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
 		to: to !== '' ? `${t('To')}: ${formatDate(to)}` : undefined,
 		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
-		servedBy: servedBy[0].value !== 'all' ? `${t('Served_By')}: ${parseMultiSelect(servedBy)}` : undefined,
-		department: department[0].value !== 'all' ? `${t('Department')}: ${parseMultiSelect(department)}` : undefined,
+		servedBy: servedBy.length ? `${t('Served_By')}: ${parseMultiSelect(servedBy)}` : undefined,
+		department: department.length ? `${t('Department')}: ${parseMultiSelect(department)}` : undefined,
 		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status])}` : undefined,
 		tags: tags.length > 0 ? `${t('Tags')}: ${tags.map((tag) => tag.label).join(', ')}` : undefined,
+		units: units?.length ? `${t('Units')}: ${parseMultiSelect(units)}` : undefined,
 		...displayCustomFields,
 	};
 };
