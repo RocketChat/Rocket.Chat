@@ -20,7 +20,7 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertAppRoom(room, isPartial) {
+	async convertAppRoom(room, isPartial = false) {
 		if (!room) {
 			return undefined;
 		}
