@@ -11,7 +11,7 @@ type UnitsListOptions = {
 
 type UnitOption = { value: string; label: string; _updatedAt: Date; _id: string };
 
-export const useUnits = (
+export const useUnitsList = (
 	options: UnitsListOptions,
 ): {
 	itemsList: RecordList<UnitOption>;
@@ -38,19 +38,16 @@ export const useUnits = (
 				sort: `{ "name": 1 }`,
 			});
 
-			const items = units.map<UnitOption>((u) => {
-				const unit = {
-					_updatedAt: new Date(u._updatedAt),
-					label: u.name,
-					value: u._id,
-					_id: u._id,
-				};
-				return unit;
-			});
+			const items = units.map<UnitOption>((u) => ({
+				_id: u._id,
+				label: u.name,
+				value: u._id,
+				_updatedAt: new Date(u._updatedAt),
+			}));
 
 			return {
 				items,
-				itemCount: total + 1,
+				itemCount: total,
 			};
 		},
 		[getUnits, text],
