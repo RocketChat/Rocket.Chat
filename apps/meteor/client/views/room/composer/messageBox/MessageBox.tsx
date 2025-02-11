@@ -412,8 +412,9 @@ const MessageBox = ({
 				{isUploading && (
 					<MessageComposerFileArea
 						uploads={uploads}
-						handleEditFileName={chat.uploads.editUploadFileName}
-						handleRemoveUpload={chat.uploads.removeUpload}
+						onEdit={chat.uploads.editUploadFileName}
+						onRemove={chat.uploads.removeUpload}
+						onCancel={chat.uploads.cancel}
 					/>
 				)}
 				<MessageComposerToolbar>
