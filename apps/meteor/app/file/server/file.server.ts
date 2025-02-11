@@ -100,8 +100,12 @@ class GridFS implements IRocketChatFileStore {
 		}
 		return new Promise<IFile>((resolve) => {
 			const data: Buffer[] = [];
-			file.readStream.on('data', (chunk) => {
-				return data.push(chunk);
+			file.readStream.on('data', (chunk: string | Buffer) => {
+				if (typeof chunk === 'string') {
+					data.push(Buffer.from(chunk));
+				} else {
+					data.push(chunk);
+				}
 			});
 
 			file.readStream.on('end', () => {
@@ -183,8 +187,12 @@ class FileSystem implements IRocketChatFileStore {
 		}
 		return new Promise<IFile>((resolve) => {
 			const data: Buffer[] = [];
-			file.readStream.on('data', (chunk: Buffer) => {
-				return data.push(chunk);
+			file.readStream.on('data', (chunk: string | Buffer) => {
+				if (typeof chunk === 'string') {
+					data.push(Buffer.from(chunk));
+				} else {
+					data.push(chunk);
+				}
 			});
 			file.readStream.on('end', () => {
 				resolve({
