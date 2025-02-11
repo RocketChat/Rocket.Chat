@@ -45,7 +45,7 @@ export class AppMessageBridge extends MessageBridge {
 		}
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const msg: IMessage | undefined = await this.orch.getConverters()?.get('messages').convertAppMessage(message, true);
+		const msg = await this.orch.getConverters()?.get('messages').convertAppMessage(message, true);
 		const editor = await Users.findOneById(message.editor.id);
 
 		if (!editor) {
