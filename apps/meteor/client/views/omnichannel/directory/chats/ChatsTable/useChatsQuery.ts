@@ -64,8 +64,8 @@ export const useChatsQuery = () => {
 				query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
 			}
 
-			if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
-				query.agents = [servedBy];
+			if (canViewLivechatRooms && servedBy && servedBy[0].value !== 'all') {
+				query.agents = servedBy.map((s) => s.value as string);
 			}
 
 			if (department && department !== 'all') {

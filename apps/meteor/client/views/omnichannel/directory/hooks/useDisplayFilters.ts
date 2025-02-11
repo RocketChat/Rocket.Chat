@@ -1,3 +1,4 @@
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -21,10 +22,9 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const { guest, servedBy, status, department, from, to, tags, ...customFields } = filtersQuery;
 
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: department });
-	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: servedBy });
+	console.log(JSON.stringify(servedBy));
 
 	const { data: departmentData } = useQuery({ queryKey: ['getDepartmentDataForFilter', department], queryFn: () => getDepartment({}) });
-	const { data: agentData } = useQuery({ queryKey: ['getAgentDataForFilter', servedBy], queryFn: () => getAgent() });
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {
@@ -38,10 +38,14 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
 		to: to !== '' ? `${t('To')}: ${formatDate(to)}` : undefined,
 		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
-		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
+		servedBy: servedBy[0].value !== 'all' ? `${t('Served_By')}: ${parseAgents(servedBy)}` : undefined,
 		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
 		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status])}` : undefined,
 		tags: tags.length > 0 ? `${t('Tags')}: ${tags.map((tag) => tag.label).join(', ')}` : undefined,
 		...displayCustomFields,
 	};
+};
+
+const parseAgents = (agents: PaginatedMultiSelectOption[]) => {
+	return agents.map((a) => (a.label as string).split(' (')[0]).join(', ');
 };

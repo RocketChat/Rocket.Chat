@@ -6,8 +6,8 @@ import { format } from 'date-fns';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../../components/AutoCompleteDepartment';
+import AutoCompleteMultipleAgent from '../../../../components/AutoCompleteMultipleAgent';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -91,7 +91,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							<Controller
 								name='servedBy'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteAgent haveAll value={value} onChange={onChange} />}
+								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent haveAll value={value} onChange={onChange} />}
 							/>
 						</FieldRow>
 					</Field>
