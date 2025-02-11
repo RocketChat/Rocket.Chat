@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteDepartment from '../../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartmentMultiple from '../../../../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMultipleAgent from '../../../../components/AutoCompleteMultipleAgent';
 import {
 	ContextualbarHeader,
@@ -111,7 +111,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							name='department'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartment haveAll showArchived value={value} onChange={onChange} onlyMyDepartments />
+								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments />
 							)}
 						/>
 					</FieldRow>

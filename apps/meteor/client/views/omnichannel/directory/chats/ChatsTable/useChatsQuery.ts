@@ -8,7 +8,7 @@ type CurrentChatQuery = {
 	agents?: string[];
 	offset?: number;
 	roomName?: string;
-	departmentId?: string;
+	departmentId?: string[];
 	open?: boolean;
 	createdAt?: string;
 	closedAt?: string;
@@ -68,8 +68,8 @@ export const useChatsQuery = () => {
 				query.agents = servedBy.map((s) => s.value as string);
 			}
 
-			if (department && department !== 'all') {
-				query.departmentId = department;
+			if (department && department[0].value !== 'all') {
+				query.departmentId = department.map((d) => d.value as string);
 			}
 
 			if (tags && tags.length > 0) {

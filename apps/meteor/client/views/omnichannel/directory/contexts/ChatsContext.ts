@@ -6,7 +6,7 @@ export type ChatsFiltersQuery = {
 	guest: string;
 	servedBy: PaginatedMultiSelectOption[];
 	status: string;
-	department: string;
+	department: PaginatedMultiSelectOption[];
 	from: string;
 	to: string;
 	tags: { _id: string; label: string; value: string }[];
@@ -17,7 +17,7 @@ export const initialValues: ChatsFiltersQuery = {
 	guest: '',
 	servedBy: [{ value: 'all', label: 'all' }],
 	status: 'all',
-	department: 'all',
+	department: [{ value: 'all', label: 'all' }],
 	from: '',
 	to: '',
 	tags: [],
