@@ -1,7 +1,7 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -10,7 +10,7 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const { t } = useTranslation();
 	const user = useUser();
 
-	const isEnabled = user?.services?.email2fa?.enabled;
+	const [isEnabled, setIsEnabled] = useState(user?.services?.email2fa?.enabled);
 
 	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
 		successMessage: t('Two-factor_authentication_enabled'),
@@ -21,9 +21,12 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 
 	const handleEnable = useCallback(async () => {
 		await enable2faAction();
+		setIsEnabled(true);
 	}, [enable2faAction]);
+
 	const handleDisable = useCallback(async () => {
 		await disable2faAction();
+		setIsEnabled(false);
 	}, [disable2faAction]);
 
 	return (
