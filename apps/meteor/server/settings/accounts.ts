@@ -711,7 +711,7 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Notification_volume',
 			});
 
-			await this.add('Accounts_Default_User_Preferences_callRingerVolume', 100, {
+			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
 				type: 'int',
 				public: true,
 				i18nLabel: 'Call_ringer_volume',
