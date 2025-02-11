@@ -183,11 +183,4 @@ export interface IRoomBuilder {
      * Note: modifying the returned value will have no effect.
      */
     getRoom(): IRoom;
-
-    /**
-     * Gets all changes applied by calling the `set` methods in the builder
-     * Essentially, a diff between the original data that the builder was
-     * constructed with and modifications applied by the app
-     */
-    getChanges(): Partial<IRoom>;
 }

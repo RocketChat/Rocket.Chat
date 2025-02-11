@@ -19,6 +19,7 @@ export class RoomBuilder implements IRoomBuilder {
     private members: Array<string>;
 
     private changes: Partial<IRoom> = {};
+    private customFieldsChanged = false;
 
     constructor(data?: Partial<IRoom>) {
         this.kind = RocketChatAssociationModel.ROOM;
@@ -47,6 +48,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setSlugifiedName(name: string): IRoomBuilder {
         this.room.slugifiedName = name;
         this.changes.slugifiedName = name;
+
         return this;
     }
 
@@ -57,6 +59,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setType(type: RoomType): IRoomBuilder {
         this.room.type = type;
         this.changes.type = type;
+
         return this;
     }
 
@@ -67,6 +70,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setCreator(creator: IUser): IRoomBuilder {
         this.room.creator = creator;
         this.changes.creator = creator;
+
         return this;
     }
 
@@ -118,6 +122,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setDefault(isDefault: boolean): IRoomBuilder {
         this.room.isDefault = isDefault;
         this.changes.isDefault = isDefault;
+
         return this;
     }
 
@@ -128,6 +133,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setReadOnly(isReadOnly: boolean): IRoomBuilder {
         this.room.isReadOnly = isReadOnly;
         this.changes.isReadOnly = isReadOnly;
+
         return this;
     }
 
@@ -138,6 +144,7 @@ export class RoomBuilder implements IRoomBuilder {
     public setDisplayingOfSystemMessages(displaySystemMessages: boolean): IRoomBuilder {
         this.room.displaySystemMessages = displaySystemMessages;
         this.changes.displaySystemMessages = displaySystemMessages;
+
         return this;
     }
 
@@ -151,12 +158,16 @@ export class RoomBuilder implements IRoomBuilder {
         }
 
         this.room.customFields[key] = value;
+
+        this.customFieldsChanged = true;
+
         return this;
     }
 
     public setCustomFields(fields: { [key: string]: object }): IRoomBuilder {
         this.room.customFields = fields;
-        this.changes.customFields = fields;
+        this.customFieldsChanged = true;
+
         return this;
     }
 
@@ -173,6 +184,12 @@ export class RoomBuilder implements IRoomBuilder {
     }
 
     public getChanges() {
-        return structuredClone(this.changes);
+        const changes: Partial<IRoom> = structuredClone(this.changes);
+
+        if (this.customFieldsChanged) {
+            changes.customFields = structuredClone(this.room.customFields);
+        }
+
+        return changes;
     }
 }

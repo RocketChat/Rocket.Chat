@@ -95,15 +95,15 @@ export class ModifyUpdater implements IModifyUpdater {
     public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
         switch (builder.kind) {
             case RocketChatAssociationModel.MESSAGE:
-                return this._finishMessage(builder as IMessageBuilder);
+                return this._finishMessage(builder as MessageBuilder);
             case RocketChatAssociationModel.ROOM:
-                return this._finishRoom(builder as IRoomBuilder);
+                return this._finishRoom(builder as RoomBuilder);
             default:
                 throw new Error('Invalid builder passed to the ModifyUpdater.finish function.');
         }
     }
 
-    private async _finishMessage(builder: IMessageBuilder): Promise<void> {
+    private async _finishMessage(builder: MessageBuilder): Promise<void> {
         const result = builder.getMessage();
 
         if (!result.id) {
@@ -118,13 +118,15 @@ export class ModifyUpdater implements IModifyUpdater {
             result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
         }
 
+        const changes = { id: result.id, ...builder.getChanges() };
+
         await this.senderFn({
             method: 'bridges:getMessageBridge:doUpdate',
-            params: [result, AppObjectRegistry.get('id')],
+            params: [changes, AppObjectRegistry.get('id')],
         });
     }
 
-    private async _finishRoom(builder: IRoomBuilder): Promise<void> {
+    private async _finishRoom(builder: RoomBuilder): Promise<void> {
         const room = builder.getRoom();
 
         if (!room.id) {
