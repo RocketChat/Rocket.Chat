@@ -355,7 +355,7 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-      {quote && <MessageBoxPreview text={text} />}
+			{quote && <MessageBoxPreview text={text} />}
 			{shouldPopupPreview && popup.option && (
 				<ComposerBoxPopup
 					select={popup.select}
