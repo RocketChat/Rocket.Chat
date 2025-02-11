@@ -10,7 +10,7 @@ import type {
 	RouteObject,
 	LocationSearch,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
 
@@ -118,24 +118,13 @@ const navigate = (
 const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
 
-const updateFlowRouter = () => {
-	if (FlowRouter._initialized) {
-		FlowRouter._updateCallbacks();
-		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path));
-		return;
-	}
-
-	FlowRouter.initialize();
-};
-
 const defineRoutes = (routes: RouteObject[]) => {
-	const flowRoutes = routes.map((route) => {
+	routes.map((route) => {
 		if (route.path === '*') {
-			FlowRouter.notFound = {
+			FlowRouter.route('*', {
 				action: () => appLayout.render(<>{route.element}</>),
-			};
-
-			return FlowRouter.notFound;
+			});
+			return;
 		}
 
 		return FlowRouter.route(route.path, {
@@ -147,26 +136,15 @@ const defineRoutes = (routes: RouteObject[]) => {
 	routes.push(...routes);
 	const index = routes.length - 1;
 
-	updateFlowRouter();
+	FlowRouter.reload();
 	routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 
 	return () => {
-		flowRoutes.forEach((flowRoute) => {
-			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
-			if ('name' in flowRoute && flowRoute.name) {
-				delete FlowRouter._routesMap[flowRoute.name];
-			} else {
-				FlowRouter.notFound = {
-					action: () => appLayout.render(<></>),
-				};
-			}
-		});
-
 		if (index !== -1) {
 			routes.splice(index, 1);
 		}
 
-		updateFlowRouter();
+		FlowRouter.reload();
 		routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 	};
 };
