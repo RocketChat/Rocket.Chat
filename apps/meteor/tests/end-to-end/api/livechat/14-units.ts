@@ -964,3 +964,4 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment.ancestors?.[0]).to.equal(unit._id);
 		});
 	});
+});
