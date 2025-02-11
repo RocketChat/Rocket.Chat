@@ -3,10 +3,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 
 let uploads: readonly Upload[] = [];
 
@@ -29,8 +29,24 @@ const wipeFailedOnes = (): void => {
 	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
 };
 
+const removeUpload = (id: Upload['id']): void => {
+	updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+};
+
+const editUploadFileName = (id: Upload['id'], fileName: Upload['name']): void => {
+	updateUploads((uploads) =>
+		uploads.map((upload) =>
+			upload.id === id ? { ...upload, file: new File([upload.file], fileName, { type: upload.file.type }) } : upload,
+		),
+	);
+};
+
+const clear = (): void => {
+	updateUploads(() => []);
+};
+
 const send = async (
-	file: File[] | File,
+	file: File,
 	{
 		description,
 		msg,
@@ -47,28 +63,32 @@ const send = async (
 	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
-	const files = Array.isArray(file) ? file : [file];
 	const id = Random.id();
 	updateUploads((uploads) => [
 		...uploads,
 		{
 			id,
-			name: files[0].name || fileContent?.raw.name || 'unknown',
+			name: fileContent?.raw.name || file.name,
+			file,
 			percentage: 0,
+			url: URL.createObjectURL(file),
 		},
 	]);
 
-	const uploadPromises = files.map((f) => {
-		return new Promise<{ fileId: string; fileUrl: string }>((resolve, reject) => {
+	try {
+		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{
-					file: f,
+					file,
 					...(fileContent && {
 						content: JSON.stringify(fileContent.encrypted),
 					}),
 				},
 				{
+					load: (event) => {
+						resolve(event);
+					},
 					progress: (event) => {
 						if (!event.lengthComputable) {
 							return;
@@ -109,7 +129,19 @@ const send = async (
 			xhr.onload = () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					resolve({ fileId: result.file._id, fileUrl: result.file.url });
+					updateUploads((uploads) =>
+						uploads.map((upload) => {
+							if (upload.id !== id) {
+								return upload;
+							}
+
+							return {
+								...upload,
+								id: result.file._id,
+								url: result.file.url,
+							};
+						}),
+					);
 				}
 			};
 
@@ -119,34 +151,7 @@ const send = async (
 				reject(new Error('Upload cancelled'));
 			});
 		});
-	});
-
-	try {
-		const results = await Promise.all(uploadPromises);
-		const fileIds = results.map((result) => result.fileId);
-		const fileUrls = results.map((result) => result.fileUrl);
-
-		if (msg === undefined) {
-			msg = '';
-		}
-
-		let content;
-		if (getContent) {
-			content = await getContent(fileIds, fileUrls);
-		}
-		const text: IMessage = {
-			rid,
-			_id: id,
-			msg: msg || description || '',
-			ts: new Date(),
-			u: { _id: id, username: id },
-			_updatedAt: new Date(),
-			tmid,
-			t,
-			content,
-		};
-		await sdk.call('sendMessage', text, fileUrls, fileIds);
-		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+		// updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 	} catch (error: unknown) {
 		updateUploads((uploads) =>
 			uploads.map((upload) => {
@@ -173,8 +178,11 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
+	clear,
+	removeUpload,
+	editUploadFileName,
 	send: (
-		file: File[] | File,
+		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
