@@ -8,10 +8,10 @@ export default {
 	title: 'Components/Page',
 	component: Page,
 	subcomponents: {
-		PageContent,
+		PageContent: PageContent as ComponentType<any>,
 		PageHeader: PageHeader as ComponentType<any>,
-		PageScrollableContent,
-		PageScrollableContentWithShadow,
+		PageScrollableContent: PageScrollableContent as ComponentType<any>,
+		PageScrollableContentWithShadow: PageScrollableContentWithShadow as ComponentType<any>,
 	},
 	parameters: {
 		layout: 'fullscreen',

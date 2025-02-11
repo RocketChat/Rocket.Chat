@@ -6,7 +6,6 @@ import { useMarketPlaceMenu } from './useMarketPlaceMenu';
 
 it('should return and empty array if the user does not have `manage-apps` and `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.build(),
@@ -17,7 +16,6 @@ it('should return and empty array if the user does not have `manage-apps` and `a
 
 it('should return `explore` and `installed` items if the user has `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.withPermission('access-marketplace')
@@ -39,7 +37,6 @@ it('should return `explore` and `installed` items if the user has `access-market
 
 it('should return `explore`, `installed` and `requested` items if the user has `manage-apps` permission', () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.withEndpoint('GET', '/apps/app-request/stats', () => ({
@@ -73,7 +70,6 @@ it('should return `explore`, `installed` and `requested` items if the user has `
 
 it('should return one action from the server with no conditions', async () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [
 				{
@@ -117,7 +113,6 @@ it('should return one action from the server with no conditions', async () => {
 describe('Marketplace menu with role conditions', () => {
 	it('should return the action if the user has admin role', async () => {
 		const { result } = renderHook(() => useMarketPlaceMenu(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -165,7 +160,6 @@ describe('Marketplace menu with role conditions', () => {
 
 	it('should return filter the action if the user doesn`t have admin role', async () => {
 		const { result } = renderHook(() => useMarketPlaceMenu(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -213,7 +207,6 @@ describe('Marketplace menu with role conditions', () => {
 describe('Marketplace menu with permission conditions', () => {
 	it('should return the action if the user has manage-apps permission', async () => {
 		const { result } = renderHook(() => useMarketPlaceMenu(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -259,7 +252,6 @@ describe('Marketplace menu with permission conditions', () => {
 
 	it('should return filter the action if the user doesn`t have `any` permission', async () => {
 		const { result } = renderHook(() => useMarketPlaceMenu(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{

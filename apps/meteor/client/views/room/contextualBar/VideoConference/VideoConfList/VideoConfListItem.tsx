@@ -4,9 +4,9 @@ import { Button, Message, Box, Avatar, Palette, IconButton, ButtonGroup } from '
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 
-import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
@@ -106,7 +106,7 @@ const VideoConfListItem = ({
 								</Avatar.Stack>
 								<Box mis={4}>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__member_joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
+										? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
 								</Box>
 							</Box>

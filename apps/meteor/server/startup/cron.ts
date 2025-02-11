@@ -12,12 +12,7 @@ import { videoConferencesCron } from '../cron/videoConferences';
 const logger = new Logger('SyncedCron');
 
 export const startCronJobs = async (): Promise<void> => {
-	await startCron();
-	await oembedCron();
-	await usageReportCron(logger);
-	await npsCron();
-	await temporaryUploadCleanupCron();
-	await federationCron();
-	await videoConferencesCron();
+	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron()]);
+	federationCron();
 	userDataDownloadsCron();
 };

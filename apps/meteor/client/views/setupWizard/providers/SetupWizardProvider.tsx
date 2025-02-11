@@ -164,23 +164,25 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const queryClient = useQueryClient();
 
-	const registerServer: HandleRegisterServer = useEffectEvent(async ({ email, resend = false }): Promise<void> => {
-		try {
-			const { intentData } = await createRegistrationIntent({ resend, email });
-			invalidateLicenseQuery(100);
-			queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
+	const registerServer: HandleRegisterServer = useEffectEvent(
+		async ({ email, resend = false }: { email: string; resend?: boolean }): Promise<void> => {
+			try {
+				const { intentData } = await createRegistrationIntent({ resend, email });
+				invalidateLicenseQuery(100);
+				queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
 
-			setSetupWizardData((prevState) => ({
-				...prevState,
-				registrationData: { ...intentData, cloudEmail: email },
-			}));
+				setSetupWizardData((prevState) => ({
+					...prevState,
+					registrationData: { ...intentData, cloudEmail: email },
+				}));
 
-			goToStep(4);
-			setShowSetupWizard('in_progress');
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
-		}
-	});
+				goToStep(4);
+				setShowSetupWizard('in_progress');
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
+			}
+		},
+	);
 
 	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });

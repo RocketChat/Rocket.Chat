@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
@@ -46,7 +46,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { data, fetchNextPage, isPending, refetch, hasNextPage } = useMembersList(
-		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
+		useMemo(() => ({ rid, type, limit: 20, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
 
 	const hasPermissionToAddUsers = useAtLeastOnePermission(
@@ -60,7 +60,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const openUserInfo = useEffectEvent((e) => {
+	const openUserInfo = useEffectEvent((e: MouseEvent<HTMLElement>) => {
 		const { userid } = e.currentTarget.dataset;
 		setState({
 			tab: ROOM_MEMBERS_TABS.INFO,
