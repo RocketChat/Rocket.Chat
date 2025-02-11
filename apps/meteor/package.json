@@ -416,7 +416,7 @@
 		"react-keyed-flatten-children": "^3.0.2",
 		"react-stately": "~3.17.0",
 		"react-virtuoso": "^4.12.0",
-		"sanitize-html": "^2.13.1",
+		"sanitize-html": "^2.14.0",
 		"semver": "^7.6.3",
 		"sharp": "^0.33.5",
 		"sip.js": "^0.21.2",
@@ -426,7 +426,6 @@
 		"stream-buffers": "^3.0.3",
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^8.5.0",
-		"suretype": "~2.4.1",
 		"swiper": "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",
@@ -442,7 +441,8 @@
 		"xml-crypto": "~3.1.0",
 		"xml-encryption": "~3.0.2",
 		"xml2js": "~0.6.2",
-		"yaqrcode": "^0.2.1"
+		"yaqrcode": "^0.2.1",
+		"zod": "^3.24.1"
 	},
 	"meteor": {
 		"mainModule": {
