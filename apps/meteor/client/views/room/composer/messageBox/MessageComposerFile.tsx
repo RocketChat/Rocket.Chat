@@ -1,61 +1,21 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useState } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import MessageComposerFileLoader from './MessageComposerFileLoader';
+import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
+import type { Upload } from '../../../../lib/chats/Upload';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
-// import { isIE11 } from '../../../../../lib/utils/isIE11';
 import FileUploadModal from '../../modals/FileUploadModal';
 
-// export enum FilePreviewType {
-// 	IMAGE = 'image',
-// 	AUDIO = 'audio',
-// 	VIDEO = 'video',
-// }
-
-// const getFileType = (fileType: File['type']): FilePreviewType | undefined => {
-// 	if (!fileType) {
-// 		return;
-// 	}
-// 	for (const type of Object.values(FilePreviewType)) {
-// 		if (fileType.indexOf(type) > -1) {
-// 			return type;
-// 		}
-// 	}
-// };
-
-// const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefined): boolean => {
-// 	if (!fileType) {
-// 		return false;
-// 	}
-// 	if (isIE11) {
-// 		return false;
-// 	}
-// 	// Avoid preview if file size bigger than 10mb
-// 	if (file.size > 10000000) {
-// 		return false;
-// 	}
-// 	if (!Object.values(FilePreviewType).includes(fileType)) {
-// 		return false;
-// 	}
-// 	return true;
-// };
-
 type MessageComposerFileProps = {
-	file: File;
-	key: number;
-	index: number;
-	onRemove: (index: number) => void;
-};
+	upload: Upload;
+	onRemove: (id: string) => void;
+	onEdit: (id: Upload['id'], fileName: string) => void;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const MessageComposerFile = ({ file, index, onRemove }: MessageComposerFileProps): ReactElement => {
-	// if (shouldShowMediaPreview(file, fileType)) {
-	// 	return <MediaPreview file={file} fileType={fileType} onRemove={handleRemove} index={index} />;
-	// }
-
-	const [fileName, setFileName] = useState(file.name.split('.')[0]);
+const MessageComposerFile = ({ upload, onRemove, onEdit, ...props }: MessageComposerFileProps): ReactElement => {
 	const setModal = useSetModal();
 
 	const previewWrapperStyle = css`
@@ -73,12 +33,28 @@ const MessageComposerFile = ({ file, index, onRemove }: MessageComposerFileProps
 		top: 0.25rem;
 	`;
 
-	const fileExtension = file.name.split('.')[1];
-	const fileSize = formatBytes(file.size, 2);
+	const fileSize = formatBytes(upload.file.size, 2);
+	const fileExtension = getMimeType(upload.file.type, upload.file.name);
+	const isLoading = upload.percentage > 0 && upload.percentage !== 100;
+
+	const handleOpenFilePreview = () => {
+		setModal(
+			<FileUploadModal
+				onSubmit={(name) => {
+					onEdit(upload.id, name);
+					setModal(null);
+				}}
+				fileName={upload.file.name}
+				file={upload.file}
+				onClose={() => setModal(null)}
+			/>,
+		);
+	};
 
 	return (
 		<Box
 			tabIndex={0}
+			role='button'
 			rcx-input-box__wrapper
 			className={previewWrapperStyle}
 			display='flex'
@@ -88,46 +64,32 @@ const MessageComposerFile = ({ file, index, onRemove }: MessageComposerFileProps
 			borderColor='extra-light'
 			alignItems='center'
 			position='relative'
-			title={file.name}
+			title={upload.file.name}
 			height='x56'
 			width='x200'
 			mie={8}
-			onClick={() =>
-				setModal(
-					<FileUploadModal
-						onSubmit={(name) => setFileName(name)}
-						fileName={fileName}
-						file={file}
-						onClose={() => setModal(null)}
-						invalidContentType={!fileUploadIsValidContentType(file?.type)}
-					/>,
-				)
-			}
+			onClick={handleOpenFilePreview}
+			onKeyDown={(e) => ['Enter', 'Space'].includes(e.code) && handleOpenFilePreview()}
+			{...props}
 		>
 			<Box width='140px' mis={4} display='flex' flexDirection='column'>
 				<Box fontScale='p2' color='info' withTruncatedText>
-					{fileName}
+					{upload.file.name}
 				</Box>
 				<Box fontScale='c1' color='hint' textTransform='uppercase'>{`${fileSize} - ${fileExtension}`}</Box>
 			</Box>
 			<Box
 				className={closeWrapperStyle}
-				// data-mid={reply._id}
-				// onClick={(): void => {
-				// 	chat.composer?.dismissQuotedMessage(reply._id);
-				// }}
 				onClick={(e) => {
 					e.stopPropagation();
-					onRemove(index);
+					onRemove(upload.id);
 				}}
 			>
-				<IconButton mini icon='cross' />
+				{isLoading && <MessageComposerFileLoader />}
+				{!isLoading && <IconButton mini icon='cross' />}
 			</Box>
-			{/* <Icon style={buttonStyle} name='cross' size='x16' mis={-2} mie={4} onClick={() => onRemove(index)} /> */}
 		</Box>
 	);
-
-	// return <GenericPreview file={file} onRemove={handleRemove} index={index} />;
 };
 
 export default MessageComposerFile;
