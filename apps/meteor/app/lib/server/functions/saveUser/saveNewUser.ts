@@ -1,3 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
 
@@ -10,8 +12,9 @@ import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
+import { saveCustomFields } from '../saveCustomFields';
 
-export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean) {
+export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean, _updater?: Updater<IUser>) {
 	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
@@ -32,7 +35,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	const _id = await Accounts.createUserAsync(createUser);
 
-	const updater = Users.getUpdater();
+	const updater = _updater || Users.getUpdater();
 
 	updater.set('settings', userData.settings || {});
 	if (typeof userData.name !== 'undefined') {
@@ -45,6 +48,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	if (typeof userData.verified === 'boolean') {
 		updater.set('emails.0.verified', userData.verified);
+	}
+
+	if (userData.customFields) {
+		await saveCustomFields(_id, userData.customFields, updater);
 	}
 
 	handleBio(updater, userData.bio);
