@@ -70,13 +70,17 @@ export class ModifyUpdater implements IModifyUpdater {
         ) as IUserUpdater;
     }
 
-    public async message(messageId: string, _updater: IUser): Promise<IMessageBuilder> {
+    public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
         const response = await this.senderFn({
             method: 'bridges:getMessageBridge:doGetById',
             params: [messageId, AppObjectRegistry.get('id')],
         });
 
-        return new MessageBuilder(response.result as IMessage);
+        const builder = new MessageBuilder(response.result as IMessage);
+
+        builder.setEditor(editor);
+
+        return builder;
     }
 
     public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
