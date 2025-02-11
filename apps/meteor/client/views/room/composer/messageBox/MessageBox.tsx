@@ -171,9 +171,9 @@ const MessageBox = ({
 			isSlashCommandAllowed,
 		});
 	});
-	const [quote, setQuote] = useState<boolean>(false);
+	const [previewText, setPreviewText] = useState<boolean>(false);
 	const handlePreviewMessage = useEffectEvent(() => {
-		setQuote(!quote);
+		setPreviewText(!previewText);
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
@@ -355,7 +355,7 @@ const MessageBox = ({
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-			{quote && <MessageBoxPreview text={text} />}
+			{previewText && text.trim() && <MessageBoxPreview text={text} />}
 			{shouldPopupPreview && popup.option && (
 				<ComposerBoxPopup
 					select={popup.select}
