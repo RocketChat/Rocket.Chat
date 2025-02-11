@@ -10,6 +10,7 @@ import { Meteor } from 'meteor/meteor';
 import { initAPN, sendAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
+import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
 
@@ -196,24 +197,40 @@ class PushClass {
 		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
 
-			// override this.options.gcm.apiKey with the oauth2 token
-			const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
-			const sendGCMOptions = {
-				...this.options,
-				gcm: {
-					...this.options.gcm,
-					apiKey: token,
-					projectNumber: projectId,
-				},
-			};
+			// Send to GCM
+			// We do support multiple here - so we should construct an array
+			// and send it bulk - Investigate limit count of id's
+			// TODO: Remove this after the legacy provider is removed
+			const useLegacyProvider = settings.get<boolean>('Push_UseLegacy');
 
-			sendFCM({
-				userTokens: app.token.gcm,
-				notification,
-				_replaceToken: this.replaceToken,
-				_removeToken: this.removeToken,
-				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
-			});
+			if (!useLegacyProvider) {
+				// override this.options.gcm.apiKey with the oauth2 token
+				const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
+				const sendGCMOptions = {
+					...this.options,
+					gcm: {
+						...this.options.gcm,
+						apiKey: token,
+						projectNumber: projectId,
+					},
+				};
+
+				sendFCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
+				});
+			} else if (this.options.gcm?.apiKey) {
+				sendGCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: this.options as RequiredField<PushOptions, 'gcm'>,
+				});
+			}
 		} else {
 			throw new Error('send got a faulty query');
 		}
