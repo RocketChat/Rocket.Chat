@@ -112,6 +112,10 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
+	get fileUploadModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'File Upload' });
+	}
+
 	get modalFilePreview(): Locator {
 		return this.page.locator(
 			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
@@ -250,12 +254,26 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
+	get btnComposerEmoji(): Locator {
+		return this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]');
+	}
+
+	get dialogEmojiPicker(): Locator {
+		return this.page.getByRole('dialog', { name: 'Emoji picker' });
+	}
+
+	getEmojiPickerTabByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
+	}
+
+	getEmojiByName(name: string) {
+		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
+	}
+
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
-		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
-
-		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tablist >> role=tab[name="${section}"]`).click();
-
-		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
+		await this.btnComposerEmoji.click();
+		await this.getEmojiPickerTabByName(section).click();
+		await this.getEmojiByName(emoji).click();
 	}
 
 	async dragAndDropTxtFile(): Promise<void> {
@@ -367,6 +385,10 @@ export class HomeContent {
 
 	get videoConfMessageBlock(): Locator {
 		return this.page.locator('.rcx-videoconf-message-block');
+	}
+
+	get videoConfMessageBlockAvatars(): Locator {
+		return this.videoConfMessageBlock.getByLabel('figure');
 	}
 
 	get btnAnonymousSignIn(): Locator {

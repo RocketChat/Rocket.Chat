@@ -13,7 +13,6 @@ const modelsMock = {
 		upsertContact: sinon.stub(),
 		updateContact: sinon.stub(),
 		findContactMatchingVisitor: sinon.stub(),
-		findOneByVisitorId: sinon.stub(),
 	},
 	'LivechatRooms': {
 		findNewestByVisitorIdOrToken: sinon.stub(),
