@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useSyncExternalStore } from 'react';
 
 import MessageBoxReply from './MessageBoxReply';
 import { useChat } from '../../contexts/ChatContext';
