@@ -1,6 +1,9 @@
 ---
-"@rocket.chat/meteor": minor
-"@rocket.chat/rest-typings": minor
+'@rocket.chat/model-typings': minor
+'@rocket.chat/rest-typings': minor
+'@rocket.chat/models': minor
+'@rocket.chat/i18n': minor
+'@rocket.chat/meteor': minor
 ---
 
-Adds a new endpoint `rooms.close` to close rooms of any type when provided with the room's ID
+Adds a new endpoint `rooms.hide` to hide rooms of any type when provided with the room's ID
