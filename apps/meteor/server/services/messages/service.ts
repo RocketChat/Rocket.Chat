@@ -154,6 +154,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
+			createdMessage.u = { _id: userId, username, name };
 			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', createdMessage);
 		}
 
