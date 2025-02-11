@@ -4251,7 +4251,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', `error-room-already-closed`);
+					expect(res.body).to.have.property('error', `error-room-already-hidden`);
 				});
 		});
 
