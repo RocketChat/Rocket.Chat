@@ -66,4 +66,25 @@ describe('messageContainsHighlight', () => {
 		};
 		expect(messageContainsHighlight(message, ['thumbsup'])).to.be.true;
 	});
+
+	it('should return true when find a cyrillic highlight in the end of the message', async () => {
+		const message = {
+			msg: 'highlighted regular Привет',
+		};
+		expect(messageContainsHighlight(message, ['Привет'])).to.be.true;
+	});
+
+	it('should return true when find a cyrillic highlight in the beginning of the message', async () => {
+		const message = {
+			msg: 'Привет highlighted regular',
+		};
+		expect(messageContainsHighlight(message, ['Привет'])).to.be.true;
+	});
+
+	it('should return true when find a cyrillic highlight in the middle of the message', async () => {
+		const message = {
+			msg: 'highlighted Привет regular',
+		};
+		expect(messageContainsHighlight(message, ['Привет'])).to.be.true;
+	});
 });
