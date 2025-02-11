@@ -4278,19 +4278,6 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should fail if user not subscribed to the room', async () => {
-			await request
-				.post(api('rooms.hide'))
-				.set(nonMemberCredentials)
-				.send({ roomId: roomA._id })
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-invalid-subscription');
-				});
-		});
-
 		it('should return forbidden if user does not have access to the room', async () => {
 			await request
 				.post(api('rooms.hide'))

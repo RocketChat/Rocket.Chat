@@ -85,6 +85,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
+	findOneOpenByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {
+		const query = {
+			rid,
+			'u._id': uid,
+			'open': true,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {
 		const query = {
 			rid,

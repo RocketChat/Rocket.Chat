@@ -982,13 +982,9 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { open: 1 } });
+			const subscription = await Subscriptions.findOneOpenByRoomIdAndUserId(roomId, this.userId);
 
 			if (!subscription) {
-				return API.v1.failure(`error-invalid-subscription`);
-			}
-
-			if (!subscription.open) {
 				return API.v1.failure('error-room-already-hidden');
 			}
 
