@@ -72,7 +72,6 @@ export class AppListenerBridge {
 
 	async systemMessageEvent(inte, payload) {
 		const msg = await this.orch.getConverters().get('messages').convertSystemMessage(payload);
-		console.log('systemMessageEvent', inte, msg);
 		return this.orch.getManager().getListenerManager().executeListener(inte, msg);
 	}
 
