@@ -11,18 +11,19 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import fileSize from 'filesize';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useState, useEffect, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
-import { handleSendFiles } from './HandleFileUploads';
+// import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFileArea from './MessageComposerFileArea';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -30,6 +31,7 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -44,8 +46,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -79,8 +79,6 @@ const a: any[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
-	filesToUpload: File[];
-	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
@@ -89,19 +87,17 @@ type MessageBoxProps = {
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
-	onUploadFiles?: (files: readonly File[]) => void;
+	onUploadFiles: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
+	uploads: readonly Upload[];
+	isUploading: boolean;
 };
 
-type HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => void;
-
 const MessageBox = ({
-	filesToUpload,
-	setFilesToUpload,
 	tmid,
 	onSend,
 	onJoin,
@@ -112,6 +108,8 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	uploads,
+	isUploading,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -122,65 +120,6 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
-	const [isUploading, setIsUploading] = useState(false);
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
-
-	const handleFilesToUpload: HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => {
-		setFilesToUpload((prevFiles: File[]) => {
-			let newFilesToUpload = [...prevFiles, ...filesList];
-			if (newFilesToUpload.length > 6) {
-				newFilesToUpload = newFilesToUpload.slice(0, 6);
-				dispatchToastMessage({
-					type: 'error',
-					message: "You can't upload more than 6 files at once. Only the first 6 files will be uploaded.",
-				});
-			}
-			let nameError = 0;
-			let sizeError = 0;
-
-			const validFiles = newFilesToUpload.filter((queuedFile) => {
-				const { name, size } = queuedFile;
-
-				if (!name) {
-					nameError = 1;
-					return false;
-				}
-
-				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
-					sizeError = 1;
-					return false;
-				}
-
-				return true;
-			});
-
-			if (nameError) {
-				dispatchToastMessage({
-					type: 'error',
-					message: t('error-the-field-is-required', { field: t('Name') }),
-				});
-			}
-
-			if (sizeError) {
-				dispatchToastMessage({
-					type: 'error',
-					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
-				});
-			}
-
-			setIsUploading(validFiles.length > 0);
-			return validFiles;
-		});
-
-		resetFileInput?.();
-	};
-	const handleRemoveFile = (indexToRemove: number) => {
-		const updatedFiles = [...filesToUpload];
-		updatedFiles.splice(indexToRemove, 1);
-		setFilesToUpload(updatedFiles);
-	};
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -226,10 +165,10 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
+	// TODO: change to something like `hasUploads`
 	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading) {
-			setIsUploading(!isUploading);
-			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
+			return chat?.flows.confirmFiles();
 		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
@@ -324,13 +263,6 @@ const MessageBox = ({
 	});
 
 	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
-
-	useEffect(() => {
-		setIsUploading(filesToUpload.length > 0);
-		if (isEditing) {
-			setFilesToUpload([]);
-		}
-	}, [filesToUpload, isEditing, setFilesToUpload]);
 
 	const isRecordingAudio = useSyncExternalStore(
 		chat.composer?.recording.subscribe ?? emptySubscribe,
@@ -477,7 +409,13 @@ const MessageBox = ({
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				{isUploading && <MessageComposerFileArea filesToUpload={filesToUpload} handleRemoveFile={handleRemoveFile} />}
+				{isUploading && (
+					<MessageComposerFileArea
+						uploads={uploads}
+						handleEditFileName={chat.uploads.editUploadFileName}
+						handleRemoveUpload={chat.uploads.removeUpload}
+					/>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -504,7 +442,6 @@ const MessageBox = ({
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 							isEditing={isEditing}
-							handleFiles={handleFilesToUpload}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>

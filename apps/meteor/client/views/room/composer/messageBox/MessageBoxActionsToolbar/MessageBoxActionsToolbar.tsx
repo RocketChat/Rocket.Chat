@@ -29,7 +29,6 @@ type MessageBoxActionsToolbarProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	isEditing: boolean;
-	handleFiles: (filesList: File[], resetFileInput?: () => void) => void;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -48,7 +47,6 @@ const MessageBoxActionsToolbar = ({
 	variant = 'large',
 	isMicrophoneDenied,
 	isEditing = false,
-	handleFiles,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -61,7 +59,7 @@ const MessageBoxActionsToolbar = ({
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing, handleFiles);
+	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
 	const webdavActions = useWebdavActions();
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);

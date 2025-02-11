@@ -9,10 +9,11 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
+import type { Upload } from '../../../lib/chats/Upload';
 
 export type ComposerMessageProps = {
-	filesToUpload: File[];
-	setFilesToUpload: any;
+	uploads: readonly Upload[];
+	isUploading: boolean;
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;

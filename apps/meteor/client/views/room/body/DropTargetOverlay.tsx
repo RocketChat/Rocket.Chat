@@ -9,20 +9,13 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type DropTargetOverlayProps = {
 	enabled: boolean;
-	setFilesToUplaod: any;
 	reason?: ReactNode;
+	onFileDrop?: (files: File[]) => void;
 	visible?: boolean;
 	onDismiss?: () => void;
 };
 
-function DropTargetOverlay({
-	enabled,
-	setFilesToUplaod,
-	reason,
-	// onFileDrop, // not using onFileDrop anymore as we use setFilesToUplaod
-	visible = true,
-	onDismiss,
-}: DropTargetOverlayProps): ReactElement | null {
+function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps): ReactElement | null {
 	const { t } = useTranslation();
 
 	const handleDragLeave = useEffectEvent((event: DragEvent) => {
@@ -62,7 +55,7 @@ function DropTargetOverlay({
 				}
 			}
 		}
-		setFilesToUplaod(files);
+		onFileDrop?.(files);
 	});
 
 	if (!visible) {
