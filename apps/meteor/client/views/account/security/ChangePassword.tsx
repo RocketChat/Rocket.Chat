@@ -62,10 +62,10 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={passwordId}
 									error={errors.password?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange}
 									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
 									aria-invalid={errors.password ? 'true' : 'false'}
+									aria-label='password'
 								/>
 							)}
 						/>
@@ -94,11 +94,11 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={confirmPasswordId}
 									error={errors.confirmationPassword?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
 									aria-describedby={`${confirmPasswordId}-error`}
+									aria-label='password'
 								/>
 							)}
 						/>
