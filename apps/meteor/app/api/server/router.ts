@@ -94,7 +94,7 @@ export class Router<
 					{
 						urlParams: req.params,
 						queryParams: req.query,
-						bodyParams: req.body,
+						bodyParams: req.bodyParams || req.body,
 						request: req,
 						response: res,
 					} as any,
