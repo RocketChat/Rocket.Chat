@@ -518,7 +518,7 @@ export class AppListenerManager {
 
     private async executePostMessageSent(data: IMessage): Promise<void> {
         // First check if the app implements Bot DM handlers and check if the dm contains more than one user
-        if (data.room.type === RoomType.DIRECT_MESSAGE && data.room.userIds.length > 1) {
+        if (data.room?.type === RoomType.DIRECT_MESSAGE && data.room?.userIds.length > 1) {
             for (const appId of this.listeners.get(AppInterface.IPostMessageSentToBot)) {
                 const app = this.manager.getOneById(appId);
 
