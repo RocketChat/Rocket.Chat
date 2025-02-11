@@ -5,7 +5,7 @@ import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEdite
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { prepareMessageObject, sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
@@ -154,7 +154,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
-			createdMessage.u = { _id: userId, username, name };
+			prepareMessageObject(createdMessage, rid, { _id: userId, username, name });
 			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', createdMessage);
 		}
 
