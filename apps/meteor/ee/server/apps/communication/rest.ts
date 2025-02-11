@@ -10,6 +10,8 @@ import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { appsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
@@ -23,10 +25,10 @@ import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmin
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
+import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -110,43 +112,20 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					// Gets the Apps from the marketplace
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/apps`, {
-							headers,
-							params: {
-								...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }),
-							},
-						});
-
-						if (request.status === 426) {
-							orchestrator.getRocketChatLogger().error('Workspace out of support window:', await request.json());
-							return API.v1.failure({ error: 'unsupported version' });
+						const apps = await fetchMarketplaceApps({ ...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }) });
+						return API.v1.success(apps);
+					} catch (err) {
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure({ error: err.message });
 						}
-						result = await request.json();
 
-						if (!request.ok) {
-							throw new Error(result.error);
-						}
-					} catch (e) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+						return API.v1.internalError();
 					}
-
-					return API.v1.success(result);
 				},
 			},
 		);
@@ -236,25 +215,20 @@ export class AppsRestApi {
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
 						try {
-							const request = await fetch(`${baseUrl}/v1/apps`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
-							}
-							result = await request.json();
+							const apps = await fetchMarketplaceApps();
+							return API.v1.success(apps);
 						} catch (e) {
-							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-						}
+							if (e instanceof MarketplaceConnectionError) {
+								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
+							}
 
-						return API.v1.success(result);
+							if (e instanceof MarketplaceAppsError) {
+								return API.v1.failure({ error: e.message });
+							}
+
+							return API.v1.internalError();
+						}
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
