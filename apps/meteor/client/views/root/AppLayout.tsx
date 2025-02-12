@@ -7,6 +7,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useGitHubEnterpriseAuth } from '../../../app/github-enterprise/client/hooks/useGitHubEnterpriseAuth';
 import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
@@ -38,6 +39,8 @@ const AppLayout = () => {
 	useNextcloud();
 
 	useGitLabAuth();
+
+	useGitHubEnterpriseAuth();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
