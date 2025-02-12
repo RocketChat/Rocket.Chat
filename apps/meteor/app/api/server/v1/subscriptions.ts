@@ -30,13 +30,21 @@ API.v1.addRoute(
 
 			const result = await Meteor.callAsync('subscriptions/get', updatedSinceDate);
 
+			// Include unread count in the response
+			const subscriptionsWithUnread = Array.isArray(result)
+				? result.map((subscription) => ({
+						...subscription,
+						unread: subscription.unread || 0, // Ensure the unread count is included
+				  }))
+				: result;
+
 			return API.v1.success(
-				Array.isArray(result)
+				Array.isArray(subscriptionsWithUnread)
 					? {
-							update: result,
+							update: subscriptionsWithUnread,
 							remove: [],
 						}
-					: result,
+					: subscriptionsWithUnread,
 			);
 		},
 	},
@@ -56,8 +64,18 @@ API.v1.addRoute(
 				return API.v1.failure("The 'roomId' param is required");
 			}
 
+			// Fetch the subscription and include unread count
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+
+			if (!subscription) {
+				return API.v1.failure("Subscription not found for the given roomId.");
+			}
+
 			return API.v1.success({
-				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
+				subscription: {
+					...subscription,
+					unread: subscription.unread || 0, // Add unread count
+				},
 			});
 		},
 	},
@@ -85,7 +103,12 @@ API.v1.addRoute(
 
 			await readMessages(roomId, this.userId, readThreads);
 
-			return API.v1.success();
+			// Fetch updated unread count after marking as read
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+
+			return API.v1.success({
+				unread: subscription?.unread || 0, // Updated unread count
+			});
 		},
 	},
 );
@@ -98,9 +121,16 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
+			const { firstUnreadMessage, roomId } = this.bodyParams;
 
-			return API.v1.success();
+			await Meteor.callAsync('unreadMessages', firstUnreadMessage, roomId);
+
+			// Fetch updated unread count after marking as unread
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+
+			return API.v1.success({
+				unread: subscription?.unread || 0, // Updated unread count
+			});
 		},
 	},
 );
