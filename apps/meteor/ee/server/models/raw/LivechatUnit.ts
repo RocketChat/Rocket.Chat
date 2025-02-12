@@ -168,6 +168,11 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.findOne(query, options);
 	}
 
+	async findUnitsByMonitorId(monitorId: string): Promise<FindCursor<IOmnichannelBusinessUnit>> {
+		const monitoredUnits = await LivechatUnitMonitors.findByMonitorId(monitorId).toArray();
+		return this.find({ _id: { $in: monitoredUnits.map((u) => u.unitId) } }, {});
+	}
+
 	async findByMonitorId(monitorId: string): Promise<string[]> {
 		const monitoredUnits = await LivechatUnitMonitors.findByMonitorId(monitorId).toArray();
 		if (monitoredUnits.length === 0) {
