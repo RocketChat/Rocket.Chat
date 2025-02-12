@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, IOmnichannelBusinessUnit, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
