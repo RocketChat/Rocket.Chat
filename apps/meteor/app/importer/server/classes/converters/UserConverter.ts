@@ -65,9 +65,11 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 	private async willExceedLicenseLimit(): Promise<boolean> {
 		const currentUserCount = await Users.getActiveLocalUserCount();
+		// what if the license is not set?
 		const licenseLimit = License.getMaxActiveUsers();
+		const AMOUNT_USER_BEING_ADDED = 1;
 
-		return currentUserCount + 1 > licenseLimit;
+		return currentUserCount + AMOUNT_USER_BEING_ADDED > licenseLimit;
 	}
 
 	async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
