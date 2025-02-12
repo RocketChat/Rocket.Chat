@@ -123,4 +123,12 @@ export class AccountProfile {
 	get btnSaveChanges(): Locator {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
+
+	get enableEmail2FAButton(): Locator {
+		return this.page.locator('role=button[name="Enable two-factor authentication via Email"]');
+	}
+
+	get disableEmail2FAButton(): Locator {
+		return this.page.locator('role=button[name="Disable two-factor authentication via Email"]');
+	}
 }
