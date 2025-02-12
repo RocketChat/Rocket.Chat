@@ -8,6 +8,7 @@ const modelsMock = {
 		findOneByEmailAddress: sinon.stub(),
 		findOneByUsernameIgnoringCase: sinon.stub(),
 		findOneById: sinon.stub(),
+		getActiveLocalUserCount: sinon.stub(),
 	},
 };
 const addUserToDefaultChannels = sinon.stub();
@@ -62,6 +63,11 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 		},
 	},
 	'@rocket.chat/models': { ...modelsMock, '@global': true },
+	'@rocket.chat/license': {
+		License: {
+			getMaxActiveUsers: sinon.stub(),
+		},
+	},
 });
 
 describe('User Converter', () => {
@@ -391,6 +397,25 @@ describe('User Converter', () => {
 			]);
 		});
 
+		it('function should not be called if exceed license limit', async () => {
+			const converter = new UserConverter({ workInMemory: true, skipDefaultChannels: true });
+
+			modelsMock.Users.findOneByEmailAddress.resolves(null);
+			modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
+
+			sinon.stub(converter, 'insertUser');
+			sinon.stub(converter, 'updateUser');
+			const licenseCheckStub = sinon.stub(converter, 'willExceedLicenseLimit').returns(true);
+
+			await converter.addObject(userToImport);
+			await converter.convertData();
+
+			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(licenseCheckStub.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
+		});
+
 		it('addUserToDefaultChannels should be called by the converter on successful insert', async () => {
 			const converter = new UserConverter({ workInMemory: true, skipDefaultChannels: false });
 
@@ -490,6 +515,22 @@ describe('User Converter', () => {
 			await converter.convertData();
 
 			expect(converter.updateUser.getCall(0)).to.be.null;
+		});
+
+		it('should not call willExceedLicenseLimit for update users', async () => {
+			const converter = new UserConverter({ workInMemory: true });
+
+			sinon.stub(converter, 'findExistingUser');
+			converter.findExistingUser.returns({ _id: 'oldId' });
+			sinon.stub(converter, 'insertUser');
+			sinon.stub(converter, 'updateUser');
+			const licenseCheckStub = sinon.stub(converter, 'willExceedLicenseLimit');
+
+			await converter.addObject(userToImport);
+			await converter.convertData();
+
+			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(licenseCheckStub.getCalls()).to.be.an('array').with.lengthOf(0);
 		});
 	});
 
