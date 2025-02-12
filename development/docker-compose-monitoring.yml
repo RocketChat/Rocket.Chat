@@ -2,27 +2,27 @@ services:
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   init:
-    image: &tempoImage grafana/tempo:latest
+    image: &tempoImage grafana/tempo:2.6.1
     user: root
     entrypoint:
-      - "chown"
-      - "10001:10001"
-      - "/var/tempo"
+      - 'chown'
+      - '10001:10001'
+      - '/var/tempo'
     volumes:
       - ./tempo-data:/var/tempo
 
   tempo:
     image: *tempoImage
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./tempo.yml:/etc/tempo.yaml
       - ./tempo-data:/var/tempo
     ports:
-      - "14268"  # jaeger ingest
-      - "3200"   # tempo
-      - "4317"  # otlp grpc
-      - "4318"  # otlp http
-      - "9411"   # zipkin2024-04-23T16:16:57+0000
+      - '14268' # jaeger ingest
+      - '3200' # tempo
+      - '4317' # otlp grpc
+      - '4318' # otlp http
+      - '9411' # zipkin2024-04-23T16:16:57+0000
     depends_on:
       - init
 
@@ -38,12 +38,12 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.100.0
     command:
-      - "--config"
-      - "/otel-local-config.yaml"
+      - '--config'
+      - '/otel-local-config.yaml'
     volumes:
       - ./collector.config.yml:/otel-local-config.yaml
     ports:
-      - "4317:4317"
+      - '4317:4317'
 
   # And put them in a Grafana Agent pipeline...
   agent:
@@ -51,8 +51,8 @@ services:
     volumes:
       - ./agent.yml:/etc/agent.yaml
     entrypoint:
-     - /bin/agent
-     - -config.file=/etc/agent.yaml
+      - /bin/agent
+      - -config.file=/etc/agent.yaml
 
   prometheus:
     image: prom/prometheus:latest
@@ -64,7 +64,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus.yaml
     ports:
-      - "9090:9090"
+      - '9090:9090'
 
   grafana:
     image: grafana/grafana:11.0.0
@@ -76,4 +76,4 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     ports:
-      - "4001:3000"
+      - '4001:3000'
