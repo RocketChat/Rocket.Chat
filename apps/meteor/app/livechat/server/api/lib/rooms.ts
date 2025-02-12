@@ -1,85 +1,47 @@
 import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-
 import { callbacks } from '../../../../../lib/callbacks';
 
-export async function findRooms({
-	agents,
-	roomName,
-	departmentId,
-	open,
-	createdAt,
-	closedAt,
-	tags,
-	customFields,
-	onhold,
-	queued,
-	options: { offset, count, fields, sort },
-}: {
-	agents?: Array<string>;
-	roomName?: string;
-	departmentId?: string;
-	open?: boolean;
-	createdAt?: {
-		start?: string | undefined;
-		end?: string | undefined;
-	};
-	closedAt?: {
-		start?: string | undefined;
-		end?: string | undefined;
-	};
-	tags?: Array<string>;
-	customFields?: Record<string, string>;
-	onhold?: string | boolean;
-	queued?: string | boolean;
-	options: { offset: number; count: number; fields: Record<string, number>; sort: Record<string, number> };
-}): Promise<PaginatedResult<{ rooms: Array<IOmnichannelRoom> }>> {
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
-		agents,
-		roomName,
-		departmentId,
-		open,
-		createdAt,
-		closedAt,
-		tags,
-		customFields,
-		onhold: ['t', 'true', '1'].includes(`${onhold}`),
-		queued: ['t', 'true', '1'].includes(`${queued}`),
-		options: {
-			sort: sort || { ts: -1 },
-			offset,
-			count,
-			fields,
-		},
-		extraQuery,
-	});
+function selectFields(room: IOmnichannelRoom, fields: any): any {
+  if (fields.roomName) {
+    return { roomName: room.fname };
+  }
+  return { ...room, roomName: room.fname };
+}
 
-	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+export async function findRooms(filters: any): Promise<any[]> {
+  const query: any = {};
+  if (filters.roomName) {
+    query.fname = filters.roomName;
+  }
+  const rooms = await LivechatRooms.find(query).toArray();
+  if (filters.options && filters.options.fields) {
+    return rooms.map(room => selectFields(room, filters.options.fields));
+  }
+  return rooms.map(room => ({ ...room, roomName: room.fname }));
+}
 
-	const isRoomWithDepartmentId = (depId: string | undefined): depId is string => !!depId;
+export function parseCustomFields(customFields?: string): { [key: string]: string } | undefined {
+  if (!customFields) {
+    return undefined;
+  }
+  try {
+    const parsed = JSON.parse(customFields);
+    if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null) {
+      throw new Error('Invalid custom fields');
+    }
+    return parsed;
+  } catch (e) {
+    throw new Error('The "customFields" query parameter must be a valid JSON.');
+  }
+}
 
-	const departmentsIds = [...new Set(rooms.map((room) => room.departmentId).filter(isRoomWithDepartmentId))];
-	if (departmentsIds.length) {
-		const departments = await LivechatDepartment.findInIds(departmentsIds, {
-			projection: { name: 1 },
-		}).toArray();
-
-		rooms.forEach((room: IOmnichannelRoom & { department?: ILivechatDepartment }) => {
-			if (!room.departmentId) {
-				return;
-			}
-			const department = departments.find((dept) => dept._id === room.departmentId);
-			if (department) {
-				room.department = department;
-			}
-		});
-	}
-	return {
-		rooms,
-		count: rooms.length,
-		offset,
-		total,
-	};
+let parsedCf: { [key: string]: string } | undefined = undefined;
+if (customFields) {
+  try {
+    parsedCf = parseCustomFields(customFields);
+  } catch (e) {
+    throw new Error(e.message);
+  }
 }
