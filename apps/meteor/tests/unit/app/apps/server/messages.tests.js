@@ -101,7 +101,6 @@ describe('The AppMessagesConverter instance', () => {
 			});
 		});
 
-
 		it("should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)", async () => {
 			const appMessage = await messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
 
