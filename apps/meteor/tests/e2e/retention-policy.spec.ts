@@ -164,7 +164,7 @@ test.describe.serial('retention-policy', () => {
 
 			test.beforeAll(async ({ api }) => {
 				ignoreThreadsSetting = (await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads')) as boolean;
-				expect((await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15))).status()).toBe(200);
+				await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15));
 			});
 
 			test.beforeEach(async () => {

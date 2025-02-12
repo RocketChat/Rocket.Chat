@@ -13,11 +13,11 @@ test.describe.serial('Presence', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+		await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+		await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true);
 	});
 
 	test.describe('Login using default settings', () => {
@@ -34,7 +34,7 @@ test.describe.serial('Presence', () => {
 		test.skip(IS_EE, `Micro services don't support turning this setting off`);
 
 		test.beforeAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
+			await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false);
 		});
 
 		test('expect user to be online after log in', async ({ page }) => {

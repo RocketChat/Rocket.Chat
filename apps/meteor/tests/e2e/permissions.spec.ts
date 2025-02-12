@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user2.state });
@@ -21,9 +21,7 @@ test.describe.serial('permissions', () => {
 
 	test.describe.serial('Edit message', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowEditing', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowEditing', false);
 		});
 
 		test('expect option(edit) not be visible', async ({ page }) => {
@@ -40,17 +38,13 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowEditing', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowEditing', true);
 		});
 	});
 
 	test.describe.serial('Delete message', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowDeleting', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowDeleting', false);
 		});
 
 		test('expect option(delete) not be visible', async ({ page }) => {
@@ -68,9 +62,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowDeleting', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowDeleting', true);
 		});
 	});
 
@@ -78,9 +70,7 @@ test.describe.serial('permissions', () => {
 		test.use({ storageState: Users.admin.state });
 
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowPinning', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowPinning', false);
 		});
 
 		test('expect option(pin) not be visible', async ({ page }) => {
@@ -94,9 +84,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowPinning', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowPinning', true);
 		});
 	});
 
@@ -104,9 +92,7 @@ test.describe.serial('permissions', () => {
 	// and after a click a "not allowed" alert pops up
 	test.describe.skip('Star message', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowStarring', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowStarring', false);
 		});
 
 		test('expect option(star) not be visible', async ({ page }) => {
@@ -123,17 +109,13 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowStarring', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowStarring', true);
 		});
 	});
 
 	test.describe.serial('Upload file', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/FileUpload_Enabled', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'FileUpload_Enabled', false);
 		});
 
 		test('expect option (upload file) not be visible', async () => {
@@ -142,17 +124,13 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/FileUpload_Enabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'FileUpload_Enabled', true);
 		});
 	});
 
 	test.describe.serial('Upload audio', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AudioRecorderEnabled', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AudioRecorderEnabled', false);
 		});
 
 		test('expect option (upload audio) not be visible', async () => {
@@ -161,17 +139,13 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AudioRecorderEnabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AudioRecorderEnabled', true);
 		});
 	});
 
 	test.describe.serial('Upload video', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_VideoRecorderEnabled', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_VideoRecorderEnabled', false);
 		});
 
 		test('expect option (upload video) not be visible', async () => {
@@ -180,19 +154,14 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_VideoRecorderEnabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_VideoRecorderEnabled', true);
 		});
 	});
 
 	test.describe.serial('Filter words', () => {
 		test.beforeAll(async ({ api }) => {
-			const statusCode1 = (await api.post('/settings/Message_AllowBadWordsFilter', { value: true })).status();
-			const statusCode2 = (await api.post('/settings/Message_BadWordsFilterList', { value: 'badword' })).status();
-
-			await expect(statusCode1).toBe(200);
-			await expect(statusCode2).toBe(200);
+			await setSettingValueById(api, 'Message_AllowBadWordsFilter', true);
+			await setSettingValueById(api, 'Message_BadWordsFilterList', 'badword');
 		});
 
 		test('expect badword be censored', async () => {
@@ -203,9 +172,7 @@ test.describe.serial('permissions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowBadWordsFilter', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
+			await setSettingValueById(api, 'Message_AllowBadWordsFilter', false);
 		});
 	});
 });
