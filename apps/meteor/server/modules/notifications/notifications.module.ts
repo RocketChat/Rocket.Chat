@@ -105,7 +105,8 @@ export class NotificationsModule {
 			if (!canAccess) {
 				// verify if can preview messages from public channels
 				if (room.t === 'c' && this.userId) {
-					return Authorization.hasPermission(this.userId, 'preview-c-room');
+					const subscription = await Subscriptions.findOne({ rid: room._id });
+					return !!subscription && Authorization.hasPermission(this.userId, 'preview-c-room');
 				}
 				return false;
 			}
@@ -186,6 +187,7 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
+
 			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
 
 			return canAccess;
