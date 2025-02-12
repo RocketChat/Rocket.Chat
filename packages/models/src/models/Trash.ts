@@ -2,7 +2,9 @@ import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class TrashRaw extends BaseRaw<RocketChatRecordDeleted<any>> {
 	constructor(db: Db) {
 		super(db, 'rocketchat__trash', undefined, {

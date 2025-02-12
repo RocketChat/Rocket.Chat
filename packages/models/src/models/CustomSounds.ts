@@ -3,7 +3,9 @@ import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSoundsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomSound>>) {
 		super(db, 'custom_sounds', trash);

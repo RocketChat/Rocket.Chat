@@ -1,5 +1,5 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
-import { registerServiceModels } from '@rocket.chat/models';
+import { registerModels } from '@rocket.chat/models';
 import { broker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 
@@ -8,7 +8,7 @@ import { startTracing } from '@rocket.chat/tracing';
 
 	startTracing({ service: 'ddp-streamer', db: client });
 
-	registerServiceModels(db, await getTrashCollection());
+	registerModels(db, await getTrashCollection());
 
 	api.setBroker(broker);
 

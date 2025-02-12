@@ -3,7 +3,9 @@ import type { IMatrixBridgedRoomModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements IMatrixBridgedRoomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMatrixBridgedRoom>>) {
 		super(db, 'matrix_bridged_rooms', trash);

@@ -4,7 +4,9 @@ import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDo
 
 import { Subscriptions, Users } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {
 		super(db, 'roles', trash);

@@ -3,7 +3,9 @@ import type { IFreeSwitchEventModel, InsertionModel } from '@rocket.chat/model-t
 import type { IndexDescription, Collection, Db, FindOptions, FindCursor, WithoutId, InsertOneResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class FreeSwitchEventRaw extends BaseRaw<IFreeSwitchEvent> implements IFreeSwitchEventModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFreeSwitchEvent>>) {
 		super(db, 'freeswitch_events', trash);

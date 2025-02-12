@@ -25,8 +25,10 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
+@model()
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
 		super(db, 'livechat_contact', trash);

@@ -30,6 +30,7 @@ import type {
 
 import { getCollectionName } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
@@ -733,6 +734,7 @@ export const aggregates = {
 	},
 };
 
+@model()
 export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 	private secondaryCollection: Collection<ISession>;
 

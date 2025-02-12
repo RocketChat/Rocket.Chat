@@ -31,6 +31,7 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -39,6 +40,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
 		};
 
+@model({ trashCollection: true })
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);

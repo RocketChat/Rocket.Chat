@@ -3,7 +3,9 @@ import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings
 import type { Collection, Db, DeleteResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfiguration> implements ILoginServiceConfigurationModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<LoginServiceConfiguration>>) {
 		super(db, 'meteor_accounts_loginServiceConfiguration', trash, {

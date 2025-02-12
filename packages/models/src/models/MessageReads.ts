@@ -3,7 +3,9 @@ import type { IMessageReadsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageReadsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<MessageReads>>) {
 		super(db, 'message_reads', trash);

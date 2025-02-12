@@ -3,7 +3,9 @@ import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	constructor(db: Db) {
 		super(db, 'import');

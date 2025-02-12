@@ -3,7 +3,9 @@ import type { IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReport>>) {
 		super(db, 'reports', trash);

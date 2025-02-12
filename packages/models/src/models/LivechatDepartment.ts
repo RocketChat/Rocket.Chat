@@ -17,7 +17,9 @@ import type {
 
 import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);

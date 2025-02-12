@@ -3,7 +3,9 @@ import type { IEmailInboxModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, FindCursor, IndexDescription, InsertOneResult, UpdateFilter, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IEmailInbox>>) {
 		super(db, 'email_inbox', trash);

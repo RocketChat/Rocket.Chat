@@ -1,11 +1,8 @@
 import type {
-	ILivechatDepartmentAgents,
-	ILivechatInquiryRecord,
-	ISetting,
-	ISubscription,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
-import type {
+	IAppsModel,
+	IAppsTokensModel,
+	IAppsPersistenceModel,
+	IAppLogsModel,
 	IAnalyticsModel,
 	IAvatarsModel,
 	IBannersDismissModel,
@@ -18,15 +15,16 @@ import type {
 	IEmailMessageHistoryModel,
 	IEmojiCustomModel,
 	IExportOperationsModel,
-	IFederationKeysModel,
 	IFederationServersModel,
+	IFederationRoomEventsModel,
 	IFreeSwitchCallModel,
 	IFreeSwitchEventModel,
+	IImportDataModel,
+	IImportsModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
 	IInvitesModel,
-	IImportDataModel,
 	ILivechatAgentActivityModel,
 	ILivechatBusinessHoursModel,
 	ILivechatContactsModel,
@@ -35,12 +33,11 @@ import type {
 	ILivechatDepartmentModel,
 	ILivechatInquiryModel,
 	ILivechatPriorityModel,
-	ILivechatRoomsModel,
 	ILivechatTagModel,
 	ILivechatTriggerModel,
+	ILivechatVisitorsModel,
 	ILivechatUnitModel,
 	ILivechatUnitMonitorsModel,
-	ILivechatVisitorsModel,
 	ILoginServiceConfigurationModel,
 	IMessagesModel,
 	INotificationQueueModel,
@@ -67,10 +64,10 @@ import type {
 	ISubscriptionsModel,
 	ITeamMemberModel,
 	ITeamModel,
+	IUsersModel,
 	IUploadsModel,
 	IUserDataFilesModel,
 	IUsersSessionsModel,
-	IUsersModel,
 	IVideoConferenceModel,
 	IVoipRoomModel,
 	IWebdavAccountsModel,
@@ -78,45 +75,16 @@ import type {
 	IMatrixBridgedUserModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
-	IAppsModel,
-	IAppsPersistenceModel,
-	IAppLogsModel,
-	IImportsModel,
-	IFederationRoomEventsModel,
-	IAppsTokensModel,
 	IAuditLogModel,
 	ICronHistoryModel,
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
+	ILivechatRoomsModel,
+	IFederationKeysModel,
 } from '@rocket.chat/model-typings';
-import type { Collection, Db } from 'mongodb';
 
-import {
-	TeamMemberRaw,
-	MessagesRaw,
-	LivechatInquiryRaw,
-	LivechatDepartmentAgentsRaw,
-	PermissionsRaw,
-	LoginServiceConfigurationRaw,
-	InstanceStatusRaw,
-	IntegrationHistoryRaw,
-	IntegrationsRaw,
-	EmailInboxRaw,
-	PbxEventsRaw,
-	LivechatRoomsRaw,
-	LivechatPriorityRaw,
-	UploadsRaw,
-	LivechatVisitorsRaw,
-	RolesRaw,
-	RoomsRaw,
-	SettingsRaw,
-	SubscriptionsRaw,
-	TeamRaw,
-	UsersRaw,
-	UsersSessionsRaw,
-} from './modelClasses';
-import { proxify, registerModel } from './proxify';
+import { proxify } from './proxify';
 
 const prefix = 'rocketchat_';
 export function getCollectionName(name: string): string {
@@ -136,6 +104,7 @@ export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
+export { model, registerModels } from './proxify';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
@@ -154,8 +123,8 @@ export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMes
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
-export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
+export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FreeSwitchCall = proxify<IFreeSwitchCallModel>('IFreeSwitchCallModel');
 export const FreeSwitchEvent = proxify<IFreeSwitchEventModel>('IFreeSwitchEventModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
@@ -222,38 +191,3 @@ export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
-
-export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
-	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
-	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
-	registerModel('IUsersModel', () => new UsersRaw(db));
-
-	registerModel('IRolesModel', () => new RolesRaw(db));
-	registerModel('IRoomsModel', () => new RoomsRaw(db));
-	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
-	registerModel('ITeamModel', () => new TeamRaw(db));
-	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
-
-	registerModel('IMessagesModel', () => new MessagesRaw(db));
-
-	registerModel(
-		'ILivechatInquiryModel',
-		() => new LivechatInquiryRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
-	);
-	registerModel(
-		'ILivechatDepartmentAgentsModel',
-		() => new LivechatDepartmentAgentsRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
-	);
-
-	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
-	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw(db));
-	registerModel('IInstanceStatusModel', () => new InstanceStatusRaw(db));
-	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
-	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
-	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
-	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
-	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
-	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
-	registerModel('IUploadsModel', () => new UploadsRaw(db));
-	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
-}

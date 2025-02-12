@@ -3,7 +3,9 @@ import type { IOAuthAuthCodesModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class OAuthAuthCodesRaw extends BaseRaw<IOAuthAuthCode> implements IOAuthAuthCodesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthAuthCode>>) {
 		super(db, 'oauth_auth_codes', trash);

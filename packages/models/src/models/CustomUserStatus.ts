@@ -3,7 +3,9 @@ import type { ICustomUserStatusModel, InsertionModel } from '@rocket.chat/model-
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model({ trashCollection: true })
 export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements ICustomUserStatusModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICustomUserStatus>>) {
 		super(db, 'custom_user_status', trash);
