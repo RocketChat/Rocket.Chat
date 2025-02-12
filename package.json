@@ -69,6 +69,7 @@
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",
+		"emoji-toolkit": "^9.0.1",
 		"node-gyp": "^10.2.0"
 	}
 }
