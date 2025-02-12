@@ -1,4 +1,4 @@
-import type { ILivechatCustomField, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -7,24 +7,8 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
-
-const validateRequiredCustomFields = async (customFields: string[], livechatCustomFields: ILivechatCustomField[]) => {
-	const errors: string[] = [];
-	const requiredCustomFields = livechatCustomFields.filter((field) => field.required);
-
-	requiredCustomFields.forEach((field) => {
-		if (!customFields.find((f) => f === field._id)) {
-			errors.push(field._id);
-		}
-	});
-
-	if (errors.length > 0) {
-		throw new Meteor.Error('error-missing-required-custom-fields', `Missing required custom fields: ${errors.join(', ')}`, {
-			method: 'livechat/visitor',
-		});
-	}
-};
 
 API.v1.addRoute(
 	'livechat/visitor',
