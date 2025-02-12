@@ -4228,6 +4228,9 @@ describe('[Rooms]', () => {
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: roomA._id });
+			await deleteUser(memberA);
+			await deleteUser(memberB);
+			await deleteUser(nonMember);
 		});
 
 		it('should hide the room', async () => {
