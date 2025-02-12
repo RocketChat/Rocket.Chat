@@ -6,8 +6,8 @@ type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
 export const useVoipSounds = () => {
 	const { play, pause } = useCustomSound();
 	const masterVolume = useUserPreference<number>('masterVolume', 100) || 100;
-	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100) || 100;
-	const audioVolume = Math.floor((voipRingerVolume * masterVolume) / 100);
+	const callRingerVolume = useUserPreference<number>('callRingerVolume', 100) || 100;
+	const audioVolume = Math.floor((callRingerVolume * masterVolume) / 100);
 
 	return useMemo(
 		() => ({
