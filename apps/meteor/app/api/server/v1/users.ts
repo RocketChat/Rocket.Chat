@@ -25,6 +25,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
+import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
+import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -793,11 +796,11 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			const { tokenName, bypassTwoFactor } = this.bodyParams;
+			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -813,7 +816,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
@@ -852,9 +855,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			await Meteor.callAsync('personalAccessTokens:removeToken', {
-				tokenName,
-			});
+			await removePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success();
 		},
