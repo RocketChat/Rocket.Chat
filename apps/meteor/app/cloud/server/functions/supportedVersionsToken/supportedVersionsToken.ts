@@ -59,13 +59,13 @@ export const handleResponse = async <T>(promise: Promise<Response>) => {
 
 const cacheValueInSettings = <T extends SettingValue>(
 	key: string,
-	fn: () => Promise<T>,
+	fn: (retry?: number) => Promise<T>,
 ): (() => Promise<T>) & {
-	reset: () => Promise<T>;
+	reset: (retry?: number) => Promise<T>;
 } => {
-	const reset = async () => {
+	const reset = async (retry?: number) => {
 		SystemLogger.debug(`Resetting cached value ${key} in settings`);
-		const value = await fn();
+		const value = await fn(retry);
 
 		if (
 			(
@@ -129,27 +129,26 @@ const getSupportedVersionsFromCloud = async () => {
 	return response;
 };
 
-const getSupportedVersionsToken = async () => {
+const getSupportedVersionsToken = async (retry = 0) => {
 	/**
 	 * Gets the supported versions from the license
 	 * Gets the supported versions from the cloud
 	 * Gets the latest version
 	 * return the token
 	 */
-
-	const [versionsFromLicense, response] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, cloudResponse] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,
 		versionsFromLicense?.supportedVersions,
-		(response.success && response.result) || undefined,
+		(cloudResponse.success && cloudResponse.result) || undefined,
 	);
 
 	SystemLogger.debug({
 		msg: 'Supported versions',
 		supportedVersionsFromBuild: supportedVersionsFromBuild.timestamp,
 		versionsFromLicense: versionsFromLicense?.supportedVersions?.timestamp,
-		response: response.success && response.result?.timestamp,
+		response: cloudResponse.success && cloudResponse.result?.timestamp,
 	});
 
 	switch (supportedVersions) {
@@ -163,14 +162,28 @@ const getSupportedVersionsToken = async () => {
 				msg: 'Using supported versions from license',
 			});
 			break;
-		case response.success && response.result:
+		case cloudResponse.success && cloudResponse.result:
 			SystemLogger.info({
 				msg: 'Using supported versions from cloud',
 			});
 			break;
 	}
 
-	await buildVersionUpdateMessage(supportedVersions?.versions);
+	// to avoid a possibly wrong message, we only send the message if the cloud response was successful
+	if (cloudResponse.success) {
+		await buildVersionUpdateMessage(supportedVersions?.versions);
+	} else if (retry < 5) {
+		// in case of failure we'll try again later
+		setTimeout(
+			async () => {
+				await getCachedSupportedVersionsToken.reset(retry + 1);
+			},
+			5000 * Math.pow(2, retry),
+		);
+	} else {
+		SystemLogger.error(`Failed to get supported versions from cloud after ${retry} retries.`);
+		await buildVersionUpdateMessage(supportedVersions?.versions);
+	}
 
 	return supportedVersions?.signed;
 };
