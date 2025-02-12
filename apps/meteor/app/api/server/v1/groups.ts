@@ -69,12 +69,12 @@ async function findPrivateGroupByIdOrName({
 	userId,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	userId: string;
 	checkedArchived?: boolean;
 }): Promise<{
@@ -89,9 +89,20 @@ async function findPrivateGroupByIdOrName({
 
 	const user = await Users.findOneById(userId, { projections: { username: 1 } });
 
-	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+	if (!user) {
+		throw new Meteor.Error('error-user-not-found', 'User not found');
+	}
+
+	if (user.roles?.includes('admin') || (room && await canAccessRoomAsync(room, user))) {
+		// Continue if the user is an admin or has access to the room
+	} else {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
+
+
+	// if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+	// 	throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+	// }
 
 	// discussions have their names saved on `fname` property
 	const roomName = room.prid ? room.fname : room.name;
