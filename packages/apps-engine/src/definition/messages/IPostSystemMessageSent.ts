@@ -1,5 +1,5 @@
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
-import type { ISystemMessage } from './ISystemMessage';
+import type { IMessage } from './IMessage';
 
 /**
  * Handler for when a System message is sent.
@@ -9,5 +9,5 @@ export interface IPostSystemMessageSent {
     /**
      * Method called *after* the system message is sent to the other clients.
      */
-    executePostSystemMessageSent(message: ISystemMessage, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void>;
+    executePostSystemMessageSent(message: IMessage, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void>;
 }

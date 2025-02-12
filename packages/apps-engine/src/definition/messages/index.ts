@@ -29,10 +29,10 @@ import { IPreMessageSentPrevent } from './IPreMessageSentPrevent';
 import { IPreMessageUpdatedExtend } from './IPreMessageUpdatedExtend';
 import { IPreMessageUpdatedModify } from './IPreMessageUpdatedModify';
 import { IPreMessageUpdatedPrevent } from './IPreMessageUpdatedPrevent';
-import { ISystemMessage } from './ISystemMessage';
 import { MessageActionButtonsAlignment } from './MessageActionButtonsAlignment';
 import { MessageActionType } from './MessageActionType';
 import { MessageProcessingType } from './MessageProcessingType';
+import { MessageType } from './MessageType';
 
 export {
     IMessage,
@@ -70,6 +70,6 @@ export {
     MessageProcessingType,
     IMessageDeleteContext,
     Reaction,
-    ISystemMessage,
+    MessageType,
     IPostSystemMessageSent,
 };

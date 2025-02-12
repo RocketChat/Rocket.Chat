@@ -11,7 +11,6 @@ import type {
     IMessageReactionContext,
     IMessageReportContext,
     IMessageStarContext,
-    ISystemMessage,
 } from '../../definition/messages';
 import { AppInterface, AppMethod } from '../../definition/metadata';
 import type { IRoom, IRoomUserJoinedContext, IRoomUserLeaveContext } from '../../definition/rooms';
@@ -46,7 +45,7 @@ interface IListenerExecutor {
         result: IMessage;
     };
     [AppInterface.IPostSystemMessageSent]: {
-        args: [ISystemMessage];
+        args: [IMessage];
         result: void;
     };
     [AppInterface.IPostMessageSent]: {
@@ -344,7 +343,7 @@ export class AppListenerManager {
                 this.executePostMessageSent(data as IMessage);
                 return;
             case AppInterface.IPostSystemMessageSent:
-                this.executePostSystemMessageSent(data as ISystemMessage);
+                this.executePostSystemMessageSent(data as IMessage);
                 return;
             case AppInterface.IPreMessageDeletePrevent:
                 return this.executePreMessageDeletePrevent(data as IMessage);
@@ -568,7 +567,7 @@ export class AppListenerManager {
         }
     }
 
-    private async executePostSystemMessageSent(data: ISystemMessage): Promise<void> {
+    private async executePostSystemMessageSent(data: IMessage): Promise<void> {
         for (const appId of this.listeners.get(AppInterface.IPostSystemMessageSent)) {
             const app = this.manager.getOneById(appId);
             await app.call(AppMethod.EXECUTEPOSTSYSTEMMESSAGESENT, data);

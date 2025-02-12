@@ -10,6 +10,7 @@ export class AppListenerBridge {
 		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
+				case AppInterface.IPostSystemMessageSent:
 				case AppInterface.IPreMessageSentPrevent:
 				case AppInterface.IPreMessageSentExtend:
 				case AppInterface.IPreMessageSentModify:
@@ -26,8 +27,6 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageStarred:
 				case AppInterface.IPostMessageReported:
 					return 'messageEvent';
-				case AppInterface.IPostSystemMessageSent:
-					return 'systemMessageEvent';
 				case AppInterface.IPreRoomCreatePrevent:
 				case AppInterface.IPreRoomCreateExtend:
 				case AppInterface.IPreRoomCreateModify:
@@ -68,11 +67,6 @@ export class AppListenerBridge {
 
 	async defaultEvent(inte, payload) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
-	}
-
-	async systemMessageEvent(inte, payload) {
-		const msg = await this.orch.getConverters().get('messages').convertSystemMessage(payload);
-		return this.orch.getManager().getListenerManager().executeListener(inte, msg);
 	}
 
 	async messageEvent(inte, message, ...payload) {
