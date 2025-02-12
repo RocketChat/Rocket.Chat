@@ -1,5 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
 
@@ -14,7 +12,7 @@ import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 import { saveCustomFields } from '../saveCustomFields';
 
-export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean, _updater?: Updater<IUser>) {
+export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean) {
 	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
@@ -35,7 +33,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	const _id = await Accounts.createUserAsync(createUser);
 
-	const updater = _updater || Users.getUpdater();
+	const updater = Users.getUpdater();
 
 	updater.set('settings', userData.settings || {});
 	if (typeof userData.name !== 'undefined') {
