@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, IOmnichannelBusinessUnit, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
@@ -24,7 +24,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('[GET] livechat/units', () => {
-		it('should fail if manage-livechat-units permission is missing', async () => {
+		it('should return empty if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
 			return request
 				.get(api('livechat/units'))
@@ -37,7 +37,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [],
 					unitDepartments: [],
 				})
-				.expect(403);
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('units').that.is.an('array').with.lengthOf(0);
+				});
 		});
 		it('should return a list of units', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -962,39 +965,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment).to.have.property('parentId', unit._id);
 			expect(fullDepartment).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
 			expect(fullDepartment.ancestors?.[0]).to.equal(unit._id);
-		});
-	});
-
-	describe('livechat/units.user', () => {
-		let user: IUser;
-		let user2: IUser;
-		let unit: IOmnichannelBusinessUnit;
-
-		before(async () => {
-			user = await createUser();
-			user2 = await createUser();
-			await createMonitor(user.username!);
-			const department = await createDepartment();
-			unit = await createUnit(user._id, user.username!, [department._id]);
-		});
-		after(async () => {
-			await Promise.all([deleteUser(user), deleteUser(user)]);
-		});
-
-		it('should return [] for a user not managing any unit', async () => {
-			const credentials = await login(user2.username, password);
-
-			const { body } = await request.get(api('livechat/units.user')).set(credentials).expect(200);
-
-			expect(body.units).to.be.an('array').with.lengthOf(0);
-		});
-		it('should return the units a user is monitoring', async () => {
-			const credentials = await login(user.username, password);
-
-			const { body } = await request.get(api('livechat/units.user')).set(credentials).expect(200);
-
-			expect(body.units).to.be.an('array').with.lengthOf(1);
-			expect(body.units[0]).to.have.property('_id', unit._id);
 		});
 	});
 });
