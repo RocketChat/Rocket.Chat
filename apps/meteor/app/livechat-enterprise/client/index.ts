@@ -1,5 +1,4 @@
 import { hasLicense } from '../../license/client';
-import './startup';
 
 void hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {

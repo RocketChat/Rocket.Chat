@@ -104,4 +104,43 @@ test.describe.serial('message-composer', () => {
 			await poHomeChannel.composer.fill('');
 		});
 	});
+
+	test('should list popup items correctly', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @rocket.cat');
+
+			await expect(poHomeChannel.composerBoxPopup.getByText('rocket.cat')).toBeVisible();
+		});
+	});
+
+	test.describe('audio recorder', () => {
+		test('should open audio recorder', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+		});
+
+		test('should stop recording when clicking on cancel', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Cancel recording', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).not.toBeVisible();
+		});
+
+		test('should open file modal when clicking on "Finish recording"', async ({ page }) => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+
+			await page.waitForTimeout(1000);
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
+			await expect(poHomeChannel.content.fileUploadModal).toBeVisible();
+		});
+	});
 });

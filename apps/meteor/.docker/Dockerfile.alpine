@@ -48,6 +48,13 @@ RUN cd /app/bundle/programs/server \
     # && npm install isolated-vm@4.6.0 \
     # && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
     # # End hack for isolated-vm
+    # TODO: remove with meteor 3.1.2
+    && cd /tmp \
+    && npm install useragent-ng@2.4.4 --no-save \
+    && rm -rf /app/bundle/programs/server/npm/node_modules/meteor/webapp/node_modules/useragent-ng \
+    && mv node_modules/useragent-ng /app/bundle/programs/server/npm/node_modules/meteor/webapp/node_modules/useragent-ng \
+    && rm -rf /tmp/node_modules \
+    # end workaround for useragent-ng/meteor<3.1.2
     && cd /app/bundle/programs/server/npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force

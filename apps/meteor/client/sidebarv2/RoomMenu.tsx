@@ -23,7 +23,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const isUnread = alert || unread || threadUnread;
 	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
 
-	return <GenericMenu detached className='rcx-sidebar-item__menu' title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
+	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
 };
 
 export default memo(RoomMenu);

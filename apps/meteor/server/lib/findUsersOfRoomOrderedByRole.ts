@@ -38,7 +38,7 @@ export async function findUsersOfRoomOrderedByRole({
 
 	const sortCriteria = {
 		rolePriority: rolePrioritySort ?? 1,
-		statusConnection: -1,
+		statusSortKey: -1,
 		...(usernameSort
 			? { username: usernameSort }
 			: {
@@ -77,6 +77,10 @@ export async function findUsersOfRoomOrderedByRole({
 					avatarETag: 1,
 					_updatedAt: 1,
 					federated: 1,
+					statusSortKey: {
+						// Adding this because offline users should come last
+						$cond: [{ $eq: ['$status', 'offline'] }, null, '$status'],
+					},
 					rolePriority: {
 						$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
 					},
@@ -110,6 +114,7 @@ export async function findUsersOfRoomOrderedByRole({
 			{
 				$project: {
 					subscription: 0,
+					statusSortKey: 0,
 				},
 			},
 		],

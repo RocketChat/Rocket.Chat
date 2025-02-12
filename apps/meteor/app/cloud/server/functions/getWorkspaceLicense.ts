@@ -1,7 +1,7 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
@@ -11,16 +11,13 @@ import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
-const workspaceLicensePayloadSchema = v.object({
-	version: v.number().required(),
-	address: v.string().required(),
-	license: v.string().required(),
-	updatedAt: v.string().format('date-time').required(),
-	modules: v.string().required(),
-	expireAt: v.string().format('date-time').required(),
+const workspaceLicensePayloadSchema = z.object({
+	version: z.number(),
+	address: z.string(),
+	license: z.string(),
+	updatedAt: z.string().datetime(),
+	expireAt: z.string().datetime(),
 });
-
-const assertWorkspaceLicensePayload = compile(workspaceLicensePayloadSchema);
 
 const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Serialized<Cloud.WorkspaceLicensePayload>> => {
 	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
@@ -44,7 +41,11 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 
 	const payload = await response.json();
 
-	assertWorkspaceLicensePayload(payload);
+	const assertWorkspaceLicensePayload = workspaceLicensePayloadSchema.safeParse(payload);
+
+	if (!assertWorkspaceLicensePayload.success) {
+		SystemLogger.error({ msg: 'workspaceLicensePayloadSchema failed type validation', errors: assertWorkspaceLicensePayload.error.errors });
+	}
 
 	return payload;
 };
@@ -52,6 +53,7 @@ const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): 
 export async function getWorkspaceLicense() {
 	const currentLicense = await Settings.findOne('Cloud_Workspace_License');
 	// it should never happen, since even if the license is not found, it will return an empty settings
+
 	if (!currentLicense?._updatedAt) {
 		throw new CloudWorkspaceLicenseError('Failed to retrieve current license');
 	}

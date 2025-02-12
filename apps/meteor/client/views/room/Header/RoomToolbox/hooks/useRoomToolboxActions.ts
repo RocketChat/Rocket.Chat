@@ -21,7 +21,6 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
-			'key': item.id,
 			'content': t(item.title),
 			'onClick':
 				item.action ??
@@ -39,7 +38,7 @@ export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxCont
 				return acc;
 			}
 
-			const newSection = { id: group, key: item.key, title: group === 'apps' ? t('Apps') : '', items: [item] };
+			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [item] };
 			acc.push(newSection);
 
 			return acc;

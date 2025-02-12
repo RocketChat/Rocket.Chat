@@ -29,6 +29,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -622,7 +623,7 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 600000,
 		},
 		validateParams: isUserRegisterParamsPOST,
 	},
@@ -953,7 +954,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();

@@ -80,12 +80,7 @@ const getWrapperSettings = ({
 			<VideoConfContext.Provider
 				value={
 					{
-						queryIncomingCalls: {
-							subscribe: () => () => undefined,
-							getSnapshot: () => {
-								return emptyArr;
-							},
-						},
+						queryIncomingCalls: () => [() => () => undefined, () => emptyArr],
 					} as any
 				}
 				children={children}
