@@ -55,7 +55,6 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 				}
 			}
 		}
-
 		onFileDrop?.(files);
 	});
 

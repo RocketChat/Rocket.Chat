@@ -27,7 +27,6 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useBannerSection } from './hooks/useBannerSection';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
@@ -104,9 +103,11 @@ const RoomBody = (): ReactElement => {
 
 	const {
 		uploads,
+		isUploading,
+		hasUploads,
 		handleUploadFiles,
-		handleUploadProgressClose,
-		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
+		// handleUploadProgressClose,
+		targetDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
@@ -211,20 +212,6 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{uploads.length > 0 && (
-									<UploadProgressContainer>
-										{uploads.map((upload) => (
-											<UploadProgressIndicator
-												key={upload.id}
-												id={upload.id}
-												name={upload.name}
-												percentage={upload.percentage}
-												error={upload.error instanceof Error ? upload.error.message : undefined}
-												onClose={handleUploadProgressClose}
-											/>
-										))}
-									</UploadProgressContainer>
-								)}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
 										count={unread}
@@ -232,7 +219,6 @@ const RoomBody = (): ReactElement => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
@@ -289,6 +275,9 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									uploads={uploads}
+									isUploading={isUploading}
+									hasUploads={hasUploads}
 									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}

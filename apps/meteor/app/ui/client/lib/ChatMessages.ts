@@ -5,6 +5,7 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
+import { confirmFiles } from '../../../../client/lib/chats/flows/confirmFiles';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
@@ -175,6 +176,7 @@ export class ChatMessages implements ChatAPI {
 
 		this.flows = {
 			uploadFiles: uploadFiles.bind(null, this),
+			confirmFiles: confirmFiles.bind(null, this),
 			sendMessage: sendMessage.bind(this, this),
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),
@@ -241,6 +243,11 @@ export class ChatMessages implements ChatAPI {
 				await this.currentEditing.cancel();
 			}
 			this.composer?.clear();
+		}
+
+		// reset uploads when release composer
+		if (this.uploads.get().length > 0) {
+			this.uploads.clear();
 		}
 	}
 }
