@@ -45,6 +45,10 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 # 🛠️ Local development
 
+> [!WARNING]
+> **If you are running Windows (any version) use WSL2**, without WSL2 the following steps are not guaranteed to work.
+> We do not have any plans of supporting Windows natively in the near future. 
+
 ##  Prerequisites
 
 You can follow these instructions to setup a dev environment:
