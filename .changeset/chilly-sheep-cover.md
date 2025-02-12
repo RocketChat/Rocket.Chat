@@ -1,5 +1,4 @@
 ---
-'@rocket.chat/model-typings': minor
 '@rocket.chat/rest-typings': minor
 '@rocket.chat/models': minor
 '@rocket.chat/i18n': minor
