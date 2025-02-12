@@ -982,13 +982,11 @@ API.v1.addRoute(
 				return API.v1.failure('error-invalid-user');
 			}
 
-			const subscription = await Subscriptions.findOneOpenByRoomIdAndUserId(roomId, this.userId);
+			const modCount = await hideRoomMethod(this.userId, roomId);
 
-			if (!subscription) {
+			if (!modCount) {
 				return API.v1.failure('error-room-already-hidden');
 			}
-
-			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
 		},
