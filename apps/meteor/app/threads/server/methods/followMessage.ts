@@ -19,8 +19,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const followMessage = async (userId: string, { mid }: { mid: IMessage['_id'] }): Promise<false | undefined> => {
-	check(mid, String);
-
 	if (mid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 	}
@@ -52,6 +50,8 @@ export const followMessage = async (userId: string, { mid }: { mid: IMessage['_i
 
 Meteor.methods<ServerMethods>({
 	async followMessage({ mid }) {
+		check(mid, String);
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'followMessage' });
