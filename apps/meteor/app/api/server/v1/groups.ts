@@ -16,6 +16,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorizatio
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -505,8 +506,9 @@ API.v1.addRoute(
 
 			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
 
-			const result = await Meteor.callAsync('getChannelHistory', {
+			const result = await getChannelHistory({
 				rid: findResult.rid,
+				fromUserId: this.userId,
 				latest: latestDate,
 				oldest: oldestDate,
 				inclusive,
