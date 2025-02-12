@@ -7,6 +7,7 @@ export enum AppInterface {
     IPreMessageSentExtend = 'IPreMessageSentExtend',
     IPreMessageSentModify = 'IPreMessageSentModify',
     IPostMessageSent = 'IPostMessageSent',
+    IPostSystemMessageSent = 'IPostSystemMessageSent',
     IPreMessageDeletePrevent = 'IPreMessageDeletePrevent',
     IPostMessageDeleted = 'IPostMessageDeleted',
     IPreMessageUpdatedPrevent = 'IPreMessageUpdatedPrevent',
