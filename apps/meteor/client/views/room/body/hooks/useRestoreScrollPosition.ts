@@ -1,15 +1,16 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import { RoomManager } from '../../../../lib/RoomManager';
+import { RoomManager, useOpenedRoom, useSecondLevelOpenedRoom } from '../../../../lib/RoomManager';
 
-export function useRestoreScrollPosition(roomId: IRoom['_id']) {
+export function useRestoreScrollPosition() {
 	const ref = useRef<HTMLElement>(null);
+	const parentRoomId = useOpenedRoom();
+	const roomId = useSecondLevelOpenedRoom() ?? parentRoomId;
 
 	const handleRestoreScroll = useCallback(() => {
-		if (!ref.current) {
+		if (!ref.current || !roomId) {
 			return;
 		}
 
@@ -24,7 +25,7 @@ export function useRestoreScrollPosition(roomId: IRoom['_id']) {
 	}, [roomId]);
 
 	useEffect(() => {
-		if (!ref.current) {
+		if (!ref.current || !roomId) {
 			return;
 		}
 
