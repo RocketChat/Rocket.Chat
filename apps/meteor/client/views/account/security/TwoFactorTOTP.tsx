@@ -118,8 +118,6 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
 	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
 
-	console.log({ user });
-
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd={8}>
