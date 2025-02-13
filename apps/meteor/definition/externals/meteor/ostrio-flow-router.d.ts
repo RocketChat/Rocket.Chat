@@ -1,4 +1,4 @@
-declare module 'meteor/kadira:flow-router' {
+declare module 'meteor/ostrio:flow-router-extra' {
 	import type { Subscription } from 'meteor/meteor';
 
 	type Context = {
@@ -106,6 +106,8 @@ declare module 'meteor/kadira:flow-router' {
 	class Router {
 		constructor();
 
+		_page: typeof page;
+
 		route<TRouteName extends string>(pathDef: string, options: RouteOptions<TRouteName>): Route<TRouteName, undefined>;
 
 		route<TRouteName extends string, TGroup extends Group<string>>(
@@ -139,7 +141,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		withTrailingSlash(fn: () => void): Router;
 
-		initialize(options?: RouterOptions): void;
+		initialize: (options: { hashbang: boolean; page: { click: boolean } }) => void;
 
 		wait(): void;
 
@@ -178,6 +180,5 @@ declare module 'meteor/kadira:flow-router' {
 	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
-		_page: typeof page;
 	};
 }

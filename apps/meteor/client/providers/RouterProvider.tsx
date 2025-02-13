@@ -118,13 +118,30 @@ const navigate = (
 const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
 
+const updateFlowRouter = () => {
+	if (FlowRouter._initialized) {
+		FlowRouter._updateCallbacks();
+
+		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path));
+		return;
+	}
+
+	FlowRouter.initialize({
+		hashbang: false,
+		page: {
+			click: true,
+		},
+	});
+};
+
 const defineRoutes = (routes: RouteObject[]) => {
-	routes.map((route) => {
+	const flowRoutes = routes.map((route) => {
 		if (route.path === '*') {
-			FlowRouter.route('*', {
+			FlowRouter.notFound = {
 				action: () => appLayout.render(<>{route.element}</>),
-			});
-			return;
+			};
+
+			return FlowRouter.notFound;
 		}
 
 		return FlowRouter.route(route.path, {
@@ -136,15 +153,26 @@ const defineRoutes = (routes: RouteObject[]) => {
 	routes.push(...routes);
 	const index = routes.length - 1;
 
-	FlowRouter.reload();
+	updateFlowRouter();
 	routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 
 	return () => {
+		flowRoutes.forEach((flowRoute) => {
+			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
+			if ('name' in flowRoute && flowRoute.name) {
+				delete FlowRouter._routesMap[flowRoute.name];
+			} else {
+				FlowRouter.notFound = {
+					action: () => appLayout.render(<></>),
+				};
+			}
+		});
+
 		if (index !== -1) {
 			routes.splice(index, 1);
 		}
 
-		FlowRouter.reload();
+		updateFlowRouter();
 		routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 	};
 };

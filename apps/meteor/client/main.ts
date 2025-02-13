@@ -9,15 +9,6 @@ FlowRouter.route('*', {
 	action: () => undefined,
 });
 
-Meteor.startup(() => {
-	FlowRouter.initialize({
-		hashbang: false,
-		page: {
-			click: true,
-		},
-	});
-});
-
 import('./polyfills')
 	.then(() => import('./meteorOverrides'))
 	.then(() => import('./ecdh'))
