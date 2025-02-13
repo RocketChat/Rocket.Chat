@@ -112,9 +112,7 @@ export class NotificationsModule {
 			}
 
 			if (room.t === 'c' && this.userId) {
-				const hasPreviewPermission = await Authorization.hasPermission(this.userId, 'preview-c-room');
-
-				if (hasPreviewPermission) {
+				if (await Authorization.hasPermission(this.userId, 'preview-c-room')) {
 					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId);
 
 					return !!subscription;
