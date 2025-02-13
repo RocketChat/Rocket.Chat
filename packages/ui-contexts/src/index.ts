@@ -66,6 +66,7 @@ export { useSessionDispatch } from './hooks/useSessionDispatch';
 export { useSetModal } from './hooks/useSetModal';
 export { useSetting } from './hooks/useSetting';
 export { useSettings } from './hooks/useSettings';
+export { useSettingsCount } from './hooks/useSettingsCount';
 export { useSettingsDispatch } from './hooks/useSettingsDispatch';
 export { useSettingSetValue } from './hooks/useSettingSetValue';
 export { useSettingStructure } from './hooks/useSettingStructure';
