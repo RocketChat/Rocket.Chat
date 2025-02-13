@@ -5,9 +5,9 @@ import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 
 FlowRouter.wait();
 
-FlowRouter.route('*', {
+FlowRouter.notFound = {
 	action: () => undefined,
-});
+};
 
 import('./polyfills')
 	.then(() => import('./meteorOverrides'))
