@@ -1,6 +1,6 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 
-export const validateRequiredCustomFields = async (customFields: string[], livechatCustomFields: ILivechatCustomField[]) => {
+export const validateRequiredCustomFields = (customFields: string[], livechatCustomFields: ILivechatCustomField[]) => {
 	const errors: string[] = [];
 	const requiredCustomFields = livechatCustomFields.filter((field) => field.required);
 

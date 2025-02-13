@@ -12,7 +12,7 @@ describe('validateRequiredCustomFields', () => {
 		];
 
 		try {
-			await validateRequiredCustomFields(customFields, livechatCustomFields);
+			validateRequiredCustomFields(customFields, livechatCustomFields);
 			throw new Error('Expected error was not thrown');
 		} catch (error) {
 			if (error instanceof Error) {
@@ -30,7 +30,7 @@ describe('validateRequiredCustomFields', () => {
 			{ _id: 'customField2', required: true, label: 'Custom Field 2', scope: 'visitor', visibility: 'public', _updatedAt: new Date() },
 		];
 
-		await validateRequiredCustomFields(customFields, livechatCustomFields);
+		validateRequiredCustomFields(customFields, livechatCustomFields);
 	});
 
 	it('should not throw an error if no custom fields are required', async () => {
@@ -40,7 +40,7 @@ describe('validateRequiredCustomFields', () => {
 			{ _id: 'customField2', required: false, label: 'Custom Field 2', scope: 'visitor', visibility: 'public', _updatedAt: new Date() },
 		];
 
-		await validateRequiredCustomFields(customFields, livechatCustomFields);
+		validateRequiredCustomFields(customFields, livechatCustomFields);
 	});
 
 	it('should throw an error if none of the required custom fields are provided', async () => {
@@ -51,7 +51,7 @@ describe('validateRequiredCustomFields', () => {
 		];
 
 		try {
-			await validateRequiredCustomFields(customFields, livechatCustomFields);
+			validateRequiredCustomFields(customFields, livechatCustomFields);
 			throw new Error('Expected error was not thrown');
 		} catch (error) {
 			if (error instanceof Error) {

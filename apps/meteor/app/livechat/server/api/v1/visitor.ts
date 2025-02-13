@@ -88,7 +88,7 @@ API.v1.addRoute(
 					{ projection: { _id: 1, required: 1 } },
 					false,
 				).toArray();
-				await validateRequiredCustomFields(keys, livechatCustomFields);
+				validateRequiredCustomFields(keys, livechatCustomFields);
 
 				const matchingCustomFields = livechatCustomFields.filter((field) => keys.includes(field._id));
 				const processedKeys = await Promise.all(
