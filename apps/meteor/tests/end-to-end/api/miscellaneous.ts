@@ -163,7 +163,7 @@ describe('miscellaneous', () => {
 					'unreadAlert',
 					'masterVolume',
 					'notificationsSoundVolume',
-					'callRingerVolume',
+					'voipRingerVolume',
 					'omnichannelTranscriptEmail',
 					IS_EE ? 'omnichannelTranscriptPDF' : false,
 					'desktopNotifications',

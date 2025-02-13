@@ -19,7 +19,7 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
-	const { callRingerVolume } = useUserSoundPreferences();
+	const { voipRingerVolume } = useUserSoundPreferences();
 
 	const popups = useMemo(
 		() =>
@@ -31,18 +31,18 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true, volume: callRingerVolume / 100 });
+			customSound.play('ringtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true, volume: callRingerVolume / 100 });
+			customSound.play('dialtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		return (): void => {
 			customSound.stop('ringtone');
 			customSound.stop('dialtone');
 		};
-	}, [customSound, isRinging, isCalling, callRingerVolume]);
+	}, [customSound, isRinging, isCalling, voipRingerVolume]);
 
 	return (
 		<>
