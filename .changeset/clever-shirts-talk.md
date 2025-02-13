@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Written code to update UI to immediately reflect 2FA status change after enabling/disabling TOTP/email
+Fixes 2FA status change not reflected in UI when enabling/disabling TOTP/emailcode

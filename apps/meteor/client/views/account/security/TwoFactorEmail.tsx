@@ -1,5 +1,5 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useUser, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,8 +9,10 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const { t } = useTranslation();
 	const user = useUser();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [isEnabled, setIsEnabled] = useState(user?.services?.email2fa?.enabled);
+	const [isEmail2faEnabled, setIsEmail2faEnabled] = useState(user?.services?.email2fa?.enabled);
+	const [registeringEmail2fa, setRegisteringEmail2fa] = useState(false);
 
 	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
 		successMessage: t('Two-factor_authentication_enabled'),
@@ -20,28 +22,45 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	});
 
 	const handleEnable = useCallback(async () => {
-		await enable2faAction();
-		setIsEnabled(true);
-	}, [enable2faAction]);
+		if (registeringEmail2fa) return;
+		setRegisteringEmail2fa(true);
+
+		try {
+			await enable2faAction();
+			setIsEmail2faEnabled(true);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setRegisteringEmail2fa(false);
+		}
+	}, [enable2faAction, registeringEmail2fa, dispatchToastMessage, t]);
 
 	const handleDisable = useCallback(async () => {
-		await disable2faAction();
-		setIsEnabled(false);
-	}, [disable2faAction]);
+		if (registeringEmail2fa) return;
+		setRegisteringEmail2fa(true);
+
+		try {
+			await disable2faAction();
+			setIsEmail2faEnabled(false);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setRegisteringEmail2fa(false);
+		}
+	}, [disable2faAction, registeringEmail2fa, dispatchToastMessage, t]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
 			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('Two-factor_authentication_email')}</Box>
-				{isEnabled && (
-					<Button danger onClick={handleDisable}>
+				{isEmail2faEnabled ? (
+					<Button danger onClick={handleDisable} disabled={registeringEmail2fa}>
 						{t('Disable_two-factor_authentication_email')}
 					</Button>
-				)}
-				{!isEnabled && (
+				) : (
 					<>
 						<Box>{t('Two-factor_authentication_email_is_currently_disabled')}</Box>
-						<Button primary onClick={handleEnable}>
+						<Button primary onClick={handleEnable} disabled={registeringEmail2fa}>
 							{t('Enable_two-factor_authentication_email')}
 						</Button>
 					</>
