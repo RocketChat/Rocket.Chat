@@ -100,7 +100,8 @@ declare module 'meteor/ostrio:flow-router-extra' {
 	};
 
 	type RouterOptions = {
-		hashbang?: boolean;
+		hashbang: boolean;
+		page: { click: boolean };
 	};
 
 	class Router {
@@ -141,7 +142,7 @@ declare module 'meteor/ostrio:flow-router-extra' {
 
 		withTrailingSlash(fn: () => void): Router;
 
-		initialize: (options: { hashbang: boolean; page: { click: boolean } }) => void;
+		initialize: (options: RouterOptions) => void;
 
 		wait(): void;
 
