@@ -11,6 +11,7 @@ import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMet
 import { generatePassword } from '../../lib/generatePassword';
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { passwordPolicy } from '../../lib/passwordPolicy';
+import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
 import { setStatusText } from '../setStatusText';
@@ -20,6 +21,7 @@ import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { wrapInSessionTransaction } from '../../../../../server/database/utils';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -44,11 +46,13 @@ export type SaveUserData = {
 
 	joinDefaultChannels?: boolean;
 	sendWelcomeEmail?: boolean;
+
+	customFields?: Record<string, any>;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
 
-export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
+const _saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
 	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -142,6 +146,10 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		updater.set('emails.0.verified', userData.verified);
 	}
 
+	if (userData.customFields) {
+		await saveCustomFields(userData._id, userData.customFields, updater);
+	}
+
 	await Users.updateFromUpdater({ _id: userData._id }, updater);
 
 	// App IPostUserUpdated event hook
@@ -176,3 +184,5 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 
 	return true;
 };
+
+export const saveUser = wrapInSessionTransaction(_saveUser);

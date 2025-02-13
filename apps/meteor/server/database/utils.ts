@@ -18,3 +18,23 @@ export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mon
 export const shouldRetryTransaction = (e: unknown): boolean =>
 	(e as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
 	(e as MongoError)?.errorLabels?.includes('TransientTransactionError');
+
+export const wrapInSessionTransaction =
+	<T extends Array<unknown>, U>(cb: (...args: T) => U) =>
+	async (...args: T): Promise<Awaited<U>> => {
+		const session = client.startSession();
+		let result: Awaited<U>;
+		try {
+			session.startTransaction();
+			result = await cb(...args);
+			await session.commitTransaction();
+		} catch (error) {
+			await session.abortTransaction();
+
+			throw error;
+		} finally {
+			await session.endSession();
+		}
+
+		return result;
+	};
