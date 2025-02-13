@@ -1,12 +1,16 @@
 import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
+import fileSize from 'filesize';
 
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
+import { settings } from '../../../app/settings/client';
+import { fileUploadIsValidContentType } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { i18n } from '../../../app/utils/lib/i18n';
 
 let uploads: readonly Upload[] = [];
 
@@ -63,7 +67,10 @@ const send = async (
 	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
+	const maxFileSize = settings.get('FileUpload_MaxFileSize');
+	const invalidContentType = !fileUploadIsValidContentType(file.type);
 	const id = Random.id();
+
 	updateUploads((uploads) => [
 		...uploads,
 		{
@@ -77,6 +84,19 @@ const send = async (
 
 	try {
 		await new Promise((resolve, reject) => {
+			if (file.size === 0) {
+				return reject(new Error(i18n.t('FileUpload_File_Empty')));
+			}
+
+			// -1 maxFileSize means there is no limit
+			if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+				return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
+			}
+
+			if (invalidContentType) {
+				return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
+			}
+
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{

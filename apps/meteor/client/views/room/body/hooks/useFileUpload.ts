@@ -1,4 +1,3 @@
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
@@ -7,7 +6,6 @@ import { useChat } from '../../contexts/ChatContext';
 
 export const useFileUpload = () => {
 	const targetDrop = useFileUploadDropTarget();
-	// const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
 	const chat = useChat();
 	if (!chat) {
