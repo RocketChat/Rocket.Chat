@@ -43,6 +43,9 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 [Start your cloud hosted trial now](https://rocket.chat/trial-saas)
 
+# 📖 Docs for Developers, Admins and Users
+Please make sure to visit our [Docs](https://docs.rocket.chat/) and [Developer Docs](https://developer.rocket.chat/docs) before sending questions. 
+
 # 🛠️ Local development
 
 ##  Prerequisites
