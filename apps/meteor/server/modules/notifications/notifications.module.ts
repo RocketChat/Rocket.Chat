@@ -111,15 +111,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (room.t === 'c' && this.userId) {
-				if (!(await Authorization.hasPermission(this.userId, 'preview-c-room'))) {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId);
-
-					return !!subscription;
-				}
-			}
-
-			return true;
+			return Authorization.canReadRoom(this.userId || '', { roomType: room.t, rid: room._id });
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');

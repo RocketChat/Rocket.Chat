@@ -1,11 +1,11 @@
+import { Authorization } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server/cached';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -49,11 +49,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// Make sure they can access the room
-		if (
-			room.t === 'c' &&
-			!(await hasPermissionAsync(fromUserId, 'preview-c-room')) &&
-			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { projection: { _id: 1 } }))
-		) {
+		if (!Authorization.canReadRoom(fromUserId, { roomType: room.t, rid: room._id })) {
 			return false;
 		}
 
