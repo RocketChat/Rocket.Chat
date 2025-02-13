@@ -141,9 +141,10 @@ export class AppMessagesConverter {
 		}
 
 		let rid;
+		console.log(message)
 		if (message.room?.id) {
 			const room = await Rooms.findOneById(message.room.id);
-			rid = room._id;
+			rid = room?._id;
 		}
 
 		if (!rid && !isPartial) {
@@ -180,9 +181,9 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAppAttachments(message.attachments);
 
-		let _id;
-		let ts;
-		let _updatedAt;
+		let _id = message.id;
+		let ts = message.createdAt;
+		let _updatedAt = message.updatedAt;
 
 		if (!isPartial) {
 			if (!message.id) {
