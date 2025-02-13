@@ -23,7 +23,7 @@ const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../ap
 	},
 });
 
-describe.only('The AppMessagesConverter instance', () => {
+describe('The AppMessagesConverter instance', () => {
 	let messagesConverter;
 	let messagesMock;
 

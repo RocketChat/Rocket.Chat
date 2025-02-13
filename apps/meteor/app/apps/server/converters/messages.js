@@ -141,7 +141,6 @@ export class AppMessagesConverter {
 		}
 
 		let rid;
-		console.log(message)
 		if (message.room?.id) {
 			const room = await Rooms.findOneById(message.room.id);
 			rid = room?._id;
