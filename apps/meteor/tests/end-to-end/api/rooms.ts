@@ -4228,6 +4228,7 @@ describe('[Rooms]', () => {
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: roomA._id });
+			await deleteRoom({ type: 'd', roomId: roomB._id });
 			await deleteUser(memberA);
 			await deleteUser(memberB);
 			await deleteUser(nonMember);
