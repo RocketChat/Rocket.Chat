@@ -1,5 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -14,11 +12,7 @@ const getCustomFieldsMeta = function (customFieldsMeta: string) {
 		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}
 };
-export const saveCustomFieldsWithoutValidation = async function (
-	userId: string,
-	formData: Record<string, any>,
-	_updater?: Updater<IUser>,
-): Promise<void> {
+export const saveCustomFieldsWithoutValidation = async function (userId: string, formData: Record<string, any>): Promise<void> {
 	const customFieldsSetting = settings.get<string>('Accounts_CustomFields');
 	if (!customFieldsSetting || trim(customFieldsSetting).length === 0) {
 		return;
@@ -35,7 +29,7 @@ export const saveCustomFieldsWithoutValidation = async function (
 		{},
 	);
 
-	const updater = _updater || Users.getUpdater();
+	const updater = Users.getUpdater();
 
 	updater.set('customFields', customFields);
 
@@ -54,9 +48,7 @@ export const saveCustomFieldsWithoutValidation = async function (
 		}
 	});
 
-	if (!_updater) {
-		await Users.updateFromUpdater({ _id: userId }, updater);
-	}
+	await Users.updateFromUpdater({ _id: userId }, updater);
 
 	// Update customFields of all Direct Messages' Rooms for userId
 	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
