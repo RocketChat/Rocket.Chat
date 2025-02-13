@@ -102,12 +102,24 @@ export class NotificationsModule {
 			}
 
 			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
+
 			if (!canAccess) {
 				// verify if can preview messages from public channels
 				if (room.t === 'c' && this.userId) {
-					const subscription = await Subscriptions.findOne({ rid: room._id });
-					return !!subscription && Authorization.hasPermission(this.userId, 'preview-c-room');
+					return Authorization.hasPermission(this.userId, 'preview-c-room');
 				}
+				return false;
+			}
+
+			if (room.t === 'c' && this.userId) {
+				const hasPreviewPermission = await Authorization.hasPermission(this.userId, 'preview-c-room');
+
+				if (hasPreviewPermission) {
+					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId);
+
+					return !!subscription;
+				}
+
 				return false;
 			}
 
@@ -187,7 +199,6 @@ export class NotificationsModule {
 			if (!this.userId) {
 				return false;
 			}
-
 			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
 
 			return canAccess;
