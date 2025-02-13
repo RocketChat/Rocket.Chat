@@ -1,4 +1,5 @@
-import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { Apps, type IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IReadSettingPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
 import { Settings } from '@rocket.chat/models';
@@ -47,7 +48,27 @@ export class AppSettingBridge extends ServerSettingBridge {
 	protected async isReadableById(id: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is checking if they can read the setting ${id}.`);
 		const setting = await Settings.findOneById(id);
-		return Boolean(setting && !setting.secret);
+
+		if (!setting) {
+			return false;
+		}
+
+		// Get the server-setting.read permission
+		const app = Apps.self?.getManager().getOneById(appId);
+		if (!app) {
+			return false;
+		}
+
+		const settingsPerms = app?.getInfo().permissions?.find((perm) => perm.name === 'server-setting.read');
+		if (!settingsPerms) {
+			return false;
+		}
+
+		if ((setting.secret || setting.hidden) && (settingsPerms as IReadSettingPermission).hiddenSettings?.includes(id)) {
+			return true;
+		}
+
+		return !setting.secret;
 	}
 
 	protected async updateOne(setting: ISetting & { id: string }, appId: string): Promise<void> {

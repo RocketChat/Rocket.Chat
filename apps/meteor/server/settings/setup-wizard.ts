@@ -1226,6 +1226,7 @@ export const createSetupWSettings = () =>
 			await this.add('Omnigateway_Url', 'https://omni-gateway.rocket.chat', {
 				type: 'string',
 				hidden: true,
+				secret: true,
 				readonly: true,
 			});
 
