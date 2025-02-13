@@ -112,13 +112,11 @@ export class NotificationsModule {
 			}
 
 			if (room.t === 'c' && this.userId) {
-				if (await Authorization.hasPermission(this.userId, 'preview-c-room')) {
+				if (!(await Authorization.hasPermission(this.userId, 'preview-c-room'))) {
 					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, this.userId);
 
 					return !!subscription;
 				}
-
-				return false;
 			}
 
 			return true;
