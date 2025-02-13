@@ -10,15 +10,9 @@ import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
-import { saveCustomFields } from '../saveCustomFields';
-import { validateCustomFields } from '../validateCustomFields';
 
 export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean) {
 	await validateEmailDomain(userData.email);
-
-	if (userData.customFields) {
-		validateCustomFields(userData.customFields);
-	}
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
 	const isGuest = roles && roles.length === 1 && roles.includes('guest');
@@ -57,10 +51,6 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 	handleNickname(updater, userData.nickname);
 
 	await Users.updateFromUpdater({ _id }, updater);
-
-	if (userData.customFields) {
-		await saveCustomFields(_id, userData.customFields);
-	}
 
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);
