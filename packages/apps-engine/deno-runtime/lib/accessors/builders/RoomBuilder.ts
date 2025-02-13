@@ -31,6 +31,8 @@ export class RoomBuilder implements IRoomBuilder {
         delete data.id;
         this.room = data as IRoom;
 
+        this.changes = structuredClone(this.room);
+
         return this;
     }
 

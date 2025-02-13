@@ -41,8 +41,7 @@ export class MessageBuilder implements IMessageBuilder {
         this.msg.editor = editor;
         this.msg.editedAt = new Date();
 
-        this.changes.editor = editor;
-        this.changes.editedAt = this.msg.editedAt;
+        this.changes = structuredClone(this.msg);
 
         return this as IMessageBuilder;
     }
