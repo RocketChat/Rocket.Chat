@@ -13,8 +13,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
-import { getMessageHistory } from '../../../../server/publications/messages';
 import { messageSearch } from '../../../../server/methods/messageSearch';
+import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
