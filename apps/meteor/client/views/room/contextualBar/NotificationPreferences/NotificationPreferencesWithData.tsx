@@ -30,6 +30,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 	];
 
 	const defaultSoundOption: SelectOption[] = [
+		['none', t('None')],
 		['default', t('Default')],
 	];
 
