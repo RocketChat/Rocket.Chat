@@ -48,14 +48,14 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('emails.0.verified', userData.verified);
 	}
 
-	if (userData.customFields) {
-		await saveCustomFields(_id, userData.customFields, updater);
-	}
-
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 
 	await Users.updateFromUpdater({ _id }, updater);
+
+	if (userData.customFields) {
+		await saveCustomFields(_id, userData.customFields);
+	}
 
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);
