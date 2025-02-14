@@ -18,17 +18,13 @@ import { handleTranscript } from './transcript';
 import Triggers from './triggers';
 
 const commands = new Commands();
-
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	console.log('Post finish chat action', Date.now());
+
+	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
 	if (!transcriptRequested) {
 		await handleTranscript();
-	}
-
-	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
-
-	if (!room) {
-		console.warn('closeChat called without a room');
-		return;
 	}
 
 	await store.setState({ room: null, renderedTriggers: [] });
@@ -46,6 +42,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 	await loadConfig();
 	parentCall('callback', 'chat-ended');
 	route('/chat-finished');
+	console.log('Close room procedure completed successfuly');
 };
 
 const getVideoConfMessageData = (message) =>
@@ -355,10 +352,11 @@ export const defaultRoomParams = () => {
 	return params;
 };
 
-store.on('change', ([state, prevState]) => {
+store.on('change', async ([state, prevState]) => {
 	// Cross-tab communication
 	// Detects when a room is created and then route to the correct container
 	if (prevState.room?._id !== state.room?._id) {
+		console.log('Room was added to the store. Redirecting to /');
 		route('/');
 	}
 });
