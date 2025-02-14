@@ -1,10 +1,11 @@
-import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
+import type { IAuthorization, RoomAccessValidator, RoomReadValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
 import { canAccessRoom } from './canAccessRoom';
+import { canReadRoom } from './canReadRoom';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
@@ -78,6 +79,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
 		return canAccessRoom(...args);
+	}
+
+	async canReadRoom(...args: Parameters<RoomReadValidator>): Promise<boolean> {
+		return canReadRoom(...args);
 	}
 
 	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {

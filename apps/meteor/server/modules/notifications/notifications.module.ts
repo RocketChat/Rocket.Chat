@@ -102,15 +102,12 @@ export class NotificationsModule {
 			}
 
 			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
+
 			if (!canAccess) {
-				// verify if can preview messages from public channels
-				if (room.t === 'c' && this.userId) {
-					return Authorization.hasPermission(this.userId, 'preview-c-room');
-				}
 				return false;
 			}
 
-			return true;
+			return Authorization.canReadRoom(room, { _id: this.userId || '' });
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
