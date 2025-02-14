@@ -889,15 +889,15 @@ API.v1.addRoute(
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-				if (!userTokens) {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+				if (!user) {
 					return;
 				}
 
 				return {
 					clientAction: 'updated',
 					id: this.user._id,
-					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
 				};
 			});
 
@@ -912,6 +912,19 @@ API.v1.addRoute(
 	{
 		async post() {
 			await Users.disableEmail2FAByUserId(this.userId);
+
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
