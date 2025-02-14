@@ -3,7 +3,9 @@ import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
 import type { Db, UpdateResult, DeleteResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInstanceStatusModel {
 	constructor(db: Db) {
 		super(db, 'instances', undefined, {

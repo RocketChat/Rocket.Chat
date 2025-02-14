@@ -4,7 +4,9 @@ import type { IFederationRoomEventsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { FederationEventsModel } from './FederationEvents';
+import { model } from '../proxify';
 
+@model()
 export class FederationRoomEventsRaw extends FederationEventsModel implements IFederationRoomEventsModel {
 	constructor(db: Db) {
 		super(db, 'federation_room_events');

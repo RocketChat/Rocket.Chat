@@ -3,7 +3,9 @@ import type { IOEmbedCacheModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCacheModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOEmbedCache>>) {
 		super(db, 'oembed_cache', trash);

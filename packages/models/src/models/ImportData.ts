@@ -10,7 +10,9 @@ import type { IImportDataModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportDataModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IImportRecord>>) {
 		super(db, 'import_data', trash);

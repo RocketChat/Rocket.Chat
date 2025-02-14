@@ -3,7 +3,9 @@ import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription, InsertOneResult, FindOneAndUpdateOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implements IIntegrationHistoryModel {
 	constructor(db: Db) {
 		super(db, 'integration_history');

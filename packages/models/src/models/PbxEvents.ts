@@ -3,7 +3,9 @@ import type { IPbxEventsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class PbxEventsRaw extends BaseRaw<IPbxEvent> implements IPbxEventsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IPbxEvent>>) {
 		super(db, 'pbx_events', trash, {

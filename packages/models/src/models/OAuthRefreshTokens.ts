@@ -3,7 +3,9 @@ import type { IOAuthRefreshTokensModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class OAuthRefreshTokensRaw extends BaseRaw<IOAuthRefreshToken> implements IOAuthRefreshTokensModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthRefreshToken>>) {
 		super(db, 'oauth_refresh_tokens', trash);

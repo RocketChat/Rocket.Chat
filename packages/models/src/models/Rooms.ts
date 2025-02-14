@@ -29,9 +29,11 @@ import type {
 
 import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import type { Updater } from '../updater';
 
+@model({ trashCollection: true })
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
 		super(db, 'room', trash);

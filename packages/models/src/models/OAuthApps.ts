@@ -3,7 +3,9 @@ import type { IOAuthAppsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOAuthApps>>) {
 		super(db, 'oauth_apps', trash);

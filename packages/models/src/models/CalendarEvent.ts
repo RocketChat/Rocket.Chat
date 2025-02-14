@@ -3,7 +3,9 @@ import type { ICalendarEventModel } from '@rocket.chat/model-typings';
 import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalendarEventModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICalendarEvent>>) {
 		super(db, 'calendar_event', trash);

@@ -3,7 +3,9 @@ import type { IInvitesModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IInvite>>) {
 		super(db, 'invites', trash);

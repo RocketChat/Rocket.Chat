@@ -3,7 +3,9 @@ import type { IUserDataFilesModel } from '@rocket.chat/model-typings';
 import type { Collection, Db, FindOptions, IndexDescription, InsertOneResult, WithId } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
+import { model } from '../proxify';
 
+@model()
 export class UserDataFilesRaw extends BaseUploadModelRaw implements IUserDataFilesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUserDataFile>>) {
 		super(db, 'user_data_files', trash);

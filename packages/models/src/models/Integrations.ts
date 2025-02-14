@@ -3,7 +3,9 @@ import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings'
 import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 
+@model()
 export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IIntegration>>) {
 		super(db, 'integrations', trash);

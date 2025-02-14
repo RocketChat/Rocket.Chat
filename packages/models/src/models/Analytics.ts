@@ -4,8 +4,10 @@ import { Random } from '@rocket.chat/random';
 import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { model } from '../proxify';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
+@model()
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {
 		super(db, 'analytics', undefined, {
