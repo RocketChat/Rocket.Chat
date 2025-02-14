@@ -4,12 +4,36 @@ import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
+import { removePersonalAccessTokenOfUser } from './removeToken';
+import { generatePersonalAccessTokenOfUser } from './generateToken';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'personalAccessTokens:regenerateToken'(params: { tokenName: string }): Promise<string>;
 	}
+}
+
+export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, userId: string): Promise<string> => {
+	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+			method: 'personalAccessTokens:regenerateToken',
+		});
+	}
+
+	const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
+		userId,
+		tokenName,
+	});
+	if (!tokenExist) {
+		throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
+			method: 'personalAccessTokens:regenerateToken',
+		});
+	}
+
+	await removePersonalAccessTokenOfUser(tokenName, userId);
+
+	return generatePersonalAccessTokenOfUser({ tokenName, userId, bypassTwoFactor: tokenExist.bypassTwoFactor || false });
 }
 
 Meteor.methods<ServerMethods>({
@@ -20,26 +44,7 @@ Meteor.methods<ServerMethods>({
 				method: 'personalAccessTokens:regenerateToken',
 			});
 		}
-		if (!(await hasPermissionAsync(uid, 'create-personal-access-tokens'))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', {
-				method: 'personalAccessTokens:regenerateToken',
-			});
-		}
-
-		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
-			userId: uid,
-			tokenName,
-		});
-		if (!tokenExist) {
-			throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
-				method: 'personalAccessTokens:regenerateToken',
-			});
-		}
-
-		await Meteor.callAsync('personalAccessTokens:removeToken', { tokenName });
-		return Meteor.callAsync('personalAccessTokens:generateToken', {
-			tokenName,
-			bypassTwoFactor: tokenExist.bypassTwoFactor,
-		});
+		
+		return regeneratePersonalAccessTokenOfUser(tokenName, uid);
 	}),
 });
