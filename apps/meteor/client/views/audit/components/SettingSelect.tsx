@@ -28,6 +28,7 @@ export const SettingSelect = ({
 		<PaginatedSelectFiltered
 			withTitle={withTitle}
 			reload={reload}
+			flexShrink={1}
 			value={value}
 			onChange={onChange}
 			placeholder={t('All_settings')}
