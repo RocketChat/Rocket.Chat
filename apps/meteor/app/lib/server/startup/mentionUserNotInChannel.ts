@@ -1,12 +1,11 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederated, getUserDisplayName } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
