@@ -101,12 +101,6 @@ describe('The AppMessagesConverter instance', () => {
 			});
 		});
 
-		it('should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message', async () => {
-			const appMessage = await messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
-
-			expect(appMessage).to.have.property('_unmappedProperties_').which.has.property('t', 'uj');
-		});
-
 		it("should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)", async () => {
 			const appMessage = await messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
 

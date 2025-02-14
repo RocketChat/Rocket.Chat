@@ -284,9 +284,9 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	}
 
 	if (Apps.self?.isLoaded()) {
-		// This returns a promise, but it won't mutate anything about the message
-		// so, we don't really care if it is successful or fails
-		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
+		// If the message has a type (system message), we should notify the listener about it
+		const messageEvent = message.t ? 'IPostSystemMessageSent' : 'IPostMessageSent';
+		void Apps.getBridges()?.getListenerBridge().messageEvent(messageEvent, message);
 	}
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
