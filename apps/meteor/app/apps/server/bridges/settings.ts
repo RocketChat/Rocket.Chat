@@ -22,11 +22,12 @@ export class AppSettingBridge extends ServerSettingBridge {
 	protected async getOneById(id: string, appId: string): Promise<ISetting> {
 		this.orch.debugLog(`The App ${appId} is getting the setting by id ${id}.`);
 
-		if (!(await this.isReadableById(id, appId))) {
+		const setting = await this.getReadableSettingById(id, appId);
+		if (!setting) {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		return this.orch.getConverters()?.get('settings').convertById(id);
+		return setting;
 	}
 
 	protected async hideGroup(name: string, appId: string): Promise<void> {
@@ -48,27 +49,40 @@ export class AppSettingBridge extends ServerSettingBridge {
 	protected async isReadableById(id: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is checking if they can read the setting ${id}.`);
 		const setting = await Settings.findOneById(id);
+		return Boolean(setting && !setting.secret);
+	}
 
-		if (!setting) {
-			return false;
-		}
-
-		// Get the server-setting.read permission
+	protected async getReadableSettingById(id: string, appId: string): Promise<ISetting | null> {
+		this.orch.debugLog(`The app ${appId} is checking if they can read the setting ${id}`);
 		const app = Apps.self?.getManager().getOneById(appId);
 		if (!app) {
-			return false;
+			this.orch.debugLog(`The app ${appId} is not found.`);
+			return null;
 		}
 
-		const settingsPerms = app?.getInfo().permissions?.find((perm) => perm.name === 'server-setting.read');
-		if (!settingsPerms) {
-			return false;
+		const { permissions } = app.getInfo();
+		if (!permissions) {
+			this.orch.debugLog(`The app ${appId} has no configured permissions.`);
+			return null;
 		}
 
-		if ((setting.secret || setting.hidden) && (settingsPerms as IReadSettingPermission).hiddenSettings?.includes(id)) {
-			return true;
+		const readSettingsPermission = permissions.find((perm) => perm.name === 'server-setting.read');
+		if (!readSettingsPermission) {
+			this.orch.debugLog(`The app ${appId} has no server-setting.read permission.`);
+			return null;
 		}
 
-		return !setting.secret;
+		const readSettings = readSettingsPermission as IReadSettingPermission;
+		// If the setting is in the hiddenSettings list (defined within the permission), then it can bypass the hidden flag.
+		// If not, then it must be a non-hidden setting. This is to allow apps to read hidden settings if they have the permission to do so.
+		const setting = readSettings.hiddenSettings?.includes(id) ? await Settings.findOneById(id) : await Settings.findOneNotHiddenById(id);
+
+		if (!setting) {
+			this.orch.debugLog(`The setting ${id} is not found.`);
+			return null;
+		}
+
+		return this.orch.getConverters()?.get('settings').convertToApp(setting);
 	}
 
 	protected async updateOne(setting: ISetting & { id: string }, appId: string): Promise<void> {
