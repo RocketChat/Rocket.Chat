@@ -1817,6 +1817,7 @@
   "error-role-name-required": "Nome do papel é obrigatório",
   "error-room-does-not-exist": "Essa sala não existe",
   "error-role-already-present": "Já existe uma função com este nome",
+  "error-room-already-hidden": "A sala já está oculta",
   "error-room-is-not-closed": "Sala não está fechada",
   "error-room-onHold": "Erro! Sala está em espera",
   "error-selected-agent-room-agent-are-same": "O agente selecionado e o agente da sala são iguais",

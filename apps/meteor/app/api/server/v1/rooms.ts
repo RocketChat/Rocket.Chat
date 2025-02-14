@@ -12,6 +12,7 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
+	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -21,6 +22,7 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -957,6 +959,34 @@ API.v1.addRoute(
 			const { roomId } = this.bodyParams;
 
 			await openRoom(this.userId, roomId);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.hide',
+	{ authRequired: true, validateParams: isRoomsHideProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			const modCount = await hideRoomMethod(this.userId, roomId);
+
+			if (!modCount) {
+				return API.v1.failure('error-room-already-hidden');
+			}
 
 			return API.v1.success();
 		},
