@@ -1,7 +1,17 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-export class SlackAPI {
-	constructor(apiOrBotToken) {
+import type {
+	ISlackAPI,
+	SlackPostMessage,
+	SlackPostMessageResponse,
+	SlackUpdateMessage,
+	SlackUpdateMessageResponse,
+} from './definition/ISlackAPI';
+
+export class SlackAPI implements ISlackAPI {
+	private token: string;
+
+	constructor(apiOrBotToken: string) {
 		this.token = apiOrBotToken;
 	}
 
@@ -22,7 +32,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			channels = channels.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
+			if (response.response_metadata?.next_cursor) {
 				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
 				channels = channels.concat(nextChannels);
 			}
@@ -48,7 +58,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			groups = groups.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
+			if (response.response_metadata?.next_cursor) {
 				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
 				groups = groups.concat(nextGroups);
 			}
@@ -92,7 +102,7 @@ export class SlackAPI {
 			const response = await request.json();
 			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
 				members = members.concat(response.members);
-				const hasMoreItems = response.response_metadata && response.response_metadata.next_cursor;
+				const hasMoreItems = response.response_metadata?.next_cursor;
 				if (hasMoreItems) {
 					currentCursor = response.response_metadata.next_cursor;
 				}
@@ -137,7 +147,7 @@ export class SlackAPI {
 		return response && request.status === 200 && response && request.ok;
 	}
 
-	async sendMessage(data) {
+	async sendMessage(data: SlackPostMessage): Promise<SlackPostMessageResponse> {
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
 			headers: {
 				Authorization: `Bearer ${this.token}`,
@@ -148,7 +158,7 @@ export class SlackAPI {
 		return request.json();
 	}
 
-	async updateMessage(data) {
+	async updateMessage(data: SlackUpdateMessage): Promise<SlackUpdateMessageResponse> {
 		const request = await fetch('https://slack.com/api/chat.update', {
 			headers: {
 				Authorization: `Bearer ${this.token}`,
