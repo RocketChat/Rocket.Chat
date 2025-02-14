@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
 import { FormSkeleton } from '../../../components/Skeleton';
+import type { UserInfoQueryData } from '../../../hooks/useUserInfoQuery';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 type AdminUserFormWithDataProps = {
@@ -16,9 +17,19 @@ type AdminUserFormWithDataProps = {
 	roleError: Error | null;
 };
 
+const filterScopedRoles = (availableRoles: IRole[] | undefined) => (data: UserInfoQueryData) => {
+	if (!availableRoles) {
+		return data;
+	}
+	return {
+		...data,
+		user: { ...data.user, roles: data.user.roles.filter((role: string) => availableRoles.some((r) => r._id === role)) },
+	};
+};
+
 const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
 	const { t } = useTranslation();
-	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid });
+	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid }, { select: filterScopedRoles(roleData?.roles) });
 
 	const handleReload = useEffectEvent(() => {
 		onReload();
