@@ -666,6 +666,14 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
+
+		await this.add('Omnichannel_Metrics_Ignore_Automatic_Messages', false, {
+			type: 'boolean',
+			public: true,
+			group: 'Omnichannel',
+			section: 'Analytics',
+			i18nLabel: 'Omnichannel_Ignore_automatic_responses_for_performance_metrics',
+		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {
