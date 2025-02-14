@@ -9,6 +9,13 @@ export { connect } from 'nats';
 const TE = new TextEncoder();
 const TD = new TextDecoder();
 
+const serviceEvents = new Set<{
+	eventName: keyof EventSignatures;
+	listeners: {
+		(...args: any[]): void;
+	}[];
+}>();
+
 export class NatsBroker implements IBroker {
 	metrics?: IServiceMetrics | undefined;
 
@@ -30,6 +37,9 @@ export class NatsBroker implements IBroker {
 		});
 
 		instance.getEvents().forEach((event) => {
+			// TODO need to add a routine to remove the events once the service is destroyed
+			serviceEvents.add(event);
+
 			event.listeners.forEach((listener) => {
 				this.nc.subscribe(event.eventName, {
 					callback: (_error, msg) => {
@@ -125,8 +135,16 @@ export class NatsBroker implements IBroker {
 		this.nc.publish(event, TE.encode(EJSON.stringify(args)));
 	}
 
-	async broadcastLocal<T extends keyof EventSignatures>(_event: T, ..._args: Parameters<EventSignatures[T]>): Promise<void> {
-		console.log('Method not implemented. broadcastLocal');
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		// loop through service events and call the listener
+		console.log('broadcastLocal', event, args);
+		for (const serviceEvent of serviceEvents) {
+			if (serviceEvent.eventName === event) {
+				serviceEvent.listeners.forEach((listener) => {
+					listener(...args);
+				});
+			}
+		}
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
