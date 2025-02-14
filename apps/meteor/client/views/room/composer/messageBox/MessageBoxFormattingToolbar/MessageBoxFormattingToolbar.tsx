@@ -14,6 +14,12 @@ type MessageBoxFormattingToolbarProps = {
 	disabled: boolean;
 };
 
+const toggleFormatting = (composer: ComposerAPI, pattern: string) => {
+	const selection = composer.getSelection();
+	const isFormatted = selection.startsWith(pattern) && selection.endsWith(pattern);
+	composer.wrapSelection(isFormatted ? selection.slice(pattern.length, -pattern.length) : pattern + selection + pattern);
+};
+
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
 	const { t } = useTranslation();
 
@@ -26,7 +32,9 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
 						onClick={() =>
-							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+							isPromptButton(featuredFormatter)
+								? featuredFormatter.prompt(composer)
+								: toggleFormatting(composer, featuredFormatter.pattern)
 						}
 						icon={featuredFormatter.icon}
 						title={t(featuredFormatter.label)}
@@ -48,7 +56,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 						key={formatter.label}
 						data-id={formatter.label}
 						title={t(formatter.label)}
-						onClick={(): void => {
+						onClick={() => {
 							if (isPromptButton(formatter)) {
 								formatter.prompt(composer);
 								return;
@@ -57,7 +65,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 								return;
 							}
-							composer.wrapSelection(formatter.pattern);
+							toggleFormatting(composer, formatter.pattern);
 						}}
 					/>
 				) : (
@@ -66,7 +74,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 							{formatter.text()}
 						</a>
 					</span>
-				),
+				)
 			)}
 		</>
 	);
