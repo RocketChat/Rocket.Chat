@@ -3642,6 +3642,7 @@ describe('[Rooms]', () => {
 
 		let testChannel: IRoom;
 		let ownerUser: IUser;
+		let leaderUser: IUser;
 		let moderatorUser: IUser;
 		let memberUser1: IUser;
 		let memberUser2: IUser;
@@ -3652,11 +3653,12 @@ describe('[Rooms]', () => {
 		let memberUser2Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 
 		before(async () => {
-			[ownerUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
+			[ownerUser, leaderUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
 				createUser({ username: `a_${Random.id()}`, roles: ['admin'] }),
 				createUser({ username: `b_${Random.id()}` }),
 				createUser({ username: `c_${Random.id()}` }),
 				createUser({ username: `d_${Random.id()}` }),
+				createUser({ username: `e_${Random.id()}` }),
 			]);
 
 			[ownerCredentials, memberUser1Credentials, memberUser2Credentials] = await Promise.all([
@@ -3680,7 +3682,7 @@ describe('[Rooms]', () => {
 			testChannel = roomCreationResponse.body.channel;
 
 			await Promise.all(
-				[moderatorUser._id, memberUser1._id, memberUser2._id].map((userId) =>
+				[leaderUser._id, moderatorUser._id, memberUser1._id, memberUser2._id].map((userId) =>
 					request
 						.post(api('channels.invite'))
 						.set(ownerCredentials)
@@ -3692,14 +3694,24 @@ describe('[Rooms]', () => {
 				),
 			);
 
-			await request
-				.post(api('channels.addModerator'))
-				.set(ownerCredentials)
-				.send({
-					roomId: testChannel._id,
-					userId: moderatorUser._id,
-				})
-				.expect(200);
+			await Promise.all([
+				request
+					.post(api('channels.addLeader'))
+					.set(ownerCredentials)
+					.send({
+						roomId: testChannel._id,
+						userId: leaderUser._id,
+					})
+					.expect(200),
+				request
+					.post(api('channels.addModerator'))
+					.set(ownerCredentials)
+					.send({
+						roomId: testChannel._id,
+						userId: moderatorUser._id,
+					})
+					.expect(200),
+			]);
 		});
 
 		after(async () => {
@@ -3710,7 +3722,7 @@ describe('[Rooms]', () => {
 			}
 		});
 
-		it('should return a list of members ordered by owner, moderator, then members by default', async () => {
+		it('should return a list of members ordered by owner, leader, moderator, then members by default', async () => {
 			const response = await request
 				.get(api('rooms.membersOrderedByRole'))
 				.set(credentials)
@@ -3723,16 +3735,17 @@ describe('[Rooms]', () => {
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.members).to.be.an('array');
 
-			const [first, second, ...rest] = response.body.members;
+			const [first, second, third, ...rest] = response.body.members;
 			expect(first.username).to.equal(ownerUser.username);
-			expect(second.username).to.equal(moderatorUser.username);
+			expect(second.username).to.equal(leaderUser.username);
+			expect(third.username).to.equal(moderatorUser.username);
 
 			const memberUsernames = rest.map((m: any) => m.username);
 			expect(memberUsernames).to.include(memberUser1.username);
 			expect(memberUsernames).to.include(memberUser2.username);
 
 			expect(response.body).to.have.property('total');
-			expect(response.body.total).to.be.gte(4);
+			expect(response.body.total).to.be.eq(5);
 		});
 
 		it('should support sorting by role in descending priority', async () => {
@@ -3747,12 +3760,13 @@ describe('[Rooms]', () => {
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			const [first, second, third, fourth] = response.body.members;
+			const [first, second, third, fourth, fifth] = response.body.members;
 
 			expect(first.username).to.equal(memberUser1.username);
 			expect(second.username).to.equal(memberUser2.username);
 			expect(third.username).to.equal(moderatorUser.username);
-			expect(fourth.username).to.equal(ownerUser.username);
+			expect(fourth.username).to.equal(leaderUser.username);
+			expect(fifth.username).to.equal(ownerUser.username);
 		});
 
 		it('should support pagination', async () => {
@@ -3769,7 +3783,7 @@ describe('[Rooms]', () => {
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.members).to.have.lengthOf(2);
-			expect(response.body.total).to.be.gte(4);
+			expect(response.body.total).to.be.eq(5);
 		});
 
 		it('should return matched members when using filter param', async () => {
@@ -3819,6 +3833,7 @@ describe('[Rooms]', () => {
 
 			const expected = [
 				ownerUser.username, // since owner
+				leaderUser.username, // since leader
 				moderatorUser.username, // since moderator
 				memberUser2.username,
 				memberUser1.username,
@@ -3846,12 +3861,13 @@ describe('[Rooms]', () => {
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			const [first, second, third, fourth] = response.body.members;
+			const [first, second, third, fourth, fifth] = response.body.members;
 
 			expect(first.username).to.equal(ownerUser.username);
-			expect(second.username).to.equal(moderatorUser.username);
-			expect(third.username).to.equal(memberUser1.username);
-			expect(fourth.username).to.equal(memberUser2.username);
+			expect(second.username).to.equal(leaderUser.username);
+			expect(third.username).to.equal(moderatorUser.username);
+			expect(fourth.username).to.equal(memberUser1.username);
+			expect(fifth.username).to.equal(memberUser2.username);
 		});
 
 		describe('Sort by user status', () => {
@@ -3880,12 +3896,13 @@ describe('[Rooms]', () => {
 					.expect(200);
 
 				expect(response.body).to.have.property('success', true);
-				const [first, second, third, fourth] = response.body.members;
+				const [first, second, third, fourth, fifth] = response.body.members;
 
 				expect(first.username).to.equal(ownerUser.username); // since owner
-				expect(second.username).to.equal(moderatorUser.username); // siince moderator
-				expect(third.username).to.equal(memberUser2.username); // since online
-				expect(fourth.username).to.equal(memberUser1.username); // since offline
+				expect(second.username).to.equal(leaderUser.username); // since leader
+				expect(third.username).to.equal(moderatorUser.username); // since moderator
+				expect(fourth.username).to.equal(memberUser2.username); // since online
+				expect(fifth.username).to.equal(memberUser1.username); // since offline
 			});
 		});
 
