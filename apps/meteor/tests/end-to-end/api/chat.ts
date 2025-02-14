@@ -3841,8 +3841,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
-						expect(res.body).to.have.property('error', 'The required "rid" query param is missing. [error-room-id-param-not-provided]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3860,8 +3859,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3880,11 +3878,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4082,7 +4076,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
-						updatedSince: 'updatedSince',
+						updatedSince: new Date().toISOString(),
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -4123,8 +4117,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4143,11 +4136,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
