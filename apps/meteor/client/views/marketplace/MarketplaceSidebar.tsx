@@ -1,7 +1,6 @@
 import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useSyncExternalStore } from 'react';
 
 import { getMarketplaceSidebarItems, subscribeToMarketplaceSidebarItems } from './sidebarItems';
 import Sidebar from '../../components/Sidebar';

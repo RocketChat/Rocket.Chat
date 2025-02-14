@@ -19,6 +19,16 @@ test.describe.serial('emoji', () => {
 		await page.goto('/home');
 	});
 
+	test('should focus the active emoji tab category', async () => {
+		const activityEmojiTab = poHomeChannel.content.getEmojiPickerTabByName('Activity');
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.btnComposerEmoji.click();
+		await activityEmojiTab.click();
+
+		await expect(activityEmojiTab).toBeFocused();
+	});
+
 	test('expect pick and send grinning emoji', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.pickEmoji('grinning');

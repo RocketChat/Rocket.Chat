@@ -1,8 +1,9 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -68,10 +69,10 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const departmentsField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const descriptionField = useId();
+	const departmentsField = useId();
 
 	return (
 		<Contextualbar>

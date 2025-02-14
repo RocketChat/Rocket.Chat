@@ -1,9 +1,8 @@
 import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -28,9 +27,9 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	const assignUser = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 	const getAvailableExtensions = useEndpoint('GET', '/v1/voip-freeswitch.extension.list');
 
-	const modalTitleId = useUniqueId();
-	const usersWithoutExtensionsId = useUniqueId();
-	const freeExtensionNumberId = useUniqueId();
+	const modalTitleId = useId();
+	const usersWithoutExtensionsId = useId();
+	const freeExtensionNumberId = useId();
 
 	const {
 		control,

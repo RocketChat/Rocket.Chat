@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import AppRoot from '../views/root/AppRoot';
 
@@ -17,9 +17,10 @@ const createContainer = (): Element => {
 
 const container = createContainer();
 
-render(
+const root = createRoot(container);
+
+root.render(
 	<StrictMode>
 		<AppRoot />
 	</StrictMode>,
-	container,
 );

@@ -1,5 +1,17 @@
 # @rocket.chat/ui-theming
 
+## 0.4.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+## 0.4.2-rc.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
 ## 0.4.1
 
 ### Patch Changes

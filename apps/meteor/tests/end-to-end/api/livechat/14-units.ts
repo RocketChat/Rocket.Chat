@@ -17,6 +17,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updatePermission('manage-livechat-departments', ['livechat-manager', 'livechat-monitor', 'admin']);
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('[GET] livechat/units', () => {

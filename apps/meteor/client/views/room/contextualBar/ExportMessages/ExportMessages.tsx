@@ -14,8 +14,8 @@ import {
 	InputBox,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useContext, useEffect, useMemo } from 'react';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -157,14 +157,14 @@ const ExportMessages = () => {
 		});
 	};
 
-	const formId = useUniqueId();
-	const methodField = useUniqueId();
-	const formatField = useUniqueId();
-	const toUsersField = useUniqueId();
-	const dateFromField = useUniqueId();
-	const dateToField = useUniqueId();
-	const additionalEmailsField = useUniqueId();
-	const subjectField = useUniqueId();
+	const formId = useId();
+	const methodField = useId();
+	const formatField = useId();
+	const toUsersField = useId();
+	const dateFromField = useId();
+	const dateToField = useId();
+	const additionalEmailsField = useId();
+	const subjectField = useId();
 
 	return (
 		<>

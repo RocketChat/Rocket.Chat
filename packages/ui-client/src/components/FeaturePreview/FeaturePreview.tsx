@@ -12,7 +12,7 @@ export const FeaturePreview = ({
 }: {
 	disabled?: boolean;
 	feature: FeaturesAvailable;
-	children: ReactElement[];
+	children: ReactElement<{ featureToggleEnabled?: boolean }>[];
 }) => {
 	const featureToggleEnabled = useFeaturePreview(feature) && !disabled;
 

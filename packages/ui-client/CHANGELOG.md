@@ -1,5 +1,79 @@
 # @rocket.chat/ui-client
 
+## 15.0.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [5506c406f4a22145ece065ad2b797225e94423ca]:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0
+  - @rocket.chat/ui-avatar@11.0.0
+  </details>
+
+## 15.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.5
+  - @rocket.chat/ui-avatar@11.0.0-rc.5
+  </details>
+
+## 15.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.4
+  - @rocket.chat/ui-avatar@11.0.0-rc.4
+  </details>
+
+## 15.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.3
+  - @rocket.chat/ui-avatar@11.0.0-rc.3
+  </details>
+
+## 15.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.2
+  - @rocket.chat/ui-avatar@11.0.0-rc.2
+  </details>
+
+## 15.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.1
+  - @rocket.chat/ui-avatar@11.0.0-rc.1
+  </details>
+
+## 15.0.0-rc.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [5506c406f4a22145ece065ad2b797225e94423ca]:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.0-rc.0
+  - @rocket.chat/ui-avatar@11.0.0-rc.0
+  </details>
+
 ## 14.0.1
 
 ### Patch Changes

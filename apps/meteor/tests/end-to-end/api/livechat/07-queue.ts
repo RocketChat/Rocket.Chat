@@ -40,11 +40,16 @@ describe('LIVECHAT - Queue', () => {
 			updateSetting('Livechat_enabled', true),
 			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
 			updateEESetting('Livechat_Require_Contact_Verification', 'never'),
+			updateSetting('Omnichannel_enable_department_removal', true),
 
 			// this cleanup is required since previous tests left the DB dirty
 			cleanupRooms(),
 		]),
 	);
+
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
+	});
 
 	describe('livechat/queue', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {

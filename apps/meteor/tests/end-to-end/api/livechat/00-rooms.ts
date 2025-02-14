@@ -76,11 +76,15 @@ describe('LIVECHAT - rooms', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/room', () => {

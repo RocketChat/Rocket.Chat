@@ -14,8 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -33,7 +32,7 @@ import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useChat } from '../../contexts/ChatContext';
-import { useComposerPopup } from '../../contexts/ComposerPopupContext';
+import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
@@ -162,7 +161,7 @@ const MessageBox = ({
 	const handleSendMessage = useEffectEvent(() => {
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
-		clearPopup();
+		popup.clear();
 
 		onSend?.({
 			value: text,
@@ -328,22 +327,8 @@ const MessageBox = ({
 		}
 	});
 
-	const composerPopupConfig = useComposerPopup();
-
-	const {
-		popup,
-		focused,
-		items,
-		ariaActiveDescendant,
-		suspended,
-		select,
-		commandsRef,
-		callbackRef: c,
-		filter,
-		clearPopup,
-	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
-		configurations: composerPopupConfig,
-	});
+	const popupOptions = useComposerPopupOptions();
+	const popup = useComposerBoxPopup(popupOptions);
 
 	const keyDownHandlerCallbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
@@ -357,15 +342,21 @@ const MessageBox = ({
 		[handler],
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
-	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
+	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
-			{shouldPopupPreview && popup && (
-				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
+			{shouldPopupPreview && popup.option && (
+				<ComposerBoxPopup
+					select={popup.select}
+					items={popup.items}
+					focused={popup.focused}
+					title={popup.option.title}
+					renderItem={popup.option.renderItem}
+				/>
 			)}
 			{/*
 				SlashCommand Preview popup works in a weird way
@@ -373,16 +364,17 @@ const MessageBox = ({
 				After that we need to the slashcommand list and check if the command exists and provide the preview
 				if not the query is `suspend` which means the slashcommand is not found or doesn't have a preview
 			*/}
-			{popup?.preview && (
+			{popup.option?.preview && (
 				<ComposerBoxPopupPreview
-					select={select}
-					items={items as any}
-					focused={focused as any}
-					renderItem={popup.renderItem}
-					ref={commandsRef}
+					select={popup.select}
+					items={popup.items as any}
+					focused={popup.focused as any}
+					title={popup.option.title}
+					renderItem={popup.option.renderItem}
+					ref={popup.commandsRef}
 					rid={room._id}
 					tmid={tmid}
-					suspended={suspended}
+					suspended={popup.suspended}
 				/>
 			)}
 			<MessageBoxHint
@@ -403,7 +395,7 @@ const MessageBox = ({
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
-					aria-activedescendant={ariaActiveDescendant}
+					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>

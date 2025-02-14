@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
+import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -17,11 +17,11 @@ export async function markRoomResponded(
 	}
 
 	const monthYear = moment().format('YYYY-MM');
-	const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+	const isContactActive = await LivechatContacts.isContactActiveOnPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 
 	// Case: agent answers & visitor is not active, we mark visitor as active
-	if (!isVisitorActive) {
-		await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
+	if (!isContactActive) {
+		await LivechatContacts.markContactActiveForPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 	}
 
 	if (!room.v?.activity?.includes(monthYear)) {

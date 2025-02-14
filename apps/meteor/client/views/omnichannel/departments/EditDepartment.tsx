@@ -17,10 +17,10 @@ import {
 	FieldHint,
 	Option,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -210,18 +210,18 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const isFormValid = isValid && isDirty;
 
-	const formId = useUniqueId();
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const showOnRegistrationField = useUniqueId();
-	const emailField = useUniqueId();
-	const showOnOfflineFormField = useUniqueId();
-	const offlineMessageChannelNameField = useUniqueId();
-	const fallbackForwardDepartmentField = useUniqueId();
-	const requestTagBeforeClosingChatField = useUniqueId();
-	const chatClosingTagsField = useUniqueId();
-	const allowReceiveForwardOffline = useUniqueId();
+	const formId = useId();
+	const enabledField = useId();
+	const nameField = useId();
+	const descriptionField = useId();
+	const showOnRegistrationField = useId();
+	const emailField = useId();
+	const showOnOfflineFormField = useId();
+	const offlineMessageChannelNameField = useId();
+	const fallbackForwardDepartmentField = useId();
+	const requestTagBeforeClosingChatField = useId();
+	const chatClosingTagsField = useId();
+	const allowReceiveForwardOffline = useId();
 
 	return (
 		<Page flexDirection='row'>

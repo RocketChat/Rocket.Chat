@@ -35,7 +35,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
 			{ key: { 'livechatData.$**': 1 } },
-			{ key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
+			// TODO: remove this index in the next major release (8.0.0)
+			// { key: { activity: 1 }, partialFilterExpression: { activity: { $exists: true } } },
 			{ key: { disabled: 1 }, partialFilterExpression: { disabled: { $exists: true } } },
 		];
 	}
@@ -404,32 +405,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		);
 	}
 
-	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean> {
-		const query = {
-			_id: visitorId,
-			activity: period,
-		};
-
-		return this.findOne(query, { projection: { _id: 1 } }).then(Boolean);
-	}
-
-	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {
-		const query = {
-			_id: visitorId,
-		};
-
-		const update = {
-			$push: {
-				activity: {
-					$each: [period],
-					$slice: -12,
-				},
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	disableById(_id: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id },
@@ -453,12 +428,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				},
 			},
 		);
-	}
-
-	countVisitorsOnPeriod(period: string): Promise<number> {
-		return this.countDocuments({
-			activity: period,
-		});
 	}
 
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult> {

@@ -1,4 +1,5 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import type { JSX } from 'react';
 
 export type ItemProps = {
   label: string;

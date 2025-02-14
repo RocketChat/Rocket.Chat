@@ -109,7 +109,7 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();

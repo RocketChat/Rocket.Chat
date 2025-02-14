@@ -38,7 +38,12 @@ describe('LIVECHAT - business hours', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_enable_business_hours', true);
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
+	});
+
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	let defaultBhId: any;

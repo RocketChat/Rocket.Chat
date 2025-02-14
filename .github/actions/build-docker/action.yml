@@ -86,7 +86,7 @@ runs:
       if: inputs.setup == 'true'
       shell: bash
     - if: ${{ inputs.platform == 'alpine' }}
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
         key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1

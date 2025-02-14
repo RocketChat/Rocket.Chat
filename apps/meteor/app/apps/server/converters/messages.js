@@ -48,6 +48,7 @@ export class AppMessagesConverter {
 			editor: 'editedBy',
 			attachments: getAttachments,
 			sender: 'u',
+			threadMsgCount: 'tcount',
 		};
 
 		return transformMappedData(message, map);

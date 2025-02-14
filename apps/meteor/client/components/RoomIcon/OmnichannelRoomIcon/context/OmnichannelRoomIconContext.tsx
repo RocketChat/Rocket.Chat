@@ -1,5 +1,4 @@
-import { createContext, useMemo, useContext } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createContext, useMemo, useContext, useSyncExternalStore } from 'react';
 
 import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';

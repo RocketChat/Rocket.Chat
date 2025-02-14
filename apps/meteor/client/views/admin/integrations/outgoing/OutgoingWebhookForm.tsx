@@ -16,10 +16,9 @@ import {
 	Select,
 	Accordion,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -98,27 +97,27 @@ const OutgoingWebhookForm = () => {
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
-	const eventField = useUniqueId();
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const channelField = useUniqueId();
-	const triggerWordsField = useUniqueId();
-	const targetRoomField = useUniqueId();
-	const urlsField = useUniqueId();
-	const impersonateUserField = useUniqueId();
-	const usernameField = useUniqueId();
-	const aliasField = useUniqueId();
-	const avatarField = useUniqueId();
-	const emojiField = useUniqueId();
-	const tokenField = useUniqueId();
-	const scriptEnabledField = useUniqueId();
-	const scriptEngineField = useUniqueId();
-	const scriptField = useUniqueId();
-	const retryFailedCallsField = useUniqueId();
-	const retryCountField = useUniqueId();
-	const retryDelayField = useUniqueId();
-	const triggerWordAnywhereField = useUniqueId();
-	const runOnEditsField = useUniqueId();
+	const eventField = useId();
+	const enabledField = useId();
+	const nameField = useId();
+	const channelField = useId();
+	const triggerWordsField = useId();
+	const targetRoomField = useId();
+	const urlsField = useId();
+	const impersonateUserField = useId();
+	const usernameField = useId();
+	const aliasField = useId();
+	const avatarField = useId();
+	const emojiField = useId();
+	const tokenField = useId();
+	const scriptEnabledField = useId();
+	const scriptEngineField = useId();
+	const scriptField = useId();
+	const retryFailedCallsField = useId();
+	const retryCountField = useId();
+	const retryDelayField = useId();
+	const triggerWordAnywhereField = useId();
+	const runOnEditsField = useId();
 
 	return (
 		<Box maxWidth='x600' alignSelf='center' w='full'>

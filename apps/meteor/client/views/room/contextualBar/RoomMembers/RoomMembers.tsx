@@ -3,7 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useMemo } from 'react';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
@@ -31,7 +31,7 @@ type RoomMembersProps = {
 	loading: boolean;
 	text: string;
 	type: string;
-	setText: FormEventHandler<HTMLElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
 	members: RoomMemberUser[];
 	total: number;
@@ -41,7 +41,7 @@ type RoomMembersProps = {
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
 	loadMoreItems: () => void;
-	renderRow?: (props: ComponentProps<typeof RoomMembersRow>) => ReactElement | null;
+	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 };
 

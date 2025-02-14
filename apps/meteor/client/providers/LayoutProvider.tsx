@@ -52,7 +52,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					showTopNavbarEmbeddedLayout,
 					sidebar: {
 						isCollapsed,
-						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
+						toggle: isMobile ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),

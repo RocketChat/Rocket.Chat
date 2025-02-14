@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +34,6 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
-	const queryClient = useQueryClient();
 
 	const { handleSubmit, control, reset } = useForm<ChatsFiltersQuery>({
 		values: filtersQuery,
@@ -47,15 +47,14 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 		['queued', t('Queued')],
 	];
 
-	const handleSubmitFilters = (data: ChatsFiltersQuery) => {
-		setFiltersQuery(({ guest }) => ({ ...data, guest }));
-		queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-	};
+	const handleSubmitFilters = (data: ChatsFiltersQuery) => setFiltersQuery(({ guest }) => ({ ...data, guest }));
 
 	const handleResetFilters = () => {
 		resetFiltersQuery();
 		reset();
 	};
+
+	const formId = useUniqueId();
 
 	return (
 		<>
@@ -64,7 +63,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 				<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSubmitFilters)}>
 				<Field>
 					<FieldLabel>{t('From')}</FieldLabel>
 					<FieldRow>
@@ -169,7 +168,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button onClick={handleSubmit(handleSubmitFilters)} primary>
+					<Button type='submit' form={formId} primary>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>

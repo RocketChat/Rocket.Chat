@@ -7,9 +7,9 @@ import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
 import MultiSelectCustomList from './MultiSelectCustomList';
 import MultiSelectCustomListWrapper from './MultiSelectCustomListWrapper';
 
-const isValidReference = (reference: RefObject<HTMLElement>, e: { target: Node | null }): boolean => {
-	const isValidTarget = Boolean(e.target);
-	const isValidReference = e.target !== reference.current && !reference.current?.contains(e.target);
+const isValidReference = (reference: RefObject<HTMLElement | null>, event: { target: Node | null }): boolean => {
+	const isValidTarget = Boolean(event.target);
+	const isValidReference = event.target !== reference.current && !reference.current?.contains(event.target);
 
 	return isValidTarget && isValidReference;
 };

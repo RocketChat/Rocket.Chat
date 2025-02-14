@@ -60,7 +60,7 @@ test.describe.serial('Threads', () => {
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 
-			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
 
 			await expect(page).toHaveURL(/.*thread/);

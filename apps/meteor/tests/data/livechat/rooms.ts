@@ -121,7 +121,7 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 };
 
 export const createDepartment = (
-	agents?: { agentId: string }[],
+	agents?: { agentId: string; count?: number }[],
 	name?: string,
 	enabled = true,
 	opts: Record<string, any> = {},
