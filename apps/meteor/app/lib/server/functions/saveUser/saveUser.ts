@@ -1,6 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -20,6 +21,7 @@ import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -48,7 +50,12 @@ export type SaveUserData = {
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
 
-export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
+type SaveUserOptions = {
+	_updater?: Updater<IUser>;
+	auditStore?: UserChangedAuditStore;
+};
+
+export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
 	const oldUserData = userData._id && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -73,14 +80,17 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		delete userData.setRandomPassword;
 	}
 
-	if (!isUpdateUserData(userData)) {
+	if (!isUpdateUserData(userData) || !oldUserData) {
+		// TODO audit new users
 		return saveNewUser(userData, sendPassword);
 	}
+
+	options?.auditStore?.setOriginalUser(oldUserData);
 
 	await validateUserEditing(userId, userData);
 
 	// update user
-	const updater = Users.getUpdater();
+	const updater = options?._updater || Users.getUpdater();
 
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
