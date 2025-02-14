@@ -10,7 +10,6 @@ import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/emoji-custom/client';
 import '../app/file-upload/client';
-import '../app/github-enterprise/client';
 import '../app/gitlab/client';
 import '../app/iframe-login/client';
 import '../app/license/client';
