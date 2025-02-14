@@ -3,6 +3,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -42,8 +43,7 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_hide_watermark', { value: false });
-		await expect(res.status()).toBe(200);
+		await setSettingValueById(api, 'Livechat_hide_watermark', false);
 	});
 
 	test('OC - Livechat - Hide watermark', async () => {
