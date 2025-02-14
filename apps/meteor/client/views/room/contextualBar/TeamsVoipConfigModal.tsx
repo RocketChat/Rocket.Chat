@@ -1,4 +1,20 @@
-import { Modal, Button, Box, Callout, Margins } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Button,
+	Box,
+	Callout,
+	Margins,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalHeroImage,
+	ModalFooter,
+	ModalFooterAnnotation,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -30,15 +46,15 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{t('VoIP')}</Modal.Tagline>
-					<Modal.Title>{t('Team_voice_call')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
-				<Modal.HeroImage maxHeight='initial' src='/images/teams-voip-config.svg' />
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{t('VoIP')}</ModalTagline>
+					<ModalTitle>{t('Team_voice_call')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
+				<ModalHeroImage maxHeight='initial' src='/images/teams-voip-config.svg' />
 				<Box paddingBlock={24}>
 					{t('Fully_integrated_voip_receive_internal_external_calls_without_switching_between_apps_external_systems')}
 				</Box>
@@ -76,10 +92,10 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 				<Callout mbs={12} mbe={24} title={!hasModule ? t('Subscription_add-on_required') : t('FreeSwitch_setup_required')} type='warning'>
 					{getCalloutWarning()}
 				</Callout>
-			</Modal.Content>
-			<Modal.Footer justifyContent={!isAdmin && hasModule ? 'space-between' : 'end'}>
-				{!isAdmin && hasModule && <Modal.FooterAnnotation>{t('Only_admins_can_perform_this_setup')}</Modal.FooterAnnotation>}
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter justifyContent={!isAdmin && hasModule ? 'space-between' : 'end'}>
+				{!isAdmin && hasModule && <ModalFooterAnnotation>{t('Only_admins_can_perform_this_setup')}</ModalFooterAnnotation>}
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					{onConfirm && isAdmin && hasModule && (
 						<Button primary onClick={onConfirm}>
@@ -91,8 +107,8 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 							{t('Contact_sales')}
 						</Button>
 					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
