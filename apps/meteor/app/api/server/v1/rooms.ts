@@ -332,6 +332,32 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'rooms.mediaEdit/:rid/:fileId',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.forbidden();
+			}
+
+			const file = await Uploads.findOneById(this.urlParams.fileId);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-file');
+			}
+
+			if (!this.bodyParams.fileName) {
+				throw new Meteor.Error('invalid-file-name');
+			}
+
+			await Uploads.updateFileNameById(this.urlParams.fileId, this.bodyParams.fileName);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'rooms.saveNotification',
 	{ authRequired: true },
 	{

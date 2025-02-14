@@ -1,12 +1,16 @@
 import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
+import fileSize from 'filesize';
 
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI } from './ChatAPI';
 import type { Upload } from './Upload';
+import { settings } from '../../../app/settings/client';
+import { fileUploadIsValidContentType } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { i18n } from '../../../app/utils/lib/i18n';
 
 let uploads: readonly Upload[] = [];
 
@@ -29,6 +33,44 @@ const wipeFailedOnes = (): void => {
 	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
 };
 
+const removeUpload = (id: Upload['id']): void => {
+	updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+};
+
+const editUploadFileName = async (rid: IRoom['_id'], uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
+	try {
+		await sdk.rest.post(`/v1/rooms.mediaEdit/${rid}/${uploadId}`, {
+			fileName,
+		});
+
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return { ...upload, file: new File([upload.file], fileName, upload.file) };
+			}),
+		);
+	} catch (error) {
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					percentage: 0,
+					error: new Error('Could not updated file name'),
+				};
+			}),
+		);
+	}
+};
+
+const clear = () => updateUploads(() => []);
+
 const send = async (
 	file: File,
 	{
@@ -44,22 +86,38 @@ const send = async (
 		tmid?: string;
 		t?: IMessage['t'];
 	},
-	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
+	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
+	const maxFileSize = settings.get('FileUpload_MaxFileSize');
+	const invalidContentType = !fileUploadIsValidContentType(file.type);
 	const id = Random.id();
 
 	updateUploads((uploads) => [
 		...uploads,
 		{
 			id,
-			name: fileContent?.raw.name || file.name,
+			file: new File([file], fileContent?.raw.name || file.name, file),
 			percentage: 0,
+			url: URL.createObjectURL(file),
 		},
 	]);
 
 	try {
 		await new Promise((resolve, reject) => {
+			if (file.size === 0) {
+				return reject(new Error(i18n.t('FileUpload_File_Empty')));
+			}
+
+			// -1 maxFileSize means there is no limit
+			if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+				return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
+			}
+
+			if (invalidContentType) {
+				return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
+			}
+
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{
@@ -77,10 +135,6 @@ const send = async (
 							return;
 						}
 						const progress = (event.loaded / event.total) * 100;
-						if (progress === 100) {
-							return;
-						}
-
 						updateUploads((uploads) =>
 							uploads.map((upload) => {
 								if (upload.id !== id) {
@@ -113,35 +167,32 @@ const send = async (
 				},
 			);
 
-			xhr.onload = async () => {
+			xhr.onload = () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					let content;
-					if (getContent) {
-						content = await getContent(result.file._id, result.file.url);
-					}
+					updateUploads((uploads) =>
+						uploads.map((upload) => {
+							if (upload.id !== id) {
+								return upload;
+							}
 
-					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
-						msg,
-						tmid,
-						description,
-						t,
-						content,
-					});
+							return {
+								...upload,
+								id: result.file._id,
+								url: result.file.url,
+							};
+						}),
+					);
 				}
 			};
-
-			if (uploads.length) {
-				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-			}
 
 			emitter.once(`cancelling-${id}`, () => {
 				xhr.abort();
 				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+				reject(new Error('Upload cancelled'));
 			});
 		});
-
-		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+		// updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 	} catch (error: unknown) {
 		updateUploads((uploads) =>
 			uploads.map((upload) => {
@@ -168,10 +219,13 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
+	clear,
+	removeUpload,
+	editUploadFileName: (id, fileName) => editUploadFileName(rid, id, fileName),
 	send: (
 		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });

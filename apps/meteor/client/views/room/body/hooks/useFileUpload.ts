@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { useChat } from '../../contexts/ChatContext';
 
 export const useFileUpload = () => {
+	const targetDrop = useFileUploadDropTarget();
+
 	const chat = useChat();
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -30,10 +32,17 @@ export const useFileUpload = () => {
 		[chat],
 	);
 
-	return {
-		uploads,
-		handleUploadProgressClose,
-		handleUploadFiles,
-		targeDrop: useFileUploadDropTarget(),
-	};
+	const isUploading = uploads.some((upload) => upload.percentage < 100);
+
+	return useMemo(
+		() => ({
+			uploads,
+			hasUploads: uploads.length > 0,
+			isUploading,
+			handleUploadProgressClose,
+			handleUploadFiles,
+			targetDrop,
+		}),
+		[uploads, isUploading, handleUploadProgressClose, handleUploadFiles, targetDrop],
+	);
 };

@@ -16,10 +16,14 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
+// import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import MessageComposerFileArea from './MessageComposerFileArea';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -27,6 +31,7 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -41,8 +46,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -84,12 +87,15 @@ type MessageBoxProps = {
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
-	onUploadFiles?: (files: readonly File[]) => void;
+	onUploadFiles: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
+	uploads: readonly Upload[];
+	isUploading: boolean;
+	hasUploads: boolean;
 };
 
 const MessageBox = ({
@@ -103,6 +109,9 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	uploads,
+	isUploading,
+	hasUploads,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -159,6 +168,9 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
+		if (hasUploads) {
+			return chat?.flows.confirmFiles();
+		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
@@ -345,6 +357,7 @@ const MessageBox = ({
 	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
+	const shouldDisableDueUploads = !hasUploads || isUploading;
 
 	return (
 		<>
@@ -398,6 +411,14 @@ const MessageBox = ({
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
+				{hasUploads && (
+					<MessageComposerFileArea
+						uploads={uploads}
+						onEdit={chat.uploads.editUploadFileName}
+						onRemove={chat.uploads.removeUpload}
+						onCancel={chat.uploads.cancel}
+					/>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -423,6 +444,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isEditing={isEditing}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -437,10 +459,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canSend || (!typing && !isEditing && shouldDisableDueUploads)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing || isEditing || !shouldDisableDueUploads}
+									info={typing || isEditing || !shouldDisableDueUploads}
 								/>
 							</>
 						)}

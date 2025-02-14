@@ -9,8 +9,12 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
+import type { Upload } from '../../../lib/chats/Upload';
 
 export type ComposerMessageProps = {
+	uploads: readonly Upload[];
+	isUploading: boolean;
+	hasUploads: boolean;
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;
@@ -84,7 +88,6 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 	const publicationReady = useReactiveValue(
 		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
 	);
-
 	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}
