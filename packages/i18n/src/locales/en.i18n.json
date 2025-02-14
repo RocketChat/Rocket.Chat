@@ -5072,6 +5072,7 @@
   "set-readonly": "Set ReadOnly",
   "set-readonly_description": "Permission to set a channel to read only channel",
   "Settings": "Settings",
+  "Setting_change": "Settings change",
   "Settings_updated": "Settings updated",
   "Setup_SMTP": "Set up SMTP",
   "Setup_Wizard": "Setup Wizard",

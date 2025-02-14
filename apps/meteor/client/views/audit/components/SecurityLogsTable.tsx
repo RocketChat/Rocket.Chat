@@ -1,10 +1,10 @@
-import { Box, Button, ButtonGroup, Field, FieldLabel, FieldRow, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldLabel, Margins } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useMethod } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { SecurityLogDisplay } from './SecurityLogDisplayModal';
 import { SettingSelect } from './SettingSelect';
 import DateRangePicker from './forms/DateRangePicker';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -22,12 +22,53 @@ import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 
 const SecurityLogsTable = (): ReactElement => {
 	const { t } = useTranslation();
-	const [value, setValue] = useState('');
+	const [setting, setSetting] = useState('');
+
+	const setModal = useSetModal();
 
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
 		start: createStartOfToday(),
 		end: createEndOfToday(),
 	}));
+
+	const handleExportJson = () => {
+		return undefined;
+	};
+
+	const handleClearFilters = () => {
+		setSetting('');
+		setDateRange({ start: createStartOfToday(), end: createEndOfToday() });
+	};
+
+	const handleApplyFilters = () => {
+		return undefined;
+	};
+
+	const handleItemClick = ({
+		actor,
+		timestamp,
+		setting,
+		changedFrom,
+		changedTo,
+	}: {
+		actor: string;
+		timestamp: string;
+		setting: string;
+		changedFrom: string;
+		changedTo: string;
+	}) => {
+		setModal(
+			<SecurityLogDisplay
+				settingType='string'
+				timestamp={timestamp}
+				actor={actor}
+				setting={setting}
+				changedFrom={changedFrom}
+				changedTo={changedTo}
+				onCancel={() => setModal(null)}
+			/>,
+		);
+	};
 
 	// const getAudits = useMethod('auditGetAuditions');
 
@@ -102,17 +143,23 @@ const SecurityLogsTable = (): ReactElement => {
 						<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
 					</Margins>
 				</Field>
-				<Field flexShrink={1} width='40%'>
+				<Field width={300}>
 					<Margins inline={6}>
 						<FieldLabel>{t('Setting')}</FieldLabel>
-						<SettingSelect value={value} onChange={setValue} />
+						<SettingSelect value={setting} onChange={setSetting} />
 					</Margins>
 				</Field>
 				<ButtonGroup>
 					<Margins inline={6}>
-						<Button secondary>{t('Export_JSON')}</Button>
-						<Button secondary>{t('Clear_filters')}</Button>
-						<Button primary>{t('Apply_filters')}</Button>
+						<Button secondary onClick={handleExportJson}>
+							{t('Export_JSON')}
+						</Button>
+						<Button secondary onClick={handleClearFilters}>
+							{t('Clear_filters')}
+						</Button>
+						<Button primary onClick={handleApplyFilters}>
+							{t('Apply_filters')}
+						</Button>
 					</Margins>
 				</ButtonGroup>
 			</Box>
@@ -121,7 +168,7 @@ const SecurityLogsTable = (): ReactElement => {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={4} />
+						<GenericTableLoadingRow cols={5} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -131,7 +178,7 @@ const SecurityLogsTable = (): ReactElement => {
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((item) => (
-							<GenericTableRow key={item._id} tabIndex={0} role='link'>
+							<GenericTableRow key={item._id} role='link' action tabIndex={0} onClick={() => handleItemClick({ ...item })}>
 								<GenericTableCell withTruncatedText>
 									<Box display='flex' alignItems='center' mbe={16}>
 										<UserAvatar size='x24' username={item.actor} />
@@ -145,7 +192,9 @@ const SecurityLogsTable = (): ReactElement => {
 									</Box>
 								</GenericTableCell>
 								<GenericTableCell withTruncatedText>{item.timestamp}</GenericTableCell>
-								<GenericTableCell withTruncatedText>{item.setting}</GenericTableCell>
+								<GenericTableCell withTruncatedText title={t(item.setting)}>
+									{item.setting}
+								</GenericTableCell>
 								<GenericTableCell withTruncatedText>{item.changedFrom}</GenericTableCell>
 								<GenericTableCell withTruncatedText>{item.changedTo}</GenericTableCell>
 							</GenericTableRow>

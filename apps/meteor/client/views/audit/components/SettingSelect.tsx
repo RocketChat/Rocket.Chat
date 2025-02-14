@@ -1,4 +1,4 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,11 @@ export const SettingSelect = ({
 			setFilter={setFilter as (value: string | number | undefined) => void}
 			options={items}
 			endReached={loadMoreItems}
+			renderItem={({ label, ...props }) => (
+				<Option {...props} title={t(label)}>
+					{label}
+				</Option>
+			)}
 		/>
 	);
 };

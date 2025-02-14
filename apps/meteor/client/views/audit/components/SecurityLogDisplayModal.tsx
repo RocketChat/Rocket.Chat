@@ -10,7 +10,7 @@ type SecurityLogDisplayProps = {
 	timestamp: string;
 	actor: string;
 	setting: string;
-	settingType: string;
+	settingType: 'string' | 'code';
 	changedFrom: string;
 	changedTo: string;
 	onCancel: () => void;
@@ -29,10 +29,10 @@ export const SecurityLogDisplay = ({
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title>{t('Security_Log_Display')}</Modal.Title>
+				<Modal.Title>{t('Setting_change')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe={16}>
 				<InfoPanelLabel>{t('Timestamp')}</InfoPanelLabel>
 				<InfoPanelText>{moment(timestamp).format('MMMM Do YYYY, h:mm:ss a')}</InfoPanelText>
 
