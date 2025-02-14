@@ -3,4 +3,4 @@
 "@rocket.chat/pdf-worker": patch
 ---
 
-fix: Omnichannel transcript filename breaking download links
+Fixes omnichannel transcript filename breaking download links
