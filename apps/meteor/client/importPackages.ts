@@ -5,7 +5,6 @@ import '../app/autotranslate/client';
 import '../app/canned-responses/client';
 import '../app/custom-sounds/client';
 import '../app/dolphin/client';
-import '../app/drupal/client';
 import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/emoji-custom/client';
