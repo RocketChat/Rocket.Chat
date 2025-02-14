@@ -19,7 +19,7 @@ const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): 
 	return { agentId, username };
 };
 
-export const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | undefined> => {
+const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | undefined> => {
 	if (!username && !id) {
 		return undefined;
 	}
