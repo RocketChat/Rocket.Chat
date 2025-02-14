@@ -43,13 +43,16 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 [Start your cloud hosted trial now](https://rocket.chat/trial-saas)
 
+# 📖 Docs for Developers, Admins and Users
+Please make sure to visit our [Docs](https://docs.rocket.chat/) and [Developer Docs](https://developer.rocket.chat/docs) before sending questions. 
+
 # 🛠️ Local development
 
 ##  Prerequisites
 
 You can follow these instructions to setup a dev environment:
 
-- Install **Node 20.x (LTS)** either [manually](https://nodejs.org/dist/latest-v20.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
+- Install **Node 22.x (LTS)** either [manually](https://nodejs.org/dist/latest-v22.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
 - Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://docs.meteor.com/about/install.html
 - Install **yarn**: https://yarnpkg.com/getting-started/install
 - Install **Deno 1.x**: https://docs.deno.com/runtime/fundamentals/installation/

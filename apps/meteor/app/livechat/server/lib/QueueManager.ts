@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Omnichannel } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatDepartment,
 	IOmnichannelRoomInfo,
@@ -12,12 +12,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepareLivechatRoom } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
@@ -25,12 +26,9 @@ import { getOnlineAgents } from './getOnlineAgents';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
+import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { sendNotification } from '../../../lib/server';
-import {
-	notifyOnLivechatInquiryChangedById,
-	notifyOnLivechatInquiryChanged,
-	notifyOnSettingChanged,
-} from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
@@ -132,6 +130,11 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		// bots should be able to skip the queue and the routing check
+		if (agent && (await allowAgentSkipQueue(agent))) {
+			return LivechatInquiryStatus.READY;
+		}
+
 		if (settings.get('Livechat_waiting_queue')) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -140,7 +143,7 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
-		if (!agent || !(await allowAgentSkipQueue(agent))) {
+		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
@@ -213,6 +216,47 @@ export class QueueManager {
 		return Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, room.v._id, room.source)));
 	}
 
+	static async startConversation(
+		rid: string,
+		insertionRoom: InsertionModel<IOmnichannelRoom>,
+		guest: ILivechatVisitor,
+		roomInfo: IOmnichannelRoomInfo,
+		defaultAgent?: SelectedAgent,
+		message?: string,
+		extraData?: IOmnichannelRoomExtraData,
+		attempts = 3,
+	): Promise<{ room: IOmnichannelRoom; inquiry: ILivechatInquiryRecord }> {
+		const session = client.startSession();
+		try {
+			session.startTransaction();
+			const room = await createLivechatRoom(insertionRoom, session);
+			logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
+			const inquiry = await createLivechatInquiry({
+				rid,
+				name: room.fname,
+				initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
+				guest,
+				message,
+				extraData: { ...extraData, source: roomInfo.source },
+				session,
+			});
+			await session.commitTransaction();
+			return { room, inquiry };
+		} catch (e) {
+			await session.abortTransaction();
+			if (shouldRetryTransaction(e)) {
+				if (attempts > 0) {
+					logger.debug({ msg: 'Retrying transaction because of transient error', attemptsLeft: attempts });
+					return this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData, attempts - 1);
+				}
+				throw new Error('error-failed-to-start-conversation');
+			}
+			throw e;
+		} finally {
+			await session.endSession();
+		}
+	}
+
 	static async requestRoom({
 		guest,
 		rid = Random.id(),
@@ -280,37 +324,24 @@ export class QueueManager {
 			}
 		}
 
-		const room = await createLivechatRoom(rid, { ...guest, ...(department && { department }) }, roomInfo, {
+		const insertionRoom = await prepareLivechatRoom(rid, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
 
-		if (!room) {
-			logger.error(`Room for visitor ${guest._id} not found`);
-			throw new Error('room-not-found');
-		}
-		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
+		// Transactional start of the conversation. This should prevent rooms from being created without inquiries and viceversa.
+		// All the actions that happened inside createLivechatRoom are now outside this transaction
+		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		const inquiry = await createLivechatInquiry({
+		await callbacks.run('livechat.newRoom', room);
+		await Message.saveSystemMessageAndNotifyUser(
+			'livechat-started',
 			rid,
-			name: room.fname,
-			initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
-			guest,
-			message,
-			extraData: { ...extraData, source: roomInfo.source },
-		});
-
-		if (!inquiry) {
-			logger.error(`Inquiry for visitor ${guest._id} not found`);
-			throw new Error('inquiry-not-found');
-		}
-
+			'',
+			{ _id: guest._id, username: guest.username },
+			{ groupable: false, token: guest.token },
+		);
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-
-		const livechatSetting = await LivechatRooms.updateRoomCount();
-		if (livechatSetting) {
-			void notifyOnSettingChanged(livechatSetting);
-		}
 
 		await this.processNewInquiry(inquiry, room, defaultAgent);
 		const newRoom = await LivechatRooms.findOneById(rid);
