@@ -160,7 +160,7 @@ export class AppMessagesConverter {
 					username: user.username,
 					name: user.name,
 				};
-			} else if (!isPartial) {
+			} else {
 				u = {
 					_id: message.sender.id,
 					username: message.sender.username,
