@@ -323,7 +323,7 @@ const ChatSyncThreadsListSchema = {
 		},
 		updatedSince: {
 			type: 'string',
-			format: 'date',
+			format: 'iso-date-time',
 		},
 	},
 	required: ['rid', 'updatedSince'],
@@ -677,7 +677,7 @@ const ChatSyncThreadMessagesSchema = {
 		},
 		updatedSince: {
 			type: 'string',
-			format: 'date',
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
@@ -743,7 +743,7 @@ const ChatGetDeletedMessagesSchema = {
 		since: {
 			type: 'string',
 			minLength: 1,
-			format: 'date',
+			format: 'iso-date-time',
 		},
 		count: {
 			type: 'number',
