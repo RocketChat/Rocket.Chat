@@ -103,7 +103,9 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 								value={statusText}
 								onChange={handleStatusText}
 								placeholder={t('StatusMessage_Placeholder')}
-								addon={<IconButton icon='cross' onClick={() => setStatusText('')} style={{ visibility: statusText ? 'visible' : 'hidden' }} />}
+								addon={
+									<IconButton icon='cross' onClick={() => setStatusText('')} style={{ visibility: statusText ? 'visible' : 'hidden' }} />
+								}
 							/>
 						</FieldRow>
 						{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
