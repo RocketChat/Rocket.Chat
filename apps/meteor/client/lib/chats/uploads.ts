@@ -12,220 +12,218 @@ import { fileUploadIsValidContentType } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { i18n } from '../../../app/utils/lib/i18n';
 
-let uploads: readonly Upload[] = [];
+class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
+	private rid: string;
 
-const emitter = new Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }>();
+	private tmid?: string;
 
-const updateUploads = (update: (uploads: readonly Upload[]) => readonly Upload[]): void => {
-	uploads = update(uploads);
-	emitter.emit('update');
-};
+	constructor({ rid, tmid }: { rid: string; tmid?: IMessage['_id'] }) {
+		super();
 
-const get = (): readonly Upload[] => uploads;
-
-const subscribe = (callback: () => void): (() => void) => emitter.on('update', callback);
-
-const cancel = (id: Upload['id']): void => {
-	emitter.emit(`cancelling-${id}`);
-};
-
-const wipeFailedOnes = (): void => {
-	updateUploads((uploads) => uploads.filter((upload) => !upload.error));
-};
-
-const removeUpload = (id: Upload['id']): void => {
-	updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-};
-
-const editUploadFileName = async (rid: IRoom['_id'], uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
-	try {
-		await sdk.rest.post(`/v1/rooms.mediaEdit/${rid}/${uploadId}`, {
-			fileName,
-		});
-
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== uploadId) {
-					return upload;
-				}
-
-				return { ...upload, file: new File([upload.file], fileName, upload.file) };
-			}),
-		);
-	} catch (error) {
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== uploadId) {
-					return upload;
-				}
-
-				return {
-					...upload,
-					percentage: 0,
-					error: new Error('Could not updated file name'),
-				};
-			}),
-		);
+		this.rid = rid;
+		this.tmid = tmid;
 	}
-};
 
-const clear = () => updateUploads(() => []);
+	uploads: readonly Upload[] = [];
 
-const send = async (
-	file: File,
-	{
-		description,
-		msg,
-		rid,
-		tmid,
-		t,
-	}: {
-		description?: string;
-		msg?: string;
-		rid: string;
-		tmid?: string;
-		t?: IMessage['t'];
-	},
-	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-): Promise<void> => {
-	const maxFileSize = settings.get('FileUpload_MaxFileSize');
-	const invalidContentType = !fileUploadIsValidContentType(file.type);
-	const id = Random.id();
+	set = (uploads: Upload[]): void => {
+		this.uploads = uploads;
+		this.emit('update');
+	};
 
-	updateUploads((uploads) => [
-		...uploads,
-		{
-			id,
-			file: new File([file], fileContent?.raw.name || file.name, file),
-			percentage: 0,
-			url: URL.createObjectURL(file),
-		},
-	]);
+	get = (): readonly Upload[] => this.uploads;
 
-	try {
-		await new Promise((resolve, reject) => {
-			if (file.size === 0) {
-				return reject(new Error(i18n.t('FileUpload_File_Empty')));
-			}
+	subscribe = (callback: () => void): (() => void) => this.on('update', callback);
 
-			// -1 maxFileSize means there is no limit
-			if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-				return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
-			}
+	cancel = (id: Upload['id']): void => {
+		this.emit(`cancelling-${id}`);
+	};
 
-			if (invalidContentType) {
-				return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
-			}
+	wipeFailedOnes = (): void => {
+		this.set(this.uploads.filter((upload) => !upload.error));
+	};
 
-			const xhr = sdk.rest.upload(
-				`/v1/rooms.media/${rid}`,
-				{
-					file,
-					...(fileContent && {
-						content: JSON.stringify(fileContent.encrypted),
-					}),
-				},
-				{
-					load: (event) => {
-						resolve(event);
-					},
-					progress: (event) => {
-						if (!event.lengthComputable) {
-							return;
-						}
-						const progress = (event.loaded / event.total) * 100;
-						updateUploads((uploads) =>
-							uploads.map((upload) => {
-								if (upload.id !== id) {
-									return upload;
-								}
+	removeUpload = (id: Upload['id']): void => {
+		this.set(this.uploads.filter((upload) => upload.id !== id));
+	};
 
-								return {
-									...upload,
-									percentage: Math.round(progress) || 0,
-								};
-							}),
-						);
-					},
-					error: (event) => {
-						updateUploads((uploads) =>
-							uploads.map((upload) => {
-								if (upload.id !== id) {
-									return upload;
-								}
-
-								return {
-									...upload,
-									percentage: 0,
-									error: new Error(xhr.responseText),
-								};
-							}),
-						);
-						reject(event);
-					},
-				},
-			);
-
-			xhr.onload = () => {
-				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
-					const result = JSON.parse(xhr.responseText);
-					updateUploads((uploads) =>
-						uploads.map((upload) => {
-							if (upload.id !== id) {
-								return upload;
-							}
-
-							return {
-								...upload,
-								id: result.file._id,
-								url: result.file.url,
-							};
-						}),
-					);
-				}
-			};
-
-			emitter.once(`cancelling-${id}`, () => {
-				xhr.abort();
-				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-				reject(new Error('Upload cancelled'));
+	editUploadFileName = async (uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
+		try {
+			await sdk.rest.post(`/v1/rooms.mediaEdit/${this.rid}/${uploadId}`, {
+				fileName,
 			});
-		});
-		// updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-	} catch (error: unknown) {
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== id) {
-					return upload;
-				}
 
-				return {
-					...upload,
-					percentage: 0,
-					error: new Error(getErrorMessage(error)),
-				};
-			}),
-		);
-	} finally {
-		if (!uploads.length) {
-			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== uploadId) {
+						return upload;
+					}
+
+					return { ...upload, file: new File([upload.file], fileName, upload.file) };
+				}),
+			);
+		} catch (error) {
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== uploadId) {
+						return upload;
+					}
+
+					return {
+						...upload,
+						percentage: 0,
+						error: new Error('Could not updated file name'),
+					};
+				}),
+			);
 		}
-	}
-};
+	};
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({
-	get,
-	subscribe,
-	wipeFailedOnes,
-	cancel,
-	clear,
-	removeUpload,
-	editUploadFileName: (id, fileName) => editUploadFileName(rid, id, fileName),
-	send: (
+	clear = () => this.set([]);
+
+	send = async (
 		file: File,
-		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
+		{
+			description,
+			msg,
+			// rid,
+			// tmid,
+			t,
+		}: {
+			description?: string;
+			msg?: string;
+			rid: string;
+			tmid?: string;
+			t?: IMessage['t'];
+		},
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
-});
+	): Promise<void> => {
+		const maxFileSize = settings.get('FileUpload_MaxFileSize');
+		const invalidContentType = !fileUploadIsValidContentType(file.type);
+		const id = Random.id();
+
+		this.set([
+			...this.uploads,
+			{
+				id,
+				file: new File([file], fileContent?.raw.name || file.name, file),
+				percentage: 0,
+				url: URL.createObjectURL(file),
+			},
+		]);
+
+		try {
+			await new Promise((resolve, reject) => {
+				if (file.size === 0) {
+					return reject(new Error(i18n.t('FileUpload_File_Empty')));
+				}
+
+				// -1 maxFileSize means there is no limit
+				if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+					return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
+				}
+
+				if (invalidContentType) {
+					return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
+				}
+
+				const xhr = sdk.rest.upload(
+					`/v1/rooms.media/${this.rid}`,
+					{
+						file,
+						...(fileContent && {
+							content: JSON.stringify(fileContent.encrypted),
+						}),
+					},
+					{
+						load: (event) => {
+							resolve(event);
+						},
+						progress: (event) => {
+							if (!event.lengthComputable) {
+								return;
+							}
+							const progress = (event.loaded / event.total) * 100;
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: Math.round(progress) || 0,
+									};
+								}),
+							);
+						},
+						error: (event) => {
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: 0,
+										error: new Error(xhr.responseText),
+									};
+								}),
+							);
+							reject(event);
+						},
+					},
+				);
+
+				xhr.onload = () => {
+					if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+						const result = JSON.parse(xhr.responseText);
+						this.set(
+							this.uploads.map((upload) => {
+								if (upload.id !== id) {
+									return upload;
+								}
+
+								return {
+									...upload,
+									id: result.file._id,
+									url: result.file.url,
+								};
+							}),
+						);
+					}
+				};
+
+				this.once(`cancelling-${id}`, () => {
+					xhr.abort();
+					this.set(this.uploads.filter((upload) => upload.id !== id));
+					reject(new Error('Upload cancelled'));
+				});
+			});
+			// updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+		} catch (error: unknown) {
+			this.set(
+				this.uploads.map((upload) => {
+					if (upload.id !== id) {
+						return upload;
+					}
+
+					return {
+						...upload,
+						percentage: 0,
+						error: new Error(getErrorMessage(error)),
+					};
+				}),
+			);
+		} finally {
+			if (!this.uploads.length) {
+				UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
+			}
+		}
+	};
+}
+
+export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>
+	new UploadsStore({ rid, tmid });
