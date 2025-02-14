@@ -1,4 +1,5 @@
 import type { IImportUser, IImportUserRecord, IUser, IUserEmail } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { SHA256 } from '@rocket.chat/sha256';
@@ -50,8 +51,25 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			return;
 		}
 
+		if (!existingUser) {
+			if (await this.willExceedLicenseLimit()) {
+				this._logger?.warn(`License limit exceeded: User ${data.username || data.emails[0]} will not be created.`);
+				await this.skipRecord(_id);
+				return;
+			}
+		}
+
 		await this.insertOrUpdateUser(existingUser, data);
 		return !existingUser;
+	}
+
+	private async willExceedLicenseLimit(): Promise<boolean> {
+		const currentUserCount = await Users.getActiveLocalUserCount();
+		// what if the license is not set?
+		const licenseLimit = License.getMaxActiveUsers();
+		const AMOUNT_USER_BEING_ADDED = 1;
+
+		return currentUserCount + AMOUNT_USER_BEING_ADDED > licenseLimit;
 	}
 
 	async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
