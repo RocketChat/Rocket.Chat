@@ -1,5 +1,4 @@
-import { createContext, useCallback, useContext, useEffect } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
 

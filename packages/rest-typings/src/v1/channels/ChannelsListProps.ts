@@ -6,18 +6,25 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChannelsListProps = PaginatedRequest<{ _id?: string; query?: string }>;
+export type ChannelsListProps = PaginatedRequest<{ _id?: string }>;
 
 const channelsListPropsSchema = {
 	type: 'object',
 	properties: {
 		_id: {
 			type: 'string',
-			nullable: true,
 		},
 		query: {
 			type: 'string',
-			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: [],

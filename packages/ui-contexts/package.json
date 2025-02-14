@@ -1,23 +1,21 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "14.0.1",
+	"version": "15.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "^0.34.1",
+		"@rocket.chat/fuselage-hooks": "~0.34.1",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/react": "~17.0.83",
-		"@types/react-dom": "~17.0.26",
-		"@types/use-sync-external-store": "^0.0.6",
+		"@types/react": "~18.3.17",
+		"@types/react-dom": "~18.3.5",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
-		"react": "~17.0.2",
-		"typescript": "~5.7.2",
-		"use-sync-external-store": "^1.2.2"
+		"react": "~18.3.1",
+		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -26,8 +24,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"react": "~17.0.2",
-		"use-sync-external-store": "^1.2.0"
+		"react": "~17.0.2"
 	},
 	"dependencies": {
 		"@rocket.chat/password-policies": "workspace:^"

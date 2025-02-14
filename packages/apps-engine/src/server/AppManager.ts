@@ -39,7 +39,7 @@ import { AppInstallationSource } from './storage/IAppStorageItem';
 
 export interface IAppInstallParameters {
     enable: boolean;
-    marketplaceInfo?: IMarketplaceInfo;
+    marketplaceInfo?: IMarketplaceInfo[];
     permissionsGranted?: Array<IPermission>;
     user: IUser;
 }
@@ -877,13 +877,13 @@ export class AppManager {
                 }
 
                 const appStorageItem = app.getStorageItem();
-                const subscriptionInfo = appStorageItem.marketplaceInfo?.subscriptionInfo;
+                const { subscriptionInfo } = appStorageItem.marketplaceInfo?.[0] || {};
 
                 if (subscriptionInfo && subscriptionInfo.license.license === appInfo.subscriptionInfo.license.license) {
                     return;
                 }
 
-                appStorageItem.marketplaceInfo.subscriptionInfo = appInfo.subscriptionInfo;
+                appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
 
                 return this.appMetadataStorage.update(appStorageItem);
             }),

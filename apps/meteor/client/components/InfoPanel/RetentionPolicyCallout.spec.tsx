@@ -14,7 +14,6 @@ describe('RetentionPolicyCallout', () => {
 	it('Should render callout if settings are valid', () => {
 		const fakeRoom = createFakeRoom({ t: 'c' });
 		render(<RetentionPolicyCallout room={fakeRoom} />, {
-			legacyRoot: true,
 			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000 }),
 		});
 		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024 at 12:30 AM');
@@ -23,7 +22,6 @@ describe('RetentionPolicyCallout', () => {
 	it('Should not render callout if settings are invalid', () => {
 		const fakeRoom = createFakeRoom({ t: 'c' });
 		render(<RetentionPolicyCallout room={fakeRoom} />, {
-			legacyRoot: true,
 			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000, advancedPrecisionCron: '* * * 12 *', advancedPrecision: true }),
 		});
 		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
