@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": minor
 "@rocket.chat/apps-engine": minor
 "@rocket.chat/apps": minor
 ---
