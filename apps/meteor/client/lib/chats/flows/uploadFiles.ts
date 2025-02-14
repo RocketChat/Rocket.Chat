@@ -23,6 +23,7 @@ const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number
 };
 
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
+	// TODO: calculate max files based on the new array and the files in the queue
 	if (chat?.uploads.get().length > 10) {
 		return dispatchToastMessage({
 			type: 'error',

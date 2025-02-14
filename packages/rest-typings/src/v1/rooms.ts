@@ -774,6 +774,10 @@ export type RoomsEndpoints = {
 		}) => { message: IMessage | null };
 	};
 
+	'/v1/rooms.mediaEdit/:rid/:fileId': {
+		POST: (params: { fileName?: string }) => void;
+	};
+
 	'/v1/rooms.saveNotification': {
 		POST: (params: { roomId: string; notifications: Notifications }) => void;
 	};

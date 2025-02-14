@@ -37,17 +37,39 @@ const removeUpload = (id: Upload['id']): void => {
 	updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 };
 
-const editUploadFileName = (id: Upload['id'], fileName: Upload['name']): void => {
-	updateUploads((uploads) =>
-		uploads.map((upload) =>
-			upload.id === id ? { ...upload, file: new File([upload.file], fileName, { type: upload.file.type }) } : upload,
-		),
-	);
+const editUploadFileName = async (rid: IRoom['_id'], uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
+	try {
+		await sdk.rest.post(`/v1/rooms.mediaEdit/${rid}/${uploadId}`, {
+			fileName,
+		});
+
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return { ...upload, file: new File([upload.file], fileName, upload.file) };
+			}),
+		);
+	} catch (error) {
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					percentage: 0,
+					error: new Error('Could not updated file name'),
+				};
+			}),
+		);
+	}
 };
 
-const clear = (): void => {
-	updateUploads(() => []);
-};
+const clear = () => updateUploads(() => []);
 
 const send = async (
 	file: File,
@@ -75,8 +97,7 @@ const send = async (
 		...uploads,
 		{
 			id,
-			name: fileContent?.raw.name || file.name,
-			file,
+			file: new File([file], fileContent?.raw.name || file.name, file),
 			percentage: 0,
 			url: URL.createObjectURL(file),
 		},
@@ -200,7 +221,7 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	clear,
 	removeUpload,
-	editUploadFileName,
+	editUploadFileName: (id, fileName) => editUploadFileName(rid, id, fileName),
 	send: (
 		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
