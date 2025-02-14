@@ -21,6 +21,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (!keyPair.public_key || !keyPair.private_key) {
+			throw new Meteor.Error('error-invalid-keys', 'Invalid keys', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
+		}
+
 		if (!keyPair.force) {
 			const keys = await Users.fetchKeysByUserId(userId);
 
