@@ -476,7 +476,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					buffer,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
 							data.visitor?.name || data.visitor?.username || 'Visitor'
 						}.pdf`,
 						type: 'application/pdf',
