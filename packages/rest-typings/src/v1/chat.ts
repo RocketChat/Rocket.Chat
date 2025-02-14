@@ -100,6 +100,7 @@ const chatFollowMessageSchema = {
 	properties: {
 		mid: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['mid'],
@@ -117,6 +118,7 @@ const chatUnfollowMessageSchema = {
 	properties: {
 		mid: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['mid'],
@@ -134,6 +136,7 @@ const ChatGetMessageSchema = {
 	properties: {
 		msgId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['msgId'],
@@ -185,6 +188,7 @@ const ChatPinMessageSchema = {
 	properties: {
 		messageId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['messageId'],
@@ -202,6 +206,7 @@ const ChatUnpinMessageSchema = {
 	properties: {
 		messageId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['messageId'],
@@ -220,18 +225,16 @@ const ChatGetDiscussionsSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		text: {
 			type: 'string',
-			nullable: true,
 		},
 		offset: {
 			type: 'number',
-			nullable: true,
 		},
 		count: {
 			type: 'number',
-			nullable: true,
 		},
 	},
 	required: ['roomId'],
@@ -320,9 +323,11 @@ const ChatSyncThreadsListSchema = {
 	properties: {
 		rid: {
 			type: 'string',
+			minLength: 1,
 		},
 		updatedSince: {
 			type: 'string',
+			format: 'date',
 		},
 	},
 	required: ['rid', 'updatedSince'],
@@ -371,6 +376,7 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+					minLength: 1,
 				},
 				shouldReact: {
 					type: 'boolean',
@@ -388,6 +394,7 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+					minLength: 1,
 				},
 				shouldReact: {
 					type: 'boolean',
@@ -417,12 +424,15 @@ const ChatIgnoreUserSchema = {
 	properties: {
 		rid: {
 			type: 'string',
+			minLength: 1,
 		},
 		userId: {
 			type: 'string',
+			minLength: 1,
 		},
 		ignore: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['rid', 'userId', 'ignore'],
@@ -527,6 +537,7 @@ const GetStarredMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -559,6 +570,7 @@ const GetPinnedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -591,6 +603,7 @@ const GetMentionedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -664,9 +677,11 @@ const ChatSyncThreadMessagesSchema = {
 	properties: {
 		tmid: {
 			type: 'string',
+			minLength: 1,
 		},
 		updatedSince: {
 			type: 'string',
+			format: 'date',
 		},
 		count: {
 			type: 'number',
@@ -696,6 +711,7 @@ const ChatGetThreadMessagesSchema = {
 	properties: {
 		tmid: {
 			type: 'string',
+			minLength: 1,
 		},
 		count: {
 			type: 'number',
@@ -726,9 +742,12 @@ const ChatGetDeletedMessagesSchema = {
 	properties: {
 		roomId: {
 			type: 'string',
+			minLength: 1,
 		},
 		since: {
 			type: 'string',
+			minLength: 1,
+			format: 'date',
 		},
 		count: {
 			type: 'number',
@@ -887,6 +906,24 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
+type ChatOTR = { roomId: string; type: OtrSystemMessages };
+const ChatOTRSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		type: {
+			type: 'string',
+			enum: ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'],
+		},
+	},
+	required: ['roomId', 'type'],
+	additionalProperties: false,
+};
+export const isChatOTRProps = ajv.compile<ChatOTR>(ChatOTRSchema);
+
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -1035,7 +1072,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'/v1/chat.otr': {
-		POST: (params: { roomId: string; type: OtrSystemMessages }) => void;
+		POST: (params: ChatOTR) => void;
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
