@@ -39,6 +39,8 @@ Meteor.methods<ServerMethods>({
 		await Meteor.callAsync('personalAccessTokens:removeToken', { tokenName });
 		return Meteor.callAsync('personalAccessTokens:generateToken', {
 			tokenName,
+			// @ts-expect-error - This doesn't make sense. We're querying a user and expecting Mongo to return a token. We should look into this one
+			// or deprecate the method
 			bypassTwoFactor: tokenExist.bypassTwoFactor,
 		});
 	}),

@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -990,7 +990,7 @@ API.v1.addRoute(
 				},
 			];
 
-			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -1029,7 +1029,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('c', rids, {
+			const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -1076,7 +1076,7 @@ API.v1.addRoute(
 
 			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult._id,
-				...(status && { status: { $in: status } }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 				skip,
 				limit,
 				filter,
