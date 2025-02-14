@@ -36,20 +36,20 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 
 	const { register, handleSubmit } = useForm<TwoFactorTOTPFormData>({ defaultValues: { authCode: '' } });
 
-	const totpEnabled = user?.services?.totp?.enabled;
+	const [isTotpEnabled, setIsTotpEnabled] = useState(user?.services?.totp?.enabled);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	useEffect(() => {
 		const updateCodesRemaining = async (): Promise<void | boolean> => {
-			if (!totpEnabled) {
+			if (!isTotpEnabled) {
 				return false;
 			}
 			const result = await checkCodesRemainingFn();
 			setCodesRemaining(result.remaining);
 		};
 		updateCodesRemaining();
-	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
+	}, [checkCodesRemainingFn, setCodesRemaining, isTotpEnabled]);
 
 	const handleEnableTotp = useCallback(async () => {
 		try {
@@ -73,6 +73,9 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
 
+				setIsTotpEnabled(false);
+				setRegisteringTotp(false);
+
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -93,6 +96,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 				}
 
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
+				setIsTotpEnabled(true);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -121,7 +125,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('Two-factor_authentication_via_TOTP')}</Box>
-				{!totpEnabled && !registeringTotp && (
+				{!isTotpEnabled && !registeringTotp && (
 					<>
 						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>
 						<Button primary onClick={handleEnableTotp}>
@@ -129,7 +133,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 						</Button>
 					</>
 				)}
-				{!totpEnabled && registeringTotp && (
+				{!isTotpEnabled && registeringTotp && (
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
@@ -143,7 +147,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 						</Box>
 					</>
 				)}
-				{totpEnabled && (
+				{isTotpEnabled && (
 					<>
 						<Button danger onClick={handleDisableTotp}>
 							{t('Disable_two-factor_authentication')}
