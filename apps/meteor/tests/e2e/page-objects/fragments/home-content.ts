@@ -371,6 +371,10 @@ export class HomeContent {
 		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
 	}
 
+	getIncomingCallByName(name: string): Locator {
+		return this.page.getByRole('dialog', { name });
+	}
+
 	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
 	}
