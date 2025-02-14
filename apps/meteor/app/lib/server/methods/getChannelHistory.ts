@@ -5,7 +5,6 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server/cached';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -44,12 +43,8 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!(await canAccessRoomAsync(room, { _id: fromUserId }))) {
-			return false;
-		}
-
 		// Make sure they can access the room
-		if (!Authorization.canReadRoom(fromUserId, { roomType: room.t, rid: room._id })) {
+		if (!(await Authorization.canReadRoom(room, { _id: fromUserId }))) {
 			return false;
 		}
 

@@ -3,7 +3,7 @@ import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator, RoomReadValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IAuthorizationVoip } from './types/IAuthorizationVoip';
 import type { IBannerService } from './types/IBannerService';
@@ -127,6 +127,7 @@ export {
 	proxify,
 	ResizeResult,
 	RoomAccessValidator,
+	RoomReadValidator,
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,
