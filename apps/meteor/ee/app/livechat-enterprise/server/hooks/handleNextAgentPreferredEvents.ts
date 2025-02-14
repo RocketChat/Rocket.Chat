@@ -19,7 +19,7 @@ const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): 
 	return { agentId, username };
 };
 
-const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | undefined> => {
+export const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | undefined> => {
 	if (!username && !id) {
 		return undefined;
 	}
@@ -93,7 +93,7 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
 	async (defaultAgent, { visitorId, source } = {}) => {
-		if (defaultAgent || !visitorId || !source) {
+		if (!visitorId || !source) {
 			return defaultAgent;
 		}
 
@@ -102,6 +102,11 @@ callbacks.add(
 		});
 		if (!guest) {
 			return undefined;
+		}
+
+		const hasDivergentContactManager = defaultAgent?.agentId !== guest?.contactManager;
+		if (!hasDivergentContactManager && defaultAgent) {
+			return defaultAgent;
 		}
 
 		const contactId = await migrateVisitorIfMissingContact(visitorId, source);
