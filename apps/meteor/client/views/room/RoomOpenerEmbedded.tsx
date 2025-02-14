@@ -43,7 +43,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const rid = data?.rid;
-	const { data: subscription, refetch } = useQuery({
+	const { data: subscriptionData, refetch } = useQuery({
 		queryKey: ['subscriptions', rid] as const,
 		queryFn: () => {
 			if (!rid) {
@@ -55,13 +55,13 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	});
 
 	useEffect(() => {
-		if (!subscription) {
+		if (!subscriptionData?.subscription) {
 			return;
 		}
 
-		CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+		CachedChatSubscription.upsertSubscription(subscriptionData.subscription as unknown as ISubscription);
 		LegacyRoomManager.computation.invalidate();
-	}, [subscription]);
+	}, [subscriptionData]);
 
 	useEffect(() => {
 		if (!uid) {
