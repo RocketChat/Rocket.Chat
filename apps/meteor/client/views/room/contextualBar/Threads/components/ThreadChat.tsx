@@ -22,8 +22,11 @@ type ThreadChatProps = {
 };
 
 const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
-	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+	const chat = useChat();
+
+	if (!chat) {
+		throw new Error('No ChatContext provided');
+	}
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
@@ -50,7 +53,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const chat = useChat();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat?.threadUploads);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
@@ -62,9 +65,9 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
-			chat?.flows.uploadFiles(files);
+			chat?.flows.uploadFiles({ files, uploadsStore: chat.threadUploads });
 		},
-		[chat?.flows],
+		[chat?.flows, chat.threadUploads],
 	);
 
 	const room = useRoom();
@@ -95,7 +98,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	return (
 		<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DateListProvider>
-				<DropTargetOverlay {...fileUploadOverlayProps} setFilesToUplaod={setFilesToUpload} />
+				<DropTargetOverlay {...fileUploadOverlayProps} />
 				<Box
 					is='section'
 					position='relative'
@@ -119,8 +122,6 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 							onNavigateToNextMessage={handleNavigateToNextMessage}
 							onUploadFiles={handleUploadFiles}
-							setFilesToUpload={setFilesToUpload}
-							filesToUpload={filesToUpload}
 							tshow={sendToChannel}
 						>
 							<Field marginBlock={8}>

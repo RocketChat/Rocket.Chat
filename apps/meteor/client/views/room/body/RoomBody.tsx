@@ -30,7 +30,8 @@ import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { useFileUpload } from './hooks/useFileUpload';
+// import { useFileUpload } from './hooks/useFileUpload';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
@@ -106,14 +107,7 @@ const RoomBody = (): ReactElement => {
 
 	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
 
-	const {
-		uploads,
-		isUploading,
-		hasUploads,
-		handleUploadFiles,
-		// handleUploadProgressClose,
-		targetDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
-	} = useFileUpload();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.uploads);
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
@@ -297,10 +291,10 @@ const RoomBody = (): ReactElement => {
 									onResize={handleComposerResize}
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
-									onUploadFiles={handleUploadFiles}
-									uploads={uploads}
-									isUploading={isUploading}
-									hasUploads={hasUploads}
+									// onUploadFiles={handleUploadFiles}
+									// uploads={uploads}
+									// isUploading={isUploading}
+									// hasUploads={hasUploads}
 									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}

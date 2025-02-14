@@ -7,18 +7,18 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
-import type { ChatAPI } from '../../../lib/chats/ChatAPI';
+import type { UploadsAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
+	uploadsStore: UploadsAPI;
 	isMicrophoneDenied?: boolean;
 };
 
-const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, uploadsStore, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
 	const { t } = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
@@ -81,7 +81,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		await stopRecording();
 	});
 
-	const chat = useChat() ?? chatContext;
+	const chat = useChat();
 
 	const handleDoneButtonClick = useEffectEvent(async () => {
 		setState('loading');
@@ -91,7 +91,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 
-		await chat?.flows.uploadFiles([file]);
+		await chat?.flows.uploadFiles({ files: [file], uploadsStore });
 	});
 
 	useEffect(() => {

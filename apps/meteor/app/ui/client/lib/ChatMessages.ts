@@ -43,6 +43,8 @@ export class ChatMessages implements ChatAPI {
 
 	public uploads: UploadsAPI;
 
+	public threadUploads: UploadsAPI;
+
 	public ActionManager: any;
 
 	public emojiPicker: {
@@ -148,7 +150,8 @@ export class ChatMessages implements ChatAPI {
 		const { rid, tmid } = params;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
-		this.uploads = createUploadsAPI({ rid, tmid });
+		this.uploads = createUploadsAPI({ rid });
+		this.threadUploads = createUploadsAPI({ rid, tmid });
 		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {

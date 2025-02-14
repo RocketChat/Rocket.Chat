@@ -7,7 +7,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { dispatchToastMessage } from '../../toast';
 import { prependReplies } from '../../utils/prependReplies';
-import type { ChatAPI } from '../ChatAPI';
+import type { ChatAPI, UploadsAPI } from '../ChatAPI';
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
@@ -22,9 +22,12 @@ const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number
 	});
 };
 
-export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
+export const uploadFiles = async (
+	chat: ChatAPI,
+	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
+): Promise<void> => {
 	// TODO: calculate max files based on the new array and the files in the queue
-	if (chat?.uploads.get().length > 10) {
+	if (uploadsStore.get().length > 10) {
 		return dispatchToastMessage({
 			type: 'error',
 			message: t('You_cant_upload_more_than__count__files', { count: 10 }),
@@ -45,7 +48,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
-		chat.uploads.send(
+		uploadsStore.send(
 			file,
 			{
 				msg,

@@ -31,11 +31,11 @@ import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionF
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
-import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
+import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
@@ -87,15 +87,15 @@ type MessageBoxProps = {
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
-	onUploadFiles: (files: readonly File[]) => void;
+	// onUploadFiles: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
-	uploads: readonly Upload[];
-	isUploading: boolean;
-	hasUploads: boolean;
+	// uploads: readonly Upload[];
+	// isUploading: boolean;
+	// hasUploads: boolean;
 };
 
 const MessageBox = ({
@@ -104,14 +104,14 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
-	onUploadFiles,
+	// onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
 	previewUrls,
-	uploads,
-	isUploading,
-	hasUploads,
+	// uploads,
+	// isUploading,
+	// hasUploads,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -166,6 +166,9 @@ const MessageBox = ({
 		const ref = messageComposerRef.current as HTMLElement;
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
+
+	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
+	const { uploads, hasUploads, handleUploadFiles, isUploading } = useFileUpload(uploadsStore);
 
 	const handleSendMessage = useEffectEvent(() => {
 		if (hasUploads) {
@@ -335,7 +338,7 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			onUploadFiles?.(files);
+			handleUploadFiles?.(files);
 		}
 	});
 
@@ -396,9 +399,9 @@ const MessageBox = ({
 				unencryptedMessagesAllowed={unencryptedMessagesAllowed}
 				isMobile={isMobile}
 			/>
-			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} uploadsStore={uploadsStore} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} uploadsStore={uploadsStore} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs}
 					aria-label={composerPlaceholder}
@@ -414,9 +417,9 @@ const MessageBox = ({
 				{hasUploads && (
 					<MessageComposerFileArea
 						uploads={uploads}
-						onEdit={chat.uploads.editUploadFileName}
-						onRemove={chat.uploads.removeUpload}
-						onCancel={chat.uploads.cancel}
+						onEdit={uploadsStore.editUploadFileName}
+						onRemove={uploadsStore.removeUpload}
+						onCancel={uploadsStore.cancel}
 					/>
 				)}
 				<MessageComposerToolbar>

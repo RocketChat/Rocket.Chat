@@ -56,10 +56,11 @@ const MessageBoxActionsToolbar = ({
 	}
 
 	const room = useRoom();
+	const uploadsStore = tmid ? chatContext.threadUploads : chatContext.uploads;
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
+	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing, uploadsStore);
 	const webdavActions = useWebdavActions();
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
