@@ -22,6 +22,8 @@ export class NetworkBroker implements IBroker {
 
 	private started: Promise<boolean> = Promise.resolve(false);
 
+	private defaultDependencies = ['settings', 'license'];
+
 	metrics: IServiceMetrics;
 
 	constructor(broker: ServiceBroker) {
@@ -64,7 +66,7 @@ export class NetworkBroker implements IBroker {
 		instance.removeAllListeners();
 	}
 
-	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
+	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
@@ -83,13 +85,15 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		// Allow services to depend on other services too
-		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
+		const dependencies = [...serviceDependencies, ...(name === 'settings' ? [] : this.defaultDependencies)].filter(
+			(dependency) => dependency !== name,
+		);
+
 		const service: ServiceSchema = {
 			name,
 			actions: {},
 			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
-			...dependencies,
+			...(dependencies.length ? { dependencies } : {}),
 			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, { eventName }) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
