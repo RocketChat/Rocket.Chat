@@ -183,7 +183,6 @@ const isAgentHidden = () => {
 
 const transformAgentInformationOnMessage = (message) => {
 	const { user } = store.state;
-
 	if (message && user && message.u && message.u._id !== user._id && isAgentHidden()) {
 		return { ...message, u: { _id: message.u._id } };
 	}
