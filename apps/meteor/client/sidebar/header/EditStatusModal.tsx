@@ -1,17 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import {
-	Field,
-	TextInput,
-	FieldGroup,
-	Modal,
-	Button,
-	Box,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	IconButton,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import { useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
@@ -64,10 +52,10 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
 	const statusOptions = [
-		{ emoji: '🚧', text: 'Busy' },
+		{ emoji: '🛠', text: 'Busy' },
 		{ emoji: '📅', text: 'In a meeting' },
 		{ emoji: '🚆', text: 'Commuting' },
-		{ emoji: '🤒', text: 'Out sick' },
+		{ emoji: '🤕', text: 'Out sick' },
 		{ emoji: '🌴', text: 'Vacationing' },
 		{ emoji: '🏠', text: 'Working remotely' },
 		{ emoji: '🏢', text: 'At the office' },
@@ -103,9 +91,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 								value={statusText}
 								onChange={handleStatusText}
 								placeholder={t('StatusMessage_Placeholder')}
-								addon={
-									<IconButton icon='cross' onClick={() => setStatusText('')} style={{ visibility: statusText ? 'visible' : 'hidden' }} />
-								}
+								addon={<UserStatusMenu margin='neg-x2' onChange={handleStatusType} initialStatus={statusType} />}
 							/>
 						</FieldRow>
 						{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
@@ -114,7 +100,11 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 					<Field>
 						<Box display='flex' flexDirection='column'>
 							{statusOptions.map(({ emoji, text }) => (
-								<Button key={text} onClick={() => setStatusText(`${emoji} ${text}`)}>
+								<Button
+									key={text}
+									onClick={() => setStatusText(`${emoji} ${text}`)}
+									style={{ backgroundColor: 'rgba(0, 0, 0, 0)', border: 'none' }}
+								>
 									{`${emoji} ${text}`}
 								</Button>
 							))}
