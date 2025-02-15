@@ -162,6 +162,7 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
+		chat.emojiPicker?.close();
 
 		onSend?.({
 			value: text,
