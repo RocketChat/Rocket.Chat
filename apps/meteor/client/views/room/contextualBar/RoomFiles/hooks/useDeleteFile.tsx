@@ -3,7 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import GenericModalDoNotAskAgain from '../../../../../components/GenericModal';
+import { GenericModalDoNotAskAgain } from '../../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../../hooks/useDontAskAgain';
 
 export const useDeleteFile = (reload: () => void) => {
