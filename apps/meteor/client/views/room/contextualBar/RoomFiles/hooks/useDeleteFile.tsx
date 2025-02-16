@@ -13,7 +13,7 @@ export const useDeleteFile = (reload: () => void) => {
 	const deleteFile = useMethod('deleteFileMessage');
 	const dontAskDeleteFile = useDontAskAgain('deleteFile');
 
-	const handleDelete = useEffectEvent(async (_id: IUpload['_id']) => {
+	const handleDelete = useEffectEvent((_id: IUpload['_id']) => {
 		const onConfirm = async () => {
 			try {
 				await deleteFile(_id);
