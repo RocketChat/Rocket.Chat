@@ -149,6 +149,6 @@ const GenericModal = ({
 	);
 };
 
-export const GenericModalDoNotAskAgain = withDoNotAskAgain<GenericModalProps>(GenericModal);
+const GenericModalDoNotAskAgain = withDoNotAskAgain<GenericModalProps>(GenericModal);
 
-export default GenericModal;
+export { GenericModalDoNotAskAgain as default, GenericModal };

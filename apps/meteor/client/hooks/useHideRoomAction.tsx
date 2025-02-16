@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useDontAskAgain } from './useDontAskAgain';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import GenericModalDoNotAskAgain from '../components/GenericModal';
 import { updateSubscription } from '../lib/mutationEffects/updateSubscription';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
