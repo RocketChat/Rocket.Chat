@@ -823,6 +823,9 @@ const ChatPostMessageSchema = {
 					},
 					nullable: true,
 				},
+				tmid: {
+					type: 'string',
+				},
 				customFields: {
 					type: 'object',
 					nullable: true,
