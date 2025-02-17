@@ -41,7 +41,7 @@ export const useDeleteFile = (reload: () => void) => {
 				cancelText={t('Cancel')}
 				dontAskAgain={{
 					action: 'deleteFile',
-					label: 'Delete File',
+					label: t('Delete_File'),
 				}}
 			>
 				{t('Delete_File_Warning')}
