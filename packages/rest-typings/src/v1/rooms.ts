@@ -670,6 +670,24 @@ const membersOrderedByRoleRolePropsSchema = {
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
+type RoomsHideProps = {
+	roomId: string;
+};
+
+const roomsHideSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -845,5 +863,9 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
 			members: (IUser & { roles?: IRole['_id'][] })[];
 		}>;
+	};
+
+	'/v1/rooms.hide': {
+		POST: (params: RoomsHideProps) => void;
 	};
 };

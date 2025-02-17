@@ -190,7 +190,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.visitor).to.not.have.property('livechatData');
 		});
 
-		it('should not update a custom field whe the overwrite flag is false', async () => {
+		it('should not update a custom field when the overwrite flag is false', async () => {
 			const token = `${new Date().getTime()}-test`;
 			const customFieldName = `new_custom_field_${Date.now()}`;
 			await createCustomField({
@@ -221,6 +221,59 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.visitor).to.have.property('token', token);
 			expect(body.visitor).to.have.property('livechatData');
 			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
+
+		it('should not validate required custom fields if no custom fields are provided', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `required_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: true,
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token } });
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			await deleteCustomField(customFieldName);
+		});
+
+		it('should fail if provided custom fields but are missing required ones', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const optionalCustomFieldName = `optional_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: optionalCustomFieldName,
+				label: optionalCustomFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: false,
+			});
+			const requiredCustomFieldName = `required_custom_field`;
+			await createCustomField({
+				searchable: true,
+				field: requiredCustomFieldName,
+				label: requiredCustomFieldName,
+				defaultValue: 'default_value',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+				required: true,
+			});
+			const { body } = await request
+				.post(api('livechat/visitor'))
+				.send({ visitor: { token, customFields: [{ key: optionalCustomFieldName, value: 'test', overwrite: true }] } });
+			expect(body).to.have.property('success', false);
+			expect(body).to.have.property('error');
+			expect(body.error).to.be.equal(`Missing required custom fields: required_custom_field`);
+			await Promise.all([deleteCustomField(optionalCustomFieldName), deleteCustomField(requiredCustomFieldName)]);
 		});
 
 		describe('special cases', () => {
