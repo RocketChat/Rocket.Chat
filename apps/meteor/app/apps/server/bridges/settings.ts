@@ -53,7 +53,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 	}
 
 	protected async getReadableSettingById(id: string, appId: string): Promise<ISetting | null> {
-		this.orch.debugLog(`The app ${appId} is checking if they can read the setting ${id}`);
+		this.orch.debugLog(`The app ${appId} is checking if it can read the setting ${id}`);
 		const app = Apps.self?.getManager().getOneById(appId);
 		if (!app) {
 			this.orch.debugLog(`The app ${appId} is not found.`);
