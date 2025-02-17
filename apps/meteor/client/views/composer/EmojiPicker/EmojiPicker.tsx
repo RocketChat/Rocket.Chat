@@ -125,7 +125,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 		onPickEmoji(_emoji + tone);
 		addRecentEmoji(_emoji + tone);
-		onClose();
+	
 	};
 
 	useEffect(() => {
