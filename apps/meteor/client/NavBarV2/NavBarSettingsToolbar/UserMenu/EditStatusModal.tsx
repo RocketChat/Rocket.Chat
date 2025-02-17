@@ -51,6 +51,16 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		onClose();
 	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
 
+	const statusOptions = [
+		{ emoji: '🛠', text: 'Busy' },
+		{ emoji: '📅', text: 'In a meeting' },
+		{ emoji: '🚆', text: 'Commuting' },
+		{ emoji: '🤕', text: 'Out sick' },
+		{ emoji: '🌴', text: 'Vacationing' },
+		{ emoji: '🏠', text: 'Working remotely' },
+		{ emoji: '🏢', text: 'At the office' },
+	];
+
 	return (
 		<Modal
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
@@ -86,6 +96,19 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 						</FieldRow>
 						{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 						<FieldError>{statusTextError}</FieldError>
+					</Field>
+					<Field>
+						<Box display='flex' flexDirection='column'>
+							{statusOptions.map(({ emoji, text }) => (
+								<Button
+									key={text}
+									onClick={() => setStatusText(`${emoji} ${text}`)}
+									style={{ backgroundColor: 'rgba(0, 0, 0, 0)', border: 'none' }}
+								>
+									{`${emoji} ${text}`}
+								</Button>
+							))}
+						</Box>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
