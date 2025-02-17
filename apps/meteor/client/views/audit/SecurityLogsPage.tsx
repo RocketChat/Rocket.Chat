@@ -9,7 +9,7 @@ const SecurityLogsPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<PageHeader title={t('Security_Logs')} />
+			<PageHeader title={t('Security_logs')} />
 			<PageContent>
 				<SecurityLogsTable />
 			</PageContent>

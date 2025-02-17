@@ -41,7 +41,7 @@ export const useAuditItems = (): GenericMenuItemProps[] => {
 	const securityLogItem: GenericMenuItemProps = {
 		id: 'securityLog',
 		icon: 'document-eye',
-		content: t('Security_Logs'),
+		content: t('Security_logs'),
 		onClick: () => securityLogsRoute.push(),
 	};
 

@@ -50,13 +50,13 @@ export const SecurityLogDisplay = ({
 				</Box>
 
 				<InfoPanelLabel>{t('Setting')}</InfoPanelLabel>
-				{settingType === 'code' ? <CodeDisplay code={setting} /> : <InfoPanelText>{t(setting)}</InfoPanelText>}
+				<InfoPanelText>{t(setting)}</InfoPanelText>
 
 				<InfoPanelLabel>{t('Changed_from')}</InfoPanelLabel>
-				<InfoPanelText>{changedFrom}</InfoPanelText>
+				{settingType === 'code' ? <CodeDisplay code={changedFrom} /> : <InfoPanelText>{changedFrom}</InfoPanelText>}
 
 				<InfoPanelLabel>{t('Changed_to')}</InfoPanelLabel>
-				<InfoPanelText>{changedTo}</InfoPanelText>
+				{settingType === 'code' ? <CodeDisplay code={changedTo} /> : <InfoPanelText>{changedTo}</InfoPanelText>}
 			</Modal.Content>
 		</Modal>
 	);

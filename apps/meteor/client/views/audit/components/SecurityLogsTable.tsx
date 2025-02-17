@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Field, FieldLabel, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldLabel, Margins, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, type ReactElement } from 'react';
@@ -17,6 +17,7 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 } from '../../../components/GenericTable';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import type { DateRange } from '../utils/dateRange';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 
@@ -31,9 +32,11 @@ const SecurityLogsTable = (): ReactElement => {
 		end: createEndOfToday(),
 	}));
 
-	const handleExportJson = () => {
-		return undefined;
-	};
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	// const handleExportJson = () => {
+	// 	return undefined;
+	// };
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -50,16 +53,18 @@ const SecurityLogsTable = (): ReactElement => {
 		setting,
 		changedFrom,
 		changedTo,
+		type,
 	}: {
 		actor: string;
 		timestamp: string;
 		setting: string;
 		changedFrom: string;
 		changedTo: string;
+		type: 'code' | 'string';
 	}) => {
 		setModal(
 			<SecurityLogDisplay
-				settingType='string'
+				settingType={type}
 				timestamp={timestamp}
 				actor={actor}
 				setting={setting}
@@ -101,14 +106,16 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'false',
 			changedTo: 'true',
+			type: 'string',
 		},
 		{
 			_id: '3',
 			actor: 'lero3',
 			timestamp: '2021-10-01T00:00:00.000Z',
 			setting: 'Show_message_in_email_notification',
-			changedFrom: 'false',
-			changedTo: 'true',
+			changedFrom: 'console.log("test")',
+			changedTo: 'console.testing.long.string.test.test.test.test.test.test.test("Hello Test!")',
+			type: 'code',
 		},
 		// Generate more 50 entries
 		...Array.from({ length: 50 }, (_, index) => ({
@@ -118,6 +125,7 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'false',
 			changedTo: 'true',
+			type: 'string',
 		})),
 	];
 
@@ -151,9 +159,9 @@ const SecurityLogsTable = (): ReactElement => {
 				</Field>
 				<ButtonGroup>
 					<Margins inline={6}>
-						<Button secondary onClick={handleExportJson}>
+						{/* <Button secondary onClick={handleExportJson}>
 							{t('Export_JSON')}
-						</Button>
+						</Button> */}
 						<Button secondary onClick={handleClearFilters}>
 							{t('Clear_filters')}
 						</Button>
@@ -202,6 +210,15 @@ const SecurityLogsTable = (): ReactElement => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
+			<Pagination
+				divider
+				current={current}
+				itemsPerPage={itemsPerPage}
+				count={data.length || 0}
+				onSetItemsPerPage={onSetItemsPerPage}
+				onSetCurrent={onSetCurrent}
+				{...paginationProps}
+			/>
 		</>
 	);
 };
