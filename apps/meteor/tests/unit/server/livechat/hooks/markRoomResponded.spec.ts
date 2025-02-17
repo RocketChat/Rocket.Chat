@@ -6,7 +6,7 @@ import Sinon from 'sinon';
 import { createFakeMessage, createFakeUser } from '../../../../mocks/data';
 
 const models = {
-	LivechatVisitors: { isVisitorActiveOnPeriod: Sinon.stub(), markVisitorActiveForPeriod: Sinon.stub() },
+	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
 	LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
 	LivechatRooms: {
 		getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
@@ -31,8 +31,8 @@ const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../app/l
 
 describe('markRoomResponded', () => {
 	beforeEach(() => {
-		models.LivechatVisitors.isVisitorActiveOnPeriod.reset();
-		models.LivechatVisitors.markVisitorActiveForPeriod.reset();
+		models.LivechatContacts.isContactActiveOnPeriod.reset();
+		models.LivechatContacts.markContactActiveForPeriod.reset();
 		models.LivechatInquiry.markInquiryActiveForPeriod.reset();
 		models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.reset();
 		models.LivechatRooms.getAgentLastMessageTsUpdateQuery.reset();
@@ -99,7 +99,7 @@ describe('markRoomResponded', () => {
 
 		await markRoomResponded(message, room, {});
 
-		expect(models.LivechatVisitors.markVisitorActiveForPeriod.calledOnce).to.be.true;
+		expect(models.LivechatContacts.markContactActiveForPeriod.calledOnce).to.be.true;
 	});
 
 	it('should try to mark inquiry as active for current period when room.v.activity doesnt include current period', async () => {
