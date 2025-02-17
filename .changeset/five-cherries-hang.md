@@ -17,4 +17,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix behavior of app updates that would save undesired field changes to documents
+Fixes behavior of app updates that would save undesired field changes to documents
