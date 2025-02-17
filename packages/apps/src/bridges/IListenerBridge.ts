@@ -19,7 +19,7 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 			int: 'IPreMessageSentExtend' | 'IPreMessageSentModify' | 'IPreMessageUpdatedExtend' | 'IPreMessageUpdatedModify',
 			message: IMessage,
 		): Promise<IMessage>;
-		messageEvent(int: 'IPostMessageSent' | 'IPostMessageUpdated', message: IMessage): Promise<void>;
+		messageEvent(int: 'IPostMessageSent' | 'IPostMessageUpdated' | 'IPostSystemMessageSent', message: IMessage): Promise<void>;
 
 		roomEvent(int: 'IPreRoomUserJoined' | 'IPostRoomUserJoined', room: IRoom, joiningUser: IUser, invitingUser?: IUser): Promise<void>;
 		roomEvent(int: 'IPreRoomUserLeave' | 'IPostRoomUserLeave', room: IRoom, leavingUser: IUser): Promise<void>;
