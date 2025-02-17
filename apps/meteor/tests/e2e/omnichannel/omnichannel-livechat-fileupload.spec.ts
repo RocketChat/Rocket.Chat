@@ -2,6 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -45,8 +46,10 @@ test.describe('OC - Livechat - OC - File Upload', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/FileUpload_Enabled', { value: true });
-		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
+		await Promise.all([
+			setSettingValueById(api, 'FileUpload_Enabled', true),
+			setSettingValueById(api, 'Livechat_fileupload_enabled', true),
+		]);
 
 		await poHomeOmnichannel.page.close();
 		await agent.delete();
@@ -85,8 +88,10 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/FileUpload_Enabled', { value: true });
-		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
+		await Promise.all([
+			setSettingValueById(api, 'FileUpload_Enabled', true),
+			setSettingValueById(api, 'Livechat_fileupload_enabled', true),
+		]);
 
 		await poHomeOmnichannel.page?.close();
 		await agent.delete();
