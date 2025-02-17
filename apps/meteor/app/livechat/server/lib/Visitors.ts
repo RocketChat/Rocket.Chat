@@ -47,10 +47,7 @@ export const Visitors = {
 			validateEmail(visitorEmail);
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 
-			const contact = await LivechatContacts.findOne(
-				{ emails: { $elemMatch: { address: visitorEmail } }, contactManager: { $exists: true } },
-				{ projection: { contactManager: 1 } },
-			);
+			const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
 			if (contact && contact.contactManager) {
 				const agent = await Users.findOneOnlineAgentById(contact.contactManager, undefined, {
 					projection: { _id: 1, username: 1, name: 1, emails: 1 },
