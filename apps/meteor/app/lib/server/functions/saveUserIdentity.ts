@@ -124,13 +124,13 @@ async function updateUsernameReferences({
 }): Promise<void> {
 	if (usernameChanged && typeof rawUsername !== 'undefined') {
 		const fileStore = FileUpload.getStore('Avatars');
-		const previousFile = await fileStore.model.findOneByName(previousUsername);
-		const file = await fileStore.model.findOneByName(username);
+		const previousFile = await fileStore.model.findOneByName(previousUsername, { session });
+		const file = await fileStore.model.findOneByName(username, { session });
 		if (file) {
-			await fileStore.model.deleteFile(file._id);
+			await fileStore.model.deleteFile(file._id, { session });
 		}
 		if (previousFile) {
-			await fileStore.model.updateFileNameById(previousFile._id, username);
+			await fileStore.model.updateFileNameById(previousFile._id, username, { session });
 		}
 
 		await Messages.updateAllUsernamesByUserId(user._id, username, { session });
