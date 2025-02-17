@@ -51,7 +51,7 @@ export interface IBaseModel<
 
 	getCollectionName(): string;
 	getUpdater(): Updater<T>;
-	updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult>;
+	updateFromUpdater(query: Filter<T>, updater: Updater<T>, options?: UpdateOptions): Promise<UpdateResult>;
 
 	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<null | WithId<T>>;

@@ -233,7 +233,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
 	}
 
-	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {
+	public async updateUserReferences(
+		userId: IUser['_id'],
+		username: IUser['username'],
+		name: IUser['name'],
+		options?: UpdateOptions,
+	): Promise<void> {
 		await this.updateMany(
 			{
 				'users._id': userId,
@@ -244,6 +249,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'users.$.username': username,
 				},
 			},
+			options,
 		);
 
 		await this.updateMany(
@@ -256,6 +262,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'createdBy.username': username,
 				},
 			},
+			options,
 		);
 
 		await this.updateMany(
@@ -268,6 +275,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'endedBy.username': username,
 				},
 			},
+			options,
 		);
 	}
 

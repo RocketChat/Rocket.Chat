@@ -12,6 +12,7 @@ import type {
 	IndexDescription,
 	SortDirection,
 	AggregationCursor,
+	UpdateOptions,
 } from 'mongodb';
 
 import { Users } from '../index';
@@ -352,7 +353,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
 
-	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
+	replaceUsernameOfAgentByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document> {
 		const query = { agentId: userId };
 
 		const update = {
@@ -361,7 +362,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
 	countByDepartmentId(departmentId: string): Promise<number> {

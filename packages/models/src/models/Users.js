@@ -2617,10 +2617,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setUsername(_id, username) {
+	setUsername(_id, username, options) {
 		const update = { $set: { username } };
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, options);
 	}
 
 	setEmail(_id, email, verified = false) {

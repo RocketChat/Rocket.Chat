@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
@@ -17,7 +18,10 @@ const getCustomFieldsMeta = function (customFieldsMeta: string) {
 export const saveCustomFieldsWithoutValidation = async function (
 	userId: string,
 	formData: Record<string, any>,
-	_updater?: Updater<IUser>,
+	options?: {
+		_updater?: Updater<IUser>;
+		session?: ClientSession;
+	},
 ): Promise<void> {
 	const customFieldsSetting = settings.get<string>('Accounts_CustomFields');
 	if (!customFieldsSetting || trim(customFieldsSetting).length === 0) {
@@ -34,6 +38,8 @@ export const saveCustomFieldsWithoutValidation = async function (
 		}),
 		{},
 	);
+
+	const { _updater, session } = options || {};
 
 	const updater = _updater || Users.getUpdater();
 
@@ -55,11 +61,11 @@ export const saveCustomFieldsWithoutValidation = async function (
 	});
 
 	if (!_updater) {
-		await Users.updateFromUpdater({ _id: userId }, updater);
+		await Users.updateFromUpdater({ _id: userId }, updater, { session });
 	}
 
 	// Update customFields of all Direct Messages' Rooms for userId
-	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields, { session });
 	if (setCustomFieldsResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
 	}

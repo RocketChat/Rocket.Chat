@@ -1628,7 +1628,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	replaceUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
+	replaceUsername(
+		previousUsername: IUser['username'],
+		username: IUser['username'],
+		options?: UpdateOptions,
+	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { usernames: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1637,10 +1641,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
-	replaceMutedUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
+	replaceMutedUsername(
+		previousUsername: IUser['username'],
+		username: IUser['username'],
+		options?: UpdateOptions,
+	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { muted: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1649,10 +1657,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
-	replaceUsernameOfUserByUserId(userId: IUser['_id'], username: IUser['username']): Promise<Document | UpdateResult> {
+	replaceUsernameOfUserByUserId(
+		userId: IUser['_id'],
+		username: IUser['username'],
+		options?: UpdateOptions,
+	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { 'u._id': userId };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1661,7 +1673,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
 	setJoinCodeById(_id: IRoom['_id'], joinCode: string): Promise<UpdateResult> {

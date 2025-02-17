@@ -59,7 +59,7 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 
-	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void>;
+	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name'], options?: UpdateOptions): Promise<void>;
 
 	increaseAnonymousCount(callId: IGroupVideoConference['_id']): Promise<void>;
 

@@ -1,5 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
-import type { MongoError } from 'mongodb';
+import type { ClientSession, MongoError } from 'mongodb';
 
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -20,13 +20,13 @@ export const shouldRetryTransaction = (e: unknown): boolean =>
 	(e as MongoError)?.errorLabels?.includes('TransientTransactionError');
 
 export const wrapInSessionTransaction =
-	<T extends Array<unknown>, U>(cb: (...args: T) => U) =>
+	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
 		const session = client.startSession();
 		let result: Awaited<U>;
 		try {
 			session.startTransaction();
-			result = await cb(...args);
+			result = await curriedCallback(session).apply(this, args);
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();

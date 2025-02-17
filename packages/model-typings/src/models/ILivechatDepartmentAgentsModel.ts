@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor, UpdateOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -71,7 +71,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
-	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
+	replaceUsernameOfAgentByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
 	countByDepartmentId(departmentId: string): Promise<number>;
 	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
