@@ -94,6 +94,9 @@ export interface IRoom extends IRocketChatRecord {
 		items: [SidepanelItem, SidepanelItem?];
 	};
 
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
 	rolePrioritiesCreated?: number | boolean;
 }
 

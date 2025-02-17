@@ -37,8 +37,7 @@ async function assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap: M
 export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => {
 	const userIdAndRoomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
 
-	const room = await Rooms.findOneById<Pick<IRoom, 'rolePrioritiesCreated'>>(rid, { projection: { rolePrioritiesCreated: 1 } });
-	if (room?.rolePrioritiesCreated === SYNC_VERSION) {
+	if (await Rooms.hasCreatedRolePrioritiesForRoom(rid, SYNC_VERSION)) {
 		return;
 	}
 
