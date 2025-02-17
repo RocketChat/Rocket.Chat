@@ -7,6 +7,10 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
+import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
+import { useGitHubEnterpriseAuth } from '../../../app/github-enterprise/client/hooks/useGitHubEnterpriseAuth';
+import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
@@ -35,6 +39,10 @@ const AppLayout = () => {
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
 	useNextcloud();
+	useGitLabAuth();
+	useGitHubEnterpriseAuth();
+	useDrupal();
+	useDolphin();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
