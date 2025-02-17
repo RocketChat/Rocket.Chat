@@ -3631,6 +3631,7 @@
   "Marketplace_Invalid_Apps_Engine_Version": "The installed Apps Engine version is not compatible with the marketplace. Please update the Apps Engine to the latest version.",
   "Marketplace_Internal_Error": "An internal error occurred communicating with Marketplace. Please try again later.",
   "Marketplace_Failed_To_Fetch_Apps": "Failed to fetch apps from the marketplace. Please try again later.",
+  "Marketplace_Core_Schema_Missmatch": "Invalid apps were found in the marketplace. If the problem persists please contact the support.",
   "MAU_value": "MAU {{value}}",
   "Max_length_is": "Max length is %s",
   "Max_number_incoming_livechats_displayed": "Max number of items displayed in the queue",

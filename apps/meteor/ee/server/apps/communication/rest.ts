@@ -9,6 +9,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { ZodError } from 'zod';
 
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
@@ -124,6 +125,11 @@ export class AppsRestApi {
 							return API.v1.failure({ error: err.message });
 						}
 
+						if (err instanceof ZodError) {
+							orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', err.issues);
+							return API.v1.failure({ error: i18n.t('Marketplace_Core_Schema_Missmatch') });
+						}
+
 						return API.v1.internalError();
 					}
 				},
@@ -225,6 +231,11 @@ export class AppsRestApi {
 
 							if (e instanceof MarketplaceAppsError) {
 								return API.v1.failure({ error: e.message });
+							}
+
+							if (e instanceof ZodError) {
+								orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', e.issues);
+								return API.v1.failure({ error: i18n.t('Marketplace_Core_Schema_Missmatch') });
 							}
 
 							return API.v1.internalError();

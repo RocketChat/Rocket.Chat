@@ -12,8 +12,8 @@ type FetchMarketplaceAppsParams = {
 };
 
 const markdownObject = z.object({
-	raw: z.string(),
-	rendered: z.string(),
+	raw: z.string().optional(),
+	rendered: z.string().optional(),
 });
 
 const fetchMarketplaceAppsSchema = z.array(
@@ -53,7 +53,7 @@ const fetchMarketplaceAppsSchema = z.array(
 			classFile: z.string(),
 			iconFile: z.string(),
 			iconFileData: z.string(),
-			status: z.enum(['submitted', 'author-rejected', 'author-approved', 'rejected', 'approved']),
+			status: z.enum(['submitted', 'author-rejected', 'author-approved', 'rejected', 'approved', 'published']),
 			reviewedNote: z.string().optional(),
 			rejectionNote: z.string().optional(),
 			changesNote: z.string().optional(),
@@ -66,20 +66,20 @@ const fetchMarketplaceAppsSchema = z.array(
 		addonId: z.string().optional(),
 		isEnterpriseOnly: z.boolean(),
 		isBundle: z.boolean(),
-		bundedAppIds: z.array(z.string()),
+		bundedAppIds: z.array(z.string()).optional(),
 		bundledIn: z.array(
 			z.object({
 				bundleId: z.string(),
 				bundleName: z.string(),
-				addonTierId: z.string(),
+				addonTierId: z.string().optional(),
 			}),
 		),
 		isPurchased: z.boolean(),
 		isSubscribed: z.boolean(),
 		subscriptionInfo: z
 			.object({
-				typeOf: z.enum(['app', 'service']),
-				status: z.enum(['trialing', 'active', 'cancelled', 'cancelling', 'pastDue']),
+				typeOf: z.enum(['app', 'service', '']),
+				status: z.enum(['trialing', 'active', 'cancelled', 'cancelling', 'pastDue', '']),
 				statusFromBilling: z.boolean(),
 				isSeatBased: z.boolean(),
 				seats: z.number(),
@@ -98,27 +98,29 @@ const fetchMarketplaceAppsSchema = z.array(
 			.optional(),
 		price: z.number(),
 		purchaseType: z.enum(['', 'buy', 'subscription']),
-		pricingPlans: z.array(
-			z.object({
-				id: z.string(),
-				enabled: z.boolean(),
-				price: z.number(),
-				trialDays: z.number(),
-				strategy: z.enum(['once', 'monthly', 'yearly']),
-				isPerSeat: z.boolean(),
-				tiers: z
-					.array(
-						z.object({
-							perUnit: z.boolean(),
-							minimum: z.number(),
-							maximum: z.number(),
-							price: z.number(),
-							refId: z.string().optional(),
-						}),
-					)
-					.optional(),
-			}),
-		),
+		pricingPlans: z
+			.array(
+				z.object({
+					id: z.string(),
+					enabled: z.boolean(),
+					price: z.number(),
+					trialDays: z.number(),
+					strategy: z.enum(['once', 'monthly', 'yearly']),
+					isPerSeat: z.boolean(),
+					tiers: z
+						.array(
+							z.object({
+								perUnit: z.boolean(),
+								minimum: z.number(),
+								maximum: z.number(),
+								price: z.number(),
+								refId: z.string().optional(),
+							}),
+						)
+						.optional(),
+				}),
+			)
+			.optional(),
 		isUsageBased: z.boolean().optional(),
 		requestedEndUser: z.boolean().optional(),
 		requested: z.boolean().optional(),
