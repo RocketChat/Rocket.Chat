@@ -1,0 +1,1 @@
+{"version":3,"file":"InvalidInstallationError.js","sourceRoot":"","sources":["../../src/server/errors/InvalidInstallationError.ts"],"names":[],"mappings":";;;AAAA,MAAa,wBAAyB,SAAQ,KAAK;IAC/C,YAAmB,OAAe;QAC9B,KAAK,CAAC,6BAA6B,OAAO,EAAE,CAAC,CAAC;IAClD,CAAC;CACJ;AAJD,4DAIC"}

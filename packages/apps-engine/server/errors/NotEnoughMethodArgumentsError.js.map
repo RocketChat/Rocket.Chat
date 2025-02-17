@@ -1,0 +1,1 @@
+{"version":3,"file":"NotEnoughMethodArgumentsError.js","sourceRoot":"","sources":["../../src/server/errors/NotEnoughMethodArgumentsError.ts"],"names":[],"mappings":";;;AAAA,MAAa,6BAA6B;IAKtC,YAAY,MAAc,EAAE,aAAqB,EAAE,aAAqB;QAJxD,SAAI,GAAW,+BAA+B,CAAC;QAK3D,IAAI,CAAC,OAAO,GAAG,eAAe,MAAM,cAAc,aAAa,mCAAmC,aAAa,GAAG,CAAC;IACvH,CAAC;CACJ;AARD,sEAQC"}

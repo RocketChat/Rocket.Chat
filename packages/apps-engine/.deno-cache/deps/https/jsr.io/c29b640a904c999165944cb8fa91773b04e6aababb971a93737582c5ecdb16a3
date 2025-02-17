@@ -1,0 +1,201 @@
+{
+  "manifest": {
+    "/prompt_secret.ts": {
+      "size": 3100,
+      "checksum": "sha256-23089c5d7d43a87a92cc48604ee8500c7a4a1ce47c21e6aa2930937cb67f069e"
+    },
+    "/mod.ts": {
+      "size": 584,
+      "checksum": "sha256-75d9254ccdd65f796576491a16b1589bfb8cd6f10954a480f1e738d0ef336f93"
+    },
+    "/unstable_spinner.ts": {
+      "size": 6208,
+      "checksum": "sha256-f3b99953369a3757b7c9d03d0bf6a653c7b9307f267dce2bc4a75bc7ab5cea8f"
+    },
+    "/prompt_secret_test.ts": {
+      "size": 10765,
+      "checksum": "sha256-36c419436ea99dac0b52b57969b28ccf52b84d043fa1b8bdaf728543534c55c7"
+    },
+    "/unstable_prompt_multiple_select_test.ts": {
+      "size": 13094,
+      "checksum": "sha256-2ce89fbf1422196ae655b07b6b71495f86e00655a4b56718d668034034c8a987"
+    },
+    "/deno.json": {
+      "size": 411,
+      "checksum": "sha256-7c7851f4de6a4acd06f0679c2bf681aa5b9eb7a6e3f1c99c48192bcc86c6c558"
+    },
+    "/unicode_width_test.ts": {
+      "size": 2889,
+      "checksum": "sha256-52f4edce54db4bab0d01e1f12af2171a16d8d1253da280afbfcd501ac2a54c76"
+    },
+    "/_tools/compare_with_rust.ts": {
+      "size": 1972,
+      "checksum": "sha256-37745a5379879ab2e437967511f7b9f0c7d3954dc7d6b66608059226b52a787d"
+    },
+    "/testdata/unicode_width_crate/Cargo.toml": {
+      "size": 185,
+      "checksum": "sha256-9a9db49f8245eee59614b09ec12117624e8539e9776322bbdac15ea4c9063eb5"
+    },
+    "/_tools/generate_data.ts": {
+      "size": 8076,
+      "checksum": "sha256-a8a0830002516099a93808e2395ab802e3bcab06f6854cf717248e483789795e"
+    },
+    "/testdata/unicode_width_crate/src/lib.rs": {
+      "size": 541,
+      "checksum": "sha256-e0580008e6a53a50b6233fa5ab2fe5ff9110fd68e566ffcba1c0ddc583b582e8"
+    },
+    "/unstable_prompt_select.ts": {
+      "size": 2588,
+      "checksum": "sha256-c8b223fa283844e148643f717df343407487eb97651e947f51ec75291a5db813"
+    },
+    "/unicode_width.ts": {
+      "size": 2845,
+      "checksum": "sha256-dc40ca6a2c8a2f23e0a6a39b9076fd5b00d72284b333634787a81ceb61c6423c"
+    },
+    "/testdata/unicode_width_crate/Cargo.lock": {
+      "size": 1420,
+      "checksum": "sha256-b8690a50f8edb28b117d1066bf08fc44bb6ef4a9909bc99e6e452dc8bccd808b"
+    },
+    "/_run_length.ts": {
+      "size": 957,
+      "checksum": "sha256-7960f6cae47c6d06eceb3e1070b5b4497418210d0138503ddf812e49e6df7c65"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/unstable_spinner_test.ts": {
+      "size": 15746,
+      "checksum": "sha256-a6ffedb1b7f1f284cb31890846086470e046384ca93bbea19da048afe124a603"
+    },
+    "/_run_length_test.ts": {
+      "size": 1887,
+      "checksum": "sha256-730645139b257e12565beb6c0faa18c9b6be48a5b478f36041277c61f0dcd33c"
+    },
+    "/parse_args_test.ts": {
+      "size": 45112,
+      "checksum": "sha256-a3b7ef5f7a0e2da40b40ed37cb9f4b0a52614144a68f8650e9cf6ae2195c148a"
+    },
+    "/unstable_prompt_multiple_select.ts": {
+      "size": 3168,
+      "checksum": "sha256-d004882227554f0661ecab5d33ecc98f4129b11c4561770a1e7b1121300db764"
+    },
+    "/_data.json": {
+      "size": 4202,
+      "checksum": "sha256-cf2cc9d039a192b3adbfe64627167c7e6212704c888c25c769fc8f1709e1e1b8"
+    },
+    "/unstable_prompt_select_test.ts": {
+      "size": 9173,
+      "checksum": "sha256-878aef478dd820def906f6afb287a55bca8f32388114dfebe2504c60a93be43a"
+    },
+    "/parse_args.ts": {
+      "size": 22604,
+      "checksum": "sha256-29ac18602d8836d2723cab1d90111ff954acc369f184626a3f9f677e3185caef"
+    }
+  },
+  "moduleGraph2": {
+    "/unstable_spinner.ts": {},
+    "/unstable_prompt_multiple_select.ts": {},
+    "/prompt_secret.ts": {},
+    "/unstable_prompt_select.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./parse_args.ts",
+          "specifierRange": [
+            [
+              17,
+              14
+            ],
+            [
+              17,
+              31
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./prompt_secret.ts",
+          "specifierRange": [
+            [
+              18,
+              14
+            ],
+            [
+              18,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./unicode_width.ts",
+          "specifierRange": [
+            [
+              19,
+              14
+            ],
+            [
+              19,
+              34
+            ]
+          ]
+        }
+      ]
+    },
+    "/unicode_width.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_data.json",
+          "specifierRange": [
+            [
+              4,
+              17
+            ],
+            [
+              4,
+              31
+            ]
+          ],
+          "importAttributes": {
+            "known": {
+              "type": "json"
+            }
+          }
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_run_length.ts",
+          "specifierRange": [
+            [
+              5,
+              32
+            ],
+            [
+              5,
+              50
+            ]
+          ]
+        }
+      ]
+    },
+    "/_run_length.ts": {},
+    "/parse_args.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./parse-args": "./parse_args.ts",
+    "./prompt-secret": "./prompt_secret.ts",
+    "./unstable-prompt-select": "./unstable_prompt_select.ts",
+    "./unstable-prompt-multiple-select": "./unstable_prompt_multiple_select.ts",
+    "./unstable-spinner": "./unstable_spinner.ts",
+    "./unicode-width": "./unicode_width.ts"
+  }
+}

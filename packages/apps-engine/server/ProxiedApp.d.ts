@@ -1,0 +1,43 @@
+import type { AppManager } from './AppManager';
+import { AppStatus } from '../definition/AppStatus';
+import type { IAppAuthorInfo, IAppInfo } from '../definition/metadata';
+import { AppMethod } from '../definition/metadata';
+import { AppConsole } from './logging';
+import { AppLicenseValidationResult } from './marketplace/license';
+import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
+import { type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import type { AppInstallationSource, IAppStorageItem } from './storage';
+export declare class ProxiedApp {
+    private readonly manager;
+    private storageItem;
+    private readonly appRuntime;
+    private previousStatus;
+    private latestLicenseValidationResult;
+    constructor(manager: AppManager, storageItem: IAppStorageItem, appRuntime: DenoRuntimeSubprocessController);
+    getRuntime(): AppsEngineRuntime;
+    getDenoRuntime(): DenoRuntimeSubprocessController;
+    getStorageItem(): IAppStorageItem;
+    setStorageItem(item: IAppStorageItem): void;
+    getPreviousStatus(): AppStatus;
+    getImplementationList(): {
+        [inter: string]: boolean;
+    };
+    setupLogger(method: `${AppMethod}`): AppConsole;
+    call(method: `${AppMethod}`, ...args: Array<any>): Promise<any>;
+    getStatus(): Promise<AppStatus>;
+    setStatus(status: AppStatus, silent?: boolean): Promise<void>;
+    getName(): string;
+    getNameSlug(): string;
+    getAppUserUsername(): string;
+    getID(): string;
+    getInstallationSource(): AppInstallationSource;
+    getVersion(): string;
+    getDescription(): string;
+    getRequiredApiVersion(): string;
+    getAuthorInfo(): IAppAuthorInfo;
+    getInfo(): IAppInfo;
+    getEssentials(): IAppInfo['essentials'];
+    getLatestLicenseValidationResult(): AppLicenseValidationResult;
+    validateInstallation(): Promise<void>;
+    validateLicense(): Promise<void>;
+}

@@ -1,0 +1,68 @@
+{
+  "name": "@rocket.chat/ui-kit",
+  "version": "0.31.25",
+  "description": "Interactive UI elements for Rocket.Chat Apps",
+  "homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/fuselage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RocketChat/fuselage/issues"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "run-s .:build:clean .:build:esm .:build:cjs",
+    ".:build:clean": "rimraf dist",
+    ".:build:esm": "tsc -p tsconfig.json",
+    ".:build:cjs": "tsc -p tsconfig-cjs.json",
+    "lint": "lint",
+    "lint-and-fix": "lint-and-fix",
+    "lint-staged": "lint-staged",
+    "test": "jest --runInBand",
+    "docs": "typedoc",
+    "bump-next": "bump-next"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.21.4",
+    "@babel/eslint-parser": "~7.21.3",
+    "@babel/plugin-transform-runtime": "~7.21.4",
+    "@babel/preset-env": "~7.21.4",
+    "@rocket.chat/eslint-config-alt": "^0.31.25",
+    "@rocket.chat/icons": "^0.31.25",
+    "@rocket.chat/prettier-config": "^0.31.25",
+    "@types/jest": "~29.5.0",
+    "babel-loader": "~9.1.2",
+    "bump": "^0.31.25",
+    "eslint": "~8.38.0",
+    "jest": "~29.5.0",
+    "lint-all": "^0.31.25",
+    "lint-staged": "~13.2.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "~2.8.7",
+    "rimraf": "^3.0.2",
+    "ts-jest": "~29.1.0",
+    "ts-loader": "~9.4.2",
+    "typedoc": "~0.24.1",
+    "typescript": "~5.0.4",
+    "webpack": "~5.78.0",
+    "webpack-cli": "~5.0.1"
+  },
+  "peerDependencies": {
+    "@rocket.chat/icons": "*"
+  },
+  "gitHead": "0fbbc58bf5cf2ec70e9dda23f099a8ae77e8014e"
+}

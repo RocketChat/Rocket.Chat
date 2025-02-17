@@ -1,0 +1,1 @@
+{"version":3,"file":"InvalidLicenseError.js","sourceRoot":"","sources":["../../src/server/errors/InvalidLicenseError.ts"],"names":[],"mappings":";;;AAEA,MAAa,mBAAoB,SAAQ,KAAK;IAC1C,YAAmC,gBAA4C;QAC3E,KAAK,CAAC,qBAAqB,CAAC,CAAC;QADE,qBAAgB,GAAhB,gBAAgB,CAA4B;IAE/E,CAAC;CACJ;AAJD,kDAIC"}

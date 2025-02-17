@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType, IUpload } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, type IRoom, type ISubscription, type IUser, type RoomType, type IUpload } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -285,6 +285,10 @@ API.v1.addRoute(
 
 			const ourQuery = { ...query, rid: findResult._id };
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			// Special check for the permissions
 			if (
 				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
@@ -438,6 +442,10 @@ API.v1.addRoute(
 			const { ...params } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({ params });
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
 
 			const moderators = (
 				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
@@ -874,6 +882,10 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			let includeAllPublicChannels = true;
 			if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
 				includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
@@ -919,12 +931,18 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			const findResult = await findChannelByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+				userId: this.userId,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			return API.v1.success({
-				channel: await findChannelByIdOrName({
-					params: this.queryParams,
-					checkedArchived: false,
-					userId: this.userId,
-				}),
+				channel: findResult,
 			});
 		},
 	},
@@ -1063,6 +1081,10 @@ API.v1.addRoute(
 				params: this.queryParams,
 				checkedArchived: false,
 			});
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
@@ -1416,7 +1438,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.anonymousread',
-	{ authRequired: false },
+	{ authOrAnonRequired: true },
 	{
 		async get() {
 			const findResult = await findChannelByIdOrName({
@@ -1432,6 +1454,16 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
 					method: 'channels.anonymousread',
 				});
+			}
+
+			// Public rooms of private teams should be accessible only by team members
+			if (findResult.teamId) {
+				const team = await Team.getOneById(findResult.teamId);
+				if (team?.type === TEAM_TYPE.PRIVATE) {
+					if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+						return API.v1.notFound('Room not found');
+					}
+				}
 			}
 
 			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {

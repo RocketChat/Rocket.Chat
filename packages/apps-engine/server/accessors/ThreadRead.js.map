@@ -1,0 +1,1 @@
+{"version":3,"file":"ThreadRead.js","sourceRoot":"","sources":["../../src/server/accessors/ThreadRead.ts"],"names":[],"mappings":";;;AAIA,MAAa,UAAU;IACnB,YACY,YAA0B,EAC1B,KAAa;QADb,iBAAY,GAAZ,YAAY,CAAc;QAC1B,UAAK,GAAL,KAAK,CAAQ;IACtB,CAAC;IAEG,aAAa,CAAC,EAAU;QAC3B,OAAO,IAAI,CAAC,YAAY,CAAC,SAAS,CAAC,EAAE,EAAE,IAAI,CAAC,KAAK,CAAC,CAAC;IACvD,CAAC;CACJ;AATD,gCASC"}

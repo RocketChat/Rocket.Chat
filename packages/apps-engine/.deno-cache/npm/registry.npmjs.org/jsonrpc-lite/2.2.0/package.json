@@ -1,0 +1,53 @@
+{
+  "name": "jsonrpc-lite",
+  "description": "Parse and Serialize JSON-RPC2 messages in node.js or browser.",
+  "authors": [
+    "Yan Qing <admin@zensh.com>"
+  ],
+  "license": "MIT",
+  "version": "2.2.0",
+  "source": "jsonrpc.ts",
+  "types": "jsonrpc.d.ts",
+  "main": "jsonrpc.js",
+  "module": "dist/esnext/jsonrpc.js",
+  "unpkg": "dist/umd/jsonrpc.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:teambition/jsonrpc-lite.git"
+  },
+  "homepage": "https://github.com/teambition/jsonrpc-lite",
+  "keywords": [
+    "json",
+    "jsonrpc",
+    "json-rpc",
+    "jsonrpc2",
+    "serialize",
+    "parse",
+    "message"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.6.2",
+    "tman": "^1.10.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.1.3",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^4.0.2"
+  },
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:umd && npm run build:esnext",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:umd": "tsc -p tsconfig.json --module UMD --target ES5 --outDir ./dist/umd",
+    "build:esnext": "tsc -p tsconfig.json --module ESNext --target ES6 --outDir ./dist/esnext",
+    "lint": "tslint -p tsconfig.json -t stylish jsonrpc.ts",
+    "test": "npm run lint && npm run build && tman"
+  },
+  "files": [
+    "README.md",
+    "jsonrpc.js",
+    "jsonrpc.js.map",
+    "jsonrpc.ts",
+    "jsonrpc.d.ts",
+    "dist"
+  ]
+}
