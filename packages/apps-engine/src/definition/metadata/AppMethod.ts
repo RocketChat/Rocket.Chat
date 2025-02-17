@@ -30,6 +30,7 @@ export enum AppMethod {
     EXECUTEPREMESSAGESENTMODIFY = 'executePreMessageSentModify',
     CHECKPOSTMESSAGESENT = 'checkPostMessageSent',
     EXECUTEPOSTMESSAGESENT = 'executePostMessageSent',
+    EXECUTEPOSTSYSTEMMESSAGESENT = 'executePostSystemMessageSent',
 
     EXECUTEPOSTMESSAGESENTTOBOT = 'executePostMessageSentToBot',
 
