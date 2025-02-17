@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { wrapInSessionTransaction } from '../../../../../server/database/utils';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
 import { generatePassword } from '../../lib/generatePassword';
@@ -20,9 +21,9 @@ import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
+import { setPasswordUpdater } from './setPasswordUpdater';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
-import { wrapInSessionTransaction } from '../../../../../server/database/utils';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -120,7 +121,7 @@ const _saveUser = (session?: ClientSession) =>
 			(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 			passwordPolicy.validate(userData.password)
 		) {
-			await Accounts.setPasswordAsync(userData._id, userData.password.trim());
+			await setPasswordUpdater(updater, userData.password.trim());
 		} else {
 			sendPassword = false;
 		}
