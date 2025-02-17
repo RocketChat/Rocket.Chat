@@ -66,7 +66,7 @@ const fetchMarketplaceAppsSchema = z.array(
 		addonId: z.string().optional(),
 		isEnterpriseOnly: z.boolean(),
 		isBundle: z.boolean(),
-		bundedAppIds: z.array(z.string()).optional(),
+		bundledAppsIn: z.array(z.string()).optional(),
 		bundledIn: z.array(
 			z.object({
 				bundleId: z.string(),
