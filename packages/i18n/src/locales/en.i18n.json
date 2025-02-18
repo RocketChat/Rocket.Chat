@@ -6783,5 +6783,7 @@
   "different_values_found": "{{number}} different values found",
   "Recent": "Recent",
   "On_All_Contacts": "On All Contacts",
-  "Once": "Once"
+  "Once": "Once",
+  "for": "for",
+  "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}"
 }
