@@ -2,7 +2,6 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
@@ -152,7 +151,6 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (userData.customFields) {
-			// pass session to side effects
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
 
