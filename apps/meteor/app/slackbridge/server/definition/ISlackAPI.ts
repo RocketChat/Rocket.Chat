@@ -1,4 +1,19 @@
-import type { MessageEvent } from '@slack/types';
+// import type { MessageEvent } from '@slack/types';
+import type {
+	ConversationsListResponse,
+	ConversationsInfoResponse,
+	ConversationsMembersResponse,
+	ChatPostMessageArguments,
+	ChatPostMessageResponse,
+	ChatUpdateArguments,
+	UsersInfoResponse,
+	ReactionsAddArguments,
+	ReactionsRemoveArguments,
+	ChatDeleteArguments,
+	ConversationsHistoryArguments,
+	ConversationsHistoryResponse,
+	PinsListResponse,
+} from '@slack/web-api';
 
 export type SlackConversation = {
 	id: string;
@@ -75,77 +90,88 @@ export type SlackUser = {
 	enterprise_user: Record<string, any>;
 };
 
-export type SlackPostMessage = {
-	// Token is mandatory, but may be passed on the header instead of the params
-	token?: string;
-
-	channel: string;
-	// JSON serialized array
-	attachments?: string;
-	// JSON serialized array
-	blocks?: string;
-	text?: string;
-
-	as_user?: boolean;
-	icon_emoji?: string;
-	icon_url?: string;
-	link_names?: boolean;
-	markdown_text?: string;
-	metadata?: string;
-	mrkdwn?: boolean;
-	parse?: string;
-	reply_broadcast?: boolean;
-	thread_ts?: string;
-	unfurl_links?: boolean;
-	unfurl_media?: boolean;
+export type SlackPostMessage = ChatPostMessageArguments & {
 	username?: string;
-} & ({ attachments: string } | { blocks: string } | { text: string });
+};
 
-export type SlackMessageResponse<SuccessType> =
-	| {
-			ok: false;
-			error: string;
-	  }
-	| ({
-			ok: true;
-	  } & SuccessType);
+// export type SlackPostMessage = {
+// 	// Token is mandatory, but may be passed on the header instead of the params
+// 	token?: string;
 
-export type SlackPostMessageResponse = SlackMessageResponse<{
-	channel: string;
-	ts: string;
-	message: MessageEvent;
-}>;
+// 	channel: string;
+// 	// JSON serialized array
+// 	attachments?: string;
+// 	// JSON serialized array
+// 	blocks?: string;
+// 	text?: string;
 
-export type SlackUpdateMessage = Pick<
-	SlackPostMessage,
-	| 'token'
-	| 'channel'
-	| 'attachments'
-	| 'blocks'
-	| 'text'
-	| 'as_user'
-	| 'link_names'
-	| 'markdown_text'
-	| 'metadata'
-	| 'parse'
-	| 'reply_broadcast'
-> & {
-	ts: string;
-	// accepts an array of strings or a CSV
-	file_ids?: string[] | string;
-} & ({ attachments: string } | { blocks: string } | { text: string });
+// 	as_user?: boolean;
+// 	icon_emoji?: string;
+// 	icon_url?: string;
+// 	link_names?: boolean;
+// 	markdown_text?: string;
+// 	metadata?: string;
+// 	mrkdwn?: boolean;
+// 	parse?: string;
+// 	reply_broadcast?: boolean;
+// 	thread_ts?: string;
+// 	unfurl_links?: boolean;
+// 	unfurl_media?: boolean;
+// 	username?: string;
+// } & ({ attachments: string } | { blocks: string } | { text: string });
 
-export type SlackUpdateMessageResponse = SlackMessageResponse<{
-	channel: string;
-	ts: string;
-	text: string;
-	message: Partial<MessageEvent>;
-}>;
+// export type SlackMessageResponse<SuccessType> =
+// 	| {
+// 			ok: false;
+// 			error: string;
+// 	  }
+// 	| ({
+// 			ok: true;
+// 	  } & SuccessType);
+
+// export type SlackPostMessageResponse = SlackMessageResponse<{
+// 	channel: string;
+// 	ts: string;
+// 	message: MessageEvent;
+// }>;
+
+// export type SlackUpdateMessage = Pick<
+// 	SlackPostMessage,
+// 	| 'token'
+// 	| 'channel'
+// 	| 'attachments'
+// 	| 'blocks'
+// 	| 'text'
+// 	| 'as_user'
+// 	| 'link_names'
+// 	| 'markdown_text'
+// 	| 'metadata'
+// 	| 'parse'
+// 	| 'reply_broadcast'
+// > & {
+// 	ts: string;
+// 	// accepts an array of strings or a CSV
+// 	file_ids?: string[] | string;
+// } & ({ attachments: string } | { blocks: string } | { text: string });
+
+// export type SlackUpdateMessageResponse = SlackMessageResponse<{
+// 	channel: string;
+// 	ts: string;
+// 	text: string;
+// 	message: Partial<MessageEvent>;
+// }>;
 
 export interface ISlackAPI {
-	getRoomInfo(roomId: string): Promise<SlackConversation>;
-	getMembers(channelId: string): Promise<string[]>;
-	getUser(userId: string): Promise<SlackUser>;
-	sendMessage(data: SlackPostMessage): Promise<SlackPostMessageResponse>;
-	updateMessage(data: SlackUpdateMessage): Promise<SlackUpdateMessageResponse>;
+	getChannels(cursor?: string | null): Promise<Required<ConversationsListResponse>['channels']>;
+	getGroups(cursor?: string | null): Promise<Required<ConversationsListResponse>['channels']>;
+	getRoomInfo(roomId: string): Promise<ConversationsInfoResponse['channel']>;
+	getMembers(channelId: string): Promise<ConversationsMembersResponse['members']>;
+	react(data: ReactionsAddArguments): Promise<boolean>;
+	removeReaction(data: ReactionsRemoveArguments): Promise<boolean>;
+	removeMessage(data: ChatDeleteArguments): Promise<boolean>;
+	sendMessage(data: ChatPostMessageArguments): Promise<ChatPostMessageResponse>;
+	updateMessage(data: ChatUpdateArguments): Promise<boolean>;
+	getHistory(options: ConversationsHistoryArguments): Promise<ConversationsHistoryResponse>;
+	getPins(channelId: string): Promise<PinsListResponse['items'] | undefined>;
+	getUser(userId: string): Promise<UsersInfoResponse['user'] | undefined>;
 }

@@ -1,6 +1,6 @@
 import util from 'util';
 
-import type { DeepWritable, IMessage, IRoom, IUser, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
+import type { DeepWritable, IMessage, IRegisterUser, IRoom, IUser, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -11,9 +11,10 @@ import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 import _ from 'underscore';
 
+import type { SlackTS } from './definition/IMessageSyncedWithSlack';
 import type { IRocketChatAdapter, RocketChatUserIdentification } from './definition/IRocketChatAdapter';
 import type { SlackConversation } from './definition/ISlackAPI';
-import type { ISlackAdapter, SlackTS } from './definition/ISlackAdapter';
+import type { ISlackAdapter } from './definition/ISlackAdapter';
 import type { ISlackbridge } from './definition/ISlackbridge';
 import type { RocketChatMessageData } from './definition/RocketChatMessageData';
 import type { SlackMessageEvent } from './definition/SlackMessageEvent';
@@ -269,7 +270,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		return this.addChannel(slackMessage.channel);
 	}
 
-	async getUser(slackUser: string): Promise<IUser | null> {
+	async getUser(slackUser: string): Promise<IRegisterUser | null> {
 		if (!slackUser) {
 			return null;
 		}
@@ -379,7 +380,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		return addedRoom;
 	}
 
-	async findUser(slackUserID: string): Promise<IUser | null> {
+	async findUser(slackUserID: string): Promise<IRegisterUser | null> {
 		const rocketUser = await Users.findOneByImportId(slackUserID);
 		if (rocketUser && !this.userTags[slackUserID]) {
 			this.userTags[slackUserID] = {
@@ -387,10 +388,10 @@ export default class RocketAdapter implements IRocketChatAdapter {
 				rocket: `@${rocketUser.username}`,
 			};
 		}
-		return rocketUser;
+		return rocketUser as IRegisterUser | null;
 	}
 
-	async addUser(slackUserID: string): Promise<IUser | null> {
+	async addUser(slackUserID: string): Promise<IRegisterUser | null> {
 		rocketLogger.debug('Adding Rocket.Chat user from Slack', slackUserID);
 		let addedUser;
 		for await (const slack of this._slackAdapters) {
@@ -476,7 +477,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 						rocket: `@${rocketUserData.name}`,
 					};
 				}
-				addedUser = await Users.findOneById(rocketUserData.rocketId);
+				addedUser = await Users.findOneById<IRegisterUser>(rocketUserData.rocketId);
 			}
 		}
 
@@ -487,7 +488,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		return addedUser || null;
 	}
 
-	addAliasToMsg(rocketUserName: string, rocketMsgObj: Partial<IMessage>) {
+	addAliasToMsg(rocketUserName: string, rocketMsgObj: Partial<IMessage>): Partial<IMessage> {
 		const aliasFormat = settings.get('SlackBridge_AliasFormat');
 		if (aliasFormat) {
 			const alias = this.util.format(aliasFormat, rocketUserName);
@@ -502,11 +503,11 @@ export default class RocketAdapter implements IRocketChatAdapter {
 
 	async buildMessageObjectFor(
 		rocketChannel: IRoom,
-		rocketUser: RocketChatUserIdentification,
+		rocketUser: IRegisterUser,
 		slackMessage: SlackMessageEvent,
 		isImporting: boolean,
 		slack: ISlackAdapter,
-	): Promise<RocketChatMessageData | undefined> {
+	): Promise<RocketChatMessageData | void> {
 		if (slackMessage.subtype) {
 			return slack.processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 		}
@@ -556,7 +557,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 
 	async createAndSaveMessage(
 		rocketChannel: IRoom,
-		rocketUser: RocketChatUserIdentification,
+		rocketUser: IRegisterUser,
 		slackMessage: MessageEvent,
 		rocketMsgDataDefaults: Partial<IMessage>,
 		isImporting: boolean,

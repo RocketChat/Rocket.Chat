@@ -1,6 +1,7 @@
-import type { IMessage, IRegisterUser, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRegisterUser, IRoom } from '@rocket.chat/core-typings';
 
-import type { ISlackAdapter, SlackTS } from './ISlackAdapter';
+import type { SlackTS } from './IMessageSyncedWithSlack';
+import type { ISlackAdapter } from './ISlackAdapter';
 
 export type RocketChatUserIdentification = Pick<IRegisterUser, '_id' | 'username' | 'name'>;
 
@@ -12,15 +13,20 @@ export interface IRocketChatAdapter {
 
 	clearSlackAdapters(): void;
 	addSlack(slack: ISlackAdapter): void;
+	addUser(slackUserID: string): Promise<IRegisterUser | null>;
 	getChannel(slackMessage: { channel?: string }): Promise<IRoom | null>;
-	getUser(slackUser: string): Promise<IUser | null>;
+	findUser(slackUserID: string): Promise<IRegisterUser | null>;
+	getUser(slackUser: string): Promise<IRegisterUser | null>;
 	createAndSaveMessage(
 		rocketChannel: IRoom,
-		rocketUser: RocketChatUserIdentification,
+		rocketUser: IRegisterUser,
 		slackMessage: unknown,
 		rocketMsgDataDefaults: Partial<IMessage>,
 		isImporting: boolean,
 		slack: ISlackAdapter,
 	): Promise<void>;
 	createRocketID(slackChannel: string, ts: SlackTS): string;
+	addChannel(slackChannelID: string, hasRetried?: boolean): Promise<IRoom | null>;
+	convertSlackMsgTxtToRocketTxtFormat(slackMsgTxt: string | undefined): Promise<string>;
+	addAliasToMsg(rocketUserName: string, rocketMsgObj: Partial<IMessage>): Partial<IMessage>;
 }

@@ -1,6 +1,7 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import type { IRocketChatAdapter } from './IRocketChatAdapter';
+import type { SlackTS } from './IMessageSyncedWithSlack';
+import type { IRocketChatAdapter, RocketChatUserIdentification } from './IRocketChatAdapter';
 import type { ISlackAPI } from './ISlackAPI';
 import type { RocketChatMessageData } from './RocketChatMessageData';
 import type { SlackMessageEvent } from './SlackMessageEvent';
@@ -15,8 +16,6 @@ export type SlackChannel = {
 	id: string;
 	family: 'channels' | 'groups';
 };
-
-export type SlackTS = string;
 
 export interface ISlackAdapter {
 	slackAPI: ISlackAPI;
@@ -44,8 +43,8 @@ export interface ISlackAdapter {
 
 	processSubtypedMessage(
 		rocketChannel: IRoom,
-		rocketUser: IUser,
+		rocketUser: RocketChatUserIdentification,
 		slackMessage: SlackMessageEvent,
 		isImporting: boolean,
-	): Promise<RocketChatMessageData | undefined>;
+	): Promise<RocketChatMessageData | void>;
 }
