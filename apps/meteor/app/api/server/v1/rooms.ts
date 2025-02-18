@@ -13,6 +13,7 @@ import {
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsHideProps,
+	isMediaEditProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -335,11 +336,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.mediaEdit/:rid/:fileId',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isMediaEditProps },
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
 				return API.v1.forbidden();
+			}
+
+			if (!this.bodyParams.fileName) {
+				throw new Meteor.Error('invalid-file-name');
 			}
 
 			const file = await Uploads.findOneById(this.urlParams.fileId);
@@ -348,11 +353,11 @@ API.v1.addRoute(
 				throw new Meteor.Error('invalid-file');
 			}
 
-			if (!this.bodyParams.fileName) {
-				throw new Meteor.Error('invalid-file-name');
-			}
+			const { matchedCount } = await Uploads.updateFileNameById(this.urlParams.fileId, this.bodyParams.fileName);
 
-			await Uploads.updateFileNameById(this.urlParams.fileId, this.bodyParams.fileName);
+			if (matchedCount === 0) {
+				throw new Meteor.Error('invalid-file');
+			}
 
 			return API.v1.success();
 		},

@@ -688,6 +688,19 @@ const roomsHideSchema = {
 
 export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
+type RoomsMediaEditProps = {
+	fileName: string;
+};
+
+const mediaEditSchema = {
+	type: 'object',
+	properties: { fileName: { type: 'string' } },
+	required: ['fileName'],
+	additionalProperties: false,
+};
+
+export const isMediaEditProps = ajv.compile<RoomsMediaEditProps>(mediaEditSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
