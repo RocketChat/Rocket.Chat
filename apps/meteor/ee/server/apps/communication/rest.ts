@@ -60,7 +60,7 @@ export class AppsRestApi {
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
+		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
