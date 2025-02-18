@@ -339,24 +339,26 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isMediaEditProps },
 	{
 		async post() {
-			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.forbidden();
+			const { fileName } = this.bodyParams;
+
+			if (fileName) {
+				throw new Error('invalid-file-name');
 			}
 
-			if (!this.bodyParams.fileName) {
-				throw new Meteor.Error('invalid-file-name');
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.forbidden();
 			}
 
 			const file = await Uploads.findOneById(this.urlParams.fileId);
 
 			if (!file) {
-				throw new Meteor.Error('invalid-file');
+				throw new Error('invalid-file');
 			}
 
-			const { matchedCount } = await Uploads.updateFileNameById(this.urlParams.fileId, this.bodyParams.fileName);
+			const { matchedCount } = await Uploads.updateFileNameById(this.urlParams.fileId, fileName);
 
 			if (matchedCount === 0) {
-				throw new Meteor.Error('invalid-file');
+				throw new Error('invalid-file');
 			}
 
 			return API.v1.success();
