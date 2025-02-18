@@ -229,9 +229,9 @@ export const sendMessage = async (
 	}
 
 	if (uploadIdsToConfirm !== undefined) {
-		const filesToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm);
+		const filesToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
 
-		if (isE2EEMessage(message)) {
+		if (!isE2EEMessage(message)) {
 			const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
 			message.files = files;
 			message.attachments = attachments;

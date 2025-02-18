@@ -38,19 +38,21 @@ export const parseMultipleFilesIntoMessageAttachments = async (
 ): Promise<parseMultipleFilesIntoMessageAttachmentsResult> => {
 	const result: parseMultipleFilesIntoMessageAttachmentsResult = { files: [], attachments: [] };
 
-	await Promise.await(
-		filesToConfirm.reduce<Array<() => Promise<void>>>((acc, file) => {
+	await Promise.all(
+		filesToConfirm.reduce<Array<Promise<void>>>((acc, file) => {
 			if (!file) return acc;
 
-			acc.push(async () => {
-				try {
-					const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-					result.files.push(...files);
-					result.attachments.push(...attachments);
-				} catch (error) {
-					console.error('Error processing file:', file, error);
-				}
-			});
+			acc.push(
+				(async () => {
+					try {
+						const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+						result.files.push(...files);
+						result.attachments.push(...attachments);
+					} catch (error) {
+						console.error('Error processing file:', file, error);
+					}
+				})(),
+			);
 
 			return acc;
 		}, []),
