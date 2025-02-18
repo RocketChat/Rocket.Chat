@@ -281,7 +281,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): Promise<boolean>;
 	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenIdle?: boolean): FindCursor<T>;
 	countOnlineAgents(agentId: string): Promise<number>;
-	findOneBotAgent(): Promise<ILivechatAgent | null>;
+	findOneBotAgent<T extends Document = ILivechatAgent>(): Promise<T | null>;
 	findOneOnlineAgentById(
 		agentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
