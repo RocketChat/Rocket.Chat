@@ -73,4 +73,4 @@ API.v1.addAuthMethod(async function () {
 	return oAuth2ServerAuth(this.request);
 });
 
-(WebApp.connectHandlers as ReturnType<typeof express>).use(oauth2server.app);
+(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
