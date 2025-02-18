@@ -36,12 +36,6 @@ const swiperStyle = css`
 		padding: 9rem 3.75rem 6rem;
 	}
 
-	.rcx-swiper-close-button,
-	.rcx-swiper-prev-button,
-	.rcx-swiper-next-button {
-		color: var(--rcx-color-font-pure-white, #ffffff) !important;
-	}
-
 	.rcx-swiper-prev-button,
 	.rcx-swiper-next-button {
 		position: absolute;
