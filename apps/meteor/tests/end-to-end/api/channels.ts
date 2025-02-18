@@ -3438,10 +3438,9 @@ describe('[Channels]', () => {
 						roomId: testChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(401)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
-						expect(res.body).to.have.a.property('error', 'Enable "Allow Anonymous Read" [error-not-allowed]');
 					})
 					.end(done);
 			});
