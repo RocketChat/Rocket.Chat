@@ -60,7 +60,7 @@ export class AppsRestApi {
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
+		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
@@ -854,6 +854,8 @@ export class AppsRestApi {
 							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 							return API.v1.internalError();
 						}
+
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} else {
 						isPrivateAppUpload = true;
 
