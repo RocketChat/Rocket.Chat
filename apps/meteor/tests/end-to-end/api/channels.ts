@@ -1914,22 +1914,21 @@ describe('[Channels]', () => {
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannel._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
 
-			it('should fetch private room members by user who is part of the room', async () => {
+			it('should not fetch private room members by user who is part of the room', async () => {
 				const response = await request
 					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannel._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.expect(400);
 
-				expect(response.body.success).to.be.true;
-				expect(response.body.members).to.be.an('array');
+				expect(response.body.success).to.be.false;
 			});
 
 			it('should fetch public room members by user who is part of the room', async () => {
@@ -1957,16 +1956,15 @@ describe('[Channels]', () => {
 				expect(response.body.members).to.be.an('array');
 			});
 
-			it('should fetch a private channel members inside a public team by someone part of the room ', async () => {
+			it('should not fetch a private channel members inside a public team by someone part of the room ', async () => {
 				await request
 					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.members).to.be.an('array');
+						expect(res.body).to.have.property('success', false);
 					});
 			});
 
@@ -1976,7 +1974,7 @@ describe('[Channels]', () => {
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -1988,7 +1986,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -2065,22 +2063,21 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
 
-			it('should fetch a private channel members inside a private team by someone part of the room', async () => {
+			it('should not fetch a private channel members inside a private team by someone part of the room', async () => {
 				await request
 					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.members).to.be.an('array');
+						expect(res.body).to.have.property('success', false);
 					});
 			});
 
@@ -2090,7 +2087,7 @@ describe('[Channels]', () => {
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -2102,7 +2099,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
