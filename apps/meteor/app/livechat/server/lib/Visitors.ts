@@ -48,8 +48,9 @@ export const Visitors = {
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 
 			const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
-			if (contact && contact.contactManager) {
-				const agent = await Users.findOneOnlineAgentById(contact.contactManager, undefined, {
+			if (contact?.contactManager) {
+				const shouldConsiderIdleAgent = settings.get<boolean>('Livechat_enabled_when_agent_idle');
+				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, {
 					projection: { _id: 1, username: 1, name: 1, emails: 1 },
 				});
 				if (agent && agent.username && agent.name && agent.emails) {
