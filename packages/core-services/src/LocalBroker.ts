@@ -204,7 +204,7 @@ export class LocalBroker implements IBroker {
 				if (elapsed > TIMEOUT) {
 					clearInterval(intervalId);
 					const pendingServices = Array.from(this.pendingServices).join(', ');
-					const error = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`)
+					const error = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
 					logger.error(error);
 					return reject(error);
 				}
