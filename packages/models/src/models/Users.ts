@@ -1845,7 +1845,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.countDocuments(query);
 	}
 
-	findOneBotAgent() {
+	findOneBotAgent<T extends Document = ILivechatAgent>() {
 		// TODO:: Create class Agent
 		const query = {
 			roles: {
