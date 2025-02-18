@@ -98,6 +98,7 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'false',
 			changedTo: 'true',
+			type: 'string' as const,
 		},
 		{
 			_id: '2',
@@ -106,7 +107,7 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'false',
 			changedTo: 'true',
-			type: 'string',
+			type: 'string' as const,
 		},
 		{
 			_id: '3',
@@ -115,7 +116,7 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'console.log("test")',
 			changedTo: 'console.testing.long.string.test.test.test.test.test.test.test("Hello Test!")',
-			type: 'code',
+			type: 'code' as const,
 		},
 		// Generate more 50 entries
 		...Array.from({ length: 50 }, (_, index) => ({
@@ -125,7 +126,7 @@ const SecurityLogsTable = (): ReactElement => {
 			setting: 'Show_message_in_email_notification',
 			changedFrom: 'false',
 			changedTo: 'true',
-			type: 'string',
+			type: 'string' as const,
 		})),
 	];
 

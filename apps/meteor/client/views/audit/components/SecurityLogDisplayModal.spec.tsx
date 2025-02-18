@@ -10,7 +10,7 @@ describe('SecurityLogDisplay', () => {
 			timestamp: '2021-10-01T00:00:00.000Z',
 			actor: 'John Doe',
 			setting: 'Show_message_in_email_notification',
-			settingType: 'Boolean',
+			settingType: 'string' as const,
 			changedFrom: 'false',
 			changedTo: 'true',
 		};
@@ -34,7 +34,7 @@ describe('SecurityLogDisplay', () => {
 			timestamp: '2021-10-01T00:00:00.000Z',
 			actor: 'John Doe',
 			setting: 'Show_message_in_email_notification',
-			settingType: 'Boolean',
+			settingType: 'string' as const,
 			changedFrom: 'false',
 			changedTo: 'true',
 		};
@@ -79,7 +79,7 @@ describe('SecurityLogDisplay', () => {
 			timestamp: '2021-10-01T00:00:00.000Z',
 			actor: 'John Doe',
 			setting: 'Show_message_in_email_notification',
-			settingType: 'code',
+			settingType: 'code' as const,
 			changedFrom: 'console.log("Hello, World!")',
 			changedTo: 'console.log("GoodBye, World!")',
 		};
@@ -97,7 +97,7 @@ describe('SecurityLogDisplay', () => {
 			{ wrapper: mockAppRoot().withJohnDoe().build() },
 		);
 
-		const changedFrom = screen.getByLabelText('code_setting');
+		const changedFrom = screen.queryAllByLabelText('code_setting')[0];
 		expect(changedFrom).toBeVisible();
 	});
 });

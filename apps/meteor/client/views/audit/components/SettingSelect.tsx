@@ -20,14 +20,18 @@ export const SettingSelect = ({
 
 	const debouncedFilter = useDebouncedValue(filter, 500);
 
-	const { reload, itemsList, loadMoreItems } = useSettingSelectOptions(debouncedFilter);
+	const { itemsList, loadMoreItems } = useSettingSelectOptions(debouncedFilter);
 
 	const { items } = useRecordList(itemsList);
+
+	type PaginatedOptionType = {
+		value: string | number;
+		label: string;
+	};
 
 	return (
 		<PaginatedSelectFiltered
 			withTitle={withTitle}
-			reload={reload}
 			flexShrink={1}
 			value={value}
 			onChange={onChange}
@@ -35,7 +39,8 @@ export const SettingSelect = ({
 			filter={filter}
 			// TODO: Fix the types on PaginatedSelectFiltered
 			setFilter={setFilter as (value: string | number | undefined) => void}
-			options={items}
+			// TODO: Fix the types on PaginatedSelectFiltered
+			options={items as unknown as PaginatedOptionType[]}
 			endReached={loadMoreItems}
 			renderItem={({ label, ...props }) => (
 				<Option {...props} title={t(label)}>
