@@ -4,7 +4,6 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRole } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';

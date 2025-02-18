@@ -2,8 +2,8 @@ import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useIsSettingsContextLoading } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useState } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SettingsGroupCard from './SettingsGroupCard';
@@ -15,7 +15,7 @@ import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 const SettingsPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
-	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
+	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);
 
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = useIsSettingsContextLoading();

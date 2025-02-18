@@ -12,13 +12,13 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
 import { useUserData } from '../../../hooks/useUserData';
@@ -49,6 +49,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
+	const displayName = useUserDisplayName(user);
 
 	const messageType = MessageTypes.getType(message);
 
@@ -85,7 +86,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						style={{ cursor: 'pointer' }}
 						{...triggerProps}
 					>
-						<MessageSystemName>{getUserDisplayName(user.name, user.username, showRealName)}</MessageSystemName>
+						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
 								{' '}

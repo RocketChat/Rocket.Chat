@@ -1,8 +1,8 @@
 import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Button } from '@rocket.chat/fuselage';
-import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../GenericModal';
@@ -45,7 +45,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 		setCode(currentTarget.value);
 	};
 
-	const id = useUniqueId();
+	const id = useId();
 
 	return (
 		<GenericModal

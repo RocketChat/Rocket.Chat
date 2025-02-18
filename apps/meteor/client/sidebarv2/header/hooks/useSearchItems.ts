@@ -1,5 +1,5 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMethod, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -16,7 +16,8 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-export const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
+// FIXME: the return type is UTTERLY wrong, but I'm not sure what it should be
+export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionWithRoom[] | undefined, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
@@ -48,9 +49,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<(ISubscriptio
 
 	const getSpotlight = useMethod('spotlight');
 
-	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
-		async () => {
+	return useQuery({
+		queryKey: ['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
+
+		queryFn: async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
 			}
@@ -105,10 +107,8 @@ export const useSearchItems = (filterText: string): UseQueryResult<(ISubscriptio
 			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 			return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
 		},
-		{
-			staleTime: 60_000,
-			keepPreviousData: true,
-			placeholderData: localRooms,
-		},
-	);
+
+		staleTime: 60_000,
+		placeholderData: (previousData) => previousData ?? localRooms,
+	});
 };

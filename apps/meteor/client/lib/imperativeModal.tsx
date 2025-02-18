@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import React, { Suspense, createElement } from 'react';
+import { createElement } from 'react';
 import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
 import { modalStore } from '../providers/ModalProvider/ModalStore';
@@ -22,14 +22,10 @@ const mapCurrentModal = (descriptor: ModalDescriptor): ReactNode => {
 	}
 
 	if ('component' in descriptor) {
-		return (
-			<Suspense fallback={<div />}>
-				{createElement(descriptor.component, {
-					key: Math.random(),
-					...descriptor.props,
-				})}
-			</Suspense>
-		);
+		return createElement(descriptor.component, {
+			key: Math.random(),
+			...descriptor.props,
+		});
 	}
 };
 

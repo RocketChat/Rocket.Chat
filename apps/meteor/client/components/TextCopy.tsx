@@ -1,6 +1,5 @@
 import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../hooks/useClipboardWithToast';

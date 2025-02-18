@@ -1,13 +1,13 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentType } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
 	sidebarDisplayAvatar?: boolean,
-): null | ComponentType<IRoom & { rid: string }> => {
+): null | ComponentType<SubscriptionWithRoom & { rid: string }> => {
 	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 	const sidebarDisplayAvatarFromSettings = useUserPreference('sidebarDisplayAvatar');
 
@@ -30,7 +30,7 @@ export const useAvatarTemplate = (
 			}
 		})();
 
-		const renderRoomAvatar: ComponentType<IRoom & { rid: string }> = (room) => (
+		const renderRoomAvatar: ComponentType<SubscriptionWithRoom & { rid: string }> = (room) => (
 			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
 		);
 

@@ -21,6 +21,7 @@ import { canAccessRoomIdAsync } from '../../../authorization/server/functions/ca
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -135,7 +136,7 @@ API.v1.addRoute(
 			} else {
 				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 				if (!canAccess) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -181,23 +182,23 @@ API.v1.addRoute(
 
 			if (ruserId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = ruserId;
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, user);
 
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
 
 			lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString(); // lm is the last message timestamp
 
-			if (subscription?.open) {
+			if (subscription) {
+				unreads = subscription.unread ?? null;
 				if (subscription.ls && room.msgs) {
-					unreads = subscription.unread;
 					unreadsFrom = new Date(subscription.ls).toISOString(); // last read timestamp
 				}
 				userMentions = subscription.userMentions;
@@ -238,7 +239,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
@@ -277,8 +278,9 @@ API.v1.addRoute(
 
 			const objectParams = {
 				rid: room._id,
+				fromUserId: this.userId,
 				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest && new Date(oldest),
+				oldest: oldest ? new Date(oldest) : undefined,
 				inclusive: inclusive === 'true',
 				offset,
 				count,
@@ -286,10 +288,10 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			};
 
-			const result = await Meteor.callAsync('getChannelHistory', objectParams);
+			const result = await getChannelHistory(objectParams);
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -309,7 +311,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -384,7 +386,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -547,7 +549,7 @@ API.v1.addRoute(
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -574,7 +576,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);

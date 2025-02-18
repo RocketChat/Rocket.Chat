@@ -25,7 +25,7 @@ export const useDiscussionsList = (
 	const getDiscussions = useEndpoint('GET', '/v1/chat.getDiscussions');
 
 	const fetchMessages = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { messages, total } = await getDiscussions({
 				roomId: options.rid,
 				text: options.text,

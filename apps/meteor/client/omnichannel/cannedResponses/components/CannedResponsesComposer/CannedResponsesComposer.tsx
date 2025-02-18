@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
@@ -98,7 +98,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 					<MessageComposerActionsDivider />
 					<MessageComposerAction icon='bold' onClick={useMarkdownSyntax('*')} title={t('Bold')} />
 					<MessageComposerAction icon='italic' onClick={useMarkdownSyntax('_')} title={t('Italic')} />
-					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strike')} />
+					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<MessageComposerActionsDivider />
 					<Button ref={ref} small onClick={openPlaceholderSelect}>

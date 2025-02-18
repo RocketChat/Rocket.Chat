@@ -3,11 +3,11 @@ import { createContext, useContext } from 'react';
 import type { AriaButtonProps } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
-export type UserCardContextValue = {
+type UserCardContextValue = {
 	openUserCard: (e: UIEvent, username: string) => void;
 	closeUserCard: () => void;
 	triggerProps: AriaButtonProps<'button'>;
-	triggerRef: MutableRefObject<null>;
+	triggerRef: MutableRefObject<Element | null>;
 	state: OverlayTriggerState;
 };
 

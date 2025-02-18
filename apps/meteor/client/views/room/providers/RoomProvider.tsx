@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useMemo, memo, useEffect, useCallback } from 'react';
+import { useMemo, memo, useEffect, useCallback } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
@@ -17,6 +16,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
+import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
@@ -37,15 +37,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const resultFromLocal = useRoomQuery(rid);
 
-	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const router = useRouter();
-	useEffect(() => {
-		if (resultFromLocal.isSuccess && !resultFromLocal.data) {
-			router.navigate('/home');
-		}
-	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
-
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => Subscriptions.findOne({ rid }) ?? null);
+	const subscriptionQuery = useReactiveQuery(subscriptionsQueryKeys.subscription(rid), () => Subscriptions.findOne({ rid }) ?? null);
 
 	useRedirectOnSettingsChanged(subscriptionQuery.data);
 

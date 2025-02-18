@@ -29,6 +29,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -235,7 +236,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.avatarUrl) {
@@ -466,7 +467,7 @@ API.v1.addRoute(
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -575,7 +576,7 @@ API.v1.addRoute(
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -622,7 +623,7 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
 		validateParams: isUserRegisterParamsPOST,
 	},
@@ -712,7 +713,7 @@ API.v1.addRoute(
 
 			const data = await generateAccessToken(this.userId, user._id);
 
-			return data ? API.v1.success({ data }) : API.v1.unauthorized();
+			return data ? API.v1.success({ data }) : API.v1.forbidden();
 		},
 	},
 );
@@ -887,15 +888,15 @@ API.v1.addRoute(
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-				if (!userTokens) {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+				if (!user) {
 					return;
 				}
 
 				return {
 					clientAction: 'updated',
 					id: this.user._id,
-					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
 				};
 			});
 
@@ -910,6 +911,19 @@ API.v1.addRoute(
 	{
 		async post() {
 			await Users.disableEmail2FAByUserId(this.userId);
+
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
@@ -953,7 +967,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
@@ -1201,7 +1215,7 @@ API.v1.addRoute(
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
@@ -1278,7 +1292,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)

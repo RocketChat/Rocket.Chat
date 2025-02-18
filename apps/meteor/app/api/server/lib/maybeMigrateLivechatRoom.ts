@@ -1,5 +1,6 @@
-import { isOmnichannelRoom, type IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { projectionAllowsAttribute } from './projectionAllowsAttribute';
@@ -9,7 +10,10 @@ import { migrateVisitorIfMissingContact } from '../../../livechat/server/lib/con
  * If the room is a livechat room and it doesn't yet have a contact, trigger the migration for its visitor and source
  * The migration will create/use a contact and assign it to every room that matches this visitorId and source.
  **/
-export async function maybeMigrateLivechatRoom(room: IRoom | null, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+export async function maybeMigrateLivechatRoom(
+	room: IOmnichannelRoom | null,
+	options: FindOptions<IRoom> = {},
+): Promise<IOmnichannelRoom | null> {
 	if (!room || !isOmnichannelRoom(room)) {
 		return room;
 	}
@@ -32,5 +36,5 @@ export async function maybeMigrateLivechatRoom(room: IRoom | null, options: Find
 	}
 
 	// Load the room again with the same options so it can be reloaded with the contactId in place
-	return Rooms.findOneById(room._id, options);
+	return LivechatRooms.findOneById(room._id, options);
 }

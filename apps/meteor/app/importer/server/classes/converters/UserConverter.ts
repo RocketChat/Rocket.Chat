@@ -26,13 +26,6 @@ export type UserConverterOptions = {
 	enableEmail2fa?: boolean;
 };
 
-export type ConvertUsersResult = {
-	inserted: string[];
-	updated: string[];
-	skipped: number;
-	failed: number;
-};
-
 export class UserConverter extends RecordConverter<IImportUserRecord, UserConverterOptions & RecordConverterOptions> {
 	private insertedIds = new Set<IUser['_id']>();
 
