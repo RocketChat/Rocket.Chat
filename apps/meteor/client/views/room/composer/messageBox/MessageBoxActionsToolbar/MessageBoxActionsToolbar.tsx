@@ -61,7 +61,7 @@ const MessageBoxActionsToolbar = ({
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
 	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing, uploadsStore);
-	const webdavActions = useWebdavActions();
+	const webdavActions = useWebdavActions(uploadsStore);
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
 
