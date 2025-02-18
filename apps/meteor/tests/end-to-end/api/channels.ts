@@ -1199,7 +1199,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -2052,7 +2052,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -2470,7 +2470,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -3369,7 +3369,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -4241,7 +4241,7 @@ describe('[Channels]', () => {
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
