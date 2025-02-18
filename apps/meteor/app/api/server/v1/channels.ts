@@ -300,7 +300,7 @@ API.v1.addRoute(
 			};
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.unauthorized();
 			}
 
 			// Special check for the permissions
@@ -455,7 +455,7 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params });
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.unauthorized();
 			}
 
 			const moderators = (
@@ -865,7 +865,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.unauthorized();
 			}
 
 			let includeAllPublicChannels = true;
@@ -920,7 +920,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.unauthorized();
 			}
 
 			return API.v1.success({
@@ -1074,7 +1074,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
+				return API.v1.unauthorized();
 			}
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
