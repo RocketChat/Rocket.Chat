@@ -227,6 +227,14 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 			});
 	});
 
+export const switchLivechatStatus = async (status: 'available' | 'not-available', overrideCredentials?: Credentials): Promise<void> => {
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({ status })
+		.expect(200);
+};
+
 export const makeAgentAvailable = async (overrideCredentials?: Credentials): Promise<Response> => {
 	await restorePermissionToRoles('view-l-room');
 	await request

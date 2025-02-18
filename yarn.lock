@@ -8157,7 +8157,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     babel-loader: "npm:^9.2.1"
-    dompurify: "npm:^3.2.0"
+    dompurify: "npm:^3.2.4"
     eslint: "npm:~8.45.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-react: "npm:~7.37.2"
@@ -8328,7 +8328,7 @@ __metadata:
     cssnano: "npm:^7.0.6"
     date-fns: "npm:^2.30.0"
     desvg-loader: "npm:^0.1.0"
-    dompurify: "npm:^3.2.3"
+    dompurify: "npm:^3.2.4"
     emoji-mart: "npm:^3.0.1"
     eslint: "npm:~8.45.0"
     eslint-plugin-import: "npm:~2.31.0"
@@ -8680,7 +8680,7 @@ __metadata:
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     docker-compose: "npm:^0.24.8"
-    dompurify: "npm:^3.2.0"
+    dompurify: "npm:^3.2.4"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
     emoji-toolkit: "npm:^7.0.1"
@@ -9455,7 +9455,7 @@ __metadata:
     "@types/jest": "npm:~29.5.14"
     "@types/react": "npm:~18.3.17"
     "@types/react-dom": "npm:~18.3.5"
-    dompurify: "npm:^3.2.0"
+    dompurify: "npm:^3.2.4"
     eslint: "npm:~8.45.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-react: "npm:~7.37.2"
@@ -9781,7 +9781,7 @@ __metadata:
     "@types/dompurify": "npm:^3.0.5"
     "@types/react": "npm:~18.3.17"
     babel-loader: "npm:~9.2.1"
-    dompurify: "npm:^3.2.0"
+    dompurify: "npm:^3.2.4"
     eslint: "npm:~8.45.0"
     react: "npm:~18.3.1"
     react-hook-form: "npm:~7.45.4"
@@ -18732,14 +18732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "dompurify@npm:3.2.0"
-  checksum: 10/d9139fdc69e95efe43d154362216a9a6768c3a238b02b988a7ac0ddd044a992422d6c5fae5b319ab47aef8465824a815d104b843800b294352657f70d5168bfa
-  languageName: node
-  linkType: hard
-
-"dompurify@npm:^3.2.3":
+"dompurify@npm:^3.2.4":
   version: 3.2.4
   resolution: "dompurify@npm:3.2.4"
   dependencies:
