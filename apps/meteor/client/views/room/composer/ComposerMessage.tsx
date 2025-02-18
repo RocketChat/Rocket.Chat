@@ -84,6 +84,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 	const publicationReady = useReactiveValue(
 		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
 	);
+
 	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}

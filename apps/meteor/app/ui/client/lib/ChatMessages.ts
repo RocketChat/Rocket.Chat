@@ -247,10 +247,5 @@ export class ChatMessages implements ChatAPI {
 			}
 			this.composer?.clear();
 		}
-
-		// reset uploads when release composer
-		if (this.uploads.get().length > 0) {
-			this.uploads.clear();
-		}
 	}
 }
