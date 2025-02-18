@@ -1,10 +1,10 @@
-import type { RoomReadValidator } from '@rocket.chat/core-services';
+import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { Authorization } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoom } from './canAccessRoom';
 
-export const canReadRoom: RoomReadValidator = async (...args) => {
+export const canReadRoom: RoomAccessValidator = async (...args) => {
 	if (!(await canAccessRoom(...args))) {
 		return false;
 	}

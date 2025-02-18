@@ -1,4 +1,4 @@
-import type { IAuthorization, RoomAccessValidator, RoomReadValidator } from '@rocket.chat/core-services';
+import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
@@ -81,7 +81,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
-	async canReadRoom(...args: Parameters<RoomReadValidator>): Promise<boolean> {
+	async canReadRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
 		return canReadRoom(...args);
 	}
 

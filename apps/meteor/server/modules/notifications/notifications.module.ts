@@ -101,13 +101,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
-
-			if (!canAccess) {
-				return false;
-			}
-
-			return Authorization.canReadRoom(room, { _id: this.userId || '' });
+			return Authorization.canReadRoom(room, { _id: this.userId || '' }, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
