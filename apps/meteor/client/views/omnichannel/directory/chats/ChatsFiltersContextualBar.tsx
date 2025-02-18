@@ -94,7 +94,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							<Controller
 								name='servedBy'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent haveAll value={value} onChange={onChange} />}
+								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent value={value} onChange={onChange} />}
 							/>
 						</FieldRow>
 					</Field>

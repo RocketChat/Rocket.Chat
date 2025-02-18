@@ -12,8 +12,6 @@ type AutoCompleteAgentProps = {
 	value: PaginatedMultiSelectOption[];
 	error?: boolean;
 	placeholder?: string;
-	haveAll?: boolean;
-	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
@@ -25,8 +23,6 @@ const AutoCompleteAgent = ({
 	value,
 	error,
 	placeholder,
-	haveAll = false,
-	haveNoAgentsSelectedOption = false,
 	excludeId,
 	showIdleAgents = true,
 	onlyAvailable = false,
@@ -39,8 +35,8 @@ const AutoCompleteAgent = ({
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
 		useMemo(
-			() => ({ text: debouncedAgentsFilter, onlyAvailable, haveAll, haveNoAgentsSelectedOption, excludeId, showIdleAgents }),
-			[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
+			() => ({ text: debouncedAgentsFilter, onlyAvailable, excludeId, showIdleAgents }),
+			[debouncedAgentsFilter, excludeId, onlyAvailable, showIdleAgents],
 		),
 	);
 
