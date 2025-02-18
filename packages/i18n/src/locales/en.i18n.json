@@ -3393,6 +3393,7 @@
   "Omnichannel_allow_force_close_conversations": "Force close conversation API",
   "Omnichannel_allow_force_close_conversations_Description": "Allow agents and managers to force close conversations via API.",
   "Omnichannel_allow_force_close_conversations_alert": "Only enable if your workspace has issues with rooms with invalid states.",
+  "Omnichannel_Ignore_automatic_responses_for_performance_metrics": "Ignore bots activities for performance metrics",
   "Livechat_Block_Unknown_Contacts": "Block unknown contacts",
   "Livechat_Block_Unknown_Contacts_Description": "Conversations from people who are not on the contact list will not be able to be taken.",
   "Livechat_Block_Unverified_Contacts": "Block unverified contacts",
