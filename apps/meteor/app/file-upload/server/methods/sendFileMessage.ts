@@ -23,43 +23,40 @@ import { FileUpload } from '../lib/FileUpload';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
-	requiredFields.forEach((field) => {
+	for (const field of requiredFields) {
 		if (!Object.keys(file).includes(field)) {
 			throw new Meteor.Error('error-invalid-file', 'Invalid file');
 		}
-	});
+	}
 }
 
+type parseMultipleFilesIntoMessageAttachmentsResult = { files: FileProp[]; attachments: MessageAttachment[] };
 export const parseMultipleFilesIntoMessageAttachments = async (
 	filesToConfirm: Partial<IUpload>[],
 	roomId: string,
 	user: IUser,
-): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
-	const messageFiles: FileProp[] = [];
-	const messageAttachments: MessageAttachment[] = [];
+): Promise<parseMultipleFilesIntoMessageAttachmentsResult> => {
+	const result: parseMultipleFilesIntoMessageAttachmentsResult = { files: [], attachments: [] };
 
-	const filesAndAttachments = await Promise.all(
-		filesToConfirm
-			.filter((files: Partial<IUpload>) => !!files)
-			.map(async (file) => {
+	await Promise.await(
+		filesToConfirm.reduce<Array<() => Promise<void>>>((acc, file) => {
+			if (!file) return acc;
+
+			acc.push(async () => {
 				try {
 					const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-					return { files, attachments };
+					result.files.push(...files);
+					result.attachments.push(...attachments);
 				} catch (error) {
 					console.error('Error processing file:', file, error);
-					return { files: [], attachments: [] };
 				}
-			}),
+			});
+
+			return acc;
+		}, []),
 	);
 
-	filesAndAttachments
-		.filter(({ files, attachments }) => files.length || attachments.length)
-		.forEach(({ files, attachments }) => {
-			messageFiles.push(...files);
-			messageAttachments.push(...attachments);
-		});
-
-	return { files: messageFiles, attachments: messageAttachments };
+	return result;
 };
 
 export const parseFileIntoMessageAttachments = async (
