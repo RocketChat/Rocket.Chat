@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 
-// import { useFileUploadDropTarget } from './useFileUploadDropTarget';
 import type { UploadsAPI } from '../../../../lib/chats/ChatAPI';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { useChat } from '../../contexts/ChatContext';
@@ -41,7 +40,6 @@ export const useFileUpload = (store: UploadsAPI) => {
 			isUploading,
 			handleUploadProgressClose,
 			handleUploadFiles,
-			// targetDrop,
 		}),
 		[uploads, isUploading, handleUploadProgressClose, handleUploadFiles],
 	);

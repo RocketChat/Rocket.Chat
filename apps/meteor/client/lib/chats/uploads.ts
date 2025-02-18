@@ -202,7 +202,6 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					reject(new Error('Upload cancelled'));
 				});
 			});
-			// updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 		} catch (error: unknown) {
 			this.set(
 				this.uploads.map((upload) => {

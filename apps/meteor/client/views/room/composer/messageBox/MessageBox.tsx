@@ -16,7 +16,6 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
-// import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
@@ -87,15 +86,11 @@ type MessageBoxProps = {
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
-	// onUploadFiles: (files: readonly File[]) => void;
 	tshow?: IMessage['tshow'];
 	previewUrls?: string[];
 	subscription?: ISubscription;
 	showFormattingTips: boolean;
 	isEmbedded?: boolean;
-	// uploads: readonly Upload[];
-	// isUploading: boolean;
-	// hasUploads: boolean;
 };
 
 const MessageBox = ({
@@ -104,14 +99,10 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
-	// onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
 	previewUrls,
-	// uploads,
-	// isUploading,
-	// hasUploads,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
