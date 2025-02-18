@@ -193,10 +193,10 @@ export class LocalBroker implements IBroker {
 			const intervalId = setInterval(async () => {
 				const elapsed = Date.now() - startTime;
 
-				const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
-
 				if (this.pendingServices.size === 0) {
-					logger.debug(`All services available: ${availableServices.map((s) => s.instance.getName()).join(', ')}`);
+					const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
+
+					logger.info(`All ${availableServices.length} services available`);
 					clearInterval(intervalId);
 					return resolve();
 				}
