@@ -81,7 +81,6 @@ export async function saveUserIdentity({
 			previousName,
 			rawName,
 			nameChanged,
-			session,
 		};
 		if (updateUsernameInBackground) {
 			setImmediate(async () => {
@@ -92,7 +91,7 @@ export async function saveUserIdentity({
 				}
 			});
 		} else {
-			await updateUsernameReferences(handleUpdateParams);
+			await updateUsernameReferences({ ...handleUpdateParams, session });
 		}
 	}
 
