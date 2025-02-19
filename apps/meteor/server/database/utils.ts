@@ -23,11 +23,11 @@ export const wrapInSessionTransaction =
 	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
 		const session = client.startSession();
-		let result: Awaited<U>;
 		try {
 			session.startTransaction();
-			result = await curriedCallback(session).apply(this, args);
+			const result = await curriedCallback(session).apply(this, args);
 			await session.commitTransaction();
+			return result;
 		} catch (error) {
 			await session.abortTransaction();
 
@@ -35,6 +35,4 @@ export const wrapInSessionTransaction =
 		} finally {
 			await session.endSession();
 		}
-
-		return result;
 	};
