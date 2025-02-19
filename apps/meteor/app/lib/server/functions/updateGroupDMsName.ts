@@ -37,11 +37,12 @@ function sortUsersAlphabetically(u1: IUser, u2: IUser): number {
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 
-type UpdateGroupDMsNameOptions = {
-	session?: ClientSession;
-};
-
-export const updateGroupDMsName = async (userThatChangedName: IUser, options?: UpdateGroupDMsNameOptions): Promise<void> => {
+export const updateGroupDMsName = async (
+	userThatChangedName: IUser,
+	options?: {
+		session?: ClientSession;
+	},
+): Promise<void> => {
 	if (!userThatChangedName.username) {
 		return;
 	}
