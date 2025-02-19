@@ -337,7 +337,7 @@
 		"eventemitter3": "^5.0.1",
 		"exif-be-gone": "^1.5.1",
 		"expiry-map": "^2.0.0",
-		"express": "^4.21.1",
+		"express": "^4.21.2",
 		"express-rate-limit": "^5.5.1",
 		"fastq": "^1.17.1",
 		"fflate": "^0.8.2",

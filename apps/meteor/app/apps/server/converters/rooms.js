@@ -68,11 +68,18 @@ export class AppRoomsConverter {
 
 		let closedBy;
 		if (room.closedBy) {
-			const user = await Users.findOneById(room.closedBy.id);
-			closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
+			if (room.closer === 'user') {
+				const user = await Users.findOneById(room.closedBy.id);
+				closedBy = {
+					_id: user._id,
+					username: user.username,
+				};
+			} else if (room.closer === 'visitor') {
+				closedBy = {
+					_id: v._id,
+					username: v.username,
+				};
+			}
 		}
 
 		let contactId;
