@@ -48,6 +48,7 @@ export class AppMessagesConverter {
 			attachments: getAttachments,
 			sender: 'u',
 			threadMsgCount: 'tcount',
+			type: 't',
 		};
 
 		return transformMappedData(message, map);
@@ -91,6 +92,7 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
+			type: 't',
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
