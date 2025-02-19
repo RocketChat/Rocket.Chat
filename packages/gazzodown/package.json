@@ -21,7 +21,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "^3.2.0",
+		"dompurify": "^3.2.4",
 		"highlight.js": "^11.10.0",
 		"react-error-boundary": "^3.1.4",
 		"react-stately": "~3.17.0"
