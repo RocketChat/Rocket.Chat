@@ -8553,7 +8553,7 @@ __metadata:
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@slack/bolt": "npm:^4.2.0"
-    "@slack/rtm-api": "npm:^7.0.1"
+    "@slack/rtm-api": "npm:^7.0.2"
     "@storybook/addon-a11y": "npm:^8.5.3"
     "@storybook/addon-essentials": "npm:^8.5.3"
     "@storybook/addon-interactions": "npm:^8.5.3"
@@ -10064,7 +10064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/rtm-api@npm:^7.0.1":
+"@slack/rtm-api@npm:^7.0.2":
   version: 7.0.2
   resolution: "@slack/rtm-api@npm:7.0.2"
   dependencies:
