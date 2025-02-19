@@ -806,7 +806,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.mediaEdit/:rid/:fileId': {
-		POST: (params: { fileName?: string }) => void;
+		POST: (params: { fileName: string }) => void;
 	};
 
 	'/v1/rooms.saveNotification': {

@@ -341,7 +341,7 @@ API.v1.addRoute(
 		async post() {
 			const { fileName } = this.bodyParams;
 
-			if (fileName) {
+			if (!fileName) {
 				throw new Error('invalid-file-name');
 			}
 
