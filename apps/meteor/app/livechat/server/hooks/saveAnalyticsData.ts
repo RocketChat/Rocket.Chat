@@ -3,7 +3,9 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+import { isMessageFromBot } from '../lib/isMessageFromBot';
 
 const getMetricValue = <T>(metric: T | undefined, defaultValue: T): T => metric ?? defaultValue;
 const calculateTimeDifference = <T extends Date | number>(startTime: T, now: Date): number =>
@@ -73,6 +75,10 @@ callbacks.add(
 		if (isMessageFromVisitor(message)) {
 			LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
 		} else {
+			if (settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message))) {
+				return message;
+			}
+
 			const analyticsData = getAnalyticsData(room, new Date());
 			LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
 		}
