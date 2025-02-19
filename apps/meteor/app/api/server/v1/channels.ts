@@ -644,7 +644,8 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Subscriptions.countByRoomId(room._id);
+				console.log('Subscription count:', members);
 			}
 
 			return API.v1.success({
