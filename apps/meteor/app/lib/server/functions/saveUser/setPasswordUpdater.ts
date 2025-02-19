@@ -8,8 +8,8 @@ import { Accounts } from 'meteor/accounts-base';
 const hashPassword = async (password: string) => {
 	const hash = crypto.createHash('sha256');
 	hash.update(password);
-	const hashedPasword = hash.digest('hex');
-	return bcrypt.hash(hashedPasword, Accounts._bcryptRounds());
+	const hashedPassword = hash.digest('hex');
+	return bcrypt.hash(hashedPassword, Accounts._bcryptRounds());
 };
 
 export async function setPasswordUpdater(
@@ -19,7 +19,7 @@ export async function setPasswordUpdater(
 ) {
 	updater.set('services.password.bcrypt', await hashPassword(newPlaintextPassword));
 
-	if (options?.logout) {
+	if (options.logout) {
 		updater.unset('services.resume.loginTokens');
 	}
 }
