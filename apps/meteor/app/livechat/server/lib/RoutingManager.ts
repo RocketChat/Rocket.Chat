@@ -31,7 +31,6 @@ import {
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { EOF } from 'node:dns';
 
 const logger = new Logger('RoutingManager');
 
