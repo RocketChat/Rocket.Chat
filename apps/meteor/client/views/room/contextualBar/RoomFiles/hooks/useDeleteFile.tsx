@@ -3,13 +3,15 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
+import { GenericModalDoNotAskAgain } from '../../../../../components/GenericModal';
+import { useDontAskAgain } from '../../../../../hooks/useDontAskAgain';
 
 export const useDeleteFile = (reload: () => void) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteFile = useMethod('deleteFileMessage');
+	const dontAskDeleteFile = useDontAskAgain('deleteFile');
 
 	const handleDelete = useEffectEvent((_id: IUpload['_id']) => {
 		const onConfirm = async () => {
@@ -24,10 +26,26 @@ export const useDeleteFile = (reload: () => void) => {
 			}
 		};
 
+		if (dontAskDeleteFile) {
+			onConfirm();
+			return;
+		}
+
 		setModal(
-			<GenericModal variant='danger' onConfirm={onConfirm} onCancel={() => setModal(null)} confirmText={t('Delete')}>
+			<GenericModalDoNotAskAgain
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={() => setModal(null)}
+				onClose={() => setModal(null)}
+				confirmText={t('Delete')}
+				cancelText={t('Cancel')}
+				dontAskAgain={{
+					action: 'deleteFile',
+					label: t('Delete_File'),
+				}}
+			>
 				{t('Delete_File_Warning')}
-			</GenericModal>,
+			</GenericModalDoNotAskAgain>,
 		);
 	});
 
