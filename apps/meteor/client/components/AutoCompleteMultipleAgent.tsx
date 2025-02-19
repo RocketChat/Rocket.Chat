@@ -8,7 +8,7 @@ import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-type AutoCompleteAgentProps = {
+type AutoCompleteMultipleAgentProps = {
 	value: PaginatedMultiSelectOption[];
 	error?: boolean;
 	placeholder?: string;
@@ -19,7 +19,7 @@ type AutoCompleteAgentProps = {
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 };
 
-const AutoCompleteAgent = ({
+const AutoCompleteMultipleAgent = ({
 	value,
 	error,
 	placeholder,
@@ -28,7 +28,7 @@ const AutoCompleteAgent = ({
 	onlyAvailable = false,
 	withTitle = false,
 	onChange,
-}: AutoCompleteAgentProps): ReactElement => {
+}: AutoCompleteMultipleAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
@@ -63,4 +63,4 @@ const AutoCompleteAgent = ({
 	);
 };
 
-export default memo(AutoCompleteAgent);
+export default memo(AutoCompleteMultipleAgent);
