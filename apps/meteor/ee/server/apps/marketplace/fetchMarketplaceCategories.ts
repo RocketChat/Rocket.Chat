@@ -1,24 +1,22 @@
 import type { AppCategory } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
 import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
 
-const fetchMarketplaceCategoriesSchema = v.array(
-	v.object({
-		id: v.string().required(),
-		title: v.string().required(),
-		description: v.string().required(),
-		hidden: v.boolean().required(),
-		createdDate: v.string().required(),
-		modifiedDate: v.string().required(),
+const fetchMarketplaceCategoriesSchema = z.array(
+	z.object({
+		id: z.string(),
+		title: z.string(),
+		description: z.string(),
+		hidden: z.boolean(),
+		createdDate: z.string(),
+		modifiedDate: z.string(),
 	}),
 );
-
-const assertFetchMarketplaceCategoriesPayload = compile(fetchMarketplaceCategoriesSchema);
 
 export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 	const baseUrl = Apps.getMarketplaceUrl();
@@ -37,7 +35,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	if (request.status === 200) {
 		const response = await request.json();
-		assertFetchMarketplaceCategoriesPayload(response);
+		fetchMarketplaceCategoriesSchema.parse(response);
 		return response;
 	}
 
