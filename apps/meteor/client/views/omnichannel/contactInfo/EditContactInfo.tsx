@@ -118,6 +118,10 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { emails, phones } = watch();
 
 	const validateEmailFormat = async (emailValue: string) => {
+		if (!emails) {
+			return true;
+		}
+
 		const currentEmails = emails.map(({ address }) => address);
 
 		if (!validateEmail(emailValue)) {
@@ -138,6 +142,10 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	};
 
 	const validatePhone = async (phoneValue: string) => {
+		if (!phones) {
+			return true;
+		}
+
 		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
 
 		if (currentPhones.filter((phone) => phone === phoneValue).length > 1) {
