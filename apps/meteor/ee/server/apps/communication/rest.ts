@@ -127,7 +127,7 @@ export class AppsRestApi {
 
 						if (err instanceof ZodError) {
 							orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', err.issues);
-							return API.v1.failure({ error: i18n.t('Marketplace_Core_Schema_Missmatch') });
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
 						}
 
 						return API.v1.internalError();
@@ -235,7 +235,7 @@ export class AppsRestApi {
 
 							if (e instanceof ZodError) {
 								orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', e.issues);
-								return API.v1.failure({ error: i18n.t('Marketplace_Core_Schema_Missmatch') });
+								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
 							}
 
 							return API.v1.internalError();
