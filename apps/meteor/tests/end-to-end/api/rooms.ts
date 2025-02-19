@@ -4221,4 +4221,94 @@ describe('[Rooms]', () => {
 			});
 		});
 	});
+
+	describe('/rooms.hide', () => {
+		let roomA: IRoom;
+		let roomB: IRoom;
+		const roomName = `rooms.hide.test.${Date.now()}`;
+		let memberA: TestUser<IUser>;
+		let memberB: TestUser<IUser>;
+		let nonMember: TestUser<IUser>;
+		let nonMemberCredentials: Credentials;
+
+		before(async () => {
+			memberA = await createUser();
+			memberB = await createUser();
+			nonMember = await createUser();
+			nonMemberCredentials = await login(nonMember.username, password);
+		});
+
+		before(async () => {
+			roomA = (await createRoom({ type: 'c', name: roomName, members: [memberA.username, memberB.username] })).body.channel;
+			roomB = (await createRoom({ type: 'd', username: memberB.username })).body.room;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: roomA._id });
+			await deleteRoom({ type: 'd', roomId: roomB._id });
+			await deleteUser(memberA);
+			await deleteUser(memberB);
+			await deleteUser(nonMember);
+		});
+
+		it('should hide the room', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send({ roomId: roomA._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should be already hidden', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send({ roomId: roomA._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `error-room-already-hidden`);
+				});
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return 401 if user is not logged in', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should return forbidden if user does not have access to the room', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(nonMemberCredentials)
+				.send({ roomId: roomB._id })
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
 });
