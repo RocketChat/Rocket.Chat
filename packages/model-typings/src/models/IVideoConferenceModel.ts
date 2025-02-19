@@ -7,7 +7,7 @@ import type {
 	VideoConferenceStatus,
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions, ClientSession } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -59,7 +59,12 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 
-	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name'], options?: UpdateOptions): Promise<void>;
+	updateUserReferences(
+		userId: IUser['_id'],
+		username: IUser['username'],
+		name: IUser['name'],
+		options?: { session: ClientSession },
+	): Promise<void>;
 
 	increaseAnonymousCount(callId: IGroupVideoConference['_id']): Promise<void>;
 

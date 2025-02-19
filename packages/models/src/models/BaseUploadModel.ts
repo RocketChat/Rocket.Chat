@@ -10,8 +10,7 @@ import type {
 	Filter,
 	FindOptions,
 	FindCursor,
-	DeleteOptions,
-	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -93,8 +92,8 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async findOneByName(name: string, options?: FindOptions): Promise<T | null> {
-		return this.findOne<T>({ name }, options);
+	async findOneByName(name: string, options?: { session: ClientSession }): Promise<T | null> {
+		return this.findOne<T>({ name }, { session: options?.session });
 	}
 
 	async findOneByRoomId(rid: string): Promise<T | null> {
@@ -112,17 +111,17 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		);
 	}
 
-	async updateFileNameById(fileId: string, name: string, options?: UpdateOptions): Promise<Document | UpdateResult> {
+	async updateFileNameById(fileId: string, name: string, options?: { session: ClientSession }): Promise<Document | UpdateResult> {
 		const filter = { _id: fileId };
 		const update = {
 			$set: {
 				name,
 			},
 		};
-		return this.updateOne(filter, update, options);
+		return this.updateOne(filter, update, { session: options?.session });
 	}
 
-	async deleteFile(fileId: string, options?: DeleteOptions): Promise<DeleteResult> {
-		return this.deleteOne({ _id: fileId }, options);
+	async deleteFile(fileId: string, options?: { session: ClientSession }): Promise<DeleteResult> {
+		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 }

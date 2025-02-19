@@ -19,6 +19,7 @@ import type {
 	DeleteResult,
 	WithId,
 	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -358,7 +359,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
-	setUsername(userId: string, username: string, options: UpdateOptions): Promise<UpdateResult>;
+	setUsername(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult>;
 	setEmail(userId: string, email: string, verified?: boolean): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
 	setName(userId: string, name: string): Promise<UpdateResult>;

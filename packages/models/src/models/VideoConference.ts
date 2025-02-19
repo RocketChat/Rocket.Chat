@@ -18,6 +18,7 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -237,7 +238,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		userId: IUser['_id'],
 		username: IUser['username'],
 		name: IUser['name'],
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<void> {
 		await this.updateMany(
 			{
@@ -249,7 +250,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'users.$.username': username,
 				},
 			},
-			options,
+			{ session: options?.session },
 		);
 
 		await this.updateMany(
@@ -262,7 +263,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'createdBy.username': username,
 				},
 			},
-			options,
+			{ session: options?.session },
 		);
 
 		await this.updateMany(
@@ -275,7 +276,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'endedBy.username': username,
 				},
 			},
-			options,
+			{ session: options?.session },
 		);
 	}
 

@@ -9,6 +9,7 @@ import type {
 	UpdateResult,
 	CountDocumentsOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import type { Updater } from '../updater';
@@ -258,9 +259,13 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	getLastMessageUpdateQuery(lastMessage: IRoom['lastMessage'], roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	resetLastMessageById(rid: string, lastMessage: IMessage | null, msgCountDelta?: number): Promise<UpdateResult>;
-	replaceUsername(username: string, newUsername: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
-	replaceMutedUsername(username: string, newUsername: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
-	replaceUsernameOfUserByUserId(userId: string, newUsername: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
+	replaceUsername(username: string, newUsername: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
+	replaceMutedUsername(username: string, newUsername: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
+	replaceUsernameOfUserByUserId(
+		userId: string,
+		newUsername: string,
+		options?: { session: ClientSession },
+	): Promise<UpdateResult | Document>;
 	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
 	setTypeById(rid: string, type: IRoom['t']): Promise<UpdateResult>;
 	setTopicById(rid: string, topic?: string | undefined): Promise<UpdateResult>;

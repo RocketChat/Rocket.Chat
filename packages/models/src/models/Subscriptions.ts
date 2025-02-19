@@ -30,7 +30,7 @@ import type {
 	CountDocumentsOptions,
 	DeleteOptions,
 	WithId,
-	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { Rooms, Users } from '../index';
@@ -1354,7 +1354,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	setCustomFieldsDirectMessagesByUserId(
 		userId: string,
 		fields: Record<string, any>,
-		options: UpdateOptions,
+		options: { session: ClientSession },
 	): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
@@ -1362,7 +1362,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 		const update: UpdateFilter<ISubscription> = { $set: { customFields: fields } };
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	findByUserIdAndRoomType(
@@ -1449,7 +1449,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateNameAndFnameById(_id: string, name: string, fname: string, options?: UpdateOptions): Promise<UpdateResult | Document> {
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
 		const query = { _id };
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1459,10 +1459,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
-	setUserUsernameByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document> {
+	setUserUsernameByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
 		const query = { 'u._id': userId };
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1471,7 +1471,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document> {
@@ -1493,7 +1493,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		name: string,
 		newName?: string,
 		newFname?: string,
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
 			name,
@@ -1507,7 +1507,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(

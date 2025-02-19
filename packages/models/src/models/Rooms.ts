@@ -25,6 +25,7 @@ import type {
 	UpdateResult,
 	WithId,
 	CountDocumentsOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { Subscriptions } from '../index';
@@ -1631,7 +1632,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	replaceUsername(
 		previousUsername: IUser['username'],
 		username: IUser['username'],
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { usernames: previousUsername };
 
@@ -1641,13 +1642,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	replaceMutedUsername(
 		previousUsername: IUser['username'],
 		username: IUser['username'],
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { muted: previousUsername };
 
@@ -1657,13 +1658,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	replaceUsernameOfUserByUserId(
 		userId: IUser['_id'],
 		username: IUser['username'],
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { 'u._id': userId };
 
@@ -1673,7 +1674,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	setJoinCodeById(_id: IRoom['_id'], joinCode: string): Promise<UpdateResult> {

@@ -13,7 +13,7 @@ import type {
 	DeleteOptions,
 	CountDocumentsOptions,
 	WithId,
-	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -238,13 +238,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setCustomFieldsDirectMessagesByUserId(
 		userId: string,
 		fields: Record<string, any>,
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	updateNameAndFnameById(_id: string, name: string, fname: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
-	setUserUsernameByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document>;
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
+	setUserUsernameByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
 	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document>;
@@ -253,7 +253,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		name: string,
 		newName?: string,
 		newFname?: string,
-		options?: UpdateOptions,
+		options?: { session: ClientSession },
 	): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(

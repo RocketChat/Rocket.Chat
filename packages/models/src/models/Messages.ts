@@ -28,7 +28,7 @@ import type {
 	Document,
 	UpdateFilter,
 	WithId,
-	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -1231,7 +1231,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	updateAllUsernamesByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document> {
+	updateAllUsernamesByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
 		const query = { 'u._id': userId };
 
 		const update = {
@@ -1240,10 +1240,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
-	updateUsernameOfEditByUserId(userId: string, username: string, options?: UpdateOptions): Promise<UpdateResult | Document> {
+	updateUsernameOfEditByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
 		const query = { 'editedBy._id': userId };
 
 		const update = {
@@ -1252,7 +1252,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(
@@ -1260,7 +1260,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		options: UpdateOptions,
+		options: { session: ClientSession },
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -1277,7 +1277,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateOne(query, update, options);
+		return this.updateOne(query, update, { session: options?.session });
 	}
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult> {
