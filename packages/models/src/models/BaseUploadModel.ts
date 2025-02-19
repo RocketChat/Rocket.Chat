@@ -112,10 +112,10 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateMany(filter, update);
 	}
 
-	findByIds(_id: string[], options?: FindOptions<T>): FindCursor<T> {
+	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T> {
 		const query = {
 			_id: {
-				$in: _id,
+				$in: _ids,
 			},
 		};
 

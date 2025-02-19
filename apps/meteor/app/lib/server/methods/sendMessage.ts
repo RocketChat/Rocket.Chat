@@ -147,6 +147,8 @@ Meteor.methods<ServerMethods>({
 			sentByEmail: Match.Maybe(Boolean),
 		});
 
+		check(uploadIdsToConfirm, Match.Maybe([String]));
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

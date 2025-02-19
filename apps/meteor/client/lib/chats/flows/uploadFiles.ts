@@ -4,6 +4,7 @@ import { e2e } from '../../../../app/e2e/client';
 import { settings } from '../../../../app/settings/client';
 import { t } from '../../../../app/utils/lib/i18n';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { MAX_MULTIPLE_UPLOADED_FILES } from '../../constants';
 import { dispatchToastMessage } from '../../toast';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI, UploadsAPI } from '../ChatAPI';
@@ -26,7 +27,7 @@ export const uploadFiles = async (
 	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
 ): Promise<void> => {
 	// TODO: calculate max files based on the new array and the files in the queue
-	if (uploadsStore.get().length > 10) {
+	if (uploadsStore.get().length > MAX_MULTIPLE_UPLOADED_FILES) {
 		return dispatchToastMessage({
 			type: 'error',
 			message: t('You_cant_upload_more_than__count__files', { count: 10 }),
@@ -148,7 +149,7 @@ export const uploadFiles = async (
 						name: file.name,
 						type: file.type,
 						size: file.size,
-						// "format": "png"
+						format: getFileExtension(file.name),
 					},
 				] as IMessage['files'];
 

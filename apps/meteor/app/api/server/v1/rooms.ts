@@ -341,18 +341,8 @@ API.v1.addRoute(
 		async post() {
 			const { fileName } = this.bodyParams;
 
-			if (!fileName) {
-				throw new Error('invalid-file-name');
-			}
-
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
 				return API.v1.forbidden();
-			}
-
-			const file = await Uploads.findOneById(this.urlParams.fileId);
-
-			if (!file) {
-				throw new Error('invalid-file');
 			}
 
 			const { matchedCount } = await Uploads.updateFileNameById(this.urlParams.fileId, fileName);

@@ -228,14 +228,11 @@ export const sendMessage = async (
 		return false;
 	}
 
-	if (uploadIdsToConfirm !== undefined) {
+	if (uploadIdsToConfirm !== undefined && !isE2EEMessage(message)) {
 		const filesToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
-
-		if (!isE2EEMessage(message)) {
-			const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
-			message.files = files;
-			message.attachments = attachments;
-		}
+		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
+		message.files = files;
+		message.attachments = attachments;
 	}
 
 	await validateMessage(message, room, user);

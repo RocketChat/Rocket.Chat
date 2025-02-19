@@ -9,6 +9,7 @@ import type {
 	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -30,6 +31,8 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	}
 }
 
+const logger = new Logger('sendFileMessage');
+
 type parseMultipleFilesIntoMessageAttachmentsResult = { files: FileProp[]; attachments: MessageAttachment[] };
 export const parseMultipleFilesIntoMessageAttachments = async (
 	filesToConfirm: Partial<IUpload>[],
@@ -49,7 +52,9 @@ export const parseMultipleFilesIntoMessageAttachments = async (
 						result.files.push(...files);
 						result.attachments.push(...attachments);
 					} catch (error) {
-						console.error('Error processing file:', file, error);
+						// Not an important error, it should not happen and if it happens wil affect the attachment
+						// preview in the message object only
+						logger.warn('Error processing file:', file, error);
 					}
 				})(),
 			);

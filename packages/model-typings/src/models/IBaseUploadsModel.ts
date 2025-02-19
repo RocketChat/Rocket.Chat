@@ -12,7 +12,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> | undefined;
 
-	findByIds(_id: string[], options?: FindOptions<T>): FindCursor<T>;
+	findByIds(_ids: string[], options?: FindOptions<T>): FindCursor<T>;
 
 	findOneByName(name: string): Promise<T | null>;
 
