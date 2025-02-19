@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
-Removes deprecated GCM push notifications feature
+Switches from GCM (unsupported) to FCM as the default push notification service for custom mobile apps
