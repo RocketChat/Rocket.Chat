@@ -184,7 +184,6 @@ export class AppMessagesConverter {
 
 		let _id = message.id;
 		let ts = message.createdAt;
-		let _updatedAt = message.updatedAt;
 
 		if (!isPartial) {
 			if (!message.id) {
@@ -193,10 +192,6 @@ export class AppMessagesConverter {
 
 			if (!message.createdAt) {
 				ts = new Date();
-			}
-
-			if (!message.updatedAt) {
-				_updatedAt = new Date();
 			}
 		}
 
@@ -207,7 +202,7 @@ export class AppMessagesConverter {
 			u,
 			msg: message.text,
 			ts,
-			_updatedAt,
+			_updatedAt: message.updatedAt,
 			...(editedBy && { editedBy }),
 			...('editedAt' in message && { editedAt: message.editedAt }),
 			...('emoji' in message && { emoji: message.emoji }),
