@@ -77,6 +77,14 @@ export class HomeChannel {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
 
+	get audioVideoConfRingtone(): Locator {
+		return this.page.locator('#custom-sound-ringtone');
+	}
+
+	get audioVideoConfDialtone(): Locator {
+		return this.page.locator('#custom-sound-dialtone');
+	}
+
 	get dialogEnterE2EEPassword(): Locator {
 		return this.page.getByRole('dialog', { name: 'Enter E2EE password' });
 	}
@@ -115,5 +123,9 @@ export class HomeChannel {
 
 	get btnNotPossibleDecodeKey(): Locator {
 		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
+	}
+
+	get audioRecorder(): Locator {
+		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
 	}
 }
