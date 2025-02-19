@@ -75,5 +75,6 @@ runs:
       run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn
 
     - name: debug
+      shell: bash
       run: |
         ls packages/apps-engine/.deno-cache
