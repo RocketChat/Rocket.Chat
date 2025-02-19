@@ -1,5 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
@@ -52,18 +53,34 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
+			let usersInserted = 0;
+			const activeUsers = await Users.getActiveLocalUserCount();
+			const maxUsersAllowed = License.getMaxActiveUsers();
 
 			await converter.convertData({
-				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
-					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
+				beforeImportFn: (async ({ options, data }: IImportRecord): Promise<boolean> => {
+					if (ldap.options.groupFilterEnabled && ldap.options.groupFilterGroupMemberFormat) {
+						const memberFormat = ldap.options.groupFilterGroupMemberFormat
+							?.replace(/#{username}/g, options?.username || '#{username}')
+							.replace(/#{userdn}/g, options?.dn || '#{userdn}');
+
+						if (!membersOfGroupFilter.includes(memberFormat)) {
+							return false;
+						}
+					}
+
+					const userExists = await converter.findExistingUser(data as IImportUser);
+					if (userExists) {
 						return true;
 					}
 
-					const memberFormat = ldap.options.groupFilterGroupMemberFormat
-						?.replace(/#{username}/g, options?.username || '#{username}')
-						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
+					if (this.willExceedLicenseLimit(activeUsers, usersInserted, maxUsersAllowed)) {
+						logger.info('Max users allowed reached, skipping import of user ', (data as IImportUser).username);
+						return false;
+					}
 
-					return membersOfGroupFilter.includes(memberFormat);
+					usersInserted++;
+					return true;
 				}) as ImporterBeforeImportCallback,
 				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
 					if (data._id) {
@@ -81,6 +98,10 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		ldap.disconnect();
+	}
+
+	public static willExceedLicenseLimit(activeUsers: number, usersInserted: number, maxUsersAllowed: number): boolean {
+		return activeUsers + usersInserted >= maxUsersAllowed;
 	}
 
 	public static async syncAvatars(): Promise<void> {
