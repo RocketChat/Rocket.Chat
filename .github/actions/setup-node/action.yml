@@ -77,4 +77,4 @@ runs:
     - name: debug
       shell: bash
       run: |
-        ls packages/apps-engine/.deno-cache
+        ls packages/apps-engine
