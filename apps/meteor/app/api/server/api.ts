@@ -705,7 +705,7 @@ export class APIClass<TBasePath extends string = ''> {
 				this._routes.push({
 					path: route,
 					options: _options,
-					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, string>,
+					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as unknown as Record<string, string>,
 				});
 			});
 		});
@@ -1014,7 +1014,7 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 Meteor.startup(() => {
-	(WebApp.connectHandlers as ReturnType<typeof express>).use(
+	(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
 			.use((_req, res, next) => {
 				res.removeHeader('X-Powered-By');
@@ -1029,7 +1029,7 @@ Meteor.startup(() => {
 	);
 });
 
-(WebApp.connectHandlers as ReturnType<typeof express>)
+(WebApp.connectHandlers as unknown as ReturnType<typeof express>)
 	.use(
 		express.json({
 			limit: '50mb',
