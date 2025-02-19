@@ -543,7 +543,7 @@ describe('[Direct Messages]', () => {
 				.end(done);
 		});
 
-		it('should should sort by ts by default', async () => {
+		it('should sort by ts by default', async () => {
 			await request
 				.get(api('im.messages'))
 				.set(testUserCredentials)
@@ -562,7 +562,7 @@ describe('[Direct Messages]', () => {
 				});
 		});
 
-		it('should should allow custom sorting', async () => {
+		it('should allow custom sorting', async () => {
 			const { messages } = (
 				await request
 					.get(api('im.messages'))
