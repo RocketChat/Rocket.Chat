@@ -265,7 +265,8 @@ API.v1.addRoute(
 				if (fields.userId) {
 					user = await Users.findOneById(fields.userId, { projection: { username: 1 } });
 				} else if (fields.username) {
-					user = await Users.findOneByUsernameIgnoringCase(fields.username, { projection: { username: 1 } });
+					// TODO: Fix these types. We're passing a projection but the `user` variable is expecting way more data than this projection
+					user = await Users.findOneByUsernameIgnoringCase<IUser>(fields.username, { projection: { username: 1 } });
 				}
 
 				if (!user) {
