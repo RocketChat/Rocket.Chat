@@ -60,7 +60,7 @@ export class AppsRestApi {
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
+		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
@@ -383,7 +383,7 @@ export class AppsRestApi {
 					}
 
 					if (!buff) {
-						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
+						return API.v1.failure({ error: 'app_file_error', message: 'Failed to get a file to install for the App. ' });
 					}
 
 					// Used mostly in Cloud hosting for security reasons
@@ -400,11 +400,12 @@ export class AppsRestApi {
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
-						return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
+						return API.v1.failure({ error: 'app_storage_error', status: 'storage_error', messages: [aff.getStorageError()] });
 					}
 
 					if (aff.hasAppUserError()) {
 						return API.v1.failure({
+							error: 'app_user_error',
 							status: 'app_user_error',
 							messages: [(aff.getAppUserError() as Record<string, any>).message],
 							payload: { username: (aff.getAppUserError() as Record<string, any>).username },
@@ -853,6 +854,8 @@ export class AppsRestApi {
 							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 							return API.v1.internalError();
 						}
+
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} else {
 						isPrivateAppUpload = true;
 

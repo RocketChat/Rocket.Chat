@@ -3,6 +3,8 @@ import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
+import { createFakeMessage, createFakeUser } from '../../../../mocks/data';
+
 const models = {
 	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
 	LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
@@ -13,10 +15,18 @@ const models = {
 	},
 };
 
-const { markRoomResponded } = proxyquire.load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
+const settingsGetMock = {
+	get: Sinon.stub(),
+};
+
+const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
+
+const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
 	'../../../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
 	'../../../lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
 	'@rocket.chat/models': models,
+	'../../../settings/server': { settings: settingsGetMock },
+	'../lib/isMessageFromBot': isMessageFromBotMock,
 });
 
 describe('markRoomResponded', () => {
@@ -27,6 +37,8 @@ describe('markRoomResponded', () => {
 		models.LivechatRooms.getVisitorActiveForPeriodUpdateQuery.reset();
 		models.LivechatRooms.getAgentLastMessageTsUpdateQuery.reset();
 		models.LivechatRooms.getResponseByRoomIdUpdateQuery.reset();
+
+		settingsGetMock.get.reset();
 	});
 
 	it('should return void if message is system message', async () => {
@@ -62,6 +74,21 @@ describe('markRoomResponded', () => {
 		const room = {};
 
 		const res = await markRoomResponded(message, room, {});
+
+		expect(res).to.be.undefined;
+	});
+
+	it('should return void if message is from bot and setting is enabled', async () => {
+		settingsGetMock.get.withArgs('Omnichannel_Metrics_Ignore_Automatic_Messages').resolves(true);
+
+		const user = createFakeUser({ roles: ['bot'] });
+
+		isMessageFromBotMock.isMessageFromBot.resolves(user);
+
+		const message = createFakeMessage();
+		const room = {};
+
+		const res = await markRoomResponded(message, room, user);
 
 		expect(res).to.be.undefined;
 	});
