@@ -25,6 +25,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
+import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
+import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -623,7 +626,7 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 600000,
+			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
 		validateParams: isUserRegisterParamsPOST,
 	},
@@ -793,11 +796,11 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			const { tokenName, bypassTwoFactor } = this.bodyParams;
+			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -813,7 +816,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
@@ -852,9 +855,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			await Meteor.callAsync('personalAccessTokens:removeToken', {
-				tokenName,
-			});
+			await removePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success();
 		},
@@ -888,15 +889,15 @@ API.v1.addRoute(
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-				if (!userTokens) {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+				if (!user) {
 					return;
 				}
 
 				return {
 					clientAction: 'updated',
 					id: this.user._id,
-					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
 				};
 			});
 
@@ -911,6 +912,19 @@ API.v1.addRoute(
 	{
 		async post() {
 			await Users.disableEmail2FAByUserId(this.userId);
+
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
