@@ -4,6 +4,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Invites, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -67,78 +68,81 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
-export const _setUsername = async function (userId: string, u: string, fullUser: IUser, updater?: Updater<IUser>): Promise<unknown> {
-	const username = u.trim();
+export const _setUsernameWithSession = (session?: ClientSession) =>
+	async function (userId: string, u: string, fullUser: IUser, updater?: Updater<IUser>): Promise<unknown> {
+		const username = u.trim();
 
-	if (!userId || !username) {
-		return false;
-	}
-
-	if (!validateUsername(username)) {
-		return false;
-	}
-
-	const user = fullUser || (await Users.findOneById(userId));
-	// User already has desired username, return
-	if (user.username === username) {
-		return user;
-	}
-	const previousUsername = user.username;
-	// Check username availability or if the user already owns a different casing of the name
-	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!(await checkUsernameAvailability(username))) {
+		if (!userId || !username) {
 			return false;
 		}
-	}
-	// If first time setting username, send Enrollment Email
-	try {
-		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
-			setImmediate(() => {
-				Accounts.sendEnrollmentEmail(user._id);
-			});
+
+		if (!validateUsername(username)) {
+			return false;
 		}
-	} catch (e: any) {
-		SystemLogger.error(e);
-	}
-	// Set new username*
-	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
-	await Users.setUsername(user._id, username);
-	user.username = username;
 
-	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = await getAvatarSuggestionForUser(user);
-		let avatarData;
-		let serviceName = 'gravatar';
+		const user = fullUser || (await Users.findOneById(userId));
+		// User already has desired username, return
+		if (user.username === username) {
+			return user;
+		}
+		const previousUsername = user.username;
+		// Check username availability or if the user already owns a different casing of the name
+		if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
+			if (!(await checkUsernameAvailability(username))) {
+				return false;
+			}
+		}
+		// If first time setting username, send Enrollment Email
+		try {
+			if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+				setImmediate(() => {
+					Accounts.sendEnrollmentEmail(user._id);
+				});
+			}
+		} catch (e: any) {
+			SystemLogger.error(e);
+		}
+		// Set new username*
+		// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
+		await Users.setUsername(user._id, username, { session });
+		user.username = username;
 
-		for (const service of Object.keys(avatarSuggestions)) {
-			avatarData = avatarSuggestions[service];
-			if (service !== 'gravatar') {
-				serviceName = service;
-				break;
+		if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
+			const avatarSuggestions = await getAvatarSuggestionForUser(user);
+			let avatarData;
+			let serviceName = 'gravatar';
+
+			for (const service of Object.keys(avatarSuggestions)) {
+				avatarData = avatarSuggestions[service];
+				if (service !== 'gravatar') {
+					serviceName = service;
+					break;
+				}
+			}
+
+			if (avatarData) {
+				await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater);
 			}
 		}
 
-		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater);
+		// If it's the first username and the user has an invite Token, then join the invite room
+		if (!previousUsername && user.inviteToken) {
+			const inviteData = await Invites.findOneById(user.inviteToken);
+			if (inviteData?.rid) {
+				await addUserToRoom(inviteData.rid, user);
+			}
 		}
-	}
 
-	// If it's the first username and the user has an invite Token, then join the invite room
-	if (!previousUsername && user.inviteToken) {
-		const inviteData = await Invites.findOneById(user.inviteToken);
-		if (inviteData?.rid) {
-			await addUserToRoom(inviteData.rid, user);
-		}
-	}
+		void api.broadcast('user.nameChanged', {
+			_id: user._id,
+			name: user.name,
+			username: user.username,
+		});
 
-	void api.broadcast('user.nameChanged', {
-		_id: user._id,
-		name: user.name,
-		username: user.username,
-	});
+		return user;
+	};
 
-	return user;
-};
+export const _setUsername = _setUsernameWithSession();
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	async 0() {
