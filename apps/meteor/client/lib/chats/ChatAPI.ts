@@ -99,11 +99,14 @@ export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
+	clear(): void;
 	cancel(id: Upload['id']): void;
+	removeUpload(id: Upload['id']): void;
+	editUploadFileName: (id: Upload['id'], fileName: string) => void;
 	send(
 		file: File,
 		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	): Promise<void>;
 };
@@ -114,6 +117,7 @@ export type ChatAPI = {
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
 	readonly data: DataAPI;
 	readonly uploads: UploadsAPI;
+	readonly threadUploads: UploadsAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
 		toPreviousMessage(): Promise<void>;
@@ -144,7 +148,16 @@ export type ChatAPI = {
 	ActionManager: IActionManager;
 
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
+		readonly uploadFiles: ({
+			files,
+			uploadsStore,
+			resetFileInput,
+		}: {
+			files: readonly File[];
+			uploadsStore: UploadsAPI;
+			resetFileInput?: () => void;
+		}) => Promise<void>;
+		readonly confirmFiles: () => Promise<void>;
 		readonly sendMessage: ({
 			text,
 			tshow,

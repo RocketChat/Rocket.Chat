@@ -5,6 +5,7 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
+import { confirmFiles } from '../../../../client/lib/chats/flows/confirmFiles';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
@@ -41,6 +42,8 @@ export class ChatMessages implements ChatAPI {
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
+
+	public threadUploads: UploadsAPI;
 
 	public ActionManager: any;
 
@@ -147,7 +150,8 @@ export class ChatMessages implements ChatAPI {
 		const { rid, tmid } = params;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
-		this.uploads = createUploadsAPI({ rid, tmid });
+		this.uploads = createUploadsAPI({ rid });
+		this.threadUploads = createUploadsAPI({ rid, tmid });
 		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {
@@ -175,6 +179,7 @@ export class ChatMessages implements ChatAPI {
 
 		this.flows = {
 			uploadFiles: uploadFiles.bind(null, this),
+			confirmFiles: confirmFiles.bind(null, this),
 			sendMessage: sendMessage.bind(this, this),
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),

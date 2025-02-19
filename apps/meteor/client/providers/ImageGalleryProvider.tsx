@@ -23,8 +23,10 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 				return setSingleImageUrl(target.dataset.id);
 			}
 			if (target?.classList.contains('gallery-item')) {
+				const id1 = target.dataset.src?.split('/file-upload/')[1].split('/')[0];
+
 				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(target.dataset.id || id);
+				return setImageId(id1 || target.dataset.id || id);
 			}
 			if (target?.classList.contains('gallery-item-container')) {
 				return setImageId(target.dataset.id);

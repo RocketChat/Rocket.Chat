@@ -91,6 +91,37 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
+	confirmTemporaryFiles(fileIds: string[], userId: string): Promise<Document | UpdateResult> | undefined {
+		if (!fileIds.length) {
+			return;
+		}
+
+		const filter = {
+			_id: {
+				$in: fileIds,
+			},
+			userId,
+		};
+
+		const update: Filter<T> = {
+			$unset: {
+				expiresAt: 1,
+			},
+		};
+
+		return this.updateMany(filter, update);
+	}
+
+	findByIds(_id: string[], options?: FindOptions<T>): FindCursor<T> {
+		const query = {
+			_id: {
+				$in: _id,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	async findOneByName(name: string): Promise<T | null> {
 		return this.findOne({ name });
 	}
