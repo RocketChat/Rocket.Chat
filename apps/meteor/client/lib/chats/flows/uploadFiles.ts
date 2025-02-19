@@ -60,7 +60,7 @@ export const uploadFiles = async (
 		uploadNextFile();
 	};
 
-	const submitToUpload = async (file: File, fileName: string, description?: string): Promise<void> => {
+	const submitToUpload = async (file: File, fileName: string): Promise<void> => {
 		Object.defineProperty(file, 'name', {
 			writable: true,
 			value: fileName,
@@ -70,19 +70,19 @@ export const uploadFiles = async (
 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 		if (!e2eRoom) {
-			uploadFile(file, { description });
+			uploadFile(file);
 			return;
 		}
 
 		if (!settings.get('E2E_Enable_Encrypt_Files')) {
-			uploadFile(file, { description });
+			uploadFile(file);
 			return;
 		}
 
 		const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 		if (!shouldConvertSentMessages) {
-			uploadFile(file, { description });
+			uploadFile(file);
 			return;
 		}
 
@@ -97,7 +97,6 @@ export const uploadFiles = async (
 				const attachment: FileAttachmentProps = {
 					title: file.name,
 					type: 'file',
-					description,
 					title_link: fileUrl,
 					title_link_download: true,
 					encryption: {
@@ -196,7 +195,7 @@ export const uploadFiles = async (
 			return;
 		}
 
-		submitToUpload(file, file.name, chat.composer?.text ?? '');
+		submitToUpload(file, file.name);
 	};
 
 	uploadNextFile();

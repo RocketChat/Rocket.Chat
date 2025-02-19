@@ -84,10 +84,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	send = async (
 		file: File,
 		{
-			description,
 			msg,
-			// rid,
-			// tmid,
+			rid,
+			tmid,
 			t,
 		}: {
 			description?: string;
@@ -195,6 +194,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						);
 					}
 				};
+
+				if (this.uploads.length) {
+					UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+				}
 
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
