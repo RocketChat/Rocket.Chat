@@ -144,7 +144,7 @@ export class AppMessagesConverter {
 
 		let rid;
 		if (message.room?.id) {
-			const room = await Rooms.findOneById(message.room.id, { projection: {_id: 1}});
+			const room = await Rooms.findOneById(message.room.id, { projection: { _id: 1 } });
 			rid = room?._id;
 		}
 
