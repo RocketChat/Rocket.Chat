@@ -9,6 +9,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { ZodError } from 'zod';
 
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
@@ -149,6 +150,11 @@ export class AppsRestApi {
 							return API.v1.failure({ error: err.message });
 						}
 
+						if (err instanceof ZodError) {
+							orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
+						}
+
 						return API.v1.internalError();
 					}
 				},
@@ -239,6 +245,11 @@ export class AppsRestApi {
 
 							if (err instanceof MarketplaceAppsError) {
 								return API.v1.failure({ error: err.message });
+							}
+
+							if (err instanceof ZodError) {
+								orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
+								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
 							}
 
 							return API.v1.internalError();
