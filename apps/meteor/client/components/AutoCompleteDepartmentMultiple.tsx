@@ -15,7 +15,7 @@ type AutoCompleteDepartmentMultipleProps = {
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
 	enabled?: boolean;
-	withCheckbox: boolean;
+	withCheckbox?: boolean;
 } & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
 
 const AutoCompleteDepartmentMultiple = ({
