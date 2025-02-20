@@ -9,6 +9,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { ZodError } from 'zod';
 
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
@@ -26,6 +27,7 @@ import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
+import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
 import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -60,7 +62,7 @@ export class AppsRestApi {
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as ReturnType<typeof express>).use(this.api.router.router);
+		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
@@ -124,6 +126,11 @@ export class AppsRestApi {
 							return API.v1.failure({ error: err.message });
 						}
 
+						if (err instanceof ZodError) {
+							orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', err.issues);
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
+						}
+
 						return API.v1.internalError();
 					}
 				},
@@ -135,27 +142,26 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-							return API.v1.failure();
+						const categories = await fetchMarketplaceCategories();
+						return API.v1.success(categories);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
-					} catch (e: any) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
 
-					return API.v1.success(result);
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure({ error: err.message });
+						}
+
+						if (err instanceof ZodError) {
+							orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
+						}
+
+						return API.v1.internalError();
+					}
 				},
 			},
 		);
@@ -227,32 +233,37 @@ export class AppsRestApi {
 								return API.v1.failure({ error: e.message });
 							}
 
+							if (e instanceof ZodError) {
+								orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', e.issues);
+								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
+							}
+
 							return API.v1.internalError();
 						}
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
-						const headers = getDefaultHeaders();
-						const token = await getWorkspaceAccessToken();
-						if (token) {
-							headers.Authorization = `Bearer ${token}`;
-						}
-
-						let result;
 						try {
-							const request = await fetch(`${baseUrl}/v1/categories`, { headers });
-							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
-								return API.v1.failure();
+							const categories = await fetchMarketplaceCategories();
+							return API.v1.success(categories);
+						} catch (err) {
+							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
+							if (err instanceof MarketplaceConnectionError) {
+								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
-							result = await request.json();
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e);
+
+							if (err instanceof MarketplaceAppsError) {
+								return API.v1.failure({ error: err.message });
+							}
+
+							if (err instanceof ZodError) {
+								orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
+								return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
+							}
+
 							return API.v1.internalError();
 						}
-
-						return API.v1.success(result);
 					}
 
 					if (
@@ -854,6 +865,8 @@ export class AppsRestApi {
 							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 							return API.v1.internalError();
 						}
+
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} else {
 						isPrivateAppUpload = true;
 
