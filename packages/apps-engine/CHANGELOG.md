@@ -1,5 +1,19 @@
 # @rocket.chat/apps-engine
 
+## 1.48.2
+
+### Patch Changes
+
+-   ([#35283](https://github.com/RocketChat/Rocket.Chat/pull/35283) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes deno dependency caching for the docker image builds
+
+-   ([#35284](https://github.com/RocketChat/Rocket.Chat/pull/35284) by [@dionisio-bot](https://github.com/dionisio-bot)) Adds simple app subprocess metrics report
+
+-   ([#35284](https://github.com/RocketChat/Rocket.Chat/pull/35284) by [@dionisio-bot](https://github.com/dionisio-bot)) Attempts to restart an app subprocess if the spawn command fails
+
+-   ([#35284](https://github.com/RocketChat/Rocket.Chat/pull/35284) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue while collecting the error message from a failed restart attempt of an app subprocess
+
+-   ([#35284](https://github.com/RocketChat/Rocket.Chat/pull/35284) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevents app:getStatus requests from timing out in some cases
+
 ## 1.48.1
 
 ### Patch Changes
