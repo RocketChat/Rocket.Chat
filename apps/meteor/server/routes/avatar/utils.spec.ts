@@ -7,10 +7,6 @@ class CookiesMock {
 	public get = (_key: any, value: any) => value;
 }
 
-const DOMPurifyMock = {
-	sanitize: (input: string) => input,
-};
-
 const mocks = {
 	settingsGet: sinon.stub(),
 	findOneByIdAndLoginToken: sinon.stub(),
@@ -50,7 +46,6 @@ const {
 		},
 	},
 	'sharp': () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
-	'dompurify': DOMPurifyMock,
 });
 
 describe('#serveAvatarFile()', () => {
