@@ -49,6 +49,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatRoomTransferred:
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
+				case AppInterface.IPostLivechatDepartmentRemoved:
+				case AppInterface.IPostLivechatDepartmentDisabled:
 					return 'livechatEvent';
 				case AppInterface.IPostUserCreated:
 				case AppInterface.IPostUserUpdated:
@@ -196,6 +198,16 @@ export class AppListenerBridge {
 					.getManager()
 					.getListenerManager()
 					.executeListener(inte, await this.orch.getConverters().get('rooms').convertById(data));
+			case AppInterface.IPostLivechatDepartmentDisabled:
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, this.orch.getConverters().get('departments').convertToApp(data));
+			case AppInterface.IPostLivechatDepartmentRemoved:
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, await this.orch.getConverters().get('departments').convertToApp(data));
 			default:
 				const room = await this.orch.getConverters().get('rooms').convertRoom(data);
 
