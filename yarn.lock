@@ -8609,7 +8609,6 @@ __metadata:
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
     "@types/node": "npm:~20.17.8"
-    "@types/node-gcm": "npm:^1.0.5"
     "@types/node-rsa": "npm:^1.1.4"
     "@types/nodemailer": "npm:^6.4.16"
     "@types/oauth2-server": "npm:^3.0.18"
@@ -8759,7 +8758,6 @@ __metadata:
     nats: "npm:^2.28.2"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
-    node-gcm: "npm:1.1.4"
     node-rsa: "npm:^1.1.1"
     nodemailer: "npm:^6.9.16"
     nyc: "npm:^17.1.0"
@@ -12322,13 +12320,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-gcm@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@types/node-gcm@npm:1.0.5"
-  checksum: 10/5448aa9de99b23700a2cc243483ed08bffd988a91d7431ed193dfbb55fc5c087c58310f728992a83f0e653b9edf9220434b62a0fabc5c7f417067ca805c1f92c
-  languageName: node
-  linkType: hard
-
 "@types/node-rsa@npm:^1.1.4":
   version: 1.1.4
   resolution: "@types/node-rsa@npm:1.1.4"
@@ -14952,17 +14943,6 @@ __metadata:
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10/b7a5f660ea53ba9c2a745bf5ad77ad8bf4f1338e13ccc3f9f09f810267d6c638c03dac88b55dae8dc98b79c57d2d6835be651d58d2af97c174f43d289a9fd007
-  languageName: node
-  linkType: hard
-
-"axios@npm:~1.6.8":
-  version: 1.6.8
-  resolution: "axios@npm:1.6.8"
-  dependencies:
-    follow-redirects: "npm:^1.15.6"
-    form-data: "npm:^4.0.0"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10/3f9a79eaf1d159544fca9576261ff867cbbff64ed30017848e4210e49f3b01e97cf416390150e6fdf6633f336cd43dc1151f890bbd09c3c01ad60bb0891eee63
   languageName: node
   linkType: hard
 
@@ -18170,7 +18150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^3.1.0, debug@npm:^3.2.7":
+"debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
   dependencies:
@@ -27901,17 +27881,6 @@ __metadata:
   version: 1.3.1
   resolution: "node-forge@npm:1.3.1"
   checksum: 10/05bab6868633bf9ad4c3b1dd50ec501c22ffd69f556cdf169a00998ca1d03e8107a6032ba013852f202035372021b845603aeccd7dfcb58cdb7430013b3daa8d
-  languageName: node
-  linkType: hard
-
-"node-gcm@npm:1.1.4":
-  version: 1.1.4
-  resolution: "node-gcm@npm:1.1.4"
-  dependencies:
-    axios: "npm:~1.6.8"
-    debug: "npm:^3.1.0"
-    lodash: "npm:^4.17.21"
-  checksum: 10/4654838afd5ade1c5943bada8bc6208c4d2c27dd43c99efd68bb06ae8880cdc25bdb2ab457e381b85c2240daeb7b35fbd85351cccbcb0afe5b3f9d92c8a50572
   languageName: node
   linkType: hard
 
