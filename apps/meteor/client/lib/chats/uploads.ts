@@ -1,11 +1,11 @@
-import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import fileSize from 'filesize';
 
 import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { getErrorMessage } from '../errorHandling';
-import type { UploadsAPI } from './ChatAPI';
+import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import type { Upload } from './Upload';
 import { settings } from '../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../app/utils/client';
@@ -59,6 +59,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						return upload;
 					}
 
+					// TODO reencrypt file
 					return { ...upload, file: new File([upload.file], fileName, upload.file) };
 				}),
 			);
@@ -81,23 +82,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	clear = () => this.set([]);
 
-	send = async (
-		file: File,
-		{
-			msg,
-			rid,
-			tmid,
-			t,
-		}: {
-			description?: string;
-			msg?: string;
-			rid: string;
-			tmid?: string;
-			t?: IMessage['t'];
-		},
-		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-	): Promise<void> => {
+	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
 		const maxFileSize = settings.get('FileUpload_MaxFileSize');
 		const invalidContentType = !fileUploadIsValidContentType(file.type);
 		const id = Random.id();
@@ -106,9 +91,9 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			...this.uploads,
 			{
 				id,
-				file: new File([file], fileContent?.raw.name || file.name, file),
+				file: encrypted ? encrypted.rawFile : file,
 				percentage: 0,
-				url: URL.createObjectURL(file),
+				encryptedFile: encrypted?.encryptedFile,
 			},
 		]);
 
@@ -131,8 +116,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					`/v1/rooms.media/${this.rid}`,
 					{
 						file,
-						...(fileContent && {
-							content: JSON.stringify(fileContent.encrypted),
+						...(encrypted && {
+							content: JSON.stringify(encrypted.fileContent.encrypted),
 						}),
 					},
 					{
@@ -196,7 +181,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				};
 
 				if (this.uploads.length) {
-					UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+					UserAction.performContinuously(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 				}
 
 				this.once(`cancelling-${id}`, () => {
@@ -224,7 +209,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 			}
 		}
-	};
+	}
 }
 
 export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>

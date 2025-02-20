@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
-import type { Upload } from './Upload';
+import type { Upload, EncryptedFile } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
@@ -95,6 +95,12 @@ export type DataAPI = {
 	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
+export type EncryptedFileUploadContent = {
+	rawFile: File;
+	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] | undefined };
+	encryptedFile: EncryptedFile;
+};
+
 export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
@@ -103,12 +109,8 @@ export type UploadsAPI = {
 	cancel(id: Upload['id']): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
-	send(
-		file: File,
-		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
-	): Promise<void>;
+	send(file: File, encrypted?: never): Promise<void>;
+	send(file: File, encrypted: EncryptedFileUploadContent): Promise<void>;
 };
 
 export type ChatAPI = {
