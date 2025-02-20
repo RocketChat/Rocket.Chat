@@ -20,7 +20,7 @@ import {
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
 import { logger } from './logger';
-import { getModules, hasModule } from './modules';
+import { getExternalModules, getModuleDefinition, getModules, hasModule } from './modules';
 import { showLicense } from './showLicense';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
@@ -31,6 +31,8 @@ interface License {
 	validateFormat: typeof validateFormat;
 	hasModule: typeof hasModule;
 	getModules: typeof getModules;
+	getModuleDefinition: typeof getModuleDefinition;
+	getExternalModules: typeof getExternalModules;
 	getTags: typeof getTags;
 	overwriteClassOnLicense: typeof overwriteClassOnLicense;
 	setLicenseLimitCounter: typeof setLicenseLimitCounter;
@@ -89,6 +91,10 @@ export class LicenseImp extends LicenseManager implements License {
 	hasModule = hasModule;
 
 	getModules = getModules;
+
+	getModuleDefinition = getModuleDefinition;
+
+	getExternalModules = getExternalModules;
 
 	getTags = getTags;
 

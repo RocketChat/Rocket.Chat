@@ -27,7 +27,10 @@ export class CustomOAuth implements IOAuthProvider {
 
 	public responseType: string;
 
-	constructor(public readonly name: string, options: OauthConfig) {
+	constructor(
+		public readonly name: string,
+		options: OauthConfig,
+	) {
 		this.name = name;
 		if (!Match.test(this.name, String)) {
 			throw new Meteor.Error('CustomOAuth: Name is required and must be String');

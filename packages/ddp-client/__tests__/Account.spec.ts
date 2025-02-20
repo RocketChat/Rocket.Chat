@@ -1,7 +1,7 @@
 import WS from 'jest-websocket-mock';
 
-import { DDPSDK } from '../src/DDPSDK';
 import { handleConnection, handleMethod } from './helpers';
+import { DDPSDK } from '../src/DDPSDK';
 
 let server: WS;
 

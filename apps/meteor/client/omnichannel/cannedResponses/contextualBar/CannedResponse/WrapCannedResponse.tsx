@@ -1,10 +1,10 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, MouseEventHandler } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
-import CreateCannedResponse from '../../modals/CreateCannedResponse';
 import CannedResponse from './CannedResponse';
+import CreateCannedResponse from '../../modals/CreateCannedResponse';
 
 type WrapCannedResponseProps = {
 	allowUse: boolean;

@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/LivechatTyped';
+import { saveDepartment } from '../lib/departmentsLib';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -30,12 +30,13 @@ declare module '@rocket.chat/ddp-client' {
 						order?: number | undefined;
 				  }[]
 				| undefined,
+			departmentUnit?: { _id?: string },
 		) => ILivechatDepartment;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
+	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents, departmentUnit) {
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -43,6 +44,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Livechat.saveDepartment(_id, departmentData, { upsert: departmentAgents });
+		return saveDepartment(uid, _id, departmentData, { upsert: departmentAgents }, departmentUnit);
 	},
 });

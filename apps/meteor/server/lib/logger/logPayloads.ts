@@ -19,11 +19,11 @@ export const getMethodArgs =
 				return {
 					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
 				};
-		  };
+			};
 
 export const getRestPayload =
 	LOG_REST_PAYLOAD === 'false' && LOG_REST_METHOD_PAYLOADS === 'false'
 		? (): null => null
 		: (payload: unknown): { payload: unknown } => ({
 				payload,
-		  });
+			});

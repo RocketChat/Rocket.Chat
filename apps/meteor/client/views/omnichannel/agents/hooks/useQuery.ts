@@ -1,3 +1,4 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { useMemo } from 'react';
 
@@ -15,16 +16,18 @@ export const useQuery = (
 	},
 	[column, direction]: [string, 'asc' | 'desc'],
 ): PaginatedRequest<{ text: string }> =>
-	useMemo(
-		() => ({
-			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-			text,
-			sort: JSON.stringify({
-				[column]: sortDir(direction),
-				usernames: column === 'name' ? sortDir(direction) : undefined,
+	useDebouncedValue(
+		useMemo(
+			() => ({
+				text,
+				sort: JSON.stringify({
+					[column]: sortDir(direction),
+					usernames: column === 'name' ? sortDir(direction) : undefined,
+				}),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
 			}),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[text, itemsPerPage, current, column, direction],
+			[text, itemsPerPage, current, column, direction],
+		),
+		500,
 	);

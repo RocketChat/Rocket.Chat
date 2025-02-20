@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-import * as constants from '../config/constants';
 import type { API } from './test';
+import * as constants from '../config/constants';
 
 export async function registerUser(api: API): Promise<string> {
 	const username = faker.string.uuid();

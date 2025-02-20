@@ -31,7 +31,7 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 	const department = room.departmentId
 		? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(room.departmentId, {
 				projection: { businessHourId: 1 },
-		  })
+			})
 		: null;
 	if (department?.businessHourId) {
 		const businessHour = await LivechatBusinessHours.findOneById(department.businessHourId);

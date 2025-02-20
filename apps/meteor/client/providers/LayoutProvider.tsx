@@ -1,7 +1,7 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 const hiddenActionsDefaultValue = {
 	roomToolbox: [],
@@ -15,7 +15,7 @@ type LayoutProviderProps = {
 };
 
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
-	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
+	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
@@ -52,7 +52,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					showTopNavbarEmbeddedLayout,
 					sidebar: {
 						isCollapsed,
-						toggle: () => setIsCollapsed((isCollapsed) => !isCollapsed),
+						toggle: isMobile ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),

@@ -8,6 +8,7 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"jsx": "react-jsx",
+		"preserveSymlinks": true,
 	},
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }

@@ -4,9 +4,9 @@ import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
+import { useChannelsData } from './hooks/useChannelsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
-import { useChannelsData } from './hooks/useChannelsData';
 
 type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
 
@@ -25,7 +25,7 @@ const ChannelsSelectElement = ({
     (value: string | string[]) => {
       if (!Array.isArray(value)) action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (

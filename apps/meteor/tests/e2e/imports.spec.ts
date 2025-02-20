@@ -115,6 +115,8 @@ test.describe.serial('imports', () => {
 		await poAdmin.inputFile.setInputFiles(zipCsvImportDir);
 		await poAdmin.btnImport.click();
 
+		await poAdmin.findFileCheckboxByUsername('billy.billy').click();
+
 		await poAdmin.btnStartImport.click();
 
 		await expect(poAdmin.importStatusTableFirstRowCell).toBeVisible({
@@ -125,8 +127,12 @@ test.describe.serial('imports', () => {
 	test('expect all imported users to be actually listed as users', async ({ page }) => {
 		await page.goto('/admin/users');
 
-		for (const user of rowUserName) {
-			expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
+		for await (const user of rowUserName) {
+			if (user === 'billy.billy') {
+				await expect(page.locator(`tbody tr td:first-child >> text="${user}"`)).not.toBeVisible();
+			} else {
+				expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
+			}
 		}
 	});
 

@@ -15,13 +15,13 @@ const BannersGetNewSchema = {
 	properties: {
 		platform: {
 			type: 'string',
-			enum: ['1', '2'],
+			enum: ['web', 'mobile'],
 		},
 		bid: {
 			type: 'string',
 		},
 	},
-	required: ['platform', 'bid'],
+	required: ['platform'],
 	additionalProperties: false,
 };
 
@@ -30,19 +30,6 @@ export const isBannersGetNewProps = ajv.compile<BannersGetNew>(BannersGetNewSche
 type BannersId = {
 	platform: BannerPlatform;
 };
-
-const BannersIdSchema = {
-	type: 'object',
-	properties: {
-		platform: {
-			type: 'string',
-		},
-	},
-	required: ['platform'],
-	additionalProperties: false,
-};
-
-export const isBannersIdProps = ajv.compile<BannersId>(BannersIdSchema);
 
 type Banners = {
 	platform: BannerPlatform;
@@ -53,6 +40,7 @@ const BannersSchema = {
 	properties: {
 		platform: {
 			type: 'string',
+			enum: ['web', 'mobile'],
 		},
 	},
 	required: ['platform'],
@@ -70,6 +58,7 @@ const BannersDismissSchema = {
 	properties: {
 		bannerId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['bannerId'],

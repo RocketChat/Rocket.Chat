@@ -1,10 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactElement } from 'react';
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
 const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
 const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
-const PortalsWrapper = lazy(() => import('../views/root/PortalsWrapper'));
 const ModalRegion = lazy(() => import('../views/modal/ModalRegion'));
 const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
 const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
@@ -35,7 +34,6 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 				<CloudAnnouncementsRegion />
 				<BannerRegion />
 				{element}
-				<PortalsWrapper />
 				<ModalRegion />
 			</>
 		);

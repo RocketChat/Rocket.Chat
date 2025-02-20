@@ -1,14 +1,15 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
-import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
 
 const AccountIntegrationsPage = () => {
 	const { data: webdavAccountIntegrations } = useWebDAVAccountIntegrationsQuery();
@@ -25,7 +26,7 @@ const AccountIntegrationsPage = () => {
 	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const removeMutation = useRemoveWebDAVAccountIntegrationMutation({
 		onSuccess: () => {
@@ -36,11 +37,11 @@ const AccountIntegrationsPage = () => {
 		},
 	});
 
-	const handleSubmitForm = useEffectEvent(({ accountSelected }) => {
+	const handleSubmitForm = useEffectEvent(({ accountSelected }: { accountSelected: string }) => {
 		removeMutation.mutate({ accountSelected });
 	});
 
-	const accountSelectedId = useUniqueId();
+	const accountSelectedId = useId();
 
 	return (
 		<Page>

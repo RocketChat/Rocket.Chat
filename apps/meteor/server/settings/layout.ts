@@ -8,18 +8,21 @@ export const createLayoutSettings = () =>
 				public: true,
 				enterprise: true,
 				invalidValue: false,
+				modules: ['hide-watermark'],
 			});
 			await this.add('Layout_Login_Hide_Title', false, {
 				type: 'boolean',
 				public: true,
 				enterprise: true,
 				invalidValue: false,
+				modules: ['hide-watermark'],
 			});
 			await this.add('Layout_Login_Hide_Powered_By', false, {
 				type: 'boolean',
 				public: true,
 				enterprise: true,
 				invalidValue: false,
+				modules: ['hide-watermark'],
 			});
 			await this.add('Layout_Login_Template', 'horizontal-template', {
 				type: 'select',
@@ -36,6 +39,7 @@ export const createLayoutSettings = () =>
 				public: true,
 				enterprise: true,
 				invalidValue: 'horizontal-template',
+				modules: ['hide-watermark'],
 			});
 			await this.add('Accounts_ShowFormLogin', true, {
 				type: 'boolean',
@@ -170,10 +174,6 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 			await this.add('UI_Use_Real_Name', false, {
-				type: 'boolean',
-				public: true,
-			});
-			await this.add('UI_Click_Direct_Message', false, {
 				type: 'boolean',
 				public: true,
 			});

@@ -5,6 +5,14 @@ import sprintf from 'i18next-sprintf-postprocessor';
 
 import { isObject } from '../../../lib/utils/isObject';
 
+declare module 'i18next' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface TFunction {
+		(key: RocketchatI18nKeys): string;
+		(key: RocketchatI18nKeys, options: TOptions): string;
+	}
+}
+
 export const i18n = i18next.use(sprintf);
 
 export const addSprinfToI18n = function (t: (typeof i18n)['t']) {
@@ -14,7 +22,7 @@ export const addSprinfToI18n = function (t: (typeof i18n)['t']) {
 		}
 
 		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
-			return t(key, replaces[0] as TOptions);
+			return t(key, replaces[0]);
 		}
 
 		return t(key, {

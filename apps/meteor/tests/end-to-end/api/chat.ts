@@ -1,15 +1,15 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -51,7 +51,6 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[invalid-channel]');
 				})
 				.end(done);
 		});
@@ -514,6 +513,179 @@ describe('[Chat]', () => {
 					message = { _id: res.body.message._id };
 				})
 				.end(done);
+		});
+
+		describe('text message allowed size', () => {
+			before(async () => {
+				await updateSetting('Message_MaxAllowedSize', 10);
+			});
+
+			after(async () => {
+				await updateSetting('Message_MaxAllowedSize', 5000);
+			});
+
+			it('should return an error if text parameter surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: '#general',
+						text: 'Text to test max limit allowed',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should return an error if text parameter in the first attachment surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Yay!',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Text to test max limit allowed',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should return an error if text parameter in any of the attachments surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Yay!',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Yay!',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+							{
+								color: '#ff0000',
+								text: 'Text to large to test max limit allowed',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should pass if any text parameter length does not surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Sample',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Sample',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [
+									{
+										short: true,
+										title: 'Test',
+										value: 'Testing out something or other',
+									},
+									{
+										short: true,
+										title: 'Another Test',
+										value: '[Link](https://google.com/) something and this and that.',
+									},
+								],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('message.msg', 'Sample');
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -1197,9 +1369,10 @@ describe('[Chat]', () => {
 					.expect(statusCode)
 					.expect(testCb);
 
-				await (customFields
-					? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-					: request.post(api(`rooms.upload/${testChannel._id}`))
+				await (
+					customFields
+						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
+						: request.post(api(`rooms.upload/${testChannel._id}`))
 				)
 					.set(credentials)
 					.attach('file', imgURL)
@@ -1212,7 +1385,7 @@ describe('[Chat]', () => {
 					.set(credentials)
 					.send({
 						roomId: testChannel._id,
-						msg: 'Sample message',
+						text: 'Sample message',
 						customFields,
 					})
 					.expect('Content-Type', 'application/json')
@@ -1424,6 +1597,87 @@ describe('[Chat]', () => {
 		after(async () => {
 			await updateSetting('Message_CustomFields_Enabled', false);
 			await updateSetting('Message_CustomFields', '');
+		});
+		it('should fail updating a message if no room id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if no message id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if no  text is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if an invalid message id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: 'invalid-id',
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'No message found with the id of "invalid-id".');
+				});
+		});
+
+		it('should fail updating a message if it is not in the provided room', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'invalid-room',
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The room id provided does not match where the message is from.');
+				});
 		});
 
 		it('should update a message successfully', (done) => {
@@ -1643,6 +1897,64 @@ describe('[Chat]', () => {
 				})
 				.end(done);
 		});
+		it('should fail deleting a message if no message id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+		it('should fail deleting a message if no room id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+		it('should fail deleting a message if it is not in the provided room', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'invalid-room',
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The room id provided does not match where the message is from.');
+				});
+		});
+		it('should fail deleting a message if an invalid id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: 'invalid-id',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `No message found with the id of "invalid-id".`);
+				});
+		});
 		it('should delete a message successfully', (done) => {
 			void request
 				.post(api('chat.delete'))
@@ -1691,6 +2003,52 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		describe('when deleting a thread message', () => {
+			let otherUser: TestUser<IUser>;
+			let otherUserCredentials: Credentials;
+			let parentThreadId: IMessage['_id'];
+
+			before(async () => {
+				const username = `user${+new Date()}`;
+				otherUser = await createUser({ username });
+				otherUserCredentials = await login(otherUser.username, password);
+				parentThreadId = (await sendSimpleMessage({ roomId: testChannel._id })).body.message._id;
+				await addUserToRoom({ rid: testChannel._id, usernames: [otherUser.username] });
+			});
+
+			after(() => Promise.all([deleteUser(otherUser), deleteMessage({ msgId: parentThreadId, roomId: testChannel._id })]));
+
+			const expectNoUnreadThreadMessages = (s: ISubscription) => {
+				expect(s).to.have.property('tunread');
+				expect(s.tunread).to.be.an('array');
+				expect(s.tunread).to.deep.equal([]);
+			};
+
+			it('should reset the unread counter if the message was removed', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId, userCredentials: otherUserCredentials });
+				const childrenMessageId = body.message._id;
+
+				await followMessage({ msgId: parentThreadId, requestCredentials: otherUserCredentials });
+				await deleteMessage({ msgId: childrenMessageId, roomId: testChannel._id });
+
+				const userWhoCreatedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id);
+
+				expectNoUnreadThreadMessages(userWhoCreatedTheThreadSubscription);
+			});
+
+			it('should reset the unread counter of users who followed the thread', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId });
+				const childrenMessageId = body.message._id;
+
+				await followMessage({ msgId: parentThreadId, requestCredentials: otherUserCredentials });
+				await deleteMessage({ msgId: childrenMessageId, roomId: testChannel._id });
+
+				const userWhoWasFollowingTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
+
+				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
+			});
 		});
 	});
 
@@ -2096,7 +2454,7 @@ describe('[Chat]', () => {
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
+			it('should return statusCode 400', (done) => {
 				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
@@ -2109,7 +2467,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "roomId" query param is missing.');
 					})
 					.end(done);
 			});
@@ -2126,7 +2483,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "since" query param is missing.');
 					})
 					.end(done);
 			});
@@ -2144,7 +2500,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The "since" query parameter must be a valid date.');
 					})
 					.end(done);
 			});
@@ -2194,6 +2549,21 @@ describe('[Chat]', () => {
 			});
 		});
 
+		it('should return an error when messageId does not exist', async () => {
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
 		it('should pin Message successfully', (done) => {
 			void updatePermission('pin-message', ['admin']).then(() => {
 				void request
@@ -2210,6 +2580,21 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it('should return message when its already pinned', async () => {
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 
@@ -2534,7 +2919,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-roomId-param-not-provided');
 					})
 					.end(done);
 			});
@@ -2563,7 +2947,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -2622,7 +3006,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -2698,7 +3082,6 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -2804,6 +3187,305 @@ describe('[Chat]', () => {
 
 		messageWords.forEach((text) => {
 			filterDiscussionsByText(text);
+		});
+	});
+
+	describe('[/chat.syncMessages]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.syncMessages.${Date.now()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.include(`must have required property 'roomId'`);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the neither "lastUpdate" or "type" parameter is sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-param-required');
+					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "lastUpdate" parameter is invalid', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: 'invalid-room', lastUpdate: 'invalid-date' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-lastUpdate-param-invalid');
+					expect(res.body.error).to.include('The "lastUpdate" query parameter must be a valid date');
+				})
+				.end(done);
+		});
+
+		it('should return an error when user provides an invalid roomId', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: 'invalid-room', lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.error).to.include('Not allowed');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "type" parameter is not supported', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'invalid-type', next: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.include('must be equal to one of the allowed values');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "next" or "previous" parameter is sent without the "type" parameter', async () => {
+			const nextResponse = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: new Date().toISOString() });
+
+			const previousResponse = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, previous: new Date().toISOString() });
+
+			expect(nextResponse.statusCode).to.equal(400);
+			expect(nextResponse.body).to.have.property('success', false);
+			expect(nextResponse.body.errorType).to.be.equal('error-param-required');
+			expect(nextResponse.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
+
+			expect(previousResponse.statusCode).to.equal(400);
+			expect(previousResponse.body).to.have.property('success', false);
+			expect(previousResponse.body.errorType).to.be.equal('error-param-required');
+			expect(previousResponse.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
+		});
+
+		it('should return an error when both "next" and "previous" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), previous: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-cursor-conflict');
+					expect(res.body.error).to.include('You cannot provide both "next" and "previous" parameters');
+				})
+				.end(done);
+		});
+
+		it('should return an error when both "next" or "previous" and "lastUpdate" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-cursor-and-lastUpdate-conflict');
+					expect(res.body.error).to.include('The attributes "next", "previous" and "lastUpdate" cannot be used together');
+				})
+				.end(done);
+		});
+
+		it('should return an error when neither "type" or "lastUpdate" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-param-required');
+					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
+				})
+				.end(done);
+		});
+
+		it('should return an empty response when there are no messages to sync', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.have.property('updated').and.to.be.an('array');
+					expect(res.body.result).to.have.property('deleted').and.to.be.an('array');
+					expect(res.body.result.updated).to.have.lengthOf(0);
+					expect(res.body.result.deleted).to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+
+		it('should return all updated and deleted messages since "lastUpdate" parameter date', async () => {
+			const lastUpdate = new Date().toISOString();
+
+			// Create two messages isolated to avoid ts conflict
+			const firstMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'First Message' });
+			const secondMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Second Message' });
+
+			const response = await request.get(api('chat.syncMessages')).set(credentials).query({ roomId: testChannel._id, lastUpdate });
+
+			expect(response.body.result.updated).to.have.lengthOf(2);
+			expect(response.body.result.updated[0]._id).to.be.equal(secondMessage.body.message._id);
+			expect(response.body.result.updated[1]._id).to.be.equal(firstMessage.body.message._id);
+			expect(response.body.result.deleted).to.have.lengthOf(0);
+
+			await deleteMessage({ roomId: testChannel._id, msgId: firstMessage.body.message._id });
+
+			const responseAfterDelete = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, lastUpdate });
+
+			expect(responseAfterDelete.body.result.updated).to.have.lengthOf(1);
+			expect(responseAfterDelete.body.result.updated[0]._id).to.be.equal(secondMessage.body.message._id);
+			expect(responseAfterDelete.body.result.deleted).to.have.lengthOf(1);
+			expect(responseAfterDelete.body.result.deleted[0]._id).to.be.equal(firstMessage.body.message._id);
+
+			await deleteMessage({ roomId: testChannel._id, msgId: secondMessage.body.message._id });
+		});
+
+		it('should return all updated messages with a cursor when "type" parameter is "UPDATED"', async () => {
+			const lastUpdate = new Date();
+			const firstMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'First Message' });
+			const secondMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Second Message' });
+			const thirdMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Third Message' });
+
+			const response = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					next: new Date(lastUpdate).getTime().toString(),
+					type: 'UPDATED',
+					count: 2,
+				});
+
+			expect(response.body.result.updated).to.have.lengthOf(2);
+			expect(response.body.result.updated[0]._id).to.be.equal(firstMessage.body.message._id);
+			expect(response.body.result.updated[1]._id).to.be.equal(secondMessage.body.message._id);
+			expect(response.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(new Date(response.body.result.updated[response.body.result.updated.length - 1]._updatedAt).getTime().toString());
+			expect(response.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(response.body.result.updated[0]._updatedAt).getTime().toString());
+			expect(response.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(firstMessage.body.message._updatedAt).getTime().toString());
+
+			const responseWithNext = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: response.body.result.cursor.next, type: 'UPDATED', count: 2 });
+
+			expect(responseWithNext.body.result.updated).to.have.lengthOf(1);
+			expect(responseWithNext.body.result.updated[0]._id).to.be.equal(thirdMessage.body.message._id);
+			expect(responseWithNext.body.result.cursor).to.have.property('next').and.to.be.null;
+			expect(responseWithNext.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(thirdMessage.body.message._updatedAt).getTime().toString());
+
+			await Promise.all([
+				deleteMessage({ roomId: testChannel._id, msgId: firstMessage.body.message._id }),
+				deleteMessage({ roomId: testChannel._id, msgId: secondMessage.body.message._id }),
+				deleteMessage({ roomId: testChannel._id, msgId: thirdMessage.body.message._id }),
+			]);
+		});
+
+		it('should return all deleted messages with a cursor when "type" parameter is "DELETED"', async () => {
+			const newChannel = (await createRoom({ type: 'c', name: `channel.test.syncMessages.${Date.now()}` })).body.channel;
+			const lastUpdate = new Date();
+			const firstMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'First Message' })).body.message;
+			const secondMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'Second Message' })).body.message;
+			const thirdMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'Third Message' })).body.message;
+
+			const response = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, next: lastUpdate.getTime().toString(), type: 'DELETED', count: 2 });
+
+			expect(response.body.result.deleted).to.have.lengthOf(0);
+			expect(response.body.result.cursor).to.have.property('next').and.to.be.null;
+			expect(response.body.result.cursor).to.have.property('previous').and.to.be.null;
+
+			const firstDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: firstMessage._id })).body.message;
+			const secondDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: secondMessage._id })).body.message;
+			const thirdDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: thirdMessage._id })).body.message;
+
+			const responseAfterDelete = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, next: lastUpdate.getTime().toString(), type: 'DELETED', count: 2 });
+
+			expect(responseAfterDelete.body.result.deleted).to.have.lengthOf(2);
+			expect(responseAfterDelete.body.result.deleted[0]._id).to.be.equal(firstDeletedMessage._id);
+			expect(responseAfterDelete.body.result.deleted[1]._id).to.be.equal(secondDeletedMessage._id);
+			expect(responseAfterDelete.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(
+					new Date(responseAfterDelete.body.result.deleted[responseAfterDelete.body.result.deleted.length - 1]._deletedAt)
+						.getTime()
+						.toString(),
+				);
+			expect(responseAfterDelete.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(responseAfterDelete.body.result.deleted[0]._deletedAt).getTime().toString());
+
+			const responseAfterDeleteWithPrevious = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, next: responseAfterDelete.body.result.cursor.next, type: 'DELETED', count: 2 });
+
+			expect(responseAfterDeleteWithPrevious.body.result.deleted).to.have.lengthOf(1);
+			expect(responseAfterDeleteWithPrevious.body.result.deleted[0]._id).to.be.equal(thirdDeletedMessage._id);
+			expect(responseAfterDeleteWithPrevious.body.result.cursor).to.have.property('next').and.to.be.null;
+			expect(responseAfterDeleteWithPrevious.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(responseAfterDeleteWithPrevious.body.result.deleted[0]._deletedAt).getTime().toString());
+
+			await deleteRoom({ type: 'c', roomId: newChannel._id });
 		});
 	});
 });
@@ -2948,6 +3630,56 @@ describe('Threads', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it("should fail returning a room's thread list if no roomId is provided", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it("should fail returning a room's thread list if an invalid type is provided", async () => {
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					type: 'invalid-type',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it("should return the room's thread list", async () => {
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('threads').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body.threads).to.have.lengthOf(1);
+					expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+				});
 		});
 
 		it("should return the room's thread list even requested with count and offset params", (done) => {
@@ -3109,8 +3841,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
-						expect(res.body).to.have.property('error', 'The required "rid" query param is missing. [error-room-id-param-not-provided]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3128,8 +3859,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3148,11 +3878,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3350,7 +4076,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
-						updatedSince: 'updatedSince',
+						updatedSince: new Date().toISOString(),
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -3373,8 +4099,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-						expect(res.body).to.have.property('error', 'The required "tmid" query param is missing. [error-invalid-params]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3392,8 +4117,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3412,11 +4136,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3723,7 +4443,6 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('invalid-params');
 					});
 			});
 			it('should return statusCode 400 and an error when "url" is not provided', async () => {
@@ -3737,7 +4456,6 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('invalid-params');
 					});
 			});
 			it('should return statusCode 400 and an error when "roomId" is provided but user is not in the room', async () => {

@@ -2,9 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useMethod, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMethod, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
@@ -24,17 +25,23 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
-const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
+type ComposerPopupProviderProps = {
+	children: ReactNode;
+	room: IRoom;
+};
+
+const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
 	const userSpotlight = useMethod('spotlight');
-	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
-	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
+	const suggestionsCount = useSetting('Number_of_users_autocomplete_suggestions', 5);
+	const cannedResponseEnabled = useSetting('Canned_Responses_Enable', true);
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
+	const [previewTitle, setPreviewTitle] = useState('');
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
-	const t = useTranslation();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const { t, i18n } = useTranslation();
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 
 	const call = useMethod('getSlashCommandPreviews');
@@ -289,8 +296,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 							const item = slashCommands.commands[command];
 							return {
 								_id: command,
-								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',
-								description: item.description && t.has(item.description) ? t(item.description) : item.description,
+								params: item.params && i18n.exists(item.params) ? t(item.params) : (item.params ?? ''),
+								description: item.description && i18n.exists(item.description) ? t(item.description) : item.description,
 								permission: item.permission,
 								...(encrypted && { disabled: encrypted }),
 							};
@@ -351,10 +358,14 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					},
 				}),
 			createMessageBoxPopupConfig({
+				title: previewTitle,
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
 					const result = await call({ cmd, params, msg: { rid, tmid } });
+
+					setPreviewTitle(t(result?.i18nTitle ?? ''));
+
 					return (
 						result?.items.map((item) => ({
 							_id: item.id,
@@ -365,7 +376,21 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
+	}, [
+		t,
+		useEmoji,
+		encrypted,
+		cannedResponseEnabled,
+		isOmnichannel,
+		previewTitle,
+		suggestionsCount,
+		userSpotlight,
+		rid,
+		recentEmojis,
+		i18n,
+		call,
+		setPreviewTitle,
+	]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

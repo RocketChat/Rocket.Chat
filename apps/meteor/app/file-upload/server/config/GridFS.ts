@@ -6,10 +6,10 @@ import zlib from 'zlib';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 
+import { getContentDisposition } from './helper';
 import { UploadFS } from '../../../../server/ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-import { getContentDisposition } from './helper';
 
 const logger = new Logger('FileUpload');
 

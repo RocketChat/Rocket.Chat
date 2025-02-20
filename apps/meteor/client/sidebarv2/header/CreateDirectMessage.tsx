@@ -1,9 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { memo } from 'react';
+import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -13,8 +12,8 @@ type CreateDirectMessageProps = { onClose: () => void };
 
 const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
-	const directMaxUsers = useSetting<number>('DirectMesssage_maxUsers') || 1;
-	const membersFieldId = useUniqueId();
+	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');

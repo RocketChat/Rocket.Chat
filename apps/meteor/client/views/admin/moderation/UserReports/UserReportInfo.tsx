@@ -12,20 +12,21 @@ import {
 	FieldRow,
 	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import UserContextFooter from './UserContextFooter';
 import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
-import UserContextFooter from './UserContextFooter';
 
 const UserReportInfo = ({ userId }: { userId: string }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();
 
@@ -36,7 +37,10 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		isSuccess,
 		isError,
 		dataUpdatedAt,
-	} = useQuery(['moderation', 'userReports', 'fetchDetails', userId], async () => getUserReports({ userId }));
+	} = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchDetails', userId],
+		queryFn: async () => getUserReports({ userId }),
+	});
 
 	const userProfile = useMemo(() => {
 		if (!report?.user) {

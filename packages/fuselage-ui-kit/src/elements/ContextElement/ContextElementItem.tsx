@@ -21,7 +21,7 @@ export const ContextElementItem = ({
     element,
     BlockContext.CONTEXT,
     undefined,
-    index
+    index,
   );
 
   if (!renderedElement) {

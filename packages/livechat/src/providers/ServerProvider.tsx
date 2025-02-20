@@ -12,14 +12,14 @@ import type { Method, PathFor, OperationParams, OperationResult, UrlParams, Path
 import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
+import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
-import React from 'react';
 
 import { host } from '../components/App';
 import { useStore } from '../store';
 import { useSDK } from './SDKProvider';
 
-const ServerProvider = ({ children }: { children: React.ReactNode }) => {
+const ServerProvider = ({ children }: { children: ComponentChildren }) => {
 	const sdk = useSDK();
 
 	const { token } = useStore();

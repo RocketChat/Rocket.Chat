@@ -1,5 +1,5 @@
-import { API } from '../../../../../app/api/server';
 import { setSLAToInquiry } from './lib/inquiries';
+import { API } from '../../../../../app/api/server';
 
 API.v1.addRoute(
 	'livechat/inquiry.setSLA',

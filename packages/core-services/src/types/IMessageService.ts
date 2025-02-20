@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
 	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
@@ -21,6 +21,6 @@ export interface IMessageService {
 	deleteMessage(user: IUser, message: IMessage): Promise<void>;
 	updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void>;
 	reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void>;
-	beforeReacted(message: IMessage, room: IRoom): Promise<void>;
+	beforeReacted(message: IMessage, room: AtLeast<IRoom, 'federated'>): Promise<void>;
 	beforeDelete(message: IMessage, room: IRoom): Promise<void>;
 }

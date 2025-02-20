@@ -1,12 +1,13 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
+import { modalStore } from '../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -21,6 +22,7 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
+	onDismiss?: () => Promise<void> | void;
 	annotation?: ReactNode;
 } & Omit<ComponentPropsWithoutRef<typeof Modal>, 'title'>;
 
@@ -67,6 +69,7 @@ const GenericModal = ({
 	icon,
 	onCancel,
 	onClose = onCancel,
+	onDismiss = onClose,
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
@@ -76,7 +79,7 @@ const GenericModal = ({
 	...props
 }: GenericModalProps) => {
 	const { t } = useTranslation();
-	const genericModalId = useUniqueId();
+	const genericModalId = useId();
 
 	const dismissedRef = useRef(true);
 
@@ -95,13 +98,20 @@ const GenericModal = ({
 		onClose?.();
 	});
 
-	useEffect(
-		() => () => {
+	const handleDismiss = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onDismiss?.();
+	});
+
+	useEffect(() => {
+		const thisModal = modalStore.current;
+
+		return () => {
+			if (thisModal === modalStore.current) return;
 			if (!dismissedRef.current) return;
-			onClose?.();
-		},
-		[onClose],
-	);
+			handleDismiss();
+		};
+	}, [handleDismiss]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
@@ -114,7 +124,7 @@ const GenericModal = ({
 				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
+			<Modal.Footer justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>

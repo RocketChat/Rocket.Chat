@@ -1,8 +1,10 @@
-import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import { Apps, type IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IReadSettingPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
 import { Settings } from '@rocket.chat/models';
 
+import { updateAuditedByApp } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export class AppSettingBridge extends ServerSettingBridge {
@@ -20,11 +22,12 @@ export class AppSettingBridge extends ServerSettingBridge {
 	protected async getOneById(id: string, appId: string): Promise<ISetting> {
 		this.orch.debugLog(`The App ${appId} is getting the setting by id ${id}.`);
 
-		if (!(await this.isReadableById(id, appId))) {
+		const setting = await this.getReadableSettingById(id, appId);
+		if (!setting) {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		return this.orch.getConverters()?.get('settings').convertById(id);
+		return setting;
 	}
 
 	protected async hideGroup(name: string, appId: string): Promise<void> {
@@ -49,6 +52,39 @@ export class AppSettingBridge extends ServerSettingBridge {
 		return Boolean(setting && !setting.secret);
 	}
 
+	protected async getReadableSettingById(id: string, appId: string): Promise<ISetting | null> {
+		this.orch.debugLog(`The app ${appId} is checking if it can read the setting ${id}`);
+		const app = Apps.self?.getManager().getOneById(appId);
+		if (!app) {
+			this.orch.debugLog(`The app ${appId} is not found.`);
+			return null;
+		}
+
+		const { permissions } = app.getInfo();
+		if (!permissions) {
+			this.orch.debugLog(`The app ${appId} has no configured permissions.`);
+			return null;
+		}
+
+		const readSettingsPermission = permissions.find((perm) => perm.name === 'server-setting.read');
+		if (!readSettingsPermission) {
+			this.orch.debugLog(`The app ${appId} has no server-setting.read permission.`);
+			return null;
+		}
+
+		const readSettings = readSettingsPermission as IReadSettingPermission;
+		// If the setting is in the hiddenSettings list (defined within the permission), then it can bypass the hidden flag.
+		// If not, then it must be a non-hidden setting. This is to allow apps to read hidden settings if they have the permission to do so.
+		const setting = readSettings.hiddenSettings?.includes(id) ? await Settings.findOneById(id) : await Settings.findOneNotHiddenById(id);
+
+		if (!setting) {
+			this.orch.debugLog(`The setting ${id} is not found.`);
+			return null;
+		}
+
+		return this.orch.getConverters()?.get('settings').convertToApp(setting);
+	}
+
 	protected async updateOne(setting: ISetting & { id: string }, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating the setting ${setting.id} .`);
 
@@ -56,7 +92,15 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${setting.id}" is not readable.`);
 		}
 
-		(await Settings.updateValueById(setting.id, setting.value)).modifiedCount && void notifyOnSettingChangedById(setting.id);
+		if (
+			(
+				await updateAuditedByApp({
+					_id: appId,
+				})(Settings.updateValueById, setting.id, setting.value)
+			).modifiedCount
+		) {
+			void notifyOnSettingChangedById(setting.id);
+		}
 	}
 
 	protected async incrementValue(id: string, value: number, appId: string): Promise<void> {
@@ -66,7 +110,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		const { value: setting } = await Settings.incrementValueById(id, value, { returnDocument: 'after' });
+		const setting = await Settings.incrementValueById(id, value, { returnDocument: 'after' });
 		if (setting) {
 			void notifyOnSettingChanged(setting);
 		}

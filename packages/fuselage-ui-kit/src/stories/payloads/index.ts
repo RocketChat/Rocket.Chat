@@ -1,5 +1,6 @@
 export * from './actions';
 export * from './conditional';
+export * from './callout';
 export * from './context';
 export * from './divider';
 export * from './image';

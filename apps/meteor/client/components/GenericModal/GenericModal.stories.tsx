@@ -1,13 +1,13 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { ComponentType } from 'react';
 
 import GenericModal, { GenericModalDoNotAskAgain } from './GenericModal';
 
 export default {
 	title: 'Components/GenericModal',
 	component: GenericModal,
-	subcomponents: { GenericModalDoNotAskAgain },
+	subcomponents: { GenericModalDoNotAskAgain: GenericModalDoNotAskAgain as ComponentType<any> },
 	args: {
 		children: 'This is the content.',
 	},
@@ -16,9 +16,9 @@ export default {
 		controls: { hideNoControlsWarning: true },
 		actions: { argTypesRegex: '^on.*' },
 	},
-} as ComponentMeta<typeof GenericModal>;
+} satisfies Meta<typeof GenericModal>;
 
-export const Example: ComponentStory<typeof GenericModal> = () => (
+export const Example: StoryFn<typeof GenericModal> = () => (
 	<GenericModal
 		title='Oh Myyy!'
 		variant='warning'
@@ -32,7 +32,7 @@ export const Example: ComponentStory<typeof GenericModal> = () => (
 	</GenericModal>
 );
 
-const Template: ComponentStory<typeof GenericModal> = (args) => <GenericModal {...args} />;
+const Template: StoryFn<typeof GenericModal> = (args) => <GenericModal {...args} />;
 
 export const Info = Template.bind({});
 Info.args = { variant: 'info' };
@@ -46,7 +46,7 @@ Warning.args = { variant: 'warning' };
 export const Success = Template.bind({});
 Success.args = { variant: 'success' };
 
-export const WithDontAskAgain: ComponentStory<typeof GenericModalDoNotAskAgain> = (args) => <GenericModalDoNotAskAgain {...args} />;
+export const WithDontAskAgain: StoryFn<typeof GenericModalDoNotAskAgain> = (args) => <GenericModalDoNotAskAgain {...args} />;
 WithDontAskAgain.args = {
 	dontAskAgain: {
 		action: 'action',

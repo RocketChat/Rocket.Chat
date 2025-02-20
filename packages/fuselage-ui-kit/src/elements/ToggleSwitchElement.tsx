@@ -32,7 +32,7 @@ const ToggleSwitchElement = ({
               {surfaceRenderer.renderTextObject(
                 option.text,
                 0,
-                UiKit.BlockContext.NONE
+                UiKit.BlockContext.NONE,
               )}
             </Box>
           </Box>

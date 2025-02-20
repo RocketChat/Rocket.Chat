@@ -1,5 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { ComponentType } from 'react';
 
 import {
 	InfoPanel,
@@ -12,28 +12,28 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '.';
-import { createFakeRoom } from '../../../tests/mocks/data';
 import RetentionPolicyCallout from './RetentionPolicyCallout';
+import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
 	title: 'Info Panel/InfoPanel',
 	component: InfoPanel,
 	subcomponents: {
-		InfoPanelAction,
-		InfoPanelActionGroup,
-		InfoPanelAvatar,
-		InfoPanelField,
-		InfoPanelLabel,
-		InfoPanelSection,
-		InfoPanelText,
-		InfoPanelTitle,
-		RetentionPolicyCallout,
+		InfoPanelAction: InfoPanelAction as ComponentType<any>,
+		InfoPanelActionGroup: InfoPanelActionGroup as ComponentType<any>,
+		InfoPanelAvatar: InfoPanelAvatar as ComponentType<any>,
+		InfoPanelField: InfoPanelField as ComponentType<any>,
+		InfoPanelLabel: InfoPanelLabel as ComponentType<any>,
+		InfoPanelSection: InfoPanelSection as ComponentType<any>,
+		InfoPanelText: InfoPanelText as ComponentType<any>,
+		InfoPanelTitle: InfoPanelTitle as ComponentType<any>,
+		RetentionPolicyCallout: RetentionPolicyCallout as ComponentType<any>,
 	},
-} as ComponentMeta<typeof InfoPanel>;
+} satisfies Meta<typeof InfoPanel>;
 
 const fakeRoom = createFakeRoom();
 
-export const Default: ComponentStory<typeof InfoPanel> = () => (
+export const Default: StoryFn<typeof InfoPanel> = () => (
 	<InfoPanel>
 		<InfoPanelAvatar />
 		<InfoPanelSection>

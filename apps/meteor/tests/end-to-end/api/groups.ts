@@ -1,10 +1,12 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
+import { pinMessage, starMessage, sendMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createGroup, deleteGroup } from '../../data/groups.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
@@ -71,14 +73,34 @@ describe('[Groups]', () => {
 
 	describe('/groups.create', () => {
 		let guestUser: TestUser<IUser>;
+		let invitedUser: TestUser<IUser>;
+		let invitedUserCredentials: Credentials;
 		let room: IRoom;
+		let teamId: ITeam['_id'];
 
 		before(async () => {
 			guestUser = await createUser({ roles: ['guest'] });
+			invitedUser = await createUser();
+			invitedUserCredentials = await login(invitedUser.username, password);
+
+			await updatePermission('create-team', ['admin', 'user']);
+			const teamCreateRes = await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `team-${Date.now()}`,
+					type: 0,
+					members: [invitedUser.username],
+				});
+
+			teamId = teamCreateRes.body.team._id;
+			await updatePermission('create-team-group', ['owner']);
 		});
 
 		after(async () => {
 			await deleteUser(guestUser);
+			await deleteUser(invitedUser);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 		});
 
 		describe('guest users', () => {
@@ -268,6 +290,37 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.nested.property('errorType', 'error-duplicate-channel-name');
 				});
 		});
+
+		it('should successfully create a group in a team', async () => {
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `team-group-${Date.now()}`,
+					extraData: { teamId },
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('teamId', teamId);
+				});
+		});
+
+		it('should fail creating a group in a team when member does not have the necessary permission', async () => {
+			await request
+				.post(api('groups.create'))
+				.set(invitedUserCredentials)
+				.send({
+					name: `team-group-${Date.now()}`,
+					extraData: { teamId },
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				});
+		});
 	});
 
 	describe('/groups.info', () => {
@@ -439,6 +492,145 @@ describe('[Groups]', () => {
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
 					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
+				});
+		});
+	});
+
+	describe('/groups.messages', () => {
+		let testGroup: IRoom;
+		let firstUser: IUser;
+		let secondUser: IUser;
+
+		before(async () => {
+			testGroup = (await createGroup({ name: `test-group-${Date.now()}` })).body.group;
+			firstUser = await createUser({ joinDefaultChannels: false });
+			secondUser = await createUser({ joinDefaultChannels: false });
+
+			const messages = [
+				{
+					rid: testGroup._id,
+					msg: `@${firstUser.username} youre being mentioned`,
+					mentions: [{ username: firstUser.username, _id: firstUser._id, name: firstUser.name }],
+				},
+				{
+					rid: testGroup._id,
+					msg: `@${secondUser.username} youre being mentioned`,
+					mentions: [{ username: secondUser.username, _id: secondUser._id, name: secondUser.name }],
+				},
+				{
+					rid: testGroup._id,
+					msg: `A simple message`,
+				},
+				{
+					rid: testGroup._id,
+					msg: `A pinned simple message`,
+				},
+			];
+
+			const [, , starredMessage, pinnedMessage] = await Promise.all(messages.map((message) => sendMessage({ message })));
+
+			await Promise.all([
+				starMessage({ messageId: starredMessage.body.message._id }),
+				pinMessage({ messageId: pinnedMessage.body.message._id }),
+			]);
+		});
+
+		after(async () => {
+			await deleteGroup({ roomName: testGroup.name });
+		});
+
+		it('should return all messages from a group', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({ roomId: testGroup._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages).to.have.lengthOf(5);
+				});
+		});
+
+		it('should return messages that mention a single user', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					mentionIds: firstUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('mentions').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body.messages[0].mentions[0]).to.have.property('_id', firstUser._id);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that mention multiple users', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					mentionIds: `${firstUser._id},${secondUser._id}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
+
+					const mentionIds = res.body.messages.map((message: any) => message.mentions[0]._id);
+					expect(mentionIds).to.include.members([firstUser._id, secondUser._id]);
+				});
+		});
+
+		it('should return messages that are starred by a specific user', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					starredIds: 'rocketchat.internal.admin.test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that are pinned', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					pinned: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
+					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
+					expect(res.body.messages[0].pinnedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
 				});
 		});
 	});
@@ -1068,7 +1260,9 @@ describe('[Groups]', () => {
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
 
-			const response = await request.get(api('groups.online')).set(testUserCredentials).query(`query={"_id": "${room._id}"}`);
+			const response = await request.get(api('groups.online')).set(testUserCredentials).query({
+				_id: room._id,
+			});
 
 			const { body } = response;
 
@@ -1083,7 +1277,9 @@ describe('[Groups]', () => {
 		it('should return an empty array if members are offline', async () => {
 			const { testUserCredentials, room } = await createUserAndChannel(false);
 
-			const response = await request.get(api('groups.online')).set(testUserCredentials).query(`query={"_id": "${room._id}"}`);
+			const response = await request.get(api('groups.online')).set(testUserCredentials).query({
+				_id: room._id,
+			});
 
 			const { body } = response;
 
@@ -1099,7 +1295,9 @@ describe('[Groups]', () => {
 			await request
 				.get(api('groups.online'))
 				.set(outsiderCredentials)
-				.query(`query={"_id": "${room._id}"}`)
+				.query({
+					_id: room._id,
+				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -1154,33 +1352,37 @@ describe('[Groups]', () => {
 	});
 
 	describe('/groups.listAll', () => {
-		it('should fail if the user doesnt have view-room-administration permission', (done) => {
-			void updatePermission('view-room-administration', []).then(() => {
-				void request
-					.get(api('groups.listAll'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
-					})
-					.end(done);
-			});
+		before(async () => {
+			return updatePermission('view-room-administration', ['admin']);
 		});
-		it('should succeed if user has view-room-administration permission', (done) => {
-			void updatePermission('view-room-administration', ['admin']).then(() => {
-				void request
-					.get(api('groups.listAll'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('groups').and.to.be.an('array');
-					})
-					.end(done);
-			});
+
+		after(async () => {
+			return updatePermission('view-room-administration', ['admin']);
+		});
+
+		it('should succeed if user has view-room-administration permission', async () => {
+			await request
+				.get(api('groups.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+				});
+		});
+
+		it('should fail if the user doesnt have view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('groups.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
 	});
 
@@ -1345,7 +1547,7 @@ describe('[Groups]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 	});
@@ -1652,22 +1854,71 @@ describe('[Groups]', () => {
 
 	describe('/groups.delete', () => {
 		let testGroup: IRoom;
+		let testTeamGroup: IRoom;
+		let testModeratorTeamGroup: IRoom;
+		let invitedUser: TestUser<IUser>;
+		let moderatorUser: TestUser<IUser>;
+		let invitedUserCredentials: Credentials;
+		let moderatorUserCredentials: Credentials;
+		let teamId: ITeam['_id'];
+		let teamMainRoomId: IRoom['_id'];
+
 		before(async () => {
-			await request
-				.post(api('groups.create'))
+			testGroup = (await createRoom({ name: `group.test.${Date.now()}`, type: 'p' })).body.group;
+			invitedUser = await createUser();
+			moderatorUser = await createUser();
+			invitedUserCredentials = await login(invitedUser.username, password);
+			moderatorUserCredentials = await login(moderatorUser.username, password);
+
+			const teamCreateRes = await request
+				.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: `group.test.${Date.now()}`,
+					name: `team-${Date.now()}`,
+					type: 1,
+					members: [invitedUser.username, moderatorUser.username],
+				});
+			teamId = teamCreateRes.body.team._id;
+			teamMainRoomId = teamCreateRes.body.team.roomId;
+
+			await updatePermission('delete-team-group', ['owner', 'moderator']);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator', 'user']);
+			const teamGroupResponse = await createRoom({
+				name: `group.test.${Date.now()}`,
+				type: 'p',
+				extraData: { teamId },
+				credentials: invitedUserCredentials,
+			});
+			testTeamGroup = teamGroupResponse.body.group;
+
+			await request
+				.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					userId: moderatorUser._id,
+					roomId: teamMainRoomId,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					testGroup = res.body.group;
+					expect(res.body).to.have.property('success', true);
 				});
+			const teamModeratorGroupResponse = await createRoom({
+				name: `group.test.moderator.${Date.now()}`,
+				type: 'p',
+				extraData: { teamId },
+				credentials: moderatorUserCredentials,
+			});
+			testModeratorTeamGroup = teamModeratorGroupResponse.body.group;
 		});
-
-		it('should delete group', (done) => {
-			void request
+		after(async () => {
+			await deleteUser(invitedUser);
+			await deleteUser(moderatorUser);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
+			await updatePermission('delete-team-group', ['admin', 'owner', 'moderator']);
+		});
+		it('should succesfully delete a group', async () => {
+			await request
 				.post(api('groups.delete'))
 				.set(credentials)
 				.send({
@@ -1677,12 +1928,10 @@ describe('[Groups]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				});
 		});
-
-		it('should return group not found', (done) => {
-			void request
+		it(`should fail retrieving a group's info after it's been deleted`, async () => {
+			await request
 				.get(api('groups.info'))
 				.set(credentials)
 				.query({
@@ -1693,8 +1942,50 @@ describe('[Groups]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
+		});
+		it(`should fail deleting a team's group when member does not have the necessary permission in the team`, async () => {
+			await request
+				.post(api('groups.delete'))
+				.set(invitedUserCredentials)
+				.send({
+					roomName: testTeamGroup.name,
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.a.property('error');
+					expect(res.body).to.have.a.property('errorType', 'error-not-allowed');
+				});
+		});
+		it(`should fail deleting a team's group when member has the necessary permission in the team, but not in the deleted room`, async () => {
+			await request
+				.post(api('groups.delete'))
+				.set(moderatorUserCredentials)
+				.send({
+					roomName: testTeamGroup.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.a.property('error');
+					expect(res.body).to.have.a.property('errorType', 'error-room-not-found');
+				});
+		});
+		it(`should successfully delete a team's group when member has both team and group permissions`, async () => {
+			await request
+				.post(api('groups.delete'))
+				.set(moderatorUserCredentials)
+				.send({
+					roomId: testModeratorTeamGroup._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 		});
 	});
 

@@ -1,22 +1,22 @@
 import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Icon, PasswordInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 type PasswordFieldValues = { password: string; confirmationPassword: string };
 
 const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const passwordId = useUniqueId();
-	const confirmPasswordId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
+	const passwordId = useId();
+	const confirmPasswordId = useId();
+	const passwordVerifierId = useId();
 
 	const {
 		watch,

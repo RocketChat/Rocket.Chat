@@ -6,7 +6,7 @@ import { parse } from 'csv-parse/lib/sync';
 
 import { RocketChatFile } from '../../file/server';
 import { Importer, ProgressStep } from '../../importer/server';
-import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
+import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
@@ -14,7 +14,7 @@ import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 export class SlackUsersImporter extends Importer {
 	private csvParser: (csv: string) => string[];
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
 
 		this.csvParser = parse;
@@ -95,7 +95,7 @@ export class SlackUsersImporter extends Importer {
 		await super.updateProgress(ProgressStep.USER_SELECTION);
 		await super.addCountToTotal(userCount);
 
-		const { value } = await Settings.incrementValueById('Slack_Users_Importer_Count', userCount, { returnDocument: 'after' });
+		const value = await Settings.incrementValueById('Slack_Users_Importer_Count', userCount, { returnDocument: 'after' });
 		if (value) {
 			void notifyOnSettingChanged(value);
 		}

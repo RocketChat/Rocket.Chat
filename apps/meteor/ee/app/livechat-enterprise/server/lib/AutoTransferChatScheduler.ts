@@ -5,15 +5,15 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { schedulerLogger } from './logger';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
-class AutoTransferChatSchedulerClass {
+export class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
 
 	running: boolean;

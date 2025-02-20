@@ -138,7 +138,7 @@ export const getEmojisBySearchTerm = (
 	return emojis;
 };
 
-export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis: (emojis: string[]) => void) => {
+export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis?: (emojis: string[]) => void) => {
 	const _emoji = emoji.replace(/(^:|:$)/g, '');
 	const pos = recentEmojis.indexOf(_emoji as never);
 
@@ -146,7 +146,7 @@ export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecen
 		return;
 	}
 	recentEmojis.splice(pos, 1);
-	setRecentEmojis(recentEmojis);
+	setRecentEmojis?.(recentEmojis);
 };
 
 export const updateRecent = (recentList: string[]) => {
@@ -154,6 +154,15 @@ export const updateRecent = (recentList: string[]) => {
 	recentList?.forEach((_emoji) => {
 		!recentPkgList.includes(_emoji) && recentPkgList.push(_emoji);
 	});
+};
+
+export const replaceEmojiInRecent = ({ oldEmoji, newEmoji }: { oldEmoji: string; newEmoji: string }) => {
+	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
+	const pos = recentPkgList.indexOf(oldEmoji);
+
+	if (pos !== -1) {
+		recentPkgList[pos] = newEmoji;
+	}
 };
 
 const getEmojiRender = (emojiName: string) => {

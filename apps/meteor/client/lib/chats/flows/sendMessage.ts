@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
@@ -12,8 +11,6 @@ import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
-	KonchatNotification.removeRoomNotification(message.rid);
-
 	if (await processSetReaction(chat, message)) {
 		return;
 	}

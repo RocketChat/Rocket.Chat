@@ -62,7 +62,7 @@ const LivechatMessageTypesValues = [
 
 const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
 
-const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
+export const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
 export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
 
 const MessageTypes = [
@@ -170,6 +170,7 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
+	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
 	otrAck?: string;
 
 	urls?: MessageUrl[];
@@ -199,7 +200,7 @@ export interface IMessage extends IRocketChatRecord {
 
 	private?: boolean;
 	/* @deprecated */
-	bot?: boolean;
+	bot?: Record<string, any>;
 	sentByEmail?: boolean;
 	webRtcCallEndTs?: Date;
 	role?: string;

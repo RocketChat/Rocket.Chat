@@ -1,5 +1,5 @@
-@import '../../styles/colors';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/variables';
 
 $avatar-size-small: 20px;
 $avatar-status-indicator-size-small: 10px;
@@ -16,7 +16,7 @@ $avatar-status-indicator-size-large: 14px;
 	width: $avatar-size-medium;
 	height: $avatar-size-medium;
 
-	border-radius: $default-border-radius;
+	border-radius: variables.$default-border-radius;
 	background-color: #000000;
 	background-image: url(./profile.png);
 	background-repeat: no-repeat;
@@ -28,7 +28,7 @@ $avatar-status-indicator-size-large: 14px;
 		height: 100%;
 
 		color: transparent;
-		border-radius: $default-border-radius;
+		border-radius: variables.$default-border-radius;
 		object-fit: cover;
 	}
 
@@ -44,7 +44,7 @@ $avatar-status-indicator-size-large: 14px;
 
 		border: 2px solid var(--color, transparent);
 		border-radius: 50%;
-		background-color: $bg-color-grey;
+		background-color: colors.$bg-color-grey;
 
 		&--small {
 			right: -2px;
@@ -64,15 +64,15 @@ $avatar-status-indicator-size-large: 14px;
 
 		&--status {
 			&-online {
-				background-color: $color-green;
+				background-color: colors.$color-green;
 			}
 
 			&-away {
-				background-color: $color-yellow;
+				background-color: colors.$color-yellow;
 			}
 
 			&-busy {
-				background-color: $color-red;
+				background-color: colors.$color-red;
 			}
 		}
 	}

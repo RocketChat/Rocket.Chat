@@ -1,29 +1,33 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
-import { useRouteParameter, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 import { useInviteTokenMutation } from './hooks/useInviteTokenMutation';
+import { useSamlInviteToken } from './hooks/useSamlInviteToken';
 import { useValidateInviteQuery } from './hooks/useValidateInviteQuery';
 
 const InvitePage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
-	const { isLoading, data: isValidInvite } = useValidateInviteQuery(userId, token);
+	const { isPending, data: isValidInvite } = useValidateInviteQuery(userId, token);
+	const [, setToken] = useSamlInviteToken();
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 
 	useEffect(() => {
+		setToken(token || null);
 		if (userId && token) {
 			getInviteRoomMutation(token);
 		}
-	}, [getInviteRoomMutation, token, userId]);
+	}, [getInviteRoomMutation, setToken, token, userId]);
 
-	if (isLoading) {
+	if (isPending) {
 		return <PageLoading />;
 	}
 

@@ -2,8 +2,11 @@ import { Box, Chip, Button, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
+import AssignAgentButton from './AssignAgentButton';
+import AssignAgentModal from './AssignAgentModal';
+import RemoveAgentButton from './RemoveAgentButton';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,9 +19,6 @@ import {
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { PageContent } from '../../../../../components/Page';
-import AssignAgentButton from './AssignAgentButton';
-import AssignAgentModal from './AssignAgentModal';
-import RemoveAgentButton from './RemoveAgentButton';
 
 const VoipExtensionsPage = () => {
 	const t = useTranslation();
@@ -35,7 +35,10 @@ const VoipExtensionsPage = () => {
 	);
 
 	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extensions');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['omnichannel-extensions', query], async () => getExtensions(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery({
+		queryKey: ['omnichannel-extensions', query],
+		queryFn: async () => getExtensions(query),
+	});
 
 	const headers = (
 		<>

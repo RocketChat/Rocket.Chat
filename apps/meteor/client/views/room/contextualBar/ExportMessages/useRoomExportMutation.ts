@@ -1,8 +1,9 @@
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 export const useRoomExportMutation = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 	const dispatchToastMessage = useToastMessageDispatch();
 

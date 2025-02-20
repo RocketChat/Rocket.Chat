@@ -10,7 +10,7 @@ const TALK_TO_SALES_URL = 'https://go.rocket.chat/i/contact-sales';
 export const useUpsellActions = (hasLicenseModule = false) => {
 	const setModal = useSetModal();
 	const handleOpenLink = useExternalLink();
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
+	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);
 
 	const { data } = useIsEnterprise();
 	const shouldShowUpsell = !data?.isEnterprise || !hasLicenseModule;

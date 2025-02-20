@@ -1,11 +1,12 @@
 import { useRouteParameter, useIsPrivilegedSettingsContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from './EditableSettingsProvider';
 import SettingsGroupSelector from './SettingsGroupSelector';
 import SettingsPage from './SettingsPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+
+const omittedSettings = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
 
 export const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();
@@ -21,7 +22,7 @@ export const SettingsRoute = (): ReactElement => {
 	}
 
 	return (
-		<EditableSettingsProvider>
+		<EditableSettingsProvider omit={omittedSettings}>
 			<SettingsGroupSelector groupId={groupId} onClickBack={() => router.navigate('/admin/settings')} />
 		</EditableSettingsProvider>
 	);

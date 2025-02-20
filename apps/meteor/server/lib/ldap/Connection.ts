@@ -8,10 +8,10 @@ import type {
 } from '@rocket.chat/core-typings';
 import ldapjs from 'ldapjs';
 
-import { settings } from '../../../app/settings/server';
-import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { settings } from '../../../app/settings/server';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 interface ILDAPEntryCallback<T> {
 	(entry: ldapjs.SearchEntry): T | undefined;
@@ -291,11 +291,11 @@ export class LDAPConnection {
 			return value.map((item) => this.extractLdapAttribute(item));
 		}
 
-		if (value instanceof Buffer) {
-			return value.toString();
+		if (typeof value === 'string') {
+			return value;
 		}
 
-		return value;
+		return value.toString();
 	}
 
 	public extractLdapEntryData(entry: ldapjs.SearchEntry): ILDAPEntry {

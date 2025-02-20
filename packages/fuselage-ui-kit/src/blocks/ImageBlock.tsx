@@ -3,9 +3,9 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useEffect, useState } from 'react';
 
+import { Image } from './ImageBlock.styles';
 import { useSurfaceType } from '../hooks/useSurfaceType';
 import type { BlockProps } from '../utils/BlockProps';
-import { Image } from './ImageBlock.styles';
 
 const maxSize = 360;
 
@@ -84,7 +84,7 @@ const ImageBlock = ({
             {surfaceRenderer.renderTextObject(
               block.title,
               0,
-              UiKit.BlockContext.NONE
+              UiKit.BlockContext.NONE,
             )}
           </Box>
         )}

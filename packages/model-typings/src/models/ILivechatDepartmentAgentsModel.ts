@@ -64,7 +64,9 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		departmentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
+	countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
+	countBotsForDepartment(departmentId: string): Promise<number>;
 	getNextBotForDepartment(
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],

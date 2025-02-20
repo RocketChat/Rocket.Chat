@@ -9,7 +9,7 @@ async function translationDiff(source: string, target: string) {
 	console.debug('loading translations from', translationDir);
 
 	function diffKeys(a: Record<string, string>, b: Record<string, string>) {
-		const diff = {};
+		const diff: Record<string, string> = {};
 		Object.keys(a).forEach((key) => {
 			if (!b[key]) {
 				diff[key] = a[key];

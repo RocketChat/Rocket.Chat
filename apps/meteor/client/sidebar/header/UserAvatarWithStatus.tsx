@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { UserStatus } from '../../components/UserStatus';
 
@@ -21,7 +20,7 @@ const anon = {
 
 const UserAvatarWithStatus = () => {
 	const user = useUser();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
 

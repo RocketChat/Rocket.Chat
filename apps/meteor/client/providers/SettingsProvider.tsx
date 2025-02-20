@@ -1,12 +1,12 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
-import { queryClient } from '../lib/queryClient';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 
@@ -74,7 +74,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 									? { section: query.section }
 									: {
 											$or: [{ section: { $exists: false } }, { section: undefined }],
-									  })),
+										})),
 						},
 						{
 							sort: {
@@ -89,26 +89,21 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 		[cachedCollection],
 	);
 
-	const settingsChangeCallback = (changes: { _id: string }[]): void => {
-		changes.forEach((val) => {
-			switch (val._id) {
-				case 'Enterprise_License':
-					queryClient.invalidateQueries(['licenses']);
-					break;
-
-				default:
-					break;
-			}
-		});
-	};
+	const queryClient = useQueryClient();
 
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
-		async (changes) => {
-			settingsChangeCallback(changes);
-			await saveSettings(changes);
+		async (changes: Partial<ISetting>[]) => {
+			// FIXME: This is a temporary solution to invalidate queries when settings change
+			changes.forEach((val) => {
+				if (val._id === 'Enterprise_License') {
+					queryClient.invalidateQueries({ queryKey: ['licenses'] });
+				}
+			});
+
+			await saveSettings(changes as Pick<ISetting, '_id' | 'value'>[]);
 		},
-		[saveSettings],
+		[queryClient, saveSettings],
 	);
 
 	const contextValue = useMemo<SettingsContextValue>(

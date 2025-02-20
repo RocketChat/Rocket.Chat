@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
@@ -11,10 +11,10 @@ import { useMediaPermissions } from '../../hooks/useMediaPermissions';
 const audioRecorder = new AudioRecorder();
 
 export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boolean): GenericMenuItemProps => {
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
+	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
+	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled', true);
+	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', '');
+	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
 	const [isPermissionDenied] = useMediaPermissions('microphone');
 
 	const isAllowed = useMemo(
@@ -34,13 +34,13 @@ export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boo
 
 	const chat = useChat();
 
-	const stopRecording = useMutableCallback(() => {
+	const stopRecording = useEffectEvent(() => {
 		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
 	});
 
-	const setMicrophoneDenied = useMutableCallback((isDenied) => {
+	const setMicrophoneDenied = useEffectEvent((isDenied: boolean) => {
 		if (isDenied) {
 			stopRecording();
 		}

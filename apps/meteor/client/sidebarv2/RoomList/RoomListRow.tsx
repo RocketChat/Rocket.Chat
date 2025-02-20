@@ -1,23 +1,23 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo } from 'react';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import type { TFunction } from 'i18next';
+import { memo, useMemo } from 'react';
 
-import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 
 type RoomListRowProps = {
 	data: {
 		extended: boolean;
-		t: ReturnType<typeof useTranslation>;
+		t: TFunction;
 		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
 	};
-	item: ISubscription & IRoom;
+	item: SubscriptionWithRoom;
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {

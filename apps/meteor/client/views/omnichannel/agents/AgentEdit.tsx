@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldLabel,
@@ -15,10 +15,10 @@ import {
 	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -31,6 +31,16 @@ import {
 } from '../../../components/Contextualbar';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
+
+type AgentEditFormData = {
+	name: string | undefined;
+	username: string | undefined;
+	email: string | undefined;
+	departments: string[];
+	status: ILivechatAgentStatus;
+	maxNumberSimultaneousChat: number;
+	voipExtension: string;
+};
 
 type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
@@ -81,7 +91,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 
 	const initialDepartmentValue = useMemo(() => userDepartments.map(({ departmentId }) => departmentId) || [], [userDepartments]);
 
-	const methods = useForm({
+	const methods = useForm<AgentEditFormData>({
 		values: {
 			name,
 			username,
@@ -103,25 +113,27 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	const saveAgentInfo = useMethod('livechat:saveAgentInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
-	const handleSave = useMutableCallback(async ({ status, departments, ...data }) => {
+	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
 			await saveAgentInfo(agentData._id, data, departments);
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
-			queryClient.invalidateQueries(['livechat-agents']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-agents'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const usernameField = useUniqueId();
-	const emailField = useUniqueId();
-	const departmentsField = useUniqueId();
-	const statusField = useUniqueId();
-	const voipExtensionField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const usernameField = useId();
+	const emailField = useId();
+	const departmentsField = useId();
+	const statusField = useId();
+	const voipExtensionField = useId();
 
 	return (
 		<Contextualbar data-qa-id='agent-edit-contextual-bar'>

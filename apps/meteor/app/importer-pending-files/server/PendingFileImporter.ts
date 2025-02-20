@@ -2,18 +2,18 @@ import http from 'http';
 import https from 'https';
 
 import { api } from '@rocket.chat/core-services';
-import type { IImport, MessageAttachment, IUpload } from '@rocket.chat/core-typings';
+import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { FileUpload } from '../../file-upload/server';
-import { Importer, ProgressStep, Selection } from '../../importer/server';
-import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
+import { Importer, ProgressStep } from '../../importer/server';
+import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class PendingFileImporter extends Importer {
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
 	}
 
@@ -27,21 +27,23 @@ export class PendingFileImporter extends Importer {
 			return 0;
 		}
 
-		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
-		await this.addCountToTotal(fileCount);
+		this.progress.count.total += fileCount;
+		await this.updateRecord({
+			'count.messages': fileCount,
+			'count.total': fileCount,
+			'messagesstatus': null,
+			'status': ProgressStep.IMPORTING_FILES,
+		});
+		this.reportProgress();
 
-		const fileData = new Selection(this.info.name, [], [], fileCount);
-		await this.updateRecord({ fileData });
-
-		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		setImmediate(() => {
-			void this.startImport(fileData);
+			void this.startImport({});
 		});
 
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<ImporterProgress> {
+	async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
 		const downloadedFileIds: string[] = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;

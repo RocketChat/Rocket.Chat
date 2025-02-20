@@ -1,6 +1,6 @@
-import React from 'react';
-import type { OnDragEndResponder } from 'react-beautiful-dnd';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { memo } from 'react';
+import type { OnDragEndResponder } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 
 import DraggableListItem from './DraggableListItem';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
@@ -17,7 +17,7 @@ export type DraggableListProps = {
   onDragEnd: OnDragEndResponder;
 };
 
-const DraggableList = React.memo(
+const DraggableList = memo(
   ({ blocks, surface, onDragEnd }: DraggableListProps) => (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable-list">

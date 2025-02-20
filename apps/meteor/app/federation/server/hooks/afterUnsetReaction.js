@@ -6,7 +6,7 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 
 async function afterUnsetReaction(message, { user, reaction }) {
-	const room = Rooms.findOneById(message.rid, { fields: { federation: 1 } });
+	const room = await Rooms.findOneById(message.rid, { projection: { federation: 1 } });
 
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) {

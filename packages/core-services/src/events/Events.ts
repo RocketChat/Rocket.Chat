@@ -211,6 +211,7 @@ export type EventSignatures = {
 						| 'ignored'
 						| 'E2EKey'
 						| 'E2ESuggestedKey'
+						| 'oldRoomKeys'
 						| 'tunread'
 						| 'tunreadGroup'
 						| 'tunreadUser'
