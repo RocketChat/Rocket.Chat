@@ -14,7 +14,6 @@ try {
 const rootPath = path.join(__dirname, '..');
 const denoRuntimePath = path.join(rootPath, 'deno-runtime');
 const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache');
-console.log('DENO CACHE WITH DENO_DIR', DENO_DIR);
 
 childProcess.execSync('deno cache main.ts', {
     cwd: denoRuntimePath,
