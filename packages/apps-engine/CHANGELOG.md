@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.47.5
+
+### Patch Changes
+
+- ([#35267](https://github.com/RocketChat/Rocket.Chat/pull/35267)) Fixes deno dependency caching for the docker image builds
+
 ## 1.47.4
 
 ### Patch Changes

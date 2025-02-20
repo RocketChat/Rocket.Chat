@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 7.0.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35267](https://github.com/RocketChat/Rocket.Chat/pull/35267)) Fixes deno dependency caching for the docker image builds
+
+- <details><summary>Updated dependencies [2af970537b]:</summary>
+
+  - @rocket.chat/apps-engine@1.47.5
+  - @rocket.chat/presence@0.2.16
+  - @rocket.chat/apps@0.2.7
+  - @rocket.chat/core-services@0.7.8
+  - @rocket.chat/core-typings@7.0.7
+  - @rocket.chat/fuselage-ui-kit@12.0.7
+  - @rocket.chat/rest-typings@7.0.7
+  - @rocket.chat/license@1.0.7
+  - @rocket.chat/omnichannel-services@0.3.13
+  - @rocket.chat/pdf-worker@0.2.13
+  - @rocket.chat/api-client@0.2.16
+  - @rocket.chat/cron@0.1.16
+  - @rocket.chat/freeswitch@1.0.7
+  - @rocket.chat/gazzodown@12.0.7
+  - @rocket.chat/model-typings@1.0.7
+  - @rocket.chat/ui-contexts@12.0.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.8
+  - @rocket.chat/models@1.0.7
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/ui-avatar@8.0.7
+  - @rocket.chat/ui-client@12.0.7
+  - @rocket.chat/ui-video-conf@12.0.7
+  - @rocket.chat/ui-voip@2.0.7
+  - @rocket.chat/web-ui-registration@12.0.7
+  - @rocket.chat/instance-status@0.1.16
+  </details>
+
 ## 7.0.6
 
 ### Patch Changes
