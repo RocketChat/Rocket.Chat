@@ -108,13 +108,15 @@ Bump ${pkgName} version.
 }
 
 export async function getEngineVersionsMd(cwd: string) {
-	const { node } = await getNodeNpmVersions(cwd);
+	const { node, yarn, deno } = await getNodeNpmVersions(cwd);
 	const appsEngine = await getAppsEngineVersion(cwd);
 	const mongo = await getMongoVersion(cwd);
 
 	return `### Engine versions
 
 - Node: \`${node}\`
+- Yarn: \`${yarn}\`
+- Deno: \`${deno}\`
 - MongoDB: \`${mongo.join(', ')}\`
 - Apps-Engine: \`${appsEngine}\`
 
