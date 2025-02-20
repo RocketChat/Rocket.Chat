@@ -1,7 +1,8 @@
 import { debounce } from 'lodash';
 
 import RocketAdapter from './RocketAdapter';
-import SlackAdapter from './SlackAdapter';
+import SlackAdapterApp from './SlackAdapterApp';
+import SlackAdapterLegacy from './SlackAdapterLegacy';
 import type { IRocketChatAdapter } from './definition/IRocketChatAdapter';
 import type { ISlackAdapter, SlackAppCredentials } from './definition/ISlackAdapter';
 import type { ISlackbridge } from './definition/ISlackbridge';
@@ -32,14 +33,22 @@ class SlackBridgeClass implements ISlackbridge {
 
 	private signingSecrets = '';
 
-	private aliasFormat = '';
+	private _aliasFormat = '';
 
-	private excludeBotnames = '';
+	private _excludeBotNames = '';
 
 	public isReactionsEnabled = true;
 
 	public get reactionsMap(): Map<unknown, unknown> {
 		return this._reactionsMap;
+	}
+
+	public get aliasFormat(): string {
+		return this._aliasFormat;
+	}
+
+	public get excludeBotNames(): string {
+		return this._excludeBotNames;
 	}
 
 	constructor() {
@@ -57,8 +66,8 @@ class SlackBridgeClass implements ISlackbridge {
 		this.botTokens = '';
 		this.appTokens = '';
 		this.signingSecrets = '';
-		this.aliasFormat = '';
-		this.excludeBotnames = '';
+		this._aliasFormat = '';
+		this._excludeBotNames = '';
 		this.isReactionsEnabled = true;
 
 		this.processSettings();
@@ -73,8 +82,7 @@ class SlackBridgeClass implements ISlackbridge {
 				const tokenList = this.apiTokens.split('\n');
 
 				tokenList.forEach((apiToken) => {
-					const slack: ISlackAdapter = new SlackAdapter(this);
-					slack.setRocketAdapter(this.rocket);
+					const slack: ISlackAdapter = new SlackAdapterLegacy(this, this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -98,8 +106,7 @@ class SlackBridgeClass implements ISlackbridge {
 				}));
 
 				appCredentials.forEach((appCredential) => {
-					const slack: ISlackAdapter = new SlackAdapter(this);
-					slack.setRocketAdapter(this.rocket);
+					const slack: ISlackAdapter = new SlackAdapterApp(this, this.rocket);
 					this.rocket.addSlack(slack);
 					this.slackAdapters.push(slack);
 
@@ -194,13 +201,13 @@ class SlackBridgeClass implements ISlackbridge {
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		settings.watch<string>('SlackBridge_AliasFormat', (value) => {
-			this.aliasFormat = value;
+			this._aliasFormat = value;
 			classLogger.debug('Setting: SlackBridge_AliasFormat', value);
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		settings.watch<string>('SlackBridge_ExcludeBotnames', (value) => {
-			this.excludeBotnames = value;
+			this._excludeBotNames = value;
 			classLogger.debug('Setting: SlackBridge_ExcludeBotnames', value);
 		});
 

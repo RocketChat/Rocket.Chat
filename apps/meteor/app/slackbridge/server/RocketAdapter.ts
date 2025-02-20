@@ -11,9 +11,8 @@ import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 import _ from 'underscore';
 
-import type { SlackTS } from './definition/IMessageSyncedWithSlack';
-import type { IRocketChatAdapter, RocketChatUserIdentification } from './definition/IRocketChatAdapter';
-import type { SlackConversation } from './definition/ISlackAPI';
+import type { IMessageSyncedWithSlack, SlackTS } from './definition/IMessageSyncedWithSlack';
+import type { IRocketChatAdapter, SlackConversationSyncedWithRocketChat } from './definition/IRocketChatAdapter';
 import type { ISlackAdapter } from './definition/ISlackAdapter';
 import type { ISlackbridge } from './definition/ISlackbridge';
 import type { RocketChatMessageData } from './definition/RocketChatMessageData';
@@ -159,7 +158,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		}
 	}
 
-	async onMessage(rocketMessage: IMessage, _params: unknown) {
+	async onMessage(rocketMessage: IMessageSyncedWithSlack, _params: unknown) {
 		for await (const slack of this._slackAdapters) {
 			try {
 				if (!slack.getSlackChannel(rocketMessage.rid)) {
@@ -241,7 +240,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		}
 	}
 
-	async processMessageChanged(rocketMessage: IMessage, slack: ISlackAdapter) {
+	async processMessageChanged(rocketMessage: IMessageSyncedWithSlack, slack: ISlackAdapter) {
 		if (!rocketMessage) {
 			return;
 		}
@@ -291,7 +290,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		return Rooms.findOneByImportId(slackChannelId);
 	}
 
-	async getRocketUsers(members: string[], slackChannel: SlackConversation) {
+	async getRocketUsers(members: string[], slackChannel: SlackConversationSyncedWithRocketChat) {
 		const rocketUsers = [];
 		for await (const member of members) {
 			if (member !== slackChannel.creator) {
@@ -304,7 +303,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 		return rocketUsers;
 	}
 
-	async getRocketUserCreator(slackChannel: SlackConversation) {
+	async getRocketUserCreator(slackChannel: SlackConversationSyncedWithRocketChat) {
 		return slackChannel.creator ? (await this.findUser(slackChannel.creator)) || this.addUser(slackChannel.creator) : null;
 	}
 
@@ -317,7 +316,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 				continue;
 			}
 
-			const slackChannel: SlackConversation & { rocketId?: string } = await slack.slackAPI.getRoomInfo(slackChannelID);
+			const slackChannel: SlackConversationSyncedWithRocketChat | undefined = await slack.slackAPI.getRoomInfo(slackChannelID);
 			if (slackChannel) {
 				const members = await slack.slackAPI.getMembers(slackChannelID);
 				if (!members) {
@@ -325,11 +324,18 @@ export default class RocketAdapter implements IRocketChatAdapter {
 					continue;
 				}
 
-				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
+				const { name: slackChannelName } = slackChannel;
+
+				if (!slackChannelName) {
+					rocketLogger.debug('Unable to addChannel: slack data is missing channel name.');
+					continue;
+				}
+
+				const rocketRoom = await Rooms.findOneByName(slackChannelName);
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : (rocketRoom as IRoom)._id;
-					await Rooms.addImportIds(slackChannel.rocketId, [slackChannel.id]);
+					await Rooms.addImportIds(slackChannel.rocketId, [slackChannel.id || slackChannelID]);
 				} else {
 					const rocketUsers = await this.getRocketUsers(members, slackChannel);
 					const rocketUserCreator = await this.getRocketUserCreator(slackChannel);
@@ -341,7 +347,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator, rocketUsers);
+						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannelName, rocketUserCreator, rocketUsers);
 						slackChannel.rocketId = rocketChannel.rid;
 					} catch (e: any) {
 						if (!hasRetried) {
@@ -354,19 +360,23 @@ export default class RocketAdapter implements IRocketChatAdapter {
 					}
 
 					const roomUpdate: Record<string, any> = {
-						ts: new Date(slackChannel.created * 1000),
+						...(slackChannel.created && {
+							ts: new Date(slackChannel.created * 1000),
+						}),
 					};
 
 					let lastSetTopic = 0;
 					if (slackChannel.topic?.value) {
 						roomUpdate.topic = slackChannel.topic.value;
-						lastSetTopic = slackChannel.topic.last_set;
+						if (slackChannel.topic.last_set) {
+							lastSetTopic = slackChannel.topic.last_set;
+						}
 					}
 
-					if (slackChannel.purpose?.value && slackChannel.purpose.last_set > lastSetTopic) {
+					if (slackChannel.purpose?.value && (slackChannel.purpose.last_set || 0) > lastSetTopic) {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
-					await Rooms.addImportIds(slackChannel.rocketId as string, [slackChannel.id]);
+					await Rooms.addImportIds(slackChannel.rocketId as string, [slackChannel.id || slackChannelID]);
 					slack.addSlackChannel(slackChannel.rocketId as string, slackChannelID);
 				}
 
@@ -489,7 +499,7 @@ export default class RocketAdapter implements IRocketChatAdapter {
 	}
 
 	addAliasToMsg(rocketUserName: string, rocketMsgObj: Partial<IMessage>): Partial<IMessage> {
-		const aliasFormat = settings.get('SlackBridge_AliasFormat');
+		const { aliasFormat } = this.slackBridge;
 		if (aliasFormat) {
 			const alias = this.util.format(aliasFormat, rocketUserName);
 

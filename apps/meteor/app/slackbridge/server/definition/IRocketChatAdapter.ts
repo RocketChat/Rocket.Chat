@@ -1,9 +1,12 @@
 import type { IMessage, IRegisterUser, IRoom } from '@rocket.chat/core-typings';
+import type { ConversationsInfoResponse } from '@slack/web-api';
 
 import type { SlackTS } from './IMessageSyncedWithSlack';
 import type { ISlackAdapter } from './ISlackAdapter';
 
 export type RocketChatUserIdentification = Pick<IRegisterUser, '_id' | 'username' | 'name'>;
+
+export type SlackConversationSyncedWithRocketChat = ConversationsInfoResponse['channel'] & { rocketId?: string };
 
 export interface IRocketChatAdapter {
 	slackAdapters: ISlackAdapter[];

@@ -39,7 +39,7 @@ export class SlackAPI implements ISlackAPI {
 		});
 		const response: ConversationsListResponse = await request.json();
 
-		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
+		if (response && Array.isArray(response.channels) && response.channels.length > 0) {
 			channels = channels.concat(response.channels);
 			if (response.response_metadata?.next_cursor) {
 				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
@@ -65,7 +65,7 @@ export class SlackAPI implements ISlackAPI {
 		});
 		const response: ConversationsListResponse = await request.json();
 
-		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
+		if (response && Array.isArray(response.channels) && response.channels.length > 0) {
 			groups = groups.concat(response.channels);
 			if (response.response_metadata?.next_cursor) {
 				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
@@ -114,7 +114,7 @@ export class SlackAPI implements ISlackAPI {
 			});
 			// eslint-disable-next-line no-await-in-loop
 			const response = await request.json();
-			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
+			if (response && request.status === 200 && request.ok && Array.isArray(response.members)) {
 				members = members.concat(response.members);
 				const hasMoreItems = response.response_metadata?.next_cursor;
 				if (hasMoreItems) {
@@ -205,7 +205,7 @@ export class SlackAPI implements ISlackAPI {
 			},
 		});
 		const response = await request.json();
-		return (response && response && request.status === 200 && request.ok && response.items) || undefined;
+		return (response && request.status === 200 && request.ok && response.items) || undefined;
 	}
 
 	async getUser(userId: string): Promise<UsersInfoResponse['user'] | undefined> {
@@ -218,7 +218,22 @@ export class SlackAPI implements ISlackAPI {
 			},
 		});
 		const response = await request.json();
-		return (response && response && request.status === 200 && request.ok && response.user) || undefined;
+		return (response && request.status === 200 && request.ok && response.user) || undefined;
+	}
+
+	async getFile(fileUrl: string): Promise<Buffer<ArrayBufferLike> | undefined> {
+		const request = await fetch(fileUrl, {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
+		});
+
+		// #ToDo: Confirm this works the same way as the old https.get code
+		const fileBuffer = await request.buffer();
+		if (request.status !== 200 || !request.ok) {
+			return undefined;
+		}
+		return fileBuffer;
 	}
 
 	static async verifyToken(token: string): Promise<boolean> {
@@ -229,7 +244,7 @@ export class SlackAPI implements ISlackAPI {
 			method: 'POST',
 		});
 		const response = await request.json();
-		return response && response && request.status === 200 && request.ok && response.ok;
+		return response && request.status === 200 && request.ok && response.ok;
 	}
 
 	static async verifyAppCredentials({ botToken, appToken }: { botToken: string; appToken: string }): Promise<boolean> {
@@ -240,7 +255,7 @@ export class SlackAPI implements ISlackAPI {
 			method: 'POST',
 		});
 		const response = await request.json();
-		const isAppTokenOk = response && response && request.status === 200 && request.ok && response.ok;
+		const isAppTokenOk = response && request.status === 200 && request.ok && response.ok;
 		const isBotTokenOk = await this.verifyToken(botToken);
 		return isAppTokenOk && isBotTokenOk;
 	}

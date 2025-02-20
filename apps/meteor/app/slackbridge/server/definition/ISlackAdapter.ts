@@ -1,7 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { SlackTS } from './IMessageSyncedWithSlack';
-import type { IRocketChatAdapter, RocketChatUserIdentification } from './IRocketChatAdapter';
+import type { RocketChatUserIdentification } from './IRocketChatAdapter';
 import type { ISlackAPI } from './ISlackAPI';
 import type { RocketChatMessageData } from './RocketChatMessageData';
 import type { SlackMessageEvent } from './SlackMessageEvent';
@@ -25,11 +25,8 @@ export interface ISlackAdapter {
 	connectLegacy(apiToken: string): Promise<unknown>;
 	disconnect(): Promise<void>;
 
-	setRocketAdapter(adapter: IRocketChatAdapter): void;
-
 	registerForEvents(): void;
 
-	registerForEventsLegacy(): void;
 	getSlackChannel(rocketChatChannelId: string): SlackChannel | undefined;
 	postDeleteMessage(message: IMessage): Promise<void>;
 
