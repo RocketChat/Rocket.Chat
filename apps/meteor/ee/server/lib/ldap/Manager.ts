@@ -1,8 +1,10 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
+import { LogOperation } from '@rocket.chat/logger';
 import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
+import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 import type {
 	ImporterAfterImportCallback,
 	ImporterBeforeImportCallback,
@@ -19,7 +21,6 @@ import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Log
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
 import { syncUserRoles } from '../syncUserRoles';
-import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -40,18 +41,30 @@ export class LDAPEEManager extends LDAPManager {
 		const converter = new LDAPUserConverter(options);
 		const touchedUsers = new Set<IUser['_id']>();
 
+		const operation = new LogOperation('LDAP Sync', {
+			options,
+			createNewUsers,
+			updateExistingUsers,
+			disableMissingUsers,
+			mergeExistingUsers,
+		});
+
 		try {
-			await ldap.connect();
+			await ldap.connect(operation);
+
+			const getUsersOperation = operation?.addOperation('get LDAP data');
 
 			if (createNewUsers || mergeExistingUsers) {
-				await this.importNewUsers(ldap, converter);
+				await this.importNewUsers(ldap, converter, getUsersOperation);
 			} else if (updateExistingUsers) {
-				await this.updateExistingUsers(ldap, converter, disableMissingUsers);
+				await this.updateExistingUsers(ldap, converter, disableMissingUsers, getUsersOperation);
 				// Missing users will have been disabled automatically by the update operation, so no need to do a separate query for them
 				disableMissingUsers = false;
 			}
 
-			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
+			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter(getUsersOperation);
+
+			const conversionOperation = operation?.addOperation('convertData');
 
 			await converter.convertData({
 				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
@@ -63,13 +76,29 @@ export class LDAPEEManager extends LDAPManager {
 						?.replace(/#{username}/g, options?.username || '#{username}')
 						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
 
-					return membersOfGroupFilter.includes(memberFormat);
+					if (membersOfGroupFilter.includes(memberFormat)) {
+						return true;
+					}
+
+					conversionOperation?.addRecord({
+						msg: 'Skipping user due to group filter',
+						username: options?.username,
+						dn: options?.dn,
+						memberFormat,
+					});
+					return false;
 				}) as ImporterBeforeImportCallback,
-				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
+				afterImportFn: (async ({ data, options }, isNewRecord: boolean): Promise<void> => {
+					const entryOperation = conversionOperation?.addOperation(`User processed ${data._id}`, {
+						username: options?.username,
+						dn: options?.dn,
+						isNewRecord,
+					});
+
 					if (data._id) {
 						touchedUsers.add(data._id);
 					}
-					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord);
+					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord, entryOperation);
 				}) as ImporterAfterImportCallback,
 			});
 
@@ -80,7 +109,9 @@ export class LDAPEEManager extends LDAPManager {
 			logger.error(error);
 		}
 
-		ldap.disconnect();
+		ldap.disconnect(operation);
+		operation.purgeData();
+		logger.debug({ msg: 'LDAP Operation log', log: JSON.stringify(operation) });
 	}
 
 	public static async syncAvatars(): Promise<void> {
@@ -142,12 +173,21 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
+	public static async advancedSyncForUser(
+		ldap: LDAPConnection,
+		user: IUser,
+		isNewRecord: boolean,
+		dn: string,
+		operation?: LogOperation,
+	): Promise<void> {
+		const advancedOperation = operation?.addOperation('Running advanced sync');
+
 		try {
-			await this.syncUserRoles(ldap, user, dn);
-			await this.syncUserChannels(ldap, user, dn);
-			await this.syncUserTeams(ldap, user, dn, isNewRecord);
+			await this.syncUserRoles(ldap, user, dn, advancedOperation);
+			await this.syncUserChannels(ldap, user, dn, advancedOperation);
+			await this.syncUserTeams(ldap, user, dn, isNewRecord, advancedOperation);
 		} catch (e) {
+			advancedOperation?.addRecord({ msg: 'Advanced Sync Failed', dn, error: e });
 			logger.debug(`Advanced Sync failed for user: ${dn}`);
 			logger.error(e);
 		}
@@ -158,14 +198,17 @@ export class LDAPEEManager extends LDAPManager {
 		importUser: IImportUser,
 		converter: LDAPUserConverter,
 		isNewRecord: boolean,
+		operation?: LogOperation,
 	): Promise<void> {
+		operation?.addRecord('Searching for matching Rocket.Chat user');
 		const user = await converter.findExistingUser(importUser);
 		if (!user?.username) {
+			operation?.addRecord('Matching user not found.');
 			return;
 		}
 
 		const dn = importUser.importIds[0];
-		return this.advancedSyncForUser(ldap, user, isNewRecord, dn);
+		return this.advancedSyncForUser(ldap, user, isNewRecord, dn, operation);
 	}
 
 	private static async isUserInGroup(
@@ -174,6 +217,7 @@ export class LDAPEEManager extends LDAPManager {
 		filter: string,
 		{ dn, username }: { dn: string; username: string },
 		groupName: string,
+		operation?: LogOperation,
 	): Promise<boolean> {
 		if (!filter || !baseDN) {
 			logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
@@ -187,11 +231,13 @@ export class LDAPEEManager extends LDAPManager {
 			scope: 'sub',
 		};
 
-		const result = await ldap.searchRaw(baseDN, searchOptions);
+		const result = await ldap.searchRaw(baseDN, searchOptions, operation);
 
 		if (!Array.isArray(result) || result.length === 0) {
+			operation?.addRecord('User is not in the group');
 			logger.debug(`${username} is not in ${groupName} group!!!`);
 		} else {
+			operation?.addRecord('User is in the group');
 			logger.debug(`${username} is in ${groupName} group.`);
 			return true;
 		}
@@ -207,9 +253,10 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
+	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string, operation?: LogOperation): Promise<void> {
 		const { username } = user;
 		if (!username) {
+			operation?.addRecord(`Can't sync roles for user with no username`);
 			logger.debug('User has no username');
 			return;
 		}
@@ -225,6 +272,8 @@ export class LDAPEEManager extends LDAPManager {
 			logger.debug('not syncing user roles');
 			return;
 		}
+
+		const rolesOperation = operation?.addOperation('syncUserRoles');
 
 		const roles = (await Roles.find(
 			{},
@@ -260,16 +309,27 @@ export class LDAPEEManager extends LDAPManager {
 			}, []);
 
 		if (searchStrategy === 'once') {
-			const ldapUserGroups = await this.getLdapGroupsByUsername(ldap, username, dn, syncUserRolesBaseDN, syncUserRolesFilter);
+			const ldapUserGroups = await this.getLdapGroupsByUsername(
+				ldap,
+				username,
+				dn,
+				syncUserRolesBaseDN,
+				syncUserRolesFilter,
+				undefined,
+				rolesOperation,
+			);
 			roleList.push(...this.getDataMappedByLdapGroups(groupsToRolesMap, ldapUserGroups));
 		} else if (searchStrategy === 'each_group') {
 			for await (const ldapGroup of ldapGroups) {
-				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapGroup)) {
+				const groupOperation = rolesOperation?.addOperation(`Group ${ldapGroup}`);
+
+				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapGroup, groupOperation)) {
 					roleList.push(...ensureArray<string>(groupsToRolesMap[ldapGroup]));
 				}
 			}
 		}
 
+		rolesOperation?.addRecord({ msg: 'roleList', roleList });
 		for await (const nonValidatedRole of roleList) {
 			const [roleIdOrName] = nonValidatedRole.split(/\.(.+)/);
 
@@ -278,6 +338,8 @@ export class LDAPEEManager extends LDAPManager {
 				roleIdsList.push(role._id);
 			}
 		}
+
+		rolesOperation?.addRecord({ msg: 'Sync Roles', allowedRoles, roleIdsList });
 
 		await syncUserRoles(user._id, roleIdsList, {
 			allowedRoles,
@@ -304,7 +366,7 @@ export class LDAPEEManager extends LDAPManager {
 		return room;
 	}
 
-	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
+	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string, operation?: LogOperation): Promise<void> {
 		const syncUserChannels = settings.get<boolean>('LDAP_Sync_User_Data_Channels') ?? false;
 		const syncUserChannelsRemove = settings.get<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels') ?? false;
 		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
@@ -328,6 +390,8 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
+		const channelsOperation = operation?.addOperation('Sync User Channels');
+
 		logger.debug('syncing user channels');
 		const ldapGroups = Object.keys(groupsToRoomsMap);
 		const ldapUserGroups: string[] = [];
@@ -335,16 +399,30 @@ export class LDAPEEManager extends LDAPManager {
 		const userChannelsNames: string[] = [];
 
 		if (searchStrategy === 'once') {
-			ldapUserGroups.push(...(await this.getLdapGroupsByUsername(ldap, username, dn, syncUserChannelsBaseDN, syncUserChannelsFilter)));
+			ldapUserGroups.push(
+				...(await this.getLdapGroupsByUsername(
+					ldap,
+					username,
+					dn,
+					syncUserChannelsBaseDN,
+					syncUserChannelsFilter,
+					undefined,
+					channelsOperation,
+				)),
+			);
 			userChannelsNames.push(...this.getDataMappedByLdapGroups(groupsToRoomsMap, ldapUserGroups));
 		} else if (searchStrategy === 'each_group') {
 			for await (const ldapGroup of ldapGroups) {
-				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapGroup)) {
+				const groupOperation = channelsOperation?.addOperation(`Group ${ldapGroup}`);
+
+				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapGroup, groupOperation)) {
 					userChannelsNames.push(...ensureArray<string>(groupsToRoomsMap[ldapGroup]));
 					ldapUserGroups.push(ldapGroup);
 				}
 			}
 		}
+
+		channelsOperation?.addRecord({ msg: 'userChannelsNames', userChannelsNames });
 
 		for await (const userChannelName of userChannelsNames) {
 			try {
@@ -388,7 +466,13 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, dn: string, isNewRecord: boolean): Promise<void> {
+	private static async syncUserTeams(
+		ldap: LDAPConnection,
+		user: IUser,
+		dn: string,
+		isNewRecord: boolean,
+		operation?: LogOperation,
+	): Promise<void> {
 		if (!user.username) {
 			return;
 		}
@@ -400,10 +484,12 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
+		const teamsOperation = operation?.addOperation('syncUserTeams');
+
 		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
 		const filter = settings.get<string>('LDAP_Query_To_Get_User_Teams');
 		const groupAttributeName = settings.get<string>('LDAP_Teams_Name_Field');
-		const ldapUserTeams = await this.getLdapGroupsByUsername(ldap, user.username, dn, baseDN, filter, groupAttributeName);
+		const ldapUserTeams = await this.getLdapGroupsByUsername(ldap, user.username, dn, baseDN, filter, groupAttributeName, teamsOperation);
 		const mapJson = settings.get<string>('LDAP_Groups_To_Rocket_Chat_Teams');
 		if (!mapJson) {
 			return;
@@ -427,6 +513,8 @@ export class LDAPEEManager extends LDAPManager {
 		const currentTeamIds = currentTeams?.map(({ teamId }) => teamId);
 		const teamsToRemove = currentTeamIds?.filter((teamId) => notInTeamIds.includes(teamId));
 		const teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
+
+		teamsOperation?.addRecord({ msg: 'Sync user Teams', teamsToAdd, teamsToRemove });
 
 		await Team.insertMemberOnTeams(user._id, teamsToAdd);
 		if (teamsToRemove) {
@@ -457,6 +545,7 @@ export class LDAPEEManager extends LDAPManager {
 		baseDN: string,
 		filter: string,
 		groupAttributeName?: string,
+		operation?: LogOperation,
 	): Promise<Array<string>> {
 		if (!filter) {
 			return [];
@@ -470,10 +559,14 @@ export class LDAPEEManager extends LDAPManager {
 
 		const attributeNames = groupAttributeName ? groupAttributeName.split(',').map((attributeName) => attributeName.trim()) : ['ou', 'cn'];
 
-		const ldapUserGroups = await ldap.searchRaw(baseDN, searchOptions);
+		const groupOperation = operation?.addOperation('getLdapGroupsByUsername');
+
+		const ldapUserGroups = await ldap.searchRaw(baseDN, searchOptions, groupOperation);
 		if (!Array.isArray(ldapUserGroups)) {
 			return [];
 		}
+
+		const entriesOperation = groupOperation?.addOperation('entries');
 
 		return ldapUserGroups
 			.map((entry) => {
@@ -481,9 +574,13 @@ export class LDAPEEManager extends LDAPManager {
 					return undefined;
 				}
 
+				const entryOperation = entriesOperation?.addOperation('entry');
+
 				for (const attributeName of attributeNames) {
+					const attributeOperation = entryOperation?.addOperation(`Attribute ${attributeName}`);
+
 					if (entry.raw[attributeName]) {
-						return ldap.extractLdapAttribute(entry.raw[attributeName]) as string;
+						return ldap.extractLdapAttribute(entry.raw[attributeName], attributeOperation) as string;
 					}
 				}
 
@@ -493,22 +590,27 @@ export class LDAPEEManager extends LDAPManager {
 			.flat();
 	}
 
-	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
+	private static isUserDeactivated(ldapUser: ILDAPEntry, operation?: LogOperation): boolean {
+		const logMessage = (msg: string) => {
+			mapLogger.debug(msg);
+			operation?.addRecord(msg);
+		};
+
 		// Account locked by "Draft-behera-ldap-password-policy"
 		if (ldapUser.pwdAccountLockedTime) {
-			mapLogger.debug('User account is locked by password policy (attribute pwdAccountLockedTime)');
+			logMessage('User account is locked by password policy (attribute pwdAccountLockedTime)');
 			return true;
 		}
 
 		// EDirectory: Account manually disabled by an admin
 		if (ldapUser.loginDisabled) {
-			mapLogger.debug('User account was manually disabled by an admin (attribute loginDisabled)');
+			logMessage('User account was manually disabled by an admin (attribute loginDisabled)');
 			return true;
 		}
 
 		// Oracle: Account must not be allowed to authenticate
 		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
-			mapLogger.debug('User must not be allowed to authenticate (attribute orclIsEnabled)');
+			logMessage('User must not be allowed to authenticate (attribute orclIsEnabled)');
 			return true;
 		}
 
@@ -518,7 +620,7 @@ export class LDAPEEManager extends LDAPManager {
 			if (lockoutTimeValue && !isNaN(lockoutTimeValue)) {
 				// Automatic unlock is disabled
 				if (!ldapUser.lockoutDuration) {
-					mapLogger.debug('User account locked indefinitely by security policy (attribute lockoutTime)');
+					logMessage('User account locked indefinitely by security policy (attribute lockoutTime)');
 					return true;
 				}
 
@@ -526,7 +628,7 @@ export class LDAPEEManager extends LDAPManager {
 				lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
 				// Account has not unlocked itself yet
 				if (lockoutTime.valueOf() > Date.now()) {
-					mapLogger.debug('User account locked temporarily by security policy (attribute lockoutTime)');
+					logMessage('User account locked temporarily by security policy (attribute lockoutTime)');
 					return true;
 				}
 			}
@@ -534,14 +636,15 @@ export class LDAPEEManager extends LDAPManager {
 
 		// Active Directory - Account disabled by an Admin
 		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
-			mapLogger.debug('User account disabled by an admin (attribute userAccountControl)');
+			logMessage('User account disabled by an admin (attribute userAccountControl)');
 			return true;
 		}
 
+		operation?.addRecord({ msg: `User account is not disabled`, userAccountControl: ldapUser.userAccountControl });
 		return false;
 	}
 
-	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
+	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser, operation?: LogOperation): void {
 		if (!ldapUser) {
 			return;
 		}
@@ -551,19 +654,25 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const deleted = this.isUserDeactivated(ldapUser);
+		const activeOperation = operation?.addOperation('copyActiveState');
+
+		const deleted = this.isUserDeactivated(ldapUser, activeOperation);
 		if (deleted === userData.deleted) {
+			activeOperation?.addRecord('No change to status');
 			return;
 		}
 
 		if (syncUserState === 'disable' && !deleted) {
+			activeOperation?.addRecord('User should not be enabled automatically');
 			return;
 		}
 
 		if (syncUserState === 'enable' && deleted) {
+			activeOperation?.addRecord('User should not be disabled automatically');
 			return;
 		}
 
+		activeOperation?.addRecord({ msg: 'Changing user status', deleted });
 		userData.deleted = deleted;
 		logger.info(`${deleted ? 'Deactivating' : 'Activating'} user ${userData.name} (${userData.username})`);
 	}
@@ -581,42 +690,75 @@ export class LDAPEEManager extends LDAPManager {
 		);
 	}
 
-	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPUserConverter): Promise<void> {
+	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPUserConverter, operation?: LogOperation): Promise<void> {
+		const importOperation = operation?.addOperation('importNewUsers');
+		const entriesOperation = importOperation?.addOperation('entries');
+
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-					const data = ldap.extractLdapEntryData(entry);
-					count++;
+			void ldap.searchAllUsers<IImportUser>(
+				{
+					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
+						const entryOperation = entriesOperation?.addOperation('entryCallback');
 
-					const userData = this.mapUserData(data);
-					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-					return userData;
-				},
-				endCallback: (error: any): void => {
-					if (error) {
-						logger.error(error);
-						reject(error);
-						return;
-					}
+						const data = ldap.extractLdapEntryData(entry, entryOperation);
+						count++;
 
-					logger.info('LDAP finished loading users. Users added to importer: ', count);
-					resolve();
+						const userData = this.mapUserData(data, entryOperation);
+						const username = this.getLdapUsername(data);
+						entryOperation?.addRecord({ msg: 'add to importer', dn: data.dn, username });
+
+						converter.addObjectToMemory(userData, { dn: data.dn, username });
+						return userData;
+					},
+					endCallback: (error: any): void => {
+						if (error) {
+							importOperation?.addRecord({ msg: 'search error', error });
+							logger.error(error);
+							reject(error);
+							return;
+						}
+
+						importOperation?.addRecord(`Added ${count} users to importer.`);
+						logger.info('LDAP finished loading users. Users added to importer: ', count);
+						resolve();
+					},
 				},
-			});
+				importOperation,
+			);
 		});
 	}
 
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPUserConverter, disableMissingUsers = false): Promise<void> {
+	private static async updateExistingUsers(
+		ldap: LDAPConnection,
+		converter: LDAPUserConverter,
+		disableMissingUsers = false,
+		operation?: LogOperation,
+	): Promise<void> {
+		const updateOperation = operation?.addOperation('updateExistingUsers');
+
 		const users = await Users.findLDAPUsers().toArray();
+		updateOperation?.addRecord({ msg: 'Got all Rocket.Chat Users with LDAP links', users: users.length });
+
+		const entriesOperation = updateOperation?.addOperation('entries');
 		for await (const user of users) {
-			const ldapUser = await this.findLDAPUser(ldap, user);
+			const entryOperation = entriesOperation?.addOperation(`User ${user._id} - ${user.username}`);
+			searchLogger.debug({ msg: `Searching for user ${user._id} on LDAP` });
+			const ldapUser = await this.findLDAPUser(ldap, user, entryOperation);
 
 			if (ldapUser) {
-				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+				const workOperation = entryOperation?.addOperation('process user');
+				searchLogger.debug({ msg: `User ${user._id} found on LDAP. Adding it to pool.` });
+				const userData = this.mapUserData(ldapUser, user.username, workOperation);
+
+				const username = this.getLdapUsername(ldapUser);
+				workOperation?.addRecord({ msg: 'add to importer', dn: ldapUser.dn, username });
+
+				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username });
 			} else if (disableMissingUsers) {
+				entryOperation?.addRecord('User not found on LDAP; Disabling it.');
+				searchLogger.debug({ msg: `User ${user._id} not found on LDAP, disabling it.` });
 				await setUserActiveStatus(user._id, false, true);
 			}
 		}
@@ -640,14 +782,16 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
+	private static async findLDAPUser(ldap: LDAPConnection, user: IUser, operation?: LogOperation): Promise<ILDAPEntry | undefined> {
 		if (user.services?.ldap?.id) {
-			return ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+			return ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute, operation);
 		}
 
 		if (user.username) {
-			return ldap.findOneByUsername(user.username);
+			return ldap.findOneByUsername(user.username, operation);
 		}
+
+		operation?.addRecord('no uniqueId or username available to search for user');
 
 		searchLogger.debug({
 			msg: 'existing LDAP user not found during Sync',
