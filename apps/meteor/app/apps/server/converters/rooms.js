@@ -135,21 +135,6 @@ export class AppRoomsConverter {
 
 		const contactId = await this.__getContactId(room);
 
-		let _default;
-		if (typeof room.isDefault !== 'undefined') {
-			_default = room.isDefault;
-		}
-
-		let ro;
-		if (typeof room.isReadOnly !== 'undefined') {
-			ro = room.isReadOnly;
-		}
-
-		let sysMes;
-		if (typeof room.displaySystemMessages !== 'undefined') {
-			sysMes = room.displaySystemMessages;
-		}
-
 		const newRoom = {
 			...(room.id && { _id: room.id }),
 			t: room.type,
@@ -159,9 +144,9 @@ export class AppRoomsConverter {
 			...(room.displayName && { fname: room.displayName }),
 			...(room.type !== 'd' && { name: room.slugifiedName }),
 			...(room.members && { members: room.members }),
-			...(_default && { default: _default }),
-			...(ro && { ro }),
-			...(sysMes && { sysMes }),
+			...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
+			...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
+			...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
 			...(u && { u }),
 			...(v && { v }),
 			...(departmentId && { departmentId }),
