@@ -1,5 +1,23 @@
 # Change Log
 
+## 16.0.0-rc.0
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#33141](https://github.com/RocketChat/Rocket.Chat/pull/33141)) Fixes an issue where video conf message block wasn't considering display avatars preference
+
+- <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, 2921a6aa6f7c971a29c8209574cfb66432bc9f47, 083fc49cf718e460dd6e8fcd72b98b42aeb6fc86, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, 271894fb3942d5d0ce3d669325d07fbbbc4bf112, 697a38d23590ac799f0f3c14a676fb6bea7e86ea, be5031a21bdcda31270d53d319f7d183e77d84d7, 36e90a2eb2f9698f7ba42f6e8429a240114426bf]:</summary>
+
+  - @rocket.chat/ui-video-conf@16.0.0-rc.0
+  - @rocket.chat/core-typings@7.4.0-rc.0
+  - @rocket.chat/apps-engine@1.49.0-rc.0
+  - @rocket.chat/ui-contexts@16.0.0-rc.0
+  - @rocket.chat/gazzodown@16.0.0-rc.0
+  - @rocket.chat/ui-avatar@12.0.0-rc.0
+  </details>
+
 ## 15.0.0
 
 ### Patch Changes

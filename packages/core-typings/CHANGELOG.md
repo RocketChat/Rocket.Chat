@@ -1,5 +1,17 @@
 # @rocket.chat/core-typings
 
+## 7.4.0-rc.0
+
+### Minor Changes
+
+- ([#33816](https://github.com/RocketChat/Rocket.Chat/pull/33816) by [@matheusbsilva137](https://github.com/matheusbsilva137)) Replaces Livechat Visitors by Contacts on workspaces' MAC count.
+  This allows a more accurate and potentially smaller MAC count in case Contact Identification is enabled, since multiple visitors may be associated to the same contact.
+- ([#35208](https://github.com/RocketChat/Rocket.Chat/pull/35208)) Adds the Leader group to rooms' members list for better role visibility and consistency.
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
 ## 7.3.0
 
 ### Minor Changes

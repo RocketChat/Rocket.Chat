@@ -1,5 +1,26 @@
 # @rocket.chat/model-typings
 
+## 1.4.0-rc.0
+
+### Minor Changes
+
+- ([#35147](https://github.com/RocketChat/Rocket.Chat/pull/35147)) Allows users to filter by multiple departments & by livechat units on `livechat/rooms` endpoint.
+
+- ([#34958](https://github.com/RocketChat/Rocket.Chat/pull/34958)) Makes Omnichannel converstion start process transactional.
+
+- ([#33816](https://github.com/RocketChat/Rocket.Chat/pull/33816) by [@matheusbsilva137](https://github.com/matheusbsilva137)) Replaces Livechat Visitors by Contacts on workspaces' MAC count.
+  This allows a more accurate and potentially smaller MAC count in case Contact Identification is enabled, since multiple visitors may be associated to the same contact.
+- ([#35208](https://github.com/RocketChat/Rocket.Chat/pull/35208)) Adds the Leader group to rooms' members list for better role visibility and consistency.
+
+### Patch Changes
+
+- ([#35029](https://github.com/RocketChat/Rocket.Chat/pull/35029)) Fixes a bug that caused routing algorithms to ignore the `Livechat_enabled_when_agent_idle` setting, effectively ignoring idle users from being assigned to inquiries.
+
+- <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.0
+  </details>
+
 ## 1.3.0
 
 ### Minor Changes
