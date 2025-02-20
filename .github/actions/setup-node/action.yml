@@ -46,7 +46,7 @@ runs:
           apps/meteor/ee/server/services/node_modules
           packages/apps-engine/node_modules
           packages/apps-engine/.deno-cache
-        key: node-modules-${{ hashFiles('yarn.lock') }}-deno-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        key: node-modules-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
     #
     # Could use this command to list all paths to save:
     # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"

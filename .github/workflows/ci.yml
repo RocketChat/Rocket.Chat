@@ -201,7 +201,7 @@ jobs:
         if: github.event.action != 'closed'
         with:
           node-version: 20.17.0
-          deno-version: 1.37.1
+          deno-version: 1.43.5
           cache-modules: true
           install: true
       - name: Restore turbo build
