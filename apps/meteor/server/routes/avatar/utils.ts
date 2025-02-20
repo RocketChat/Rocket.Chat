@@ -4,8 +4,8 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
-import DOMPurify from 'dompurify';
 import { Cookies } from 'meteor/ostrio:cookies';
+import sanitizeHtml from 'sanitize-html';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
 
@@ -124,7 +124,7 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 }
 
 const getFirstLetter = (name: string) => {
-	const sanitizedName = DOMPurify.sanitize(name);
+	const sanitizedName = sanitizeHtml(name);
 	return sanitizedName.substring(0, 1).toUpperCase();
 };
 
