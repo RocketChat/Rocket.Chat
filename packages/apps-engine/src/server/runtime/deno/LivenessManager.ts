@@ -92,6 +92,7 @@ export class LivenessManager {
         this.pingTimeoutConsecutiveCount = 0;
 
         this.subprocess.once('exit', this.handleExit.bind(this));
+        this.subprocess.once('error', this.handleError.bind(this));
     }
 
     /**
@@ -165,6 +166,11 @@ export class LivenessManager {
         this.messenger.send(COMMAND_PING);
     }
 
+    private handleError(err: Error) {
+        this.debug('App has failed to start.`', err);
+        this.restartProcess(err.message);
+    }
+
     private handleExit(exitCode: number, signal: string) {
         this.pingAbortController.emit('abort');
 
@@ -195,8 +201,6 @@ export class LivenessManager {
             return;
         }
 
-        this.pingTimeoutConsecutiveCount = 0;
-        this.restartCount++;
         this.restartLog.push({
             reason,
             source,

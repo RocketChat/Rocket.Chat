@@ -330,18 +330,24 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private waitUntilReady(): Promise<void> {
+        if (this.state === 'ready') {
+            return;
+        }
+
         return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`)), this.options.timeout);
+            let timeoutId: NodeJS.Timeout;
 
-            if (this.state === 'ready') {
+            const handler = () => {
                 clearTimeout(timeoutId);
-                return resolve();
-            }
+                resolve();
+            };
 
-            this.once('ready', () => {
-                clearTimeout(timeoutId);
-                return resolve();
-            });
+            timeoutId = setTimeout(() => {
+                this.off('ready', handler);
+                reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
+            }, this.options.timeout);
+
+            this.once('ready', handler);
         });
     }
 
