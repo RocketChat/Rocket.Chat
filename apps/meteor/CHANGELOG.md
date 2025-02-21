@@ -1,5 +1,48 @@
 # @rocket.chat/meteor
 
+## 7.3.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35212](https://github.com/RocketChat/Rocket.Chat/pull/35212) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes incorrect start date on omnichannel reports
+
+- ([#35222](https://github.com/RocketChat/Rocket.Chat/pull/35222) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes `channels.list` endpoint from rejecting pagination parameters
+
+- ([#35251](https://github.com/RocketChat/Rocket.Chat/pull/35251) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes an issue with embedded layout rooms displaying as if the user is not part of the room
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.2
+  - @rocket.chat/rest-typings@7.3.2
+  - @rocket.chat/license@1.0.6
+  - @rocket.chat/omnichannel-services@0.3.12
+  - @rocket.chat/pdf-worker@0.2.12
+  - @rocket.chat/presence@0.2.15
+  - @rocket.chat/api-client@0.2.15
+  - @rocket.chat/apps@0.2.6
+  - @rocket.chat/core-services@0.7.7
+  - @rocket.chat/cron@0.1.15
+  - @rocket.chat/freeswitch@1.2.2
+  - @rocket.chat/fuselage-ui-kit@15.0.2
+  - @rocket.chat/gazzodown@15.0.2
+  - @rocket.chat/model-typings@1.3.2
+  - @rocket.chat/ui-contexts@15.0.2
+  - @rocket.chat/models@1.2.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.7
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@11.0.2
+  - @rocket.chat/ui-client@15.0.2
+  - @rocket.chat/ui-video-conf@15.0.2
+  - @rocket.chat/ui-voip@5.0.2
+  - @rocket.chat/web-ui-registration@15.0.2
+  - @rocket.chat/instance-status@0.1.15
+  </details>
+
 ## 7.3.1
 
 ### Patch Changes
