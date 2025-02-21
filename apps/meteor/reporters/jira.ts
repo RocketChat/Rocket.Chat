@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
 import fetch from 'node-fetch';
 
@@ -141,6 +143,24 @@ ${this.run_url}
 					'Authorization': `Basic ${this.apiKey}`,
 				},
 			});
+
+			// upload file to existing issue
+			console.log(
+				'attachments',
+				await Promise.all(
+					result.attachments.map((attachment) =>
+						fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+							method: 'POST',
+							body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': `Basic ${this.apiKey}`,
+							},
+						}).then((response) => response.json()),
+					),
+				),
+			);
+
 			return;
 		}
 
@@ -200,6 +220,22 @@ ${this.run_url}
 				'Authorization': `Basic ${this.apiKey}`,
 			},
 		});
+		// upload file to existing issue
+		console.log(
+			'attachments',
+			await Promise.all(
+				result.attachments.map((attachment) =>
+					fetch(`${this.url}/rest/api/2/issue/${issue}/attachments`, {
+						method: 'POST',
+						body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Basic ${this.apiKey}`,
+						},
+					}).then((response) => response.json()),
+				),
+			),
+		);
 	}
 }
 
