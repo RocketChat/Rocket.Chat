@@ -59,7 +59,13 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 			return;
 		}
 
-		CachedChatSubscription.upsertSubscription(subscriptionData.subscription as unknown as ISubscription);
+		const sub = subscriptionData.subscription;
+		const serializedSub = {
+			...sub,
+			...(sub?.lr && { lr: new Date(sub.lr) }),
+		};
+
+		CachedChatSubscription.upsertSubscription(serializedSub as unknown as ISubscription);
 		LegacyRoomManager.computation.invalidate();
 	}, [subscriptionData]);
 
