@@ -39,6 +39,9 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
+let skipBoldEmoji = false;
+let skipItalicEmoji = false;
+let skipInlineEmoji = false;
 }}
 
 Start
@@ -159,7 +162,7 @@ UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return li
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
-UnorderedListItemContentItem = InlineItem / !"*" @Any
+UnorderedListItemContentItem = & {skipInlineEmoji = false; return true} item:(InlineItemPattern / !"*" @Any) { skipInlineEmoji = false; return item }
 
 /**
  *
@@ -214,9 +217,19 @@ Paragraph = value:Inline { return paragraph(value); }
  * Inline
  *
 */
-Inline = value:(InlineItem / Any)+ EndOfLine? { return reducePlainTexts(value); }
+Inline = & {skipInlineEmoji = false; return true; } value:InlinePattern+ EndOfLine? { skipInlineEmoji = false; return reducePlainTexts(value); }
 
-InlineItem = Whitespace
+InlinePattern = InlineItem / InlineItemFallback
+
+InlineItem = item:InlineItemPattern { skipInlineEmoji = false; return item; }
+
+InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
+
+InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
+
+InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
+
+InlineItemPattern = Whitespace
   / Timestamp
   / MaybeReferences
   / AutolinkedPhone
@@ -226,10 +239,10 @@ InlineItem = Whitespace
   / Emphasis
   / UserMention
   / ChannelMention
-  / Emoji
+  / InlineEmoji
   / InlineCode
   / Image
-  / Emoticon
+  / InlineEmoticon
   / Color
   / KatexInline
   / Escaped
@@ -433,29 +446,50 @@ Italic
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]
 
-ItalicContent = text:ItalicContentItems { return italic(text); }
+ItalicContent = & { skipItalicEmoji = false; return true; } text:ItalicContentItems { skipItalicEmoji = false; return italic(text); }
 
 ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 
-ItalicContentItem
-  = Whitespace
+ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
+
+ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skipItalicEmoji = false; return item; }
+
+ItalicContentPreferentialItemPattern = Whitespace
   / InlineCode
   / MaybeReferences
   / UserMention
   / ChannelMention
   / MaybeBold
   / MaybeStrikethrough
-  / Emoji
-  / Emoticon
-  / AnyItalic
-  / Line
+  / ItalicEmoji
+  / ItalicEmoticon
+
+ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { skipItalicEmoji = true; return item; }
+
+ItalicContentFallbackItemPattern = AnyItalic / Line
+
+ItalicEmoji = & { return !skipItalicEmoji; } emo:Emoji { return emo; }
+
+ItalicEmoticon = & { return !skipItalicEmoji; } emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { skipItalicEmoji = false; return emo; }
 
 /* Bold */
 Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
-BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
+BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { skipBoldEmoji = false; return bold(reducePlainTexts(text)); }
 
-BoldContentItem = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / Emoji / Emoticon / AnyBold / Line
+BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
+
+BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
+
+BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
+
+BoldContentFallbackItemPattern = AnyBold / Line
+
+BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
+
+BoldEmoji = & { return !skipBoldEmoji; } emo:Emoji { return emo; }
+
+BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { skipBoldEmoji = false; return emo; }
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
@@ -534,6 +568,8 @@ EmojiShortCodeName = $[0-9a-zA-Z-_+.]+
 
 /* Emoticons */
 Emoticon = & { return options.emoticons; } @EmoticonPattern
+
+EmoticonNeighbor = EndOfLine / Whitespace / [\x2A] / !.
 
 EmoticonPattern
   = e:$"<3" { return emoticon(e, 'heart'); }
