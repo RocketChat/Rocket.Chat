@@ -202,12 +202,12 @@ export class AppListenerBridge {
 				return this.orch
 					.getManager()
 					.getListenerManager()
-					.executeListener(inte, this.orch.getConverters().get('departments').convertToApp(data));
+					.executeListener(inte, this.orch.getConverters().get('departments').convertDepartment(data));
 			case AppInterface.IPostLivechatDepartmentRemoved:
 				return this.orch
 					.getManager()
 					.getListenerManager()
-					.executeListener(inte, await this.orch.getConverters().get('departments').convertToApp(data));
+					.executeListener(inte, await this.orch.getConverters().get('departments').convertDepartment(data));
 			default:
 				const room = await this.orch.getConverters().get('rooms').convertRoom(data);
 
