@@ -9,7 +9,7 @@ export const createCannedResponse = (): Promise<Partial<IOmnichannelCannedRespon
 		const response = {
 			shortcut: `${faker.lorem.word()}-${Date.now()}`,
 			scope: 'user',
-			tags: [faker.lorem.word()],
+			tags: [faker.string.uuid()],
 			text: faker.lorem.sentence(),
 		};
 		return request

@@ -112,9 +112,9 @@ describe('The AppMessagesConverter instance', () => {
 			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
 			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
 			expect(rocketchatRoom).to.have.property('sysMes', appRoom.displaySystemMessages);
+			expect(rocketchatRoom).to.have.property('msgs', 0);
 			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
 
-			expect(rocketchatRoom).to.not.have.property('msgs');
 			expect(rocketchatRoom).to.not.have.property('ro');
 			expect(rocketchatRoom).to.not.have.property('default');
 		});
