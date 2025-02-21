@@ -7,6 +7,7 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { router } from '../../../../client/providers/RouterProvider';
+import { parseReaction } from '../../../../lib/utils/parseReaction';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
@@ -57,7 +58,7 @@ class KonchatNotification {
 		const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
-			body: stripTags(message.msg),
+			body: notification.reaction !== '' ? parseReaction(notification.text, notification.reaction as string) : stripTags(message.msg),
 			tag: notification.payload._id,
 			canReply: true,
 			silent: true,
