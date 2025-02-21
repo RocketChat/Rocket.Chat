@@ -9,6 +9,24 @@
   - @rocket.chat/ui-contexts@16.0.0-rc.0
   </details>
 
+## 11.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.2
+  </details>
+
+## 11.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.1
+  </details>
+
 ## 11.0.0
 
 ### Patch Changes

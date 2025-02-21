@@ -12,6 +12,10 @@
 
 - ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
 
+## 7.3.2
+
+## 7.3.1
+
 ## 7.3.0
 
 ### Minor Changes
