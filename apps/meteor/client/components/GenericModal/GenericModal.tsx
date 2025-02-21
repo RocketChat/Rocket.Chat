@@ -107,7 +107,7 @@ const GenericModal = ({
 		const thisModal = modalStore.current;
 
 		return () => {
-			if (thisModal === modalStore.current) return;
+			if (thisModal === modalStore.current || modalStore.current) return;
 			if (!dismissedRef.current) return;
 			handleDismiss();
 		};
