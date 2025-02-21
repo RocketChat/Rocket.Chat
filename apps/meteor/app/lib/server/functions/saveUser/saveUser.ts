@@ -138,7 +138,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		}
 	}
 
-	if (typeof userData.verified === 'boolean' && !userData.email) {
+	if (typeof userData.verified === 'boolean') {
 		updater.set('emails.0.verified', userData.verified);
 	}
 
