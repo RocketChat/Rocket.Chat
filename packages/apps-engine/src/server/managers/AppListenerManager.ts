@@ -30,6 +30,7 @@ import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
+import { ILivechatDepartmentStatusContext } from '../../definition/livechat/ILivechatEventContext';
 
 interface IListenerExecutor {
     [AppInterface.IPreMessageSentPrevent]: {
@@ -188,6 +189,14 @@ interface IListenerExecutor {
     };
     [AppInterface.IPostLivechatGuestSaved]: {
         args: [IVisitor];
+        result: void;
+    };
+    [AppInterface.IPostLivechatDepartmentRemoved]: {
+        args: [ILivechatDepartmentStatusContext];
+        result: void;
+    };
+    [AppInterface.IPostLivechatDepartmentDisabled]: {
+        args: [ILivechatDepartmentStatusContext];
         result: void;
     };
     // FileUpload
@@ -421,6 +430,10 @@ export class AppListenerManager {
                 return this.executePostLivechatAgentUnassigned(data as ILivechatEventContext);
             case AppInterface.IPostLivechatRoomTransferred:
                 return this.executePostLivechatRoomTransferred(data as ILivechatTransferEventContext);
+            case AppInterface.IPostLivechatDepartmentRemoved:
+                return this.executePostLivechatDepartmentRemoved(data as ILivechatDepartmentStatusContext);
+            case AppInterface.IPostLivechatDepartmentDisabled:
+                return this.executePostLivechatDepartmentDisabled(data as ILivechatDepartmentStatusContext);
             case AppInterface.IPostLivechatGuestSaved:
                 return this.executePostLivechatGuestSaved(data as IVisitor);
             // FileUpload
@@ -1119,6 +1132,22 @@ export class AppListenerManager {
             const app = this.manager.getOneById(appId);
 
             await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_SAVED, data);
+        }
+    }
+
+    private async executePostLivechatDepartmentRemoved(data: ILivechatDepartmentStatusContext): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentRemoved)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_REMOVED, data);
+        }
+    }
+
+    private async executePostLivechatDepartmentDisabled(data: ILivechatDepartmentStatusContext): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentDisabled)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_DISABLED, data);
         }
     }
 
