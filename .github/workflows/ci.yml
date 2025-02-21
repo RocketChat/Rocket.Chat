@@ -173,7 +173,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.6
 
       - name: Build Rocket.Chat Packages
         run: yarn build
