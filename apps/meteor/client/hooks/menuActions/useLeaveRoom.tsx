@@ -49,10 +49,12 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 		};
 
 		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
+		const translatedText = t(warnText as TranslationKey);
+		const finalText = translatedText.replace('%s', name);
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, name)}
+				text={t(finalText)}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
