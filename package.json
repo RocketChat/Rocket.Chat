@@ -43,6 +43,7 @@
 	"engines": {
 		"yarn": "4.6.0",
 		"node": "22.13.1",
+		"deno": "1.37.1",
 		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@4.6.0",
