@@ -1,9 +1,8 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
-import { settings } from '../../settings/client';
+import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
 
 const config: OauthConfig = {
 	serverURL: '',
@@ -23,11 +22,14 @@ const config: OauthConfig = {
 
 const Tokenpass = new CustomOAuth('tokenpass', config);
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		if (settings.get('API_Tokenpass_URL')) {
-			config.serverURL = settings.get('API_Tokenpass_URL');
-			Tokenpass.configure(config);
+export const useTokenPassAuth = () => {
+	const setting = useSetting('API_Tokenpass_URL');
+
+	useEffect(() => {
+		if (!setting) {
+			return;
 		}
-	});
-});
+		config.serverURL = setting as string;
+		Tokenpass.configure(config);
+	}, [setting]);
+};
