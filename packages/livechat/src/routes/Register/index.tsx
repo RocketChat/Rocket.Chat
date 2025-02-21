@@ -93,7 +93,10 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+			await dispatch({
+				user,
+				...(user.contactManager && { agent: user.contactManager }),
+			} as Omit<StoreState['user'], 'ts'>);
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
 			Triggers.callbacks?.emit('chat-visitor-registered');
