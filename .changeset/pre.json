@@ -69,6 +69,7 @@
   },
   "changesets": [
     "brave-ties-shout",
+    "bump-patch-1740175629412",
     "chilled-shirts-smile",
     "chilly-sheep-cover",
     "cool-coins-agree",
