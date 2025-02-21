@@ -162,9 +162,9 @@ const MessageBox = ({
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
-
+		const correctText = text.replace(/(\S):/g, "$1: ");
 		onSend?.({
-			value: text,
+			value: correctText,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
