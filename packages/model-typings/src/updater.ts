@@ -8,6 +8,7 @@ export interface Updater<T extends { _id: string }> {
 	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: ArrayElementType<AddToSetProps<T>[K]>): Updater<T>;
 	hasChanges(): boolean;
 	getUpdateFilter(): UpdateFilter<T>;
+	addUpdateFilter(update: UpdateFilter<T>): Updater<T>;
 }
 
 type ArrayElementType<T> = T extends (infer E)[] ? E : T;
@@ -36,3 +37,5 @@ export type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetP
 export type IncProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, number>>;
 
 export type AddToSetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, any[]>>;
+
+export type UpdaterCompatibleUpdateFilter<T extends { _id: string }> = Pick<UpdateFilter<T>, '$set' | '$unset' | '$inc' | '$addToSet'>;
