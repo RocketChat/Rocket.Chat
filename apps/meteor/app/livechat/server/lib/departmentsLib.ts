@@ -11,7 +11,6 @@ import {
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,
 } from '../../../lib/server/lib/notifyListener';
-import de from 'date-fns/esm/locale/de';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
