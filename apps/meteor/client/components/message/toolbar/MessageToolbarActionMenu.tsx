@@ -66,7 +66,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 		useReplyInDMAction(message, { room, subscription }),
 		useCopyAction(message, { subscription }),
 		useEditMessageAction(message, { room, subscription }),
-		useDeleteMessageAction(message, { room, subscription }),
+		useDeleteMessageAction(message, { room, subscription, context }),
 		useReportMessageAction(message, { room, subscription }),
 		useShowMessageReactionsAction(message),
 		useReadReceiptsDetailsAction(message),
