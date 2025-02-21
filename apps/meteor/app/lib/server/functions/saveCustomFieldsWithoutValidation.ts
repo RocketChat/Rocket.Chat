@@ -1,5 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
@@ -12,7 +15,14 @@ const getCustomFieldsMeta = function (customFieldsMeta: string) {
 		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}
 };
-export const saveCustomFieldsWithoutValidation = async function (userId: string, formData: Record<string, any>): Promise<void> {
+export const saveCustomFieldsWithoutValidation = async function (
+	userId: string,
+	formData: Record<string, any>,
+	options?: {
+		_updater?: Updater<IUser>;
+		session?: ClientSession;
+	},
+): Promise<void> {
 	const customFieldsSetting = settings.get<string>('Accounts_CustomFields');
 	if (!customFieldsSetting || trim(customFieldsSetting).length === 0) {
 		return;
@@ -29,7 +39,9 @@ export const saveCustomFieldsWithoutValidation = async function (userId: string,
 		{},
 	);
 
-	const updater = Users.getUpdater();
+	const { _updater, session } = options || {};
+
+	const updater = _updater || Users.getUpdater();
 
 	updater.set('customFields', customFields);
 
@@ -48,10 +60,12 @@ export const saveCustomFieldsWithoutValidation = async function (userId: string,
 		}
 	});
 
-	await Users.updateFromUpdater({ _id: userId }, updater);
+	if (!_updater) {
+		await Users.updateFromUpdater({ _id: userId }, updater, { session });
+	}
 
 	// Update customFields of all Direct Messages' Rooms for userId
-	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields, { session });
 	if (setCustomFieldsResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
 	}
