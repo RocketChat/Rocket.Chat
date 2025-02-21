@@ -74,9 +74,9 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
-			onUploadFiles: (files: readonly File[]) => {
-				return chat?.flows.uploadFiles(files);
-			},
+			// onUploadFiles: (files: readonly File[]) => {
+			// 	return chat?.flows.uploadFiles({ files, uploadsStore: chat.uploads });
+			// },
 		}),
 		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);

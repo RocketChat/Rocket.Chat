@@ -18,7 +18,6 @@ it('should show Undo request button when roomOpen is true and transcriptRequest 
 	render(<FileUploadModal {...defaultProps} />, {
 		wrapper: mockAppRoot()
 			.withTranslations('en', 'core', {
-				Cannot_upload_file_character_limit: 'Cannot upload file, description is over the {{count}} character limit',
 				Send: 'Send',
 				Upload_file_description: 'File description',
 			})

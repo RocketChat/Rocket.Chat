@@ -8,13 +8,13 @@ import { useRef, useEffect, useState } from 'react';
 
 import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
 import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
-import type { ChatAPI } from '../../../lib/chats/ChatAPI';
+import type { UploadsAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 type VideoMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
+	uploadsStore: UploadsAPI;
 	reference: RefObject<HTMLElement>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
@@ -38,7 +38,7 @@ const getVideoRecordingExtension = () => {
 	return 'mp4';
 };
 
-const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessageRecorderProps) => {
+const VideoMessageRecorder = ({ rid, tmid, uploadsStore, reference }: VideoMessageRecorderProps) => {
 	const t = useTranslation();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -49,7 +49,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 	const isRecording = recordingState === 'recording';
 	const sendButtonDisabled = !(VideoRecorder.cameraStarted.get() && !(recordingState === 'recording'));
 
-	const chat = useChat() ?? chatContext;
+	const chat = useChat();
 
 	const stopVideoRecording = async (rid: IRoom['_id'], tmid?: IMessage['_id']) => {
 		if (recordingInterval) {
@@ -86,7 +86,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 		const cb = async (blob: Blob) => {
 			const fileName = `${t('Video_record')}.${getVideoRecordingExtension()}`;
 			const file = new File([blob], fileName, { type: VideoRecorder.getSupportedMimeTypes().split(';')[0] });
-			await chat?.flows.uploadFiles([file]);
+			await chat?.flows.uploadFiles({ files: [file], uploadsStore });
 			chat?.composer?.setRecordingVideo(false);
 		};
 

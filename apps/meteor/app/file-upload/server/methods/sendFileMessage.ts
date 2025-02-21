@@ -6,8 +6,10 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -22,12 +24,47 @@ import { FileUpload } from '../lib/FileUpload';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
-	requiredFields.forEach((field) => {
+	for (const field of requiredFields) {
 		if (!Object.keys(file).includes(field)) {
 			throw new Meteor.Error('error-invalid-file', 'Invalid file');
 		}
-	});
+	}
 }
+
+const logger = new Logger('sendFileMessage');
+
+type parseMultipleFilesIntoMessageAttachmentsResult = { files: FileProp[]; attachments: MessageAttachment[] };
+export const parseMultipleFilesIntoMessageAttachments = async (
+	filesToConfirm: Partial<IUpload>[],
+	roomId: string,
+	user: IUser,
+): Promise<parseMultipleFilesIntoMessageAttachmentsResult> => {
+	const result: parseMultipleFilesIntoMessageAttachmentsResult = { files: [], attachments: [] };
+
+	await Promise.all(
+		filesToConfirm.reduce<Array<Promise<void>>>((acc, file) => {
+			if (!file) return acc;
+
+			acc.push(
+				(async () => {
+					try {
+						const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+						result.files.push(...files);
+						result.attachments.push(...attachments);
+					} catch (error) {
+						// Not an important error, it should not happen and if it happens wil affect the attachment
+						// preview in the message object only
+						logger.warn('Error processing file:', file, error);
+					}
+				})(),
+			);
+
+			return acc;
+		}, []),
+	);
+
+	return result;
+};
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
