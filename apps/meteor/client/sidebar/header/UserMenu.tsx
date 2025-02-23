@@ -13,11 +13,12 @@ import { useTranslation } from 'react-i18next';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserAvatarWithStatusUnstable from './UserAvatarWithStatusUnstable';
 import { useUserMenu } from './hooks/useUserMenu';
+import { useLayout } from '@rocket.chat/ui-contexts';
 
 const UserMenu = ({ user }: { user: IUser }) => {
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
-
+	const { sidebar } = useLayout()
 	const sections = useUserMenu(user);
 	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]);
 
@@ -36,6 +37,7 @@ const UserMenu = ({ user }: { user: IUser }) => {
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
+					disabled={sidebar.isCollapsed}
 				/>
 			</FeaturePreviewOff>
 			<FeaturePreviewOn>
@@ -50,6 +52,7 @@ const UserMenu = ({ user }: { user: IUser }) => {
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
+					disabled={sidebar.isCollapsed}
 				/>
 			</FeaturePreviewOn>
 		</FeaturePreview>
