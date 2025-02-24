@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
@@ -12,9 +12,7 @@ type FetchMarketplaceAppsParams = {
 	endUserID?: string;
 };
 
-const fetchMarketplaceAppsSchema = v.array(appOverviewSchema);
-
-const assertMarketplaceAppsSchema = compile(fetchMarketplaceAppsSchema);
+const fetchMarketplaceAppsSchema = z.array(appOverviewSchema);
 
 export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsParams = {}): Promise<App[]> {
 	const baseUrl = Apps.getMarketplaceUrl();
@@ -38,7 +36,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 
 	if (request.status === 200) {
 		const response = await request.json();
-		assertMarketplaceAppsSchema(response);
+		fetchMarketplaceAppsSchema.parse(response);
 		return response;
 	}
 

@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.6.4",
+  "version": "0.6.7-rc.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -53,7 +53,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "typescript": "~5.7.2",
-    "vite": "^5.4.14"
+    "vite": "^6.1.0"
   },
   "volta": {
     "extends": "../../package.json"
