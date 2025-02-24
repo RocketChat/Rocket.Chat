@@ -109,7 +109,7 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = await Users.countDocuments({});
+		statistics.totalUsers = await Users.estimatedDocumentCount();
 		statistics.activeUsers = await Users.getActiveLocalUserCount();
 		statistics.activeGuests = await Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = await Users.countDocuments({ active: false });
@@ -126,7 +126,7 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = await Rooms.countDocuments({});
+		statistics.totalRooms = await Rooms.estimatedDocumentCount();
 		statistics.totalChannels = await Rooms.countByType('c');
 		statistics.totalPrivateGroups = await Rooms.countByType('p');
 		statistics.totalDirect = await Rooms.countByType('d');
@@ -190,7 +190,7 @@ export const statistics = {
 		);
 
 		// Number of custom fields
-		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.countDocuments({})));
+		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount()));
 
 		// Number of public custom fields
 		statsPms.push((statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true })));
@@ -313,25 +313,25 @@ export const statistics = {
 
 		// Message statistics
 		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalChannelDiscussionsMessages = await channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+		const totalChannelDiscussionsMessages = channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalChannelMessages =
-			(await channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
+			channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			}, 0)) - totalChannelDiscussionsMessages;
+			}, 0) - totalChannelDiscussionsMessages;
 
 		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalPrivateGroupsDiscussionsMessages = await privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
+		const totalPrivateGroupsDiscussionsMessages = privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
 			num: number,
 			room: IRoom,
 		) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalPrivateGroupMessages =
-			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
+			privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			}, 0)) - totalPrivateGroupsDiscussionsMessages;
+			}, 0) - totalPrivateGroupsDiscussionsMessages;
 
 		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
 
