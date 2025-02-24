@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
@@ -1101,48 +1101,6 @@ class LivechatClass {
 		}
 
 		return result.modifiedCount;
-	}
-
-	async requestTranscript({
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		rid: string;
-		email: string;
-		subject: string;
-		user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
-	}) {
-		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
-
-		if (!room?.open) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		if (room.transcriptRequest) {
-			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
-		}
-
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-mac-limit-reached');
-		}
-
-		const { _id, username, name, utcOffset } = user;
-		const transcriptRequest = {
-			requestedAt: new Date(),
-			requestedBy: {
-				_id,
-				username,
-				name,
-				utcOffset,
-			},
-			email,
-			subject,
-		};
-
-		await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
-		return true;
 	}
 
 	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
