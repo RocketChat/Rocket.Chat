@@ -45,22 +45,27 @@ const AddToken = ({ reload }: AddTokenProps) => {
 	const handleAddToken = useCallback(
 		async ({ name: tokenName, bypassTwoFactor }: AddTokenFormData) => {
 			try {
-				const token = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
+				if(!tokenName){   
+					dispatchToastMessage({type:'error', message: t('Please_provide_a_name_for_your_token')})   
+					return 
+				}else{
+					const token = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
 
-				setModal(
-					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={() => setModal(null)} onClose={() => setModal(null)}>
-						<Box
-							dangerouslySetInnerHTML={{
-								__html: DOMPurify.sanitize(
-									t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-										token,
-										userId,
-									}),
-								),
-							}}
-						/>
-					</GenericModal>,
-				);
+					setModal(
+						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={() => setModal(null)} onClose={() => setModal(null)}>
+							<Box
+								dangerouslySetInnerHTML={{
+									__html: DOMPurify.sanitize(
+										t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+											token,
+											userId,
+										}),
+									),
+								}}
+							/>
+						</GenericModal>,
+					);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
