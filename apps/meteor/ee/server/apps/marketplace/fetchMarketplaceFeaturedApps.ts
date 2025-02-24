@@ -1,6 +1,6 @@
 import type { FeaturedAppsSection } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { Apps } from '../orchestrator';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
@@ -8,19 +8,15 @@ import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceE
 import { appOverviewSchema } from './schema';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 
-const marketplaceFeaturedAppsSchema = v.object({
-	sections: v
-		.array(
-			v.object({
-				i18nLabel: v.string().required(),
-				slug: v.string().required(),
-				apps: v.array(appOverviewSchema).required(),
-			}),
-		)
-		.required(),
+const marketplaceFeaturedAppsSchema = z.object({
+	sections: z.array(
+		z.object({
+			i18nLabel: z.string(),
+			slug: z.string(),
+			apps: z.array(appOverviewSchema),
+		}),
+	),
 });
-
-const assertMarketplaceFeaturedAppsResponse = compile(marketplaceFeaturedAppsSchema);
 
 export async function fetchMarketplaceFeaturedApps(): Promise<{ sections: FeaturedAppsSection[] }> {
 	const baseUrl = Apps.getMarketplaceUrl();
@@ -38,9 +34,10 @@ export async function fetchMarketplaceFeaturedApps(): Promise<{ sections: Featur
 
 	if (request.status === 200) {
 		const response = await request.json();
-		assertMarketplaceFeaturedAppsResponse(response);
+		marketplaceFeaturedAppsSchema.parse(response);
 		return response;
 	}
+
 	const response = await request.json();
 	Apps.getRocketChatLogger().error('Failed to fetch marketplace featured apps', response);
 
