@@ -1,122 +1,118 @@
-import { v } from 'suretype';
+import { z } from 'zod';
 
-const markdownObject = {
-	raw: v.string(),
-	rendered: v.string(),
-};
+const markdownObject = z.object({
+	raw: z.string(),
+	rendered: z.string(),
+});
 
-export const appOverviewSchema = v.object({
-	appId: v.string().required(),
-	latest: v
-		.object({
-			internalId: v.string(),
-			id: v.string().required(),
-			name: v.string().required(),
-			nameSlug: v.string().required(),
-			version: v.string().required(),
-			categories: v.array(v.string()).required(),
-			languages: v.array(v.string()),
-			shortDescription: v.string(),
-			description: v.string().required(),
-			privacyPolicySummary: v.string(),
-			documentationUrl: v.string(),
-			detailedDescription: v.object(markdownObject).required(),
-			detailedChangelog: v.object(markdownObject).required(),
-
-			requiredApiVersion: v.string().required(),
-			versionIncompatible: v.boolean(),
-
-			permissions: v.array(
-				v.object({
-					name: v.string().required(),
-					domains: v.array(v.string()),
-					scopes: v.array(v.string()),
+export const appOverviewSchema = z.object({
+	appId: z.string(),
+	latest: z.object({
+		internalId: z.string(),
+		id: z.string(),
+		name: z.string(),
+		nameSlug: z.string(),
+		version: z.string(),
+		categories: z.array(z.string()),
+		languages: z.array(z.string()).optional(),
+		shortDescription: z.string().optional(),
+		description: z.string(),
+		privacyPolicySummary: z.string().optional(),
+		documentationUrl: z.string().optional(),
+		detailedDescription: markdownObject,
+		detailedChangelog: markdownObject,
+		requiredApiVersion: z.string(),
+		versionIncompatible: z.boolean().optional(),
+		permissions: z
+			.array(
+				z.object({
+					name: z.string(),
+					domains: z.array(z.string()).optional(),
+					scopes: z.array(z.string()).optional(),
 				}),
-			),
-			addon: v.string(),
-			author: v
-				.object({
-					name: v.string().required(),
-					support: v.string().required(),
-					homepage: v.string().required(),
-				})
-				.required(),
-			classFile: v.string().required(),
-			iconFile: v.string().required(),
-			iconFileData: v.string().required(),
-			status: v.string().enum('submitted', 'author-rejected', 'author-approved', 'rejected', 'approved').required(),
-			reviewedNote: v.string(),
-			rejectionNote: v.string(),
-			changesNote: v.string(),
-			internalChangesNote: v.string(),
-			isVisible: v.boolean().required(),
-			createdDate: v.string().required(),
-			modifiedDate: v.string().required(),
-		})
-		.required(),
-	isAddon: v.boolean().required(),
-	addonId: v.string(),
-	isEnterpriseOnly: v.boolean().required(),
-	isBundle: v.boolean().required(),
-	bundedAppIds: v.array(v.string()).required(),
-	bundledIn: v
-		.array(
-			v.object({
-				bundleId: v.string(),
-				bundleName: v.string(),
-				addonTierId: v.string(),
-			}),
-		)
-		.required(),
-	isPurchased: v.boolean().required(),
-	isSubscribed: v.boolean().required(),
-	subscriptionInfo: v.object({
-		typeOf: v.string().enum('app', 'service').required(),
-		status: v.string().enum('trialing', 'active', 'cancelled', 'cancelling', 'pastDue').required(),
-		statusFromBilling: v.boolean().required(),
-		isSeatBased: v.boolean().required(),
-		seats: v.number().required(),
-		maxSeats: v.number().required(),
-		license: v
-			.object({
-				license: v.string().required(),
-				version: v.number().required(),
-				expireDate: v.string().required(),
-			})
-			.required(),
-		startDate: v.string().required(),
-		periodEnd: v.string().required(),
-		endDate: v.string(),
-		externallyManaged: v.boolean().required(),
-		isSubscribedViaBundle: v.boolean().required(),
+			)
+			.optional(),
+		addon: z.string().optional(),
+		author: z.object({
+			name: z.string(),
+			support: z.string(),
+			homepage: z.string(),
+		}),
+		classFile: z.string(),
+		iconFile: z.string(),
+		iconFileData: z.string(),
+		status: z.enum(['submitted', 'author-rejected', 'author-approved', 'rejected', 'approved', 'published']),
+		reviewedNote: z.string().optional(),
+		rejectionNote: z.string().optional(),
+		changesNote: z.string().optional(),
+		internalChangesNote: z.string().optional(),
+		isVisible: z.boolean(),
+		createdDate: z.string(),
+		modifiedDate: z.string(),
 	}),
-	price: v.number().required(),
-	purchaseType: v.string().enum('', 'buy', 'subscription').required(),
-	pricingPlans: v.array(
-		v.object({
-			id: v.string().required(),
-			enabled: v.boolean().required(),
-			price: v.number().required(),
-			trialDays: v.number().required(),
-			strategy: v.string().enum('once', 'monthly', 'yearly').required(),
-			isPerSeat: v.boolean().required(),
-			tiers: v.array(
-				v.object({
-					perUnit: v.boolean().required(),
-					minimum: v.number().required(),
-					maximum: v.number().required(),
-					price: v.number().required(),
-					refId: v.string(),
-				}),
-			),
+	isAddon: z.boolean(),
+	addonId: z.string().optional(),
+	isEnterpriseOnly: z.boolean(),
+	isBundle: z.boolean(),
+	bundledAppsIn: z.array(z.string()).optional(),
+	bundledIn: z.array(
+		z.object({
+			bundleId: z.string(),
+			bundleName: z.string(),
+			addonTierId: z.string().optional(),
 		}),
 	),
-	isUsageBased: v.boolean().required(),
-
-	requestedEndUser: v.boolean(),
-	requested: v.boolean(),
-	appRequestStats: v.object({}),
-
-	createdAt: v.string().required(),
-	modifiedAt: v.string().required(),
+	isPurchased: z.boolean(),
+	isSubscribed: z.boolean(),
+	subscriptionInfo: z
+		.object({
+			typeOf: z.enum(['app', 'service', '']),
+			status: z.enum(['trialing', 'active', 'cancelled', 'cancelling', 'pastDue', '']),
+			statusFromBilling: z.boolean(),
+			isSeatBased: z.boolean(),
+			seats: z.number(),
+			maxSeats: z.number(),
+			license: z.object({
+				license: z.string(),
+				version: z.number(),
+				expireDate: z.string(),
+			}),
+			startDate: z.string(),
+			periodEnd: z.string(),
+			endDate: z.string().optional(),
+			externallyManaged: z.boolean(),
+			isSubscribedViaBundle: z.boolean(),
+		})
+		.optional(),
+	price: z.number(),
+	purchaseType: z.enum(['', 'buy', 'subscription']),
+	pricingPlans: z
+		.array(
+			z.object({
+				id: z.string(),
+				enabled: z.boolean(),
+				price: z.number(),
+				trialDays: z.number(),
+				strategy: z.enum(['once', 'monthly', 'yearly']),
+				isPerSeat: z.boolean(),
+				tiers: z
+					.array(
+						z.object({
+							perUnit: z.boolean(),
+							minimum: z.number(),
+							maximum: z.number(),
+							price: z.number(),
+							refId: z.string().optional(),
+						}),
+					)
+					.optional(),
+			}),
+		)
+		.optional(),
+	isUsageBased: z.boolean().optional(),
+	requestedEndUser: z.boolean().optional(),
+	requested: z.boolean().optional(),
+	appRequestStats: z.object({}).optional(),
+	createdAt: z.string(),
+	modifiedAt: z.string(),
 });
