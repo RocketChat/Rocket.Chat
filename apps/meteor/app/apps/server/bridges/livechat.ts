@@ -11,6 +11,7 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { settings } from '../../../settings/server';
@@ -145,7 +146,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor && { visitor }),
 		};
 
-		await LivechatTyped.closeRoom(closeData);
+		await closeRoom(closeData);
 
 		return true;
 	}
