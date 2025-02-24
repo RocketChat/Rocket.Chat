@@ -11,7 +11,7 @@ export const useWebRTCVideoRoomAction = () => {
 	const enabled = useSetting('WebRTC_Enabled', false);
 	const room = useRoom();
 	const federated = isRoomFederated(room);
-	const callProvider = useSetting<string>('Omnichannel_call_provider', 'default-provider');
+	const callProvider = useSetting('Omnichannel_call_provider', 'default-provider');
 
 	const allowed = enabled && callProvider === 'WebRTC' && room.servedBy;
 

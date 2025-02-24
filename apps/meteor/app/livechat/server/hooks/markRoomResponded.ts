@@ -1,27 +1,34 @@
 import type { IOmnichannelRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
+import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
+import { isMessageFromBot } from '../lib/isMessageFromBot';
 
 export async function markRoomResponded(
 	message: IMessage,
 	room: IOmnichannelRoom,
 	roomUpdater: Updater<IOmnichannelRoom>,
 ): Promise<IOmnichannelRoom['responseBy'] | undefined> {
-	if (isSystemMessage(message) || isEditedMessage(message) || isMessageFromVisitor(message)) {
+	if (
+		isSystemMessage(message) ||
+		isEditedMessage(message) ||
+		isMessageFromVisitor(message) ||
+		(settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message)))
+	) {
 		return;
 	}
 
 	const monthYear = moment().format('YYYY-MM');
-	const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
+	const isContactActive = await LivechatContacts.isContactActiveOnPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 
 	// Case: agent answers & visitor is not active, we mark visitor as active
-	if (!isVisitorActive) {
-		await LivechatVisitors.markVisitorActiveForPeriod(room.v._id, monthYear);
+	if (!isContactActive) {
+		await LivechatContacts.markContactActiveForPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 	}
 
 	if (!room.v?.activity?.includes(monthYear)) {

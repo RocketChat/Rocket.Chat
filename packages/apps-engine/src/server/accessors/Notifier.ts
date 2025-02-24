@@ -8,7 +8,11 @@ import type { MessageBridge, UserBridge } from '../bridges';
 import { MessageBuilder } from './MessageBuilder';
 
 export class Notifier implements INotifier {
-    constructor(private readonly userBridge: UserBridge, private readonly msgBridge: MessageBridge, private readonly appId: string) {}
+    constructor(
+        private readonly userBridge: UserBridge,
+        private readonly msgBridge: MessageBridge,
+        private readonly appId: string,
+    ) {}
 
     public async notifyUser(user: IUser, message: IMessage): Promise<void> {
         if (!message.sender || !message.sender.id) {

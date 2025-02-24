@@ -1,10 +1,12 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { useMemo, useState } from 'react';
 
+import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
@@ -17,7 +19,6 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
-import TeamsTableRow from './TeamsTableRow';
 
 const TeamsTable = () => {
 	const t = useTranslation();
@@ -57,11 +58,14 @@ const TeamsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+		queryKey: ['getDirectoryData', query],
+		queryFn: () => getDirectoryData(query),
+	});
 
 	const onClick = useMemo(
-		() => (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (name && (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter')) {
+		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
+			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
 				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
@@ -87,7 +91,7 @@ const TeamsTable = () => {
 							{data.result.map((team) => (
 								<TeamsTableRow
 									key={team._id}
-									team={team as unknown as IRoom & { roomsCount: number }}
+									team={team as unknown as Serialized<IRoom> & { roomsCount: number }}
 									onClick={onClick}
 									mediaQuery={mediaQuery}
 								/>

@@ -1,11 +1,11 @@
 import { v1 as uuid } from 'uuid';
 
-import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 import type { IUIKitContextualBarInteraction, IUIKitErrorInteraction, IUIKitInteraction, IUIKitModalInteraction } from './IUIKitInteractionType';
 import { UIKitInteractionType } from './IUIKitInteractionType';
 import type { IUIKitSurface } from './IUIKitSurface';
 import { UIKitSurfaceType } from './IUIKitSurface';
 import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from './UIKitInteractionResponder';
+import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 function isModalInteraction(type: IUIKitInteraction['type']): type is IUIKitModalInteraction['type'] {
     return [UIKitInteractionType.MODAL_OPEN, UIKitInteractionType.MODAL_UPDATE, UIKitInteractionType.MODAL_CLOSE].includes(type);

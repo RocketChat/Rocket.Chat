@@ -4,7 +4,10 @@ import type { ProxiedApp } from '../ProxiedApp';
 import type { AppSettingsManager } from '../managers';
 
 export class SettingUpdater implements ISettingUpdater {
-    constructor(private readonly app: ProxiedApp, private readonly manager: AppSettingsManager) {}
+    constructor(
+        private readonly app: ProxiedApp,
+        private readonly manager: AppSettingsManager,
+    ) {}
 
     public async updateValue(id: ISetting['id'], value: ISetting['value']) {
         if (!this.app.getStorageItem().settings[id]) {

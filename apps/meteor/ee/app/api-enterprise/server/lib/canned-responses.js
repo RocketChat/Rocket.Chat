@@ -116,7 +116,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 								$in: tags,
 							},
 						},
-				  ]
+					]
 				: []),
 			...extraFilter,
 		],

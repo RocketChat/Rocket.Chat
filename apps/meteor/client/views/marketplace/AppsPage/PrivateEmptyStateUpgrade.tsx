@@ -1,6 +1,5 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, Button } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -20,7 +19,7 @@ const PrivateEmptyStateUpgrade = () => {
 			<StatesSubtitle>{t('Private_apps_upgrade_empty_state_description')}</StatesSubtitle>
 			<StatesActions>
 				{isAdmin && (
-					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
+					<UpgradeButton primary target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}

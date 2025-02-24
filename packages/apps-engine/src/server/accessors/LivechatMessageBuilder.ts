@@ -1,3 +1,4 @@
+import { MessageBuilder } from './MessageBuilder';
 import type { ILivechatMessageBuilder, IMessageBuilder } from '../../definition/accessors';
 import type { ILivechatMessage } from '../../definition/livechat/ILivechatMessage';
 import type { IVisitor } from '../../definition/livechat/IVisitor';
@@ -6,7 +7,6 @@ import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom } from '../../definition/rooms';
 import { RoomType } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
-import { MessageBuilder } from './MessageBuilder';
 
 export class LivechatMessageBuilder implements ILivechatMessageBuilder {
     public kind: RocketChatAssociationModel.LIVECHAT_MESSAGE;

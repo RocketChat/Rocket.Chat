@@ -34,7 +34,7 @@ export const avatarResolver = (username: string) =>
 		'guilherme.gazzo': gazzoAvatar,
 		'martin.schoeler': martinAvatar,
 		'tasso.evangelista': tassoAvatar,
-	}[username]);
+	})[username];
 
 export const attachmentResolver = (url: string) => url;
 

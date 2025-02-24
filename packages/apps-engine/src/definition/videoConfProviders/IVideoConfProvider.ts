@@ -1,9 +1,9 @@
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { IBlock } from '../uikit';
-import type { VideoConference } from '../videoConferences/IVideoConference';
-import type { IVideoConferenceUser } from '../videoConferences/IVideoConferenceUser';
 import type { IVideoConferenceOptions } from './IVideoConferenceOptions';
 import type { VideoConfData, VideoConfDataExtended } from './VideoConfData';
+import type { VideoConference } from '../videoConferences/IVideoConference';
+import type { IVideoConferenceUser } from '../videoConferences/IVideoConferenceUser';
 
 /**
  * Represents a video conference provider

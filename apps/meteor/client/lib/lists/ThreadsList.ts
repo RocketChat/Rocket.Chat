@@ -1,4 +1,4 @@
-import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, IUser, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { MessageList } from './MessageList';
@@ -32,7 +32,7 @@ const isThreadUnread = (threadMessage: ThreadMessage, tunread: ISubscription['tu
 
 const isThreadTextMatching = (threadMessage: ThreadMessage, regex: RegExp): boolean => regex.test(threadMessage.msg);
 
-export class ThreadsList extends MessageList {
+export class ThreadsList extends MessageList<IThreadMainMessage> {
 	public constructor(private _options: ThreadsListOptions) {
 		super();
 	}
@@ -46,7 +46,7 @@ export class ThreadsList extends MessageList {
 		this.clear();
 	}
 
-	protected filter(message: IMessage): boolean {
+	protected filter(message: IThreadMainMessage): boolean {
 		const { rid } = this._options;
 
 		if (!isThreadMessageInRoom(message, rid)) {
@@ -77,7 +77,7 @@ export class ThreadsList extends MessageList {
 		return true;
 	}
 
-	protected compare(a: IMessage, b: IMessage): number {
+	protected compare(a: IThreadMainMessage, b: IThreadMainMessage): number {
 		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }

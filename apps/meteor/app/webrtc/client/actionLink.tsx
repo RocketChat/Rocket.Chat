@@ -2,12 +2,12 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { actionLinks } from '../../../client/lib/actionLinks';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { ChatRoom } from '../../models/client';
+import { Rooms } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
-	const room = ChatRoom.findOne({ _id: message.rid });
+	const room = Rooms.findOne({ _id: message.rid });
 	if (!room) {
 		throw new Error('Room not found');
 	}
@@ -20,7 +20,7 @@ actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 });
 
 actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
-	const room = ChatRoom.findOne({ _id: message.rid });
+	const room = Rooms.findOne({ _id: message.rid });
 	if (!room) {
 		throw new Error('Room not found');
 	}

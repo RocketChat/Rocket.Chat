@@ -42,3 +42,6 @@ const getProtectAvatars = (callback?: typeof renderFallback) => async (req: Inco
 
 // If unauthorized returns the SVG fallback (letter avatar)
 export const protectAvatarsWithFallback = getProtectAvatars(renderFallback);
+
+// Just returns 404
+export const protectAvatars = getProtectAvatars();

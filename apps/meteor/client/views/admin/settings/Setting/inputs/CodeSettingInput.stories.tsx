@@ -1,6 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import CodeSettingInput from './CodeSettingInput';
 
@@ -14,7 +13,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<div className='rc-old'>
+			<div>
 				<Field>{fn()}</Field>
 			</div>
 		),

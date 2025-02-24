@@ -95,6 +95,7 @@ export type App = {
 	version: string;
 	versionIncompatible?: boolean;
 	addon?: ExternalModuleName;
+	installedAddon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
@@ -128,4 +129,13 @@ export type App = {
 	private: boolean;
 	documentationUrl: string;
 	migrated: boolean;
+};
+
+export type AppCategory = {
+	id: string;
+	title: string;
+	description: string;
+	hidden: boolean;
+	createdDate: string;
+	modifiedDate: string;
 };

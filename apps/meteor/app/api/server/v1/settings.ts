@@ -7,11 +7,18 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
-import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
+import {
+	isSettingsUpdatePropDefault,
+	isSettingsUpdatePropsActions,
+	isSettingsUpdatePropsColor,
+	isSettingsPublicWithPaginationProps,
+	isSettingsGetParams,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
+import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
@@ -44,14 +51,18 @@ async function fetchSettings(
 // settings endpoints
 API.v1.addRoute(
 	'settings.public',
-	{ authRequired: false },
+	{ authRequired: false, validateParams: isSettingsPublicWithPaginationProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
+			const { _id } = this.queryParams;
+
+			const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 			const ourQuery = {
 				...query,
+				...parsedQueryId,
 				hidden: { $ne: true },
 				public: true,
 			};
@@ -121,9 +132,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'settings',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSettingsGetParams },
 	{
 		async get() {
+			const { includeDefaults } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -136,6 +148,11 @@ API.v1.addRoute(
 			}
 
 			ourQuery = Object.assign({}, query, ourQuery);
+
+			// Note: change this when `fields` gets removed
+			if (includeDefaults) {
+				fields.packageValue = 1;
+			}
 
 			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
@@ -175,7 +192,7 @@ API.v1.addRoute(
 
 				// Disable custom scripts in cloud trials to prevent phishing campaigns
 				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// allow special handling of particular setting types
@@ -191,9 +208,16 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 
+				const auditSettingOperation = updateAuditedByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+				});
+
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
 					const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
-					const updateValuePromise = Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const updateValuePromise = auditSettingOperation(Settings.updateValueNotHiddenById, this.urlParams._id, this.bodyParams.value);
 
 					const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
 
@@ -205,7 +229,12 @@ API.v1.addRoute(
 				}
 
 				if (isSettingsUpdatePropDefault(this.bodyParams)) {
-					const { matchedCount } = await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const { matchedCount } = await auditSettingOperation(
+						Settings.updateValueNotHiddenById,
+						this.urlParams._id,
+						this.bodyParams.value,
+					);
+
 					if (!matchedCount) {
 						return API.v1.failure();
 					}

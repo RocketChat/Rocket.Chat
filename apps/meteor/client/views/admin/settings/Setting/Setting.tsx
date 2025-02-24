@@ -3,13 +3,15 @@ import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
+import MarkdownText from '../../../../components/MarkdownText';
+import { useEditableSetting, useEditableSettingsDispatch } from '../../EditableSettingsContext';
+import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 type SettingProps = {
 	className?: string;
@@ -20,7 +22,7 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
-	const isEnterprise = useIsEnterprise();
+	const hasSettingModule = useHasSettingModule(setting);
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
@@ -69,7 +71,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
-		(value) => {
+		(value: SettingValue) => {
 			setValue(value);
 			update({ value });
 		},
@@ -77,7 +79,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 
 	const onChangeEditor = useCallback(
-		(editor) => {
+		(editor: SettingEditor) => {
 			setEditor(editor);
 			update({ editor });
 		},
@@ -105,12 +107,14 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			) : undefined,
 		[i18n, i18nDescription, t],
 	);
+
 	const callout = useMemo(
-		() => alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? t(alert) : alert }} />,
+		() =>
+			alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? DOMPurify.sanitize(t(alert)) : DOMPurify.sanitize(alert) }} />,
 		[alert, i18n, t],
 	);
 
-	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
+	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
 	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 

@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import { useUserCard } from '../../../contexts/UserCardContext';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
@@ -48,7 +48,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 					title: t('Video_call'),
 					icon: 'video',
 					onClick: action,
-			  }
+				}
 			: undefined;
 	}, [
 		room,

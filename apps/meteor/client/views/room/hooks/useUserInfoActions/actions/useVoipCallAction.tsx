@@ -35,7 +35,7 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 					icon: 'phone',
 					disabled,
 					onClick: handleClick,
-			  }
+				}
 			: undefined;
 	}, [closeUserCard, disabled, isEnabled, isSameUser, makeCall, t, user?.freeSwitchExtension]);
 

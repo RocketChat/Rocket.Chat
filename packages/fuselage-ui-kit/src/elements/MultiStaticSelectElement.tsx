@@ -23,14 +23,14 @@ const MultiStaticSelectElement = ({
         value,
         fromTextObjectToString(text) ?? '',
       ]),
-    [block.options, fromTextObjectToString]
+    [block.options, fromTextObjectToString],
   );
 
   const handleChange = useCallback(
     (value: string[]) => {
       action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (

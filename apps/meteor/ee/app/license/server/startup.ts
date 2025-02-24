@@ -1,15 +1,15 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
-import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
+import { Subscriptions, Users, Settings, LivechatContacts } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
 
+import { getAppCount } from './lib/getAppCount';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { getAppCount } from './lib/getAppCount';
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
@@ -110,7 +110,7 @@ export const startLicense = async () => {
 	License.setLicenseLimitCounter('roomsPerGuest', async (context) => (context?.userId ? Subscriptions.countByUserId(context.userId) : 0));
 	License.setLicenseLimitCounter('privateApps', () => getAppCount('private'));
 	License.setLicenseLimitCounter('marketplaceApps', () => getAppCount('marketplace'));
-	License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatVisitors.countVisitorsOnPeriod(moment.utc().format('YYYY-MM')));
+	License.setLicenseLimitCounter('monthlyActiveContacts', () => LivechatContacts.countContactsOnPeriod(moment.utc().format('YYYY-MM')));
 
 	return new Promise<void>((resolve) => {
 		// When settings are loaded, apply the current license if there is one.

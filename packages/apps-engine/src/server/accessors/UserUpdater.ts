@@ -4,7 +4,10 @@ import type { IUser } from '../../definition/users/IUser';
 import type { AppBridges } from '../bridges';
 
 export class UserUpdater implements IUserUpdater {
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {}
 
     public async updateStatusText(user: IUser, statusText: IUser['statusText']) {
         return this.bridges.getUserBridge().doUpdate(user, { statusText }, this.appId);

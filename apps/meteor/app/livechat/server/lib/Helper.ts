@@ -16,6 +16,7 @@ import type {
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
@@ -27,13 +28,20 @@ import {
 	LivechatRooms,
 	LivechatDepartment,
 	Subscriptions,
-	Rooms,
 	Users,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
+import { Livechat as LivechatTyped } from './LivechatTyped';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
+import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
+import { getOnlineAgents } from './getOnlineAgents';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -47,10 +55,6 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { Livechat as LivechatTyped } from './LivechatTyped';
-import { queueInquiry, saveQueueInquiry } from './QueueManager';
-import { RoutingManager } from './RoutingManager';
-import { getOnlineAgents } from './getOnlineAgents';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
@@ -63,15 +67,13 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 
 	return hasRoleAsync(agent.agentId, 'bot');
 };
-export const createLivechatRoom = async (
+export const prepareLivechatRoom = async (
 	rid: string,
-	name: string,
 	guest: ILivechatVisitor,
-	roomInfo: IOmnichannelRoomInfo = {},
+	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
-) => {
+): Promise<InsertionModel<IOmnichannelRoom>> => {
 	check(rid, String);
-	check(name, String);
 	check(
 		guest,
 		Match.ObjectIncluding({
@@ -83,22 +85,38 @@ export const createLivechatRoom = async (
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
+	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
+	const source = extraRoomInfo.source || roomInfo.source;
 
-	const { activity } = guest;
+	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
+		await LivechatContacts.setChannelVerifiedStatus({ visitorId: _id, source }, false);
+	}
+
+	const contactId = await migrateVisitorIfMissingContact(_id, source);
+	const contact =
+		contactId &&
+		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+			projection: { name: 1, channels: 1, activity: 1 },
+		}));
+	if (!contact) {
+		throw new Error('error-invalid-contact');
+	}
+	const verified = Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
+
+	const activity = guest.activity || contact.activity;
 	logger.debug({
 		msg: `Creating livechat room for visitor ${_id}`,
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
 	// TODO: Solve `u` missing issue
-	const room: InsertionModel<IOmnichannelRoom> = {
+	return {
 		_id: rid,
 		msgs: 0,
 		usersCount: 1,
 		lm: newRoomAt,
-		fname: name,
+		fname: contact.name,
 		t: 'l' as const,
 		ts: newRoomAt,
 		departmentId,
@@ -107,12 +125,13 @@ export const createLivechatRoom = async (
 			username,
 			token,
 			status,
-			contactId,
 			...(activity?.length && { activity }),
 		},
+		contactId,
 		cl: false,
 		open: true,
 		waitingResponse: true,
+		verified,
 		// this should be overridden by extraRoomInfo when provided
 		// in case it's not provided, we'll use this "default" type
 		source: {
@@ -125,8 +144,10 @@ export const createLivechatRoom = async (
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,
 	} as InsertionModel<IOmnichannelRoom>;
+};
 
-	const result = await Rooms.findOneAndUpdate(
+export const createLivechatRoom = async (room: InsertionModel<IOmnichannelRoom>, session: ClientSession) => {
+	const result = await LivechatRooms.findOneAndUpdate(
 		room,
 		{
 			$set: {},
@@ -134,17 +155,15 @@ export const createLivechatRoom = async (
 		{
 			upsert: true,
 			returnDocument: 'after',
+			session,
 		},
 	);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Room not created');
 	}
 
-	await callbacks.run('livechat.newRoom', room);
-	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
-
-	return result.value as IOmnichannelRoom;
+	return result;
 };
 
 export const createLivechatInquiry = async ({
@@ -154,6 +173,7 @@ export const createLivechatInquiry = async ({
 	message,
 	initialStatus,
 	extraData,
+	session,
 }: {
 	rid: string;
 	name?: string;
@@ -161,6 +181,7 @@ export const createLivechatInquiry = async ({
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: IOmnichannelInquiryExtraData;
+	session?: ClientSession;
 }) => {
 	check(rid, String);
 	check(name, String);
@@ -177,12 +198,16 @@ export const createLivechatInquiry = async ({
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
+	const { _id, username, token, department, status = UserStatus.ONLINE } = guest;
+	const inquirySource = extraData?.source || { type: OmnichannelSourceType.OTHER };
+	const activity =
+		guest.activity ||
+		(await LivechatContacts.findOneByVisitor({ visitorId: guest._id, source: inquirySource }, { projection: { activity: 1 } }))?.activity;
 
 	const ts = new Date();
 
 	logger.debug({
-		msg: `Creating livechat inquiry for visitor ${_id}`,
+		msg: `Creating livechat inquiry for visitor`,
 		visitor: { _id, username, department, status, activity },
 	});
 
@@ -215,15 +240,16 @@ export const createLivechatInquiry = async ({
 		{
 			upsert: true,
 			returnDocument: 'after',
+			session,
 		},
 	);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Inquiry not created');
 	}
 
-	return result.value as ILivechatInquiryRecord;
+	return result;
 };
 
 export const createLivechatSubscription = async (
@@ -262,8 +288,6 @@ export const createLivechatSubscription = async (
 		rid,
 		name,
 		fname: name,
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: name.toLowerCase(),
 		alert: true,
 		open: true,
 		unread: 1,

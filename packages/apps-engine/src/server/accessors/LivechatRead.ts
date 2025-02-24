@@ -6,7 +6,10 @@ import type { IMessage } from '../../definition/messages';
 import type { LivechatBridge } from '../bridges/LivechatBridge';
 
 export class LivechatRead implements ILivechatRead {
-    constructor(private readonly livechatBridge: LivechatBridge, private readonly appId: string) {}
+    constructor(
+        private readonly livechatBridge: LivechatBridge,
+        private readonly appId: string,
+    ) {}
 
     /**
      * @deprecated please use the `isOnlineAsync` method instead.

@@ -2,7 +2,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 export const useGoogleTagManager = () => {
-	const i = useSetting<string>('GoogleTagManager_id');
+	const i = useSetting('GoogleTagManager_id', '');
 
 	useEffect(() => {
 		if (typeof i !== 'string' || i.trim() === '') {

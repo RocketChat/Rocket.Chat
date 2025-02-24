@@ -11,7 +11,10 @@ import type { PublicationPayloads } from './types/publicationPayloads';
 export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscriptions = new Map<string, Subscription>();
 
-	constructor(private ddp: DDPClient, readonly dispatcher: DDPDispatcher = new DDPDispatcher()) {
+	constructor(
+		private ddp: DDPClient,
+		readonly dispatcher: DDPDispatcher = new DDPDispatcher(),
+	) {
 		ddp.onConnection(({ msg }) => {
 			if (msg === 'connected') {
 				this.emit('connected');

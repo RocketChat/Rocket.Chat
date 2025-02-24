@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 
-import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { getConfig } from './utils/getConfig';
+import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 

@@ -7,10 +7,11 @@ import type { ProcessMessenger } from './ProcessMessenger';
 const COMMAND_PING = '_zPING';
 
 const defaultOptions: LivenessManager['options'] = {
-    pingRequestTimeout: 10000,
+    pingRequestTimeout: 1000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
-    maxRestarts: 3,
+    maxRestarts: Infinity,
+    restartAttemptDelayInMS: 1000,
 };
 
 /**
@@ -36,6 +37,9 @@ export class LivenessManager {
 
         // Limit of times we can try to restart a process
         maxRestarts: number;
+
+        // Time to delay the next restart attempt after a failed one
+        restartAttemptDelayInMS: number;
     };
 
     private subprocess: ChildProcess;
@@ -63,6 +67,23 @@ export class LivenessManager {
         this.pingAbortController = new EventEmitter();
 
         this.options = Object.assign({}, defaultOptions, options);
+
+        this.controller.on('ready', () => this.ping());
+        this.controller.on('error', async (reason) => {
+            if (reason instanceof Error && reason.message.startsWith('DECODE_ERROR')) {
+                await this.restartProcess('Decode error', 'controller');
+            }
+        })
+    }
+
+    public getRuntimeData() {
+        const { restartCount, pingTimeoutConsecutiveCount, restartLog } = this;
+
+        return {
+            restartCount,
+            pingTimeoutConsecutiveCount,
+            restartLog,
+        };
     }
 
     public attach(deno: ChildProcess) {
@@ -70,8 +91,8 @@ export class LivenessManager {
 
         this.pingTimeoutConsecutiveCount = 0;
 
-        this.controller.once('ready', () => this.ping());
         this.subprocess.once('exit', this.handleExit.bind(this));
+        this.subprocess.once('error', this.handleError.bind(this));
     }
 
     /**
@@ -122,7 +143,7 @@ export class LivenessManager {
 
                 if (reason === 'timeout' && this.pingTimeoutConsecutiveCount >= this.options.consecutiveTimeoutLimit) {
                     this.debug('Subprocess failed to respond to pings %d consecutive times. Attempting restart...', this.options.consecutiveTimeoutLimit);
-                    this.restartProcess();
+                    this.restartProcess('Too many pings timed out');
                     return false;
                 }
 
@@ -145,6 +166,11 @@ export class LivenessManager {
         this.messenger.send(COMMAND_PING);
     }
 
+    private handleError(err: Error) {
+        this.debug('App has failed to start.`', err);
+        this.restartProcess(err.message);
+    }
+
     private handleExit(exitCode: number, signal: string) {
         this.pingAbortController.emit('abort');
 
@@ -154,31 +180,42 @@ export class LivenessManager {
             return;
         }
 
+        let reason: string;
+
         // Otherwise we try to restart the subprocess, if possible
         if (signal) {
             this.debug('App has been killed (%s). Attempting restart #%d...', signal, this.restartCount + 1);
+            reason = `App has been killed with signal ${signal}`;
         } else {
             this.debug('App has exited with code %d. Attempting restart #%d...', exitCode, this.restartCount + 1);
+            reason = `App has exited with code ${exitCode}`;
         }
 
-        this.restartProcess();
+        this.restartProcess(reason);
     }
 
-    private restartProcess() {
+    private async restartProcess(reason: string, source = 'liveness-manager') {
         if (this.restartCount >= this.options.maxRestarts) {
             this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
             this.controller.stopApp();
             return;
         }
 
-        this.pingTimeoutConsecutiveCount = 0;
-        this.restartCount++;
         this.restartLog.push({
+            reason,
+            source,
             restartedAt: new Date(),
-            source: 'liveness-manager',
             pid: this.subprocess.pid,
         });
 
-        this.controller.restartApp();
+        try {
+            await this.controller.restartApp();
+        } catch (e) {
+            this.debug('Restart attempt failed. Retrying in %dms', this.options.restartAttemptDelayInMS);
+            setTimeout(() => this.restartProcess('Failed restart attempt'), this.options.restartAttemptDelayInMS);
+        }
+
+        this.pingTimeoutConsecutiveCount = 0;
+        this.restartCount++;
     }
 }

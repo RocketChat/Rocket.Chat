@@ -1,13 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AnnouncementComponent from './AnnouncementComponent';
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
-import AnnouncementComponent from './AnnouncementComponent';
 
 type RoomAnnouncementParams = {
 	announcement: string;
@@ -17,7 +16,7 @@ type RoomAnnouncementParams = {
 const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncementParams) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
+	const closeModal = useEffectEvent(() => setModal(null));
 	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
 		if ((e.target as HTMLAnchorElement).href) {
 			return;
@@ -35,7 +34,7 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,
-			  );
+				);
 	};
 
 	return announcement ? (

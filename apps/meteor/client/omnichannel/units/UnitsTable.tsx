@@ -1,10 +1,11 @@
 import { Pagination, IconButton } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useRemoveUnit } from './useRemoveUnit';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { useRemoveUnit } from './useRemoveUnit';
 
 const UnitsTable = () => {
 	const { t } = useTranslation();
@@ -42,13 +42,16 @@ const UnitsTable = () => {
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery(['livechat-units', query], async () => getUnits(query));
+	const { isSuccess, isLoading, data } = useQuery({
+		queryKey: ['livechat-units', query],
+		queryFn: async () => getUnits(query),
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/units/new'));
-	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/units/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/units/new'));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
 	const handleDelete = useRemoveUnit();
 
 	const headers = (

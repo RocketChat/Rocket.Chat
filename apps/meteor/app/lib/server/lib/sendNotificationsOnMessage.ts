@@ -12,16 +12,17 @@ import emojione from 'emojione';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
+import { getMentions } from './notifyUsersOnMessage';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
-import { messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
+import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { getMentions } from './notifyUsersOnMessage';
 
 type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];

@@ -39,25 +39,28 @@ export const EnterpriseCheck: ServiceSchema = {
 		},
 	},
 	async started(): Promise<void> {
-		setInterval(async () => {
-			try {
-				const hasLicense = await this.broker.call('license.hasValidLicense', ['scalability']);
-				if (hasLicense) {
-					checkFails = 0;
+		setInterval(
+			async () => {
+				try {
+					const hasLicense = await this.broker.call('license.hasValidLicense', ['scalability']);
+					if (hasLicense) {
+						checkFails = 0;
+						return;
+					}
+				} catch (e: unknown) {
+					// check failed, so continue
+				}
+
+				if (++checkFails < maxFails) {
 					return;
 				}
-			} catch (e: unknown) {
-				// check failed, so continue
-			}
 
-			if (++checkFails < maxFails) {
-				return;
-			}
-
-			const shouldShutdown = await this.shouldShutdown();
-			if (shouldShutdown) {
-				this.broker.fatal('Enterprise license not found. Shutting down...');
-			}
-		}, (parseInt(LICENSE_CHECK_INTERVAL) || 20) * 1000);
+				const shouldShutdown = await this.shouldShutdown();
+				if (shouldShutdown) {
+					this.broker.fatal('Enterprise license not found. Shutting down...');
+				}
+			},
+			(parseInt(LICENSE_CHECK_INTERVAL) || 20) * 1000,
+		);
 	},
 };

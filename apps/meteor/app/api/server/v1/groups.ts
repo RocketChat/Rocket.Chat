@@ -1,13 +1,14 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps } from '@rocket.chat/rest-typings';
+import { isGroupsOnlineProps, isGroupsMessagesProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addAllUserToRoomFn } from '../../../../server/methods/addAllUserToRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -15,6 +16,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorizatio
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -122,7 +124,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			await Meteor.callAsync('addAllUserToRoom', findResult.rid, this.bodyParams.activeUsersOnly);
+			await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === 'true' || activeUsersOnly === 1);
 
 			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
@@ -270,7 +272,7 @@ API.v1.addRoute(
 
 			if (params.userId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = params.userId;
 			}
@@ -347,7 +349,7 @@ API.v1.addRoute(
 				});
 			} catch (error: unknown) {
 				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				throw error;
 			}
@@ -504,8 +506,9 @@ API.v1.addRoute(
 
 			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
 
-			const result = await Meteor.callAsync('getChannelHistory', {
+			const result = await getChannelHistory({
 				rid: findResult.rid,
+				fromUserId: this.userId,
 				latest: latestDate,
 				oldest: oldestDate,
 				inclusive,
@@ -516,7 +519,7 @@ API.v1.addRoute(
 			});
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -707,7 +710,7 @@ API.v1.addRoute(
 			});
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
@@ -746,19 +749,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.messages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMessagesProps },
 	{
 		async get() {
+			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+
 			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
+				params: { roomId },
 				userId: this.userId,
 			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const parseIds = (ids: string | undefined, field: string) =>
+				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
-			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+			const ourQuery = {
+				...query,
+				rid: findResult.rid,
+				...parseIds(mentionIds, 'mentions._id'),
+				...parseIds(starredIds, 'starred._id'),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			};
+
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
@@ -1241,7 +1255,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const subscriptions = await Subscriptions.findByRoomId(room.rid, {

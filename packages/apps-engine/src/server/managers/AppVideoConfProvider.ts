@@ -14,7 +14,10 @@ export class AppVideoConfProvider {
      */
     public isRegistered: boolean;
 
-    constructor(public app: ProxiedApp, public provider: IVideoConfProvider) {
+    constructor(
+        public app: ProxiedApp,
+        public provider: IVideoConfProvider,
+    ) {
         this.isRegistered = false;
     }
 

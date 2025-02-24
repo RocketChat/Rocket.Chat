@@ -115,7 +115,7 @@ type OperationsByPathPatternAndMethod<
 			path: ReplacePlaceholders<TPathPattern extends string ? TPathPattern : never>;
 			params: GetParams<TEndpoints[TPathPattern][TMethod]>;
 			result: GetResult<TEndpoints[TPathPattern][TMethod]>;
-	  }
+		}
 	: never;
 
 type OperationsByPathPattern<TEndpoints extends Endpoints, TPathPattern extends keyof TEndpoints> = TPathPattern extends any
@@ -142,8 +142,8 @@ type MethodToPathWithoutParamsMap = {
 	[TOperation in Operations as Parameters<TOperation['fn']> extends { length: 0 }
 		? TOperation['method']
 		: undefined extends Parameters<TOperation['fn']>[0]
-		? TOperation['method']
-		: never]: TOperation['path'];
+			? TOperation['method']
+			: never]: TOperation['path'];
 };
 
 export type PathFor<TMethod extends Method> = MethodToPathMap[TMethod];
@@ -206,10 +206,10 @@ export type OperationResult<TMethod extends Method, TPathPattern extends PathPat
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
 	: T extends `${string}:${infer Param}/${infer Rest}`
-	? { [k in Param | keyof UrlParams<Rest>]: string }
-	: T extends `${string}:${infer Param}`
-	? { [k in Param]: string }
-	: undefined | Record<string, never>;
+		? { [k in Param | keyof UrlParams<Rest>]: string }
+		: T extends `${string}:${infer Param}`
+			? { [k in Param]: string }
+			: undefined | Record<string, never>;
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 

@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
@@ -145,14 +147,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 				if (clientAction === 'removed') {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks.removed?.(id);
+						wrapExceptions(() => callbacks.removed?.(id)).suppress();
 					});
 					return;
 				}
 
 				if (data) {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+						wrapExceptions(() => callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data)).suppress();
 					});
 				}
 			});

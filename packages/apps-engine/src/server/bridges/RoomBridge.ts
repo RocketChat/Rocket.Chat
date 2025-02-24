@@ -1,10 +1,10 @@
+import { BaseBridge } from './BaseBridge';
 import type { IMessage, IMessageRaw } from '../../definition/messages';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export const GetMessagesSortableFields = ['createdAt'] as const;
 
@@ -12,6 +12,7 @@ export type GetMessagesOptions = {
     limit: number;
     skip: number;
     sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
+    showThreadMessages: boolean;
 };
 
 export abstract class RoomBridge extends BaseBridge {

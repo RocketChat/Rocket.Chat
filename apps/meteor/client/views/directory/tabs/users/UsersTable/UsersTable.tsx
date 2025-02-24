@@ -3,9 +3,10 @@ import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesActio
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
-import UsersTableRow from './UsersTableRow';
 
 const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const t = useTranslation();
@@ -81,11 +81,15 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
-	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+		queryKey: ['getDirectoryData', query],
+		queryFn: () => getDirectoryData(query),
+	});
 
 	const handleClick = useCallback(
-		(username) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
+		(username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => {
+			if (!username) return;
+			if (e.type === 'click' || (e as KeyboardEvent).key === 'Enter') {
 				directRoute.push({ rid: username });
 			}
 		},

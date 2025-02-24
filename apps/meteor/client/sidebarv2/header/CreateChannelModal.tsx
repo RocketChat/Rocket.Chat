@@ -15,7 +15,6 @@ import {
 	Accordion,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -26,13 +25,13 @@ import {
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
-import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -67,7 +66,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting<boolean>('Federation_Matrix_enabled') || false;
+	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const canCreateChannel = usePermission('create-c');
@@ -189,15 +188,15 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
 	);
 
-	const createChannelFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const federatedId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createChannelFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const federatedId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal

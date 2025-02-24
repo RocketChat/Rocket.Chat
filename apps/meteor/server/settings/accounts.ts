@@ -237,6 +237,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
+			i18nDescription: 'Accounts_CustomFieldsToShowInUserInfo_Description',
 		});
 		await this.add('Accounts_LoginExpiration', 90, {
 			type: 'int',
@@ -698,10 +699,22 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Mute_Focused_Conversations',
 			});
 
+			await this.add('Accounts_Default_User_Preferences_masterVolume', 100, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Master_volume',
+			});
+
 			await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 				type: 'int',
 				public: true,
-				i18nLabel: 'Notifications_Sound_Volume',
+				i18nLabel: 'Notification_volume',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Call_ringer_volume',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {

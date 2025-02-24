@@ -15,7 +15,6 @@ import type {
 	InsertManyResult,
 	InsertOneOptions,
 	InsertOneResult,
-	ModifyResult,
 	OptionalId,
 	UpdateFilter,
 	UpdateOptions,
@@ -29,8 +28,8 @@ export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> 
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-	? Pick<Defaults, keyof Defaults>
-	: Omit<Defaults, keyof Defaults>;
+		? Pick<Defaults, keyof Defaults>
+		: Omit<Defaults, keyof Defaults>;
 
 export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
@@ -54,8 +53,8 @@ export interface IBaseModel<
 	getUpdater(): Updater<T>;
 	updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult>;
 
-	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>>;
-	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
+	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
+	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<null | WithId<T>>;
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
 	findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;

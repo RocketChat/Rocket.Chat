@@ -15,7 +15,7 @@ import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
 
 const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement => {
-	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 

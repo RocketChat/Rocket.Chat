@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
 export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
-	const linkReplacementText = String(useSetting('Accounts_RegistrationForm_LinkReplacementText'));
+	const linkReplacementText = useSetting('Accounts_RegistrationForm_LinkReplacementText', '');
 
 	const { t } = useTranslation();
 

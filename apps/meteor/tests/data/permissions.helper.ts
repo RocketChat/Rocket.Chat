@@ -1,9 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
+import { api, credentials, request } from './api-data';
 import { permissions } from '../../app/authorization/server/constant/permissions';
 import { omnichannelEEPermissions } from '../../ee/app/livechat-enterprise/server/permissions';
 import { IS_EE } from '../e2e/config/constants';
-import { api, credentials, request } from './api-data';
 
 export const updatePermission = (permission: string, roles: string[]): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ export const updateEESetting = (setting: string, value: ISetting['value']): Prom
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
-		  })
+			})
 		: Promise.resolve();
 
 export const removePermissions = async (perms: string[]) => {

@@ -1,7 +1,6 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import React from 'react';
 
 type NavBarItemOmnichannelContactProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 

@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -45,8 +45,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const { t } = useTranslation();
 
 	const isSelecting = useIsSelecting();
+	const isOTRMessage = message.t === 'otr' || message.t === 'otr-ack';
+
 	const toggleSelected = useToggleSelect(message._id);
-	const isSelected = useIsSelectedMessage(message._id);
+	const isSelected = useIsSelectedMessage(message._id, isOTRMessage);
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
@@ -63,6 +65,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			}
 
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
+		}
+
+		if (isOTRMessage) {
+			return;
 		}
 
 		return toggleSelected();
@@ -117,7 +123,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							size='x18'
 						/>
 					)}
-					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+					{isSelecting && <CheckBox disabled={isOTRMessage} checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>

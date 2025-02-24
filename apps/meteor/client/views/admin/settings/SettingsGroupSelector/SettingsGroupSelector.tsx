@@ -1,6 +1,5 @@
-import type { GroupId } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSkeleton';
 import BaseGroupPage from '../groups/BaseGroupPage';
@@ -9,7 +8,7 @@ import OAuthGroupPage from '../groups/OAuthGroupPage';
 import VoipGroupPage from '../groups/VoipGroupPage';
 
 type SettingsGroupSelectorProps = {
-	groupId: GroupId;
+	groupId: ISetting['_id'];
 	onClickBack?: () => void;
 };
 

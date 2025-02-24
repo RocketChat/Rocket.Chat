@@ -1,19 +1,25 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
-import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import {
+	VideoConfPopupBackdrop,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfIncomingCalls,
+} from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
-import type { VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
-import { useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfIncomingCalls } from '../../../../../contexts/VideoConfContext';
-import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 import VideoConfPopup from './VideoConfPopup';
+import { useUserSoundPreferences } from '../../../../../hooks/useUserSoundPreferences';
+import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
 	const customSound = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
+	const { voipRingerVolume } = useUserSoundPreferences();
 
 	const popups = useMemo(
 		() =>
@@ -25,18 +31,18 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true });
+			customSound.play('ringtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true });
+			customSound.play('dialtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		return (): void => {
 			customSound.stop('ringtone');
 			customSound.stop('dialtone');
 		};
-	}, [customSound, isRinging, isCalling]);
+	}, [customSound, isRinging, isCalling, voipRingerVolume]);
 
 	return (
 		<>

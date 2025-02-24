@@ -6,7 +6,13 @@ import type { IUser } from '../users';
  * executes a slash command.
  */
 export class SlashCommandContext {
-    constructor(private sender: IUser, private room: IRoom, private params: Array<string>, private threadId?: string, private triggerId?: string) {}
+    constructor(
+        private sender: IUser,
+        private room: IRoom,
+        private params: Array<string>,
+        private threadId?: string,
+        private triggerId?: string,
+    ) {}
 
     /** The user who sent the command. */
     public getSender(): IUser {

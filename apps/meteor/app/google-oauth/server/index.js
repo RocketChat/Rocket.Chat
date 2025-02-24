@@ -7,7 +7,7 @@ import { OAuth } from 'meteor/oauth';
 Meteor.startup(() => {
 	const appRedirectUrl = 'rocketchat://auth';
 
-	const renderEndOfLoginResponse = (options) => {
+	const renderEndOfLoginResponse = async (options) => {
 		const escape = (s) => {
 			if (!s) {
 				return s;
@@ -33,9 +33,9 @@ Meteor.startup(() => {
 
 		let template;
 		if (options.loginStyle === 'popup') {
-			template = OAuth._endOfPopupResponseTemplate;
+			template = await OAuth._endOfPopupResponseTemplate();
 		} else if (options.loginStyle === 'redirect') {
-			template = OAuth._endOfRedirectResponseTemplate;
+			template = await OAuth._endOfRedirectResponseTemplate();
 		} else {
 			throw new Error(`invalid loginStyle: ${options.loginStyle}`);
 		}
@@ -47,7 +47,7 @@ Meteor.startup(() => {
 		return `<!DOCTYPE html>\n${result}`;
 	};
 
-	OAuth._endOfLoginResponse = (res, details) => {
+	OAuth._endOfLoginResponse = async (res, details) => {
 		res.writeHead(200, { 'Content-Type': 'text/html' });
 		let redirectUrl;
 
@@ -77,7 +77,7 @@ Meteor.startup(() => {
 
 		if (details.error) {
 			res.end(
-				renderEndOfLoginResponse({
+				await renderEndOfLoginResponse({
 					loginStyle: details.loginStyle,
 					setCredentialToken: false,
 					redirectUrl,
@@ -92,7 +92,7 @@ Meteor.startup(() => {
 		// window, with the corresponding credentialToken. The parent window
 		// uses the credentialToken and credentialSecret to log in over DDP.
 		res.end(
-			renderEndOfLoginResponse({
+			await renderEndOfLoginResponse({
 				loginStyle: details.loginStyle,
 				setCredentialToken: true,
 				credentialToken: details.credentials.token,

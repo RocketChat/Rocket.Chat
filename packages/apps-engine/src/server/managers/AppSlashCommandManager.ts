@@ -5,9 +5,9 @@ import { SlashCommandContext } from '../../definition/slashcommands';
 import type { AppManager } from '../AppManager';
 import type { CommandBridge } from '../bridges';
 import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../errors';
-import { Room } from '../rooms/Room';
 import type { AppAccessorManager } from './AppAccessorManager';
 import { AppSlashCommand } from './AppSlashCommand';
+import { Room } from '../rooms/Room';
 
 /**
  * The command manager for the Apps.

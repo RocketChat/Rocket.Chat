@@ -79,7 +79,7 @@ Meteor.startup(async () => {
 		}
 
 		if (semver.satisfies(semver.coerce(mongoVersion), '<5.0.0')) {
-			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 5.0 OR LATER'].join('\n');
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 5.0 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
@@ -108,7 +108,7 @@ Meteor.startup(async () => {
 				sendMessagesToAdmins({
 					msgs: async ({ adminUser }) => [
 						{
-							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, mongoVersion, adminUser.language)}\n${link}`,
+							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
 						},
 					],
 					banners: [

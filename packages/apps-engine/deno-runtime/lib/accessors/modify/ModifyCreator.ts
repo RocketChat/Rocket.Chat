@@ -1,6 +1,7 @@
 import type { IModifyCreator } from '@rocket.chat/apps-engine/definition/accessors/IModifyCreator.ts';
 import type { IUploadCreator } from '@rocket.chat/apps-engine/definition/accessors/IUploadCreator.ts';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator.ts';
+import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator.ts';
 import type { ILivechatCreator } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
@@ -16,6 +17,7 @@ import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definitio
 import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper.ts';
 
 import * as Messenger from '../../messenger.ts';
+import { randomBytes } from 'node:crypto';
 
 import { BlockBuilder } from '../builders/BlockBuilder.ts';
 import { MessageBuilder } from '../builders/MessageBuilder.ts';
@@ -44,7 +46,7 @@ export class ModifyCreator implements IModifyCreator {
                 get: (_target: unknown, prop: string) => {
                     // It's not worthwhile to make an asynchronous request for such a simple method
                     if (prop === 'createToken') {
-                        return () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                        return () => randomBytes(16).toString('hex');
                     }
 
                     if (prop === 'toJSON') {
@@ -96,6 +98,26 @@ export class ModifyCreator implements IModifyCreator {
                                 ? {}
                                 : this.senderFn({
                                     method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
+                                    params
+                                })
+                                    .then((response) => response.result)
+                                    .catch((err) => {
+                                        throw new Error(err.error);
+                                    }),
+            }
+        )
+    }
+
+    getContactCreator(): IContactCreator {
+        return new Proxy(
+            { __kind: 'getContactCreator' },
+            {
+                get: (_target: unknown, prop: string) => 
+                        (...params: unknown[]) =>
+                            prop === 'toJSON'
+                                ? {}
+                                : this.senderFn({
+                                    method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
                                     params
                                 })
                                     .then((response) => response.result)

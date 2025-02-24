@@ -3,8 +3,9 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 
+import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import IntegrationRow from './IntegrationRow';
 
 const IntegrationsTable = ({ type }: { type?: string }) => {
 	const t = useTranslation();
@@ -42,10 +42,13 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	);
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['integrations', query], async () => getIntegrations(query));
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['integrations', query],
+		queryFn: async () => getIntegrations(query),
+	});
 
 	const onClick = useCallback(
-		(_id, type) => () =>
+		(_id: string, type: string) => () =>
 			router.push({
 				context: 'edit',
 				type: type === 'webhook-incoming' ? 'incoming' : 'outgoing',

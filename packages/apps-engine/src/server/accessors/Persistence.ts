@@ -3,7 +3,10 @@ import type { RocketChatAssociationRecord } from '../../definition/metadata';
 import type { PersistenceBridge } from '../bridges/PersistenceBridge';
 
 export class Persistence implements IPersistence {
-    constructor(private persistBridge: PersistenceBridge, private appId: string) {}
+    constructor(
+        private persistBridge: PersistenceBridge,
+        private appId: string,
+    ) {}
 
     public create(data: object): Promise<string> {
         return this.persistBridge.doCreate(data, this.appId);

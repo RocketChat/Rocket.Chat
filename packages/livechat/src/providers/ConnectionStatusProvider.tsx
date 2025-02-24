@@ -1,7 +1,7 @@
 import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 
 import { useSDK } from './SDKProvider';
 
@@ -32,7 +32,7 @@ const ConnectionStatusProvider = ({ children }: { children: ComponentChildren })
 				status,
 				connected: status === 'connected',
 				reconnect: () => sdk.connection.reconnect(),
-			} as const),
+			}) as const,
 		[status, sdk],
 	);
 

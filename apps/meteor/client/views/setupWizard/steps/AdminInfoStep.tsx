@@ -2,7 +2,6 @@ import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import React from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
@@ -35,7 +34,7 @@ const AdminInfoStep = (): ReactElement => {
 	return (
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
 			<AdminInfoPage
-				validatePassword={(password): boolean => password.length > 0}
+				validatePassword={(password) => password.length > 0}
 				passwordRulesHint=''
 				validateUsername={validateUsername}
 				validateEmail={validateEmail}

@@ -4,7 +4,9 @@ import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
+import { pinMessage, starMessage, sendMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { createGroup, deleteGroup } from '../../data/groups.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
@@ -490,6 +492,145 @@ describe('[Groups]', () => {
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
 					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
+				});
+		});
+	});
+
+	describe('/groups.messages', () => {
+		let testGroup: IRoom;
+		let firstUser: IUser;
+		let secondUser: IUser;
+
+		before(async () => {
+			testGroup = (await createGroup({ name: `test-group-${Date.now()}` })).body.group;
+			firstUser = await createUser({ joinDefaultChannels: false });
+			secondUser = await createUser({ joinDefaultChannels: false });
+
+			const messages = [
+				{
+					rid: testGroup._id,
+					msg: `@${firstUser.username} youre being mentioned`,
+					mentions: [{ username: firstUser.username, _id: firstUser._id, name: firstUser.name }],
+				},
+				{
+					rid: testGroup._id,
+					msg: `@${secondUser.username} youre being mentioned`,
+					mentions: [{ username: secondUser.username, _id: secondUser._id, name: secondUser.name }],
+				},
+				{
+					rid: testGroup._id,
+					msg: `A simple message`,
+				},
+				{
+					rid: testGroup._id,
+					msg: `A pinned simple message`,
+				},
+			];
+
+			const [, , starredMessage, pinnedMessage] = await Promise.all(messages.map((message) => sendMessage({ message })));
+
+			await Promise.all([
+				starMessage({ messageId: starredMessage.body.message._id }),
+				pinMessage({ messageId: pinnedMessage.body.message._id }),
+			]);
+		});
+
+		after(async () => {
+			await deleteGroup({ roomName: testGroup.name });
+		});
+
+		it('should return all messages from a group', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({ roomId: testGroup._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages).to.have.lengthOf(5);
+				});
+		});
+
+		it('should return messages that mention a single user', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					mentionIds: firstUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('mentions').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body.messages[0].mentions[0]).to.have.property('_id', firstUser._id);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that mention multiple users', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					mentionIds: `${firstUser._id},${secondUser._id}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
+
+					const mentionIds = res.body.messages.map((message: any) => message.mentions[0]._id);
+					expect(mentionIds).to.include.members([firstUser._id, secondUser._id]);
+				});
+		});
+
+		it('should return messages that are starred by a specific user', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					starredIds: 'rocketchat.internal.admin.test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that are pinned', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: testGroup._id,
+					pinned: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
+					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
+					expect(res.body.messages[0].pinnedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
 				});
 		});
 	});

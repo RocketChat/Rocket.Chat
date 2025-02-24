@@ -3,10 +3,10 @@
  */
 
 import { LicenseImp } from '../src';
+import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 import { DuplicatedLicenseError } from '../src/errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from '../src/errors/InvalidLicenseError';
 import { NotReadyForValidation } from '../src/errors/NotReadyForValidation';
-import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 
 // Same license used on ci tasks so no I didnt leak it
 const VALID_LICENSE =

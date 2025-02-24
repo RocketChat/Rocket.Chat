@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -7,11 +7,35 @@ import {
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
+	isChatSyncMessagesProps,
+	isChatGetMessageProps,
+	isChatPinMessageProps,
+	isChatPostMessageProps,
+	isChatSearchProps,
+	isChatSendMessageProps,
+	isChatStarMessageProps,
+	isChatUnpinMessageProps,
+	isChatUnstarMessageProps,
+	isChatIgnoreUserProps,
+	isChatGetPinnedMessagesProps,
+	isChatFollowMessageProps,
+	isChatUnfollowMessageProps,
+	isChatGetMentionedMessagesProps,
+	isChatOTRProps,
+	isChatReactProps,
+	isChatGetDeletedMessagesProps,
+	isChatSyncThreadsListProps,
+	isChatGetThreadMessagesProps,
+	isChatSyncThreadMessagesProps,
+	isChatGetStarredMessagesProps,
+	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { messageSearch } from '../../../../server/methods/messageSearch';
+import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -21,6 +45,7 @@ import { processWebhookMessage } from '../../../lib/server/functions/processWebh
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import { pinMessage } from '../../../message-pin/server/pinMessage';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
@@ -73,22 +98,32 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncMessagesProps },
 	{
 		async get() {
-			const { roomId, lastUpdate } = this.queryParams;
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
 			}
 
-			if (!lastUpdate) {
-				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
-			} else if (isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 			}
 
-			const result = await Meteor.callAsync('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
 
 			if (!result) {
 				return API.v1.failure();
@@ -96,8 +131,9 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				result: {
-					updated: await normalizeMessagesForUser(result.updated, this.userId),
-					deleted: result.deleted,
+					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
+					deleted: 'deleted' in result ? result.deleted : [],
+					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
 			});
 		},
@@ -108,13 +144,10 @@ API.v1.addRoute(
 	'chat.getMessage',
 	{
 		authRequired: true,
+		validateParams: isChatGetMessageProps,
 	},
 	{
 		async get() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
-
 			const msg = await Meteor.callAsync('getSingleMessage', this.queryParams.msgId);
 
 			if (!msg) {
@@ -132,20 +165,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.pinMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatPinMessageProps },
 	{
 		async post() {
-			if (!this.bodyParams.messageId?.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
-			}
-
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const pinnedMessage = await Meteor.callAsync('pinMessage', msg);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
 			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
@@ -158,9 +187,24 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.postMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
 		async post() {
+			const { text, attachments } = this.bodyParams;
+			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+
+			if (text && text.length > maxAllowedSize) {
+				return API.v1.failure('error-message-size-exceeded');
+			}
+
+			if (attachments && attachments.length > 0) {
+				for (const attachment of attachments) {
+					if (attachment.text && attachment.text.length > maxAllowedSize) {
+						return API.v1.failure('error-message-size-exceeded');
+					}
+				}
+			}
+
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
 			if (!messageReturn) {
@@ -180,7 +224,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.search',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSearchProps },
 	{
 		async get() {
 			const { roomId, searchText } = this.queryParams;
@@ -194,7 +238,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 			}
 
-			const result = (await Meteor.callAsync('messageSearch', searchText, roomId, count, offset)).message.docs;
+			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
+			if (searchResult === false) {
+				return API.v1.failure();
+			}
+			if (!searchResult.message) {
+				return API.v1.failure();
+			}
+			const result = searchResult.message.docs;
 
 			return API.v1.success({
 				messages: await normalizeMessagesForUser(result, this.userId),
@@ -208,13 +259,9 @@ API.v1.addRoute(
 // one channel whereas the other one allows for sending to more than one channel at a time.
 API.v1.addRoute(
 	'chat.sendMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSendMessageProps },
 	{
 		async post() {
-			if (!this.bodyParams.message) {
-				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
-			}
-
 			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
@@ -233,13 +280,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.starMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatStarMessageProps },
 	{
 		async post() {
-			if (!this.bodyParams.messageId?.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
-
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -259,13 +302,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unPinMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUnpinMessageProps },
 	{
 		async post() {
-			if (!this.bodyParams.messageId?.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
-
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -281,13 +320,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unStarMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUnstarMessageProps },
 	{
 		async post() {
-			if (!this.bodyParams.messageId?.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
-			}
-
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -349,13 +384,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.react',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatReactProps },
 	{
 		async post() {
-			if (!this.bodyParams.messageId?.trim()) {
-				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
-			}
-
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -398,21 +429,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.ignoreUser',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatIgnoreUserProps },
 	{
 		async get() {
 			const { rid, userId } = this.queryParams;
 			let { ignore = true } = this.queryParams;
 
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
-
-			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
-			}
-
-			if (!userId?.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
-			}
 
 			await Meteor.callAsync('ignoreUser', { rid, userId, ignore });
 
@@ -423,23 +446,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
 	{
 		async get() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			if (!roomId) {
-				throw new Meteor.Error('The required "roomId" query param is missing.');
-			}
-
-			if (!since) {
-				throw new Meteor.Error('The required "since" query param is missing.');
-			} else if (isNaN(Date.parse(since))) {
-				throw new Meteor.Error('The "since" query parameter must be a valid date.');
-			}
-
-			const { cursor, totalCount } = await Messages.trashFindPaginatedDeletedAfter(
+			const { cursor, totalCount } = Messages.trashFindPaginatedDeletedAfter(
 				new Date(since),
 				{ rid: roomId },
 				{
@@ -463,21 +476,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getPinnedMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { cursor, totalCount } = await Messages.findPaginatedPinnedByRoom(roomId, {
+			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
 			});
@@ -522,7 +531,7 @@ API.v1.addRoute(
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const { cursor, totalCount } = await Messages.findPaginated(threadQuery, {
+			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,
@@ -543,7 +552,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncThreadsList',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
 	{
 		async get() {
 			const { rid } = this.queryParams;
@@ -553,12 +562,7 @@ API.v1.addRoute(
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
-			if (!rid) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" query param is missing.');
-			}
-			if (!updatedSince) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
-			}
+
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
@@ -592,7 +596,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetThreadMessagesProps },
 	{
 		async get() {
 			const { tmid } = this.queryParams;
@@ -602,9 +606,7 @@ API.v1.addRoute(
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
-			if (!tmid) {
-				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
-			}
+
 			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
 			if (!thread?.rid) {
 				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
@@ -615,7 +617,7 @@ API.v1.addRoute(
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const { cursor, totalCount } = await Messages.findPaginated(
+			const { cursor, totalCount } = Messages.findPaginated(
 				{ ...query, tmid },
 				{
 					sort: sort || { ts: 1 },
@@ -639,7 +641,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncThreadMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
 	{
 		async get() {
 			const { tmid } = this.queryParams;
@@ -649,12 +651,7 @@ API.v1.addRoute(
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 			}
-			if (!tmid) {
-				throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
-			}
-			if (!updatedSince) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The required param "updatedSince" is missing.');
-			}
+
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
@@ -664,6 +661,7 @@ API.v1.addRoute(
 			if (!thread?.rid) {
 				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 			}
+			// TODO: promise.all? this.user?
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
@@ -682,14 +680,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.followMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatFollowMessageProps },
 	{
 		async post() {
 			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
 
 			await Meteor.callAsync('followMessage', { mid });
 
@@ -700,14 +694,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unfollowMessage',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
 	{
 		async post() {
 			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
 
 			await Meteor.callAsync('unfollowMessage', { mid });
 
@@ -718,15 +708,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getMentionedMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			if (!roomId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
-			}
+
 			const messages = await findMentionedMessages({
 				uid: this.userId,
 				roomId,
@@ -744,16 +732,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getStarredMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetStarredMessagesProps },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			if (!roomId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
-			}
 			const messages = await findStarredMessages({
 				uid: this.userId,
 				roomId,
@@ -773,16 +758,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getDiscussions',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			if (!roomId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
-			}
 			const messages = await findDiscussionsFromRoom({
 				uid: this.userId,
 				roomId,
@@ -800,18 +782,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.otr',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatOTRProps },
 	{
 		async post() {
 			const { roomId, type: otrType } = this.bodyParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
-			}
-
-			if (!otrType) {
-				throw new Meteor.Error('error-invalid-params', 'The required "type" query param is missing.');
-			}
 
 			const { username, type } = this.user;
 

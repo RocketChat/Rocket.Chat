@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -12,10 +12,12 @@ import {
 	useRouter,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
-import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
+import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
@@ -29,8 +31,6 @@ import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
-import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
-import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
@@ -53,7 +53,7 @@ export const useQuickActions = (): {
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
-	const getVisitorEmail = useMutableCallback(async () => {
+	const getVisitorEmail = useEffectEvent(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
@@ -196,7 +196,7 @@ export const useQuickActions = (): {
 									sendToVisitor: preferences?.omnichannelTranscriptEmail,
 									requestData,
 								},
-						  }
+							}
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
 				LivechatInquiry.remove({ rid });
@@ -234,7 +234,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useMutableCallback(async (id: string) => {
+	const handleAction = useEffectEvent(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -354,7 +354,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useMutableCallback((actionId: string) => {
+	const actionDefault = useEffectEvent((actionId: string) => {
 		handleAction(actionId);
 	});
 

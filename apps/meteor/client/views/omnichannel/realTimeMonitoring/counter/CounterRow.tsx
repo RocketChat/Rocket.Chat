@@ -1,6 +1,6 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 type CounterRowProps = {
@@ -17,7 +17,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 								...acc,
 								<Fragment key={i}>{child}</Fragment>,
 								<Divider key={(i + 1) * children.length} width='x2' m='none' alignSelf='stretch' />,
-						  ]
+							]
 						: [...acc, child],
 				[] as ReactNode[],
 			)}

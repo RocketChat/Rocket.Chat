@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Mongo } from 'meteor/mongo';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { ChatRoom } from '../../../../app/models/client';
+import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
@@ -115,7 +115,7 @@ roomCoordinator.add(
 				name: identifier,
 			};
 
-			return ChatRoom.findOne(query);
+			return Rooms.findOne(query);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

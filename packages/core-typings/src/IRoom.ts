@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
@@ -92,6 +93,11 @@ export interface IRoom extends IRocketChatRecord {
 	sidepanel?: {
 		items: [SidepanelItem, SidepanelItem?];
 	};
+
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
+	rolePrioritiesCreated?: number | boolean;
 }
 
 export const isSidepanelItem = (item: any): item is SidepanelItem => {
@@ -196,7 +202,7 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity' | 'contactId'> & {
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
 	};
@@ -264,6 +270,8 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 	closingMessage?: IMessage;
 
 	departmentAncestors?: string[];
+
+	contactId?: string;
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
@@ -318,6 +326,8 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// which is controlled by Livechat_auto_transfer_chat_timeout setting
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
+
+	verified?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -335,7 +345,10 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'contactId'> & { lastMessageTs?: Date; phone?: string };
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
+		lastMessageTs?: Date;
+		phone?: string;
+	};
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
@@ -354,6 +367,8 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 	chatDuration: number;
 };
 
+export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
+
 export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
@@ -362,7 +377,7 @@ export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source i
 	return source?.type === OmnichannelSourceType.APP;
 };
 
-export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'source' | 'sms' | 'email'>;
+export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'sms' | 'email'> & Pick<IOmnichannelRoom, 'source'>;
 
 export type IOmnichannelRoomExtraData = Pick<Partial<IOmnichannelRoom>, 'customFields' | 'source'> & { sla?: string };
 
@@ -407,3 +422,10 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 		overrideGlobal?: boolean;
 	};
 }
+
+export const ROOM_ROLE_PRIORITY_MAP = {
+	owner: 0,
+	leader: 250,
+	moderator: 500,
+	default: 10000,
+};

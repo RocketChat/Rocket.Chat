@@ -1,10 +1,10 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { getRedirectUri } from './getRedirectUri';
+import { saveRegistrationData } from './saveRegistrationData';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
-import { getRedirectUri } from './getRedirectUri';
-import { saveRegistrationData } from './saveRegistrationData';
 
 const fetchRegistrationDataPayload = async ({
 	token,

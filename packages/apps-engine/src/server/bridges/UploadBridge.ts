@@ -1,9 +1,9 @@
+import { BaseBridge } from './BaseBridge';
 import type { IUpload } from '../../definition/uploads';
 import type { IUploadDetails } from '../../definition/uploads/IUploadDetails';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class UploadBridge extends BaseBridge {
     public async doGetById(id: string, appId: string): Promise<IUpload> {

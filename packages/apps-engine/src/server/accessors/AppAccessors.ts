@@ -9,7 +9,10 @@ export class AppAccessors implements IAppAccessors {
 
     private apiManager: AppApiManager;
 
-    constructor(manager: AppManager, private readonly appId: string) {
+    constructor(
+        manager: AppManager,
+        private readonly appId: string,
+    ) {
         this.accessorManager = manager.getAccessorManager();
         this.apiManager = manager.getApiManager();
     }

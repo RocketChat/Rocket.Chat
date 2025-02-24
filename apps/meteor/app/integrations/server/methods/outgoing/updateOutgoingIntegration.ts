@@ -91,7 +91,7 @@ Meteor.methods<ServerMethods>({
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
 								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
-						  }),
+							}),
 					triggerWords: integration.triggerWords,
 					retryFailedCalls: integration.retryFailedCalls,
 					retryCount: integration.retryCount,
@@ -107,14 +107,14 @@ Meteor.methods<ServerMethods>({
 							$unset: {
 								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
 							},
-					  }),
+						}),
 			},
 		);
 
-		if (updatedIntegration.value) {
-			await notifyOnIntegrationChanged(updatedIntegration.value);
+		if (updatedIntegration) {
+			await notifyOnIntegrationChanged(updatedIntegration);
 		}
 
-		return updatedIntegration.value;
+		return updatedIntegration;
 	},
 });

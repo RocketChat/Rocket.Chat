@@ -1,9 +1,9 @@
 import * as stackTrace from 'stack-trace';
 
+import type { ILoggerStorageEntry } from './ILoggerStorageEntry';
 import type { ILogEntry, ILogger } from '../../definition/accessors';
 import { LogMessageSeverity } from '../../definition/accessors';
 import type { AppMethod } from '../../definition/metadata';
-import type { ILoggerStorageEntry } from './ILoggerStorageEntry';
 
 export class AppConsole implements ILogger {
     public static toStorageEntry(appId: string, logger: AppConsole): ILoggerStorageEntry {

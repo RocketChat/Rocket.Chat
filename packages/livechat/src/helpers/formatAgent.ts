@@ -26,7 +26,7 @@ export const formatAgent = (agent: AgentType) => {
 			? {
 					description: agent.username,
 					src: getAvatarUrl(agent.username),
-			  }
+				}
 			: undefined,
 	};
 };

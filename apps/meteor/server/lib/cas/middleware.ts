@@ -6,8 +6,8 @@ import type { ICredentialToken } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
 import _ from 'underscore';
 
-import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
+import { settings } from '../../../app/settings/server';
 
 const closePopup = function (res: ServerResponse): void {
 	res.writeHead(200, { 'Content-Type': 'text/html' });

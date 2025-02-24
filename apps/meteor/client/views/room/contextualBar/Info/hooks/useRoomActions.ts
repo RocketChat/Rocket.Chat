@@ -2,11 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
-import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
+import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
+import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
@@ -18,11 +18,12 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const { t } = useTranslation();
-	const handleHide = useRoomHide(room);
+
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
+	const handleHide = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {
@@ -42,7 +43,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'login' as const,
 								onClick: onClickEnterRoom,
 							},
-					  ]
+						]
 					: []),
 				...(onClickEdit
 					? [
@@ -52,7 +53,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'edit' as const,
 								onClick: onClickEdit,
 							},
-					  ]
+						]
 					: []),
 				...(handleLeave
 					? [
@@ -62,7 +63,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'sign-out' as const,
 								onClick: handleLeave,
 							},
-					  ]
+						]
 					: []),
 				...(handleMoveToTeam
 					? [
@@ -72,7 +73,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'team-arrow-right' as const,
 								onClick: handleMoveToTeam,
 							},
-					  ]
+						]
 					: []),
 				...(handleConvertToTeam
 					? [
@@ -82,7 +83,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'team' as const,
 								onClick: handleConvertToTeam,
 							},
-					  ]
+						]
 					: []),
 				...(canDeleteRoom
 					? [
@@ -93,7 +94,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								onClick: handleDelete,
 								variant: 'danger',
 							},
-					  ]
+						]
 					: []),
 			],
 		};

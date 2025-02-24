@@ -1,13 +1,13 @@
-import type { InternalModuleName } from '@rocket.chat/core-typings';
-import {
-	CoreModules,
-	type GrantedModules,
-	type ILicenseTag,
-	type ILicenseV3,
-	type LicenseLimit,
-	type LicenseModule,
-	type LicensePeriod,
-	type Timestamp,
+import { CoreModules } from '@rocket.chat/core-typings';
+import type {
+	InternalModuleName,
+	GrantedModules,
+	ILicenseTag,
+	ILicenseV3,
+	LicenseLimit,
+	LicenseModule,
+	LicensePeriod,
+	Timestamp,
 } from '@rocket.chat/core-typings';
 
 import { encrypt, encryptStatsToken } from './token';

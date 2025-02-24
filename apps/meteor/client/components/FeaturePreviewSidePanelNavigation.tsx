@@ -1,6 +1,5 @@
 import { FeaturePreview } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useSidePanelNavigationScreenSize } from '../hooks/useSidePanelNavigation';
 

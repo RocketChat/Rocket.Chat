@@ -3,7 +3,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactElement } from 'react';
-import React, { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
+import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
 
 import 'overlayscrollbars/styles/overlayscrollbars.css';
 

@@ -1,7 +1,6 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 
 import { NavbarAction } from '../../components/Navbar';
 import UserAvatarWithStatusUnstable from '../../sidebar/header/UserAvatarWithStatusUnstable';

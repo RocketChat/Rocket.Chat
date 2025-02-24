@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,

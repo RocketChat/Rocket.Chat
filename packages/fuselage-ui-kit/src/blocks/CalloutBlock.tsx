@@ -18,7 +18,7 @@ const CalloutBlock = ({
         (block.accessory &&
           surfaceRenderer.renderSectionAccessoryBlockElement(
             block.accessory,
-            0
+            0,
           )) ||
         undefined
       }

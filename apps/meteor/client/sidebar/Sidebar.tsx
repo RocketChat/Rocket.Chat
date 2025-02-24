@@ -1,14 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
-import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
 import BannerSection from './sections/BannerSection';
 import OmnichannelSection from './sections/OmnichannelSection';
+import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 
 // TODO unit test airgappedbanner
 const Sidebar = () => {

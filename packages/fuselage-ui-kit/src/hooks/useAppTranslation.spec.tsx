@@ -3,8 +3,8 @@ import * as i18next from 'i18next';
 import { Suspense } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-import { AppIdProvider } from '../contexts/AppIdContext';
 import { useAppTranslation } from './useAppTranslation';
+import { AppIdProvider } from '../contexts/AppIdContext';
 
 let i18n: i18next.i18n;
 
@@ -31,7 +31,6 @@ beforeEach(async () => {
 
 it('should work with normal app ID (`test`)', async () => {
   const { result } = renderHook(() => useAppTranslation().t('test'), {
-    legacyRoot: true,
     wrapper: ({ children }) => (
       <I18nextProvider i18n={i18n}>
         <AppIdProvider appId='test'>{children}</AppIdProvider>
@@ -44,7 +43,6 @@ it('should work with normal app ID (`test`)', async () => {
 
 it('should work with core app ID (`test-core`)', async () => {
   const { result } = renderHook(() => useAppTranslation().t('test'), {
-    legacyRoot: true,
     wrapper: ({ children }) => (
       <I18nextProvider i18n={i18n}>
         <AppIdProvider appId='test-core'>{children}</AppIdProvider>
@@ -96,7 +94,6 @@ describe('with suspense', () => {
 
   it('should work with normal app ID (`test`)', async () => {
     const { result } = renderHook(() => useAppTranslation().t('test'), {
-      legacyRoot: true,
       wrapper: ({ children }) => (
         <I18nextProvider i18n={i18n}>
           <AppIdProvider appId='test'>
@@ -107,13 +104,12 @@ describe('with suspense', () => {
     });
 
     await waitFor(() =>
-      expect(result.current).toBe('jumped over the lazy dog')
+      expect(result.current).toBe('jumped over the lazy dog'),
     );
   });
 
   it('should work with core app ID (`test-core`)', async () => {
     const { result } = renderHook(() => useAppTranslation().t('test'), {
-      legacyRoot: true,
       wrapper: ({ children }) => (
         <I18nextProvider i18n={i18n}>
           <AppIdProvider appId='test-core'>

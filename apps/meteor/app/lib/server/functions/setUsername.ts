@@ -1,16 +1,14 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Invites, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
-import { notifyOnUserChange } from '../lib/notifyListener';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
@@ -18,6 +16,9 @@ import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
+import { callbacks } from '../../../../lib/callbacks';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnUserChange } from '../lib/notifyListener';
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {
@@ -66,7 +67,7 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
-export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
+export const _setUsername = async function (userId: string, u: string, fullUser: IUser, updater?: Updater<IUser>): Promise<unknown> {
 	const username = u.trim();
 
 	if (!userId || !username) {
@@ -100,6 +101,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		SystemLogger.error(e);
 	}
 	// Set new username*
+	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
 	await Users.setUsername(user._id, username);
 	user.username = username;
 
@@ -117,7 +119,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 
 		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName);
+			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater);
 		}
 	}
 

@@ -10,20 +10,20 @@ import {
 	EmojiPickerPreview,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
-import React, { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject, UIEvent } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
-import type { EmojiItem, EmojiCategoryPosition } from '../../../../app/emoji/client';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
-import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useIsVisible } from '../../room/hooks/useIsVisible';
 import CategoriesResult from './CategoriesResult';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
 import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
+import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
+import type { EmojiItem } from '../../../../app/emoji/client';
+import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useIsVisible } from '../../room/hooks/useIsVisible';
 
 type EmojiPickerProps = {
 	reference: Element;
@@ -35,7 +35,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
 
 	const ref = useRef<Element | null>(reference);
-	const categoriesPosition = useRef<EmojiCategoryPosition[]>([]);
 	const virtuosoRef = useRef<VirtuosoHandle>(null);
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +60,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setRecentEmojis,
 		actualTone,
 		currentCategory,
+		categoriesPosition,
 		getEmojiListsByCategory,
 		customItemsLimit,
 		setActualTone,
@@ -129,11 +129,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	useEffect(() => {
-		if (recentEmojis.length === 0 && currentCategory === 'recent') {
-			const customEmojiList = getEmojiListsByCategory().filter(({ key }) => key === 'rocket');
-			handleGoToCategory(customEmojiList.length > 0 ? 0 : 1);
-		}
-	}, [actualTone, recentEmojis, getEmojiListsByCategory, currentCategory, setRecentEmojis]);
+		setCurrentCategory('recent');
+	}, [setCurrentCategory]);
 
 	const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
@@ -158,19 +155,19 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCustomItemsLimit(customItemsLimit + 90);
 	};
 
-	// FIXME: not able to type the event scroll yet due the virtuoso version
-	const handleScroll = (event: any) => {
-		const scrollTop = event?.scrollTop;
-		const last = categoriesPosition.current?.filter((pos) => pos.top <= scrollTop).pop();
+	const handleScroll = (event: UIEvent<HTMLDivElement>) => {
+		const categoryMargin = 12;
+		const { scrollTop } = event.currentTarget;
 
-		if (!last) {
+		const lastCategory = categoriesPosition.current
+			?.filter((category, index = 1) => category.top - categoryMargin * index <= scrollTop)
+			.pop();
+
+		if (!lastCategory) {
 			return;
 		}
 
-		const { el } = last;
-		const category = el.id.replace('emoji-list-category-', '');
-
-		setCurrentCategory(category);
+		setCurrentCategory(lastCategory.key);
 	};
 
 	const handleGoToCategory = (categoryIndex: number) => {
@@ -216,7 +213,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						<CategoriesResult
 							ref={virtuosoRef}
 							emojiListByCategory={getEmojiListsByCategory()}
-							categoriesPosition={categoriesPosition}
 							customItemsLimit={customItemsLimit}
 							handleLoadMore={handleLoadMore}
 							handleSelectEmoji={handleSelectEmoji}

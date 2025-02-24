@@ -2,7 +2,6 @@ import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const BannerEnterpriseTrialEnded = (): ReactElement => {
@@ -15,7 +14,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 		linkTarget: '_blank',
 	};
 
-	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
+	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);
 
 	const [showTrialBanner, setShowTrialBanner] = useLocalStorage('showAppsTrialEndBanner', cloudWorkspaceHadTrial);
 

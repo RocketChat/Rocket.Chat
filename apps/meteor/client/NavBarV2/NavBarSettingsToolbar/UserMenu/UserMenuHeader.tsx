@@ -1,19 +1,18 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
-import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 
 type UserMenuHeaderProps = { user: IUser };
 
 const UserMenuHeader = ({ user }: UserMenuHeaderProps) => {
 	const { t } = useTranslation();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const displayName = useUserDisplayName(user);
 
 	return (

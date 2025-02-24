@@ -3,12 +3,11 @@ import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
 import type { ReactElement, MouseEvent, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 import type { CallActionsType } from '../../../contexts/CallContext';
 import type { VoipFooterMenuOptions } from '../../../hooks/useVoipFooterMenu';
-import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 
 type VoipFooterProps = {
 	caller: ICallerInfo;
@@ -56,7 +55,7 @@ const VoipFooter = ({
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
 			? css`
 					cursor: pointer;
-			  `
+				`
 			: '';
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {

@@ -26,7 +26,7 @@ const InputBlock = ({
       appId: block.element.appId ?? block.appId,
       blockId: block.element.blockId ?? block.blockId,
     }),
-    [block.element, block.appId, block.blockId]
+    [block.element, block.appId, block.blockId],
   );
 
   const [{ error }] = useUiKitState(inputElement, context);
@@ -38,7 +38,7 @@ const InputBlock = ({
           {surfaceRenderer.renderTextObject(
             block.label,
             0,
-            UiKit.BlockContext.NONE
+            UiKit.BlockContext.NONE,
           )}
         </FieldLabel>
       )}
@@ -51,7 +51,7 @@ const InputBlock = ({
           {surfaceRenderer.renderTextObject(
             block.hint,
             0,
-            UiKit.BlockContext.NONE
+            UiKit.BlockContext.NONE,
           )}
         </FieldHint>
       )}

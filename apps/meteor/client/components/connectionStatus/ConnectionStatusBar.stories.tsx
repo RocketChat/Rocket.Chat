@@ -2,7 +2,6 @@ import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ContextType, ReactElement } from 'react';
-import React from 'react';
 
 import ConnectionStatusBar from './ConnectionStatusBar';
 
@@ -14,8 +13,9 @@ export default {
 	},
 } satisfies Meta<typeof ConnectionStatusBar>;
 
-const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) =>
-	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>;
+const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) => (
+	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>
+);
 
 const Template: StoryFn<typeof ConnectionStatusBar> = () => <ConnectionStatusBar />;
 

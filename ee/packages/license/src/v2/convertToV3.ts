@@ -29,7 +29,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 							name: tag,
 							color: getTagColor(tag),
 						})),
-				  ],
+					],
 		},
 		validation: {
 			serverUrls: [
@@ -65,7 +65,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.maxGuestUsers
 				? {
@@ -75,7 +75,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.maxRoomsPerGuest
 				? {
@@ -85,7 +85,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.apps?.maxPrivateApps
 				? {
@@ -95,7 +95,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.apps?.maxMarketplaceApps
 				? {
@@ -105,7 +105,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 		},
 		cloudMeta: v2.meta,

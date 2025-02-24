@@ -1,15 +1,15 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
 import { PageHeader } from '../../../components/Page';
+import UpgradeButton from '../../admin/subscription/components/UpgradeButton';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
+import EnabledAppsCount from './EnabledAppsCount';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
-import EnabledAppsCount from './EnabledAppsCount';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 import UpdateRocketChatButton from './UpdateRocketChatButton';
 
@@ -65,8 +65,13 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsup
 						{t('Enable_unlimited_apps')}
 					</Button>
 				)}
-
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
+
+				{isAdmin && result.isSuccess && !privateAppsEnabled && context === 'private' && (
+					<UpgradeButton primary target='private-apps-header' action='upgrade'>
+						{t('Upgrade')}
+					</UpgradeButton>
+				)}
 				{unsupportedVersion && isAdmin && context !== 'private' && <UpdateRocketChatButton />}
 			</ButtonGroup>
 		</PageHeader>

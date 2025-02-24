@@ -2,15 +2,14 @@ import { useSession } from '@rocket.chat/ui-contexts';
 import type { LoginRoutes } from '@rocket.chat/web-ui-registration';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import LoggedOutBanner from '../../../components/deviceManagement/LoggedOutBanner';
 import { useIframeLogin } from './useIframeLogin';
+import LoggedOutBanner from '../../../components/deviceManagement/LoggedOutBanner';
 
 const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; children?: ReactNode }): ReactElement => {
 	const { t } = useTranslation();
-	const showForcedLogoutBanner = useSession('force_logout');
+	const showForcedLogoutBanner = useSession('force_logout') as boolean | undefined;
 	const iframeLoginUrl = useIframeLogin();
 
 	if (iframeLoginUrl) {

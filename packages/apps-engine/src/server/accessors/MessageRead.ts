@@ -5,7 +5,10 @@ import type { IUser } from '../../definition/users';
 import type { MessageBridge } from '../bridges/MessageBridge';
 
 export class MessageRead implements IMessageRead {
-    constructor(private messageBridge: MessageBridge, private appId: string) {}
+    constructor(
+        private messageBridge: MessageBridge,
+        private appId: string,
+    ) {}
 
     public getById(id: string): Promise<IMessage> {
         return this.messageBridge.doGetById(id, this.appId);

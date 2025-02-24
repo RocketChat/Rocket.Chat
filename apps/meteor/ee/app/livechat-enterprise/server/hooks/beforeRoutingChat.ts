@@ -63,6 +63,8 @@ callbacks.add(
 		}
 
 		await saveQueueInquiry(inquiry);
+
+		return LivechatInquiry.findOneById(inquiry._id);
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-routing-chat',

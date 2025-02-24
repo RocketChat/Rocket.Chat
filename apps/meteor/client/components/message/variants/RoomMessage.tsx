@@ -4,7 +4,7 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -55,8 +55,10 @@ const RoomMessage = ({
 	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
+	const isOTRMessage = message.t === 'otr' || message.t === 'otr-ack';
+
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id);
+	const selected = useIsSelectedMessage(message._id, isOTRMessage);
 
 	useCountSelected();
 
@@ -67,10 +69,10 @@ const RoomMessage = ({
 			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={sequential ? t('sequential_message') : t('message')}
+			aria-roledescription={t('message')}
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
-			onClick={selecting ? toggleSelected : undefined}
+			onClick={selecting && !isOTRMessage ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -99,7 +101,7 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox disabled={isOTRMessage} checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
@@ -110,7 +112,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && message?.e2e !== 'pending' && <MessageToolbarHolder message={message} context={context} />}
+			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };

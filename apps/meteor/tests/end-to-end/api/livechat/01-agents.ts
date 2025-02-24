@@ -20,7 +20,7 @@ import {
 	moveBackToQueue,
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -36,6 +36,8 @@ describe('LIVECHAT - Agents', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		agent = await createAgent();
 		manager = await createManager();
 	});
@@ -54,6 +56,7 @@ describe('LIVECHAT - Agents', () => {
 	});
 
 	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 		await deleteUser(agent2.user);
 	});
 

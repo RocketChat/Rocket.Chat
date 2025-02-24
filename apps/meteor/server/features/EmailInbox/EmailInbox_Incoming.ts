@@ -9,8 +9,9 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
-import stripHtml from 'string-strip-html';
+import { stripHtml } from 'string-strip-html';
 
+import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
@@ -18,7 +19,6 @@ import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
-import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
@@ -140,7 +140,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					wrapTails: ')',
 				},
 				skipHtmlDecoding: false,
-		  }).result
+			}).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();

@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 
-import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
 import { ChatTranscript } from './ChatTranscript';
+import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
 
 jest.mock('../templates/ChatTranscript', () => {
 	return {

@@ -12,12 +12,11 @@ import {
 	TextAreaInput,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -37,22 +36,22 @@ type LoginRegisterPayload = {
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
-	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
-	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
-	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers');
+	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
+	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers', false);
 
-	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
-	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
-	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
+	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
+	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
 
-	const formLabelId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
-	const nameId = useUniqueId();
-	const emailId = useUniqueId();
-	const usernameId = useUniqueId();
-	const passwordId = useUniqueId();
-	const passwordConfirmationId = useUniqueId();
-	const reasonId = useUniqueId();
+	const formLabelId = useId();
+	const passwordVerifierId = useId();
+	const nameId = useId();
+	const emailId = useId();
+	const usernameId = useId();
+	const passwordId = useId();
+	const passwordConfirmationId = useId();
+	const reasonId = useId();
 
 	const registerUser = useRegisterMethod();
 	const customFields = useAccountsCustomFields();
@@ -297,7 +296,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isLoading} primary>
+					<Button type='submit' loading={registerUser.isPending} primary>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>

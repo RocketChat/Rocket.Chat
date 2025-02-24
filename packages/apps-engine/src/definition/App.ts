@@ -28,7 +28,11 @@ export abstract class App implements IApp {
      * Also, please use the `initialize()` method to do items instead of the constructor as the constructor
      * *might* be called more than once but the `initialize()` will only be called once.
      */
-    public constructor(private readonly info: IAppInfo, private readonly logger: ILogger, private readonly accessors?: IAppAccessors) {
+    public constructor(
+        private readonly info: IAppInfo,
+        private readonly logger: ILogger,
+        private readonly accessors?: IAppAccessors,
+    ) {
         this.logger.debug(
             `Constructed the App ${this.info.name} (${this.info.id})`,
             `v${this.info.version} which depends on the API v${this.info.requiredApiVersion}!`,

@@ -3,8 +3,8 @@ import type { App } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 // import { t } from '../../../app/utils/client';
-import { t } from '../../../app/utils/lib/i18n';
 import { appErroredStatuses } from './helpers/appErroredStatuses';
+import { t } from '../../../app/utils/lib/i18n';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
@@ -186,21 +186,21 @@ export const appStatusSpanProps = (
 				? {
 						label: 'Enabled*',
 						tooltipText: t('Grandfathered_app'),
-				  }
+					}
 				: {
 						label: 'Enabled',
-				  };
+					};
 		}
 
 		return migrated && !isEnterprise
 			? {
 					label: 'Disabled*',
 					tooltipText: t('Grandfathered_app'),
-			  }
+				}
 			: {
 					type: 'warning',
 					label: 'Disabled',
-			  };
+				};
 	}
 
 	const isFailed = status && appErroredStatuses.includes(status);

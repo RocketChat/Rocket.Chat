@@ -1,5 +1,4 @@
 import type { DragEvent } from 'react';
-import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 const hasFilesToUpload = (dataTransfer: DataTransfer): boolean => dataTransfer.types.includes('Files');
@@ -9,7 +8,7 @@ const hasURLToUpload = (dataTransfer: DataTransfer): boolean =>
 
 export const useDropTarget = (): {
 	triggerProps: {
-		onDragEnter: (event: React.DragEvent<Element>) => void;
+		onDragEnter: (event: DragEvent<Element>) => void;
 	};
 	overlayProps: {
 		visible: boolean;

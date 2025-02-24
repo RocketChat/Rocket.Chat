@@ -1,8 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import InviteUsers from './InviteUsers';
+import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	title: 'Room/Contextual Bar/RoomMembers/InviteUsers',

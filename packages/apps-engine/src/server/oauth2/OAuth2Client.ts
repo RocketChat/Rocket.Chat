@@ -30,7 +30,10 @@ export class OAuth2Client implements IOAuth2Client {
                 </div>`,
     };
 
-    constructor(private readonly app: App, private readonly config: IOAuth2ClientOptions) {}
+    constructor(
+        private readonly app: App,
+        private readonly config: IOAuth2ClientOptions,
+    ) {}
 
     public async setup(configuration: IConfigurationExtend): Promise<void> {
         configuration.api.provideApi({

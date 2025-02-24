@@ -3,8 +3,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
+import { callbacks } from '../../../lib/callbacks';
 
 const isMeteorError = (error: any): error is Meteor.Error => {
 	return error?.meteorError !== undefined;
@@ -95,7 +95,7 @@ OAuth._retrievePendingCredential = async function (key, ...args): Promise<string
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update(
+	await OAuth._pendingCredentials.updateAsync(
 		{
 			_id: pendingCredential._id,
 		},

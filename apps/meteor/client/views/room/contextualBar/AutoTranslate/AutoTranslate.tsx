@@ -1,7 +1,6 @@
 import { Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import type { ReactElement, ChangeEvent } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {

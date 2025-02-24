@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { e2e } from '../../../../app/e2e/client';
 import { useE2EEResetRoomKey } from './useE2EEResetRoomKey';
+import { e2e } from '../../../../app/e2e/client';
 
 jest.mock('../../../../app/e2e/client', () => ({
 	e2e: {
@@ -30,7 +30,6 @@ describe('useE2EEResetRoomKey', () => {
 
 	it('should call resetRoomKey endpoint with correct params', async () => {
 		const { result } = renderHook(() => useE2EEResetRoomKey(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withEndpoint('POST', '/v1/e2e.resetRoomKey', resetRoomKeyMock).build(),
 		});
 
@@ -53,7 +52,6 @@ describe('useE2EEResetRoomKey', () => {
 		(e2e.getInstanceByRoomId as jest.Mock).mockReturnValue(null);
 
 		const { result } = renderHook(() => useE2EEResetRoomKey(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withEndpoint('POST', '/v1/e2e.resetRoomKey', resetRoomKeyMock).build(),
 		});
 
@@ -75,7 +73,6 @@ describe('useE2EEResetRoomKey', () => {
 		}));
 
 		const { result } = renderHook(() => useE2EEResetRoomKey(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withEndpoint('POST', '/v1/e2e.resetRoomKey', resetRoomKeyMock).build(),
 		});
 
@@ -93,7 +90,6 @@ describe('useE2EEResetRoomKey', () => {
 	it('should return an error if resetRoomKey does not resolve', async () => {
 		resetRoomKeyMock.mockRejectedValue(new Error('error-e2e-key-reset-in-progress'));
 		const { result } = renderHook(() => useE2EEResetRoomKey(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withEndpoint('POST', '/v1/e2e.resetRoomKey', resetRoomKeyMock).build(),
 		});
 

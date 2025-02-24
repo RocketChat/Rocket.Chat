@@ -1,7 +1,6 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
@@ -30,11 +29,11 @@ const ScreenshotCarousel = ({
 						opacity: '1',
 						transitionDuration: '1s',
 						transform: 'scale(1.08)',
-				  }
+					}
 				: {
 						opacity: '0',
 						transitionDuration: '1s ease',
-				  };
+					};
 
 			return (
 				<Box style={screenshotWrapperStyle} key={currentScreenshot.id}>

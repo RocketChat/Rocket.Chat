@@ -16,6 +16,6 @@ export const useStringFromTextObject = () => {
         ? t?.(textObject.i18n.key, { ...textObject.i18n.args })
         : textObject.text;
     },
-    [t]
+    [t],
   );
 };

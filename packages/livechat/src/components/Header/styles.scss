@@ -1,12 +1,11 @@
 @use 'sass:math';
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
 
-@import '../../styles/colors';
-@import '../../styles/helpers';
-@import '../../styles/variables';
-
-$header-background-color: $color-dark-blue;
-$header-color: $color-text-lighter;
-$header-padding: $default-padding;
+$header-background-color: colors.$color-dark-blue;
+$header-color: colors.$color-text-lighter;
+$header-padding: variables.$default-padding;
 $header-height: 56px;
 $header-height-large: 77px;
 
@@ -24,7 +23,7 @@ $header-action-active-displacement: 2px;
 
 	color: var(--font-color, $header-color);
 	background-color: var(--color, $header-background-color);
-	box-shadow: 0 0 16px $bg-color-grey;
+	box-shadow: 0 0 16px colors.$bg-color-grey;
 
 	font-size: 16px;
 	align-items: center;
@@ -102,7 +101,7 @@ $header-action-active-displacement: 2px;
 			background: none;
 			justify-content: center;
 
-			@include pressable-button($header-action-active-displacement, 0);
+			@include helpers.pressable-button($header-action-active-displacement, 0);
 		}
 	}
 

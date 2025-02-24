@@ -10,22 +10,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
-import { isTruthy } from '../../../lib/isTruthy';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import { settings } from '../../settings/client';
-import { getUserAvatarURL } from '../../utils/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
 import { E2EEState } from './E2EEState';
 import {
 	toString,
@@ -43,6 +27,22 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
+import * as banners from '../../../client/lib/banners';
+import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
+import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { isTruthy } from '../../../lib/isTruthy';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { getUserAvatarURL } from '../../utils/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 
 import './events';
 
@@ -239,7 +239,7 @@ class E2E extends Emitter {
 						return;
 					}
 
-					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
 						this.log('Imported valid E2E suggested key');
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
@@ -254,7 +254,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -264,8 +264,9 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
+		const userId = Meteor.userId();
+		if (!this.instancesByRoomId[rid] && userId) {
+			this.instancesByRoomId[rid] = new E2ERoom(userId, room);
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
@@ -519,6 +520,9 @@ class E2E extends Emitter {
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
@@ -611,6 +615,9 @@ class E2E extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(this.db_private_key));
 
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			const privateKey = toString(privKey) as string;
 
@@ -638,6 +645,9 @@ class E2E extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
 
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
@@ -673,7 +683,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const decryptedMessage: IE2EEMessage = await e2eRoom.decryptMessage(message);
+		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
@@ -835,7 +845,7 @@ class E2E extends Emitter {
 		}
 
 		const keyDistribution = async () => {
-			const roomIds = ChatRoom.find({
+			const roomIds = Rooms.find({
 				'usersWaitingForE2EKeys': { $exists: true },
 				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
 			}).map((room) => room._id);

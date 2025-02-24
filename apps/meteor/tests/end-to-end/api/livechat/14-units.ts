@@ -17,10 +17,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updatePermission('manage-livechat-departments', ['livechat-manager', 'livechat-monitor', 'admin']);
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('[GET] livechat/units', () => {
-		it('should fail if manage-livechat-units permission is missing', async () => {
+		it('should return empty if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
 			return request
 				.get(api('livechat/units'))
@@ -33,7 +37,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [],
 					unitDepartments: [],
 				})
-				.expect(403);
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('units').that.is.an('array').with.lengthOf(0);
+				});
 		});
 		it('should return a list of units', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -482,11 +489,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should succesfully create a department into an existing unit that a monitor supervises', async () => {
 			const department = await createDepartment(undefined, undefined, undefined, undefined, { _id: unit._id }, monitor1Credentials);
 
-			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 2);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -494,6 +500,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment.ancestors?.[0]).to.equal(unit._id);
 
 			await deleteDepartment(department._id);
+		});
+
+		it('unit should end up with 0 departments after removing all of them', async () => {
+			const updatedUnit = await getUnit(unit._id);
+			expect(updatedUnit).to.have.property('name', unit.name);
+			expect(updatedUnit).to.have.property('numMonitors', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 0);
 		});
 	});
 
@@ -943,11 +956,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 			});
 			testDepartmentId = testDepartment._id;
 
-			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 3);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);

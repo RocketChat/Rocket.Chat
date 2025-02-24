@@ -5,6 +5,8 @@ import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
 	AppMessagesConverter,
@@ -16,12 +18,11 @@ import {
 	AppUploadsConverter,
 	AppVisitorsConverter,
 	AppRolesConverter,
+	AppContactsConverter,
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -63,6 +64,7 @@ export class AppServerOrchestrator {
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
 		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('contacts', new AppContactsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());

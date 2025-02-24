@@ -1,10 +1,9 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { useResumeChatOnHoldMutation } from './hooks/useResumeChatOnHoldMutation';
+import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelOnHold = (): ReactElement => {
 	const resumeChatOnHoldMutation = useResumeChatOnHoldMutation();
@@ -17,7 +16,7 @@ export const ComposerOmnichannelOnHold = (): ReactElement => {
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('chat_on_hold_due_to_inactivity')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutAction
-				disabled={resumeChatOnHoldMutation.isLoading}
+				disabled={resumeChatOnHoldMutation.isPending}
 				onClick={(): void => resumeChatOnHoldMutation.mutate(room._id)}
 			>
 				{t('Resume')}

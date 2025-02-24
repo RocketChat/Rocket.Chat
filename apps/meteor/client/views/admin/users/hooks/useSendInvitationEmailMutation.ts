@@ -17,14 +17,13 @@ export const useSendInvitationEmailMutation = (): UseMutationResult<
 
 	const sendInvites = useEndpoint('POST', '/v1/sendInvitationEmail');
 
-	return useMutation(
-		async ({ emails }) => {
+	return useMutation({
+		mutationFn: async ({ emails }) => {
 			const result = await sendInvites({ emails });
 			return result;
 		},
-		{
-			onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Sending_Invitations') }),
-			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-		},
-	);
+
+		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Sending_Invitations') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
 };

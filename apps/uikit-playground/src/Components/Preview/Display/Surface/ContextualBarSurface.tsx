@@ -42,7 +42,7 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
             flexGrow: 1,
             overflowY: 'hidden',
           }}
-          renderThumbVertical={({ style, ...props }): JSX.Element => (
+          renderThumbVertical={({ style, ...props }) => (
             <div
               {...props}
               style={{
