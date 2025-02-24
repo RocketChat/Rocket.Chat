@@ -1,11 +1,11 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { AtLeast, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams } from '@rocket.chat/rest-typings';
 
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { sendTranscript } from '../../lib/sendTranscript';
+import { sendTranscript, requestTranscript } from '../../lib/sendTranscript';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -71,45 +71,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-export async function requestTranscript({
-	rid,
-	email,
-	subject,
-	user,
-}: {
-	rid: string;
-	email: string;
-	subject: string;
-	user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
-}) {
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
-
-	if (!room?.open) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room');
-	}
-
-	if (room.transcriptRequest) {
-		throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
-	}
-
-	if (!(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Error('error-mac-limit-reached');
-	}
-
-	const { _id, username, name, utcOffset } = user;
-	const transcriptRequest = {
-		requestedAt: new Date(),
-		requestedBy: {
-			_id,
-			username,
-			name,
-			utcOffset,
-		},
-		email,
-		subject,
-	};
-
-	await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
-	return true;
-}
