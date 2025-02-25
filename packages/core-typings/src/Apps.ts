@@ -130,3 +130,12 @@ export type App = {
 	documentationUrl: string;
 	migrated: boolean;
 };
+
+export type AppCategory = {
+	id: string;
+	title: string;
+	description: string;
+	hidden: boolean;
+	createdDate: string;
+	modifiedDate: string;
+};

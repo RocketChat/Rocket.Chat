@@ -12,6 +12,30 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const removePersonalAccessTokenOfUser = async (tokenName: string, userId: string): Promise<void> => {
+	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+			method: 'personalAccessTokens:removeToken',
+		});
+	}
+	const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
+		userId,
+		tokenName,
+	});
+	if (!tokenExist) {
+		throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
+			method: 'personalAccessTokens:removeToken',
+		});
+	}
+	await Users.removePersonalAccessTokenOfUser({
+		userId,
+		loginTokenObject: {
+			type: 'personalAccessToken',
+			name: tokenName,
+		},
+	});
+}
+
 Meteor.methods<ServerMethods>({
 	'personalAccessTokens:removeToken': twoFactorRequired(async function ({ tokenName }) {
 		const uid = Meteor.userId();
@@ -20,26 +44,7 @@ Meteor.methods<ServerMethods>({
 				method: 'personalAccessTokens:removeToken',
 			});
 		}
-		if (!(await hasPermissionAsync(uid, 'create-personal-access-tokens'))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', {
-				method: 'personalAccessTokens:removeToken',
-			});
-		}
-		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
-			userId: uid,
-			tokenName,
-		});
-		if (!tokenExist) {
-			throw new Meteor.Error('error-token-does-not-exists', 'Token does not exist', {
-				method: 'personalAccessTokens:removeToken',
-			});
-		}
-		await Users.removePersonalAccessTokenOfUser({
-			userId: uid,
-			loginTokenObject: {
-				type: 'personalAccessToken',
-				name: tokenName,
-			},
-		});
+
+		return removePersonalAccessTokenOfUser(tokenName, uid);
 	}),
 });

@@ -10,5 +10,6 @@ export interface IAppRoomsConverter {
 	convertRoom(room: IRoom | undefined | null): Promise<IAppsRoom | IAppsLivechatRoom | undefined>;
 	convertAppRoom(room: undefined | null): Promise<undefined>;
 	convertAppRoom(room: IAppsRoom): Promise<IRoom>;
-	convertAppRoom(room: IAppsRoom | undefined | null): Promise<IRoom | undefined>;
+	convertAppRoom(room: IAppsRoom, isPartial: boolean): Promise<Partial<IRoom>>;
+	convertAppRoom(room: IAppsRoom | undefined | null, isPartial?: boolean): Promise<Partial<IRoom> | undefined>;
 }

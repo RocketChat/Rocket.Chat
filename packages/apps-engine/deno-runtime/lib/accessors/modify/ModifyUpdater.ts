@@ -70,13 +70,17 @@ export class ModifyUpdater implements IModifyUpdater {
         ) as IUserUpdater;
     }
 
-    public async message(messageId: string, _updater: IUser): Promise<IMessageBuilder> {
+    public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
         const response = await this.senderFn({
             method: 'bridges:getMessageBridge:doGetById',
             params: [messageId, AppObjectRegistry.get('id')],
         });
 
-        return new MessageBuilder(response.result as IMessage);
+        const builder = new MessageBuilder(response.result as IMessage);
+
+        builder.setEditor(editor);
+
+        return builder;
     }
 
     public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
@@ -91,15 +95,15 @@ export class ModifyUpdater implements IModifyUpdater {
     public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
         switch (builder.kind) {
             case RocketChatAssociationModel.MESSAGE:
-                return this._finishMessage(builder as IMessageBuilder);
+                return this._finishMessage(builder as MessageBuilder);
             case RocketChatAssociationModel.ROOM:
-                return this._finishRoom(builder as IRoomBuilder);
+                return this._finishRoom(builder as RoomBuilder);
             default:
                 throw new Error('Invalid builder passed to the ModifyUpdater.finish function.');
         }
     }
 
-    private async _finishMessage(builder: IMessageBuilder): Promise<void> {
+    private async _finishMessage(builder: MessageBuilder): Promise<void> {
         const result = builder.getMessage();
 
         if (!result.id) {
@@ -114,40 +118,44 @@ export class ModifyUpdater implements IModifyUpdater {
             result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
         }
 
+        const changes = { id: result.id, ...builder.getChanges() };
+
         await this.senderFn({
             method: 'bridges:getMessageBridge:doUpdate',
-            params: [result, AppObjectRegistry.get('id')],
+            params: [changes, AppObjectRegistry.get('id')],
         });
     }
 
-    private async _finishRoom(builder: IRoomBuilder): Promise<void> {
-        const result = builder.getRoom();
+    private async _finishRoom(builder: RoomBuilder): Promise<void> {
+        const room = builder.getRoom();
 
-        if (!result.id) {
+        if (!room.id) {
             throw new Error("Invalid room, can't update a room without an id.");
         }
 
-        if (!result.type) {
+        if (!room.type) {
             throw new Error('Invalid type assigned to the room.');
         }
 
-        if (result.type !== RoomType.LIVE_CHAT) {
-            if (!result.creator || !result.creator.id) {
+        if (room.type !== RoomType.LIVE_CHAT) {
+            if (!room.creator || !room.creator.id) {
                 throw new Error('Invalid creator assigned to the room.');
             }
 
-            if (!result.slugifiedName || !result.slugifiedName.trim()) {
+            if (!room.slugifiedName || !room.slugifiedName.trim()) {
                 throw new Error('Invalid slugifiedName assigned to the room.');
             }
         }
 
-        if (!result.displayName || !result.displayName.trim()) {
+        if (!room.displayName || !room.displayName.trim()) {
             throw new Error('Invalid displayName assigned to the room.');
         }
 
+        const changes = { id: room.id, ...builder.getChanges() };
+
         await this.senderFn({
             method: 'bridges:getRoomBridge:doUpdate',
-            params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+            params: [changes, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
         });
     }
 }
