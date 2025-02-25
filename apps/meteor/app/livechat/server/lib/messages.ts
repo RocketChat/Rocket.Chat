@@ -1,13 +1,14 @@
 import dns from 'dns';
 import * as util from 'util';
 
+import type { ILivechatVisitor, AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
+import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { ILivechatVisitor, AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -112,6 +113,20 @@ export async function updateMessage({ guest, message }: { guest: ILivechatVisito
 	// TODO: Apps sends an `any` object and apparently we just check for _id being present
 	// while updateMessage expects AtLeast<id, msg, rid>
 	await updateMessageFunc(message, guest as unknown as IUser);
+
+	return true;
+}
+
+export async function deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
+	const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
+	const editOwn = message.u && message.u._id === guest._id;
+
+	if (!deleteAllowed || !editOwn) {
+		throw new Error('error-action-not-allowed');
+	}
+
+	// TODO: we shouldn't do this :(
+	await deleteMessageFunc(message, guest as unknown as IUser);
 
 	return true;
 }

@@ -46,7 +46,6 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
@@ -535,19 +534,6 @@ class LivechatClass {
 
 		await cleanGuestHistory(guest);
 		return LivechatVisitors.disableById(_id);
-	}
-
-	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
-		const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
-		const editOwn = message.u && message.u._id === guest._id;
-
-		if (!deleteAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		await deleteMessage(message, guest as unknown as IUser);
-
-		return true;
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {

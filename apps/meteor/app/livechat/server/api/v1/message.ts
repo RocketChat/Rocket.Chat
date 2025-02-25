@@ -18,7 +18,7 @@ import { loadMessageHistory } from '../../../../lib/server/functions/loadMessage
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { updateMessage } from '../../lib/messages';
+import { updateMessage, deleteMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -177,7 +177,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await LivechatTyped.deleteMessage({ guest, message });
+			const result = await deleteMessage({ guest, message });
 			if (result) {
 				return API.v1.success({
 					message: {
