@@ -651,7 +651,7 @@ API.v1.addRoute(
 				return API.v1.failure('Username is already in use');
 			}
 			if (!(await checkEmailAvailability(this.bodyParams.email))) {
-				return API.v1.failure('Email is already in use');
+				return API.v1.failure('Email already exists');
 			}
 			if (this.bodyParams.customFields) {
 				try {
