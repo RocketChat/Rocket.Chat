@@ -2,12 +2,16 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import type { AppPreventedError } from '../lib/errors/AppPreventedError';
+import { dispatchToastMessage } from '../lib/toast';
 
 type UseJoinRoomMutationFunctionProps = {
 	rid: IRoom['_id'];
 	reference: string;
 	type: IRoom['t'];
 };
+
+const isAppError = (error: AppPreventedError | Error): error is AppPreventedError => (error as AppPreventedError).reason !== undefined;
 
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
@@ -22,6 +26,9 @@ export const useJoinRoom = () => {
 			queryClient.invalidateQueries({
 				queryKey: ['rooms', data],
 			});
+		},
+		onError: (error: AppPreventedError | Error) => {
+			dispatchToastMessage({ message: isAppError(error) ? error.reason : error.message, type: 'error' });
 		},
 	});
 };
