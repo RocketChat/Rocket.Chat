@@ -69,11 +69,34 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Security', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('account/security');
+			await page.waitForSelector('.main-content');
+		});
+
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/security');
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
+		});
+
+		test('expect to disable email 2FA', async () => {
+			await poAccountProfile.security2FASection.click();
+			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
+			await poAccountProfile.disableEmail2FAButton.click();
+
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
+		});
+
+		test('expect to enable email 2FA', async () => {
+			await poAccountProfile.security2FASection.click();
+			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
+			await poAccountProfile.enableEmail2FAButton.click();
+
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
 		});
 	});
 
