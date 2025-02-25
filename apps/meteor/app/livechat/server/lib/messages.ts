@@ -1,11 +1,13 @@
 import dns from 'dns';
 import * as util from 'util';
 
-import { LivechatDepartment } from '@rocket.chat/models';
+import { LivechatDepartment, Messages } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { ILivechatVisitor, AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -88,4 +90,28 @@ async function sendEmail(from: string, to: string, replyTo: string, subject: str
 		subject,
 		html,
 	});
+}
+
+export async function updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
+	// TODO: Remove check
+	check(message, Match.ObjectIncluding({ _id: String }));
+
+	const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
+	if (!originalMessage?._id) {
+		return;
+	}
+
+	// TODO: shouldn't this happen inside updateMessageFunc?
+	const editAllowed = settings.get('Message_AllowEditing');
+	const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
+
+	if (!editAllowed || !editOwn) {
+		throw new Error('error-action-not-allowed');
+	}
+
+	// TODO: Apps sends an `any` object and apparently we just check for _id being present
+	// while updateMessage expects AtLeast<id, msg, rid>
+	await updateMessageFunc(message, guest as unknown as IUser);
+
+	return true;
 }

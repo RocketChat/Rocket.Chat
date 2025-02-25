@@ -18,6 +18,7 @@ import { loadMessageHistory } from '../../../../lib/server/functions/loadMessage
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { updateMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -128,12 +129,13 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
+			// TODO: projection
 			const msg = await Messages.findOneById(_id);
 			if (!msg) {
 				throw new Error('invalid-message');
 			}
 
-			const result = await LivechatTyped.updateMessage({
+			const result = await updateMessage({
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg, rid: msg.rid },
 			});

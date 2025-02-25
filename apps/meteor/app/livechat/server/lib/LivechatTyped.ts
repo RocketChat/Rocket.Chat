@@ -407,28 +407,6 @@ class LivechatClass {
 		});
 	}
 
-	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
-		if (!originalMessage?._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		// TODO: Apps sends an `any` object and apparently we just check for _id being present
-		// while updateMessage expects AtLeast<id, msg, rid>
-		await updateMessage(message, guest as unknown as IUser);
-
-		return true;
-	}
-
 	async transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
 		this.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
