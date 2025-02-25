@@ -3301,7 +3301,7 @@
   "Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat": "Learn how to unlock the myriad possibilities of Rocket.Chat.",
   "Leave": "Leave",
   "Leave_a_comment": "Leave a comment",
-  "Leave_Group_Warning": "Are you sure you want to leave the group \"%s\"?",
+  "Leave_Group_Warning": "Are you sure you want to leave the group {{name}}?",
   "Leave_Livechat_Warning": "Are you sure you want to leave the omnichannel with \"%s\"?",
   "Leave_Private_Warning": "Are you sure you want to leave the discussion with \"%s\"?",
   "Leave_room": "Leave",
