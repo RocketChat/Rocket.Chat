@@ -18,7 +18,7 @@ import type {
 	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import { Logger, type MainLogger } from '@rocket.chat/logger';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -33,7 +33,6 @@ import {
 	LivechatCustomField,
 	LivechatContacts,
 } from '@rocket.chat/models';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -59,7 +58,6 @@ import {
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
@@ -98,11 +96,8 @@ type ICRMData = {
 class LivechatClass {
 	logger: Logger;
 
-	webhookLogger: MainLogger;
-
 	constructor() {
 		this.logger = new Logger('Livechat');
-		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
@@ -316,50 +311,6 @@ class LivechatClass {
 		}
 
 		return Users.countBotAgents();
-	}
-
-	async sendRequest(
-		postData: {
-			type: string;
-			[key: string]: any;
-		},
-		attempts = 10,
-	) {
-		if (!attempts) {
-			Livechat.logger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
-			return;
-		}
-		const timeout = settings.get<number>('Livechat_http_timeout');
-		const secretToken = settings.get<string>('Livechat_secret_token');
-		const webhookUrl = settings.get<string>('Livechat_webhookUrl');
-		try {
-			Livechat.webhookLogger.debug({ msg: 'Sending webhook request', postData });
-			const result = await fetch(webhookUrl, {
-				method: 'POST',
-				headers: {
-					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
-				},
-				body: postData,
-				timeout,
-			});
-
-			if (result.status === 200) {
-				metrics.totalLivechatWebhooksSuccess.inc();
-				return result;
-			}
-
-			metrics.totalLivechatWebhooksFailures.inc();
-			throw new Error(await result.text());
-		} catch (err) {
-			const retryAfter = timeout * 4;
-			Livechat.webhookLogger.error({ msg: `Error response on ${11 - attempts} try ->`, err });
-			// try 10 times after 20 seconds each
-			attempts - 1 &&
-				Livechat.webhookLogger.warn({ msg: `Webhook call failed. Retrying`, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
-			setTimeout(async () => {
-				await Livechat.sendRequest(postData, attempts - 1);
-			}, retryAfter);
-		}
 	}
 
 	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
