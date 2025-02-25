@@ -47,7 +47,6 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -70,6 +69,7 @@ import { Visitors, type RegisterGuestType } from './Visitors';
 import { registerGuestData } from './contacts/registerGuestData';
 import { getRequiredDepartment } from './departmentsLib';
 import type { ILivechatMessage } from './localTypes';
+import { cleanGuestHistory } from './tracking';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -604,37 +604,8 @@ class LivechatClass {
 			throw new Error('error-invalid-guest');
 		}
 
-		await this.cleanGuestHistory(guest);
+		await cleanGuestHistory(guest);
 		return LivechatVisitors.disableById(_id);
-	}
-
-	async cleanGuestHistory(guest: ILivechatVisitor) {
-		const { token } = guest;
-
-		// This shouldn't be possible, but just in case
-		if (!token) {
-			throw new Error('error-invalid-guest');
-		}
-
-		const cursor = LivechatRooms.findByVisitorToken(token);
-		for await (const room of cursor) {
-			await Promise.all([
-				Subscriptions.removeByRoomId(room._id, {
-					async onTrash(doc) {
-						void notifyOnSubscriptionChanged(doc, 'removed');
-					},
-				}),
-				FileUpload.removeFilesByRoomId(room._id),
-				Messages.removeByRoomId(room._id),
-				ReadReceipts.removeByRoomId(room._id),
-			]);
-		}
-
-		await LivechatRooms.removeByVisitorToken(token);
-
-		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
-		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
-		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
