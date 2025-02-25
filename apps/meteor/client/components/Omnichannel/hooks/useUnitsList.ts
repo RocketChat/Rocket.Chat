@@ -9,7 +9,7 @@ type UnitsListOptions = {
 	text: string;
 };
 
-type UnitOption = { value: string; label: string; _updatedAt: Date; _id: string };
+type UnitOption = { value: string; label: string; _id: string };
 
 export const useUnitsList = (
 	options: UnitsListOptions,
@@ -42,7 +42,6 @@ export const useUnitsList = (
 				_id: u._id,
 				label: u.name,
 				value: u._id,
-				_updatedAt: new Date(u._updatedAt),
 			}));
 
 			return {
