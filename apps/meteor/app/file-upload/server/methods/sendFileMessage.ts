@@ -11,6 +11,7 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -33,37 +34,25 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 
 const logger = new Logger('sendFileMessage');
 
-type parseMultipleFilesIntoMessageAttachmentsResult = { files: FileProp[]; attachments: MessageAttachment[] };
 export const parseMultipleFilesIntoMessageAttachments = async (
 	filesToConfirm: Partial<IUpload>[],
 	roomId: string,
 	user: IUser,
-): Promise<parseMultipleFilesIntoMessageAttachmentsResult> => {
-	const result: parseMultipleFilesIntoMessageAttachmentsResult = { files: [], attachments: [] };
-
-	await Promise.all(
-		filesToConfirm.reduce<Array<Promise<void>>>((acc, file) => {
-			if (!file) return acc;
-
-			acc.push(
-				(async () => {
-					try {
-						const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-						result.files.push(...files);
-						result.attachments.push(...attachments);
-					} catch (error) {
-						// Not an important error, it should not happen and if it happens wil affect the attachment
-						// preview in the message object only
-						logger.warn('Error processing file:', file, error);
-					}
-				})(),
-			);
-
-			return acc;
-		}, []),
+): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
+	const results = await Promise.all(
+		filesToConfirm.map((file) =>
+			wrapExceptions(() => parseFileIntoMessageAttachments(file, roomId, user)).catch(async (error) => {
+				// Not an important error, it should not happen and if it happens wil affect the attachment preview in the message object only
+				logger.warn({ msg: 'Error processing file: ', file, error });
+				return { files: [], attachments: [] };
+			}),
+		),
 	);
 
-	return result;
+	return {
+		files: results.flatMap(({ files }) => files),
+		attachments: results.flatMap(({ attachments }) => attachments),
+	};
 };
 
 export const parseFileIntoMessageAttachments = async (
