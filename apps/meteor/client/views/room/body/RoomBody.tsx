@@ -1,13 +1,11 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement, UIEvent } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo, useRef } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LeaderBar from './LeaderBar';
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
@@ -24,7 +22,6 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
@@ -114,7 +111,7 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -181,19 +178,6 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
-	const { openUserCard, triggerProps } = useUserCard();
-
-	const handleOpenUserCard = useCallback(
-		(event: UIEvent, username: IUser['username']) => {
-			if (!username) {
-				return;
-			}
-
-			openUserCard(event, username);
-		},
-		[openUserCard],
-	);
-
 	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
@@ -229,16 +213,6 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{roomLeader ? (
-									<LeaderBar
-										_id={roomLeader._id}
-										username={roomLeader.username}
-										name={roomLeader.name}
-										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCard}
-										triggerProps={triggerProps}
-									/>
-								) : null}
 								{uploads.length > 0 && (
 									<UploadProgressContainer>
 										{uploads.map((upload) => (

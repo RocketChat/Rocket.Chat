@@ -28,6 +28,7 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
 
+	// TODO: remove this locator
 	get btnSubmit(): Locator {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
@@ -42,6 +43,14 @@ export class AccountProfile {
 
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
+
+	get preferencesSoundAccordionOption(): Locator {
+		return this.page.locator('h2:has-text("Sound")');
+	}
+
+	get preferencesCallRingerVolumeSlider(): Locator {
+		return this.page.getByRole('slider', { name: 'Call Ringer Volume' });
 	}
 
 	get btnClose(): Locator {
@@ -122,5 +131,13 @@ export class AccountProfile {
 
 	get btnSaveChanges(): Locator {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
+	}
+
+	get enableEmail2FAButton(): Locator {
+		return this.page.locator('role=button[name="Enable two-factor authentication via Email"]');
+	}
+
+	get disableEmail2FAButton(): Locator {
+		return this.page.locator('role=button[name="Disable two-factor authentication via Email"]');
 	}
 }
