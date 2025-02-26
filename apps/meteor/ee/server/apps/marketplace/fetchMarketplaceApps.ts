@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 
 type FetchMarketplaceAppsParams = {
 	endUserID?: string;
@@ -159,6 +159,11 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 	const response = await request.json();
 
 	Apps.getRocketChatLogger().error('Failed to fetch marketplace apps', response);
+
+	// TODO: Refactor cloud to return a proper error code on unsupported version
+	if ('errorMsg' in response && response.errorMsg === 'unsupported version') {
+		throw new MarketplaceUnsupportedVersionError();
+	}
 
 	if (request.status === 400 && response.code === 200) {
 		throw new MarketplaceAppsError('Marketplace_Invalid_Apps_Engine_Version');
