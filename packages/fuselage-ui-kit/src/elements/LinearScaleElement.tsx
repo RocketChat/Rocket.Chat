@@ -24,15 +24,15 @@ const LinearScaleElement = ({
 
   const [{ loading, value = initialValue, error }, action] = useUiKitState(
     block,
-    context
+    context,
   );
 
   const points = useMemo(
     () =>
       Array.from({ length: Math.max(maxValue - minValue + 1, 1) }, (_, i) =>
-        String(minValue + i)
+        String(minValue + i),
       ),
-    [maxValue, minValue]
+    [maxValue, minValue],
   );
 
   return (
@@ -47,7 +47,7 @@ const LinearScaleElement = ({
           {surfaceRenderer.renderTextObject(
             preLabel,
             0,
-            UiKit.BlockContext.NONE
+            UiKit.BlockContext.NONE,
           )}
         </Box>
       )}
@@ -72,7 +72,7 @@ const LinearScaleElement = ({
                   text: String(i + minValue),
                 },
                 0,
-                UiKit.BlockContext.NONE
+                UiKit.BlockContext.NONE,
               )}
             </Button>
           ))}
@@ -83,7 +83,7 @@ const LinearScaleElement = ({
           {surfaceRenderer.renderTextObject(
             postLabel,
             0,
-            UiKit.BlockContext.NONE
+            UiKit.BlockContext.NONE,
           )}
         </Box>
       )}

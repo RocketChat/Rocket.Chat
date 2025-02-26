@@ -22,25 +22,40 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 				errorType?: TErrorType;
 				details?: TErrorDetails;
 				message?: string;
-		  } & (undefined extends TErrorType ? object : { errorType: TErrorType }) &
+			} & (undefined extends TErrorType ? object : { errorType: TErrorType }) &
 				(undefined extends TErrorDetails ? object : { details: TErrorDetails extends string ? unknown : TErrorDetails });
 };
 
 export type UnauthorizedResult<T> = {
-	statusCode: 403;
+	statusCode: 401;
 	body: {
 		success: false;
 		error: T | 'unauthorized';
 	};
 };
 
-export type InternalError<T> = { statusCode: 500; body: { error: T | 'Internal error occured'; success: false } };
+export type ForbiddenResult<T> = {
+	statusCode: 403;
+	body: {
+		success: false;
+		// TODO: MAJOR remove 'unauthorized'
+		error: T | 'forbidden' | 'unauthorized';
+	};
+};
 
-export type NotFoundResult = {
+export type InternalError<T> = {
+	statusCode: 500;
+	body: {
+		error: T | 'Internal server error';
+		success: false;
+	};
+};
+
+export type NotFoundResult<T = string> = {
 	statusCode: 404;
 	body: {
 		success: false;
-		error: string;
+		error: T;
 	};
 };
 
@@ -112,16 +127,7 @@ export type PartialThis = {
 	readonly logger: Logger;
 };
 
-export type UserInfo = IUser & {
-	email?: string;
-	settings: {
-		profile: object;
-		preferences: unknown;
-	};
-	avatarUrl: string;
-};
-
-export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -130,26 +136,32 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 		? TOptions extends { validateParams: ValidateFunction<infer T> }
 			? T
 			: TOptions extends { validateParams: { GET: ValidateFunction<infer T> } }
-			? T
-			: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number }
+				? T
+				: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number }
 		: Record<string, string>;
 	// TODO make it unsafe
 	readonly bodyParams: TMethod extends 'GET'
 		? Record<string, unknown>
 		: TOptions extends { validateParams: ValidateFunction<infer T> }
-		? T
-		: TOptions extends { validateParams: infer V }
-		? V extends { [key in TMethod]: ValidateFunction<infer T> }
 			? T
-			: Partial<OperationParams<TMethod, TPathPattern>>
-		: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
-		  Partial<OperationParams<TMethod, TPathPattern>>;
+			: TOptions extends { validateParams: infer V }
+				? V extends { [key in TMethod]: ValidateFunction<infer T> }
+					? T
+					: Partial<OperationParams<TMethod, TPathPattern>>
+				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
+					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
+		/**
+		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
 		fields: Record<string, 0 | 1>;
+		/**
+		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
 		query: Record<string, unknown>;
 	}>;
 } & (TOptions extends { authRequired: true }
@@ -157,18 +169,18 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 			user: IUser;
 			userId: string;
 			readonly token: string;
-	  }
+		}
 	: TOptions extends { authOrAnonRequired: true }
-	? {
-			user?: IUser;
-			userId?: string;
-			readonly token?: string;
-	  }
-	: {
-			user?: IUser | null;
-			userId?: string | undefined;
-			readonly token?: string;
-	  });
+		? {
+				user?: IUser;
+				userId?: string;
+				readonly token?: string;
+			}
+		: {
+				user?: IUser | null;
+				userId?: string | undefined;
+				readonly token?: string;
+			});
 
 export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
@@ -184,12 +196,94 @@ export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOp
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
 
-export type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
+export type InnerAction<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+	Action<TMethod, TPathPattern, TOptions> extends (this: infer This) => infer Result
+		? This extends ActionThis<TMethod, TPathPattern, TOptions>
+			? (this: Mutable<This>) => Result
+			: never
+		: never;
+
+type Mutable<Immutable> = {
+	-readonly [key in keyof Immutable]: Immutable[key];
+};
+
+type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
 	| Action<TMethod, TPathPattern, TEndpointOptions>
 	| ({
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
 	  } & { twoFactorRequired: boolean });
 
+type ActionOperation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions extends Options = object> = {
+	action: Action<TMethod, TPathPattern, TEndpointOptions>;
+} & TEndpointOptions;
+
 export type Operations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
 	[M in MethodOf<TPathPattern> as Lowercase<M>]: Operation<Uppercase<M>, TPathPattern, TOptions>;
 };
+
+export type ActionOperations<TPathPattern extends PathPattern, TOptions extends Options = object> = {
+	[M in MethodOf<TPathPattern> as Lowercase<M>]: ActionOperation<Uppercase<M>, TPathPattern, TOptions>;
+};
+
+export type TypedOptions = {
+	response: {
+		200: ValidateFunction;
+		300?: ValidateFunction;
+		400?: ValidateFunction;
+		401?: ValidateFunction;
+		403?: ValidateFunction;
+		404?: ValidateFunction;
+		500?: ValidateFunction;
+	};
+	query?: ValidateFunction;
+	body?: ValidateFunction;
+	tags?: string[];
+} & Options;
+
+export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	userId: TOptions['authRequired'] extends true ? string : string | undefined;
+	token: TOptions['authRequired'] extends true ? string : string | undefined;
+	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
+	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
+	parseJsonQuery(): Promise<{
+		sort: Record<string, 1 | -1>;
+		/**
+		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
+		fields: Record<string, 0 | 1>;
+		/**
+		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
+		query: Record<string, unknown>;
+	}>;
+	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
+
+	requestIp?: string;
+};
+
+type PromiseOrValue<T> = T | Promise<T>;
+
+type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
+
+type Results<TResponse extends TypedOptions['response']> = {
+	[K in keyof TResponse]: K extends 200
+		? SuccessResult<InferResult<TResponse[200]>>
+		: K extends 400
+			? FailureResult<InferResult<TResponse[400]>>
+			: K extends 401
+				? UnauthorizedResult<InferResult<TResponse[401]>>
+				: K extends 403
+					? ForbiddenResult<InferResult<TResponse[403]>>
+					: K extends 404
+						? NotFoundResult<InferResult<TResponse[404]>>
+						: K extends 500
+							? InternalError<InferResult<TResponse[500]>>
+							: never;
+}[keyof TResponse] & {
+	headers?: Record<string, string>;
+};
+
+export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
+	this: TypedThis<TOptions, TPath>,
+	request: Request,
+) => PromiseOrValue<Results<TOptions['response']>>;

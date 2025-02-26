@@ -3,6 +3,7 @@ import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services
 import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
+import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
@@ -11,7 +12,6 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
-import { FederationActions } from './hooks/BeforeFederationActions';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';

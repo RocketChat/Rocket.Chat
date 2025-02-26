@@ -1,9 +1,8 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import type { Control, FieldValues, FieldError as RHFFieldError } from 'react-hook-form';
 import { Controller, useFormState, get } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +35,7 @@ const CustomField = <T extends FieldValues>({
 }: CustomFieldProps<T>) => {
 	const { t } = useTranslation();
 	const { errors } = useFormState({ control });
-	const fieldId = useUniqueId();
+	const fieldId = useId();
 
 	const Component = FIELD_TYPES[type] ?? null;
 
@@ -54,9 +53,9 @@ const CustomField = <T extends FieldValues>({
 				case 'required':
 					return t('Required_field', { field: label || name });
 				case 'minLength':
-					return t('Min_length_is', props?.minLength);
+					return t('Min_length_is', { postProcess: 'sprintf', sprintf: [props?.minLength] });
 				case 'maxLength':
-					return t('Max_length_is', props?.maxLength);
+					return t('Max_length_is', { postProcess: 'sprintf', sprintf: [props?.maxLength] });
 			}
 		},
 		[label, name, props?.maxLength, props?.minLength, t],

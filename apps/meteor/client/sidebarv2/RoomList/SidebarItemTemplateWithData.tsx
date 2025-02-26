@@ -1,11 +1,13 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import type { useTranslation } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
+import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
@@ -13,9 +15,9 @@ import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannel
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { normalizeSidebarMessage } from './normalizeSidebarMessage';
+import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
+export const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -34,33 +36,9 @@ export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: Re
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
-export const getBadgeTitle = (
-	userMentions: number,
-	threadUnread: number,
-	groupMentions: number,
-	unread: number,
-	t: ReturnType<typeof useTranslation>,
-) => {
-	const title = [] as string[];
-	if (userMentions) {
-		title.push(t('mentions_counter', { count: userMentions }));
-	}
-	if (threadUnread) {
-		title.push(t('threads_counter', { count: threadUnread }));
-	}
-	if (groupMentions) {
-		title.push(t('group_mentions_counter', { count: groupMentions }));
-	}
-	const count = unread - userMentions - groupMentions;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
-	}
-	return title.join(', ');
-};
-
 type RoomListRowProps = {
 	extended: boolean;
-	t: ReturnType<typeof useTranslation>;
+	t: TFunction;
 	SidebarItemTemplate: ComponentType<
 		{
 			icon: ReactNode;
@@ -69,7 +47,7 @@ type RoomListRowProps = {
 			actions: unknown;
 			href: string;
 			time?: Date;
-			menu?: ReactNode;
+			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
 			titleIcon?: string;
@@ -85,7 +63,7 @@ type RoomListRowProps = {
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 
-	room: ISubscription & IRoom;
+	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -115,22 +93,10 @@ const SidebarItemTemplateWithData = ({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const {
-		lastMessage,
-		hideUnreadStatus,
-		hideMentionStatus,
-		unread = 0,
-		alert,
-		userMentions,
-		groupMentions,
-		tunread = [],
-		tunreadUser = [],
-		rid,
-		t: type,
-		cl,
-	} = room;
+	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
+	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
+
 	const icon = (
 		<SidebarV2ItemIcon
 			highlighted={highlighted}
@@ -155,20 +121,11 @@ const SidebarItemTemplateWithData = ({
 	const message = extended && getMessage(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
-	const threadUnread = tunread.length > 0;
-	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
-
-	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
-
-	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
-
 	const badges = (
 		<>
-			{showBadge && isUnread && (
-				<SidebarV2ItemBadge variant={variant} title={badgeTitle}>
-					{unread + tunread?.length}
+			{showUnread && (
+				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
+					{unreadCount.total}
 				</SidebarV2ItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
@@ -180,6 +137,7 @@ const SidebarItemTemplateWithData = ({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
+			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
 			href={href}
@@ -196,22 +154,21 @@ const SidebarItemTemplateWithData = ({
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice &&
-				!isAnonymous &&
-				(!isQueued || (isQueued && isPriorityEnabled)) &&
-				((): ReactElement => (
-					<RoomMenu
-						alert={alert}
-						threadUnread={threadUnread}
-						rid={rid}
-						unread={!!unread}
-						roomOpen={false}
-						type={type}
-						cl={cl}
-						name={title}
-						hideDefaultOptions={isQueued}
-					/>
-				))
+				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+					? (): ReactElement => (
+							<RoomMenu
+								alert={alert}
+								threadUnread={unreadCount.threads > 0}
+								rid={rid}
+								unread={!!unread}
+								roomOpen={selected}
+								type={type}
+								cl={cl}
+								name={title}
+								hideDefaultOptions={isQueued}
+							/>
+						)
+					: undefined
 			}
 		/>
 	);

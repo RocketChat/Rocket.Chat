@@ -1,8 +1,8 @@
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { ServiceClass } from '@rocket.chat/core-services';
 import type { Logger } from '@rocket.chat/logger';
+import type { DatabaseWatcher } from '@rocket.chat/models';
 
-import type { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
 import { initWatchers } from '../../../../apps/meteor/server/modules/watchers/watchers.module';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
@@ -10,7 +10,10 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 	private logger: Logger;
 
-	constructor(private watcher: DatabaseWatcher, loggerClass: typeof Logger) {
+	constructor(
+		private watcher: DatabaseWatcher,
+		loggerClass: typeof Logger,
+	) {
 		super();
 
 		// eslint-disable-next-line new-cap

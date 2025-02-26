@@ -25,10 +25,14 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
+import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
+import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -155,7 +159,7 @@ API.v1.addRoute(
 				: {
 						twoFactorCode: userData.typedPassword,
 						twoFactorMethod: 'password',
-				  };
+					};
 
 			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -235,7 +239,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.avatarUrl) {
@@ -324,13 +328,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
-				return API.v1.unauthorized();
-			}
-
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
@@ -365,16 +365,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setActiveStatus',
-	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUserSetActiveStatusParamsPOST,
+		permissionsRequired: {
+			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
+		},
+	},
 	{
 		async post() {
-			if (
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
-				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				return API.v1.unauthorized();
-			}
-
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
 			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 
@@ -391,13 +390,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
+	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { daysIdle, role = 'user' } = this.bodyParams;
 
 			const lastLoggedIn = new Date();
@@ -418,8 +413,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = await this.parseJsonQuery();
-
 			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
 				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
@@ -435,7 +428,7 @@ API.v1.addRoute(
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
-			if (fields.userRooms === 1 && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 				return API.v1.success({
 					user: {
 						...user,
@@ -469,18 +462,15 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
+		permissionsRequired: ['view-d-room'],
 	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
-			}
-
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -526,7 +516,7 @@ API.v1.addRoute(
 							{
 								$limit: count,
 							},
-					  ]
+						]
 					: [];
 
 			const result = await Users.col
@@ -589,7 +579,7 @@ API.v1.addRoute(
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -636,7 +626,7 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
 		validateParams: isUserRegisterParamsPOST,
 	},
@@ -726,7 +716,7 @@ API.v1.addRoute(
 
 			const data = await generateAccessToken(this.userId, user._id);
 
-			return data ? API.v1.success({ data }) : API.v1.unauthorized();
+			return data ? API.v1.success({ data }) : API.v1.forbidden();
 		},
 	},
 );
@@ -806,11 +796,11 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			const { tokenName, bypassTwoFactor } = this.bodyParams;
+			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -826,7 +816,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
@@ -835,13 +825,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getPersonalAccessTokens',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
-				throw new Meteor.Error('not-authorized', 'Not Authorized');
-			}
-
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -869,9 +855,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			await Meteor.callAsync('personalAccessTokens:removeToken', {
-				tokenName,
-			});
+			await removePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success();
 		},
@@ -905,15 +889,15 @@ API.v1.addRoute(
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 			// instead of having to listen to every watch.users event
 			void notifyOnUserChangeAsync(async () => {
-				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-				if (!userTokens) {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+				if (!user) {
 					return;
 				}
 
 				return {
 					clientAction: 'updated',
 					id: this.user._id,
-					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
 				};
 			});
 
@@ -928,6 +912,19 @@ API.v1.addRoute(
 	{
 		async post() {
 			await Users.disableEmail2FAByUserId(this.userId);
+
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
@@ -971,7 +968,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
@@ -1219,7 +1216,7 @@ API.v1.addRoute(
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
@@ -1296,7 +1293,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)

@@ -3,10 +3,10 @@ import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typin
 import { Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { logger } from './logger';
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import { API } from '../../api';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
-import { logger } from './logger';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],

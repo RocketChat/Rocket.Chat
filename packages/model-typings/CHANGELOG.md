@@ -1,5 +1,471 @@
 # @rocket.chat/model-typings
 
+## 1.3.0
+
+### Minor Changes
+
+- ([#33060](https://github.com/RocketChat/Rocket.Chat/pull/33060)) Added `departmentsAllowedToForward` property to departments returned in the `livechat/config` endpoint
+
+- ([#34948](https://github.com/RocketChat/Rocket.Chat/pull/34948)) Adds voice calls data to statistics
+
+### Patch Changes
+
+- ([#35009](https://github.com/RocketChat/Rocket.Chat/pull/35009)) Fix an issue with apps installations via Marketplace
+
+- ([#34210](https://github.com/RocketChat/Rocket.Chat/pull/34210)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
+
+- <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
+
+  - @rocket.chat/core-typings@7.3.0
+  </details>
+
+## 1.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.5
+  </details>
+
+## 1.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.4
+  </details>
+
+## 1.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.3
+  </details>
+
+## 1.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.2
+  </details>
+
+## 1.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.1
+  </details>
+
+## 1.3.0-rc.0
+
+### Minor Changes
+
+- ([#33060](https://github.com/RocketChat/Rocket.Chat/pull/33060)) Added `departmentsAllowedToForward` property to departments returned in the `livechat/config` endpoint
+
+- ([#34948](https://github.com/RocketChat/Rocket.Chat/pull/34948)) Adds voice calls data to statistics
+
+### Patch Changes
+
+- ([#34210](https://github.com/RocketChat/Rocket.Chat/pull/34210)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
+
+- <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  </details>
+
+## 1.2.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.1
+  </details>
+
+## 1.2.0
+
+### Minor Changes
+
+- ([#34004](https://github.com/RocketChat/Rocket.Chat/pull/34004)) Allows Rocket.Chat to store call events.
+
+- ([#33895](https://github.com/RocketChat/Rocket.Chat/pull/33895)) Adds statistics related to the new **Contact Identification** feature:
+  - `totalContacts`: Total number of contacts;
+  - `totalUnknownContacts`: Total number of unknown contacts;
+  - `totalMergedContacts`: Total number of merged contacts;
+  - `totalConflicts`: Total number of merge conflicts;
+  - `totalResolvedConflicts`: Total number of resolved conflicts;
+  - `totalBlockedContacts`: Total number of blocked contacts;
+  - `totalPartiallyBlockedContacts`: Total number of partially blocked contacts;
+  - `totalFullyBlockedContacts`: Total number of fully blocked contacts;
+  - `totalVerifiedContacts`: Total number of verified contacts;
+  - `avgChannelsPerContact`: Average number of channels per contact;
+  - `totalContactsWithoutChannels`: Number of contacts without channels;
+  - `totalImportedContacts`: Total number of imported contacts;
+  - `totalUpsellViews`: Total number of "Advanced Contact Management" Upsell CTA views;
+  - `totalUpsellClicks`: Total number of "Advanced Contact Management" Upsell CTA clicks;
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34137](https://github.com/RocketChat/Rocket.Chat/pull/34137)) Fixes Unit's `numDepartments` property not being updated after a department is removed
+
+- ([#34156](https://github.com/RocketChat/Rocket.Chat/pull/34156)) Fixes "Average first response time" and "Best first response time" metrics being associated with the last agent who served the room (instead of the first one)
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/core-typings@7.2.0
+  </details>
+
+## 1.2.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.3
+  </details>
+
+## 1.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  </details>
+
+## 1.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.1
+  </details>
+
+## 1.2.0-rc.0
+
+### Minor Changes
+
+- ([#34004](https://github.com/RocketChat/Rocket.Chat/pull/34004)) Allows Rocket.Chat to store call events.
+
+- ([#33895](https://github.com/RocketChat/Rocket.Chat/pull/33895)) Adds statistics related to the new **Contact Identification** feature:
+  - `totalContacts`: Total number of contacts;
+  - `totalUnknownContacts`: Total number of unknown contacts;
+  - `totalMergedContacts`: Total number of merged contacts;
+  - `totalConflicts`: Total number of merge conflicts;
+  - `totalResolvedConflicts`: Total number of resolved conflicts;
+  - `totalBlockedContacts`: Total number of blocked contacts;
+  - `totalPartiallyBlockedContacts`: Total number of partially blocked contacts;
+  - `totalFullyBlockedContacts`: Total number of fully blocked contacts;
+  - `totalVerifiedContacts`: Total number of verified contacts;
+  - `avgChannelsPerContact`: Average number of channels per contact;
+  - `totalContactsWithoutChannels`: Number of contacts without channels;
+  - `totalImportedContacts`: Total number of imported contacts;
+  - `totalUpsellViews`: Total number of "Advanced Contact Management" Upsell CTA views;
+  - `totalUpsellClicks`: Total number of "Advanced Contact Management" Upsell CTA clicks;
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34137](https://github.com/RocketChat/Rocket.Chat/pull/34137)) Fixes Unit's `numDepartments` property not being updated after a department is removed
+
+- ([#34156](https://github.com/RocketChat/Rocket.Chat/pull/34156)) Fixes "Average first response time" and "Best first response time" metrics being associated with the last agent who served the room (instead of the first one)
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.0
+  </details>
+
+## 1.1.0
+
+### Minor Changes
+
+- ([#32727](https://github.com/RocketChat/Rocket.Chat/pull/32727)) These changes aims to add:
+  - A brand-new omnichannel contact profile
+  - The ability to communicate with known contacts only
+  - Communicate with verified contacts only
+  - Merge verified contacts across different channels
+  - Block contact channels
+  - Resolve conflicting contact information when registered via different channels
+  - An advanced contact center filters
+
+### Patch Changes
+
+- ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
+
+  - @rocket.chat/core-typings@7.1.0
+  </details>
+
+## 1.1.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.3
+  </details>
+
+## 1.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.2
+  </details>
+
+## 1.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  </details>
+
+## 1.1.0-rc.0
+
+### Minor Changes
+
+- ([#32727](https://github.com/RocketChat/Rocket.Chat/pull/32727)) These changes aims to add:
+  - A brand-new omnichannel contact profile
+  - The ability to communicate with known contacts only
+  - Communicate with verified contacts only
+  - Merge verified contacts across different channels
+  - Block contact channels
+  - Resolve conflicting contact information when registered via different channels
+  - An advanced contact center filters
+
+### Patch Changes
+
+- ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  </details>
+
+## 1.0.0
+
+### Major Changes
+
+- ([#32856](https://github.com/RocketChat/Rocket.Chat/pull/32856)) Adds a new collection to store all the workspace cloud tokens to defer the race condition management to MongoDB instead of having to handle it within the settings cache.
+  Removes the Cloud_Workspace_Access_Token & Cloud_Workspace_Access_Token_Expires_At settings since they are not going to be used anymore.
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- ([#33435](https://github.com/RocketChat/Rocket.Chat/pull/33435)) Fixes an issue causing server to not notify users via websocket of new E2EE keys suggested by other users to them when running in development environments.
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [bcacbb1cee, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0
+  </details>
+
+## 1.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  </details>
+
+## 1.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  </details>
+
+## 1.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  </details>
+
+## 1.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  </details>
+
+## 1.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.2
+  </details>
+
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.1
+  </details>
+
+## 1.0.0-rc.0
+
+### Major Changes
+
+- ([#32856](https://github.com/RocketChat/Rocket.Chat/pull/32856)) Adds a new collection to store all the workspace cloud tokens to defer the race condition management to MongoDB instead of having to handle it within the settings cache.
+  Removes the Cloud_Workspace_Access_Token & Cloud_Workspace_Access_Token_Expires_At settings since they are not going to be used anymore.
+
+### Minor Changes
+
+- ([#33569](https://github.com/RocketChat/Rocket.Chat/pull/33569)) Adds a `source` field to livechat visitors, which stores the channel (eg API, widget, SMS, email-inbox, app) that's been used by the visitor to send messages.
+  Uses the new `source` field to assure each visitor is linked to a single source, so that each connection through a distinct channel creates a new visitor.
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- ([#33435](https://github.com/RocketChat/Rocket.Chat/pull/33435)) Fixes an issue causing server to not notify users via websocket of new E2EE keys suggested by other users to them when running in development environments.
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [7726d68374, bcacbb1cee, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.0
+  </details>
+
+## 0.8.0
+
+### Minor Changes
+
+- ([#32682](https://github.com/RocketChat/Rocket.Chat/pull/32682)) Added support for specifying a unit on departments' creation and update
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+- ([#33177](https://github.com/RocketChat/Rocket.Chat/pull/33177)) New `teams.listChildren` endpoint that allows users listing rooms & discussions from teams. Only the discussions from the team's main room are returned.
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [274f4f5881, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/core-typings@6.13.0
+  </details>
+
+## 0.8.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.6
+  </details>
+
+## 0.8.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  </details>
+
+## 0.8.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.4
+  </details>
+
+## 0.8.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  </details>
+
+## 0.8.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.2
+  </details>
+
+## 0.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  </details>
+
+## 0.8.0-rc.0
+
+### Minor Changes
+
+- ([#32682](https://github.com/RocketChat/Rocket.Chat/pull/32682)) Added support for specifying a unit on departments' creation and update
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+- ([#33177](https://github.com/RocketChat/Rocket.Chat/pull/33177)) New `teams.listChildren` endpoint that allows users listing rooms & discussions from teams. Only the discussions from the team's main room are returned.
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [274f4f5881, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.0
+  </details>
+
+## 0.7.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.1
+  </details>
+
 ## 0.7.0
 
 ### Minor Changes

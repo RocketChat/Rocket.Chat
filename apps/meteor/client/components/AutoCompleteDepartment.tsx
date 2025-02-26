@@ -1,7 +1,7 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
@@ -42,8 +42,9 @@ const AutoCompleteDepartment = ({
 				haveNone,
 				excludeDepartmentId,
 				showArchived,
+				selectedDepartment: value,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, value],
 		),
 	);
 

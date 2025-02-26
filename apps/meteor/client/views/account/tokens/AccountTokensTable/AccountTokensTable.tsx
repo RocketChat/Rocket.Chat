@@ -1,8 +1,12 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement, RefObject } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AccountTokensRow from './AccountTokensRow';
+import AddToken from './AddToken';
 import GenericModal from '../../../../components/GenericModal';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -16,11 +20,9 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import AccountTokensRow from './AccountTokensRow';
-import AddToken from './AddToken';
 
 const AccountTokensTable = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const userId = useUserId();
@@ -57,7 +59,7 @@ const AccountTokensTable = (): ReactElement => {
 	);
 
 	const handleRegenerate = useCallback(
-		(name) => {
+		(name: string) => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
@@ -67,10 +69,12 @@ const AccountTokensTable = (): ReactElement => {
 						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={closeModal}>
 							<Box
 								dangerouslySetInnerHTML={{
-									__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-										token,
-										userId,
-									}),
+									__html: DOMPurify.sanitize(
+										t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+											token,
+											userId,
+										}),
+									),
 								}}
 							/>
 						</GenericModal>,
@@ -99,7 +103,7 @@ const AccountTokensTable = (): ReactElement => {
 	);
 
 	const handleRemove = useCallback(
-		(name) => {
+		(name: string) => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					await removeToken({ tokenName: name });
@@ -154,11 +158,11 @@ const AccountTokensTable = (): ReactElement => {
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
-										{...filteredToken}
 										key={filteredToken.createdAt}
 										onRegenerate={handleRegenerate}
 										onRemove={handleRemove}
 										isMedium={isMedium}
+										{...filteredToken}
 									/>
 								))}
 						</GenericTableBody>

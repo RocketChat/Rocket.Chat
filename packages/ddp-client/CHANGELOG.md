@@ -1,5 +1,394 @@
 # @rocket.chat/ddp-client
 
+## 0.3.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c75d771c410579d3d7eaabb379871456ded1b111, 8942b0032af976738a7c602fa389803dda30c0dc, 1f54b733eaa91e602baaff74f113c7ef16ddaa89, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, c0fa1c884cccab47f4e68dd81457c424cf176f11, c8e8518011b8b7d318a2bb2f26b897b196421d76]:</summary>
+
+  - @rocket.chat/rest-typings@7.3.0
+  - @rocket.chat/core-typings@7.3.0
+  - @rocket.chat/api-client@0.2.13
+  </details>
+
+## 0.3.13-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.5
+  - @rocket.chat/rest-typings@7.3.0-rc.5
+  - @rocket.chat/api-client@0.2.13-rc.5
+  </details>
+
+## 0.3.13-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.4
+  - @rocket.chat/rest-typings@7.3.0-rc.4
+  - @rocket.chat/api-client@0.2.13-rc.4
+  </details>
+
+## 0.3.13-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.3
+  - @rocket.chat/rest-typings@7.3.0-rc.3
+  - @rocket.chat/api-client@0.2.13-rc.3
+  </details>
+
+## 0.3.13-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.2
+  - @rocket.chat/rest-typings@7.3.0-rc.2
+  - @rocket.chat/api-client@0.2.13-rc.2
+  </details>
+
+## 0.3.13-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.1
+  - @rocket.chat/rest-typings@7.3.0-rc.1
+  - @rocket.chat/api-client@0.2.13-rc.1
+  </details>
+
+## 0.3.13-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c75d771c410579d3d7eaabb379871456ded1b111, 8942b0032af976738a7c602fa389803dda30c0dc, 1f54b733eaa91e602baaff74f113c7ef16ddaa89, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, c8e8518011b8b7d318a2bb2f26b897b196421d76]:</summary>
+
+  - @rocket.chat/rest-typings@7.3.0-rc.0
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  - @rocket.chat/api-client@0.2.13-rc.0
+  </details>
+
+## 0.3.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.1
+  - @rocket.chat/rest-typings@7.2.1
+  - @rocket.chat/api-client@0.2.12
+  </details>
+
+## 0.3.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0
+  - @rocket.chat/core-typings@7.2.0
+  - @rocket.chat/api-client@0.2.11
+  </details>
+
+## 0.3.11-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.3
+  - @rocket.chat/rest-typings@7.2.0-rc.3
+  - @rocket.chat/api-client@0.2.11-rc.3
+  </details>
+
+## 0.3.11-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/rest-typings@7.2.0-rc.2
+  - @rocket.chat/api-client@0.2.11-rc.2
+  </details>
+
+## 0.3.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.1
+  - @rocket.chat/rest-typings@7.2.0-rc.1
+  - @rocket.chat/api-client@0.2.11-rc.1
+  </details>
+
+## 0.3.11-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0-rc.0
+  - @rocket.chat/core-typings@7.2.0-rc.0
+  - @rocket.chat/api-client@0.2.11-rc.0
+  </details>
+
+## 0.3.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
+
+  - @rocket.chat/core-typings@7.1.0
+  - @rocket.chat/rest-typings@7.1.0
+  - @rocket.chat/api-client@0.2.10
+  </details>
+
+## 0.3.10-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.3
+  - @rocket.chat/rest-typings@7.1.0-rc.3
+  - @rocket.chat/api-client@0.2.10-rc.3
+  </details>
+
+## 0.3.10-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.2
+  - @rocket.chat/rest-typings@7.1.0-rc.2
+  - @rocket.chat/api-client@0.2.10-rc.2
+  </details>
+
+## 0.3.10-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  - @rocket.chat/rest-typings@7.1.0-rc.1
+  - @rocket.chat/api-client@0.2.10-rc.1
+  </details>
+
+## 0.3.10-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  - @rocket.chat/rest-typings@7.1.0-rc.0
+  - @rocket.chat/api-client@0.2.10-rc.0
+  </details>
+
+## 0.3.9
+
+### Patch Changes
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [3395c8290b, 6b5b91fd14, d1e14a0a85, bcacbb1cee, b167db0b37, f4365b7dd4, b338807d76, bf05700542, 1bdfd201b1, 3ea02d3cc1, e3629e065b, b19ae4dbc7, 03d148524b, 3f9c3f1f52, 81998f3450, 2bc9692de0, 50943a02e8, 509143d6dd, fa501ecb53]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0
+  - @rocket.chat/core-typings@7.0.0
+  - @rocket.chat/api-client@0.2.9
+  </details>
+
+## 0.3.9-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  - @rocket.chat/rest-typings@7.0.0-rc.6
+  - @rocket.chat/api-client@0.2.9-rc.6
+  </details>
+
+## 0.3.9-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d1e14a0a85, bf05700542, 1bdfd201b1, 2bc9692de0]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.5
+  - @rocket.chat/api-client@0.2.9-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  </details>
+
+## 0.3.9-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/rest-typings@7.0.0-rc.4
+  - @rocket.chat/api-client@0.2.9-rc.4
+  </details>
+
+## 0.3.9-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/rest-typings@7.0.0-rc.3
+  - @rocket.chat/api-client@0.2.9-rc.3
+  </details>
+
+## 0.3.9-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.2
+  - @rocket.chat/rest-typings@7.0.0-rc.2
+  - @rocket.chat/api-client@0.2.9-rc.2
+  </details>
+
+## 0.3.9-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.1
+  - @rocket.chat/rest-typings@7.0.0-rc.1
+  - @rocket.chat/api-client@0.2.9-rc.1
+  </details>
+
+## 0.3.9-rc.0
+
+### Patch Changes
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [3395c8290b, 6b5b91fd14, 7726d68374, bcacbb1cee, b167db0b37, f4365b7dd4, b338807d76, 3ea02d3cc1, e3629e065b, b19ae4dbc7, 03d148524b, 3f9c3f1f52, 81998f3450, 50943a02e8, 509143d6dd, fa501ecb53]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.0
+  - @rocket.chat/core-typings@7.0.0-rc.0
+  - @rocket.chat/api-client@0.2.9-rc.0
+  </details>
+
+## 0.3.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a38c8e13f, 9eaefdc892, 274f4f5881, 532f08819e, 927710d778, 3a161c4310, 12d6307998]:</summary>
+
+  - @rocket.chat/rest-typings@6.13.0
+  - @rocket.chat/core-typings@6.13.0
+  - @rocket.chat/api-client@0.2.8
+  </details>
+
+## 0.3.8-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.6
+  - @rocket.chat/rest-typings@6.13.0-rc.6
+  - @rocket.chat/api-client@0.2.8-rc.6
+  </details>
+
+## 0.3.8-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  - @rocket.chat/rest-typings@6.13.0-rc.5
+  - @rocket.chat/api-client@0.2.8-rc.5
+  </details>
+
+## 0.3.8-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.4
+  - @rocket.chat/rest-typings@6.13.0-rc.4
+  - @rocket.chat/api-client@0.2.8-rc.4
+  </details>
+
+## 0.3.8-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  - @rocket.chat/rest-typings@6.13.0-rc.3
+  - @rocket.chat/api-client@0.2.8-rc.3
+  </details>
+
+## 0.3.8-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.2
+  - @rocket.chat/rest-typings@6.13.0-rc.2
+  - @rocket.chat/api-client@0.2.8-rc.2
+  </details>
+
+## 0.3.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  - @rocket.chat/rest-typings@6.13.0-rc.1
+  - @rocket.chat/api-client@0.2.8-rc.1
+  </details>
+
+## 0.3.8-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a38c8e13f, 9eaefdc892, 274f4f5881, 532f08819e, 927710d778, 3a161c4310, 12d6307998]:</summary>
+
+  - @rocket.chat/rest-typings@6.13.0-rc.0
+  - @rocket.chat/core-typings@6.13.0-rc.0
+  - @rocket.chat/api-client@0.2.7-rc.0
+  </details>
+
+## 0.3.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/rest-typings@6.12.1
+  - @rocket.chat/api-client@0.2.7
+  </details>
+
 ## 0.3.6
 
 ### Patch Changes

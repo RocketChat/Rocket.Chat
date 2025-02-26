@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { BarChart, ReportCard } from '../components';
 import { useDepartmentsSection } from '../hooks';
 import { ellipsis } from '../utils/ellipsis';

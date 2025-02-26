@@ -3,7 +3,7 @@ import type { Mongo } from 'meteor/mongo';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { router } from '../../../client/providers/RouterProvider';
-import { Subscriptions, ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { slashCommands } from '../../utils/client/slashCommand';
 
@@ -23,7 +23,7 @@ slashCommands.add({
 			...(type && { t: { $in: type } }),
 		};
 
-		const subscription = ChatSubscription.findOne(query);
+		const subscription = Subscriptions.findOne(query);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());

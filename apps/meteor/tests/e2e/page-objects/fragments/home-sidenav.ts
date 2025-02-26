@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
 	get userProfileMenu(): Locator {
@@ -61,22 +61,36 @@ export class HomeSidenav {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
 	}
 
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
-	getSidebarItemByName(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	get accountPreferencesOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
+	}
+
+	// TODO: refactor getSidebarItemByName to not use data-qa
+	getSidebarItemByName(name: string, isRead?: boolean): Locator {
+		return this.page.locator(
+			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
+		);
+	}
+
+	async selectMarkAsUnread(name: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
 	}
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.locator(`li[value="${priority}"]`).click();
+		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
@@ -165,9 +179,17 @@ export class HomeSidenav {
 
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
-		await this.inputChannelName.type(name);
+		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+	}
+
+	getRoomBadge(roomName: string): Locator {
+		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
+	}
+
+	getSearchChannelBadge(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
 	}
 }

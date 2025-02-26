@@ -2,12 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { CheckBox } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRemoveRoomFromTeam } from './hooks/useRemoveRoomFromTeam';
 import { useToggleAutoJoin } from './hooks/useToggleAutoJoin';
+import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 
 const TeamsChannelItemMenu = ({ room, mainRoom, reload }: { room: IRoom; mainRoom: IRoom; reload?: () => void }) => {
 	const { t } = useTranslation();

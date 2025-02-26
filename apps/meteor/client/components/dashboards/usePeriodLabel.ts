@@ -7,5 +7,5 @@ import { getPeriod } from './periods';
 export const usePeriodLabel = (period: Period['key']): string => {
 	const { t } = useTranslation();
 
-	return useMemo(() => t(getPeriod(period).label), [period, t]);
+	return useMemo(() => t(...getPeriod(period).label), [period, t]);
 };

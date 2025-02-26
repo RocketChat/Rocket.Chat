@@ -163,11 +163,11 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					? {
 							msg: message,
 							rid,
-					  }
+						}
 					: {
 							...message,
 							rid,
-					  },
+						},
 		});
 	}
 

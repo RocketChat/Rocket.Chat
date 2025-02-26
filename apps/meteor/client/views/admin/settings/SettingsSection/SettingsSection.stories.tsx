@@ -1,5 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import SettingsSection from './SettingsSection';
 import SettingsSectionSkeleton from './SettingsSectionSkeleton';
@@ -11,11 +10,11 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof SettingsSection>;
+} satisfies Meta<typeof SettingsSection>;
 
-export const Default: ComponentStory<typeof SettingsSection> = (args) => <SettingsSection {...args} />;
+export const Default: StoryFn<typeof SettingsSection> = (args) => <SettingsSection {...args} />;
 Default.args = {
 	groupId: 'General',
 };
 
-export const Skeleton: ComponentStory<typeof SettingsSectionSkeleton> = () => <SettingsSectionSkeleton />;
+export const Skeleton: StoryFn<typeof SettingsSectionSkeleton> = () => <SettingsSectionSkeleton />;

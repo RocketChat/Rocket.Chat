@@ -4,5 +4,5 @@ import { getPeriod, type Period } from '../../../components/dashboards/periods';
 
 export const formatPeriodDescription = (periodKey: Period['key'], t: TFunction) => {
 	const { label } = getPeriod(periodKey);
-	return t(label).toLocaleLowerCase();
+	return t(...label).toLocaleLowerCase();
 };

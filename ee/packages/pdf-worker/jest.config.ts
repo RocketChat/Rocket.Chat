@@ -16,6 +16,7 @@ export default {
 			moduleNameMapper: {
 				'^fontkit($|/.+)': '<rootDir>/../../../node_modules/fontkit$1', // needed to a weird bug related to module resolution in SWC
 			},
+			transformIgnorePatterns: ['/node_modules/(?!(yoga-layout)/)'],
 			modulePathIgnorePatterns: ['<rootDir>/src/strategies/', '<rootDir>/src/templates/'],
 		},
 	],

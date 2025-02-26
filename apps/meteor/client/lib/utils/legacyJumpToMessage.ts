@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 
-import { ChatRoom } from '../../../app/models/client';
+import { Rooms } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { router } from '../../providers/RouterProvider';
 import { RoomManager } from '../RoomManager';
@@ -23,7 +23,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 					tab: 'thread',
 					context: message.tmid || message._id,
 					rid: message.rid,
-					name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
+					name: Rooms.findOne({ _id: message.rid })?.name ?? '',
 				},
 				search: {
 					...router.getSearchParameters(),

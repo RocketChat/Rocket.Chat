@@ -4,8 +4,8 @@ import util from 'util';
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
-import { DDPSDK } from '../src/DDPSDK';
 import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
+import { DDPSDK } from '../src/DDPSDK';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 

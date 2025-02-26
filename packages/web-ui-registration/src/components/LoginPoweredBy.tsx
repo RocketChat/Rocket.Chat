@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
 export const LoginPoweredBy = (): ReactElement | null => {
-	const hidePoweredBy = useSetting<boolean>('Layout_Login_Hide_Powered_By');
+	const hidePoweredBy = useSetting('Layout_Login_Hide_Powered_By', false);
 	if (hidePoweredBy) {
 		return null;
 	}

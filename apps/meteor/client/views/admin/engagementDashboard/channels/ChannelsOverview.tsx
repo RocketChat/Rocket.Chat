@@ -1,7 +1,7 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
@@ -121,10 +121,7 @@ const ChannelsOverview = (): ReactElement => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', {
-							postProcess: 'sprintf',
-							sprintf: [current + 1, Math.min(current + itemsPerPage, count), count],
-						})
+						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

@@ -23,7 +23,7 @@ describe('components/Files', () => {
 
 	it('should renders file name and image when buffer is not null', () => {
 		const { getByRole, getByText } = render(<Files files={[validFile]} invalidMessage='' />);
-		const image = getByRole('img');
+		const image = getByRole('presentation');
 		const fileName = getByText(validFile.name);
 
 		expect(image).toBeInTheDocument();

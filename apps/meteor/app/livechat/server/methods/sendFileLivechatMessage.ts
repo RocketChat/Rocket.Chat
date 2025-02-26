@@ -11,8 +11,8 @@ import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
 import { sendMessageLivechat } from './sendMessageLivechat';
+import { FileUpload } from '../../../file-upload/server';
 
 interface ISendFileLivechatMessage {
 	roomId: string;

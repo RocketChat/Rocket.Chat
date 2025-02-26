@@ -16,6 +16,10 @@ import {
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
+import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { updateGroupDMsName } from './updateGroupDMsName';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
@@ -26,10 +30,6 @@ import {
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnUserChange,
 } from '../lib/notifyListener';
-import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
-import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
 	if (userId === 'rocket.cat') {

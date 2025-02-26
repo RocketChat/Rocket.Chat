@@ -6,13 +6,13 @@ import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { getTop } from '../utils/getTop';
 import { round } from '../utils/round';
-import { useDefaultDownload } from './useDefaultDownload';
 
 type DataItem = { label: string; value: number; id: string; rawLabel: string };
 
@@ -46,22 +46,22 @@ export const useChannelsSection = () => {
 	const {
 		data: { data, rawData, total } = { data: [], rawData: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-source', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-source', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
 			const data = formatChartData(response.data, response.total, t);
 			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, response.total, t));
 			return { ...response, data: displayData, rawData: data };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_channel');
 	const subtitle = t('__count__conversations__period__', {
@@ -80,7 +80,7 @@ export const useChannelsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -88,6 +88,6 @@ export const useChannelsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isPending, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

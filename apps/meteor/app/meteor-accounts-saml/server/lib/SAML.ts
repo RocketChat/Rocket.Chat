@@ -7,6 +7,8 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { SAMLServiceProvider } from './ServiceProvider';
+import { SAMLUtils } from './Utils';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -18,8 +20,6 @@ import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { SAMLServiceProvider } from './ServiceProvider';
-import { SAMLUtils } from './Utils';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -54,7 +54,7 @@ export class SAML {
 			case 'sloRedirect':
 				return this.processSLORedirectAction(req, res);
 			case 'authorize':
-				return this.processAuthorizeAction(req, res, service, samlObject);
+				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
 				return this.processValidateAction(req, res, service, samlObject);
 			default:
@@ -163,7 +163,7 @@ export class SAML {
 				}
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
+			const userId = await Accounts.insertUserDoc({}, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
@@ -267,7 +267,7 @@ export class SAML {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
-			let timeoutHandler: NodeJS.Timer | null = null;
+			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
 			const redirect = (url?: string | undefined): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
@@ -275,7 +275,7 @@ export class SAML {
 				}
 
 				clearTimeout(timeoutHandler);
-				timeoutHandler = null;
+				timeoutHandler = undefined;
 
 				res.writeHead(302, {
 					Location: url || Meteor.absoluteUrl(),
@@ -373,25 +373,15 @@ export class SAML {
 	}
 
 	private static async processAuthorizeAction(
-		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		samlObject: ISAMLAction,
 	): Promise<void> {
-		service.id = samlObject.credentialToken;
-
-		// Allow redirecting to internal domains when login process is complete
-		const { referer } = req.headers;
-		const siteUrl = settings.get<string>('Site_Url');
-		if (typeof referer === 'string' && referer.startsWith(siteUrl)) {
-			service.redirectUrl = referer;
-		}
-
 		const serviceProvider = new SAMLServiceProvider(service);
 		let url: string | undefined;
 
 		try {
-			url = await serviceProvider.getAuthorizeUrl();
+			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
 		} catch (err: any) {
 			SAMLUtils.error('Unable to generate authorize url');
 			SAMLUtils.error(err);
@@ -433,7 +423,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken, service.redirectUrl));
+				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
 				res.writeHead(302, {
 					Location: url,
 				});

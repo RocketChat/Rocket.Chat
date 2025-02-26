@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../../settings/server';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -14,8 +15,13 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
-import { DepartmentHelper } from '../../../server/lib/Departments';
-import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
+import {
+	saveDepartment,
+	archiveDepartment,
+	unarchiveDepartment,
+	saveDepartmentAgents,
+	removeDepartment,
+} from '../../../server/lib/departmentsLib';
 import { isDepartmentCreationAvailable } from '../../../server/lib/isDepartmentCreationAvailable';
 
 API.v1.addRoute(
@@ -57,10 +63,18 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
+				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatTs.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
+			const { departmentUnit } = this.bodyParams;
+			const department = await saveDepartment(
+				this.userId,
+				null,
+				this.bodyParams.department as ILivechatDepartment,
+				agents,
+				departmentUnit || {},
+			);
 
 			if (department) {
 				return API.v1.success({
@@ -70,6 +84,22 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/department/isDepartmentCreationAvailable',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
+		},
+	},
+	{
+		async get() {
+			const available = await isDepartmentCreationAvailable();
+			return API.v1.success({ isDepartmentCreationAvailable: available });
 		},
 	},
 );
@@ -112,17 +142,18 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
+				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
 			});
 
 			const { _id } = this.urlParams;
-			const { department, agents } = this.bodyParams;
+			const { department, agents, departmentUnit } = this.bodyParams;
 
 			if (!permissionToSave) {
 				throw new Error('error-not-allowed');
 			}
 
 			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
-			await LivechatTs.saveDepartment(_id, department, agentParam);
+			await saveDepartment(this.userId, _id, department, agentParam, departmentUnit || {});
 
 			return API.v1.success({
 				department: await LivechatDepartment.findOneById(_id),
@@ -134,7 +165,13 @@ API.v1.addRoute(
 				_id: String,
 			});
 
-			await DepartmentHelper.removeDepartment(this.urlParams._id);
+			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
+
+			if (!isRemoveEnabled) {
+				return API.v1.failure('error-department-removal-disabled');
+			}
+
+			await removeDepartment(this.urlParams._id);
 
 			return API.v1.success();
 		},
@@ -182,7 +219,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await LivechatTs.archiveDepartment(this.urlParams._id);
+			await archiveDepartment(this.urlParams._id);
 
 			return API.v1.success();
 		},
@@ -197,7 +234,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await LivechatTs.unarchiveDepartment(this.urlParams._id);
+			await unarchiveDepartment(this.urlParams._id);
 			return API.v1.success();
 		},
 	},
@@ -262,7 +299,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			await LivechatTs.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},
@@ -289,21 +326,6 @@ API.v1.addRoute(
 					fields,
 				}),
 			);
-		},
-	},
-);
-API.v1.addRoute(
-	'livechat/department/isDepartmentCreationAvailable',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
-		},
-	},
-	{
-		async get() {
-			const available = await isDepartmentCreationAvailable();
-			return API.v1.success({ isDepartmentCreationAvailable: available });
 		},
 	},
 );

@@ -1,4 +1,4 @@
-@import '../../../../styles/variables';
+@use '../../../../styles/variables';
 
 .uikit-image {
 	overflow: hidden;
@@ -11,13 +11,13 @@
 		width: 5.5rem;
 		height: 5.5rem;
 
-		border-radius: $default-border-radius;
+		border-radius: variables.$default-border-radius;
 	}
 
 	&--context {
 		width: 1.25rem;
 		height: 1.25rem;
 
-		border-radius: $default-border-radius;
+		border-radius: variables.$default-border-radius;
 	}
 }

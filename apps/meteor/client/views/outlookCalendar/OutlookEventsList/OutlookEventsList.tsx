@@ -2,9 +2,9 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Butt
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import OutlookEventItem from './OutlookEventItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -19,7 +19,6 @@ import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
-import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
 	onClose: () => void;
@@ -28,7 +27,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url');
+	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -69,7 +68,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					<ContextualbarFooter>
 						<Box mbs={8}>
 							<ButtonGroup stretch>
-								<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+								<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 									{t('Login')}
 								</Button>
 							</ButtonGroup>
@@ -126,7 +125,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						{hasOutlookMethods && (
 							<Box mbs={8}>
 								<ButtonGroup stretch>
-									<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+									<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 										{t('Sync')}
 									</Button>
 								</ButtonGroup>

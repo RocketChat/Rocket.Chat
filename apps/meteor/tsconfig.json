@@ -7,7 +7,7 @@
 
 		"allowJs": true,
 		"checkJs": false,
-		"jsx": "react",
+		"jsx": "react-jsx",
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */
@@ -32,6 +32,12 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
+	"include": [
+		"./**/*",
+		"./.storybook/**/*",
+		"./jest.config.ts",
+		"./.scripts/**/*"
+	],
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",

@@ -3,12 +3,12 @@ import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickA
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
 import { useOnHoldChatQuickAction } from './hooks/quickActions/useOnHoldChatQuickAction';
 import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
+import { useAppsRoomStarActions } from './hooks/roomActions/useAppsRoomStarActions';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useCallsRoomAction } from './hooks/roomActions/useCallsRoomAction';
 import { useCannedResponsesRoomAction } from './hooks/roomActions/useCannedResponsesRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
-import { useContactChatHistoryRoomAction } from './hooks/roomActions/useContactChatHistoryRoomAction';
 import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfileRoomAction';
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
@@ -47,7 +47,6 @@ export const roomActionHooks = [
 	useCallsRoomAction,
 	useCannedResponsesRoomAction,
 	useCleanHistoryRoomAction,
-	useContactChatHistoryRoomAction,
 	useContactProfileRoomAction,
 	useDiscussionsRoomAction,
 	useE2EERoomAction,
@@ -69,6 +68,7 @@ export const roomActionHooks = [
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
+	useAppsRoomStarActions,
 ] satisfies (() => RoomToolboxActionConfig | undefined)[];
 
 export const quickActionHooks = [

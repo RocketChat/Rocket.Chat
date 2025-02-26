@@ -1,10 +1,10 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { CallPreferences, DirectCallData, DirectCallParams, IRoom, IUser, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { getConfig } from './utils/getConfig';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
 
@@ -17,30 +17,9 @@ const CALL_TIMEOUT = 10000;
 // How long are we gonna wait for a link after accepting an incoming call
 const ACCEPT_TIMEOUT = 5000;
 
-type DirectCallParams = {
-	uid: IUser['_id'];
-	rid: IRoom['_id'];
-	callId: string;
-};
-
-export type DirectCallData = DirectCallParams & {
-	dismissed: boolean;
-};
-
 type IncomingDirectCall = DirectCallParams & {
 	timeout: ReturnType<typeof setTimeout> | undefined;
 	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
-};
-
-export type CallPreferences = {
-	mic?: boolean;
-	cam?: boolean;
-};
-
-export type ProviderCapabilities = {
-	mic?: boolean;
-	cam?: boolean;
-	title?: boolean;
 };
 
 type CurrentCallParams = {
@@ -84,9 +63,7 @@ type VideoConfEvents = {
 	// When join call
 	'call/join': CurrentCallParams;
 
-	'join/error': { error: string };
-
-	'start/error': { error: string };
+	'error': { error: string };
 
 	'capabilities/changed': void;
 };
@@ -104,11 +81,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
 
+	private directCalls: DirectCallData[] = [];
+
 	private dismissedCalls: Set<string>;
 
 	private _preferences: CallPreferences;
 
 	private _capabilities: ProviderCapabilities;
+
+	private _logLevel: number;
 
 	public get preferences(): CallPreferences {
 		return this._preferences;
@@ -120,10 +101,18 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	constructor() {
 		super();
+		this._logLevel = 0;
 		this.incomingDirectCalls = new Map<string, IncomingDirectCall>();
 		this.dismissedCalls = new Set<string>();
 		this._preferences = { mic: true, cam: false };
 		this._capabilities = {};
+
+		this.on('incoming/changed', () => {
+			this.directCalls = [...this.incomingDirectCalls.values()]
+				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
+				.filter((call) => !call.acceptTimeout)
+				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }));
+		});
 	}
 
 	public isBusy(): boolean {
@@ -147,28 +136,24 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public getIncomingDirectCalls(): DirectCallData[] {
-		return (
-			[...this.incomingDirectCalls.values()]
-				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
-				.filter((call) => !call.acceptTimeout)
-				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }))
-		);
+		return this.directCalls;
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {
 		if (!this.userId || this.isBusy()) {
+			this.emitError('error-videoconf-cant-start-call-with-manager-busy');
 			throw new Error('Video manager is busy.');
 		}
 
-		debug && console.log(`[VideoConf] Starting new call on room ${roomId}`);
+		this.debugLog(`[VideoConf] Starting new call on room ${roomId}`);
 		this.startingNewCall = true;
 		this.emit('calling/changed');
 
 		const { data } = await sdk.rest.post('/v1/video-conference.start', { roomId, title, allowRinging: true }).catch((e: any) => {
-			debug && console.error(`[VideoConf] Failed to start new call on room ${roomId}`);
+			console.error(`[VideoConf] Failed to start new call on room ${roomId}`, e);
 			this.startingNewCall = false;
 			this.emit('calling/changed');
-			this.emit('start/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-unexpected');
 
 			return Promise.reject(e);
 		});
@@ -193,14 +178,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	public acceptIncomingCall(callId: string): void {
 		const callData = this.incomingDirectCalls.get(callId);
 		if (!callData) {
+			this.emitError();
 			throw new Error('Unable to find accepted call information.');
 		}
 		if (callData.acceptTimeout) {
-			debug && console.log(`[VideoConf] We're already trying to accept call ${callId}.`);
+			this.debugLog(`[VideoConf] We're already trying to accept call ${callId}.`);
 			return;
 		}
 
-		debug && console.log(`[VideoConf] Accepting incoming call ${callId}.`);
+		this.debugLog(`[VideoConf] Accepting incoming call ${callId}.`);
 
 		if (callData.timeout) {
 			clearTimeout(callData.timeout);
@@ -219,15 +205,16 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 					return;
 				}
 
-				debug && console.log(`[VideoConf] Attempt to accept call has timed out.`);
+				this.debugLog(`[VideoConf] Attempt to accept call has timed out.`);
 				this.removeIncomingCall(callId);
 
 				this.emit('direct/failed', { callId, uid: callData.uid, rid: callData.rid });
+				this.emitError('error-videoconf-direct-call-accept-timeout');
 			}, ACCEPT_TIMEOUT),
 		);
 		this.emit('incoming/changed');
 
-		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
+		this.debugLog(`[VideoConf] Notifying user ${callData.uid} that we accept their call.`);
 		this.userId && this.notifyUser(callData.uid, 'accepted', { callId, uid: this.userId, rid: callData.rid });
 	}
 
@@ -253,7 +240,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	public async loadCapabilities(): Promise<void> {
 		const { capabilities } = await sdk.rest.get('/v1/video-conference.capabilities').catch((e: any) => {
-			debug && console.error(`[VideoConf] Failed to load video conference capabilities`);
+			console.error(`[VideoConf] Failed to load video conference capabilities`, e);
+			this.emitError();
 
 			return Promise.reject(e);
 		});
@@ -269,7 +257,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	): void {
 		const callData = this.incomingDirectCalls.get(callId);
 		if (!callData) {
-			debug && console.error(`[VideoConf] Cannot change attribute "${attributeName}" of unknown call "${callId}".`);
+			console.error(`[VideoConf] Cannot change attribute "${attributeName}" of unknown call "${callId}".`);
 			return;
 		}
 
@@ -283,8 +271,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			newData[attributeName] = value;
 		}
 
-		debug && console.log(`[VideoConf] Updating attribute "${attributeName}" of call "${callId}".`);
+		this.debugLog(`[VideoConf] Updating attribute "${attributeName}" of call "${callId}".`);
 		this.incomingDirectCalls.set(callId, newData);
+	}
+
+	private emitError(error = 'error-videoconf-unexpected'): void {
+		this.emit('error', { error });
 	}
 
 	private dismissedIncomingCallHelper(callId: string): boolean {
@@ -293,7 +285,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return false;
 		}
 
-		debug && console.log(`[VideoConf] Dismissing call ${callId}`);
+		this.debugLog(`[VideoConf] Dismissing call ${callId}`);
 		this.dismissedCalls.add(callId);
 		// We don't need to hold on to the dismissed callIds forever because the server won't let anyone call us with it for very long
 		setTimeout(() => this.dismissedCalls.delete(callId), CALL_TIMEOUT * 20);
@@ -314,11 +306,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		const userId = Meteor.userId();
 
 		if (this.userId === userId) {
-			debug && console.log(`[VideoConf] Logged user has not changed, so we're not changing the hooks.`);
+			this.debugLog(`[VideoConf] Logged user has not changed, so we're not changing the hooks.`);
 			return;
 		}
 
-		debug && console.log(`[VideoConf] Logged user has changed.`);
+		this.debugLog(`[VideoConf] Logged user has changed.`);
 
 		if (this.userId) {
 			this.disconnect();
@@ -343,13 +335,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 	}
 
+	public setLogLevel(level: number): void {
+		this._logLevel = Math.max(0, Math.min(level, 2));
+	}
+
 	public async joinCall(callId: string): Promise<void> {
-		debug && console.log(`[VideoConf] Joining call ${callId}.`);
+		this.debugLog(`[VideoConf] Joining call ${callId}.`);
 
 		if (this.incomingDirectCalls.has(callId)) {
 			const data = this.incomingDirectCalls.get(callId);
 			if (data?.acceptTimeout) {
-				debug && console.log('[VideoConf] Clearing acceptance timeout');
+				this.debugLog('[VideoConf] Clearing acceptance timeout');
 				clearTimeout(data.acceptTimeout);
 			}
 			this.removeIncomingCall(callId);
@@ -364,17 +360,18 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		};
 
 		const { url, providerName } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
-			debug && console.error(`[VideoConf] Failed to join call ${callId}`);
-			this.emit('join/error', { error: e?.xhr?.responseJSON?.error || 'unknown-error' });
+			console.error(`[VideoConf] Failed to join call ${callId}`, e);
+			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
 			return Promise.reject(e);
 		});
 
 		if (!url) {
+			this.emitError('error-videoconf-missing-url');
 			throw new Error('Failed to get video conference URL.');
 		}
 
-		debug && console.log(`[VideoConf] Opening ${url}.`);
+		this.debugLog(`[VideoConf] Opening ${url}.`);
 		this.emit('call/join', { url, callId, providerName });
 	}
 
@@ -386,10 +383,22 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.giveUp(this.currentCallData);
 	}
 
+	private infoLog(...args: any[]): void {
+		(debug || this._logLevel >= 1) && console.log(...args);
+	}
+
+	private warnLog(...args: any[]): void {
+		(debug || this._logLevel >= 1) && console.warn(...args);
+	}
+
+	private debugLog(...args: any[]): void {
+		(debug || this._logLevel >= 2) && console.log(...args);
+	}
+
 	private rejectIncomingCallsFromUser(userId: string): void {
 		for (const [, { callId, uid }] of this.incomingDirectCalls) {
 			if (userId === uid) {
-				debug && console.log(`[VideoConf] Rejecting old incoming call from user ${userId}`);
+				this.debugLog(`[VideoConf] Rejecting old incoming call from user ${userId}`);
 				this.rejectIncomingCall(callId);
 			}
 		}
@@ -397,6 +406,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private async callUser({ uid, rid, callId }: DirectCallParams): Promise<void> {
 		if (this.currentCallHandler || this.currentCallData) {
+			this.emitError('error-videoconf-cant-start-call-with-manager-busy');
 			throw new Error('Video Conference State Error.');
 		}
 
@@ -404,7 +414,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.currentCallData = { callId, rid, uid };
 		this.currentCallHandler = setInterval(() => {
 			if (!this.currentCallHandler) {
-				debug && console.warn(`[VideoConf] Ringing interval was not properly cleared.`);
+				this.warnLog(`[VideoConf] Ringing interval was not properly cleared.`);
 				return;
 			}
 
@@ -415,19 +425,19 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				return;
 			}
 
-			debug && console.log(`[VideoConf] Ringing user ${uid}, attempt number ${attempt}.`);
+			this.debugLog(`[VideoConf] Ringing user ${uid}, attempt number ${attempt}.`);
 			this.userId && this.notifyUser(uid, 'call', { uid: this.userId, rid, callId });
 		}, CALL_INTERVAL);
 		this.emit('calling/changed');
 
-		debug && console.log(`[VideoConf] Ringing user ${uid} for the first time.`);
+		this.debugLog(`[VideoConf] Ringing user ${uid} for the first time.`);
 		this.userId && this.notifyUser(uid, 'call', { uid: this.userId, rid, callId });
 	}
 
 	private async giveUp({ uid, rid, callId }: DirectCallParams): Promise<void> {
 		const joined = this.currentCallData?.joined;
 
-		debug && console.log(`[VideoConf] Stop ringing user ${uid}.`);
+		this.debugLog(`[VideoConf] Stop ringing user ${uid}.`);
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
 			this.currentCallHandler = undefined;
@@ -435,7 +445,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.emit('calling/changed');
 		}
 
-		debug && console.log(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
+		this.debugLog(`[VideoConf] Notifying user ${uid} that we are no longer calling.`);
 		this.userId && this.notifyUser(uid, 'canceled', { uid: this.userId, rid, callId });
 
 		this.emit('direct/cancel', { uid, rid, callId });
@@ -449,7 +459,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private disconnect(): void {
-		debug && console.log(`[VideoConf] disconnecting user ${this.userId}`);
+		console.log(`[VideoConf] disconnecting user ${this.userId}`);
 		for (const hook of this.hooks) {
 			hook();
 		}
@@ -468,6 +478,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				clearTimeout(call.acceptTimeout);
 			}
 		});
+		this.userId = undefined;
 		this.incomingDirectCalls.clear();
 		this.dismissedCalls.clear();
 		this.currentCallData = undefined;
@@ -479,11 +490,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private async onVideoConfNotification({ action, params }: { action: string; params: DirectCallParams }): Promise<void> {
 		if (!action || typeof action !== 'string') {
-			debug && console.error('[VideoConf] Invalid action received.');
+			this.warnLog('[VideoConf] Invalid action received.', action, params);
 			return;
 		}
 		if (!params || typeof params !== 'object' || !params.callId || !params.uid || !params.rid) {
-			debug && console.error('[VideoConf] Invalid params received.');
+			this.warnLog('[VideoConf] Invalid params received.', action, params);
 			return;
 		}
 
@@ -510,7 +521,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private async connectUser(userId: string): Promise<void> {
-		debug && console.log(`[VideoConf] connecting user ${userId}`);
+		console.log(`[VideoConf] connecting user ${userId}`);
 		this.userId = userId;
 
 		const { stop, ready } = sdk.stream('notify-user', [`${userId}/video-conference`], (data) => this.onVideoConfNotification(data));
@@ -526,25 +537,25 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		debug && console.log(`[VideoConf] Canceling call ${callId} due to ringing timeout.`);
+		this.infoLog(`[VideoConf] Canceling call ${callId} due to ringing timeout.`);
 		this.loseIncomingCall(callId);
 	}
 
 	private loseIncomingCall(callId: string): void {
 		const lostCall = this.incomingDirectCalls.get(callId);
 		if (!lostCall) {
-			debug && console.warn(`[VideoConf] Unable to cancel ${callId} because we have no information about it.`);
+			this.warnLog(`[VideoConf] Unable to cancel ${callId} because we have no information about it.`);
 			return;
 		}
 
 		this.removeIncomingCall(callId);
 
-		debug && console.log(`[VideoConf] Call ${callId} from ${lostCall.uid} was lost.`);
+		this.debugLog(`[VideoConf] Call ${callId} from ${lostCall.uid} was lost.`);
 		this.emit('direct/lost', { callId, uid: lostCall.uid, rid: lostCall.rid });
 	}
 
 	private removeIncomingCall(callId: string): void {
-		debug && console.log(`[VideoConf] Removing call with id "${callId}" from Incoming Calls list.`);
+		this.debugLog(`[VideoConf] Removing call with id "${callId}" from Incoming Calls list.`);
 		if (!this.incomingDirectCalls.has(callId)) {
 			return;
 		}
@@ -570,14 +581,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
 		if (this.isCallDismissed(callId)) {
-			debug && console.log(`[VideoConf] Ignoring dismissed call.`);
+			this.debugLog(`[VideoConf] Ignoring dismissed call.`);
 			return;
 		}
 
 		// Reject any currently ringing call from the user before registering the new one.
 		this.rejectIncomingCallsFromUser(uid);
 
-		debug && console.log(`[VideoConf] Storing this new call information.`);
+		this.debugLog(`[VideoConf] Storing this new call information.`);
 		this.incomingDirectCalls.set(callId, {
 			callId,
 			uid,
@@ -596,7 +607,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			throw new Error('Video Conference Manager State Error');
 		}
 
-		debug && console.log(`[VideoConf] Resetting call timeout.`);
+		this.debugLog(`[VideoConf] Resetting call timeout.`);
 		if (existingData.timeout) {
 			clearTimeout(existingData.timeout);
 		}
@@ -613,7 +624,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		debug && console.log(`[VideoConf] User ${uid} is ringing with call ${callId}.`);
+		this.infoLog(`[VideoConf] User ${uid} is ringing with call ${callId}.`);
 		if (this.incomingDirectCalls.has(callId)) {
 			this.refreshExistingIncomingCall({ callId, uid, rid });
 		} else {
@@ -622,11 +633,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private onDirectCallCanceled({ callId }: DirectCallParams): void {
-		debug && console.log(`[VideoConf] Call ${callId} was canceled by the remote user.`);
+		this.infoLog(`[VideoConf] Call ${callId} was canceled by the remote user.`);
 
 		// We had just accepted this call, but the remote user hang up before they got the notification, so cancel our acceptance
 		const callData = this.incomingDirectCalls.get(callId);
 		if (callData?.acceptTimeout) {
+			this.emitError('error-videoconf-direct-call-accept-canceled');
 			clearTimeout(callData.acceptTimeout);
 			this.setIncomingCallAttribute(callId, 'acceptTimeout', undefined);
 		}
@@ -636,11 +648,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private onDirectCallAccepted(params: DirectCallParams, skipConfirmation = false): void {
 		if (!params.callId || params.callId !== this.currentCallData?.callId) {
-			debug && console.log(`[VideoConf] User ${params.uid} has accepted a call ${params.callId} from us, but we're not calling.`);
+			this.debugLog(`[VideoConf] User ${params.uid} has accepted a call ${params.callId} from us, but we're not calling.`);
 			return;
 		}
 
-		debug && console.log(`[VideoConf] User ${params.uid} has accepted our call ${params.callId}.`);
+		this.infoLog(`[VideoConf] User ${params.uid} has accepted our call ${params.callId}.`);
 
 		// Stop ringing
 		if (this.currentCallHandler) {
@@ -663,13 +675,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		debug && console.log(`[VideoConf] Notifying user ${callData.uid} that they can join the call now.`);
+		this.debugLog(`[VideoConf] Notifying user ${callData.uid} that they can join the call now.`);
 		this.userId && this.notifyUser(callData.uid, 'confirmed', { callId: callData.callId, uid: this.userId, rid: callData.rid });
 	}
 
 	private onDirectCallConfirmed(params: DirectCallParams): void {
 		if (!params.callId || !this.incomingDirectCalls.get(params.callId)?.acceptTimeout) {
-			debug && console.log(`[VideoConf] User ${params.uid} confirmed we can join ${params.callId} but we aren't trying to join it.`);
+			this.warnLog(`[VideoConf] User ${params.uid} confirmed we can join ${params.callId} but we aren't trying to join it.`);
 			return;
 		}
 
@@ -678,40 +690,41 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private onDirectCallJoined(params: DirectCallParams): void {
 		if (!params.callId) {
-			debug && console.log(`[VideoConf] Invalid 'video-conference.join' event received: ${params.callId}, ${params.uid}.`);
+			this.debugLog(`[VideoConf] Invalid 'video-conference.join' event received: ${params.callId}, ${params.uid}.`);
 			return;
 		}
 
 		if (params.uid === this.userId) {
 			if (this.currentCallData?.callId === params.callId) {
-				debug && console.log(`[VideoConf] We joined our own call (${this.userId}) from somewhere else. Flagging the call appropriatelly.`);
+				this.debugLog(`[VideoConf] We joined our own call (${this.userId}) from somewhere else. Flagging the call appropriatelly.`);
 				this.currentCallData.joined = true;
 				this.emit('calling/changed');
 				return;
 			}
 
 			if (this.incomingDirectCalls.has(params.callId)) {
-				debug && console.log(`[VideoConf] We joined the call ${params.callId} from somewhere else. Dismissing it.`);
+				this.debugLog(`[VideoConf] We joined the call ${params.callId} from somewhere else. Dismissing it.`);
 				this.dismissIncomingCall(params.callId);
 				this.loseIncomingCall(params.callId);
 			}
 			return;
 		}
 
-		debug && console.log(`[VideoConf] User ${params.uid} has joined a call we started ${params.callId}.`);
+		this.infoLog(`[VideoConf] User ${params.uid} has joined a call we started ${params.callId}.`);
 		this.onDirectCallAccepted(params, true);
 	}
 
 	private onDirectCallEnded(params: DirectCallParams): void {
 		if (!params.callId) {
-			debug && console.log(`[VideoConf] Invalid 'video-conference.end' event received: ${params.callId}, ${params.uid}.`);
+			this.debugLog(`[VideoConf] Invalid 'video-conference.end' event received: ${params.callId}, ${params.uid}.`);
 			return;
 		}
 
 		const callData = this.incomingDirectCalls.get(params.callId);
 		if (callData) {
-			debug && console.log(`[VideoConf] Incoming call ended by the server: ${params.callId}.`);
+			this.infoLog(`[VideoConf] Incoming call ended by the server: ${params.callId}.`);
 			if (callData.acceptTimeout) {
+				this.emitError('error-videoconf-direct-call-accept-ended');
 				clearTimeout(callData.acceptTimeout);
 				this.setIncomingCallAttribute(params.callId, 'acceptTimeout', undefined);
 			}
@@ -721,11 +734,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		if (this.currentCallData?.callId !== params.callId) {
-			debug && console.log(`[VideoConf] Server sent a call ended event for a call we're not aware of: ${params.callId}.`);
+			this.infoLog(`[VideoConf] Server sent a call ended event for a call we're not aware of: ${params.callId}.`);
 			return;
 		}
 
-		debug && console.log(`[VideoConf] Outgoing call ended by the server: ${params.callId}.`);
+		this.infoLog(`[VideoConf] Outgoing call ended by the server: ${params.callId}.`);
 
 		// Stop ringing
 		this.currentCallData = undefined;
@@ -739,11 +752,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private onDirectCallRejected(params: DirectCallParams): void {
 		if (!params.callId || params.callId !== this.currentCallData?.callId) {
-			debug && console.log(`[VideoConf] User ${params.uid} has rejected a call ${params.callId} from us, but we're not calling.`);
+			this.infoLog(`[VideoConf] User ${params.uid} has rejected a call ${params.callId} from us, but we're not calling.`);
 			return;
 		}
 
-		debug && console.log(`[VideoConf] User ${params.uid} has rejected our call ${params.callId}.`);
+		this.infoLog(`[VideoConf] User ${params.uid} has rejected our call ${params.callId}.`);
 
 		// Stop ringing
 		if (this.currentCallHandler) {

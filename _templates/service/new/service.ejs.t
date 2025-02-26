@@ -1,24 +1,22 @@
 ---
 to: ee/apps/<%= name %>/src/service.ts
 ---
-import type { Document } from 'mongodb';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { registerServiceModels } from '@rocket.chat/models';
+import { startBroker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
-import { api } from '@rocket.chat/core-services';
-
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
 const PORT = process.env.PORT || <%= h.random() %>;
 
 (async () => {
-	const db = await getConnection();
+	const { db } = await getConnection();
 
-	const trash = await getCollection<Document>(Collections.Trash);
+	startTracing({ service: '<%= name %>', db: client });
 
-	registerServiceModels(db, trash);
+	registerServiceModels(db, await getTrashCollection());
 
-	api.setBroker(broker);
+	api.setBroker(startBroker());
 
 	// need to import service after models are registered
 	const { <%= h.changeCase.pascalCase(name) %> } = await import('./<%= h.changeCase.pascalCase(name) %>');

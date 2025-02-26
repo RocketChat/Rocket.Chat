@@ -1,5 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import Counter from './Counter';
 
@@ -10,11 +9,11 @@ export default {
 		layout: 'centered',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof Counter>;
+} satisfies Meta<typeof Counter>;
 
-export const Example: ComponentStory<typeof Counter> = () => <Counter count={740} variation={59} description='LDAP users' />;
+export const Example: StoryFn<typeof Counter> = () => <Counter count={740} variation={59} description='LDAP users' />;
 
-const Template: ComponentStory<typeof Counter> = (args) => <Counter {...args} />;
+const Template: StoryFn<typeof Counter> = (args) => <Counter {...args} />;
 
 export const WithoutVariation = Template.bind({});
 WithoutVariation.args = {

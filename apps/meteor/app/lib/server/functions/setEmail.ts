@@ -1,3 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -7,6 +9,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 
 let html = '';
 Meteor.startup(() => {
@@ -37,7 +40,13 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	}
 };
 
-const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true) {
+const _setEmail = async function (
+	userId: string,
+	email: string,
+	shouldSendVerificationEmail = true,
+	verified = false,
+	updater?: Updater<IUser>,
+) {
 	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
@@ -74,13 +83,18 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 	}
 
 	// Set new email
-	await Users.setEmail(user?._id, email);
+	if (updater) {
+		updater.set('emails', [{ address: email, verified }]);
+	} else {
+		await Users.setEmail(user?._id, email, verified);
+	}
+
 	const result = {
 		...user,
 		email,
 	};
 	if (shouldSendVerificationEmail === true) {
-		await Meteor.callAsync('sendConfirmationEmail', result.email);
+		await sendConfirmationEmail(result.email);
 	}
 	return result;
 };

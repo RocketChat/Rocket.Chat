@@ -16,6 +16,10 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
+  deno-version:
+    required: true
+    description: 'Deno version'
+    type: string
 
 runs:
   using: composite
@@ -30,6 +34,7 @@ runs:
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
+        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
@@ -133,3 +138,4 @@ runs:
         name: build
         path: /tmp/Rocket.Chat.tar.gz
         overwrite: true
+        include-hidden-files: true

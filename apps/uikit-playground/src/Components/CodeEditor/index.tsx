@@ -20,7 +20,7 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
   } = useContext(context);
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    json5.stringify(screens[activeScreen].payload, undefined, 4)
+    json5.stringify(screens[activeScreen].payload, undefined, 4),
   );
   const debounceValue = useDebouncedValue(changes?.value, 1500);
 
@@ -32,7 +32,7 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
           updatePayloadAction({
             blocks: parsedCode,
             changedByEditor: false,
-          })
+          }),
         );
 
         dispatch(updatePayloadAction({ blocks: parsedCode }));
@@ -45,14 +45,11 @@ const CodeEditor = ({ extensions }: CodeMirrorProps) => {
 
   useEffect(() => {
     if (!changes?.isDispatch) {
-      try {
-        const prettierCode = codePrettier(changes.value, changes.cursor || 0);
+      codePrettier(changes.value, changes.cursor || 0).then((prettierCode) => {
         setValue(prettierCode.formatted, {
           cursor: prettierCode.cursorOffset,
         });
-      } catch (e) {
-        // do nothing
-      }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceValue]);

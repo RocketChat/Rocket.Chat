@@ -1,7 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { GenericTableCell } from '../../../../../components/GenericTable';
@@ -12,9 +13,9 @@ const RemoveAgentButton = ({ username, reload }: RemoveAgentButtonProps) => {
 	const removeAgent = useEndpoint('DELETE', '/v1/omnichannel/agent/extension/:username', { username });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async () => {
+	const handleRemoveClick = useEffectEvent(async () => {
 		try {
 			await removeAgent();
 		} catch (error: unknown) {
@@ -23,7 +24,7 @@ const RemoveAgentButton = ({ username, reload }: RemoveAgentButtonProps) => {
 		reload();
 	});
 
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteAgent = async (): Promise<void> => {
 			try {

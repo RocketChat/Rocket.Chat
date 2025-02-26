@@ -1,8 +1,8 @@
 import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typings';
 
+import * as Federation from './Federation';
 import { RoomRoles } from '../../../app/models/client';
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import * as Federation from './Federation';
 
 jest.mock('../../../app/models/client', () => ({
 	RoomRoles: {

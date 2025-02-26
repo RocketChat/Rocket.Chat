@@ -108,7 +108,7 @@ export async function sendTranscript({
 					messageType.data
 						? { ...messageType.data(message), interpolation: { escapeValue: false } }
 						: { interpolation: { escapeValue: false } },
-			  )}</i>`
+				)}</i>`
 			: message.msg;
 
 		let filesHTML = '';

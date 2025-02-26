@@ -5,14 +5,11 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 const ajv = new Ajv({ coerceTypes: true });
 
 export type DmMessagesProps = PaginatedRequest<
-	(
-		| {
-				roomId: string;
-		  }
-		| {
-				username: string;
-		  }
-	) & {
+	({ roomId: string } | { username: string }) & {
+		query?: string;
+		mentionIds?: string;
+		starredIds?: string;
+		pinned?: string;
 		fields?: string;
 	}
 >;
@@ -23,6 +20,15 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 			type: 'object',
 			properties: {
 				roomId: {
+					type: 'string',
+				},
+				mentionIds: {
+					type: 'string',
+				},
+				starredIds: {
+					type: 'string',
+				},
+				pinned: {
 					type: 'string',
 				},
 				fields: {
@@ -48,6 +54,15 @@ export const isDmMessagesProps = ajv.compile<DmMessagesProps>({
 			type: 'object',
 			properties: {
 				username: {
+					type: 'string',
+				},
+				mentionIds: {
+					type: 'string',
+				},
+				starredIds: {
+					type: 'string',
+				},
+				pinned: {
 					type: 'string',
 				},
 				query: {

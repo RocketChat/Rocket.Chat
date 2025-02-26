@@ -10,9 +10,10 @@ type UseMessagesSentOptions = { period: Period['key'] };
 export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 	const getMessagesSent = useEndpoint('GET', '/v1/engagement-dashboard/messages/messages-sent');
 
-	return useQuery(
-		['admin/engagement-dashboard/messages/messages-sent', { period }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/messages/messages-sent', { period }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getMessagesSent({
@@ -25,12 +26,11 @@ export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

@@ -5,13 +5,13 @@ import { hasElement } from './hasElement';
 import { hasElements } from './hasElements';
 
 const isActionableElement = (
-  element: UiKit.BlockElement | UiKit.TextObject
+  element: UiKit.BlockElement | UiKit.TextObject,
 ): element is UiKit.ActionableElement =>
   'actionId' in element && typeof element.actionId === 'string';
 
 const reduceInitialValuesFromLayoutBlock = (
   state: { [actionId: string]: Value },
-  block: UiKit.LayoutBlock
+  block: UiKit.LayoutBlock,
 ) => {
   if (hasElement(block)) {
     if (isActionableElement(block.element)) {

@@ -43,7 +43,7 @@ const createGetEmojiClassNameAndDataTitle =
 				? emojiElement.style.backgroundImage
 				: (Object.fromEntries((emojiElement.getAttribute('style') || '')?.split(';').map((s) => s.split(':'))) as Record<string, string>)[
 						'background-image'
-				  ];
+					];
 
 		return {
 			'className': emojiElement.getAttribute('class') || '',

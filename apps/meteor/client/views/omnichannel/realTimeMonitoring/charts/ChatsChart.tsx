@@ -1,16 +1,17 @@
+import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { Chart as ChartType } from 'chart.js';
+import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Chart from './Chart';
+import { useUpdateChartData } from './useUpdateChartData';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import Chart from './Chart';
-import { useUpdateChartData } from './useUpdateChartData';
 
 const labels = ['Open', 'Queued', 'On_Hold_Chats', 'Closed'];
 
@@ -21,7 +22,7 @@ const initialData = {
 	closed: 0,
 };
 
-const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction) =>
+const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | undefined, t: TFunction) =>
 	drawDoughnutChart(
 		canvas,
 		t('Chats'),
@@ -33,13 +34,13 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFun
 type ChatsChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats'>;
 	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-};
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
 
 const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
-	const context: MutableRefObject<ChartType | undefined> = useRef();
+	const context: MutableRefObject<chartjs.Chart<'doughnut'> | undefined> = useRef();
 
 	const updateChartData = useUpdateChartData({
 		context,
@@ -56,9 +57,10 @@ const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 
 	useEffect(() => {
 		const initChart = async () => {
-			if (canvas?.current) {
-				context.current = await init(canvas.current, context.current, t);
+			if (!canvas.current) {
+				return;
 			}
+			context.current = await init(canvas.current, context.current, t);
 		};
 		initChart();
 	}, [t]);

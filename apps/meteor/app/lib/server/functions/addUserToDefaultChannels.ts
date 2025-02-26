@@ -2,11 +2,11 @@ import { Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
+import { getDefaultChannels } from './getDefaultChannels';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
-import { getDefaultChannels } from './getDefaultChannels';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	await callbacks.run('beforeJoinDefaultChannels', user);

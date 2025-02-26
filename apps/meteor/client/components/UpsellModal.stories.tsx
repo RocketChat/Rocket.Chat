@@ -1,15 +1,14 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import GenericUpsellModal from './GenericUpsellModal';
 
 export default {
 	title: 'Components/GenericUpsellModal',
 	component: GenericUpsellModal,
-} as ComponentMeta<typeof GenericUpsellModal>;
+} satisfies Meta<typeof GenericUpsellModal>;
 
-export const Example: ComponentStory<typeof GenericUpsellModal> = () => (
+export const Example: StoryFn<typeof GenericUpsellModal> = () => (
 	<GenericUpsellModal
 		title='Title'
 		subtitle='Subtitle'

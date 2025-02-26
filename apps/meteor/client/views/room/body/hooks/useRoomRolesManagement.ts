@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { RoomRoles, ChatMessage } from '../../../../../app/models/client';
+import { RoomRoles, Messages } from '../../../../../app/models/client';
 
 // const roomRoles = RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>;
 
@@ -27,19 +27,19 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 				if (!role.u?._id) {
 					return;
 				}
-				ChatMessage.update({ rid, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
+				Messages.update({ rid, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 			},
 			changed: (role) => {
 				if (!role.u?._id) {
 					return;
 				}
-				ChatMessage.update({ rid, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
+				Messages.update({ rid, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
 			},
 			removed: (role) => {
 				if (!role.u?._id) {
 					return;
 				}
-				ChatMessage.update({ rid, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
+				Messages.update({ rid, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 			},
 		});
 

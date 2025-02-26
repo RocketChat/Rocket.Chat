@@ -1,5 +1,6 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -7,8 +8,8 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type AgentsListOptions = {
 	text: string;
-	haveAll: boolean;
-	haveNoAgentsSelectedOption: boolean;
+	haveAll?: boolean;
+	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
@@ -24,7 +25,7 @@ export const useAgentsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<AgentOption>());
 	const reload = useCallback(() => setItemsList(new RecordList<AgentOption>()), []);
 
@@ -36,7 +37,7 @@ export const useAgentsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { users: agents, total } = await getAgents({
 				...(text && { text }),
 				...(excludeId && { excludeId }),
