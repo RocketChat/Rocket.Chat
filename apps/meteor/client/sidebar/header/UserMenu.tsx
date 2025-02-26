@@ -7,18 +7,18 @@ import {
 	useHandleMenuAction,
 	type GenericMenuItemProps,
 } from '@rocket.chat/ui-client';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserAvatarWithStatusUnstable from './UserAvatarWithStatusUnstable';
 import { useUserMenu } from './hooks/useUserMenu';
-import { useLayout } from '@rocket.chat/ui-contexts';
 
 const UserMenu = ({ user }: { user: IUser }) => {
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
-	const { sidebar } = useLayout()
+	const { sidebar } = useLayout();
 	const sections = useUserMenu(user);
 	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]);
 
