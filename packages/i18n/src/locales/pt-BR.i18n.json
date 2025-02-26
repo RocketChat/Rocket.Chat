@@ -766,7 +766,7 @@
   "Call_transfered_to__name__": "Chamada transferida para {{name}}",
   "Call_terminated": "Chamada encerrada",
   "Call_ringer_volume": "Volume do toque de chamada",
-  "Call_ringer_volume_hint": "Para todas as notificações de chamadas recebidas",
+  "Call_ringer_volume_hint": "Para todas as notificações de chamadas de voz e vídeo recebidas",
   "Caller": "Autor da chamada",
   "Caller_Id": "ID do autor da chamada",
   "Cancel": "Cancelar",
