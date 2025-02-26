@@ -18,9 +18,7 @@ const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMes
 		'../../../utils/server/functions/normalizeMessageFileUpload': {
 			normalizeMessageFileUpload: (data: any) => data,
 		},
-		'../lib/LivechatTyped': {
-			Livechat: {},
-		},
+		'../lib/webhooks': {},
 	});
 
 describe('[OC] Send TO CRM', () => {
