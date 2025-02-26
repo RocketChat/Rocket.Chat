@@ -25,9 +25,7 @@ const events = {
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		await invalidateRoomQueries(inquiry.rid);
 	},
-	removed: (inquiry: ILivechatInquiryRecord) => {
-		return removeInquiry(inquiry);
-	},
+	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
 };
 
 const invalidateRoomQueries = async (rid: string) => {
