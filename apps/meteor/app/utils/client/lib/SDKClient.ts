@@ -1,5 +1,6 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -49,7 +50,7 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 
 type StreamMapValue = {
 	stop: () => void;
-	error: (cb: (...args: any[]) => void) => void;
+	error: (cb: (...args: any[]) => void) => OffCallbackHandler;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
 	ready: () => Promise<void>;
 	isReady: boolean;
@@ -171,7 +172,9 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
-		const stop = (): void => {
+		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+
+		const stopStreamListener = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
 			// If someone is still listening, don't unsubscribe
 			if (streamProxy.has(eventLiteral)) {
@@ -184,14 +187,12 @@ const createStreamManager = () => {
 			}
 		};
 
-		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
-
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
 			streams.set(eventLiteral, stream);
 		}
 
-		stream.error(() => {
+		const stopErrorListener = stream.error(() => {
 			stream.unsubList.forEach((stop) => stop());
 		});
 
@@ -199,7 +200,10 @@ const createStreamManager = () => {
 			id: '',
 			name,
 			params: data as any,
-			stop,
+			stop: () => {
+				stopStreamListener();
+				stopErrorListener();
+			},
 			ready: stream.ready,
 			onChange: stream.onChange,
 			isReady: stream.isReady,
