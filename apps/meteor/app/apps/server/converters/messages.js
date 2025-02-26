@@ -1,6 +1,7 @@
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { removeEmpty } from '@rocket.chat/tools';
 
 import { cachedFunction } from './cachedFunction';
 import { transformMappedData } from './transformMappedData';
@@ -236,39 +237,37 @@ export class AppMessagesConverter {
 		}
 
 		return attachments.map((attachment) =>
-			Object.assign(
-				{
-					collapsed: attachment.collapsed,
-					color: attachment.color,
-					text: attachment.text,
-					ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
-					message_link: attachment.timestampLink,
-					thumb_url: attachment.thumbnailUrl,
-					author_name: attachment.author ? attachment.author.name : undefined,
-					author_link: attachment.author ? attachment.author.link : undefined,
-					author_icon: attachment.author ? attachment.author.icon : undefined,
-					title: attachment.title ? attachment.title.value : undefined,
-					title_link: attachment.title ? attachment.title.link : undefined,
-					title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
-					image_dimensions: attachment.imageDimensions,
-					image_preview: attachment.imagePreview,
-					image_url: attachment.imageUrl,
-					image_type: attachment.imageType,
-					image_size: attachment.imageSize,
-					audio_url: attachment.audioUrl,
-					audio_type: attachment.audioType,
-					audio_size: attachment.audioSize,
-					video_url: attachment.videoUrl,
-					video_type: attachment.videoType,
-					video_size: attachment.videoSize,
-					fields: attachment.fields,
-					button_alignment: attachment.actionButtonsAlignment,
-					actions: attachment.actions,
-					type: attachment.type,
-					description: attachment.description,
-				},
-				attachment._unmappedProperties_,
-			),
+			removeEmpty({
+				collapsed: attachment.collapsed,
+				color: attachment.color,
+				text: attachment.text,
+				ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
+				message_link: attachment.timestampLink,
+				thumb_url: attachment.thumbnailUrl,
+				author_name: attachment.author ? attachment.author.name : undefined,
+				author_link: attachment.author ? attachment.author.link : undefined,
+				author_icon: attachment.author ? attachment.author.icon : undefined,
+				title: attachment.title ? attachment.title.value : undefined,
+				title_link: attachment.title ? attachment.title.link : undefined,
+				title_link_download: attachment.title ? attachment.title.displayDownloadLink : undefined,
+				image_dimensions: attachment.imageDimensions,
+				image_preview: attachment.imagePreview,
+				image_url: attachment.imageUrl,
+				image_type: attachment.imageType,
+				image_size: attachment.imageSize,
+				audio_url: attachment.audioUrl,
+				audio_type: attachment.audioType,
+				audio_size: attachment.audioSize,
+				video_url: attachment.videoUrl,
+				video_type: attachment.videoType,
+				video_size: attachment.videoSize,
+				fields: attachment.fields,
+				button_alignment: attachment.actionButtonsAlignment,
+				actions: attachment.actions,
+				type: attachment.type,
+				description: attachment.description,
+				...attachment._unmappedProperties_,
+			}),
 		);
 	}
 

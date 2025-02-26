@@ -2672,7 +2672,7 @@ export class UsersRaw extends BaseRaw {
 	unsetName(_id) {
 		const update = {
 			$unset: {
-				name,
+				name: 1,
 			},
 		};
 
@@ -2852,7 +2852,7 @@ export class UsersRaw extends BaseRaw {
 		const settingsObject = Object.assign(
 			{},
 			...Object.keys(preferences).map((key) => ({
-				[`settings.preferences.${key}`]: preferences[key],
+				...(preferences[key] !== undefined && { [`settings.preferences.${key}`]: preferences[key] }),
 			})),
 		);
 
