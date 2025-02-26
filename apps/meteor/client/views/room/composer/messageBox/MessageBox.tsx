@@ -162,9 +162,6 @@ const MessageBox = ({
 	const { uploads, hasUploads, handleUploadFiles, isUploading } = useFileUpload(uploadsStore);
 
 	const handleSendMessage = useEffectEvent(() => {
-		if (hasUploads) {
-			return chat?.flows.confirmFiles();
-		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();

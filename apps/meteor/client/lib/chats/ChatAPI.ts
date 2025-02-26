@@ -159,7 +159,6 @@ export type ChatAPI = {
 			uploadsStore: UploadsAPI;
 			resetFileInput?: () => void;
 		}) => Promise<void>;
-		readonly confirmFiles: () => Promise<void>;
 		readonly sendMessage: ({
 			text,
 			tshow,
@@ -168,6 +167,7 @@ export type ChatAPI = {
 			tshow?: boolean;
 			previewUrls?: string[];
 			isSlashCommandAllowed?: boolean;
+			tmid?: IMessage['tmid'];
 		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
@@ -175,6 +175,7 @@ export type ChatAPI = {
 			message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
 			previewUrls?: string[],
 		) => Promise<boolean>;
+		readonly processMessageUploads: (message: IMessage) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 		readonly replyBroadcast: (message: IMessage) => Promise<void>;

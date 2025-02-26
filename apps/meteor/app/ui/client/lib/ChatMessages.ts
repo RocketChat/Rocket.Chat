@@ -5,8 +5,8 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
-import { confirmFiles } from '../../../../client/lib/chats/flows/confirmFiles';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processMessageUploads } from '../../../../client/lib/chats/flows/processMessageUploads';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
@@ -179,11 +179,11 @@ export class ChatMessages implements ChatAPI {
 
 		this.flows = {
 			uploadFiles: uploadFiles.bind(null, this),
-			confirmFiles: confirmFiles.bind(null, this),
 			sendMessage: sendMessage.bind(this, this),
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),
 			processMessageEditing: processMessageEditing.bind(null, this),
+			processMessageUploads: processMessageUploads.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),

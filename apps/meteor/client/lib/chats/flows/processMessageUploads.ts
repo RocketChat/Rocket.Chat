@@ -4,6 +4,7 @@ import { e2e } from '../../../../app/e2e/client';
 import type { E2ERoom } from '../../../../app/e2e/client/rocketchat.e2e.room';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import type { EncryptedUpload } from '../Upload';
 
@@ -100,21 +101,16 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 	});
 };
 
-export const confirmFiles = async (chat: ChatAPI): Promise<void> => {
+export const processMessageUploads = async (chat: ChatAPI, message: IMessage) => {
+	const { tmid, msg } = message;
 	const room = await chat.data.getRoom();
 	const e2eRoom = await e2e.getInstanceByRoomId(room._id);
-	const replies = chat.composer?.quotedMessages.get() ?? [];
-	const text = chat.composer?.text || '';
-
-	const { msg, tmid, ...composedMessage } = await chat.data.composeMessage(text, {
-		quotedMessages: replies,
-	});
 
 	const store = tmid ? chat.threadUploads : chat.uploads;
 	const filesToUpload = store.get();
 
 	if (filesToUpload.length === 0) {
-		return;
+		return false;
 	}
 
 	const { fileUrls, fileIds } = filesToUpload.reduce<{ fileUrls: string[]; fileIds: string[] }>(
@@ -138,8 +134,8 @@ export const confirmFiles = async (chat: ChatAPI): Promise<void> => {
 		content = await getEncryptedContent(filesToUpload as EncryptedUpload[], e2eRoom, msg);
 	}
 
-	const message: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
-		...composedMessage,
+	const composedMessage: AtLeast<IMessage, 'msg' | '_id' | 'rid'> = {
+		...message,
 		tmid,
 		msg,
 		content,
@@ -149,10 +145,13 @@ export const confirmFiles = async (chat: ChatAPI): Promise<void> => {
 	} as const;
 
 	try {
-		await sdk.call('sendMessage', message, fileUrls, fileIds);
+		await sdk.call('sendMessage', composedMessage, fileUrls, fileIds);
 		chat.composer?.clear();
 		store.clear();
 	} catch (error: unknown) {
 		console.error(error);
+		dispatchToastMessage({ type: 'error', message: error });
 	}
+
+	return true;
 };

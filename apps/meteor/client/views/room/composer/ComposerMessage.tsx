@@ -46,11 +46,13 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 				tshow,
 				previewUrls,
 				isSlashCommandAllowed,
+				tmid,
 			}: {
 				value: string;
 				tshow?: boolean;
 				previewUrls?: string[];
 				isSlashCommandAllowed?: boolean;
+				tmid?: IMessage['_id'];
 			}): Promise<void> => {
 				try {
 					await chat?.action.stop('typing');
@@ -59,6 +61,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 						tshow,
 						previewUrls,
 						isSlashCommandAllowed,
+						tmid,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
@@ -74,9 +77,6 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
-			// onUploadFiles: (files: readonly File[]) => {
-			// 	return chat?.flows.uploadFiles({ files, uploadsStore: chat.uploads });
-			// },
 		}),
 		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
