@@ -48,6 +48,12 @@ Meteor.methods<ServerMethods>({
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
+		if (!type || !name) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'getRoomByTypeAndName',
+			});
+		}
+
 		const userId = Meteor.userId();
 
 		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
