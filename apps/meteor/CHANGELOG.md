@@ -1,5 +1,42 @@
 # @rocket.chat/meteor
 
+## 7.1.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35322](https://github.com/RocketChat/Rocket.Chat/pull/35322) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent a bug that caused all sessions being marked as logged out if some required value was missing due to a race condition.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.4
+  - @rocket.chat/rest-typings@7.1.4
+  - @rocket.chat/license@1.0.5
+  - @rocket.chat/omnichannel-services@0.3.11
+  - @rocket.chat/pdf-worker@0.2.11
+  - @rocket.chat/presence@0.2.14
+  - @rocket.chat/api-client@0.2.14
+  - @rocket.chat/apps@0.2.5
+  - @rocket.chat/core-services@0.7.6
+  - @rocket.chat/cron@0.1.14
+  - @rocket.chat/freeswitch@1.0.5
+  - @rocket.chat/fuselage-ui-kit@13.0.4
+  - @rocket.chat/gazzodown@13.0.4
+  - @rocket.chat/model-typings@1.1.4
+  - @rocket.chat/ui-contexts@13.0.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.6
+  - @rocket.chat/models@1.0.5
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/ui-avatar@9.0.4
+  - @rocket.chat/ui-client@13.0.4
+  - @rocket.chat/ui-video-conf@13.0.4
+  - @rocket.chat/ui-voip@3.0.4
+  - @rocket.chat/web-ui-registration@13.0.4
+  - @rocket.chat/instance-status@0.1.14
+  </details>
+
 ## 7.1.3
 
 ### Patch Changes
