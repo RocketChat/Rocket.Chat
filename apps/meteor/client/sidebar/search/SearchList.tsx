@@ -13,7 +13,7 @@ import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import Row from './Row';
-import CustomScrollbars from '../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -363,7 +363,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				aria-busy={isLoading}
 				onClick={handleClick}
 			>
-				<CustomScrollbars virtualized>
+				<VirtualizedScrollbars>
 					<Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={items.length}
@@ -372,7 +372,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 						itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 						ref={listRef}
 					/>
-				</CustomScrollbars>
+				</VirtualizedScrollbars>
 			</Box>
 		</Box>
 	);

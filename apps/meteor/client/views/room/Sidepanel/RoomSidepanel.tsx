@@ -8,7 +8,7 @@ import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import RoomSidepanelLoading from './RoomSidepanelLoading';
 import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
-import CustomScrollbars from '../../../components/CustomScrollbars';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 

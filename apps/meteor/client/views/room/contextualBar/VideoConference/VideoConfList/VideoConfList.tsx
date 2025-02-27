@@ -14,7 +14,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 type VideoConfListProps = {
@@ -68,7 +68,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{videoConfs.length > 0 && (
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{
 									height: blockSize,
@@ -86,7 +86,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								data={videoConfs}
 								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

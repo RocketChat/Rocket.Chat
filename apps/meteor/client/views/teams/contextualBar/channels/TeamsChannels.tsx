@@ -18,7 +18,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { CustomScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {

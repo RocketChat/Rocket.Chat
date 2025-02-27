@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ThreadMessageItem } from './ThreadMessageItem';
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import CustomScrollbars from '../../../../../components/CustomScrollbars';
+import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { BubbleDate } from '../../../BubbleDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';

@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import EmojiCategoryRow from './EmojiCategoryRow';
 import type { EmojiByCategory } from '../../../../app/emoji/client';
-import CustomScrollbars from '../../../components/CustomScrollbars';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 
 type CategoriesResultProps = {
 	emojiListByCategory: EmojiByCategory[];

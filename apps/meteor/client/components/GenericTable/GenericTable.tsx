@@ -2,7 +2,7 @@ import { Box, Table } from '@rocket.chat/fuselage';
 import type { ComponentProps, ForwardedRef, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
-import CustomScrollbars from '../CustomScrollbars';
+import { CustomScrollbars } from '../CustomScrollbars';
 
 type GenericTableProps = {
 	fixed?: boolean;

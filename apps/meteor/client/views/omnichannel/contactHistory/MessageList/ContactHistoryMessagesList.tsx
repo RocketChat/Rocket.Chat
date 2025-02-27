@@ -29,7 +29,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -115,7 +115,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && totalItemCount > 0 && history.length > 0 && (
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={totalItemCount}
 								initialTopMostItemIndex={{ index: 'LAST' }}
@@ -142,7 +142,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 									);
 								}}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

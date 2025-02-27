@@ -17,7 +17,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -152,7 +152,7 @@ const ThreadList = () => {
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{
 									height: blockSize,
@@ -178,7 +178,7 @@ const ThreadList = () => {
 									/>
 								)}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

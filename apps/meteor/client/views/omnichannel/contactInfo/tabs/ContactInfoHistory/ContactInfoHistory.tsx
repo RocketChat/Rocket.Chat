@@ -11,7 +11,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -113,14 +113,14 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 						</Box>
 					</Box>
 					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
 								overscan={25}
 								data={data?.history}
 								itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					</Box>
 				</>
 			)}

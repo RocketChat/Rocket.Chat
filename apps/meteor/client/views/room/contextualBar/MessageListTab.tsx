@@ -17,7 +17,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 } from '../../../components/Contextualbar';
-import CustomScrollbars from '../../../components/CustomScrollbars';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';

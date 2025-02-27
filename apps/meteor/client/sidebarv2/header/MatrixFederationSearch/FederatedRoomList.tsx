@@ -8,7 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
-import CustomScrollbars from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
@@ -61,7 +61,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
 		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} mi={-24}>
-			<CustomScrollbars virtualized>
+			<VirtualizedScrollbars>
 				<Virtuoso
 					data={flattenedData || []}
 					computeItemKey={(index, room) => room?.id || index}
@@ -76,7 +76,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 					)}
 				/>
-			</CustomScrollbars>
+			</VirtualizedScrollbars>
 		</Box>
 	);
 };

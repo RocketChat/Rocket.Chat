@@ -9,7 +9,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import CustomScrollbars from '../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -49,7 +49,7 @@ const RoomList = () => {
 
 	return (
 		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
-			<CustomScrollbars virtualized>
+			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}
 					groupContent={(index) => (
@@ -66,7 +66,7 @@ const RoomList = () => {
 					})}
 					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
 				/>
-			</CustomScrollbars>
+			</VirtualizedScrollbars>
 		</Box>
 	);
 };

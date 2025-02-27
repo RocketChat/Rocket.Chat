@@ -16,7 +16,7 @@ import {
 	ContextualbarInnerContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
 
 type CannedResponseListProps = {
@@ -92,7 +92,7 @@ const CannedResponseList = ({
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ width: inlineSize }}
 								totalCount={itemCount}
@@ -110,7 +110,7 @@ const CannedResponseList = ({
 									/>
 								)}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>

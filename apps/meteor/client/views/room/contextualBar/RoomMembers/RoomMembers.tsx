@@ -19,7 +19,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
@@ -174,7 +174,7 @@ const RoomMembers = ({
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<CustomScrollbars virtualized>
+							<VirtualizedScrollbars>
 								<GroupedVirtuoso
 									style={{
 										height: '100%',
@@ -189,7 +189,7 @@ const RoomMembers = ({
 										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 									)}
 								/>
-							</CustomScrollbars>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}

@@ -17,7 +17,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type DiscussionsListProps = {
@@ -87,7 +87,7 @@ function DiscussionsList({
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{
 									height: blockSize,
@@ -100,7 +100,7 @@ function DiscussionsList({
 								data={discussions}
 								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

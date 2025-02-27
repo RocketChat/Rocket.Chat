@@ -15,7 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import CustomScrollbars from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
 type RoomFilesProps = {
 	loading: boolean;
@@ -84,7 +84,7 @@ const RoomFiles = ({
 				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-						<CustomScrollbars virtualized>
+						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{
 									height: '100%',
@@ -96,7 +96,7 @@ const RoomFiles = ({
 								data={filesItems}
 								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
 							/>
-						</CustomScrollbars>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
