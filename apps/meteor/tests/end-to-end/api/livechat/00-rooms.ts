@@ -10,6 +10,8 @@ import type {
 	ILivechatPriority,
 	ILivechatDepartment,
 	ISubscription,
+	IOmnichannelBusinessUnit,
+	IUser,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -39,6 +41,7 @@ import {
 	fetchInquiry,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
+import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
 import type { DummyResponse } from '../../../data/livechat/utils';
 import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
@@ -76,11 +79,15 @@ describe('LIVECHAT - rooms', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('livechat/room', () => {
@@ -184,7 +191,8 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "departmentId" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ 'departmentId[]': 'marcos' })
+				// it accepts an array now!
+				.query({ departmentId: { test: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -428,6 +436,30 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 		});
+		(IS_EE ? it : it.skip)('should return rooms with the given departments', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const { department: department2 } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+			});
+
+			const { room: expectedRoom2 } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department2._id,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ departmentId: [department._id, department2._id] })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(2);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
+		});
 		(IS_EE ? it : it.skip)('should return rooms with the given department and the given status', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
 
@@ -471,6 +503,35 @@ describe('LIVECHAT - rooms', () => {
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id)]);
+		});
+		(IS_EE ? it : it.skip)('should return only rooms served by the given agents', async () => {
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department._id,
+				agent: agent.credentials,
+			});
+
+			const { department: department2, agent: agent2 } = await createDepartmentWithAnOnlineAgent();
+
+			const { room: expectedRoom2 } = await startANewLivechatRoomAndTakeIt({
+				departmentId: department2._id,
+				agent: agent2.credentials,
+			});
+
+			const { body } = await request
+				.get(api('livechat/rooms'))
+				.query({ agents: [agent.user._id, agent2.user._id] })
+				.set(credentials)
+				.expect(200);
+
+			expect(body.rooms.length).to.be.equal(2);
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
+			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
+
+			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
@@ -523,6 +584,99 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.rooms.length).to.be.equal(2);
 				expect(body.rooms[0]._id).to.be.equal(openRoom._id);
 				expect(body.rooms[1]._id).to.be.equal(closeRoom._id);
+			});
+		});
+		(IS_EE ? describe : describe.skip)('monitors', () => {
+			let user: IUser;
+			let userCreds: Credentials;
+			let user2: IUser;
+			let user2Creds: Credentials;
+			let department: ILivechatDepartment;
+			let department2: ILivechatDepartment;
+			let agent: any;
+			let agent2: any;
+			let unit: IOmnichannelBusinessUnit;
+			let unit2: IOmnichannelBusinessUnit;
+			let room1: IOmnichannelRoom;
+			let room2: IOmnichannelRoom;
+
+			before(async () => {
+				user = await createUser();
+				userCreds = await login(user.username!, password);
+				user2 = await createUser();
+				user2Creds = await login(user2.username!, password);
+
+				await createMonitor(user.username!);
+				await createMonitor(user2.username!);
+				const { department: dep1, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
+				const { department: dep2, agent: agen2 } = await createDepartmentWithAnOnlineAgent();
+
+				department = dep1;
+				agent = agent1;
+				department2 = dep2;
+				agent2 = agen2;
+
+				unit = await createUnit(user._id, user.username!, [department._id], '', [{ monitorId: user2._id, username: user2.username! }]);
+				unit2 = await createUnit(user2._id, user2.username!, [department2._id]);
+			});
+			before(async () => {
+				const { room: localOpenRoom } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department._id,
+					agent: agent.credentials,
+				});
+				room1 = localOpenRoom;
+				const { room: localOpenRoom2 } = await startANewLivechatRoomAndTakeIt({
+					departmentId: department2._id,
+					agent: agent2.credentials,
+				});
+				room2 = localOpenRoom2;
+			});
+			before(async () => {
+				await restorePermissionToRoles('view-livechat-rooms');
+			});
+			after(async () => {
+				await Promise.all([
+					deleteUser(user),
+					deleteUser(user),
+					deleteUnit(unit),
+					deleteUnit(unit2),
+					deleteDepartment(department._id),
+					deleteDepartment(department2._id),
+				]);
+			});
+
+			it('should return valid list of rooms for monitor', () => {
+				return request
+					.get(api('livechat/rooms'))
+					.set(userCreds)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.rooms.length).to.be.equal(1);
+						expect(res.body.rooms[0]._id).to.be.equal(room1._id);
+					});
+			});
+			it('should return a valid list of rooms for monitor 2', () => {
+				return request
+					.get(api('livechat/rooms'))
+					.set(user2Creds)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.rooms.length).to.be.equal(2);
+					});
+			});
+			it('should allow monitor 1 to filter by units', async () => {
+				const { body } = await request.get(api('livechat/rooms')).set(userCreds).query({ 'units[]': unit._id }).expect(200);
+				expect(body.rooms.length).to.be.equal(1);
+				expect(body.rooms[0]._id).to.be.equal(room1._id);
+			});
+			it('should not allow monitor 1 to filter by a unit hes not part of', async () => {
+				const { body } = await request.get(api('livechat/rooms')).set(userCreds).query({ 'units[]': unit2._id }).expect(200);
+				expect(body.rooms.length).to.be.equal(0);
+			});
+			it('should allow monitor 2 to filter by only one unit', async () => {
+				const { body } = await request.get(api('livechat/rooms')).set(user2Creds).query({ 'units[]': unit2._id }).expect(200);
+				expect(body.rooms.length).to.be.equal(1);
+				expect(body.rooms[0]._id).to.be.equal(room2._id);
 			});
 		});
 	});

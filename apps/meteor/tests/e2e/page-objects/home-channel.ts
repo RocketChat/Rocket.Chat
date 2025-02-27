@@ -45,6 +45,10 @@ export class HomeChannel {
 		return this.page.locator('textarea[name="msg"]');
 	}
 
+	get composerBoxPopup(): Locator {
+		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
+	}
+
 	get userCardToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
 	}
@@ -71,6 +75,14 @@ export class HomeChannel {
 
 	get markUnread(): Locator {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
+	}
+
+	get audioVideoConfRingtone(): Locator {
+		return this.page.locator('#custom-sound-ringtone');
+	}
+
+	get audioVideoConfDialtone(): Locator {
+		return this.page.locator('#custom-sound-dialtone');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {
@@ -111,5 +123,9 @@ export class HomeChannel {
 
 	get btnNotPossibleDecodeKey(): Locator {
 		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
+	}
+
+	get audioRecorder(): Locator {
+		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
 	}
 }

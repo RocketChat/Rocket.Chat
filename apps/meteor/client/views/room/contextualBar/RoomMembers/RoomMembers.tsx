@@ -3,7 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useMemo } from 'react';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
@@ -31,7 +31,7 @@ type RoomMembersProps = {
 	loading: boolean;
 	text: string;
 	type: string;
-	setText: FormEventHandler<HTMLElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
 	members: RoomMemberUser[];
 	total: number;
@@ -41,7 +41,7 @@ type RoomMembersProps = {
 	onClickAdd?: () => void;
 	onClickInvite?: () => void;
 	loadMoreItems: () => void;
-	renderRow?: (props: ComponentProps<typeof RoomMembersRow>) => ReactElement | null;
+	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 };
 
@@ -88,9 +88,22 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles } = useMemo(() => {
-		const owners = members.filter((member) => member.roles?.includes('owner'));
-		const moderators = members.filter((member) => !member.roles?.includes('owner') && member.roles?.includes('moderator'));
-		const normalMembers = members.filter((member) => !member.roles?.includes('owner') && !member.roles?.includes('moderator'));
+		const owners: RoomMemberUser[] = [];
+		const leaders: RoomMemberUser[] = [];
+		const moderators: RoomMemberUser[] = [];
+		const normalMembers: RoomMemberUser[] = [];
+
+		members.forEach((member) => {
+			if (member.roles?.includes('owner')) {
+				owners.push(member);
+			} else if (member.roles?.includes('leader')) {
+				leaders.push(member);
+			} else if (member.roles?.includes('moderator')) {
+				moderators.push(member);
+			} else {
+				normalMembers.push(member);
+			}
+		});
 
 		const counts = [];
 		const titles = [];
@@ -98,6 +111,11 @@ const RoomMembers = ({
 		if (owners.length > 0) {
 			counts.push(owners.length);
 			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		}
+
+		if (leaders.length > 0) {
+			counts.push(leaders.length);
+			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
 		}
 
 		if (moderators.length > 0) {

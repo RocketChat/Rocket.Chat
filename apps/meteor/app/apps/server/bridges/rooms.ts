@@ -108,12 +108,14 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
+
+		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
 
 		// We support only one field for now
 		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
@@ -128,6 +130,7 @@ export class AppRoomBridge extends RoomBridge {
 			rid: roomId,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			...threadFilterQuery,
 		};
 
 		const cursor = Messages.find(query, messageQueryOptions);
@@ -160,13 +163,13 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !(await Rooms.findOneById(room.id))) {
-			throw new Error('A room must exist to update.');
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room, true);
+
+		const updateResult = await Rooms.updateOne({ _id: room.id }, { $set: rm });
+
+		if (!updateResult.matchedCount) {
+			throw new Error('Room id not found');
 		}
-
-		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
 		for await (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
@@ -175,7 +178,7 @@ export class AppRoomBridge extends RoomBridge {
 				continue;
 			}
 
-			await addUserToRoom(rm._id, member);
+			await addUserToRoom(room.id, member);
 		}
 	}
 
@@ -268,10 +271,18 @@ export class AppRoomBridge extends RoomBridge {
 
 		const sort: Sort = options.sort?.createdAt ? { ts: options.sort.createdAt } : { ts: 1 };
 
-		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
-			...options,
-			sort,
-		});
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			roomId,
+			lastSeen,
+			new Date(),
+			[],
+			{
+				limit: options.limit,
+				skip: options.skip,
+				sort,
+			},
+			options.showThreadMessages,
+		);
 
 		const messages = await cursor.toArray();
 		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));

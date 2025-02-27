@@ -1,8 +1,8 @@
-import { OmnichannelTranscript } from '@rocket.chat/core-services';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { canAccessRoomAsync } from '../../../../../app/authorization/server/functions/canAccessRoom';
+import { requestPdfTranscript } from '../lib/requestPdfTranscript';
 
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',
@@ -19,17 +19,11 @@ API.v1.addRoute(
 			}
 
 			// Flow is as follows:
-			// 1. Call OmnichannelTranscript.requestTranscript()
-			// 2. OmnichannelTranscript.requestTranscript() calls QueueWorker.queueWork()
-			// 3. QueueWorker.queueWork() eventually calls OmnichannelTranscript.workOnPdf()
-			// 4. OmnichannelTranscript.workOnPdf() calls OmnichannelTranscript.pdfComplete() when processing ends
-			// 5. OmnichannelTranscript.pdfComplete() sends the messages to the user, and updates the room with the flags
-			await OmnichannelTranscript.requestTranscript({
-				details: {
-					userId: this.userId,
-					rid: this.urlParams.rid,
-				},
-			});
+			// 1. On Test Mode, call Transcript.workOnPdf directly
+			// 2. On Normal Mode, call QueueWorker.queueWork to queue the work
+			// 3. OmnichannelTranscript.workOnPdf will be called by the worker to generate the transcript
+			// 4. We be happy :)
+			await requestPdfTranscript(room, this.userId);
 
 			return API.v1.success();
 		},

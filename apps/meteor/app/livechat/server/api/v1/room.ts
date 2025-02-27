@@ -24,6 +24,7 @@ import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivecha
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { closeRoom } from '../../lib/closeRoom';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
@@ -180,7 +181,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await LivechatTyped.closeRoom({ visitor, room, comment, options });
+			await closeRoom({ visitor, room, comment, options });
 
 			return API.v1.success({ rid, comment });
 		},

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
-import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
+import { appMessageMock, appMessageInvalidRoomMock, appPartialMessageMock } from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
@@ -101,12 +101,6 @@ describe('The AppMessagesConverter instance', () => {
 			});
 		});
 
-		it('should add an `_unmappedProperties_` field to the converted message which contains the `t` property of the message', async () => {
-			const appMessage = await messagesConverter.convertMessage(messagesMock.findOneById('SimpleMessageMock'));
-
-			expect(appMessage).to.have.property('_unmappedProperties_').which.has.property('t', 'uj');
-		});
-
 		it("should return basic sender info when it's not a Rocket.Chat user (e.g. Livechat Guest)", async () => {
 			const appMessage = await messagesConverter.convertMessage(messagesMock.findOneById('LivechatGuestMessageMock'));
 
@@ -140,11 +134,37 @@ describe('The AppMessagesConverter instance', () => {
 			});
 		});
 
+		it('should return a proper schema when receiving a partial object', async () => {
+			const rocketchatMessage = await messagesConverter.convertAppMessage(appPartialMessageMock, true);
+
+			expect(rocketchatMessage).to.have.property('_id', 'appPartialMessageMock');
+			expect(rocketchatMessage).to.have.property('groupable', false);
+			expect(rocketchatMessage).to.have.property('emoji', ':smirk:');
+			expect(rocketchatMessage).to.have.property('alias', 'rocket.feline');
+
+			expect(rocketchatMessage).to.not.have.property('ts');
+			expect(rocketchatMessage).to.not.have.property('u');
+			expect(rocketchatMessage).to.not.have.property('rid');
+			expect(rocketchatMessage).to.not.have.property('_updatedAt');
+		});
+
 		it('should merge `_unmappedProperties_` into the returned message', async () => {
 			const rocketchatMessage = await messagesConverter.convertAppMessage(appMessageMock);
 
 			expect(rocketchatMessage).not.to.have.property('_unmappedProperties_');
 			expect(rocketchatMessage).to.have.property('t', 'uj');
+		});
+
+		it('should not merge `_unmappedProperties_` into the returned message when receiving a partial object', async () => {
+			const invalidPartialMessage = structuredClone(appPartialMessageMock);
+			invalidPartialMessage._unmappedProperties_ = {
+				t: 'uj',
+			};
+
+			const rocketchatMessage = await messagesConverter.convertAppMessage(invalidPartialMessage, true);
+
+			expect(rocketchatMessage).to.not.have.property('_unmappedProperties_');
+			expect(rocketchatMessage).to.not.have.property('t');
 		});
 
 		it('should throw if message has an invalid room', async () => {

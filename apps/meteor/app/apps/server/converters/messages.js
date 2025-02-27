@@ -47,6 +47,8 @@ export class AppMessagesConverter {
 			editor: 'editedBy',
 			attachments: getAttachments,
 			sender: 'u',
+			threadMsgCount: 'tcount',
+			type: 't',
 		};
 
 		return transformMappedData(message, map);
@@ -90,6 +92,7 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
+			type: 't',
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
@@ -134,19 +137,23 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	async convertAppMessage(message) {
-		if (!message || !message.room) {
+	async convertAppMessage(message, isPartial = false) {
+		if (!message) {
 			return undefined;
 		}
 
-		const room = await Rooms.findOneById(message.room.id);
+		let rid;
+		if (message.room?.id) {
+			const room = await Rooms.findOneById(message.room.id, { projection: { _id: 1 } });
+			rid = room?._id;
+		}
 
-		if (!room) {
+		if (!rid && !isPartial) {
 			throw new Error('Invalid room provided on the message.');
 		}
 
 		let u;
-		if (message.sender && message.sender.id) {
+		if (message.sender?.id) {
 			const user = await Users.findOneById(message.sender.id);
 
 			if (user) {
@@ -175,14 +182,27 @@ export class AppMessagesConverter {
 
 		const attachments = this._convertAppAttachments(message.attachments);
 
+		let _id = message.id;
+		let ts = message.createdAt;
+
+		if (!isPartial) {
+			if (!message.id) {
+				_id = Random.id();
+			}
+
+			if (!message.createdAt) {
+				ts = new Date();
+			}
+		}
+
 		const newMessage = {
-			_id: message.id || Random.id(),
+			_id,
 			...('threadId' in message && { tmid: message.threadId }),
-			rid: room._id,
+			rid,
 			u,
 			msg: message.text,
-			ts: message.createdAt || new Date(),
-			_updatedAt: message.updatedAt || new Date(),
+			ts,
+			_updatedAt: message.updatedAt,
 			...(editedBy && { editedBy }),
 			...('editedAt' in message && { editedAt: message.editedAt }),
 			...('emoji' in message && { emoji: message.emoji }),
@@ -197,7 +217,17 @@ export class AppMessagesConverter {
 			...('token' in message && { token: message.token }),
 		};
 
-		return Object.assign(newMessage, message._unmappedProperties_);
+		if (isPartial) {
+			Object.entries(newMessage).forEach(([key, value]) => {
+				if (typeof value === 'undefined') {
+					delete newMessage[key];
+				}
+			});
+		} else {
+			Object.assign(newMessage, message._unmappedProperties_);
+		}
+
+		return newMessage;
 	}
 
 	_convertAppAttachments(attachments) {
