@@ -94,7 +94,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	countTotal(): Promise<number> {
-		return this.col.countDocuments();
+		return this.estimatedDocumentCount();
 	}
 
 	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
@@ -132,7 +132,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 	countByBusinessHourIdExcludingDepartmentId(businessHourId: string, departmentId: string): Promise<number> {
 		const query = { businessHourId, _id: { $ne: departmentId } };
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findEnabledByBusinessHourId(businessHourId: string, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
@@ -453,7 +453,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	countArchived(): Promise<number> {
-		return this.col.countDocuments({ archived: true });
+		return this.countDocuments({ archived: true });
 	}
 
 	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
