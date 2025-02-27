@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { Apps } from '../orchestrator';
-import { MarketplaceAppsError, MarketplaceConnectionError } from './marketplaceErrors';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 
 const fetchMarketplaceCategoriesSchema = z.array(
 	z.object({
@@ -40,6 +40,12 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 	}
 
 	const response = await request.json();
+
+	// TODO: Refactor cloud to return a proper error code on unsupported version
+	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {
+		throw new MarketplaceUnsupportedVersionError();
+	}
+
 	const INTERNAL_MARKETPLACE_ERROR_CODES = [189, 266];
 
 	if (request.status === 500 && INTERNAL_MARKETPLACE_ERROR_CODES.includes(response.code)) {

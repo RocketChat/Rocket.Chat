@@ -151,7 +151,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -253,7 +253,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
 
-							if (err instanceof MarketplaceAppsError) {
+							if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: err.message });
 							}
 

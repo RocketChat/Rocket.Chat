@@ -161,7 +161,7 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 	Apps.getRocketChatLogger().error('Failed to fetch marketplace apps', response);
 
 	// TODO: Refactor cloud to return a proper error code on unsupported version
-	if ('errorMsg' in response && response.errorMsg === 'unsupported version') {
+	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {
 		throw new MarketplaceUnsupportedVersionError();
 	}
 
