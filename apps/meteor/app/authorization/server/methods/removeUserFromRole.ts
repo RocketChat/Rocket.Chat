@@ -65,7 +65,7 @@ Meteor.methods<ServerMethods>({
 
 		// prevent removing last user from admin role
 		if (role._id === 'admin') {
-			const adminCount = await Users.col.countDocuments({
+			const adminCount = await Users.countDocuments({
 				roles: {
 					$in: ['admin'],
 				},
