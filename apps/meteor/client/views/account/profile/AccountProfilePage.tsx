@@ -1,4 +1,5 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -34,6 +35,7 @@ const AccountProfilePage = (): ReactElement => {
 	const erasureType = useSetting('Message_ErasureType');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
+	const isMobile = useMediaQuery('(max-width: 814px)');
 
 	const methods = useForm({
 		defaultValues: getProfileInitialValues(user),
@@ -119,16 +121,18 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<Box mb={12}>
-						<ButtonGroup stretch>
-							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
-								{t('Logout_Others')}
-							</Button>
-							{allowDeleteOwnAccount && (
-								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
-									{t('Delete_my_account')}
+						<Box mb={12}>
+							<ButtonGroup vertical={isMobile} style={{ gap: '8px' }} stretch>
+								<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+									{t('Logout_Others')}
 								</Button>
-							)}
-						</ButtonGroup>
+								{allowDeleteOwnAccount && (
+									<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+										{t('Delete_my_account')}
+									</Button>
+								)}
+							</ButtonGroup>
+						</Box>
 					</Box>
 				</Box>
 			</PageScrollableContentWithShadow>

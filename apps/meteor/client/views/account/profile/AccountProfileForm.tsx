@@ -12,6 +12,7 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -44,6 +45,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const customFieldsMetadata = useAccountsCustomFields();
+	const isMobile = useMediaQuery('(max-width: 768px)');
 
 	const {
 		allowRealNameChange,
@@ -303,34 +305,38 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
 					</FieldLabel>
-					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
-						<Controller
-							control={control}
-							name='email'
-							rules={{
-								required: t('Required_field', { field: t('Email') }),
-								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
-							}}
-							render={({ field }) => (
-								<TextInput
-									{...field}
-									id={emailId}
-									flexGrow={1}
-									error={errors.email?.message}
-									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
-									disabled={!allowEmailChange}
-									aria-required='true'
-									aria-invalid={errors.email ? 'true' : 'false'}
-									aria-describedby={`${emailId}-error ${emailId}-hint`}
-								/>
-							)}
-						/>
+					<Field display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '8px' }}>
+						<FieldRow flexGrow={3} flexShrink={1} flexBasis={isUserVerified ? '100%' : '75%'}>
+							<Controller
+								control={control}
+								name='email'
+								rules={{
+									required: t('Required_field', { field: t('Email') }),
+									validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
+								}}
+								render={({ field }) => (
+									<TextInput
+										{...field}
+										id={emailId}
+										flexGrow={1}
+										error={errors.email?.message}
+										addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+										disabled={!allowEmailChange}
+										aria-required='true'
+										aria-invalid={errors.email ? 'true' : 'false'}
+										aria-describedby={`${emailId}-error ${emailId}-hint`}
+									/>
+								)}
+							/>
+						</FieldRow>
 						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
-								{t('Resend_verification_email')}
-							</Button>
+							<FieldRow flexGrow={1} flexShrink={1} flexBasis='25%'>
+								<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} width='100%'>
+									{t('Resend_verification_email')}
+								</Button>
+							</FieldRow>
 						)}
-					</FieldRow>
+					</Field>
 					{errors.email && (
 						<FieldError aria-live='assertive' id={`${emailId}-error`}>
 							{errors?.email?.message}
