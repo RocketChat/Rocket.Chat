@@ -1,66 +1,45 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactElement } from 'react';
-import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
+import { useEffect, useRef, forwardRef, memo } from 'react';
 
-import 'overlayscrollbars/styles/overlayscrollbars.css';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
 type CustomScrollbarsProps = {
 	children: ReactElement;
-	virtualized?: boolean;
 	overflowX?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function Virtualized(
-	{ virtualized = false, overflowX, ...props },
-	ref,
-) {
+const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars({ overflowX, ...props }, ref) {
 	const rootRef = useRef(null);
-	const mergedRefs = useMergedRefs(rootRef, ref);
-	const [scroller, setScroller] = useState(null);
+	const scrollbarsOptions = getScrollbarsOptions(overflowX);
 	const [initialize, osInstance] = useOverlayScrollbars({
-		options: { scrollbars: { autoHide: 'scroll' }, overflow: { x: overflowX ? 'scroll' : 'hidden' } },
-		defer: true,
+		options: scrollbarsOptions,
 	});
 
 	useEffect(() => {
 		const { current: root } = rootRef;
 
-		if (scroller && root) {
-			return initialize({
-				target: root,
-				elements: {
-					viewport: scroller,
-				},
-			});
-		}
-
 		if (root) {
 			initialize(root);
+
+			const instance = osInstance();
+			if (!instance || !ref) {
+				return;
+			}
+
+			if (typeof ref === 'function') {
+				ref(instance.elements().viewport || null);
+				console.log(instance.elements());
+				return;
+			}
+
+			ref.current = instance.elements().viewport || null;
 		}
 
 		return () => osInstance()?.destroy();
-	}, [scroller, initialize, osInstance]);
+	}, [initialize, osInstance, ref]);
 
-	return (
-		<Box
-			className={css`
-				.os-scrollbar {
-					--os-handle-bg: ${Palette.stroke['stroke-dark']};
-					--os-handle-bg-hover: ${Palette.stroke['stroke-dark']};
-					--os-handle-bg-active: ${Palette.stroke['stroke-dark']};
-				}
-			`}
-			height='full'
-			data-overlayscrollbars-initialize=''
-			ref={mergedRefs}
-			{...props}
-		>
-			{cloneElement(props.children, virtualized ? { scrollerRef: setScroller } : undefined)}
-		</Box>
-	);
+	return <BaseScrollbars ref={rootRef} {...props} />;
 });
 
 export default memo(CustomScrollbars);
