@@ -1,8 +1,10 @@
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
@@ -67,10 +69,10 @@ async function removeIntegration(options, user) {
 }
 
 async function executeIntegrationRest() {
-	incomingLogger.info({ msg: 'Post integration:', integration: this.integration.name });
+	incomingLogger.info({ msg: 'Post integration:', integration: this.request.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
-	if (this.integration.enabled !== true) {
+	if (this.request.integration.enabled !== true) {
 		return {
 			statusCode: 503,
 			body: 'Service Unavailable',
@@ -78,15 +80,15 @@ async function executeIntegrationRest() {
 	}
 
 	const defaultValues = {
-		channel: this.integration.channel,
-		alias: this.integration.alias,
-		avatar: this.integration.avatar,
-		emoji: this.integration.emoji,
+		channel: this.request.integration.channel,
+		alias: this.request.integration.alias,
+		avatar: this.request.integration.avatar,
+		emoji: this.request.integration.emoji,
 	};
 
-	const scriptEngine = getEngine(this.integration);
+	const scriptEngine = getEngine(this.request.integration);
 
-	if (scriptEngine.integrationHasValidScript(this.integration)) {
+	if (scriptEngine.integrationHasValidScript(this.request.integration)) {
 		this.request.setEncoding('utf8');
 		const content_raw = this.request.read();
 
@@ -112,7 +114,7 @@ async function executeIntegrationRest() {
 		};
 
 		const result = await scriptEngine.processIncomingRequest({
-			integration: this.integration,
+			integration: this.request.integration,
 			request,
 		});
 
@@ -120,7 +122,7 @@ async function executeIntegrationRest() {
 			if (!result) {
 				incomingLogger.debug({
 					msg: 'Process Incoming Request result of Trigger has no data',
-					integration: this.integration.name,
+					integration: this.request.integration.name,
 				});
 				return API.v1.success();
 			}
@@ -136,14 +138,14 @@ async function executeIntegrationRest() {
 
 			incomingLogger.debug({
 				msg: 'Process Incoming Request result of Trigger',
-				integration: this.integration.name,
+				integration: this.request.integration.name,
 				result: this.bodyParams,
 			});
 		} catch (err) {
 			incomingLogger.error({
 				msg: 'Error running Script in Trigger',
-				integration: this.integration.name,
-				script: this.integration.scriptCompiled,
+				integration: this.request.integration.name,
+				script: this.request.integration.scriptCompiled,
 				err,
 			});
 			return API.v1.failure('error-running-script');
@@ -152,16 +154,16 @@ async function executeIntegrationRest() {
 
 	// TODO: Turn this into an option on the integrations - no body means a success
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
-	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
+	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.request.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();
 	}
 
-	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.integration.overrideDestinationChannelEnabled) {
+	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.request.integration.overrideDestinationChannelEnabled) {
 		return API.v1.failure('overriding destination channel is disabled for this integration');
 	}
 
-	this.bodyParams.bot = { i: this.integration._id };
+	this.bodyParams.bot = { i: this.request.integration._id };
 
 	try {
 		const message = await processWebhookMessage(this.bodyParams, this.user, defaultValues);
@@ -237,6 +239,29 @@ function integrationInfoRest() {
 }
 
 class WebHookAPI extends APIClass {
+	async authenticatedRoute(request) {
+		request.integration = await Integrations.findOne({
+			_id: request.params.integrationId,
+			token: decodeURIComponent(request.params.token),
+		});
+
+		if (!request.integration) {
+			incomingLogger.info(`Invalid integration id ${request.params.integrationId} or token ${request.params.token}`);
+
+			return {
+				error: {
+					statusCode: 404,
+					body: {
+						success: false,
+						error: 'Invalid integration id or token provided.',
+					},
+				},
+			};
+		}
+
+		return Users.findOneById(request.integration.userId);
+	}
+
 	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
 	shouldAddRateLimitToRoute(options) {
 		const { rateLimiterOptions } = options;
@@ -286,52 +311,27 @@ class WebHookAPI extends APIClass {
 const Api = new WebHookAPI({
 	enableCors: true,
 	apiPath: 'hooks/',
-	auth: {
-		async user() {
-			const payloadKeys = Object.keys(this.bodyParams);
-			const payloadIsWrapped = this.bodyParams && this.bodyParams.payload && payloadKeys.length === 1;
-			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
-				try {
-					this.bodyParams = JSON.parse(this.bodyParams.payload);
-				} catch ({ message }) {
-					return {
-						error: {
-							statusCode: 400,
-							body: {
-								success: false,
-								error: message,
-							},
-						},
-					};
-				}
-			}
+});
 
-			this.integration = await Integrations.findOne({
-				_id: this.request.params.integrationId,
-				token: decodeURIComponent(this.request.params.token),
-			});
+// middleware for special requests that are urlencoded but have a json payload (like GitHub webhooks)
+Api.router.use((req, res, next) => {
+	if (req.headers['content-type'] !== 'application/x-www-form-urlencoded') {
+		return next();
+	}
 
-			if (!this.integration) {
-				incomingLogger.info(`Invalid integration id ${this.request.params.integrationId} or token ${this.request.params.token}`);
+	const payloadKeys = Object.keys(req.body);
+	if (payloadKeys.length !== 1) {
+		return next();
+	}
 
-				return {
-					error: {
-						statusCode: 404,
-						body: {
-							success: false,
-							error: 'Invalid integration id or token provided.',
-						},
-					},
-				};
-			}
-
-			const user = await Users.findOne({
-				_id: this.integration.userId,
-			});
-
-			return { user };
-		},
-	},
+	try {
+		// need to compose the full payload in this weird way because body-parser thought it was a form
+		req.bodyParams = JSON.parse(payloadKeys[0] + req.body[payloadKeys[0]]);
+		return next();
+	} catch (e) {
+		res.writeHead(400);
+		res.end(JSON.stringify({ success: false, error: e.message }));
+	}
 });
 
 Api.addRoute(
@@ -415,3 +415,7 @@ Api.addRoute(
 		post: removeIntegrationRest,
 	},
 );
+
+Meteor.startup(() => {
+	WebApp.connectHandlers.use(Api.router.router);
+});
