@@ -16,7 +16,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const executeDeleteUser = async (fromUserId: IUser['_id'], userId: IUser['_id'], confirmRelinquish = false): Promise<boolean> => {
-	check(userId, String);
 	if ((await hasPermissionAsync(fromUserId, 'delete-user')) !== true) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'deleteUser',
@@ -57,6 +56,8 @@ export const executeDeleteUser = async (fromUserId: IUser['_id'], userId: IUser[
 
 Meteor.methods<ServerMethods>({
 	async deleteUser(userId, confirmRelinquish = false) {
+		check(userId, String);
+		
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

@@ -18,8 +18,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const deleteUserOwnAccount = async (fromUserId: string, password: string, confirmRelinquish = false): Promise<boolean> => {
-	check(password, String);
-
 	if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'deleteUserOwnAccount',
@@ -65,6 +63,8 @@ export const deleteUserOwnAccount = async (fromUserId: string, password: string,
 
 Meteor.methods<ServerMethods>({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
+		check(password, String);
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

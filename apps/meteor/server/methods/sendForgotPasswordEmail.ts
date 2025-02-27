@@ -15,8 +15,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const sendForgotPasswordEmail = async (to: string): Promise<boolean | undefined> => {
-	check(to, String);
-
 	const email = to.trim().toLowerCase();
 
 	const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1, services: 1 } });
@@ -41,6 +39,8 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 
 Meteor.methods<ServerMethods>({
 	async sendForgotPasswordEmail(to) {
+		check(to, String);
+		
 		return sendForgotPasswordEmail(to);
 	},
 });

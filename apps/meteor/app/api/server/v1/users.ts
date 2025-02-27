@@ -96,11 +96,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			const suggestions = await getAvatarSuggestionForUser(user);
+			const suggestions = await getAvatarSuggestionForUser(this.user);
 
 			return API.v1.success({ suggestions });
 		},
@@ -784,11 +780,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const user = await Users.findOneById(this.userId, { projection: { name: 1, emails: 1, services: 1 } });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			const result = await generateUsernameSuggestion(user);
+			const result = await generateUsernameSuggestion(this.user);
 
 			return API.v1.success({ result });
 		},
@@ -1056,11 +1048,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { fullExport = false } = this.queryParams;
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			const result = (await requestDataDownload({ userData: user, fullExport: fullExport === 'true' })) as {
+			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
 				requested: boolean;
 				exportOperation: IExportOperation;
 			};
