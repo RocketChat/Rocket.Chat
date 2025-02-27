@@ -21,6 +21,7 @@ import { IPostMessageReported } from './IPostMessageReported';
 import { IPostMessageSent } from './IPostMessageSent';
 import { IPostMessageStarred } from './IPostMessageStarred';
 import { IPostMessageUpdated } from './IPostMessageUpdated';
+import { IPostSystemMessageSent } from './IPostSystemMessageSent';
 import { IPreMessageDeletePrevent } from './IPreMessageDeletePrevent';
 import { IPreMessageSentExtend } from './IPreMessageSentExtend';
 import { IPreMessageSentModify } from './IPreMessageSentModify';
@@ -31,6 +32,7 @@ import { IPreMessageUpdatedPrevent } from './IPreMessageUpdatedPrevent';
 import { MessageActionButtonsAlignment } from './MessageActionButtonsAlignment';
 import { MessageActionType } from './MessageActionType';
 import { MessageProcessingType } from './MessageProcessingType';
+import { MessageType } from './MessageType';
 
 export {
     IMessage,
@@ -68,4 +70,6 @@ export {
     MessageProcessingType,
     IMessageDeleteContext,
     Reaction,
+    MessageType,
+    IPostSystemMessageSent,
 };
