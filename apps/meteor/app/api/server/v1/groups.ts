@@ -27,6 +27,7 @@ import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -517,8 +518,9 @@ API.v1.addRoute(
 
 			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
 
-			const result = await Meteor.callAsync('getChannelHistory', {
+			const result = await getChannelHistory({
 				rid: findResult.rid,
+				fromUserId: this.userId,
 				latest: latestDate,
 				oldest: oldestDate,
 				inclusive,

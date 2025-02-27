@@ -18,8 +18,3 @@ export type EmojiByCategory = {
 		limit: number | null;
 	};
 };
-
-export type EmojiCategoryPosition = {
-	el: Element;
-	top: number;
-};

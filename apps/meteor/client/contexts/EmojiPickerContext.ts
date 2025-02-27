@@ -1,6 +1,12 @@
+import type { MutableRefObject } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { EmojiByCategory } from '../../app/emoji/client';
+
+type EmojiCategoryPosition = {
+	key: string;
+	top: number;
+};
 
 type EmojiPickerContextValue = {
 	open: (ref: Element, callback: (emoji: string) => void) => void;
@@ -16,6 +22,7 @@ type EmojiPickerContextValue = {
 	actualTone: number;
 	currentCategory: string;
 	setCurrentCategory: (category: string) => void;
+	categoriesPosition: MutableRefObject<EmojiCategoryPosition[]>;
 	customItemsLimit: number;
 	setCustomItemsLimit: (limit: number) => void;
 	setActualTone: (tone: number) => void;
@@ -49,6 +56,7 @@ export const useEmojiPickerData = () => {
 		actualTone,
 		addRecentEmoji,
 		currentCategory,
+		categoriesPosition,
 		customItemsLimit,
 		getEmojiListsByCategory,
 		quickReactions,
@@ -66,6 +74,7 @@ export const useEmojiPickerData = () => {
 		setRecentEmojis,
 		actualTone,
 		currentCategory,
+		categoriesPosition,
 		setCurrentCategory,
 		customItemsLimit,
 		setCustomItemsLimit,
