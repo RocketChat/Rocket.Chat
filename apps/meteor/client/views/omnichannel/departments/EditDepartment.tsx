@@ -23,6 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { formatDepartmentPayload } from './utils/formatDepartmentPayload';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -138,45 +139,10 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleSave = useEffectEvent(async (data: FormValues) => {
-		const {
-			agentList,
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward,
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		} = data;
-
-		const payload = {
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			requestTagBeforeClosingChat,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		};
-
 		try {
+			const { agentList } = data;
+			const payload = formatDepartmentPayload(data);
+
 			if (id) {
 				const { agentList: initialAgentList } = initialValues;
 
