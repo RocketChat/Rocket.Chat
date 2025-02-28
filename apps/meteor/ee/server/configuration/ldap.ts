@@ -1,6 +1,7 @@
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
+import type { LogOperation } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
@@ -80,13 +81,13 @@ Meteor.startup(async () => {
 
 		callbacks.add(
 			'mapLDAPUserData',
-			(userData: IImportUser, ldapUser?: ILDAPEntry) => {
+			({ userData, ldapUser, operation }: { userData: IImportUser; ldapUser?: ILDAPEntry; operation?: LogOperation }) => {
 				if (!ldapUser) {
 					return;
 				}
 
 				LDAPEEManager.copyCustomFields(ldapUser, userData);
-				LDAPEEManager.copyActiveState(ldapUser, userData);
+				LDAPEEManager.copyActiveState(ldapUser, userData, operation);
 			},
 			callbacks.priority.MEDIUM,
 			'mapLDAPCustomFields',
