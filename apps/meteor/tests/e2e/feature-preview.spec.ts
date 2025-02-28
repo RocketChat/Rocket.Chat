@@ -161,6 +161,16 @@ test.describe.serial('feature preview', () => {
 			await collapser.click();
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
+
+		test('should not show NavBar in embedded layout', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetChannel);
+			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+			await page.goto(embeddedLayoutURL);
+			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+		});
 	});
 
 	test.describe('Sidepanel', () => {
