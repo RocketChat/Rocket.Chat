@@ -16,7 +16,6 @@ test.each([
     ],
   ],
   [':) asd', [paragraph([emoticon(':)', 'slight_smile'), plain(' asd')])]],
-  [':) asd', [paragraph([emoticon(':)', 'slight_smile'), plain(' asd')])]],
   [
     ' :) asd',
     [paragraph([plain(' '), emoticon(':)', 'slight_smile'), plain(' asd')])],
