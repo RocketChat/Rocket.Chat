@@ -1,4 +1,4 @@
-import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useUser, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -18,6 +18,7 @@ type VoipClientResult = {
 export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClientParams = {}): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
 	const voipClientRef = useRef<VoipClient | null>(null);
+	const siteUrl = useSetting('Site_Url') as string;
 
 	const getRegistrationInfo = useEndpoint('GET', '/v1/voip-freeswitch.extension.getRegistrationInfoByUserId');
 
@@ -59,6 +60,8 @@ export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClien
 				webSocketURI: websocketPath,
 				connectionRetryCount: Number(10), // TODO: get from settings
 				enableKeepAliveUsingOptionsForUnstableNetworks: true, // TODO: get from settings
+				userId,
+				siteUrl,
 			};
 
 			const voipClient = await VoipClient.create(config);
