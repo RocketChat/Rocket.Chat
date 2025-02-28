@@ -34,6 +34,7 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 	isLoading: false,
 	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
 	querySettings: () => [() => () => undefined, () => []],
+	countSettings: () => Object.keys(settings).length,
 	dispatch: async () => undefined,
 };
 
