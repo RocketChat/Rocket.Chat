@@ -25,6 +25,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatDepartmentPayload } from './utils/formatDepartmentPayload';
+import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -46,12 +47,6 @@ export type EditDepartmentProps = {
 	allowedToForwardData?: Serialized<{
 		departments: ILivechatDepartment[];
 	}>;
-};
-
-type InitialValueParams = {
-	department?: Serialized<ILivechatDepartment> | null;
-	agents?: Serialized<ILivechatDepartmentAgents>[];
-	allowedToForwardData?: EditDepartmentProps['allowedToForwardData'];
 };
 
 export type IDepartmentAgent = Pick<ILivechatDepartmentAgents, 'agentId' | 'username' | 'count' | 'order'> & {
@@ -79,30 +74,6 @@ export type FormValues = {
 	allowReceiveForwardOffline: boolean;
 };
 
-function withDefault<T>(key: T | undefined | null, defaultValue: T) {
-	return key || defaultValue;
-}
-
-const getInitialValues = ({ department, agents, allowedToForwardData }: InitialValueParams) => ({
-	name: withDefault(department?.name, ''),
-	email: withDefault(department?.email, ''),
-	description: withDefault(department?.description, ''),
-	enabled: !!department?.enabled,
-	maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat,
-	showOnRegistration: !!department?.showOnRegistration,
-	showOnOfflineForm: !!department?.showOnOfflineForm,
-	abandonedRoomsCloseCustomMessage: withDefault(department?.abandonedRoomsCloseCustomMessage, ''),
-	requestTagBeforeClosingChat: !!department?.requestTagBeforeClosingChat,
-	offlineMessageChannelName: withDefault(department?.offlineMessageChannelName, ''),
-	visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds,
-	waitingQueueMessage: withDefault(department?.waitingQueueMessage, ''),
-	departmentsAllowedToForward: allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
-	fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
-	chatClosingTags: department?.chatClosingTags ?? [],
-	agentList: agents || [],
-	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
-});
-
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const router = useRouter();
@@ -112,7 +83,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const initialValues = getInitialValues({ department, agents, allowedToForwardData });
+	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });
 
 	const {
 		register,
