@@ -1,5 +1,20 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.16-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.3
+  - @rocket.chat/omnichannel-services@0.3.13-rc.3
+  - @rocket.chat/pdf-worker@0.2.13-rc.3
+  - @rocket.chat/core-services@0.7.8-rc.3
+  - @rocket.chat/model-typings@1.4.0-rc.3
+  - @rocket.chat/models@1.3.0-rc.3
+  - @rocket.chat/network-broker@0.1.8-rc.3
+  </details>
+
 ## 0.4.16-rc.2
 
 ### Patch Changes
