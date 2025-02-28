@@ -1,4 +1,4 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Icon, PasswordInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
