@@ -8918,6 +8918,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
     moleculer: "npm:^0.14.35"
+    nats: "npm:^2.29.1"
     pino: "npm:^8.21.0"
     sinon: "npm:^19.0.2"
     typescript: "npm:~5.7.2"
@@ -27695,6 +27696,15 @@ __metadata:
   dependencies:
     nkeys.js: "npm:1.1.0"
   checksum: 10/09fff7e163c40e4c99be97cfc5a094572cd98258411e5dbdd40183409196fb432b810dbda8dd7cfc96e059b66edcd2bb29c7b42e93bc57a66ff6a5b0e6da05c2
+  languageName: node
+  linkType: hard
+
+"nats@npm:^2.29.1":
+  version: 2.29.1
+  resolution: "nats@npm:2.29.1"
+  dependencies:
+    nkeys.js: "npm:1.1.0"
+  checksum: 10/5d6c22701825372b3ce88d799e5552bab35c7838d82ad1a6df32fa8a6240ac272577dd1afdd80c77611c4fb1e52ed989b739218c1251a79e1f742c18b5f299c7
   languageName: node
   linkType: hard
 
