@@ -23,6 +23,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import type { EditDepartmentFormData } from './definitions';
+import { formatAgentListPayload } from './utils/formatAgentListPayload';
+import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
+import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -33,6 +37,7 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
+import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
 
 export type EditDepartmentProps = {
 	id?: string;
@@ -46,61 +51,6 @@ export type EditDepartmentProps = {
 	}>;
 };
 
-type InitialValueParams = {
-	department?: Serialized<ILivechatDepartment> | null;
-	agents?: Serialized<ILivechatDepartmentAgents>[];
-	allowedToForwardData?: EditDepartmentProps['allowedToForwardData'];
-};
-
-export type IDepartmentAgent = Pick<ILivechatDepartmentAgents, 'agentId' | 'username' | 'count' | 'order'> & {
-	_id?: string;
-	name?: string;
-};
-
-export type FormValues = {
-	name: string;
-	email: string;
-	description: string;
-	enabled: boolean;
-	maxNumberSimultaneousChat: number;
-	showOnRegistration: boolean;
-	showOnOfflineForm: boolean;
-	abandonedRoomsCloseCustomMessage: string;
-	requestTagBeforeClosingChat: boolean;
-	offlineMessageChannelName: string;
-	visitorInactivityTimeoutInSeconds: number;
-	waitingQueueMessage: string;
-	departmentsAllowedToForward: { label: string; value: string }[];
-	fallbackForwardDepartment: string;
-	agentList: IDepartmentAgent[];
-	chatClosingTags: string[];
-	allowReceiveForwardOffline: boolean;
-};
-
-function withDefault<T>(key: T | undefined | null, defaultValue: T) {
-	return key || defaultValue;
-}
-
-const getInitialValues = ({ department, agents, allowedToForwardData }: InitialValueParams) => ({
-	name: withDefault(department?.name, ''),
-	email: withDefault(department?.email, ''),
-	description: withDefault(department?.description, ''),
-	enabled: !!department?.enabled,
-	maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat,
-	showOnRegistration: !!department?.showOnRegistration,
-	showOnOfflineForm: !!department?.showOnOfflineForm,
-	abandonedRoomsCloseCustomMessage: withDefault(department?.abandonedRoomsCloseCustomMessage, ''),
-	requestTagBeforeClosingChat: !!department?.requestTagBeforeClosingChat,
-	offlineMessageChannelName: withDefault(department?.offlineMessageChannelName, ''),
-	visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds,
-	waitingQueueMessage: withDefault(department?.waitingQueueMessage, ''),
-	departmentsAllowedToForward: allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
-	fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
-	chatClosingTags: department?.chatClosingTags ?? [],
-	agentList: agents || [],
-	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
-});
-
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const router = useRouter();
@@ -110,7 +60,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const initialValues = getInitialValues({ department, agents, allowedToForwardData });
+	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });
 
 	const {
 		register,
@@ -118,7 +68,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		handleSubmit,
 		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
-	} = useForm<FormValues>({ mode: 'onChange', defaultValues: initialValues });
+	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
 
 	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
@@ -137,70 +87,25 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleSave = useEffectEvent(async (data: FormValues) => {
-		const {
-			agentList,
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward,
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		} = data;
-
-		const payload = {
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			requestTagBeforeClosingChat,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		};
-
+	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
 		try {
+			const { agentList } = data;
+			const payload = formatEditDepartmentPayload(data);
+
 			if (id) {
-				const { agentList: initialAgentList } = initialValues;
-
-				const agentListPayload = {
-					upsert: agentList.filter(
-						(agent) =>
-							!initialAgentList.some(
-								(initialAgent) =>
-									initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
-							),
-					),
-					remove: initialAgentList.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
-				};
-
 				await saveDepartmentInfo(id, payload, []);
+
+				const { agentList: initialAgentList } = initialValues;
+				const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
+
 				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
 			} else {
 				await saveDepartmentInfo(id ?? null, payload, agentList);
 			}
-			queryClient.invalidateQueries({
-				queryKey: ['/v1/livechat/department/:_id', id],
-			});
+
+			queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.navigate('/omnichannel/departments');
 		} catch (error) {
@@ -249,6 +154,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<ToggleSwitch id={enabledField} {...register('enabled')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={nameField} required>
 								{t('Name')}
@@ -269,6 +175,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
@@ -280,12 +187,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						<Field data-qa='DepartmentEditToggle-ShowOnRegistrationPage'>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnRegistrationField}>{t('Show_on_registration_page')}</FieldLabel>
 								<ToggleSwitch id={showOnRegistrationField} {...register('showOnRegistration')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={emailField} required>
 								{t('Email')}
@@ -310,12 +219,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnOfflineFormField}>{t('Show_on_offline_page')}</FieldLabel>
 								<ToggleSwitch id={showOnOfflineFormField} {...register('showOnOfflineForm')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={offlineMessageChannelNameField}>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
 							<FieldRow>
@@ -342,6 +253,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						{hasLicense && (
 							<>
 								<Field>
@@ -357,6 +269,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -370,6 +283,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -383,6 +297,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -392,6 +307,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -406,6 +322,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<FieldLabel htmlFor={fallbackForwardDepartmentField}>{t('Fallback_forward_department')}</FieldLabel>
 									<Controller
@@ -428,14 +345,29 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
+								<Field>
+									<FieldLabel>{t('Unit')}</FieldLabel>
+									<FieldRow>
+										<Controller
+											name='unit'
+											control={control}
+											render={({ field: { value, onChange } }) => (
+												<AutoCompleteUnit haveNoUnitSelectedOption value={value} onChange={onChange} />
+											)}
+										/>
+									</FieldRow>
+								</Field>
 							</>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
 							</FieldRow>
 						</Field>
+
 						{requestTagBeforeClosingChat && (
 							<Field>
 								<FieldLabel htmlFor={chatClosingTagsField} required>
@@ -463,6 +395,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							</Field>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
@@ -475,7 +408,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
+
 						<Divider mb={16} />
+
 						<Field>
 							<FieldLabel mb={4}>{t('Agents')}</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
