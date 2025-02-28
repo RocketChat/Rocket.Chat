@@ -28,7 +28,6 @@ import '../app/slashcommands-kick/client';
 import '../app/slashcommands-open/client';
 import '../app/slashcommands-topic/client';
 import '../app/slashcommands-unarchiveroom/client';
-import '../app/tokenpass/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
 import '../app/e2e/client';
