@@ -53,7 +53,6 @@ const removeListenerOfDepartment = (departmentId: ILivechatDepartment['_id']) =>
 const appendListenerToDepartment = (departmentId: ILivechatDepartment['_id']) => {
 	departments.add(departmentId);
 	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], async (args) => {
-		console.log({ departmentId, args });
 		if (!('type' in args)) {
 			return;
 		}
