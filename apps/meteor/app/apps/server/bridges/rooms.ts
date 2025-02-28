@@ -163,13 +163,13 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !(await Rooms.findOneById(room.id))) {
-			throw new Error('A room must exist to update.');
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room, true);
+
+		const updateResult = await Rooms.updateOne({ _id: room.id }, { $set: rm });
+
+		if (!updateResult.matchedCount) {
+			throw new Error('Room id not found');
 		}
-
-		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
 		for await (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
@@ -178,7 +178,7 @@ export class AppRoomBridge extends RoomBridge {
 				continue;
 			}
 
-			await addUserToRoom(rm._id, member);
+			await addUserToRoom(room.id, member);
 		}
 	}
 
