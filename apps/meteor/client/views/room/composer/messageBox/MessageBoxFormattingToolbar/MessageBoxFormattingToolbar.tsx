@@ -12,9 +12,10 @@ type MessageBoxFormattingToolbarProps = {
 	variant?: 'small' | 'large';
 	items: FormattingButton[];
 	disabled: boolean;
+	toggleFormatting: boolean;
 };
 
-const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
+const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled, toggleFormatting }: MessageBoxFormattingToolbarProps) => {
 	const { t } = useTranslation();
 
 	if (variant === 'small') {
@@ -26,14 +27,14 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
 						onClick={() =>
-							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : toggleFormatting ? composer.toggleSelectionWrap(featuredFormatter.pattern) : composer.wrapSelection(featuredFormatter.pattern)
 						}
 						icon={featuredFormatter.icon}
 						title={t(featuredFormatter.label)}
 						disabled={disabled}
 					/>
 				)}
-				<FormattingToolbarDropdown composer={composer} items={collapsedItems} disabled={disabled} />
+				<FormattingToolbarDropdown toggleFormatting={toggleFormatting} composer={composer} items={collapsedItems} disabled={disabled} />
 			</>
 		);
 	}
@@ -55,6 +56,10 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 							}
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
+								return;
+							}
+							if (toggleFormatting) {
+								composer.toggleSelectionWrap(formatter.pattern);
 								return;
 							}
 							composer.wrapSelection(formatter.pattern);
