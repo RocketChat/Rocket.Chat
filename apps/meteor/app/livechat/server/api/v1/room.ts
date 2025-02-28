@@ -27,6 +27,7 @@ import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { closeRoom } from '../../lib/closeRoom';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
+import { createRoom } from '../../lib/rooms';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -82,7 +83,7 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({
+				const newRoom = await createRoom({
 					visitor: guest,
 					roomInfo,
 					agent,

@@ -120,6 +120,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}
 	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
+	console.log({ enabled, canViewOmnichannelQueue, routeConfig, agentAvailable });
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
 
