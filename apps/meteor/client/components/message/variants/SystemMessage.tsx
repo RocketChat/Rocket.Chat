@@ -18,6 +18,7 @@ import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { hasPermission } from '../../../../app/authorization/client';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../hooks/useFormatTime';
@@ -44,6 +45,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
 	const { triggerProps, openUserCard } = useUserCard();
+	const deleteAnyAllowed = hasPermission('delete-message', message.rid);
+	const deleteOwnAllowed = hasPermission('delete-own-message');
+	const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
 
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
@@ -64,7 +68,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
-			isSelected={isSelected}
+			isSelected={isSelected && deleteAllowed}
 			data-qa-selected={isSelected}
 			data-qa='system-message'
 			data-system-message-type={message.t}
@@ -72,7 +76,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		>
 			<MessageSystemLeftContainer>
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+				{isSelecting && deleteAllowed && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
