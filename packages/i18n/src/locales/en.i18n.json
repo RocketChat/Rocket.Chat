@@ -2092,6 +2092,7 @@
   "Premium_License": "Premium License",
   "Premium_License_alert": "If a license is removed the workspace must be restarted to take effect. <br/>If the workspace is connected to the cloud the license should be canceled there first otherwise cloud will provide the license to the workspace again during the restart.",
   "Premium_only": "Premium only",
+  "Please_provide_a_name_for_your_token":"Please provide a name for your token.",
   "Entertainment": "Entertainment",
   "Error": "Error",
   "Error_something_went_wrong": "Oops! Something went wrong. Please reload the page or contact an administrator.",
