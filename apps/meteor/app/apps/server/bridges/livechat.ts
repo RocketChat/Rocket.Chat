@@ -11,8 +11,10 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
+import { updateMessage } from '../../../livechat/server/lib/messages';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -88,7 +90,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		};
 
 		// @ts-expect-error IVisitor vs ILivechatVisitor :(
-		await LivechatTyped.updateMessage(data);
+		await updateMessage(data);
 	}
 
 	protected async createRoom(
@@ -145,7 +147,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor && { visitor }),
 		};
 
-		await LivechatTyped.closeRoom(closeData);
+		await closeRoom(closeData);
 
 		return true;
 	}
