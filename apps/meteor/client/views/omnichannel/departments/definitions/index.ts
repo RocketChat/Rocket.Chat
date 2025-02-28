@@ -23,4 +23,5 @@ export type EditDepartmentFormData = {
 	agentList: IDepartmentAgent[];
 	chatClosingTags: string[];
 	allowReceiveForwardOffline: boolean;
+	unit?: string;
 };
