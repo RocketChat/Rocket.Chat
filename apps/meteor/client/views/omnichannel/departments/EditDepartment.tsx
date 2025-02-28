@@ -198,9 +198,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			} else {
 				await saveDepartmentInfo(id ?? null, payload, agentList);
 			}
-			queryClient.invalidateQueries({
-				queryKey: ['/v1/livechat/department/:_id', id],
-			});
+
+			queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.navigate('/omnichannel/departments');
 		} catch (error) {
@@ -249,6 +248,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<ToggleSwitch id={enabledField} {...register('enabled')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={nameField} required>
 								{t('Name')}
@@ -269,6 +269,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
@@ -280,12 +281,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						<Field data-qa='DepartmentEditToggle-ShowOnRegistrationPage'>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnRegistrationField}>{t('Show_on_registration_page')}</FieldLabel>
 								<ToggleSwitch id={showOnRegistrationField} {...register('showOnRegistration')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={emailField} required>
 								{t('Email')}
@@ -310,12 +313,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnOfflineFormField}>{t('Show_on_offline_page')}</FieldLabel>
 								<ToggleSwitch id={showOnOfflineFormField} {...register('showOnOfflineForm')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={offlineMessageChannelNameField}>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
 							<FieldRow>
@@ -342,6 +347,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						{hasLicense && (
 							<>
 								<Field>
@@ -357,6 +363,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -370,6 +377,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -383,6 +391,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -392,6 +401,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -406,6 +416,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<FieldLabel htmlFor={fallbackForwardDepartmentField}>{t('Fallback_forward_department')}</FieldLabel>
 									<Controller
@@ -430,12 +441,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</Field>
 							</>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
 							</FieldRow>
 						</Field>
+
 						{requestTagBeforeClosingChat && (
 							<Field>
 								<FieldLabel htmlFor={chatClosingTagsField} required>
@@ -463,6 +476,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							</Field>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
@@ -475,7 +489,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
+
 						<Divider mb={16} />
+
 						<Field>
 							<FieldLabel mb={4}>{t('Agents')}</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
