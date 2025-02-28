@@ -11,6 +11,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { sendMessageNotifications } from '../../lib/server/lib/sendNotificationsOnMessage';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -88,6 +89,7 @@ export async function setReaction(
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 
+		await sendMessageNotifications(message, room as IRoom, undefined, reaction);
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
 
 		isReacted = true;
@@ -139,8 +141,8 @@ export async function executeSetReaction(
 	}
 
 	const room = await Rooms.findOneById<
-		Pick<IRoom, '_id' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
-	>(message.rid, { projection: { _id: 1, ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
+		Pick<IRoom, '_id' | 'fname' | 'name' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
+	>(message.rid, { projection: { _id: 1, fname: 1, name: 1,ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
