@@ -1,6 +1,6 @@
 import type { EditDepartmentFormData } from '../definitions';
 
-export const formatDepartmentPayload = (data: EditDepartmentFormData) => {
+export const formatEditDepartmentPayload = (data: EditDepartmentFormData) => {
 	const {
 		enabled,
 		name,
