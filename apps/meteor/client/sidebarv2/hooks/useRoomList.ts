@@ -116,7 +116,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const groups = new Map<string, Set<any>>();
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
-			console.log({ showOmnichannel, inquiries, queue });
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
