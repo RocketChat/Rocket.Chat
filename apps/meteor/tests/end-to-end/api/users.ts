@@ -2006,6 +2006,61 @@ describe('[Users]', () => {
 			await deleteUser(user);
 		});
 
+		describe('email verification', () => {
+			let user: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			beforeEach(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
+			});
+
+			afterEach(async () => {
+				await deleteUser(user);
+			});
+
+			it("should update user's email verified correctly", (done) => {
+				void request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: user._id,
+						data: {
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					})
+					.end(done);
+			});
+
+			it("should update user's email verified even if email is not changed", (done) => {
+				void request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: user._id,
+						data: {
+							email: user.emails[0].address,
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					})
+					.end(done);
+			});
+		});
+
 		function failUpdateUser(name: string) {
 			it(`should not update an user if the new username is the reserved word ${name}`, (done) => {
 				void request
