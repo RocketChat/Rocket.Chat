@@ -7,6 +7,6 @@ export interface ILivechatEventContext {
     room: ILivechatRoom;
 }
 
-export interface ILivechatDepartmentStatusContext {
+export interface ILivechatDepartmentEventContext {
     department: IDepartment;
 }

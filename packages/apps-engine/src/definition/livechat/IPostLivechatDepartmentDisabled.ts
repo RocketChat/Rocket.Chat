@@ -1,6 +1,6 @@
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import { AppMethod } from '../metadata';
-import type { ILivechatDepartmentStatusContext } from './ILivechatEventContext';
+import type { ILivechatDepartmentEventContext } from './ILivechatEventContext';
 
 /**
  * Handler called after the disablement of a livechat department.
@@ -16,7 +16,7 @@ export interface IPostLivechatDepartmentDisabled {
      * @param modify An accessor to the modifier
      */
     [AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_DISABLED](
-        context: ILivechatDepartmentStatusContext,
+        context: ILivechatDepartmentEventContext,
         read: IRead,
         http: IHttp,
         persis: IPersistence,
