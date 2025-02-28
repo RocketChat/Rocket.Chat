@@ -23,7 +23,7 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { getBaseUserFields, getBaseUserFieldsWithTwoFactor } from '../../../utils/server/functions/getBaseUserFields';
+import { getBaseUserFieldsWithTwoFactor } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
