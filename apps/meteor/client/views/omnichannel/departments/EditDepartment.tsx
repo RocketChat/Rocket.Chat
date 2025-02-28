@@ -37,6 +37,7 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
+import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
 
 export type EditDepartmentProps = {
 	id?: string;
@@ -343,6 +344,19 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											/>
 										)}
 									/>
+								</Field>
+
+								<Field>
+									<FieldLabel>{t('Unit')}</FieldLabel>
+									<FieldRow>
+										<Controller
+											name='unit'
+											control={control}
+											render={({ field: { value, onChange } }) => (
+												<AutoCompleteUnit haveNoUnitSelectedOption value={value} onChange={onChange} />
+											)}
+										/>
+									</FieldRow>
 								</Field>
 							</>
 						)}
