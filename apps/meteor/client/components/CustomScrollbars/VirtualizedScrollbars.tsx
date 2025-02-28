@@ -33,14 +33,10 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 			});
 		}
 
-		if (root) {
-			initialize(root);
-		}
-
 		return () => osInstance()?.destroy();
 	}, [initialize, osInstance, ref, scroller]);
 
-	return <BaseScrollbars>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
+	return <BaseScrollbars ref={rootRef}>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
 });
 
 export default memo(VirtualizedScrollbars);
