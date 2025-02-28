@@ -1,4 +1,3 @@
-import '../app/cors/client';
 import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
