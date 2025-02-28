@@ -112,7 +112,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>
 					</Box>
-					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+					<Box role='list' height='100%' overflow='hidden' flexShrink={1}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
