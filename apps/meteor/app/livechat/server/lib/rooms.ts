@@ -1,12 +1,21 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo, SelectedAgent, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
-import { LivechatRooms, LivechatContacts, Messages } from '@rocket.chat/models';
+import { LivechatRooms, LivechatContacts, Messages, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
 import { Visitors } from './Visitors';
 import { getRequiredDepartment } from './departmentsLib';
 import { livechatLogger } from './logger';
 import { callbacks } from '../../../../lib/callbacks';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import {
+	notifyOnLivechatInquiryChangedByRoom,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnRoomChangedById,
+} from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { i18n } from '../../../utils/lib/i18n';
 
 export async function getRoom(
 	guest: ILivechatVisitor,
@@ -101,4 +110,76 @@ export async function createRoom({
 	await Messages.setRoomIdByToken(visitor.token, room._id);
 
 	return room;
+}
+
+export async function saveRoomInfo(
+	roomData: {
+		_id: string;
+		topic?: string;
+		tags?: string[];
+		livechatData?: { [k: string]: string };
+		// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
+		priorityId?: string;
+		slaId?: string;
+	},
+	guestData?: {
+		_id: string;
+		name?: string;
+		email?: string;
+		phone?: string;
+		livechatData?: { [k: string]: string };
+	},
+	userId?: string,
+) {
+	livechatLogger.debug(`Saving room information on room ${roomData._id}`);
+	const { livechatData = {} } = roomData;
+	const customFields: Record<string, string> = {};
+
+	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
+		const fields = LivechatCustomField.findByScope('room');
+		for await (const field of fields) {
+			if (!livechatData.hasOwnProperty(field._id)) {
+				continue;
+			}
+			const value = trim(livechatData[field._id]);
+			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+				const regexp = new RegExp(field.regexp);
+				if (!regexp.test(value)) {
+					throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
+				}
+			}
+			customFields[field._id] = value;
+		}
+		roomData.livechatData = customFields;
+		livechatLogger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
+	}
+
+	await LivechatRooms.saveRoomById(roomData);
+
+	setImmediate(() => {
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+	});
+
+	if (guestData?.name?.trim().length) {
+		const { _id: rid } = roomData;
+		const { name } = guestData;
+
+		const responses = await Promise.all([
+			Rooms.setFnameById(rid, name),
+			LivechatInquiry.setNameByRoomId(rid, name),
+			Subscriptions.updateDisplayNameByRoomId(rid, name),
+		]);
+
+		if (responses[1]?.modifiedCount) {
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+		}
+
+		if (responses[2]?.modifiedCount) {
+			await notifyOnSubscriptionChangedByRoomId(rid);
+		}
+	}
+
+	void notifyOnRoomChangedById(roomData._id);
+
+	return true;
 }
