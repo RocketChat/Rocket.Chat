@@ -87,6 +87,21 @@ const addGlobalListener = () => {
 	return removeGlobalListener;
 };
 
+const removeAgentListener = (userId: IOmnichannelAgent['_id']) => {
+	sdk.stop('livechat-inquiry-queue-observer', `agent/${userId}`);
+};
+
+const addAgentListener = (userId: IOmnichannelAgent['_id']) => {
+	sdk.stream('livechat-inquiry-queue-observer', [`agent/${userId}`], async (args) => {
+		if (!('type' in args)) {
+			return;
+		}
+		const { type, ...inquiry } = args;
+		await events[type](inquiry);
+	});
+	return () => removeAgentListener(userId);
+};
+
 const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	const config = await callWithErrorHandling('livechat:getRoutingConfig');
 	if (config?.autoAssignAgent) {
@@ -95,7 +110,8 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 
 	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 
-	// Register to all depts + public queue always to match the inquiry list returned by backend
+	// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
+	const cleanAgentListener = addAgentListener(userId);
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
 
@@ -108,6 +124,8 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	return () => {
 		LivechatInquiry.remove({});
 		removeGlobalListener();
+		removeAgentListener(userId);
+		cleanAgentListener?.();
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
 		departments.clear();
