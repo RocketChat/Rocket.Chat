@@ -9,7 +9,6 @@ import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/b
 import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import {
 	filterBusinessHoursThatMustBeOpened,
-	filterBusinessHoursThatMustBeOpenedByDay,
 	makeOnlineAgentsAvailable,
 	makeAgentsUnavailableBasedOnBusinessHour,
 } from '../../../../../app/livechat/server/business-hour/Helper';
@@ -240,7 +239,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {
 		const currentTime = moment().utc();
-		const day = currentTime.format('dddd');
 		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
 			projection: {
 				workHours: 1,
@@ -249,7 +247,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 				active: 1,
 			},
 		});
-		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
+		const openedBusinessHours = await filterBusinessHoursThatMustBeOpened(allActiveBusinessHoursForEntireWeek, currentTime);
 		if (!openedBusinessHours.length) {
 			bhLogger.debug({
 				msg: 'Business hour status check failed for agent. No opened business hour found for the current day',
