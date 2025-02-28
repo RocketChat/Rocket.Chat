@@ -23,6 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatDepartmentPayload } from './utils/formatDepartmentPayload';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -144,20 +145,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			const payload = formatDepartmentPayload(data);
 
 			if (id) {
-				const { agentList: initialAgentList } = initialValues;
-
-				const agentListPayload = {
-					upsert: agentList.filter(
-						(agent) =>
-							!initialAgentList.some(
-								(initialAgent) =>
-									initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
-							),
-					),
-					remove: initialAgentList.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
-				};
-
 				await saveDepartmentInfo(id, payload, []);
+
+				const { agentList: initialAgentList } = initialValues;
+				const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
+
 				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
