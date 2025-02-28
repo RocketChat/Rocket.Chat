@@ -1,27 +1,6 @@
-import type { IDepartmentAgent } from '../EditDepartment';
+import type { EditDepartmentFormData } from '../definitions';
 
-export type FormValues = {
-	name: string;
-	email: string;
-	description: string;
-	enabled: boolean;
-	maxNumberSimultaneousChat: number;
-	showOnRegistration: boolean;
-	showOnOfflineForm: boolean;
-	abandonedRoomsCloseCustomMessage: string;
-	requestTagBeforeClosingChat: boolean;
-	offlineMessageChannelName: string;
-	visitorInactivityTimeoutInSeconds: number;
-	waitingQueueMessage: string;
-	departmentsAllowedToForward: { label: string; value: string }[];
-	fallbackForwardDepartment: string;
-	agentList: IDepartmentAgent[];
-	chatClosingTags: string[];
-	allowReceiveForwardOffline: boolean;
-	unit?: string;
-};
-
-export const formatDepartmentPayload = (data: FormValues) => {
+export const formatDepartmentPayload = (data: EditDepartmentFormData) => {
 	const {
 		enabled,
 		name,
@@ -39,7 +18,6 @@ export const formatDepartmentPayload = (data: FormValues) => {
 		fallbackForwardDepartment,
 		allowReceiveForwardOffline,
 		requestTagBeforeClosingChat,
-		unit,
 	} = data;
 
 	return {
@@ -59,6 +37,5 @@ export const formatDepartmentPayload = (data: FormValues) => {
 		departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
 		fallbackForwardDepartment,
 		allowReceiveForwardOffline,
-		departmentUnit: { id: unit },
 	};
 };

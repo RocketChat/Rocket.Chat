@@ -23,6 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatDepartmentPayload } from './utils/formatDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
@@ -49,31 +50,6 @@ export type EditDepartmentProps = {
 	}>;
 };
 
-export type IDepartmentAgent = Pick<ILivechatDepartmentAgents, 'agentId' | 'username' | 'count' | 'order'> & {
-	_id?: string;
-	name?: string;
-};
-
-export type FormValues = {
-	name: string;
-	email: string;
-	description: string;
-	enabled: boolean;
-	maxNumberSimultaneousChat: number;
-	showOnRegistration: boolean;
-	showOnOfflineForm: boolean;
-	abandonedRoomsCloseCustomMessage: string;
-	requestTagBeforeClosingChat: boolean;
-	offlineMessageChannelName: string;
-	visitorInactivityTimeoutInSeconds: number;
-	waitingQueueMessage: string;
-	departmentsAllowedToForward: { label: string; value: string }[];
-	fallbackForwardDepartment: string;
-	agentList: IDepartmentAgent[];
-	chatClosingTags: string[];
-	allowReceiveForwardOffline: boolean;
-};
-
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const router = useRouter();
@@ -91,7 +67,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		handleSubmit,
 		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
-	} = useForm<FormValues>({ mode: 'onChange', defaultValues: initialValues });
+	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
 
 	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
@@ -110,7 +86,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleSave = useEffectEvent(async (data: FormValues) => {
+	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
 		try {
 			const { agentList } = data;
 			const payload = formatDepartmentPayload(data);

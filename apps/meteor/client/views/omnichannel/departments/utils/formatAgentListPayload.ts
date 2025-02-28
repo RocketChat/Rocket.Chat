@@ -1,4 +1,4 @@
-import type { IDepartmentAgent } from '../EditDepartment';
+import type { IDepartmentAgent } from '../definitions';
 
 export const formatAgentListPayload = (oldAgentList: IDepartmentAgent[], newAgentList: IDepartmentAgent[]) => {
 	return {
