@@ -28,6 +28,7 @@ import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceFor
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
+import { markAppRequestAsSeen } from '../marketplace/markAppRequestAsSeen';
 import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -688,33 +689,23 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async post() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-					const headers = getDefaultHeaders();
-
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
 					const { unseenRequests } = this.bodyParams;
-
+					if (!unseenRequests || !Array.isArray(unseenRequests)) {
+						return API.v1.failure('Marketplace_App_Request_MarkAsSeen_Invalid_Request');
+					}
 					try {
-						const request = await fetch(`${baseUrl}/v1/app-request/markAsSeen`, {
-							method: 'POST',
-							headers,
-							body: { ids: unseenRequests },
-						});
-						const result = await request.json();
-
-						if (!request.ok) {
-							throw new Error(result.error);
+						await markAppRequestAsSeen({ appIds: unseenRequests });
+						return API.v1.success({ success: true });
+					} catch (err) {
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure(err.message);
+						}
 
-						return API.v1.failure(e.message);
+						return API.v1.failure({ success: false });
 					}
 				},
 			},
