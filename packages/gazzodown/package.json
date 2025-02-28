@@ -76,8 +76,8 @@
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "0.31.31",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "16.0.0-rc.0",
-		"@rocket.chat/ui-contexts": "16.0.0-rc.0",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"katex": "*",
 		"react": "*"
 	},
