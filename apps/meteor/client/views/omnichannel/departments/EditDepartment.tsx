@@ -25,7 +25,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
-import { formatDepartmentPayload } from './utils/formatDepartmentPayload';
+import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -89,7 +89,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
 		try {
 			const { agentList } = data;
-			const payload = formatDepartmentPayload(data);
+			const payload = formatEditDepartmentPayload(data);
 
 			if (id) {
 				await saveDepartmentInfo(id, payload, []);
