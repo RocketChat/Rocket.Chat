@@ -32,6 +32,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { executeSaveUserProfile } from '../../../../server/methods/saveUserProfile';
 import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
@@ -161,7 +162,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
