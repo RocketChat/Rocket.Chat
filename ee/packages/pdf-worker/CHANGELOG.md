@@ -1,5 +1,16 @@
 # @rocket.chat/pdf-worker
 
+## 0.2.15
+
+### Patch Changes
+
+- ([#35354](https://github.com/RocketChat/Rocket.Chat/pull/35354) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes omnichannel transcript filename breaking download links
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.9
+  </details>
+
 ## 0.2.14
 
 ### Patch Changes
