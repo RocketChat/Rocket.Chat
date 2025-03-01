@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLogout } from '@rocket.chat/ui-contexts';
+import { useLogout, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import UserMenuHeader from '../UserMenuHeader';
@@ -11,6 +11,7 @@ import { useVoipItemsSection } from './useVoipItemsSection';
 
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
@@ -21,6 +22,10 @@ export const useUserMenu = (user: IUser) => {
 		logout();
 	});
 
+	const handleProfileClick = () => {
+		router.navigate('/account/profile');
+	};
+
 	const logoutItem: GenericMenuItemProps = {
 		id: 'logout',
 		icon: 'sign-out',
@@ -30,7 +35,7 @@ export const useUserMenu = (user: IUser) => {
 
 	return [
 		{
-			title: <UserMenuHeader user={user} />,
+			title: <div onClick={handleProfileClick} style={{ cursor: 'pointer' }}><UserMenuHeader user={user} /></div>,
 			items: [],
 		},
 		{
