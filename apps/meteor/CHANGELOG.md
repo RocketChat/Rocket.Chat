@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.3.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Add a retry mechanism to get supported versions from Cloud
+
+- ([#35353](https://github.com/RocketChat/Rocket.Chat/pull/35353) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes omnichannel transcript filename breaking download links
+
+- <details><summary>Updated dependencies [b2d71461a6a73157024e4594cc1228419a34673e]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.3.13
+  - @rocket.chat/pdf-worker@0.2.13
+  - @rocket.chat/core-typings@7.3.3
+  - @rocket.chat/rest-typings@7.3.3
+  - @rocket.chat/license@1.0.7
+  - @rocket.chat/presence@0.2.16
+  - @rocket.chat/api-client@0.2.16
+  - @rocket.chat/apps@0.2.7
+  - @rocket.chat/core-services@0.7.8
+  - @rocket.chat/cron@0.1.16
+  - @rocket.chat/freeswitch@1.2.3
+  - @rocket.chat/fuselage-ui-kit@15.0.3
+  - @rocket.chat/gazzodown@15.0.3
+  - @rocket.chat/model-typings@1.3.3
+  - @rocket.chat/ui-contexts@15.0.3
+  - @rocket.chat/models@1.2.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.8
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@11.0.3
+  - @rocket.chat/ui-client@15.0.3
+  - @rocket.chat/ui-video-conf@15.0.3
+  - @rocket.chat/ui-voip@5.0.3
+  - @rocket.chat/web-ui-registration@15.0.3
+  - @rocket.chat/instance-status@0.1.16
+  </details>
+
 ## 7.3.2
 
 ### Patch Changes
