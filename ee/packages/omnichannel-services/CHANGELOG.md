@@ -1,5 +1,21 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.12
+
+### Patch Changes
+
+- ([#35355](https://github.com/RocketChat/Rocket.Chat/pull/35355) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes omnichannel transcript filename breaking download links
+
+- <details><summary>Updated dependencies [bdfe51c995c89844f6432b1a4da050fa568c4924]:</summary>
+
+  - @rocket.chat/pdf-worker@0.2.12
+  - @rocket.chat/core-typings@7.1.5
+  - @rocket.chat/rest-typings@7.1.5
+  - @rocket.chat/core-services@0.7.7
+  - @rocket.chat/model-typings@1.1.5
+  - @rocket.chat/models@1.0.6
+  </details>
+
 ## 0.3.11
 
 ### Patch Changes

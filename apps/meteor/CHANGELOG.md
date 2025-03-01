@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.1.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35359](https://github.com/RocketChat/Rocket.Chat/pull/35359) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where room's file list would incorrectly display incoming messages as files.
+
+- ([#35355](https://github.com/RocketChat/Rocket.Chat/pull/35355) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes omnichannel transcript filename breaking download links
+
+- <details><summary>Updated dependencies [bdfe51c995c89844f6432b1a4da050fa568c4924]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.3.12
+  - @rocket.chat/pdf-worker@0.2.12
+  - @rocket.chat/core-typings@7.1.5
+  - @rocket.chat/rest-typings@7.1.5
+  - @rocket.chat/license@1.0.6
+  - @rocket.chat/presence@0.2.15
+  - @rocket.chat/api-client@0.2.15
+  - @rocket.chat/apps@0.2.6
+  - @rocket.chat/core-services@0.7.7
+  - @rocket.chat/cron@0.1.15
+  - @rocket.chat/freeswitch@1.0.6
+  - @rocket.chat/fuselage-ui-kit@13.0.5
+  - @rocket.chat/gazzodown@13.0.5
+  - @rocket.chat/model-typings@1.1.5
+  - @rocket.chat/ui-contexts@13.0.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.7
+  - @rocket.chat/models@1.0.6
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/ui-avatar@9.0.5
+  - @rocket.chat/ui-client@13.0.5
+  - @rocket.chat/ui-video-conf@13.0.5
+  - @rocket.chat/ui-voip@3.0.5
+  - @rocket.chat/web-ui-registration@13.0.5
+  - @rocket.chat/instance-status@0.1.15
+  </details>
+
 ## 7.1.4
 
 ### Patch Changes
