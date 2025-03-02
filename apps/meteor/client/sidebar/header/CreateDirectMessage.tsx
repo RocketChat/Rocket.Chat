@@ -20,8 +20,9 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 		control,
 		handleSubmit,
 		formState: { isSubmitting, isValidating, errors },
+		watch,
 	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
-
+	const users= watch('users');
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
 		onSuccess: ({ room: { rid } }) => {
@@ -86,7 +87,7 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} disabled={!users.length} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
