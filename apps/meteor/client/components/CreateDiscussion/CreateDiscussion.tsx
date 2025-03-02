@@ -62,7 +62,8 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	});
 
 	const { encrypted } = watch();
-
+	const parentRoom = watch('parentRoom'); 
+    const name = watch('name');
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
 	const createDiscussionMutation = useMutation({
@@ -245,7 +246,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary loading={createDiscussionMutation.isPending}>
+					<Button type='submit' disabled={!parentRoom || !name} primary loading={createDiscussionMutation.isPending}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

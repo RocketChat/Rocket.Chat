@@ -93,7 +93,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			members: [],
 		},
 	});
-
+	const name = watch('name');
 	const { isPrivate, broadcast, readOnly, encrypted } = watch();
 
 	useEffect(() => {
@@ -305,7 +305,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
+					<Button disabled={!(canCreateTeam && name)} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

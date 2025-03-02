@@ -118,7 +118,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			federated: false,
 		},
 	});
-
+	const name = watch('name');
 	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
@@ -379,7 +379,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
+					<Button type='submit' disabled={!name} primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
