@@ -1,5 +1,6 @@
 import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
+import type Moleculer from 'moleculer';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
@@ -70,82 +71,85 @@ class EJSONSerializer extends Base {
 	}
 }
 
-const network = new ServiceBroker({
-	namespace: MS_NAMESPACE,
-	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
-	transporter: TRANSPORTER,
-	metrics: {
-		enabled: MS_METRICS === 'true',
-		reporter: [
-			{
-				type: 'Prometheus',
-				options: {
-					port: MS_METRICS_PORT,
+export function startBroker(options: Moleculer.BrokerOptions = {}): NetworkBroker {
+	const network = new ServiceBroker({
+		namespace: MS_NAMESPACE,
+		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
+		transporter: TRANSPORTER,
+		metrics: {
+			enabled: MS_METRICS === 'true',
+			reporter: [
+				{
+					type: 'Prometheus',
+					options: {
+						port: MS_METRICS_PORT,
+					},
 				},
-			},
-		],
-	},
-	cacher: CACHE,
-	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
-	logger: {
-		type: 'Pino',
-		options: {
-			level: MOLECULER_LOG_LEVEL,
-			pino: {
-				options: {
-					timestamp: pino.stdTimeFunctions.isoTime,
-					...(process.env.NODE_ENV !== 'production'
-						? {
-								transport: {
-									target: 'pino-pretty',
-									options: {
-										colorize: true,
+			],
+		},
+		cacher: CACHE,
+		serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
+		logger: {
+			type: 'Pino',
+			options: {
+				level: MOLECULER_LOG_LEVEL,
+				pino: {
+					options: {
+						timestamp: pino.stdTimeFunctions.isoTime,
+						...(process.env.NODE_ENV !== 'production'
+							? {
+									transport: {
+										target: 'pino-pretty',
+										options: {
+											colorize: true,
+										},
 									},
-								},
-							}
-						: {}),
+								}
+							: {}),
+					},
 				},
 			},
 		},
-	},
-	registry: {
-		strategy: BALANCE_STRATEGY,
-		preferLocal: BALANCE_PREFER_LOCAL !== 'false',
-	},
+		registry: {
+			strategy: BALANCE_STRATEGY,
+			preferLocal: BALANCE_PREFER_LOCAL !== 'false',
+		},
 
-	requestTimeout: parseInt(REQUEST_TIMEOUT) * 1000,
-	retryPolicy: {
-		enabled: RETRY_ENABLED === 'true',
-		retries: parseInt(RETRY_RETRIES),
-		delay: parseInt(RETRY_DELAY),
-		maxDelay: parseInt(RETRY_MAX_DELAY),
-		factor: parseInt(RETRY_FACTOR),
-		check: (err: any): boolean => err && !!err.retryable,
-	},
+		requestTimeout: parseInt(REQUEST_TIMEOUT) * 1000,
+		retryPolicy: {
+			enabled: RETRY_ENABLED === 'true',
+			retries: parseInt(RETRY_RETRIES),
+			delay: parseInt(RETRY_DELAY),
+			maxDelay: parseInt(RETRY_MAX_DELAY),
+			factor: parseInt(RETRY_FACTOR),
+			check: (err: any): boolean => err && !!err.retryable,
+		},
 
-	maxCallLevel: 100,
-	heartbeatInterval: parseInt(HEARTBEAT_INTERVAL),
-	heartbeatTimeout: parseInt(HEARTBEAT_TIMEOUT),
+		maxCallLevel: 100,
+		heartbeatInterval: parseInt(HEARTBEAT_INTERVAL),
+		heartbeatTimeout: parseInt(HEARTBEAT_TIMEOUT),
 
-	// circuitBreaker: {
-	// 	enabled: false,
-	// 	threshold: 0.5,
-	// 	windowTime: 60,
-	// 	minRequestCount: 20,
-	// 	halfOpenTime: 10 * 1000,
-	// 	check: (err: any): boolean => err && err.code >= 500,
-	// },
+		// circuitBreaker: {
+		// 	enabled: false,
+		// 	threshold: 0.5,
+		// 	windowTime: 60,
+		// 	minRequestCount: 20,
+		// 	halfOpenTime: 10 * 1000,
+		// 	check: (err: any): boolean => err && err.code >= 500,
+		// },
 
-	bulkhead: {
-		enabled: BULKHEAD_ENABLED === 'true',
-		concurrency: parseInt(BULKHEAD_CONCURRENCY),
-		maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
-	},
+		bulkhead: {
+			enabled: BULKHEAD_ENABLED === 'true',
+			concurrency: parseInt(BULKHEAD_CONCURRENCY),
+			maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
+		},
 
-	errorRegenerator: new CustomRegenerator(),
-	started(): void {
-		console.log('NetworkBroker started successfully.');
-	},
-});
+		errorRegenerator: new CustomRegenerator(),
+		started(): void {
+			console.log('NetworkBroker started successfully.');
+		},
+		...options,
+	});
 
-export const broker = new NetworkBroker(network);
+	return new NetworkBroker(network);
+}

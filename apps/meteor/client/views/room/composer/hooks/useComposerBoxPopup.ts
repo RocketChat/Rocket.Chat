@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
@@ -9,7 +9,7 @@ import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
 type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
-			getFilter?: () => unknown;
+			getFilter?: () => string;
 			select?: (s: T) => void;
 	  }
 	| undefined
@@ -19,66 +19,60 @@ type ComposerBoxPopupOptions<T extends { _id: string; sort?: number | undefined 
 
 type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 	| {
-			popup: ComposerPopupOption<T>;
+			option: ComposerPopupOption<T>;
 			items: UseQueryResult<T[]>[];
 			focused: T | undefined;
-			ariaActiveDescendant: string | undefined;
 			select: (item: T) => void;
 			callbackRef: (node: HTMLElement) => void;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
 			suspended: boolean;
 			filter: unknown;
-			clearPopup: () => void;
+			clear: () => void;
 	  }
 	| {
-			popup: undefined;
+			option: undefined;
 			items: undefined;
 			focused: undefined;
-			ariaActiveDescendant: undefined;
 			callbackRef: (node: HTMLElement) => void;
 			select: undefined;
 			commandsRef: ComposerBoxPopupImperativeCommands<T>;
-			suspended: boolean;
+			suspended: undefined;
 			filter: unknown;
-			clearPopup: () => void;
+			clear: () => void;
 	  };
 
 const keys = {
 	TAB: 9,
 	ENTER: 13,
 	ESC: 27,
-	ARROW_LEFT: 37,
 	ARROW_UP: 38,
-	ARROW_RIGHT: 39,
 	ARROW_DOWN: 40,
-};
+} as const;
 
-export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
-	configurations,
-}: {
-	configurations: ComposerBoxPopupOptions<T>[];
-}): ComposerBoxPopupResult<T> => {
-	const [popup, setPopup] = useState<ComposerBoxPopupOptions<T> | undefined>(undefined);
+export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
+	options: ComposerBoxPopupOptions<T>[],
+): ComposerBoxPopupResult<T> => {
+	const [optionIndex, setOptionIndex] = useState<number>(-1);
 	const [focused, setFocused] = useState<T | undefined>(undefined);
-	const [filter, setFilter] = useState<unknown>('');
+	const [filter, setFilter] = useState('');
+
+	const option = options[optionIndex];
 
 	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
 
-	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, popup) as {
+	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, option) as {
 		queries: UseQueryResult<T[]>[];
 		suspended: boolean;
 	};
 
 	const chat = useChat();
 
-	const ariaActiveDescendant = focused ? `popup-item-${focused._id}` : undefined;
-
 	useEffect(() => {
-		if (!popup) {
+		if (!option) {
 			return;
 		}
 
-		if (popup?.preview && suspended) {
+		if (option?.preview && suspended) {
 			setFocused(undefined);
 			return;
 		}
@@ -89,10 +83,10 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
-	}, [items, popup, suspended]);
+	}, [items, option, suspended]);
 
-	const select = useMutableCallback((item: T) => {
-		if (!popup) {
+	const select = useEffectEvent((item: T) => {
+		if (!option) {
 			throw new Error('No popup is open');
 		}
 
@@ -101,33 +95,33 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		} else {
 			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 			const selector =
-				popup.matchSelectorRegex ??
-				(popup.triggerAnywhere ? new RegExp(`(?:^| |\n)(${popup.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${popup.trigger})([^\\s]*$)`));
+				option.matchSelectorRegex ??
+				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 
 			const result = value?.match(selector);
 			if (!result || !value) {
 				return;
 			}
 
-			chat?.composer?.replaceText((popup.prefix ?? popup.trigger ?? '') + popup.getValue(item) + (popup.suffix ?? ''), {
+			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), {
 				start: value.lastIndexOf(result[1] + result[2]),
 				end: chat?.composer?.selection.start,
 			});
 		}
-		setPopup(undefined);
+		setOptionIndex(-1);
 		setFocused(undefined);
 	});
 
-	const setConfigByInput = useMutableCallback((): ComposerBoxPopupOptions<T> | undefined => {
+	const setOptionByInput = useEffectEvent((): ComposerBoxPopupOptions<T> | undefined => {
 		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 
 		if (!value) {
-			setPopup(undefined);
+			setOptionIndex(-1);
 			setFocused(undefined);
 			return;
 		}
 
-		const configuration = configurations.find(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
+		const optionIndex = options.findIndex(({ trigger, matchSelectorRegex, triggerAnywhere, triggerLength }) => {
 			const selector =
 				matchSelectorRegex ?? (triggerAnywhere ? new RegExp(`(?:^| |\n)(${trigger})[^\\s]*$`) : new RegExp(`(?:^)(${trigger})[^\\s]*$`));
 			const result = selector.test(value);
@@ -137,50 +131,49 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			const filter = value.match(selector);
 			return filter && triggerLength < filter[0].length;
 		});
-		setPopup(configuration);
-		if (!configuration) {
+		setOptionIndex(optionIndex);
+		const option = options[optionIndex];
+		if (!option) {
 			setFocused(undefined);
 			setFilter('');
 		}
 
-		if (configuration) {
+		if (option) {
 			const selector =
-				configuration.matchSelectorRegex ??
-				(configuration.triggerAnywhere
-					? new RegExp(`(?:^| |\n)(${configuration.trigger})([^\\s]*$)`)
-					: new RegExp(`(?:^)(${configuration.trigger})([^\\s]*$)`));
+				option.matchSelectorRegex ??
+				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
 			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
 		}
-		return configuration;
+		return option;
 	});
 
-	const onFocus = useMutableCallback(() => {
-		if (popup) {
+	const handleFocus = useEffectEvent(() => {
+		if (option) {
 			return;
 		}
-		setConfigByInput();
+		setOptionByInput();
 	});
 
-	const keyup = useMutableCallback((event: KeyboardEvent) => {
-		if (!setConfigByInput()) {
+	const handleKeyUp = useEffectEvent((event: KeyboardEvent) => {
+		if (!setOptionByInput()) {
 			return;
 		}
 
-		if (!popup) {
+		if (!option) {
 			return;
 		}
 
-		if (popup.closeOnEsc === true && event.which === keys.ESC) {
-			setPopup(undefined);
+		if (option.closeOnEsc === true && event.which === keys.ESC) {
+			setOptionIndex(-1);
 			setFocused(undefined);
 			event.preventDefault();
 			event.stopImmediatePropagation();
 		}
 	});
 
-	const keydown = useMutableCallback((event: KeyboardEvent) => {
-		if (!popup) {
+	const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+		if (!option) {
 			return;
 		}
 
@@ -235,54 +228,59 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		}
 	});
 
-	const clearPopup = useMutableCallback(() => {
-		if (!popup) {
+	const clear = useEffectEvent(() => {
+		if (!option) {
 			return;
 		}
 
-		setPopup(undefined);
+		setOptionIndex(-1);
 		setFocused(undefined);
 		setFilter('');
 	});
 
+	const ref = useRef<HTMLElement | null>(null);
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
+			if (ref.current) {
+				ref.current.removeEventListener('keyup', handleKeyUp);
+				ref.current.removeEventListener('keydown', handleKeyDown);
+				ref.current.removeEventListener('focus', handleFocus);
+				ref.current = null;
 			}
 
-			node.addEventListener('keyup', keyup);
-			node.addEventListener('keydown', keydown);
-			node.addEventListener('focus', onFocus);
+			if (node) {
+				ref.current = node;
+				node.addEventListener('keyup', handleKeyUp);
+				node.addEventListener('keydown', handleKeyDown);
+				node.addEventListener('focus', handleFocus);
+			}
 		},
-		[keyup, keydown, onFocus],
+		[handleKeyUp, handleKeyDown, handleFocus],
 	);
 
-	if (!popup) {
+	if (!option) {
 		return {
-			callbackRef,
-			focused: undefined,
+			option: undefined,
 			items: undefined,
-			ariaActiveDescendant: undefined,
-			popup: undefined,
+			focused: undefined,
 			select: undefined,
-			suspended: true,
+			callbackRef,
 			commandsRef,
+			suspended: undefined,
 			filter: undefined,
-			clearPopup,
+			clear,
 		};
 	}
 
 	return {
-		focused,
+		option,
 		items,
-		ariaActiveDescendant,
-		popup,
+		focused,
 		select,
-		filter,
-		suspended,
-		commandsRef,
 		callbackRef,
-		clearPopup,
+		commandsRef,
+		suspended,
+		filter,
+		clear,
 	};
 };

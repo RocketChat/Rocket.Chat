@@ -13,6 +13,7 @@ import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import { Messages } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
@@ -179,11 +180,16 @@ export class OTRRoom implements IOTRRoom {
 		this._sessionKey = null;
 	}
 
+	deleteOTRMessages(): void {
+		Messages.remove({ t: { $in: ['otr', 'otr-ack', ...Object.values(otrSystemMessages)] }, rid: this._roomId });
+	}
+
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
 		Presence.stop(this.peerId, this.onPresenceEventHook);
+		this.deleteOTRMessages();
 		sdk.publish('notify-user', [
 			`${this.peerId}/otr`,
 			'end',
@@ -435,6 +441,7 @@ export class OTRRoom implements IOTRRoom {
 					if (this.getState() === OtrRoomState.ESTABLISHED) {
 						this.reset();
 						this.setState(OtrRoomState.NOT_STARTED);
+						this.deleteOTRMessages();
 						imperativeModal.open({
 							component: GenericModal,
 							props: {

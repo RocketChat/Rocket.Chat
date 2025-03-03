@@ -1,6 +1,5 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useVoipOutboundStates } from '../../contexts/CallContext';

@@ -4,7 +4,6 @@
     "prefix": "sbmodule",
     "body": [
       "import type { Meta, StoryFn } from '@storybook/react';",
-      "import React from 'react';",
       "",
       "import $1 from './$1';",
       "",

@@ -1,8 +1,10 @@
-import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
-import { broker } from '@rocket.chat/network-broker';
-import { startTracing } from '@rocket.chat/tracing';
+import os from 'os';
 
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
+import { registerServiceModels } from '@rocket.chat/models';
+import { startBroker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 
 (async () => {
 	const { db, client } = await getConnection();
@@ -11,7 +13,11 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 
 	registerServiceModels(db, await getTrashCollection());
 
-	api.setBroker(broker);
+	api.setBroker(
+		startBroker({
+			nodeID: `${os.hostname().toLowerCase()}-${InstanceStatus.id()}`,
+		}),
+	);
 
 	// need to import service after models are registered
 	const { NotificationsModule } = await import('../../../../apps/meteor/server/modules/notifications/notifications.module');

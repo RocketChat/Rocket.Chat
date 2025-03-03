@@ -1,9 +1,8 @@
 import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { FormEventHandler, ReactElement } from 'react';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { FormEvent, FormEventHandler, ReactElement } from 'react';
+import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { getButtonStyle } from './getButtonStyle';
@@ -39,9 +38,9 @@ type ModalBlockParams = {
 	view: UiKit.ModalView;
 	errors: any;
 	appId: string;
-	onSubmit: FormEventHandler<HTMLElement>;
+	onSubmit: (event: FormEvent) => void;
 	onClose: () => void;
-	onCancel: FormEventHandler<HTMLElement>;
+	onCancel: FormEventHandler;
 };
 
 const isFocusable = (element: Element | null): element is HTMLElement =>
@@ -54,7 +53,7 @@ const KeyboardCode = new Map<string, number>([
 ]);
 
 const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockParams): ReactElement => {
-	const id = `modal_id_${useUniqueId()}`;
+	const id = `modal_id_${useId()}`;
 	const ref = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -82,12 +81,15 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 		[previousFocus],
 	);
 
+	const formRef = useRef<HTMLFormElement>(null);
+
 	const handleKeyDown = useCallback(
-		(event) => {
+		(event: KeyboardEvent) => {
 			switch (event.keyCode) {
 				case KeyboardCode.get('ENTER'):
-					if (event?.target?.nodeName !== 'TEXTAREA') {
-						return onSubmit(event);
+					if ((event?.target as Node | null)?.nodeName !== 'TEXTAREA') {
+						formRef.current?.submit();
+						return;
 					}
 					return;
 				case KeyboardCode.get('ESC'):
@@ -123,7 +125,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					}
 			}
 		},
-		[onClose, onSubmit],
+		[onClose],
 	);
 
 	useEffect(() => {
@@ -139,7 +141,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			return false;
 		};
 
-		const ignoreIfNotContains = (e: Event) => {
+		const ignoreIfNotContains = (e: KeyboardEvent) => {
 			if (e.target !== element) {
 				return;
 			}
@@ -147,7 +149,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
-			return handleKeyDown(e);
+			return handleKeyDown(e as KeyboardEvent);
 		};
 
 		document.addEventListener('keydown', ignoreIfNotContains);
@@ -168,7 +170,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 						<Modal.Close tabIndex={-1} onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
-						<Box is='form' method='post' action='#' onSubmit={onSubmit}>
+						<Box ref={formRef} is='form' method='post' action='#' onSubmit={onSubmit}>
 							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
 						</Box>
 					</Modal.Content>

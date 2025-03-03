@@ -1,9 +1,10 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { useMemo, useState } from 'react';
 
 import ChannelsTableRow from './ChannelsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
@@ -81,11 +82,14 @@ const ChannelsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+		queryKey: ['getDirectoryData', query],
+		queryFn: () => getDirectoryData(query),
+	});
 
 	const onClick = useMemo(
-		() => (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (name && (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter')) {
+		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
+			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
 				type === 'c' ? channelRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
@@ -109,7 +113,7 @@ const ChannelsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((room) => (
-								<ChannelsTableRow key={room._id} room={room as unknown as IRoom} onClick={onClick} mediaQuery={mediaQuery} />
+								<ChannelsTableRow key={room._id} room={room as Serialized<IRoom>} onClick={onClick} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

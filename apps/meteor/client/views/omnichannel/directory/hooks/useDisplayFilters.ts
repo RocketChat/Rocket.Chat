@@ -1,6 +1,5 @@
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -18,13 +17,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
-	const { guest, servedBy, status, department, from, to, tags, ...customFields } = filtersQuery;
-
-	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: department });
-	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: servedBy });
-
-	const { data: departmentData } = useQuery(['getDepartmentDataForFilter', department], () => getDepartment({}));
-	const { data: agentData } = useQuery(['getAgentDataForFilter', servedBy], () => getAgent());
+	const { guest, servedBy, status, department, from, to, tags, units, ...customFields } = filtersQuery;
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {
@@ -38,10 +31,15 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
 		to: to !== '' ? `${t('To')}: ${formatDate(to)}` : undefined,
 		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
-		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
-		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
+		servedBy: servedBy.length ? `${t('Served_By')}: ${parseMultiSelect(servedBy)}` : undefined,
+		department: department.length ? `${t('Department')}: ${parseMultiSelect(department)}` : undefined,
 		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status])}` : undefined,
 		tags: tags.length > 0 ? `${t('Tags')}: ${tags.map((tag) => tag.label).join(', ')}` : undefined,
+		units: units?.length ? `${t('Units')}: ${parseMultiSelect(units)}` : undefined,
 		...displayCustomFields,
 	};
+};
+
+const parseMultiSelect = (data: PaginatedMultiSelectOption[]) => {
+	return data.map((a) => (a.label as string).split(' (')[0]).join(', ');
 };

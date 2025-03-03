@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';

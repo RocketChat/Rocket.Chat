@@ -1,7 +1,7 @@
 import { Box, TextInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../GenericModal';
@@ -11,10 +11,11 @@ import { Method } from './TwoFactorModal';
 type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	onDismiss?: () => void;
 	invalidAttempt?: boolean;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
@@ -28,7 +29,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTot
 		setCode(currentTarget.value);
 	};
 
-	const id = useUniqueId();
+	const id = useId();
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
@@ -36,6 +37,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTot
 			confirmText={t('Verify')}
 			title={t('Enter_TOTP_password')}
 			onClose={onClose}
+			onDismiss={onDismiss}
 			variant='warning'
 			confirmDisabled={!code}
 			tagline={t('Two-factor_authentication')}

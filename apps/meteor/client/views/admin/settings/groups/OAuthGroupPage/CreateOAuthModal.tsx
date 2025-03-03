@@ -1,7 +1,5 @@
 import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box, FieldHint } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { useId, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +27,7 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 
 	const { t } = useTranslation();
 
-	const customOAuthNameId = useUniqueId();
+	const customOAuthNameId = useId();
 
 	return (
 		<GenericModal

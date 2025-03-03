@@ -2,7 +2,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
 import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
@@ -11,7 +11,6 @@ const renderModal = (modalElement: ReactElement) => {
 	const {
 		result: { current: setModal },
 	} = renderHook(() => useSetModal(), {
-		legacyRoot: true,
 		wrapper: ({ children }) => (
 			<Suspense fallback={null}>
 				<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
@@ -39,6 +38,20 @@ describe('callbacks', () => {
 		expect(screen.queryByRole('heading', { name: 'Modal' })).not.toBeInTheDocument();
 
 		expect(handleClose).toHaveBeenCalled();
+	});
+
+	it('should call onDismiss and not call onClose', async () => {
+		const onDismiss = jest.fn(() => undefined);
+		const onClose = jest.fn(() => undefined);
+
+		renderModal(<GenericModal title='Modal' onDismiss={onDismiss} onClose={onClose} />);
+
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
+
+		await userEvent.keyboard('{Escape}');
+
+		expect(onDismiss).toHaveBeenCalled();
+		expect(onClose).not.toHaveBeenCalled();
 	});
 
 	it('should NOT call onClose callback when confirmed', async () => {

@@ -1,6 +1,6 @@
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
@@ -11,37 +11,37 @@ import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '..
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleAnnouncementsOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
 
-const workspaceCommPayloadSchema = v.object({
-	workspaceId: v.string().required(),
-	publicKey: v.string(),
-	nps: v.object({
-		id: v.string().required(),
-		startAt: v.string().format('date-time').required(),
-		expireAt: v.string().format('date-time').required(),
-	}),
-	announcements: v.object({
-		create: v.array(
-			v.object({
-				_id: v.string().required(),
-				_updatedAt: v.string().format('date-time').required(),
-				selector: v.object({
-					roles: v.array(v.string()),
+const workspaceCommPayloadSchema = z.object({
+	workspaceId: z.string().optional(),
+	publicKey: z.string().optional(),
+	nps: z
+		.object({
+			id: z.string(),
+			startAt: z.string().datetime(),
+			expireAt: z.string().datetime(),
+		})
+		.optional(),
+	announcements: z.object({
+		create: z.array(
+			z.object({
+				_id: z.string(),
+				_updatedAt: z.string().datetime().optional(),
+				selector: z.object({
+					roles: z.array(z.string()),
 				}),
-				platform: v.array(v.string().enum('web', 'mobile')).required(),
-				expireAt: v.string().format('date-time').required(),
-				startAt: v.string().format('date-time').required(),
-				createdBy: v.string().enum('cloud', 'system').required(),
-				createdAt: v.string().format('date-time').required(),
-				dictionary: v.object({}).additional(v.object({}).additional(v.string())),
-				view: v.any(),
-				surface: v.string().enum('banner', 'modal').required(),
+				platform: z.array(z.enum(['web', 'mobile'])),
+				expireAt: z.string().datetime(),
+				startAt: z.string().datetime(),
+				createdBy: z.enum(['cloud', 'system']),
+				createdAt: z.string().datetime(),
+				dictionary: z.record(z.record(z.string())).optional(),
+				view: z.unknown(),
+				surface: z.enum(['banner', 'modal']),
 			}),
 		),
-		delete: v.array(v.string()),
+		delete: z.array(z.string()).optional(),
 	}),
 });
-
-const assertWorkspaceCommPayload = compile(workspaceCommPayloadSchema);
 
 const fetchCloudAnnouncementsSync = async ({
 	token,
@@ -70,7 +70,12 @@ const fetchCloudAnnouncementsSync = async ({
 
 	const payload = await response.json();
 
-	assertWorkspaceCommPayload(payload);
+	const assertWorkspaceCommPayload = workspaceCommPayloadSchema.safeParse(payload);
+
+	if (!assertWorkspaceCommPayload.success) {
+		SystemLogger.error({ msg: 'workspaceCommPayloadSchema failed type validation', errors: assertWorkspaceCommPayload.error.errors });
+	}
+
 	return payload;
 };
 

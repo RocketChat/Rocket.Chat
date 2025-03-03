@@ -1,11 +1,9 @@
 import type { IUser, IRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import type { CloseRoomParams } from '../../../livechat/server/lib/localTypes';
-import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 export const closeLivechatRoom = async (
 	user: IUser,
@@ -15,6 +13,7 @@ export const closeLivechatRoom = async (
 		tags,
 		generateTranscriptPdf,
 		transcriptEmail,
+		forceClose = false,
 	}: {
 		comment?: string;
 		tags?: string[];
@@ -27,23 +26,12 @@ export const closeLivechatRoom = async (
 					sendToVisitor: true;
 					requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
 			  };
+		forceClose?: boolean;
 	},
 ): Promise<void> => {
 	const room = await LivechatRooms.findOneById(roomId);
-	if (!room || !isOmnichannelRoom(room)) {
+	if (!room) {
 		throw new Error('error-invalid-room');
-	}
-
-	if (!room.open) {
-		const { deletedCount } = await Subscriptions.removeByRoomId(roomId, {
-			async onTrash(doc) {
-				void notifyOnSubscriptionChanged(doc, 'removed');
-			},
-		});
-		if (deletedCount) {
-			return;
-		}
-		throw new Error('error-room-already-closed');
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
@@ -76,7 +64,21 @@ export const closeLivechatRoom = async (
 		}),
 	};
 
-	await Livechat.closeRoom({
+	if (forceClose) {
+		return closeRoom({
+			room,
+			user,
+			options,
+			comment,
+			forceClose,
+		});
+	}
+
+	if (!room.open) {
+		throw new Error('error-room-already-closed');
+	}
+
+	return closeRoom({
 		room,
 		user,
 		options,

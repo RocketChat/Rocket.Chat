@@ -15,7 +15,6 @@ import {
 	Accordion,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	useEndpoint,
 	usePermission,
@@ -25,7 +24,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useEffect, useMemo } from 'react';
+import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -147,14 +146,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 	};
 
-	const createTeamFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createTeamFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal

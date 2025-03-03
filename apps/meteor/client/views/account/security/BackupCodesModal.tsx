@@ -1,43 +1,33 @@
-import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { Box, CodeSnippet } from '@rocket.chat/fuselage';
+import { useClipboard } from '@rocket.chat/fuselage-hooks';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import TextCopy from '../../../components/TextCopy';
+import GenericModal from '../../../components/GenericModal';
 
 type BackupCodesModalProps = {
 	codes: string[];
 	onClose: () => void;
 };
 
-const BackupCodesModal = ({ codes, onClose, ...props }: BackupCodesModalProps) => {
+const BackupCodesModal = ({ codes, onClose }: BackupCodesModalProps) => {
 	const { t } = useTranslation();
 
 	const codesText = useMemo(() => codes.join(' '), [codes]);
+	const { copy, hasCopied } = useClipboard(codesText);
 
 	return (
-		<Modal {...props}>
-			<Modal.Header>
-				<Modal.Icon name='info' />
-				<Modal.Title>{t('Backup_codes')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
-				<Box mb={8} withRichContent>
-					{t('Make_sure_you_have_a_copy_of_your_codes_1')}
-				</Box>
-				<TextCopy text={codesText} mb={8} />
-				<Box mb={8} withRichContent>
-					{t('Make_sure_you_have_a_copy_of_your_codes_2')}
-				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
-					<Button primary onClick={onClose}>
-						{t('Ok')}
-					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
-		</Modal>
+		<GenericModal title={t('Backup_codes')} onCancel={onClose} cancelText={t('Close')}>
+			<Box mb={8} withRichContent>
+				{t('Make_sure_you_have_a_copy_of_your_codes_1')}
+			</Box>
+			<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()} mbs={8}>
+				{codesText}
+			</CodeSnippet>
+			<Box mb={8} withRichContent>
+				{t('Make_sure_you_have_a_copy_of_your_codes_2')}
+			</Box>
+		</GenericModal>
 	);
 };
 

@@ -8,8 +8,8 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type AgentsListOptions = {
 	text: string;
-	haveAll: boolean;
-	haveNoAgentsSelectedOption: boolean;
+	haveAll?: boolean;
+	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
@@ -37,7 +37,7 @@ export const useAgentsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { users: agents, total } = await getAgents({
 				...(text && { text }),
 				...(excludeId && { excludeId }),

@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, type IRoom, type ISubscription, type IUser, type RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -27,6 +27,7 @@ import { Meteor } from 'meteor/meteor';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { addAllUserToRoomFn } from '../../../../server/methods/addAllUserToRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -35,6 +36,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -96,7 +98,7 @@ API.v1.addRoute(
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params, userId: this.userId });
 
-			await Meteor.callAsync('addAllUserToRoom', findResult._id, activeUsersOnly);
+			await addAllUserToRoomFn(this.userId, findResult._id, activeUsersOnly === 'true' || activeUsersOnly === 1);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -162,10 +164,11 @@ API.v1.addRoute(
 
 			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const result = await Meteor.callAsync('getChannelHistory', {
+			const result = await getChannelHistory({
 				rid: findResult._id,
+				fromUserId: this.userId,
 				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest && new Date(oldest),
+				oldest: oldest ? new Date(oldest) : undefined,
 				inclusive: inclusive === 'true',
 				offset,
 				count,
@@ -174,7 +177,7 @@ API.v1.addRoute(
 			});
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -299,12 +302,16 @@ API.v1.addRoute(
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 			};
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			// Special check for the permissions
 			if (
 				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
@@ -450,6 +457,10 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			const moderators = (
 				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
 					projection: { u: 1 },
@@ -499,7 +510,7 @@ API.v1.addRoute(
 			}
 
 			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const room = await findChannelByIdOrName({
@@ -613,7 +624,7 @@ API.v1.addRoute(
 
 			if (userId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = userId;
 			}
@@ -751,7 +762,7 @@ API.v1.addRoute(
 				});
 			} catch (e: any) {
 				if (e.message === 'unauthorized') {
-					error = API.v1.unauthorized();
+					error = API.v1.forbidden();
 				} else {
 					error = API.v1.failure(e.message);
 				}
@@ -801,7 +812,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -856,6 +867,10 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			let includeAllPublicChannels = true;
 			if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
 				includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
@@ -901,12 +916,18 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			const findResult = await findChannelByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+				userId: this.userId,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			return API.v1.success({
-				channel: await findChannelByIdOrName({
-					params: this.queryParams,
-					checkedArchived: false,
-					userId: this.userId,
-				}),
+				channel: findResult,
 			});
 		},
 	},
@@ -1055,8 +1076,12 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
@@ -1413,7 +1438,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.anonymousread',
-	{ authRequired: false },
+	{ authOrAnonRequired: true },
 	{
 		async get() {
 			const findResult = await findChannelByIdOrName({
@@ -1429,6 +1454,16 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
 					method: 'channels.anonymousread',
 				});
+			}
+
+			// Public rooms of private teams should be accessible only by team members
+			if (findResult.teamId) {
+				const team = await Team.getOneById(findResult.teamId);
+				if (team?.type === TEAM_TYPE.PRIVATE) {
+					if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+						return API.v1.notFound('Room not found');
+					}
+				}
 			}
 
 			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {

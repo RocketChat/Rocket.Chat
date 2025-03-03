@@ -1,13 +1,13 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
-import AutoCompleteDepartment from '../../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartmentMultiple from '../../../../components/AutoCompleteDepartmentMultiple';
+import AutoCompleteMultipleAgent from '../../../../components/AutoCompleteMultipleAgent';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -16,6 +16,8 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import AutoCompleteUnits from '../../../../omnichannel/additionalForms/AutoCompleteUnits';
 import { CurrentChatTags } from '../../additionalForms';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 import { useChatsContext } from '../contexts/ChatsContext';
@@ -28,13 +30,13 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const { t } = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
+	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data } = useQuery(['livechat/custom-fields'], async () => allCustomFields());
+	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
-	const queryClient = useQueryClient();
 
 	const { handleSubmit, control, reset } = useForm<ChatsFiltersQuery>({
 		values: filtersQuery,
@@ -48,15 +50,14 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 		['queued', t('Queued')],
 	];
 
-	const handleSubmitFilters = (data: ChatsFiltersQuery) => {
-		setFiltersQuery(({ guest }) => ({ ...data, guest }));
-		queryClient.invalidateQueries(['current-chats']);
-	};
+	const handleSubmitFilters = (data: ChatsFiltersQuery) => setFiltersQuery(({ guest }) => ({ ...data, guest }));
 
 	const handleResetFilters = () => {
 		resetFiltersQuery();
 		reset();
 	};
+
+	const formId = useUniqueId();
 
 	return (
 		<>
@@ -65,7 +66,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 				<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
+			<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSubmitFilters)}>
 				<Field>
 					<FieldLabel>{t('From')}</FieldLabel>
 					<FieldRow>
@@ -93,7 +94,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							<Controller
 								name='servedBy'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteAgent haveAll value={value} onChange={onChange} />}
+								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent value={value} onChange={onChange} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -113,7 +114,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							name='department'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartment haveAll showArchived value={value} onChange={onChange} onlyMyDepartments />
+								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments withCheckbox={false} />
 							)}
 						/>
 					</FieldRow>
@@ -128,6 +129,18 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 						/>
 					</FieldRow>
 				</Field>
+				{isEnterprise && (
+					<Field>
+						<FieldLabel>{t('Units')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='units'
+								control={control}
+								render={({ field: { value, onChange } }) => <AutoCompleteUnits value={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+					</Field>
+				)}
 				{canViewCustomFields &&
 					contactCustomFields?.map((customField) => {
 						if (customField.type === 'select') {
@@ -170,7 +183,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button onClick={handleSubmit(handleSubmitFilters)} primary>
+					<Button type='submit' form={formId} primary>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>

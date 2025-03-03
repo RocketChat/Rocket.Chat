@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
 	get userProfileMenu(): Locator {
@@ -68,6 +68,10 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
+	get accountPreferencesOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
+	}
+
 	// TODO: refactor getSidebarItemByName to not use data-qa
 	getSidebarItemByName(name: string, isRead?: boolean): Locator {
 		return this.page.locator(
@@ -79,14 +83,14 @@ export class HomeSidenav {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
+		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
 	}
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.locator(`li[value="${priority}"]`).click();
+		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {

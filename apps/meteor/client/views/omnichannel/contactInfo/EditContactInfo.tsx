@@ -1,10 +1,9 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -76,10 +75,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
+	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
 
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
-	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
 		enabled: canViewCustomFields,
 	});
@@ -118,21 +118,47 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { emails, phones } = watch();
 
 	const validateEmailFormat = async (emailValue: string) => {
+		if (!emails) {
+			return true;
+		}
+
 		const currentEmails = emails.map(({ address }) => address);
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
 
 		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
 
-		return !isDuplicated ? true : t('Email_already_exists');
+		if (currentEmails.filter((email) => email === emailValue).length > 1) {
+			return t('Email_already_exists');
+		}
+
+		const initialEmails = initialValue.emails.map(({ address }) => address);
+
+		if (!initialEmails.includes(emailValue) && (await checkExistenceEndpoint({ email: emailValue })).exists) {
+			return t('Email_already_exists');
+		}
+
+		return true;
 	};
 
 	const validatePhone = async (phoneValue: string) => {
-		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
-		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
+		if (!phones) {
+			return true;
+		}
 
-		return !isDuplicated ? true : t('Phone_already_exists');
+		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (currentPhones.filter((phone) => phone === phoneValue).length > 1) {
+			return t('Phone_already_exists');
+		}
+
+		const initialPhones = initialValue.phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (!initialPhones.includes(phoneValue) && (await checkExistenceEndpoint({ phone: phoneValue })).exists) {
+			return t('Phone_already_exists');
+		}
+
+		return true;
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
@@ -155,10 +181,10 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		return createContact.mutate(payload);
 	};
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const emailField = useUniqueId();
-	const phoneField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const emailField = useId();
+	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
 		return (

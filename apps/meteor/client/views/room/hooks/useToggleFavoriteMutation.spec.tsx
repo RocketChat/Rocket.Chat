@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import React from 'react';
 
 import { useToggleFavoriteMutation } from './useToggleFavoriteMutation';
 import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
@@ -10,7 +9,6 @@ it('should work', async () => {
 	const endpointHandler = jest.fn(() => null);
 
 	const { result } = renderHook(() => useToggleFavoriteMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/rooms.favorite', endpointHandler).build(),
 	});
 
@@ -28,7 +26,6 @@ it('should invalidate any subscription queries', async () => {
 	jest.spyOn(queryClient, 'invalidateQueries');
 
 	const { result } = renderHook(() => useToggleFavoriteMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('POST', '/v1/rooms.favorite', async () => null)
 			.wrap((children) => <QueryClientProvider client={queryClient} children={children} />)
@@ -39,5 +36,5 @@ it('should invalidate any subscription queries', async () => {
 
 	await waitFor(() => expect(result.current.status).toBe('success'));
 
-	expect(queryClient.invalidateQueries).toHaveBeenCalledWith(subscriptionsQueryKeys.subscription('general'));
+	expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: subscriptionsQueryKeys.subscription('general') });
 });

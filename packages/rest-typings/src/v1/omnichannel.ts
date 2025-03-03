@@ -2402,6 +2402,7 @@ type POSTLivechatRoomCloseByUserParams = {
 	comment?: string;
 	tags?: string[];
 	generateTranscriptPdf?: boolean;
+	forceClose?: boolean;
 	transcriptEmail?:
 		| {
 				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
@@ -2456,6 +2457,9 @@ const POSTLivechatRoomCloseByUserParamsSchema = {
 			},
 			required: ['sendToVisitor'],
 			additionalProperties: false,
+		},
+		forceClose: {
+			type: 'boolean',
 		},
 	},
 	required: ['rid'],
@@ -2817,11 +2821,13 @@ export type GETLivechatRoomsParams = PaginatedRequest<{
 	closedAt?: string;
 	agents?: string[];
 	roomName?: string;
-	departmentId?: string;
+	// TODO: support only arrays on next major
+	departmentId?: string | string[];
 	open?: string | boolean;
 	onhold?: string | boolean;
 	queued?: string | boolean;
 	tags?: string[];
+	units?: string[];
 }>;
 
 const GETLivechatRoomsParamsSchema = {
@@ -2871,8 +2877,7 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		departmentId: {
-			type: 'string',
-			nullable: true,
+			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
 		},
 		open: {
 			anyOf: [
@@ -2898,6 +2903,12 @@ const GETLivechatRoomsParamsSchema = {
 				type: 'string',
 			},
 			nullable: true,
+		},
+		units: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
 		},
 	},
 	additionalProperties: false,

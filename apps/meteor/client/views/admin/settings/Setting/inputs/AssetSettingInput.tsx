@@ -3,7 +3,6 @@ import { Box, Button, Field, FieldLabel, FieldRow, Icon, Palette } from '@rocket
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
-import React from 'react';
 
 import './AssetSettingInput.styles.css';
 import type { SettingInputProps } from './types';

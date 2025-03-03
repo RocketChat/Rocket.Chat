@@ -16,6 +16,7 @@ import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
+import { getOmniChatSortQuery } from '../../../../../app/livechat/lib/inquiries';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -37,7 +38,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
 		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
 		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
+			return Number(maxNumberSimultaneousChat);
 		}
 	}
 
@@ -45,7 +46,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
+			return Number(maxNumberSimultaneousChat);
 		}
 	}
 
@@ -123,7 +124,7 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({
 		department,
-		queueSortBy: getInquirySortMechanismSetting(),
+		queueSortBy: getOmniChatSortQuery(getInquirySortMechanismSetting()),
 	});
 
 	if (!queue.length) {
@@ -262,7 +263,7 @@ export const getLivechatQueueInfo = async (room?: IOmnichannelRoom) => {
 	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 		inquiryId: _id,
 		department,
-		queueSortBy: getInquirySortMechanismSetting(),
+		queueSortBy: getOmniChatSortQuery(getInquirySortMechanismSetting()),
 	});
 
 	if (!inq) {

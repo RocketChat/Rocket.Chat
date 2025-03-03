@@ -8,45 +8,43 @@
 
 rocketchat:ddp
 rocketchat:mongo-config
-rocketchat:restivus
 rocketchat:livechat
 rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base@3.0.3
+accounts-base@3.0.4
 accounts-facebook@1.3.4
 accounts-github@1.5.1
 accounts-google@1.4.1
 accounts-meteor-developer@1.5.1
-accounts-oauth@1.4.5
-accounts-password@3.0.2
+accounts-oauth@1.4.6
+accounts-password@3.0.3
 accounts-twitter@1.5.2
 
 google-oauth@1.4.5
-oauth@3.0.0
+oauth@3.0.1
 oauth2@1.3.3
 
 check@1.4.4
 ddp-rate-limiter@1.2.2
 rate-limit@1.1.2
-email@3.1.0
+email@3.1.2
 
 meteor-base@1.5.2
 ddp-common@1.4.4
-webapp@2.0.3
+webapp@2.0.5
 
-mongo@2.0.2
+mongo@2.1.0
 
 reload@1.3.2
 service-configuration@1.3.5
 session@1.2.2
-shell-server@0.6.0
+shell-server@0.6.1
 
 dispatch:run-as-user
 ostrio:cookies
 
-kadira:flow-router
 
 meteorhacks:inject-initial
 
@@ -59,11 +57,11 @@ tracker@1.3.4
 reactive-dict@1.3.2
 reactive-var@1.0.13
 
-babel-compiler@7.11.1
+babel-compiler@7.11.3
 standard-minifier-css@1.9.3
 dynamic-import@0.7.4
-ecmascript@0.16.9
-typescript@5.4.3
+ecmascript@0.16.10
+typescript@5.6.3
 
 autoupdate@2.0.0
 
@@ -71,3 +69,4 @@ autoupdate@2.0.0
 
 zodern:types
 zodern:standard-minifier-js
+ostrio:flow-router-extra

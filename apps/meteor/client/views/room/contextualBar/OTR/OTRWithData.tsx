@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import OTRComponent from './OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';

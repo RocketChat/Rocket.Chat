@@ -2,8 +2,10 @@ import { ServiceStarter } from '@rocket.chat/core-services';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
+import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
@@ -24,8 +26,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	private running = false;
-
-	private queues: (string | undefined)[] = [];
 
 	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
@@ -75,17 +75,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	private async getActiveQueues() {
-		// undefined = public queue(without department)
-		return ([undefined] as typeof this.queues).concat(await LivechatInquiry.getDistinctQueuedDepartments({}));
-	}
-
-	private async nextQueue() {
-		if (!this.queues.length) {
-			queueLogger.debug('No more registered queues. Refreshing');
-			this.queues = await this.getActiveQueues();
-		}
-
-		return this.queues.shift();
+		return (await LivechatInquiry.getDistinctQueuedDepartments({})).map(({ _id }) => _id);
 	}
 
 	private async execute() {
@@ -100,19 +90,23 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			return;
 		}
 
-		const queue = await this.nextQueue();
-		const queueDelayTimeout = this.delay();
-		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
-
-		void this.checkQueue(queue).catch((e) => {
-			queueLogger.error(e);
-		});
+		// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
+		// And we get tracing :)
+		const queues = await this.getActiveQueues();
+		for await (const queue of queues) {
+			await tracerSpan(
+				'omnichannel.queue',
+				{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
+				() => this.checkQueue(queue),
+			);
+		}
+		this.scheduleExecution();
 	}
 
-	private async checkQueue(queue: string | undefined) {
+	private async checkQueue(queue: string | null) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getOmniChatSortQuery(getInquirySortMechanismSetting()), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;
@@ -121,12 +115,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
-				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
-				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
-				// preventing us from playing with the same inquiry over and over again
 				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
-				const updatedQueue = await LivechatInquiry.unlockAndQueue(nextInquiry._id);
-				return updatedQueue;
+				return await LivechatInquiry.unlock(nextInquiry._id);
 			}
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
@@ -143,8 +133,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				queue: queue || 'Public',
 				err: e,
 			});
-		} finally {
-			this.scheduleExecution();
 		}
 	}
 
@@ -216,7 +204,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return true;
 	}
 
-	private async processWaitingQueue(department: string | undefined, inquiry: InquiryWithAgentInfo) {
+	private async processWaitingQueue(department: string | null, inquiry: InquiryWithAgentInfo) {
 		const queue = department || 'Public';
 
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
