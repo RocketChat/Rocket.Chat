@@ -63,7 +63,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 		const { permissions } = app.getInfo();
 
 		// If the app does not have any permissions we must assume it has a set of default permissions
-		// so, for being cautious, we will not allow it to read any setting.
+		// so, for being cautious, we will not allow it to read all settings.
 		// If one desires to read a hidden setting it must ask explicitly for it.
 		if (!permissions) {
 			const setting = await Settings.findOneNotHiddenById(id);
