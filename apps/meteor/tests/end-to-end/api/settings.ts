@@ -273,4 +273,70 @@ describe('[Settings]', () => {
 				.end(done);
 		});
 	});
+
+	describe('/audit.settings', () => {
+		it('should return list of settings changed (no filters)', async () => {
+			void request
+				.get(api('audit.settings'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+				});
+		});
+
+		it('should return list of settings between date ranges', async () => {
+			void request
+				.get(api('audit.settings'))
+				.query({ start: '2025/01/01', end: '2025/01/31' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+				});
+		});
+
+		it('should return list of settings changed filtered by an actor', async () => {
+			void request
+				.get(api('audit.settings'))
+				.query({ actor: { type: 'user' } })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+				});
+		});
+
+		it('should return list of changes of an specific setting', async () => {
+			void request
+				.get(api('audit.settings'))
+				.query({ settingId: 'Site_Url' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+				});
+		});
+
+		it('should return list of changes of an specific setting filtered by an actor between date ranges', async () => {
+			void request
+				.get(api('audit.settings'))
+				.query({ actor: { type: 'user' }, start: '2025/01/01', end: '2025/01/31' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+				});
+		});
+	});
 });
