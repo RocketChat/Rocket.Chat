@@ -13,6 +13,7 @@ import { AppAccessors, AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { require } from '../../lib/require.ts';
 import createRoom from '../../lib/roomFactory.ts';
 import { Room } from "../../lib/room.ts";
+import { Buffer } from 'node:buffer';
 
 const { AppsEngineException } = require('@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js') as {
     AppsEngineException: typeof _AppsEngineException;
@@ -70,6 +71,8 @@ export function parseArgs(deps: { AppAccessorsInstance: AppAccessors }, evtMetho
         (context as Record<string, unknown>).room = createRoom((context as Record<string, unknown>).room as IRoom, AppAccessorsInstance.getSenderFn());
     } else if (evtMethod.includes('PreRoom')) {
         context = createRoom(context as IRoom, AppAccessorsInstance.getSenderFn());
+    } else if (evtMethod.includes('Upload')) {
+        (context as Record<string, unknown>).content = Buffer.from((context as { content: Uint8Array }).content);
     }
 
     const args: unknown[] = [context, AppAccessorsInstance.getReader(), AppAccessorsInstance.getHttp()];
