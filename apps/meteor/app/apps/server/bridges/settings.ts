@@ -61,9 +61,18 @@ export class AppSettingBridge extends ServerSettingBridge {
 		}
 
 		const { permissions } = app.getInfo();
+
+		// If the app does not have any permissions we must assume it has a set of default permissions
+		// so, for being cautious, we will not allow it to read any setting.
+		// If one desires to read a hidden setting it must ask explicitly for it.
 		if (!permissions) {
-			this.orch.debugLog(`The app ${appId} has no configured permissions.`);
-			return null;
+			const setting = await Settings.findOneNotHiddenById(id);
+			if (!setting) {
+				this.orch.debugLog(`The setting ${id} is not found.`);
+				return null;
+			}
+
+			return this.orch.getConverters()?.get('settings').convertToApp(setting);
 		}
 
 		const readSettingsPermission = permissions.find((perm) => perm.name === 'server-setting.read');
