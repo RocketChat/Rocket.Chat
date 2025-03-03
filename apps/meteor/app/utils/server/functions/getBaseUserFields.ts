@@ -32,9 +32,3 @@ export const getBaseUserFields = (): UserFields => ({
 	'extension': 1,
 	'openBusinessHours': 1,
 });
-
-export const getBaseUserFieldsWithTwoFactor = (): UserFields => ({
-	...getBaseUserFields(),
-	'services.totp.enabled': 1,
-	'services.email2fa.enabled': 1,
-});
