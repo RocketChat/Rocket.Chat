@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/gazzodown@16.0.0-rc.3
   </details>
 
@@ -36,6 +35,15 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/gazzodown@16.0.0-rc.0
+  </details>
+
+## 1.22.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@15.0.3
   </details>
 
 ## 1.22.2

@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.7.8-rc.3
   </details>
 
@@ -36,6 +35,14 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/core-services@0.7.6-rc.0
+  </details>
+
+## 0.1.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-services@0.7.8
   </details>
 
 ## 0.1.7

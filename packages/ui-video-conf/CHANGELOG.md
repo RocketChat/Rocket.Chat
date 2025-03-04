@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@16.0.0-rc.3
   - @rocket.chat/ui-avatar@12.0.0-rc.3
   </details>
@@ -42,6 +41,16 @@
 
   - @rocket.chat/ui-contexts@16.0.0-rc.0
   - @rocket.chat/ui-avatar@12.0.0-rc.0
+  </details>
+
+## 15.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.3
+  - @rocket.chat/ui-avatar@11.0.3
   </details>
 
 ## 15.0.2

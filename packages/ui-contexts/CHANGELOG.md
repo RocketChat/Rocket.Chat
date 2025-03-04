@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.3
   - @rocket.chat/rest-typings@7.4.0-rc.3
   - @rocket.chat/ddp-client@0.3.16-rc.3
@@ -43,6 +42,17 @@
   - @rocket.chat/rest-typings@7.4.0-rc.0
   - @rocket.chat/core-typings@7.4.0-rc.0
   - @rocket.chat/ddp-client@0.3.14-rc.0
+  </details>
+
+## 15.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.3
+  - @rocket.chat/rest-typings@7.3.3
+  - @rocket.chat/ddp-client@0.3.16
   </details>
 
 ## 15.0.2
