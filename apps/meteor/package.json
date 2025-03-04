@@ -215,6 +215,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.758.0",
+		"@aws-sdk/s3-request-presigner": "^3.758.0",
 		"@babel/runtime": "~7.26.0",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",

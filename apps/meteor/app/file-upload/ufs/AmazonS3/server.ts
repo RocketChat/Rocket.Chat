@@ -1,6 +1,8 @@
 import stream from 'stream';
+import type { ReadableStream } from 'stream/web';
 
-import { S3 } from '@aws-sdk/client-s3';
+import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
@@ -31,6 +33,8 @@ export type S3Options = StoreOptions & {
 class AmazonS3Store extends UploadFS.Store {
 	protected getPath: (file: IUpload) => string;
 
+	private bucketName: string;
+
 	constructor(options: S3Options) {
 		// Default options
 		// options.secretAccessKey,
@@ -49,6 +53,8 @@ class AmazonS3Store extends UploadFS.Store {
 		);
 
 		super(options);
+
+		this.bucketName = options.connection.params.Bucket;
 
 		const classOptions = options;
 
@@ -74,13 +80,13 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			const params = {
+			const getObject = new GetObjectCommand({
 				Key: this.getPath(file),
-				Expires: classOptions.URLExpiryTimeSpan,
+				Bucket: this.bucketName,
 				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
-			};
+			});
 
-			return s3.getSignedUrlPromise('getObject', params);
+			return getSignedUrl(s3, getObject, { expiresIn: classOptions.URLExpiryTimeSpan });
 		};
 
 		/**
@@ -121,7 +127,7 @@ class AmazonS3Store extends UploadFS.Store {
 			};
 
 			try {
-				return s3.deleteObject(params).promise();
+				return s3.deleteObject(params);
 			} catch (err: any) {
 				SystemLogger.error(err);
 			}
@@ -148,7 +154,12 @@ class AmazonS3Store extends UploadFS.Store {
 				params.Range = `${options.start} - ${options.end}`;
 			}
 
-			return s3.getObject(params).createReadStream();
+			const { Body: body } = await s3.getObject(params);
+			if (!body) {
+				throw new Error('failed to get object from s3');
+			}
+
+			return stream.Readable.fromWeb(body.transformToWebStream() as ReadableStream);
 		};
 
 		/**
