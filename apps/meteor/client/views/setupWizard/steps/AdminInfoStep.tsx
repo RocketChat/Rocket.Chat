@@ -34,7 +34,7 @@ const AdminInfoStep = (): ReactElement => {
 	return (
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
 			<AdminInfoPage
-				validatePassword={(password): boolean => password.length > 0}
+				validatePassword={(password) => password.length > 0}
 				passwordRulesHint=''
 				validateUsername={validateUsername}
 				validateEmail={validateEmail}

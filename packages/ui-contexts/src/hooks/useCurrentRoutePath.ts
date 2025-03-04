@@ -1,5 +1,4 @@
-import { useCallback, useContext } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useContext, useSyncExternalStore } from 'react';
 
 import { RouterContext } from '../RouterContext';
 

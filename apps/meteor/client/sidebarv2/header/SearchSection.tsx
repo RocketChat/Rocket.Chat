@@ -1,10 +1,9 @@
-import { useFocusManager } from '@react-aria/focus';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, TextInput, Palette, SidebarV2Section, IconButton } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FocusScope } from 'react-aria';
+import { FocusScope, useFocusManager } from 'react-aria';
 import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';
 
@@ -95,7 +94,7 @@ const SearchSection = () => {
 			'Shift+$mod+K': (event) => {
 				event.preventDefault();
 				setRecentButtonPressed(true);
-				focusManager.focusNext({ accept: (node) => isRecentButton(node) });
+				focusManager?.focusNext({ accept: (node) => isRecentButton(node) });
 			},
 			'Escape': (event) => {
 				event.preventDefault();

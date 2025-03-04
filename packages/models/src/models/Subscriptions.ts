@@ -1319,6 +1319,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
+			'open': true,
 		};
 
 		const update: UpdateFilter<ISubscription> = {

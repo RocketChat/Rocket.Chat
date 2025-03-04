@@ -7,7 +7,6 @@ import type { RoomToolboxActionConfig } from '../../../contexts/RoomToolboxConte
 describe('useRoomToolboxActions', () => {
 	it('should return an empty array if there are no actions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: [], openTab: () => undefined }), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 		expect(result.current.featuredActions).toEqual([]);
@@ -17,7 +16,6 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return apps actions only inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: appsActions, openTab: () => undefined }), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 		const appsSection = result.current.hiddenActions[0];
@@ -30,7 +28,6 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return max of 6 items on visibleActions and the rest items inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 		expect(result.current.hiddenActions.length).toBeGreaterThan(0);
@@ -39,7 +36,6 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return featured items inside featuredActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));

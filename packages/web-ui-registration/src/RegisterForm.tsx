@@ -12,12 +12,11 @@ import {
 	TextAreaInput,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -45,14 +44,14 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
 
-	const formLabelId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
-	const nameId = useUniqueId();
-	const emailId = useUniqueId();
-	const usernameId = useUniqueId();
-	const passwordId = useUniqueId();
-	const passwordConfirmationId = useUniqueId();
-	const reasonId = useUniqueId();
+	const formLabelId = useId();
+	const passwordVerifierId = useId();
+	const nameId = useId();
+	const emailId = useId();
+	const usernameId = useId();
+	const passwordId = useId();
+	const passwordConfirmationId = useId();
+	const reasonId = useId();
 
 	const registerUser = useRegisterMethod();
 	const customFields = useAccountsCustomFields();

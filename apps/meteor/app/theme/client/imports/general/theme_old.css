@@ -25,20 +25,8 @@
 	color: var(--primary-font-color);
 }
 
-.color-primary-action-color {
-	color: var(--primary-action-color);
-}
-
 .secondary-font-color {
 	color: var(--secondary-font-color);
-}
-
-.background-component-color {
-	background-color: var(--component-color);
-}
-
-.upload-progress-progress {
-	background-color: var(--success-background);
 }
 
 input,

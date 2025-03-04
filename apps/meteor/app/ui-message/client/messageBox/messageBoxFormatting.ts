@@ -1,5 +1,6 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { flushSync } from 'react-dom';
 
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -72,9 +73,14 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 			};
 
 			const onConfirm = (url: string, text: string) => {
-				onClose();
-				composerApi.replaceText(`[${text}](${url})`, selection);
-				composerApi.setCursorToEnd();
+				// Composer API can't handle the selection of the text while the modal is open
+				flushSync(() => {
+					onClose();
+				});
+				flushSync(() => {
+					composerApi.replaceText(`[${text}](${url})`, selection);
+					composerApi.setCursorToEnd();
+				});
 			};
 
 			imperativeModal.open({ component: AddLinkComposerActionModal, props: { onConfirm, selectedText, onClose } });

@@ -1,11 +1,12 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, IUser } from '@rocket.chat/core-typings';
 import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedResponsesProps } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { removeCannedResponse } from '../../canned-responses/server/methods/removeCannedResponse';
+import { saveCannedResponse } from '../../canned-responses/server/methods/saveCannedResponse';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -89,18 +90,22 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { _id, shortcut, text, scope, departmentId, tags } = this.bodyParams;
-			await Meteor.callAsync('saveCannedResponse', _id, {
-				shortcut,
-				text,
-				scope,
-				...(tags && { tags }),
-				...(departmentId && { departmentId }),
-			});
+			await saveCannedResponse(
+				this.userId,
+				{
+					shortcut,
+					text,
+					scope,
+					...(tags && { tags }),
+					...(departmentId && { departmentId }),
+				},
+				_id,
+			);
 			return API.v1.success();
 		},
 		async delete() {
 			const { _id } = this.bodyParams;
-			await Meteor.callAsync('removeCannedResponse', _id);
+			await removeCannedResponse(this.userId, _id);
 			return API.v1.success();
 		},
 	},

@@ -11,6 +11,7 @@ export interface IAuthorization {
 	hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean>;
 	hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean>;
 	canAccessRoom: RoomAccessValidator;
+	canReadRoom: RoomAccessValidator;
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;
 	getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]>;
 }

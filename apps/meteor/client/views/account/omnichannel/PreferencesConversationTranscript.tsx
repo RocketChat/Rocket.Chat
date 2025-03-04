@@ -1,6 +1,6 @@
 import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -17,8 +17,8 @@ const PreferencesConversationTranscript = () => {
 	const canSendTranscriptEmail = canSendTranscriptEmailPermission && !alwaysSendEmailTranscript;
 	const cantSendTranscriptPDF = !canSendTranscriptPDF || !hasLicense;
 
-	const omnichannelTranscriptPDF = useUniqueId();
-	const omnichannelTranscriptEmail = useUniqueId();
+	const omnichannelTranscriptPDF = useId();
+	const omnichannelTranscriptEmail = useId();
 
 	return (
 		<AccordionItem defaultExpanded title={t('Conversational_transcript')}>

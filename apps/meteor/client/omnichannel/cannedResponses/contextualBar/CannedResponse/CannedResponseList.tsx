@@ -27,7 +27,7 @@ type CannedResponseListProps = {
 	loading: boolean;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLOrSVGElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;

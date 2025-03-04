@@ -14,9 +14,9 @@ import {
 	FieldRow,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -84,12 +84,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		});
 	};
 
-	const parentRoomId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const discussionNameId = useUniqueId();
-	const membersId = useUniqueId();
-	const firstMessageId = useUniqueId();
-	const topicId = useUniqueId();
+	const parentRoomId = useId();
+	const encryptedId = useId();
+	const discussionNameId = useId();
+	const membersId = useId();
+	const firstMessageId = useId();
+	const topicId = useId();
 
 	return (
 		<Modal

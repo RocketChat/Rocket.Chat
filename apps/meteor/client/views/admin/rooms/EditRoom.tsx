@@ -13,8 +13,9 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -120,19 +121,19 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
-	const formId = useUniqueId();
-	const roomNameField = useUniqueId();
-	const ownerField = useUniqueId();
-	const roomDescription = useUniqueId();
-	const roomAnnouncement = useUniqueId();
-	const roomTopicField = useUniqueId();
-	const roomTypeField = useUniqueId();
-	const readOnlyField = useUniqueId();
-	const reactWhenReadOnly = useUniqueId();
-	const archivedField = useUniqueId();
-	const isDefaultField = useUniqueId();
-	const favoriteField = useUniqueId();
-	const featuredField = useUniqueId();
+	const formId = useId();
+	const roomNameField = useId();
+	const ownerField = useId();
+	const roomDescription = useId();
+	const roomAnnouncement = useId();
+	const roomTopicField = useId();
+	const roomTypeField = useId();
+	const readOnlyField = useId();
+	const reactWhenReadOnly = useId();
+	const archivedField = useId();
+	const isDefaultField = useId();
+	const favoriteField = useId();
+	const featuredField = useId();
 
 	return (
 		<>

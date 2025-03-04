@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../../settings/server';
 import {
 	findDepartments,
 	findDepartmentById,
@@ -88,6 +89,22 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'livechat/department/isDepartmentCreationAvailable',
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
+		},
+	},
+	{
+		async get() {
+			const available = await isDepartmentCreationAvailable();
+			return API.v1.success({ isDepartmentCreationAvailable: available });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'livechat/department/:_id',
 	{
 		authRequired: true,
@@ -147,6 +164,12 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
+
+			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
+
+			if (!isRemoveEnabled) {
+				return API.v1.failure('error-department-removal-disabled');
+			}
 
 			await removeDepartment(this.urlParams._id);
 
@@ -303,21 +326,6 @@ API.v1.addRoute(
 					fields,
 				}),
 			);
-		},
-	},
-);
-API.v1.addRoute(
-	'livechat/department/isDepartmentCreationAvailable',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			GET: { permissions: ['view-livechat-departments', 'manage-livechat-departments'], operation: 'hasAny' },
-		},
-	},
-	{
-		async get() {
-			const available = await isDepartmentCreationAvailable();
-			return API.v1.success({ isDepartmentCreationAvailable: available });
 		},
 	},
 );

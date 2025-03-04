@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { api, credentials, request } from './api-data';
+import { api, credentials, methodCall, request } from './api-data';
 import { password } from './user';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
@@ -100,3 +100,29 @@ export const setUserStatus = (overrideCredentials = credentials, status = UserSt
 		message: '',
 		status,
 	});
+
+export const setUserAway = (overrideCredentials = credentials) =>
+	request
+		.post(methodCall('UserPresence:away'))
+		.set(overrideCredentials)
+		.send({
+			message: JSON.stringify({
+				method: 'UserPresence:away',
+				params: [],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+
+export const setUserOnline = (overrideCredentials = credentials) =>
+	request
+		.post(methodCall('UserPresence:online'))
+		.set(overrideCredentials)
+		.send({
+			message: JSON.stringify({
+				method: 'UserPresence:online',
+				params: [],
+				id: 'id',
+				msg: 'method',
+			}),
+		});

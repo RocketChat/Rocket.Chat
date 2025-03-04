@@ -433,7 +433,7 @@ class LivechatClass {
 
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
 		if (agent?.agentId) {
-			return Users.checkOnlineAgents(agent.agentId);
+			return Users.checkOnlineAgents(agent.agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		}
 
 		if (department) {
@@ -452,7 +452,7 @@ class LivechatClass {
 			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
 		}
 
-		return Users.checkOnlineAgents();
+		return Users.checkOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	}
 
 	async removeRoom(rid: string) {

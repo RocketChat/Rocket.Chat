@@ -20,7 +20,7 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertAppRoom(room) {
+	async convertAppRoom(room, isPartial = false) {
 		if (!room) {
 			return undefined;
 		}
@@ -68,17 +68,44 @@ export class AppRoomsConverter {
 
 		let closedBy;
 		if (room.closedBy) {
-			const user = await Users.findOneById(room.closedBy.id);
-			closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
+			if (room.closer === 'user') {
+				const user = await Users.findOneById(room.closedBy.id);
+				closedBy = {
+					_id: user._id,
+					username: user.username,
+				};
+			} else if (room.closer === 'visitor') {
+				closedBy = {
+					_id: v._id,
+					username: v.username,
+				};
+			}
 		}
 
 		let contactId;
 		if (room.contact?._id) {
 			const contact = await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } });
 			contactId = contact._id;
+		}
+
+		let _default;
+		if (typeof room.isDefault !== 'undefined') {
+			_default = room.isDefault;
+		}
+
+		let ro;
+		if (typeof room.isReadOnly !== 'undefined') {
+			ro = room.isReadOnly;
+		}
+
+		let sysMes;
+		if (typeof room.displaySystemMessages !== 'undefined') {
+			sysMes = room.displaySystemMessages;
+		}
+
+		let msgs;
+		if (typeof room.messageCount !== 'undefined') {
+			msgs = room.messageCount;
 		}
 
 		const newRoom = {
@@ -88,17 +115,17 @@ export class AppRoomsConverter {
 			t: room.type,
 			u,
 			v,
+			ro,
+			sysMes,
+			msgs,
 			departmentId,
 			servedBy,
 			closedBy,
 			members: room.members,
 			uids: room.userIds,
-			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
-			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
-			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
+			default: _default,
 			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
 			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
-			msgs: room.messageCount || 0,
 			ts: room.createdAt,
 			_updatedAt: room.updatedAt,
 			closedAt: room.closedAt,
@@ -115,7 +142,17 @@ export class AppRoomsConverter {
 			}),
 		};
 
-		return Object.assign(newRoom, room._unmappedProperties_);
+		if (isPartial) {
+			Object.entries(newRoom).forEach(([key, value]) => {
+				if (typeof value === 'undefined') {
+					delete newRoom[key];
+				}
+			});
+		} else {
+			Object.assign(newRoom, room._unmappedProperties_);
+		}
+
+		return newRoom;
 	}
 
 	async convertRoom(originalRoom) {
@@ -238,6 +275,7 @@ export class AppRoomsConverter {
 				if (originalRoom.closer === 'user') {
 					return this.orch.getConverters().get('users').convertById(closedBy._id);
 				}
+
 				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
 			servedBy: async (room) => {

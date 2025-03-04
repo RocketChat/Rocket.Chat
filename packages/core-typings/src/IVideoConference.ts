@@ -4,6 +4,27 @@ import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 import type { AtLeast } from './utils';
 
+export type DirectCallParams = {
+	uid: IUser['_id'];
+	rid: IRoom['_id'];
+	callId: string;
+};
+
+export type DirectCallData = DirectCallParams & {
+	dismissed: boolean;
+};
+
+export type ProviderCapabilities = {
+	mic?: boolean;
+	cam?: boolean;
+	title?: boolean;
+};
+
+export type CallPreferences = {
+	mic?: boolean;
+	cam?: boolean;
+};
+
 export enum VideoConferenceStatus {
 	CALLING = 0,
 	STARTED = 1,

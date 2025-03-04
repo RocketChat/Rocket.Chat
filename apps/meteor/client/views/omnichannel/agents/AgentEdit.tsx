@@ -15,10 +15,10 @@ import {
 	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
@@ -127,13 +127,13 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const usernameField = useUniqueId();
-	const emailField = useUniqueId();
-	const departmentsField = useUniqueId();
-	const statusField = useUniqueId();
-	const voipExtensionField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const usernameField = useId();
+	const emailField = useId();
+	const departmentsField = useId();
+	const statusField = useId();
+	const voipExtensionField = useId();
 
 	return (
 		<Contextualbar data-qa-id='agent-edit-contextual-bar'>

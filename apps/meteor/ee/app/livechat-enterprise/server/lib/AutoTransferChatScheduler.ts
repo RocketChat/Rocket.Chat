@@ -13,7 +13,7 @@ import { settings } from '../../../../../app/settings/server';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
-class AutoTransferChatSchedulerClass {
+export class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
 
 	running: boolean;

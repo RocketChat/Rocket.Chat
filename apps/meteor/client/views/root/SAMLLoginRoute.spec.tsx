@@ -30,7 +30,6 @@ it('should redirect to /home', async () => {
 				</RouterContextMock>
 			</MockedUserContext>
 		</MockedServerContext>,
-		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(1);
@@ -45,7 +44,6 @@ it('should redirect to /home when userId is null and the stored invite token is 
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
-		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(1);
@@ -60,7 +58,6 @@ it('should redirect to the invite page with the stored invite token when it is v
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
-		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(1);
@@ -74,7 +71,6 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
-		{ legacyRoot: true },
 	);
 
 	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
@@ -88,7 +84,6 @@ it('should call loginWithSamlToken with the token when it is present', async () 
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedUserContext>,
-		{ legacyRoot: true },
 	);
 
 	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);

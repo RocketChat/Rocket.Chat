@@ -9,7 +9,6 @@ import {
 	SidebarV2ItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
@@ -52,14 +51,12 @@ const Extended = ({
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-	const isReduceMotionEnabled = usePrefersReducedMotion();
 
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setMenuVisibility,
-	};
+	const handleFocus = () => setMenuVisibility(true);
+	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props}>
+		<SidebarV2Item href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
@@ -72,7 +69,7 @@ const Extended = ({
 					{badges && badges}
 					{actions && actions}
 					{menu && (
-						<SidebarV2ItemMenu {...handleMenuEvent}>
+						<SidebarV2ItemMenu>
 							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 						</SidebarV2ItemMenu>
 					)}

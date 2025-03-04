@@ -1,9 +1,8 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { memo, useCallback } from 'react';
+import { useId, memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import CannedResponseForm from './components/CannedResponseForm';
@@ -56,6 +55,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 			try {
 				await saveCannedResponse({
 					...data,
+					_id: cannedResponseData?._id ?? data._id,
 					...(departmentId && { departmentId }),
 				});
 				dispatchToastMessage({
@@ -72,7 +72,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 		},
 		[cannedResponseData?._id, queryClient, saveCannedResponse, dispatchToastMessage, t, router],
 	);
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page>

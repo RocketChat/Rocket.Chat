@@ -10,12 +10,13 @@ import {
 	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
 	VideoConfPopupHeader,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 
 type OutgoingPopupProps = {
 	id: string;

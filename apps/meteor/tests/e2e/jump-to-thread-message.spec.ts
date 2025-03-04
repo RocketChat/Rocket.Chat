@@ -47,7 +47,7 @@ test.describe.serial('Threads', () => {
 		const messageLink = `/channel/${targetChannel.name}?msg=${mainMessage._id}`;
 		await page.goto(messageLink);
 
-		const message = await page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
+		const message = page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
 
 		await expect(message).toBeVisible();
 		await expect(message).toBeInViewport();

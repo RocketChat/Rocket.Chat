@@ -1,5 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
-import type { Response } from 'meteor/rocketchat:restivus';
+import type { Response } from 'express';
 import semver from 'semver';
 
 import { metrics } from '../../../metrics/server';

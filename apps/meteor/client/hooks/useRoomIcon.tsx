@@ -7,7 +7,7 @@ import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const useRoomIcon = (
 	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u'>,
-): ReactElement | ComponentProps<typeof Icon> | null => {
+): ComponentProps<typeof Icon> | ReactElement | null => {
 	if (isRoomFederated(room)) {
 		return { name: 'globe' };
 	}

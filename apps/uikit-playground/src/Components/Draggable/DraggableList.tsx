@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import type { OnDragEndResponder } from 'react-beautiful-dnd';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import type { OnDragEndResponder } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 
 import DraggableListItem from './DraggableListItem';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';

@@ -30,7 +30,6 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
-import { Settings } from '../index';
 import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -1262,7 +1261,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}: {
 		agents?: string[];
 		roomName?: string;
-		departmentId?: string;
+		departmentId?: string | string[];
 		open?: boolean;
 		served?: boolean;
 		createdAt?: { start?: Date; end?: Date };
@@ -1281,7 +1280,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
 			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
-			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(departmentId && departmentId !== 'undefined' && { departmentId: { $in: ([] as string[]).concat(departmentId) } }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
@@ -1907,10 +1906,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	async updateRoomCount() {
-		return Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
-	}
-
 	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2484,15 +2479,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getVisitorActiveForPeriodUpdateQuery(period: string, updater: Updater<IOmnichannelRoom> = this.getUpdater()): Updater<IOmnichannelRoom> {
 		return updater.addToSet('v.activity', period);
-	}
-
-	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
-		const query = {
-			_id: rid,
-		};
-		const updater = this.getVisitorActiveForPeriodUpdateQuery(period);
-
-		return this.updateOne(query, updater.getUpdateFilter());
 	}
 
 	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {

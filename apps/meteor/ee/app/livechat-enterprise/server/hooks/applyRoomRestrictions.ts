@@ -6,29 +6,42 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../lib/units';
 
-export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
+export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelRoom> = {}, unitsFilter?: string[]) => {
 	const query = { ...originalQuery };
 
-	const units = await getUnitsFromUser();
-	if (!Array.isArray(units)) {
+	let userUnits = await getUnitsFromUser();
+	if (!Array.isArray(userUnits)) {
+		if (Array.isArray(unitsFilter) && unitsFilter.length) {
+			return { ...query, departmentAncestors: { $in: unitsFilter } };
+		}
 		return query;
 	}
-	const departments = await LivechatDepartment.find({ ancestors: { $in: units } }, { projection: { _id: 1 } }).toArray();
+
+	if (Array.isArray(unitsFilter) && unitsFilter.length) {
+		const userUnit = new Set([...userUnits]);
+		const filteredUnits = new Set(unitsFilter);
+
+		// IF user is trying to filter by a unit he doens't have access to, apply empty filter (no matches)
+		userUnits = [...userUnit.intersection(filteredUnits)];
+	}
+	// TODO: units is meant to include units and departments, however, here were only using them as units
+	// We have to change the filter to something like { $or: [{ ancestors: {$in: units }}, {_id: {$in: units}}] }
+	const departments = await LivechatDepartment.find({ ancestors: { $in: userUnits } }, { projection: { _id: 1 } }).toArray();
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [{ departmentAncestors: { $in: units } }, { departmentId: { $in: departments.map(({ _id }) => _id) } }],
+		$or: [{ departmentAncestors: { $in: userUnits } }, { departmentId: { $in: departments.map(({ _id }) => _id) } }],
 	};
 	query.$and = [condition, ...expressions];
 
-	cbLogger.debug({ msg: 'Applying room query restrictions', units });
+	cbLogger.debug({ msg: 'Applying room query restrictions', userUnits });
 	return query;
 };
 
 callbacks.add(
 	'livechat.applyRoomRestrictions',
-	async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
-		return restrictQuery(originalQuery);
+	async (originalQuery: FilterOperators<IOmnichannelRoom> = {}, unitsFilter?: string[]) => {
+		return restrictQuery(originalQuery, unitsFilter);
 	},
 	callbacks.priority.HIGH,
 	'livechat-apply-room-restrictions',

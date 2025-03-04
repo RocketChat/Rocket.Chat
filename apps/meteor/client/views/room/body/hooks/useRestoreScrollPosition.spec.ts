@@ -8,6 +8,8 @@ jest.mock('../../../../lib/RoomManager', () => ({
 	RoomManager: {
 		getStore: jest.fn(),
 	},
+	useOpenedRoom: jest.fn(() => 'room-id'),
+	useSecondLevelOpenedRoom: jest.fn(() => 'room-id'),
 }));
 
 describe('useRestoreScrollPosition', () => {
@@ -21,7 +23,7 @@ describe('useRestoreScrollPosition', () => {
 
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
 
-		const { unmount } = renderHook(() => useRestoreScrollPosition('room-id'), { legacyRoot: true });
+		const { unmount } = renderHook(() => useRestoreScrollPosition());
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
 		expect(mockElement).toHaveProperty('scrollTop', 100);
@@ -42,7 +44,7 @@ describe('useRestoreScrollPosition', () => {
 
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
 
-		const { unmount } = renderHook(() => useRestoreScrollPosition('room-id'), { legacyRoot: true });
+		const { unmount } = renderHook(() => useRestoreScrollPosition());
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
 		expect(mockElement).toHaveProperty('scrollTop', 800);
@@ -71,7 +73,7 @@ describe('useRestoreScrollPosition', () => {
 
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
 
-		const { unmount } = renderHook(() => useRestoreScrollPosition('room-id'), { legacyRoot: true });
+		const { unmount } = renderHook(() => useRestoreScrollPosition());
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
 		expect(update).toHaveBeenCalledWith({ scroll: 500, atBottom: false });
