@@ -1,5 +1,40 @@
 # @rocket.chat/meteor
 
+## 7.4.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.5
+  - @rocket.chat/rest-typings@7.4.0-rc.5
+  - @rocket.chat/license@1.0.8-rc.5
+  - @rocket.chat/omnichannel-services@0.3.14-rc.5
+  - @rocket.chat/pdf-worker@0.2.14-rc.5
+  - @rocket.chat/presence@0.2.17-rc.5
+  - @rocket.chat/api-client@0.2.17-rc.5
+  - @rocket.chat/apps@0.3.0-rc.5
+  - @rocket.chat/core-services@0.7.9-rc.5
+  - @rocket.chat/cron@0.1.17-rc.5
+  - @rocket.chat/freeswitch@1.2.4-rc.5
+  - @rocket.chat/fuselage-ui-kit@16.0.0-rc.5
+  - @rocket.chat/gazzodown@16.0.0-rc.5
+  - @rocket.chat/model-typings@1.4.0-rc.5
+  - @rocket.chat/ui-contexts@16.0.0-rc.5
+  - @rocket.chat/models@1.3.0-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.9-rc.5
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@12.0.0-rc.5
+  - @rocket.chat/ui-client@16.0.0-rc.5
+  - @rocket.chat/ui-video-conf@16.0.0-rc.5
+  - @rocket.chat/ui-voip@6.0.0-rc.5
+  - @rocket.chat/web-ui-registration@16.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.17-rc.5
+  </details>
+
 ## 7.4.0-rc.4
 
 ### Patch Changes
