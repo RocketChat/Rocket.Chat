@@ -81,7 +81,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const {
 		handleSubmit,
 		reset,
-		formState: { isDirty, isSubmitting, isSubmitted },
+		formState: { isDirty, isSubmitting },
 	} = methods;
 
 	return (
@@ -125,7 +125,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
 					{installed && isAdminUser && (
-						<Button primary loading={isSubmitting || isSubmitted} onClick={handleSubmit(saveAppSettings)}>
+						<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 							{t('Save_changes')}
 						</Button>
 					)}
