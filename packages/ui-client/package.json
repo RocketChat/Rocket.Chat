@@ -61,8 +61,8 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "12.0.0-rc.0",
-		"@rocket.chat/ui-contexts": "16.0.0-rc.0",
+		"@rocket.chat/ui-avatar": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"react": "*",
 		"react-i18next": "*"
 	},

@@ -67,9 +67,9 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-avatar": "12.0.0-rc.0",
-		"@rocket.chat/ui-client": "16.0.0-rc.0",
-		"@rocket.chat/ui-contexts": "16.0.0-rc.0",
+		"@rocket.chat/ui-avatar": "workspace:^",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"react": "~17.0.2",
 		"react-aria": "~3.23.1",
 		"react-dom": "^17.0.2"
