@@ -44,6 +44,10 @@ interface IListenerExecutor {
         args: [IMessage];
         result: IMessage;
     };
+    [AppInterface.IPostSystemMessageSent]: {
+        args: [IMessage];
+        result: void;
+    };
     [AppInterface.IPostMessageSent]: {
         args: [IMessage];
         result: void;
@@ -338,6 +342,9 @@ export class AppListenerManager {
             case AppInterface.IPostMessageSent:
                 this.executePostMessageSent(data as IMessage);
                 return;
+            case AppInterface.IPostSystemMessageSent:
+                this.executePostSystemMessageSent(data as IMessage);
+                return;
             case AppInterface.IPreMessageDeletePrevent:
                 return this.executePreMessageDeletePrevent(data as IMessage);
             case AppInterface.IPostMessageDeleted:
@@ -557,6 +564,13 @@ export class AppListenerManager {
             if (continueOn) {
                 await app.call(AppMethod.EXECUTEPOSTMESSAGESENT, data);
             }
+        }
+    }
+
+    private async executePostSystemMessageSent(data: IMessage): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostSystemMessageSent)) {
+            const app = this.manager.getOneById(appId);
+            await app.call(AppMethod.EXECUTEPOSTSYSTEMMESSAGESENT, data);
         }
     }
 

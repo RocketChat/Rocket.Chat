@@ -1,11 +1,12 @@
 import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
+import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './lib/units';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +15,7 @@ declare module '@rocket.chat/rest-typings' {
 			GET: (params: { unitId: string }) => { monitors: ILivechatUnitMonitor[] };
 		};
 		'/v1/livechat/units': {
-			GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
+			GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
 			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
@@ -46,13 +47,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
+	{ authRequired: true, permissionsRequired: { POST: ['manage-livechat-units'], GET: [] } },
 	{
 		async get() {
 			const params = this.queryParams;
 			const { offset, count } = await getPaginationItems(params);
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
+
+			if (!(await hasPermissionAsync(this.userId, 'manage-livechat-units'))) {
+				return API.v1.success(await findUnitsOfUser({ text, userId: this.userId, pagination: { offset, count, sort } }));
+			}
 
 			return API.v1.success(
 				await findUnits({

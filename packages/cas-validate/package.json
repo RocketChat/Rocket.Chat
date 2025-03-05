@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/cas-validate",
 	"description": "Fork of https://github.com/kcbanner/node-cas",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
@@ -11,7 +11,8 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"testunit": "jest"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -19,6 +20,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"cheerio": "1.0.0"
+		"cheerio": "1.0.0",
+		"jest": "^29.7.0"
 	}
 }

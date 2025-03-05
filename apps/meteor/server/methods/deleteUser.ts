@@ -38,7 +38,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const adminCount = await Users.col.countDocuments({ roles: 'admin' });
+		const adminCount = await Users.countDocuments({ roles: 'admin' });
 
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
