@@ -30,4 +30,5 @@ export const getFormInitialValues = ({ department, agents, allowedToForwardData 
 	chatClosingTags: department?.chatClosingTags ?? [],
 	agentList: agents || [],
 	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
+	unit: withDefault(department?.ancestors?.[0], ''), // NOTE: A department should only have one ancestor
 });

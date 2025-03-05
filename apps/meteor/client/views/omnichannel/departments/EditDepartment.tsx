@@ -18,7 +18,7 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -82,7 +82,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
 
-	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
+	const createDepartment = useEndpoint('POST', '/v1/livechat/department');
+	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
 	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:_id/agents`, { _id: id || '' });
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -91,9 +92,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		try {
 			const { agentList } = data;
 			const payload = formatEditDepartmentPayload(data);
+			const departmentUnit = data.unit ? { _id: data.unit } : undefined;
 
 			if (id) {
-				await saveDepartmentInfo(id, payload, []);
+				await updateDepartmentInfo({
+					department: payload,
+					agents: [],
+					departmentUnit,
+				});
 
 				const { agentList: initialAgentList } = initialValues;
 				const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
@@ -102,7 +108,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
 			} else {
-				await saveDepartmentInfo(id ?? null, payload, agentList);
+				await createDepartment({
+					department: payload,
+					agents: agentList.map(({ agentId, count, order }) => ({ agentId, count, order })),
+					departmentUnit,
+				});
 			}
 
 			queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
