@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import type { IDepartmentAgent } from '../EditDepartment';
+import type { IDepartmentAgent } from '../definitions';
 
 function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: (agent: IDepartmentAgent) => void }) {
 	const { t } = useTranslation();
