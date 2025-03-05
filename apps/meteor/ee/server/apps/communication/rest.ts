@@ -28,6 +28,7 @@ import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceFor
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
+import { fetchMarketplaceFeaturedApps } from '../marketplace/fetchMarketplaceFeaturedApps';
 import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -596,27 +597,25 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const baseUrl = orchestrator.getMarketplaceUrl();
-
-					const headers = getDefaultHeaders();
-					const token = await getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${token}`;
-					}
-
-					let result;
 					try {
-						const request = await fetch(`${baseUrl}/v1/featured-apps`, { headers });
-						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
-							return API.v1.failure();
+						const result = await fetchMarketplaceFeaturedApps();
+						return API.v1.success(result);
+					} catch (err) {
+						if (err instanceof MarketplaceConnectionError) {
+							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
-						result = await request.json();
-					} catch (e) {
-						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
-					}
 
-					return API.v1.success(result);
+						if (err instanceof MarketplaceAppsError) {
+							return API.v1.failure({ error: err.message });
+						}
+
+						if (err instanceof ZodError) {
+							orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', err.issues);
+							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Featured_Apps') });
+						}
+
+						return API.v1.internalError();
+					}
 				},
 			},
 		);
