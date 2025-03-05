@@ -13,8 +13,8 @@ type MessageComposerFileAreaProps = {
 const MessageComposerFileArea = ({ uploads, onRemove, onEdit, onCancel }: MessageComposerFileAreaProps) => {
 	return (
 		<Box display='flex' width='100%' flexDirection='row' pi={8} pbe={8} pbs={2} overflowX='auto' style={{ whiteSpace: 'nowrap' }}>
-			{uploads?.map((upload, index) => (
-				<div key={index} id={`file-preview-${index}`}>
+			{uploads?.map((upload) => (
+				<div key={upload.id}>
 					<MessageComposerFile upload={upload} onRemove={onRemove} onEdit={onEdit} onCancel={onCancel} />
 				</div>
 			))}

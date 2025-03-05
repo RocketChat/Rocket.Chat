@@ -3,7 +3,6 @@ import { settings } from '../../../../app/settings/client';
 import { t } from '../../../../app/utils/lib/i18n';
 import { MAX_MULTIPLE_UPLOADED_FILES } from '../../constants';
 import { dispatchToastMessage } from '../../toast';
-// import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI, UploadsAPI, EncryptedFileUploadContent } from '../ChatAPI';
 
 export const uploadFiles = async (
@@ -14,13 +13,9 @@ export const uploadFiles = async (
 	if (uploadsStore.get().length > MAX_MULTIPLE_UPLOADED_FILES) {
 		return dispatchToastMessage({
 			type: 'error',
-			message: t('You_cant_upload_more_than__count__files', { count: 10 }),
+			message: t('You_cant_upload_more_than__count__files', { count: MAX_MULTIPLE_UPLOADED_FILES }),
 		});
 	}
-
-	// const replies = chat.composer?.quotedMessages.get() ?? [];
-
-	// const msg = await prependReplies('', replies);
 
 	const room = await chat.data.getRoom();
 
