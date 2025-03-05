@@ -181,7 +181,6 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 describe('[Users]', () => {
 	let targetUser: { _id: IUser['_id']; username: string };
 	let userCredentials: Credentials;
-	let initialUserData: IUser;
 
 	before((done) => getCredentials(done));
 
@@ -197,7 +196,6 @@ describe('[Users]', () => {
 			username: user.username,
 		};
 		userCredentials = await login(user.username, password);
-		initialUserData = user;
 	});
 
 	after(() => Promise.all([deleteUser(targetUser), updateSetting('E2E_Enable', false)]));
@@ -1706,27 +1704,6 @@ describe('[Users]', () => {
 				.send({
 					userId: targetUser._id,
 					data: {
-						verified: true,
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
-		});
-
-		it("should update user's email verified correctly", (done) => {
-			void request
-				.post(api('users.update'))
-				.set(credentials)
-				.send({
-					userId: targetUser._id,
-					data: {
-						email: initialUserData?.emails?.[0].address,
 						verified: false,
 					},
 				})
@@ -2027,6 +2004,63 @@ describe('[Users]', () => {
 				});
 
 			await deleteUser(user);
+		});
+
+		describe('email verification', () => {
+			let admin: TestUser<IUser>;
+			let userToUpdate: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			beforeEach(async () => {
+				admin = await createUser({ roles: ['admin'] });
+				userToUpdate = await createUser();
+				userCredentials = await login(admin.username, password);
+			});
+
+			afterEach(async () => {
+				await deleteUser(userToUpdate);
+				await deleteUser(admin);
+			});
+
+			it("should update user's email verified correctly", async () => {
+				await request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					});
+			});
+
+			it("should update user's email verified even if email is not changed", (done) => {
+				void request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							email: userToUpdate.emails[0].address,
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					})
+					.end(done);
+			});
 		});
 
 		function failUpdateUser(name: string) {
