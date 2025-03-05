@@ -563,23 +563,7 @@ const LivechatDepartmentSchema = {
 export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
 type POSTLivechatDepartmentProps = {
-	department: {
-		enabled: boolean;
-		name: string;
-		email: string;
-		description?: string;
-		showOnRegistration: boolean;
-		showOnOfflineForm: boolean;
-		requestTagsBeforeClosingChat?: boolean;
-		chatClosingTags?: string[];
-		fallbackForwardDepartment?: string;
-		requestTagBeforeClosingChat?: boolean;
-		departmentsAllowedToForward?: string[];
-		allowReceiveForwardOffline?: boolean;
-		offlineMessageChannelName?: string;
-		abandonedRoomsCloseCustomMessage?: string;
-		waitingQueueMessage?: string;
-	};
+	department: LivechatDepartmentDTO;
 	agents?: { agentId: string; count?: number; order?: number }[];
 	departmentUnit?: { _id?: string };
 };
@@ -606,7 +590,7 @@ const POSTLivechatDepartmentSchema = {
 				showOnOfflineForm: {
 					type: 'boolean',
 				},
-				requestTagsBeforeClosingChat: {
+				requestTagBeforeClosingChat: {
 					type: 'boolean',
 					nullable: true,
 				},
@@ -623,10 +607,6 @@ const POSTLivechatDepartmentSchema = {
 				},
 				email: {
 					type: 'string',
-				},
-				requestTagBeforeClosingChat: {
-					type: 'boolean',
-					nullable: true,
 				},
 				departmentsAllowedToForward: {
 					type: 'array',
@@ -3707,7 +3687,7 @@ export type OmnichannelEndpoints = {
 			departments: ILivechatDepartment[];
 		}>;
 		POST: (params: {
-			department: Partial<ILivechatDepartment>;
+			department: LivechatDepartmentDTO;
 			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
 			departmentUnit?: { _id?: string };
 		}) => {
