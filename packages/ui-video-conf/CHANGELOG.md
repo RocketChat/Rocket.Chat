@@ -1,5 +1,19 @@
 # @rocket.chat/ui-video-conf
 
+## 16.0.0
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#33141](https://github.com/RocketChat/Rocket.Chat/pull/33141)) Fixes an issue where video conf message block wasn't considering display avatars preference
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@16.0.0
+  - @rocket.chat/ui-avatar@12.0.0
+  </details>
+
 ## 16.0.0-rc.5
 
 ### Patch Changes

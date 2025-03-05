@@ -1,5 +1,16 @@
 # @rocket.chat/network-broker
 
+## 0.1.9
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.7.9
+  </details>
+
 ## 0.1.9-rc.5
 
 ### Patch Changes
