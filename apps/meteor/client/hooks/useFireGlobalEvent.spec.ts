@@ -10,7 +10,7 @@ jest.mock('../lib/utils/fireGlobalEventBase', () => ({
 
 const fireGlobalMock = fireGlobalEventBase as jest.MockedFunction<typeof fireGlobalEventBase>;
 
-describe('useInstance', () => {
+describe('useFireGlobalEvent', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
