@@ -211,7 +211,7 @@ export class AppServerOrchestrator {
 		let upgradeToV7Date = null;
 
 		try {
-			const statistics = await this.getStatisticsModel().find({}).toArray();
+			const statistics = await this.getStatisticsModel().findInstallationDates();
 			if (statistics && statistics.length > 0) {
 				const sortedStats = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
 
