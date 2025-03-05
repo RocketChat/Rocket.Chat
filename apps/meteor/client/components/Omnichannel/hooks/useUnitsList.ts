@@ -8,7 +8,7 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type UnitsListOptions = {
 	text: string;
-	haveNoUnitSelectedOption?: boolean;
+	haveNone?: boolean;
 };
 
 type UnitOption = { value: string; label: string; _id: string };
@@ -22,7 +22,7 @@ export const useUnitsList = (
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const { t } = useTranslation();
-	const { haveNoUnitSelectedOption = false } = options;
+	const { haveNone = false } = options;
 	const [itemsList, setItemsList] = useState(() => new RecordList<UnitOption>());
 	const reload = useCallback(() => setItemsList(new RecordList<UnitOption>()), []);
 
@@ -48,11 +48,11 @@ export const useUnitsList = (
 				value: u._id,
 			}));
 
-			haveNoUnitSelectedOption &&
+			haveNone &&
 				items.unshift({
-					_id: 'no-unit-selected',
-					label: t('Empty_no_unit_selected'),
-					value: 'no-unit-selected',
+					_id: '',
+					label: t('None'),
+					value: '',
 				});
 
 			return {
@@ -60,7 +60,7 @@ export const useUnitsList = (
 				itemCount: total,
 			};
 		},
-		[getUnits, haveNoUnitSelectedOption, t, text],
+		[getUnits, haveNone, t, text],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
