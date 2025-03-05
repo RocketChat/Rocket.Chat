@@ -93,7 +93,6 @@ describe('Thread Metrics', () => {
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
 						.buildWithRouter(navigateCallback),
-					legacyRoot: true,
 				},
 			);
 
@@ -151,7 +150,6 @@ describe('Thread Metrics', () => {
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
 						.buildWithRouter(navigateCallback),
-					legacyRoot: true,
 				},
 			);
 			const followButton = screen.getByTitle('Not_following');
@@ -184,7 +182,6 @@ describe('Thread Metrics', () => {
 						toggleFollowMock(() => undefined),
 					)
 					.build(),
-				legacyRoot: true,
 			});
 			const followButton = screen.getByTitle('Not_following');
 			expect(followButton).toBeVisible();
@@ -199,7 +196,6 @@ describe('Thread Metrics', () => {
 						toggleFollowMock(() => undefined),
 					)
 					.build(),
-				legacyRoot: true,
 			});
 			const followButton = screen.getByTitle('Following');
 			expect(followButton).toBeVisible();
@@ -208,7 +204,6 @@ describe('Thread Metrics', () => {
 		it('should render unread badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
-				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
@@ -216,7 +211,6 @@ describe('Thread Metrics', () => {
 		it('should render mention-all badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={true} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
-				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('mention-all');
 			expect(badge).toBeVisible();
@@ -224,7 +218,6 @@ describe('Thread Metrics', () => {
 		it('should render Mentions_you badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
-				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('Mentions_you');
 			expect(badge).toBeVisible();
@@ -237,7 +230,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			expect(screen.getByTitle('follower')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
@@ -250,7 +242,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			expect(screen.getByTitle('followers')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
@@ -263,7 +254,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			expect(screen.getByTitle('followers')).toBeVisible();
 			const avatars = screen.getAllByRole('figure');
@@ -277,7 +267,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			expect(screen.getByTitle('followers')).toBeVisible();
 
@@ -294,7 +283,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', false)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			const follower = screen.getByTitle('follower');
 			expect(follower).toBeVisible();
@@ -311,7 +299,6 @@ describe('Thread Metrics', () => {
 					.withUserPreference('displayAvatars', false)
 					.withTranslations(...mockedTranslations)
 					.build(),
-				legacyRoot: true,
 			});
 			const follower = screen.getByTitle('followers');
 			expect(follower).toBeVisible();

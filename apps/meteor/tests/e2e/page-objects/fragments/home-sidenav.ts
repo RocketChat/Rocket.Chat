@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
 	get userProfileMenu(): Locator {
@@ -66,6 +66,10 @@ export class HomeSidenav {
 
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
+	}
+
+	get accountPreferencesOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
 	}
 
 	// TODO: refactor getSidebarItemByName to not use data-qa

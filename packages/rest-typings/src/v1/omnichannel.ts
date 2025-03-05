@@ -2821,11 +2821,13 @@ export type GETLivechatRoomsParams = PaginatedRequest<{
 	closedAt?: string;
 	agents?: string[];
 	roomName?: string;
-	departmentId?: string;
+	// TODO: support only arrays on next major
+	departmentId?: string | string[];
 	open?: string | boolean;
 	onhold?: string | boolean;
 	queued?: string | boolean;
 	tags?: string[];
+	units?: string[];
 }>;
 
 const GETLivechatRoomsParamsSchema = {
@@ -2875,8 +2877,7 @@ const GETLivechatRoomsParamsSchema = {
 			nullable: true,
 		},
 		departmentId: {
-			type: 'string',
-			nullable: true,
+			oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
 		},
 		open: {
 			anyOf: [
@@ -2902,6 +2903,12 @@ const GETLivechatRoomsParamsSchema = {
 				type: 'string',
 			},
 			nullable: true,
+		},
+		units: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
 		},
 	},
 	additionalProperties: false,
