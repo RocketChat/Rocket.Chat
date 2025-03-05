@@ -161,7 +161,7 @@ export class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			console.debug(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 
@@ -209,20 +209,20 @@ export class AppServerOrchestrator {
 	async disableMarketplaceApps() {
 		let hadPre7Version = false;
 		let upgradeToV7Date = null;
-		
+
 		try {
 			const statistics = await this.getStatisticsModel().find({}).toArray();
 			if (statistics && statistics.length > 0) {
 				const sortedStats = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
-				
+
 				for (const stat of sortedStats) {
 					const version = stat.version || '';
-					
+
 					if (version && !version.startsWith('7.')) {
 						this._rocketchatLogger.info(`Found pre-7.0 version: ${version} on ${stat.installedAt}`);
 						hadPre7Version = true;
 					}
-					
+
 					if (hadPre7Version && version && version.startsWith('7.')) {
 						upgradeToV7Date = new Date(stat.installedAt);
 						this._rocketchatLogger.info(`Found upgrade to v7 date: ${upgradeToV7Date.toISOString()}`);
@@ -233,46 +233,56 @@ export class AppServerOrchestrator {
 		} catch (error) {
 			this._rocketchatLogger.error('Error checking statistics for version history:', error.message);
 		}
-		
+
 		const apps = await this.getManager().get({ installationSource: 'marketplace' });
 		this._rocketchatLogger.info(`Found ${apps.length} marketplace apps to check for disabling`);
-		
+
 		let disabledCount = 0;
 		let grandfatheredCount = 0;
 
-		for (const app of apps) {
+		for await (const app of apps) {
 			const storageItem = app.getStorageItem();
 			const appId = app.getID();
 			const appName = app.getInfo().name;
 
-			this._rocketchatLogger.info(`Checking app ${appName} (${appId}) ${storageItem.migrated ? 'migrated' : 'not migrated'} ${storageItem.createdAt ? `installed on ${storageItem.createdAt}` : 'no install date'} ${storageItem.status}`);
-			
+			this._rocketchatLogger.info(
+				`Checking app ${appName} (${appId}) ${storageItem.migrated ? 'migrated' : 'not migrated'} ${storageItem.createdAt ? `installed on ${storageItem.createdAt}` : 'no install date'} ${storageItem.status}`,
+			);
+
 			try {
 				if (storageItem.migrated === true) {
 					this._rocketchatLogger.info(`App ${appName} (${appId}) is grandfathered because it was migrated`);
 					grandfatheredCount++;
 					continue;
 				}
-				
-				this._rocketchatLogger.info(`upgradeToV7Date: ${upgradeToV7Date} storageItem.createdAt: ${storageItem.createdAt} storageItem.status: ${storageItem.status}`);
 
-				if (upgradeToV7Date && storageItem.createdAt && new Date(storageItem.createdAt) < upgradeToV7Date && (storageItem.status === 'enabled' || storageItem.status === 'manually_enabled')) {
-					this._rocketchatLogger.info(`App ${appName} (${appId}) is grandfathered (installed before upgrade to v7 on ${upgradeToV7Date.toISOString()})`);
+				this._rocketchatLogger.info(
+					`upgradeToV7Date: ${upgradeToV7Date} storageItem.createdAt: ${storageItem.createdAt} storageItem.status: ${storageItem.status}`,
+				);
+
+				if (
+					upgradeToV7Date &&
+					storageItem.createdAt &&
+					new Date(storageItem.createdAt) < upgradeToV7Date &&
+					(storageItem.status === 'enabled' || storageItem.status === 'manually_enabled')
+				) {
+					this._rocketchatLogger.info(
+						`App ${appName} (${appId}) is grandfathered (installed before upgrade to v7 on ${upgradeToV7Date.toISOString()})`,
+					);
 					grandfatheredCount++;
 					continue;
 				} else {
 					this._rocketchatLogger.info(`App ${appName} (${appId}) is not grandfathered - ${storageItem.status} - ${storageItem.createdAt}`);
 				}
-				
+
 				await this.getManager().disable(appId);
 				this._rocketchatLogger.info(`Disabled app ${appName} (${appId})`);
 				disabledCount++;
-				
 			} catch (error) {
 				this._rocketchatLogger.error(`Error processing app ${appName} (${appId}):`, error.message);
 			}
 		}
-		
+
 		this._rocketchatLogger.info(`Marketplace apps processing complete: ${disabledCount} disabled, ${grandfatheredCount} grandfathered`);
 	}
 
