@@ -11,18 +11,18 @@ type AutoCompleteUnitProps = {
 	value: string | undefined;
 	error?: string;
 	placeholder?: string;
-	haveNoUnitSelectedOption?: boolean;
+	haveNone?: boolean;
 	onChange: (value: string) => void;
 };
 
-const AutoCompleteUnit = ({ value, error, placeholder, haveNoUnitSelectedOption, onChange }: AutoCompleteUnitProps) => {
+const AutoCompleteUnit = ({ value, error, placeholder, haveNone, onChange }: AutoCompleteUnitProps) => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
 
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
 	const { itemsList, loadMoreItems: loadMoreUnits } = useUnitsList(
-		useMemo(() => ({ text: debouncedUnitFilter, haveNoUnitSelectedOption }), [debouncedUnitFilter, haveNoUnitSelectedOption]),
+		useMemo(() => ({ text: debouncedUnitFilter, haveNone }), [debouncedUnitFilter, haveNone]),
 	);
 	const { phase: agentsPhase, itemCount: agentsTotal, items: unitsList } = useRecordList(itemsList);
 
