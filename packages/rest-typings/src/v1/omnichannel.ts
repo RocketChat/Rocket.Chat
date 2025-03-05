@@ -573,6 +573,12 @@ type POSTLivechatDepartmentProps = {
 		requestTagsBeforeClosingChat?: boolean;
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
+		requestTagBeforeClosingChat?: boolean;
+		departmentsAllowedToForward?: string[];
+		allowReceiveForwardOffline?: boolean;
+		offlineMessageChannelName?: string;
+		abandonedRoomsCloseCustomMessage?: string;
+		waitingQueueMessage?: string;
 	};
 	agents?: { agentId: string; count?: number; order?: number }[];
 	departmentUnit?: { _id?: string };
@@ -617,6 +623,33 @@ const POSTLivechatDepartmentSchema = {
 				},
 				email: {
 					type: 'string',
+				},
+				requestTagBeforeClosingChat: {
+					type: 'boolean',
+					nullable: true,
+				},
+				departmentsAllowedToForward: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				allowReceiveForwardOffline: {
+					type: 'boolean',
+					nullable: true,
+				},
+				offlineMessageChannelName: {
+					type: 'string',
+					nullable: true,
+				},
+				abandonedRoomsCloseCustomMessage: {
+					type: 'string',
+					nullable: true,
+				},
+				waitingQueueMessage: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['name', 'email', 'enabled', 'showOnRegistration', 'showOnOfflineForm'],
@@ -3673,9 +3706,13 @@ export type OmnichannelEndpoints = {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
-		POST: (params: { department: Partial<ILivechatDepartment>; agents: string[] }) => {
+		POST: (params: {
+			department: Partial<ILivechatDepartment>;
+			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
+			departmentUnit?: { _id?: string };
+		}) => {
 			department: ILivechatDepartment;
-			agents: any[];
+			agents: ILivechatDepartmentAgents[];
 		};
 	};
 	'/v1/livechat/department/:_id': {
@@ -3686,6 +3723,7 @@ export type OmnichannelEndpoints = {
 		PUT: (params: {
 			department: LivechatDepartmentDTO;
 			agents: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
+			departmentUnit?: { _id?: string };
 		}) => {
 			department: ILivechatDepartment | null;
 			agents: ILivechatDepartmentAgents[];
