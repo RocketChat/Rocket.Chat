@@ -206,7 +206,7 @@ export class AppServerOrchestrator {
 		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
 	}
 
-	async disableMarketplaceApps() {
+	async findUpgradeToV7Date() {
 		let hadPre7Version = false;
 		let upgradeToV7Date = null;
 
@@ -219,7 +219,6 @@ export class AppServerOrchestrator {
 					const version = stat.version || '';
 
 					if (version && !version.startsWith('7.')) {
-						this._rocketchatLogger.info(`Found pre-7.0 version: ${version} on ${stat.installedAt}`);
 						hadPre7Version = true;
 					}
 
@@ -234,56 +233,70 @@ export class AppServerOrchestrator {
 			this._rocketchatLogger.error('Error checking statistics for version history:', error.message);
 		}
 
-		const apps = await this.getManager().get({ installationSource: 'marketplace' });
-		this._rocketchatLogger.info(`Found ${apps.length} marketplace apps to check for disabling`);
+		return upgradeToV7Date;
+	}
 
-		let disabledCount = 0;
-		let grandfatheredCount = 0;
+	async disableMarketplaceApps() {
+		return this.disableApps('marketplace', false, 5);
+	}
 
-		for await (const app of apps) {
+	async disablePrivateApps() {
+		return this.disableApps('private', true, 0);
+	}
+
+	async disableApps(installationSource, grandfatherApps, maxApps) {
+		const upgradeToV7Date = await this.findUpgradeToV7Date();
+		const apps = await this.getManager().get({ installationSource });
+
+		const grandfathered = [];
+		const toKeep = [];
+		const toDisable = [];
+
+		for (const app of apps) {
 			const storageItem = app.getStorageItem();
-			const appId = app.getID();
-			const appName = app.getInfo().name;
+			const isEnabled = ['enabled', 'manually_enabled', 'auto_enabled'].includes(storageItem.status);
+			const marketplaceInfo = storageItem.marketplaceInfo && storageItem.marketplaceInfo[0];
 
-			this._rocketchatLogger.info(
-				`Checking app ${appName} (${appId}) ${storageItem.migrated ? 'migrated' : 'not migrated'} ${storageItem.createdAt ? `installed on ${storageItem.createdAt}` : 'no install date'} ${storageItem.status}`,
-			);
+			const wasInstalledBeforeV7 = upgradeToV7Date && storageItem.createdAt && new Date(storageItem.createdAt) < upgradeToV7Date;
 
-			try {
-				if (storageItem.migrated === true) {
-					this._rocketchatLogger.info(`App ${appName} (${appId}) is grandfathered because it was migrated`);
-					grandfatheredCount++;
-					continue;
-				}
+			if (wasInstalledBeforeV7 && isEnabled && grandfatherApps) {
+				grandfathered.push(app);
+				continue;
+			}
 
-				this._rocketchatLogger.info(
-					`upgradeToV7Date: ${upgradeToV7Date} storageItem.createdAt: ${storageItem.createdAt} storageItem.status: ${storageItem.status}`,
-				);
+			if (marketplaceInfo?.isEnterpriseOnly === true && installationSource === 'marketplace') {
+				toDisable.push(app);
+				continue;
+			}
 
-				if (
-					upgradeToV7Date &&
-					storageItem.createdAt &&
-					new Date(storageItem.createdAt) < upgradeToV7Date &&
-					(storageItem.status === 'enabled' || storageItem.status === 'manually_enabled')
-				) {
-					this._rocketchatLogger.info(
-						`App ${appName} (${appId}) is grandfathered (installed before upgrade to v7 on ${upgradeToV7Date.toISOString()})`,
-					);
-					grandfatheredCount++;
-					continue;
-				} else {
-					this._rocketchatLogger.info(`App ${appName} (${appId}) is not grandfathered - ${storageItem.status} - ${storageItem.createdAt}`);
-				}
-
-				await this.getManager().disable(appId);
-				this._rocketchatLogger.info(`Disabled app ${appName} (${appId})`);
-				disabledCount++;
-			} catch (error) {
-				this._rocketchatLogger.error(`Error processing app ${appName} (${appId}):`, error.message);
+			if (isEnabled) {
+				toKeep.push(app);
 			}
 		}
 
-		this._rocketchatLogger.info(`Marketplace apps processing complete: ${disabledCount} disabled, ${grandfatheredCount} grandfathered`);
+		toKeep.sort((a, b) => new Date(a.getStorageItem().createdAt || 0) - new Date(b.getStorageItem().createdAt || 0));
+
+		if (toKeep.length > maxApps) {
+			toDisable.push(...toKeep.splice(maxApps));
+		}
+
+		if (toDisable.length === 0) {
+			return;
+		}
+
+		const disablePromises = toDisable.map((app) => {
+			const appId = app.getID();
+			return this.getManager().disable(appId);
+		});
+
+		try {
+			await Promise.all(disablePromises);
+			this._rocketchatLogger.info(
+				`${installationSource} apps processing complete - kept ${grandfathered.length + toKeep.length}, disabled ${toDisable.length}`,
+			);
+		} catch (error) {
+			this._rocketchatLogger.error('Error disabling apps:', error.message);
+		}
 	}
 
 	async unload() {
