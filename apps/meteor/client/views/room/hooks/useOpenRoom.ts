@@ -98,6 +98,11 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
 			if (user && !sub && !hasPreviewPermission) {
+				// Omnichannel rooms do cannot be previewed without permission
+				if (type === 'l') {
+					throw new NotAuthorizedError();
+				}
+
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 
