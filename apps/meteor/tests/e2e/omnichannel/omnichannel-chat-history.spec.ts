@@ -31,9 +31,11 @@ test.describe('Omnichannel chat history', () => {
 		await api.delete('/livechat/users/agent/user1');
 		await api.delete('/livechat/users/manager/user1');
 		await agent.page.close();
+
+		await api.post('/permissions.update', { permissions: [{ _id: 'view-c-room', roles: ['admin', 'owner', 'moderator', 'user'] }] });
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
+	test('Receiving a message from visitor', async ({ page, api }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
@@ -68,6 +70,15 @@ test.describe('Omnichannel chat history', () => {
 			await agent.poHomeOmnichannel.btnContactInfo.click();
 			await agent.poHomeOmnichannel.contacts.contactInfo.tabHistory.click();
 			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyItem).toBeVisible();
+
+			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
+			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
+		});
+
+		await api.post('/permissions.update', { permissions: [{ _id: 'view-c-room', roles: [] }] });
+
+		await test.step('Expect to not be able to see conversation history', async () => {
+			await agent.page.reload();
 
 			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
 			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
