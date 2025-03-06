@@ -44,8 +44,8 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
-import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
