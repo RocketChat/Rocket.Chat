@@ -3,19 +3,6 @@ import type { ClientSession, MongoError } from 'mongodb';
 
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-declare module 'mongodb' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Transaction {
-		state:
-			| 'NO_TRANSACTION'
-			| 'STARTING_TRANSACTION'
-			| 'TRANSACTION_IN_PROGRESS'
-			| 'TRANSACTION_COMMITTED'
-			| 'TRANSACTION_COMMITTED_EMPTY'
-			| 'TRANSACTION_ABORTED';
-	}
-}
-
 /**
  * In MongoDB, errors like UnknownTransactionCommitResult and TransientTransactionError occur primarily in the context of distributed transactions
  * and are often due to temporary network issues, server failures, or timeouts. Here’s what each error means and some common causes:
