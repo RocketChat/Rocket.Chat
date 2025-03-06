@@ -19,7 +19,6 @@ import type {
 	Document,
 	Filter,
 	WithId,
-	ClientSession,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -208,8 +207,8 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;
 	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	updateUsernameOfEditByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
-	updateAllUsernamesByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document>;
+	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
+	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
 	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
@@ -237,7 +236,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		options?: { session: ClientSession },
 	): Promise<UpdateResult>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;

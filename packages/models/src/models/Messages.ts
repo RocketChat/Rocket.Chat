@@ -28,7 +28,6 @@ import type {
 	Document,
 	UpdateFilter,
 	WithId,
-	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -507,7 +506,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number> {
-		return this.col.countDocuments({ t: type }, options);
+		return this.countDocuments({ t: type }, options);
 	}
 
 	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
@@ -757,7 +756,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	// FIND
@@ -1023,7 +1022,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
@@ -1231,7 +1230,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	updateAllUsernamesByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
+	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
 		const query = { 'u._id': userId };
 
 		const update = {
@@ -1240,10 +1239,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateMany(query, update, { session: options?.session });
+		return this.updateMany(query, update);
 	}
 
-	updateUsernameOfEditByUserId(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult | Document> {
+	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
 		const query = { 'editedBy._id': userId };
 
 		const update = {
@@ -1252,7 +1251,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateMany(query, update, { session: options?.session });
+		return this.updateMany(query, update);
 	}
 
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(
@@ -1260,7 +1259,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		oldUsername: string,
 		newUsername: string,
 		newMessage: string,
-		options: { session: ClientSession },
 	): Promise<UpdateResult> {
 		const query = {
 			_id,
@@ -1277,7 +1275,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.updateOne(query, update, { session: options?.session });
+		return this.updateOne(query, update);
 	}
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult> {
@@ -1666,7 +1664,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// threads
 
 	countThreads(): Promise<number> {
-		return this.col.countDocuments({ tcount: { $exists: true } });
+		return this.countDocuments({ tcount: { $exists: true } });
 	}
 
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
@@ -1773,7 +1771,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {

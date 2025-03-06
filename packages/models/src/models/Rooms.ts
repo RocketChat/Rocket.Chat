@@ -25,7 +25,6 @@ import type {
 	UpdateResult,
 	WithId,
 	CountDocumentsOptions,
-	ClientSession,
 } from 'mongodb';
 
 import { Subscriptions } from '../index';
@@ -742,7 +741,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	countByType(t: IRoom['t']): Promise<number> {
-		return this.col.countDocuments({ t });
+		return this.countDocuments({ t });
 	}
 
 	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
@@ -874,7 +873,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			callStatus: { $exists: true },
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
@@ -905,7 +904,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	async countFederatedRooms(): Promise<number> {
-		return this.col.countDocuments({ federated: true });
+		return this.countDocuments({ federated: true });
 	}
 
 	incMsgCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
@@ -1629,11 +1628,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	replaceUsername(
-		previousUsername: IUser['username'],
-		username: IUser['username'],
-		options?: { session: ClientSession },
-	): Promise<Document | UpdateResult> {
+	replaceUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { usernames: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1642,14 +1637,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, { session: options?.session });
+		return this.updateMany(query, update);
 	}
 
-	replaceMutedUsername(
-		previousUsername: IUser['username'],
-		username: IUser['username'],
-		options?: { session: ClientSession },
-	): Promise<Document | UpdateResult> {
+	replaceMutedUsername(previousUsername: IUser['username'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { muted: previousUsername };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1658,14 +1649,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, { session: options?.session });
+		return this.updateMany(query, update);
 	}
 
-	replaceUsernameOfUserByUserId(
-		userId: IUser['_id'],
-		username: IUser['username'],
-		options?: { session: ClientSession },
-	): Promise<Document | UpdateResult> {
+	replaceUsernameOfUserByUserId(userId: IUser['_id'], username: IUser['username']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { 'u._id': userId };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1674,7 +1661,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update, { session: options?.session });
+		return this.updateMany(query, update);
 	}
 
 	setJoinCodeById(_id: IRoom['_id'], joinCode: string): Promise<UpdateResult> {
@@ -2010,7 +1997,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	countDiscussions(): Promise<number> {
-		return this.col.countDocuments({ prid: { $exists: true } });
+		return this.countDocuments({ prid: { $exists: true } });
 	}
 
 	setOTRForDMByRoomID(rid: IRoom['_id']): Promise<UpdateResult> {

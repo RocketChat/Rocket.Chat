@@ -16,7 +16,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T>;
 
-	updateFileNameById(fileId: string, name: string, options?: { session: ClientSession }): Promise<Document | UpdateResult>;
+	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
 
 	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
 }

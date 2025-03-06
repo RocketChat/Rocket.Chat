@@ -111,14 +111,14 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		);
 	}
 
-	async updateFileNameById(fileId: string, name: string, options?: { session: ClientSession }): Promise<Document | UpdateResult> {
+	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {
 		const filter = { _id: fileId };
 		const update = {
 			$set: {
 				name,
 			},
 		};
-		return this.updateOne(filter, update, { session: options?.session });
+		return this.updateOne(filter, update);
 	}
 
 	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {

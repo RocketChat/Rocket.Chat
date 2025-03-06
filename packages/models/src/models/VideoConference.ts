@@ -18,7 +18,6 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
-	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -234,12 +233,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
 	}
 
-	public async updateUserReferences(
-		userId: IUser['_id'],
-		username: IUser['username'],
-		name: IUser['name'],
-		options?: { session: ClientSession },
-	): Promise<void> {
+	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {
 		await this.updateMany(
 			{
 				'users._id': userId,
@@ -250,7 +244,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'users.$.username': username,
 				},
 			},
-			{ session: options?.session },
 		);
 
 		await this.updateMany(
@@ -263,7 +256,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'createdBy.username': username,
 				},
 			},
-			{ session: options?.session },
 		);
 
 		await this.updateMany(
@@ -276,7 +268,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					'endedBy.username': username,
 				},
 			},
-			{ session: options?.session },
 		);
 	}
 
