@@ -62,6 +62,10 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 							return <RoomNotFound />;
 						}
 
+						if (error instanceof NotSubscribedToRoomError && type === 'l') {
+							return <NotAuthorizedPage />;
+						}
+
 						if (error instanceof NotSubscribedToRoomError) {
 							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
 						}

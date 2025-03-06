@@ -14,7 +14,7 @@ import {
 	Throbber,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference, useUserId, usePermission } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +40,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 	const [text, setText] = useState('');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const userId = useUserId();
+	const canPreviewRoom = usePermission('preview-c-room');
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -128,7 +129,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					)}
 				</Box>
 			</ContextualbarContent>
-			{onOpenRoom && (
+			{canPreviewRoom && onOpenRoom && (
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
 						<Button onClick={onOpenRoom}>{t('Open_chat')}</Button>
