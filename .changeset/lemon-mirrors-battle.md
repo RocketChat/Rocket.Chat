@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-changed password key to eye with visibility on click
+Fixes an issue where password inputs inside account security page is displaying a key icon instead of eye icon content toggler 
