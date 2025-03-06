@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { wrapInSessionTransaction } from '../../../../../server/database/utils';
+import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
 import { generatePassword } from '../../lib/generatePassword';
@@ -107,7 +107,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (typeof userData.statusText === 'string') {
-			await setStatusText(userData._id, userData.statusText, updater);
+			await setStatusText(userData._id, userData.statusText, updater, session);
 		}
 
 		if (userData.email) {
@@ -156,37 +156,39 @@ const _saveUser = (session?: ClientSession) =>
 
 		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
 
-		// App IPostUserUpdated event hook
-		// We need to pass the session here to ensure this record is fetched
-		// with the uncommited transaction data.
-		const userUpdated = await Users.findOneById(userData._id, { session });
+		await onceTransactionCommitedSuccessfully(async () => {
+			// App IPostUserUpdated event hook
+			// We need to pass the session here to ensure this record is fetched
+			// with the uncommited transaction data.
+			const userUpdated = await Users.findOneById(userData._id, { session });
 
-		await callbacks.run('afterSaveUser', {
-			user: userUpdated,
-			oldUser: oldUserData,
-		});
+			await callbacks.run('afterSaveUser', {
+				user: userUpdated,
+				oldUser: oldUserData,
+			});
 
-		await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdated,
-			previousUser: oldUserData,
-			performedBy: await safeGetMeteorUser(),
-		});
+			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
+				user: userUpdated,
+				previousUser: oldUserData,
+				performedBy: await safeGetMeteorUser(),
+			});
 
-		if (sendPassword) {
-			await sendPasswordEmail(userData);
-		}
+			if (sendPassword) {
+				await sendPasswordEmail(userData);
+			}
 
-		if (typeof userData.verified === 'boolean') {
-			delete userData.verified;
-		}
-		void notifyOnUserChange({
-			clientAction: 'updated',
-			id: userData._id,
-			diff: {
-				...userData,
-				emails: userUpdated?.emails,
-			},
-		});
+			if (typeof userData.verified === 'boolean') {
+				delete userData.verified;
+			}
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: userData._id,
+				diff: {
+					...userData,
+					emails: userUpdated?.emails,
+				},
+			});
+		}, session);
 
 		return true;
 	};
