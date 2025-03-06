@@ -14,7 +14,7 @@ import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, uploadFile } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -894,6 +894,57 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 				});
+		});
+	});
+
+	describe('/rooms.mediaEdit', () => {
+		let testChannel: IRoom;
+		let user: TestUser<IUser>;
+		let file: { _id: string; url: string };
+		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: false });
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			file = (await uploadFile({ rid: testChannel._id, fileUrl: imgURL })).body.file;
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(user)]));
+
+		it('should throw error when file id is invalid', (done) => {
+			void request
+				.post(api(`rooms.mediaEdit/${testChannel._id}/invalid`))
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should throw error when fileName param is not provided', (done) => {
+			void request
+				.post(api(`rooms.mediaEdit/${testChannel._id}/${file._id}`))
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				})
+				.end(done);
+		});
+
+		it('should update the file name', (done) => {
+			void request
+				.post(api(`rooms.mediaEdit/${testChannel._id}/${file._id}`))
+				.set(credentials)
+				.send({ fileName: 'test.png' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
 		});
 	});
 
