@@ -137,7 +137,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	getUserLanguages(): any;
 
-	updateStatusText(_id: any, statusText: any): any;
+	updateStatusText(_id: any, statusText: any, options?: { session?: ClientSession }): any;
 
 	updateStatusByAppId(appId: any, status: any): any;
 
@@ -359,13 +359,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
-	setUsername(userId: string, username: string, options?: { session: ClientSession }): Promise<UpdateResult>;
-	setEmail(userId: string, email: string, verified?: boolean): Promise<UpdateResult>;
+	setUsername(userId: string, username: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
+	setEmail(userId: string, email: string, verified?: boolean, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
-	setName(userId: string, name: string): Promise<UpdateResult>;
-	unsetName(userId: string): Promise<UpdateResult>;
+	setName(userId: string, name: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
+	unsetName(userId: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	setCustomFields(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
-	setAvatarData(userId: string, origin: string, etag?: Date | null | string): Promise<UpdateResult>;
+	setAvatarData(userId: string, origin: string, etag?: Date | null | string, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
 	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;

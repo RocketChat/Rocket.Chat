@@ -875,14 +875,22 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(pipeline).toArray();
 	}
 
-	updateStatusText(_id, statusText) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} statusText
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	updateStatusText(_id, statusText, options) {
 		const update = {
 			$set: {
 				statusText,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	updateStatusByAppId(appId, status) {
@@ -2617,13 +2625,30 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} username
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
 	setUsername(_id, username, options) {
 		const update = { $set: { username } };
 
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	setEmail(_id, email, verified = false) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} email
+	 * @param {boolean} verified
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setEmail(_id, email, verified = false, options) {
 		const update = {
 			$set: {
 				emails: [
@@ -2635,7 +2660,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	// 5
@@ -2659,24 +2684,39 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setName(_id, name) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} name
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setName(_id, name, options) {
 		const update = {
 			$set: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	unsetName(_id) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	unsetName(_id, options) {
 		const update = {
 			$unset: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	setCustomFields(_id, fields) {
@@ -2690,7 +2730,16 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setAvatarData(_id, origin, etag) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} origin
+	 * @param {string} etag
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setAvatarData(_id, origin, etag, options) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
@@ -2698,7 +2747,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	unsetAvatarData(_id) {
