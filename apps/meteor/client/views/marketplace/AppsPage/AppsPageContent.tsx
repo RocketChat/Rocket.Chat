@@ -140,7 +140,10 @@ const AppsPageContent = (): ReactElement => {
 
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
-	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'unsupported version';
+	// TODO: Introduce error codes, so we can avoid using error message strings for this kind of logic
+	//       whenever we change the error message, this code ends up breaking.
+	const unsupportedVersion =
+		appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'Marketplace_Unsupported_Version';
 
 	const noMarketplaceOrInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
