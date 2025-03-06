@@ -4,9 +4,10 @@ import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptio
 import type { ClientSession } from 'mongodb';
 
 import { _setRealName } from './setRealName';
-import { _setUsernameWithSession } from './setUsername';
+import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
 import {
@@ -57,43 +58,46 @@ export async function saveUserIdentity({
 			return false;
 		}
 
-		if (!(await _setUsernameWithSession(session)(_id, username, user, updater))) {
+		if (!(await _setUsername(_id, username, user, updater, session))) {
 			return false;
 		}
 		user.username = username;
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await _setRealName(_id, name, user, updater))) {
+		if (!(await _setRealName(_id, name, user, updater, session))) {
 			return false;
 		}
 	}
 
-	// if coming from old username, update all references
-	if (previousUsername) {
-		const handleUpdateParams = {
-			username,
-			previousUsername,
-			rawUsername,
-			usernameChanged,
-			user,
-			name,
-			previousName,
-			rawName,
-			nameChanged,
-		};
-		if (updateUsernameInBackground) {
-			setImmediate(async () => {
-				try {
-					await updateUsernameReferences(handleUpdateParams);
-				} catch (err) {
-					SystemLogger.error(err);
-				}
-			});
-		} else {
-			await updateUsernameReferences({ ...handleUpdateParams, session });
+	const updateReferences = async () => {
+		if (previousUsername) {
+			const handleUpdateParams = {
+				username,
+				previousUsername,
+				rawUsername,
+				usernameChanged,
+				user,
+				name,
+				previousName,
+				rawName,
+				nameChanged,
+			};
+			if (updateUsernameInBackground) {
+				setImmediate(async () => {
+					try {
+						await updateUsernameReferences(handleUpdateParams);
+					} catch (err) {
+						SystemLogger.error(err);
+					}
+				});
+			} else {
+				await updateUsernameReferences(handleUpdateParams);
+			}
 		}
-	}
+	};
+
+	await onceTransactionCommitedSuccessfully(updateReferences, session);
 
 	return true;
 }
@@ -108,7 +112,6 @@ async function updateUsernameReferences({
 	previousName,
 	rawName,
 	nameChanged,
-	session,
 }: {
 	username: string;
 	previousUsername: string;
@@ -119,36 +122,33 @@ async function updateUsernameReferences({
 	previousName: string | undefined;
 	rawName?: string;
 	nameChanged: boolean;
-	session?: ClientSession;
 }): Promise<void> {
 	if (usernameChanged && typeof rawUsername !== 'undefined') {
 		const fileStore = FileUpload.getStore('Avatars');
-		const previousFile = await fileStore.model.findOneByName(previousUsername, { session });
-		const file = await fileStore.model.findOneByName(username, { session });
+		const previousFile = await fileStore.model.findOneByName(previousUsername);
+		const file = await fileStore.model.findOneByName(username);
 		if (file) {
-			await fileStore.model.deleteFile(file._id, { session });
+			await fileStore.model.deleteFile(file._id);
 		}
 		if (previousFile) {
-			await fileStore.model.updateFileNameById(previousFile._id, username, { session });
+			await fileStore.model.updateFileNameById(previousFile._id, username);
 		}
 
-		await Messages.updateAllUsernamesByUserId(user._id, username, { session });
-		await Messages.updateUsernameOfEditByUserId(user._id, username, { session });
+		await Messages.updateAllUsernamesByUserId(user._id, username);
+		await Messages.updateUsernameOfEditByUserId(user._id, username);
 
 		const cursor = Messages.findByMention(previousUsername);
 		for await (const msg of cursor) {
 			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg, { session });
+			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 		}
 
-		// Mongo does not recommend paralelizing session transactions
-		// This is working fine and should be as long as the first transaction is no parallel
 		const responses = await Promise.all([
-			Rooms.replaceUsername(previousUsername, username, { session }),
-			Rooms.replaceMutedUsername(previousUsername, username, { session }),
-			Rooms.replaceUsernameOfUserByUserId(user._id, username, { session }),
-			Subscriptions.setUserUsernameByUserId(user._id, username, { session }),
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username, { session }),
+			Rooms.replaceUsername(previousUsername, username),
+			Rooms.replaceMutedUsername(previousUsername, username),
+			Rooms.replaceUsernameOfUserByUserId(user._id, username),
+			Subscriptions.setUserUsernameByUserId(user._id, username),
+			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username),
 		]);
 
 		if (responses[3]?.modifiedCount) {
@@ -167,7 +167,6 @@ async function updateUsernameReferences({
 			previousUsername,
 			rawUsername && username,
 			rawName && name,
-			{ session },
 		);
 
 		if (updateDirectNameResponse?.modifiedCount) {
@@ -178,9 +177,9 @@ async function updateUsernameReferences({
 		}
 
 		// update name and fname of group direct messages
-		await updateGroupDMsName(user, { session });
+		await updateGroupDMsName(user);
 
 		// update name and username of users on video conferences
-		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName, { session });
+		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
 	}
 }
