@@ -40,7 +40,7 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 Meteor.methods<ServerMethods>({
 	async sendForgotPasswordEmail(to) {
 		check(to, String);
-		
+
 		return sendForgotPasswordEmail(to);
 	},
 });

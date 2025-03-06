@@ -57,7 +57,7 @@ export const executeDeleteUser = async (fromUserId: IUser['_id'], userId: IUser[
 Meteor.methods<ServerMethods>({
 	async deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
-		
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
