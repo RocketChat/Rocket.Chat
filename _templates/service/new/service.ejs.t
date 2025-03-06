@@ -12,7 +12,7 @@ const PORT = process.env.PORT || <%= h.random() %>;
 (async () => {
 	const { db } = await getConnection();
 
-	startTracing({ service: '<%= name %>', db: client });
+	startTracing({ service: '<%= name %>', db: db });
 
 	registerServiceModels(db, await getTrashCollection());
 
