@@ -10,7 +10,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined;
 
-	findOneByName(name: string, options?: { session: ClientSession }): Promise<T | null>;
+	findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null>;
 
 	findOneByRoomId(rid: string): Promise<T | null>;
 
@@ -18,5 +18,5 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileNameById(fileId: string, name: string, options?: { session: ClientSession }): Promise<Document | UpdateResult>;
 
-	deleteFile(fileId: string, options?: { session: ClientSession }): Promise<DeleteResult>;
+	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
 }

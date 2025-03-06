@@ -92,7 +92,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async findOneByName(name: string, options?: { session: ClientSession }): Promise<T | null> {
+	async findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null> {
 		return this.findOne<T>({ name }, { session: options?.session });
 	}
 
@@ -121,7 +121,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update, { session: options?.session });
 	}
 
-	async deleteFile(fileId: string, options?: { session: ClientSession }): Promise<DeleteResult> {
+	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 }
