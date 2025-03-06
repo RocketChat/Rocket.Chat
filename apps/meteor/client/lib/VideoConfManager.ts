@@ -713,6 +713,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
+		if (params.callId !== this.currentCallData?.callId) {
+			this.debugLog(`[VideoConf] User ${params.uid} has joined the call ${params.callId}, but we aren't calling with that id.`);
+			return;
+		}
+
 		this.infoLog(`[VideoConf] User ${params.uid} has joined a call we started ${params.callId}.`);
 		this.onDirectCallAccepted(params, true);
 	}
