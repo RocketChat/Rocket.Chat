@@ -160,7 +160,7 @@ const _saveUser = (session?: ClientSession) =>
 			// App IPostUserUpdated event hook
 			// We need to pass the session here to ensure this record is fetched
 			// with the uncommited transaction data.
-			const userUpdated = await Users.findOneById(userData._id, { session });
+			const userUpdated = await Users.findOneById(userData._id);
 
 			await callbacks.run('afterSaveUser', {
 				user: userUpdated,
