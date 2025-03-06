@@ -2,6 +2,7 @@ import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
+	ClientSession,
 	Collection,
 	DeleteOptions,
 	DeleteResult,
@@ -88,7 +89,7 @@ export interface IBaseModel<
 
 	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
 
-	removeById(_id: T['_id']): Promise<DeleteResult>;
+	removeById(_id: T['_id'], options?: { session?: ClientSession }): Promise<DeleteResult>;
 
 	removeByIds(ids: T['_id'][]): Promise<DeleteResult>;
 
