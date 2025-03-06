@@ -11,11 +11,11 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { ZodError } from 'zod';
 
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
+import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { registerAppLogsHandler } from './endpoints/appLogsHandler';
+import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
@@ -61,7 +61,9 @@ export class AppsRestApi {
 			prettyJson: false,
 			enableCors: false,
 		});
+
 		await this.addManagementRoutes();
+
 		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
@@ -90,8 +92,10 @@ export class AppsRestApi {
 			return API.v1.failure();
 		};
 
-		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
-		this.api.addRoute('count', ...appsCountHandler(this));
+		registerActionButtonsHandler(this);
+		registerAppsCountHandler(this);
+
+		registerAppLogsHandler(this);
 
 		this.api.addRoute(
 			'incompatibleModal',
@@ -1117,34 +1121,6 @@ export class AppsRestApi {
 						const languages = prl.getStorageItem().languageContent || {};
 
 						return API.v1.success({ languages });
-					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
-				},
-			},
-		);
-
-		this.api.addRoute(
-			':id/logs',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
-			{
-				async get() {
-					const prl = manager.getOneById(this.urlParams.id);
-
-					if (prl) {
-						const { offset, count } = await getPaginationItems(this.queryParams);
-						const { sort, fields, query } = await this.parseJsonQuery();
-
-						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
-						const options = {
-							sort: sort || { _updatedAt: -1 },
-							skip: offset,
-							limit: count,
-							fields,
-						};
-
-						const logs = await orchestrator?.getLogStorage()?.find(ourQuery, options);
-
-						return API.v1.success({ logs });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
