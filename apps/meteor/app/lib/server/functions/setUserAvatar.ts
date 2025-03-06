@@ -188,21 +188,20 @@ export async function setUserAvatar(
 
 	const avatarETag = etag || result?.etag || '';
 
-	await onceTransactionCommitedSuccessfully(async () => {
-		setTimeout(async () => {
-			if (service) {
-				if (updater) {
-					updater.set('avatarOrigin', origin);
-					updater.set('avatarETag', avatarETag);
-				} else {
-					await Users.setAvatarData(user._id, service, avatarETag);
-				}
+	if (service) {
+		if (updater) {
+			updater.set('avatarOrigin', origin);
+			updater.set('avatarETag', avatarETag);
+		} else {
+			// TODO: Why was this timeout added?
+			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+		}
 
-				void api.broadcast('user.avatarUpdate', {
-					username: user.username,
-					avatarETag,
-				});
-			}
-		}, 500);
-	}, session);
+		await onceTransactionCommitedSuccessfully(async () => {
+			void api.broadcast('user.avatarUpdate', {
+				username: user.username,
+				avatarETag,
+			});
+		}, session);
+	}
 }
