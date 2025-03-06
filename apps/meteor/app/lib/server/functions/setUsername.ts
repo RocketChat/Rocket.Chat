@@ -18,6 +18,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
 import { callbacks } from '../../../../lib/callbacks';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { notifyOnUserChange } from '../lib/notifyListener';
 
@@ -68,63 +69,71 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
-export const _setUsernameWithSession = (session?: ClientSession) =>
-	async function (userId: string, u: string, fullUser: IUser, updater?: Updater<IUser>): Promise<unknown> {
-		const username = u.trim();
+export const _setUsername = async function (
+	userId: string,
+	u: string,
+	fullUser: IUser,
+	updater?: Updater<IUser>,
+	session?: ClientSession,
+): Promise<unknown> {
+	const username = u.trim();
 
-		if (!userId || !username) {
+	if (!userId || !username) {
+		return false;
+	}
+
+	if (!validateUsername(username)) {
+		return false;
+	}
+
+	const user = fullUser || (await Users.findOneById(userId, { session }));
+	// User already has desired username, return
+	if (user.username === username) {
+		return user;
+	}
+	const previousUsername = user.username;
+	// Check username availability or if the user already owns a different casing of the name
+	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
+		if (!(await checkUsernameAvailability(username))) {
 			return false;
 		}
-
-		if (!validateUsername(username)) {
-			return false;
-		}
-
-		const user = fullUser || (await Users.findOneById(userId));
-		// User already has desired username, return
-		if (user.username === username) {
-			return user;
-		}
-		const previousUsername = user.username;
-		// Check username availability or if the user already owns a different casing of the name
-		if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-			if (!(await checkUsernameAvailability(username))) {
-				return false;
-			}
-		}
-		// If first time setting username, send Enrollment Email
-		try {
-			if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+	}
+	// If first time setting username, send Enrollment Email
+	if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+		await onceTransactionCommitedSuccessfully(() => {
+			try {
 				setImmediate(() => {
 					Accounts.sendEnrollmentEmail(user._id);
 				});
+			} catch (e: any) {
+				SystemLogger.error(e);
 			}
-		} catch (e: any) {
-			SystemLogger.error(e);
-		}
-		// Set new username*
-		// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
-		await Users.setUsername(user._id, username, { session });
-		user.username = username;
+		}, session);
+	}
+	// Set new username*
+	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
+	await Users.setUsername(user._id, username, { session });
+	user.username = username;
 
-		if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			let avatarData;
-			let serviceName = 'gravatar';
+	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
+		const avatarSuggestions = await getAvatarSuggestionForUser(user);
+		let avatarData;
+		let serviceName = 'gravatar';
 
-			for (const service of Object.keys(avatarSuggestions)) {
-				avatarData = avatarSuggestions[service];
-				if (service !== 'gravatar') {
-					serviceName = service;
-					break;
-				}
-			}
-
-			if (avatarData) {
-				await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater);
+		for (const service of Object.keys(avatarSuggestions)) {
+			avatarData = avatarSuggestions[service];
+			if (service !== 'gravatar') {
+				serviceName = service;
+				break;
 			}
 		}
 
+		if (avatarData) {
+			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater, session);
+		}
+	}
+
+	await onceTransactionCommitedSuccessfully(async () => {
 		// If it's the first username and the user has an invite Token, then join the invite room
 		if (!previousUsername && user.inviteToken) {
 			const inviteData = await Invites.findOneById(user.inviteToken);
@@ -138,11 +147,10 @@ export const _setUsernameWithSession = (session?: ClientSession) =>
 			name: user.name,
 			username: user.username,
 		});
+	}, session);
 
-		return user;
-	};
-
-export const _setUsername = _setUsernameWithSession();
+	return user;
+};
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
 	async 0() {
