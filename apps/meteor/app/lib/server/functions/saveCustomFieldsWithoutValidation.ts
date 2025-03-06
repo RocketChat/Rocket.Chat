@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { trim } from '../../../../lib/utils/stringUtils';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { settings } from '../../../settings/server';
 import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../lib/notifyListener';
 
@@ -64,9 +65,10 @@ export const saveCustomFieldsWithoutValidation = async function (
 		await Users.updateFromUpdater({ _id: userId }, updater, { session });
 	}
 
-	// Update customFields of all Direct Messages' Rooms for userId
-	const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields, { session });
-	if (setCustomFieldsResponse.modifiedCount) {
-		void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
-	}
+	await onceTransactionCommitedSuccessfully(async () => {
+		const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+		if (setCustomFieldsResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
+		}
+	}, session);
 };
