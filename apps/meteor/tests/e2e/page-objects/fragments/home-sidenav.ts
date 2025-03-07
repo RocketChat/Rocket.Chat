@@ -33,6 +33,10 @@ export class HomeSidenav {
 		return this.page.locator('#modal-root [data-qa="create-direct-modal"] [data-qa-type="user-auto-complete-input"]');
 	}
 
+	get btnDirectory(): Locator {
+		return this.page.locator('role=button[name="Directory"]');
+	}
+
 	get btnCreate(): Locator {
 		return this.page.locator('role=button[name="Create"]');
 	}
@@ -129,6 +133,10 @@ export class HomeSidenav {
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.userProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
+	}
+
+	async openDirectory(): Promise<void> {
+		await this.btnDirectory.click();
 	}
 
 	async openChat(name: string): Promise<void> {
