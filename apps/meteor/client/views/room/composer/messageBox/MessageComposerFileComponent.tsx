@@ -31,6 +31,7 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 			tabIndex={0}
 			role='button'
 			rcx-input-box__wrapper
+			readOnly={error}
 			className={previewWrapperStyle}
 			display='flex'
 			padding={4}
@@ -48,7 +49,7 @@ const MessageComposerFileComponent = ({ fileTitle, fileSubtitle, actionIcon, err
 				<Box fontScale='p2' color='info' withTruncatedText>
 					{fileTitle}
 				</Box>
-				<Box fontScale='c1' color={error ? 'danger' : 'hint'} textTransform={!error ? 'uppercase' : 'none'}>
+				<Box fontScale='c1' color={error ? 'danger' : 'hint'} textTransform={!error ? 'uppercase' : 'none'} withTruncatedText>
 					{fileSubtitle}
 				</Box>
 			</Box>

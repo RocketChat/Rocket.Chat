@@ -133,14 +133,14 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.audioRecorder).not.toBeVisible();
 		});
 
-		test('should open file modal when clicking on "Finish recording"', async ({ page }) => {
+		test('should attach file to the composer when clicking on "Finish recording"', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
 			await page.waitForTimeout(1000);
 			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
-			await expect(poHomeChannel.content.fileUploadModal).toBeVisible();
+			await expect(poHomeChannel.content.getFileComposerByName('Audio record.mp3')).toBeVisible();
 		});
 	});
 });

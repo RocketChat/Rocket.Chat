@@ -108,34 +108,36 @@ export class HomeContent {
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
-	get btnModalCancel(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
-	}
-
 	get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
-	}
-
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
 	}
 
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
 	get getFileDescription(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	get inputFileUploadName(): Locator {
+		return this.fileUploadModal.getByRole('textbox', { name: 'File name' });
+	}
+
+	get btnUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Update' });
+	}
+
+	get btnCancelUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Cancel' });
+	}
+
+	getFileComposerByName(fileName: string) {
+		return this.page.getByRole('main').getByRole('button', { name: fileName });
+	}
+
+	getThreadFileComposerByName(fileName: string) {
+		return this.page.getByRole('dialog').getByRole('button', { name: fileName });
 	}
 
 	get lastMessageFileName(): Locator {
@@ -446,5 +448,13 @@ export class HomeContent {
 
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
+	}
+
+	get btnSendMainComposer() {
+		return this.page.getByRole('main').getByRole('button', { name: 'Send', exact: true });
+	}
+
+	get btnSendThreadComposer() {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true });
 	}
 }

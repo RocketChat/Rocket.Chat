@@ -46,13 +46,11 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 				tshow,
 				previewUrls,
 				isSlashCommandAllowed,
-				tmid,
 			}: {
 				value: string;
 				tshow?: boolean;
 				previewUrls?: string[];
 				isSlashCommandAllowed?: boolean;
-				tmid?: IMessage['_id'];
 			}): Promise<void> => {
 				try {
 					await chat?.action.stop('typing');
@@ -78,7 +76,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
 		}),
-		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
+		[chat?.data, chat?.action, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, tmid, onSend],
 	);
 
 	const publicationReady = useReactiveValue(
