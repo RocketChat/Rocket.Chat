@@ -9,8 +9,8 @@ export const uploadFiles = async (
 	chat: ChatAPI,
 	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
 ): Promise<void> => {
-	// TODO: calculate max files based on the new array and the files in the queue
-	if (uploadsStore.get().length > MAX_MULTIPLE_UPLOADED_FILES) {
+	const mergedFilesLength = files.length + uploadsStore.get().length;
+	if (mergedFilesLength > MAX_MULTIPLE_UPLOADED_FILES) {
 		return dispatchToastMessage({
 			type: 'error',
 			message: t('You_cant_upload_more_than__count__files', { count: MAX_MULTIPLE_UPLOADED_FILES }),
