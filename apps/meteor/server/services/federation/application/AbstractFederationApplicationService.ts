@@ -70,8 +70,7 @@ export abstract class AbstractFederationApplicationService {
 			return;
 		}
 		if (federatedUser.shouldUpdateDisplayName(displayName)) {
-			// FIXME: temporary deep copy to not pass a readonly object, although, in this case we should let the caller update the internal reference.
-			await this.internalUserAdapter.updateRealName(JSON.parse(JSON.stringify(federatedUser.getInternalReference())) as IUser, displayName);
+			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReferenceCopy(), displayName);
 		}
 	}
 
