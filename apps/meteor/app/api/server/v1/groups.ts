@@ -588,7 +588,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
 			}
 
-			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) });
+			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
 
 			const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
 
