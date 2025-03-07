@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -9,12 +10,29 @@ jest.mock('../hooks/useAppInfo', () => ({
 	useAppInfo: jest.fn(),
 }));
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useTranslation: () => (key: string) => key,
-	useRouter: () => ({ navigate: jest.fn() }),
-	useToastMessageDispatch: () => jest.fn(),
-	usePermission: () => true,
-	useRouteParameter: jest.fn(() => null),
+jest.mock('@rocket.chat/ui-contexts', () => {
+	const originalModule = jest.requireActual('@rocket.chat/ui-contexts');
+	return {
+		...originalModule,
+		useRouter: () => ({ navigate: jest.fn() }),
+		useToastMessageDispatch: () => jest.fn(),
+		usePermission: () => true,
+		useRouteParameter: () => 'settings',
+	};
+});
+
+jest.mock('../../../components/Page', () => {
+	const originalModule = jest.requireActual('../../../components/Page');
+	return {
+		...originalModule,
+		PageHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+		PageFooter: ({ children, isDirty }: { children: React.ReactNode; isDirty: boolean }) => isDirty && <div>{children}</div>,
+	};
+});
+
+jest.mock('./AppDetailsPageHeader', () => ({
+	__esModule: true,
+	default: () => <div>AppDetailsPageHeader</div>,
 }));
 
 jest.mock('../../../apps/orchestrator', () => ({
@@ -23,6 +41,7 @@ jest.mock('../../../apps/orchestrator', () => ({
 	},
 }));
 
+const wrapper = mockAppRoot().withTranslations('en', 'core', { Save_changes: 'Save changes' });
 describe('AppDetailsPage', () => {
 	beforeEach(() => {
 		(useAppInfo as jest.Mock).mockReturnValue({
@@ -30,7 +49,7 @@ describe('AppDetailsPage', () => {
 			name: 'Test App',
 			installed: true,
 			settings: {
-				setting1: { id: 'setting1', value: 'old-value', packageValue: 'default-value' },
+				setting1: { id: 'setting1', value: 'old-value', packageValue: 'default-value', type: 'string' },
 			},
 			privacyPolicySummary: '',
 			permissions: [],
@@ -40,27 +59,92 @@ describe('AppDetailsPage', () => {
 		(AppClientOrchestratorInstance.setAppSettings as jest.Mock).mockReset();
 	});
 
-	it('should remove loading state on Save button, reset form, and hide the button after successful save', async () => {
-		(AppClientOrchestratorInstance.setAppSettings as jest.Mock).mockResolvedValueOnce({});
+	it('should not display the Save button initially', async () => {
+		render(<AppDetailsPage id='app123' />, {
+			wrapper: wrapper.build(),
+			legacyRoot: true,
+		});
 
-		render(<AppDetailsPage id='app123' />);
+		await waitFor(() => {
+			expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
+		});
+	});
 
-		const saveButton = screen.getByRole('button', { name: /Save_changes/i });
+	it('should display the Save button when a setting is changed', async () => {
+		render(<AppDetailsPage id='app123' />, {
+			wrapper: wrapper.build(),
+			legacyRoot: true,
+		});
 
-		expect(saveButton).not.toBeDisabled();
+		const settingInput = screen.getByLabelText('setting1');
+		await userEvent.clear(settingInput);
+		await userEvent.type(settingInput, 'new-value');
+
+		await waitFor(() => {
+			expect(screen.getByRole('button', { name: 'Save changes' })).toBeVisible();
+		});
+	});
+
+	it('should disable the Save button during submission', async () => {
+		(AppClientOrchestratorInstance.setAppSettings as jest.Mock).mockResolvedValueOnce(new Promise((resolve) => setTimeout(resolve, 500)));
+
+		render(<AppDetailsPage id='app123' />, {
+			wrapper: wrapper.build(),
+			legacyRoot: true,
+		});
+
+		const settingInput = screen.getByLabelText('setting1');
+		await userEvent.clear(settingInput);
+		await userEvent.type(settingInput, 'new-value');
+
+		const saveButton = screen.getByRole('button', { name: 'Save changes' });
 
 		await userEvent.click(saveButton);
 
 		await waitFor(() => {
 			expect(saveButton).toBeDisabled();
 		});
+	});
 
-		await waitFor(() => {
-			expect(saveButton).not.toBeDisabled();
+	it('should hide the Save button after successful save', async () => {
+		(AppClientOrchestratorInstance.setAppSettings as jest.Mock).mockResolvedValueOnce(new Promise((resolve) => setTimeout(resolve, 500)));
+
+		render(<AppDetailsPage id='app123' />, {
+			wrapper: wrapper.build(),
+			legacyRoot: true,
 		});
 
+		const settingInput = screen.getByLabelText('setting1');
+		await userEvent.clear(settingInput);
+		await userEvent.type(settingInput, 'new-value');
+
+		const saveButton = screen.getByRole('button', { name: 'Save changes' });
+		await userEvent.click(saveButton);
+
 		await waitFor(() => {
-			expect(screen.queryByRole('button', { name: /Save_changes/i })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: 'Save changes' })).not.toBeInTheDocument();
+		});
+	});
+
+	it('should call setAppSettings with updated setting value', async () => {
+		(AppClientOrchestratorInstance.setAppSettings as jest.Mock).mockResolvedValueOnce(new Promise((resolve) => setTimeout(resolve, 500)));
+
+		render(<AppDetailsPage id='app123' />, {
+			wrapper: wrapper.build(),
+			legacyRoot: true,
+		});
+
+		const settingInput = screen.getByLabelText('setting1');
+		await userEvent.clear(settingInput);
+		await userEvent.type(settingInput, 'new-value');
+
+		const saveButton = screen.getByRole('button', { name: 'Save changes' });
+		await userEvent.click(saveButton);
+
+		await waitFor(() => {
+			expect(AppClientOrchestratorInstance.setAppSettings as jest.Mock).toHaveBeenCalledWith('app123', [
+				{ id: 'setting1', packageValue: 'default-value', type: 'string', value: 'new-value' },
+			]);
 		});
 	});
 });
