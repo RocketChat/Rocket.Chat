@@ -347,7 +347,7 @@
 		"google-libphonenumber": "^3.2.38",
 		"gravatar": "^1.8.2",
 		"he": "^1.2.0",
-		"highlight.js": "^11.10.0",
+		"highlight.js": "11.8.0",
 		"hljs9": "npm:highlight.js@^9.18.5",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
