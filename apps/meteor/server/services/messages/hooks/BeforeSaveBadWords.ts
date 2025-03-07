@@ -26,7 +26,12 @@ export class BeforeSaveBadWords {
 		};
 
 		this.badWords = new Filter(options);
-		this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
+
+		try {
+			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
+		} catch (error) {
+			this.badWordsRegex = null;
+		}
 
 		if (goodWordsList?.length) {
 			this.badWords.removeWords(...goodWordsList.split(',').map((word) => word.trim()));
@@ -39,7 +44,7 @@ export class BeforeSaveBadWords {
 	}
 
 	async filterBadWords({ message }: { message: IMessage }): Promise<IMessage> {
-		if (!message.msg || !this.badWords || !this.badWordsRegex) {
+		if (!message.msg || !this.badWords) {
 			return message;
 		}
 
@@ -48,7 +53,9 @@ export class BeforeSaveBadWords {
 		} catch (error) {
 			// ignore
 		} finally {
-			message.msg = message.msg.replace(this.badWordsRegex, (match) => '*'.repeat(match.length));
+			if (this.badWordsRegex) {
+				message.msg = message.msg.replace(this.badWordsRegex, (match) => '*'.repeat(match.length));
+			}
 		}
 
 		return message;
