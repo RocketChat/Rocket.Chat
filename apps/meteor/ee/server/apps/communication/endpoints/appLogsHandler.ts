@@ -1,4 +1,3 @@
-import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import type { AppsRestApi } from '../rest';
 
@@ -11,7 +10,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 				const proxiedApp = _manager.getOneById(this.urlParams.id);
 
 				if (!proxiedApp) {
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+					return api.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				}
 
 				const { offset, count } = await getPaginationItems(this.queryParams);
@@ -25,9 +24,9 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 					fields,
 				};
 
-				const logs = await _orch?.getLogStorage()?.find(ourQuery, options);
+				const result = await _orch.getLogStorage().find(ourQuery, options);
 
-				return API.v1.success({ logs });
+				return api.success({ offset, logs: result.logs, count: result.logs.length, total: result.total });
 			},
 		},
 	);

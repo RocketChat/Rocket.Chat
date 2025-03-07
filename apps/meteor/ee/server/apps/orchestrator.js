@@ -104,6 +104,10 @@ export class AppServerOrchestrator {
 	}
 
 	getLogStorage() {
+		if (!this._logStorage) {
+			throw new Error('Apps-Engine not yet fully initialized');
+		}
+
 		return this._logStorage;
 	}
 
