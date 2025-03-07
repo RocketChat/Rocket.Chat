@@ -36,6 +36,7 @@ import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeMana
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import { TestAppStatusCache } from './TestAppStatusCache';
 
 export class TestInfastructureSetup {
     private appStorage: TestsAppStorage;
@@ -102,6 +103,9 @@ export class TestInfastructureSetup {
             },
             getRuntime: () => {
                 return this.runtimeManager;
+            },
+            getAppStatusCache() {
+                return new TestAppStatusCache();
             },
         } as unknown as AppManager;
     }
