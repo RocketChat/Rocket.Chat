@@ -342,10 +342,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         return promise;
     }
 
-    public setState(state: AppStatus) {
-        
-    }
-
     private waitUntilReady(): Promise<void> {
         if (this.state === 'ready') {
             return;
