@@ -30,7 +30,6 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
-import { Settings } from '../index';
 import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -728,7 +727,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -742,7 +741,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -755,7 +754,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -1262,7 +1261,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}: {
 		agents?: string[];
 		roomName?: string;
-		departmentId?: string;
+		departmentId?: string | string[];
 		open?: boolean;
 		served?: boolean;
 		createdAt?: { start?: Date; end?: Date };
@@ -1281,7 +1280,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
 			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
-			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+			...(departmentId && departmentId !== 'undefined' && { departmentId: { $in: ([] as string[]).concat(departmentId) } }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
@@ -1358,7 +1357,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.departmentId = departmentId;
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findAllServiceTimeByAgent({
@@ -1907,10 +1906,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	async updateRoomCount() {
-		return Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
-	}
-
 	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2128,7 +2123,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	getAnalyticsMetricsBetweenDate(
@@ -2322,7 +2317,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
@@ -2486,15 +2481,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater.addToSet('v.activity', period);
 	}
 
-	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
-		const query = {
-			_id: rid,
-		};
-		const updater = this.getVisitorActiveForPeriodUpdateQuery(period);
-
-		return this.updateOne(query, updater.getUpdateFilter());
-	}
-
 	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {
 		return this.col
 			.aggregate<MACStats>([
@@ -2616,7 +2602,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
-		return this.col.countDocuments({ departmentId: { $exists: true } });
+		return this.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

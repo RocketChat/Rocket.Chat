@@ -302,3 +302,6 @@ export type AvatarServiceObject = {
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
+
+export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
+	useRealName ? name || username : username;

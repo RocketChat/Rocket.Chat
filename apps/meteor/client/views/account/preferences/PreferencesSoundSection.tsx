@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesSoundSection = () => {
@@ -12,12 +12,12 @@ const PreferencesSoundSection = () => {
 	const { control, watch } = useFormContext();
 	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
 
-	const newRoomNotificationId = useUniqueId();
-	const newMessageNotificationId = useUniqueId();
-	const muteFocusedConversationsId = useUniqueId();
-	const masterVolumeId = useUniqueId();
-	const notificationsSoundVolumeId = useUniqueId();
-	const voipRingerVolumeId = useUniqueId();
+	const newRoomNotificationId = useId();
+	const newMessageNotificationId = useId();
+	const muteFocusedConversationsId = useId();
+	const masterVolumeId = useId();
+	const notificationsSoundVolumeId = useId();
+	const voipRingerVolumeId = useId();
 
 	return (
 		<AccordionItem title={t('Sound')}>
@@ -33,7 +33,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={masterVolumeId}
+									aria-label={t('Master_volume')}
 									aria-describedby={`${masterVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -55,7 +55,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={notificationsSoundVolumeId}
+									aria-label={t('Notification_volume')}
 									aria-describedby={`${notificationsSoundVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -81,7 +81,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={voipRingerVolumeId}
+									aria-label={t('Call_ringer_volume')}
 									aria-describedby={`${voipRingerVolumeId}-hint`}
 									value={value}
 									minValue={0}

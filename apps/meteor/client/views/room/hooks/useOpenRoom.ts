@@ -32,6 +32,10 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new NotAuthorizedError();
 			}
 
+			if (!reference || !type) {
+				throw new RoomNotFoundError(undefined, { type, reference });
+			}
+
 			let roomData;
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
