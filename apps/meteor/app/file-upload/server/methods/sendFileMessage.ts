@@ -6,9 +6,12 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -22,12 +25,35 @@ import { FileUpload } from '../lib/FileUpload';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
 	const requiredFields = ['_id', 'name', 'type', 'size'];
-	requiredFields.forEach((field) => {
+	for (const field of requiredFields) {
 		if (!Object.keys(file).includes(field)) {
 			throw new Meteor.Error('error-invalid-file', 'Invalid file');
 		}
-	});
+	}
 }
+
+const logger = new Logger('sendFileMessage');
+
+export const parseMultipleFilesIntoMessageAttachments = async (
+	filesToConfirm: Partial<IUpload>[],
+	roomId: string,
+	user: IUser,
+): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
+	const results = await Promise.all(
+		filesToConfirm.map((file) =>
+			wrapExceptions(() => parseFileIntoMessageAttachments(file, roomId, user)).catch(async (error) => {
+				// Not an important error, it should not happen and if it happens wil affect the attachment preview in the message object only
+				logger.warn({ msg: 'Error processing file: ', file, error });
+				return { files: [], attachments: [] };
+			}),
+		),
+	);
+
+	return {
+		files: results.flatMap(({ files }) => files),
+		attachments: results.flatMap(({ attachments }) => attachments),
+	};
+};
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,

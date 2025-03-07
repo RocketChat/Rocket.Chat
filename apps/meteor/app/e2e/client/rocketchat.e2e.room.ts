@@ -27,6 +27,7 @@ import {
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { RoomManager } from '../../../client/lib/RoomManager';
+import type { EncryptedFile } from '../../../client/lib/chats/Upload';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
@@ -187,7 +188,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.KEYS_RECEIVED);
 	}
 
-	async shouldConvertSentMessages(message: { msg: string }) {
+	async readyToEncrypt() {
 		if (!this.isReady() || this[PAUSED]) {
 			return false;
 		}
@@ -196,6 +197,14 @@ export class E2ERoom extends Emitter {
 			return new Promise((resolve) => {
 				this.once('PAUSED', resolve);
 			});
+		}
+
+		return true;
+	}
+
+	async shouldConvertSentMessages(message: { msg: string }) {
+		if (!(await this.readyToEncrypt())) {
+			return false;
 		}
 
 		if (message.msg[0] === '/') {
@@ -562,7 +571,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
-	async encryptFile(file: File) {
+	async encryptFile(file: File): Promise<EncryptedFile | void> {
 		// if (!this.isSupportedRoomType(this.typeOfRoom)) {
 		// 	return;
 		// }

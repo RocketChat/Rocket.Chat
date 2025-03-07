@@ -13,6 +13,7 @@ import {
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsHideProps,
+	isMediaEditProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -329,6 +330,28 @@ API.v1.addRoute(
 			return API.v1.success({
 				message,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.mediaEdit/:rid/:fileId',
+	{ authRequired: true, validateParams: isMediaEditProps },
+	{
+		async post() {
+			const { fileName } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.forbidden();
+			}
+
+			const { matchedCount } = await Uploads.updateFileNameById(this.urlParams.fileId, fileName);
+
+			if (matchedCount === 0) {
+				throw new Error('invalid-file');
+			}
+
+			return API.v1.success();
 		},
 	},
 );

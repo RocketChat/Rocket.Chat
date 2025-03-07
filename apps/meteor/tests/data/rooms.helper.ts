@@ -141,3 +141,10 @@ export const addUserToRoom = ({
 			}),
 		});
 };
+
+export const uploadFile = ({ rid, fileUrl }: { rid: IRoom['_id']; fileUrl: string }) => {
+	return request
+		.post(api(`rooms.media/${rid}`))
+		.set(credentials)
+		.attach('file', fileUrl);
+};
