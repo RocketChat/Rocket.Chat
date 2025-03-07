@@ -75,13 +75,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomScrollbars
-				ref={scrollRef}
-				onScroll={(args) => {
-					handleScroll(args);
-				}}
-				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
-			>
+			<CustomScrollbars ref={scrollRef} onScroll={handleScroll} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<Box
 					is='ul'
 					className={[listStyle, 'thread']}
