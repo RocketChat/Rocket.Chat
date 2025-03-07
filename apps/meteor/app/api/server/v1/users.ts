@@ -31,7 +31,6 @@ import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-ac
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
-import { executeDeleteUser } from '../../../../server/methods/deleteUser';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
@@ -46,6 +45,7 @@ import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
+import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
@@ -343,7 +343,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await executeDeleteUser(this.userId, user._id, confirmRelinquish);
+			await deleteUser(user._id, confirmRelinquish, this.userId);
 
 			return API.v1.success();
 		},
