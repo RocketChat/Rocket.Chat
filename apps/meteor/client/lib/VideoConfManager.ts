@@ -326,17 +326,16 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	public updateUser(): void {
 		const userId = Meteor.userId();
 
-		if (this.userId === userId) {
-			this.debugLog(`[VideoConf] Logged user has not changed, so we're not changing the hooks.`);
-			return;
-		}
-
-		this.debugLog(`[VideoConf] Logged user has changed.`);
+		this.debugLog(`[VideoConf] Logged user or connection status has changed.`);
 
 		if (this.userId) {
-			this.disconnect();
+			this.disconnect(this.userId !== userId);
 		}
 
+		if (!Meteor.status().connected || (userId && Meteor.loggingIn())) {
+			this.debugLog(`[VideoConf] Connection lost or login process still pending, skipping user change.`);
+			return;
+		}
 		if (userId) {
 			this.connectUser(userId);
 		}
@@ -479,12 +478,17 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		sdk.rest.post('/v1/video-conference.cancel', { callId });
 	}
 
-	private disconnect(): void {
+	private disconnect(clearCalls = true): void {
 		console.log(`[VideoConf] disconnecting user ${this.userId}`);
 		for (const hook of this.hooks) {
 			hook();
 		}
 		this.hooks = [];
+		this.userId = undefined;
+
+		if (!clearCalls) {
+			return;
+		}
 
 		if (this.currentCallHandler) {
 			clearInterval(this.currentCallHandler);
@@ -499,7 +503,6 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				clearTimeout(call.acceptTimeout);
 			}
 		});
-		this.userId = undefined;
 		this.incomingDirectCalls.clear();
 		this.dismissedCalls.clear();
 		this.currentCallData = undefined;
