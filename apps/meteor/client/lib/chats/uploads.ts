@@ -1,9 +1,8 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import fileSize from 'filesize';
 
-import { UserAction, USER_ACTIVITIES } from '../../../app/ui/client/lib/UserAction';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import type { Upload } from './Upload';
@@ -15,13 +14,10 @@ import { i18n } from '../../../app/utils/lib/i18n';
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
 
-	private tmid?: string;
-
-	constructor({ rid, tmid }: { rid: string; tmid?: IMessage['_id'] }) {
+	constructor({ rid }: { rid: string }) {
 		super();
 
 		this.rid = rid;
-		this.tmid = tmid;
 	}
 
 	uploads: readonly Upload[] = [];
@@ -180,10 +176,6 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					}
 				};
 
-				if (this.uploads.length) {
-					UserAction.performContinuously(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
-				}
-
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
 					this.set(this.uploads.filter((upload) => upload.id !== id));
@@ -204,13 +196,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					};
 				}),
 			);
-		} finally {
-			if (!this.uploads.length) {
-				UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
-			}
 		}
 	}
 }
 
-export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI =>
-	new UploadsStore({ rid, tmid });
+export const createUploadsAPI = ({ rid }: { rid: IRoom['_id'] }): UploadsAPI => new UploadsStore({ rid });

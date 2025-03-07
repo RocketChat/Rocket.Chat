@@ -145,12 +145,13 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage) =>
 	} as const;
 
 	try {
-		await sdk.call('sendMessage', composedMessage, fileUrls, fileIds);
 		chat.composer?.clear();
 		store.clear();
+		await sdk.call('sendMessage', composedMessage, fileUrls, fileIds);
 	} catch (error: unknown) {
-		console.error(error);
 		dispatchToastMessage({ type: 'error', message: error });
+	} finally {
+		chat.action.stop('uploading');
 	}
 
 	return true;

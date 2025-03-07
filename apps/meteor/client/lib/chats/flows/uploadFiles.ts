@@ -90,4 +90,5 @@ export const uploadFiles = async (
 
 	uploadNextFile();
 	resetFileInput?.();
+	chat?.action.performContinuously('uploading');
 };

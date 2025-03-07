@@ -151,7 +151,7 @@ export class ChatMessages implements ChatAPI {
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid });
-		this.threadUploads = createUploadsAPI({ rid, tmid });
+		this.threadUploads = createUploadsAPI({ rid });
 		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {
