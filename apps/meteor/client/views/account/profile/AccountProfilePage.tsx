@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -35,7 +35,8 @@ const AccountProfilePage = (): ReactElement => {
 	const erasureType = useSetting('Message_ErasureType');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
-	const isMobile = useMediaQuery('(max-width: 814px)');
+	const breakpoints = useBreakpoints();
+	const isMobile = !breakpoints.includes('md');
 
 	const methods = useForm({
 		defaultValues: getProfileInitialValues(user),
@@ -122,7 +123,7 @@ const AccountProfilePage = (): ReactElement => {
 					</FormProvider>
 					<Box mb={12}>
 						<Box mb={12}>
-							<ButtonGroup vertical={isMobile} style={{ gap: '8px' }} stretch>
+							<ButtonGroup vertical={isMobile} large stretch>
 								<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 									{t('Logout_Others')}
 								</Button>

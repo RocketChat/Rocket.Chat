@@ -12,7 +12,7 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -45,7 +45,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
 	const customFieldsMetadata = useAccountsCustomFields();
-	const isMobile = useMediaQuery('(max-width: 768px)');
+	const breakpoints = useBreakpoints();
+	const isMobile = !breakpoints.includes('md');
 
 	const {
 		allowRealNameChange,
