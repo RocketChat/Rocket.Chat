@@ -6,6 +6,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { sendRequest } from '../lib/webhooks';
 
 type AdditionalFields =
 	| Record<string, unknown>
@@ -139,7 +140,7 @@ async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await LivechatTyped.sendRequest(responseData);
+	const response = await sendRequest(responseData);
 
 	if (response) {
 		const responseData = await response.text();

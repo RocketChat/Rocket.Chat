@@ -37,9 +37,8 @@ Rocket.Chat has four key product offerings:
 
 # ☁️ Cloud-hosted Rocket.Chat
 
-Send your first message in minutes! Enjoy your free trial [cloud-hosted workspace](https://docs.rocket.chat/docs/saas-trial) for 30 days. Explore the benefits and decide whether to continue using our secure cloud hosting or migrate to your private cloud, data center, or air-gapped environment.
-
-[Start your cloud-hosted trial now!](https://rocket.chat/trial-saas)
+Rocket.Chat has flexible hosting options that adapt to your infrastructure needs.
+For more information please [follow this link](https://www.rocket.chat/hosting)
 
 # 📖 Docs for Developers, Admins and Users
 

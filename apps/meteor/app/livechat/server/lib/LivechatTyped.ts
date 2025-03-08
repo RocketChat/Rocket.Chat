@@ -18,7 +18,7 @@ import type {
 	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import { Logger, type MainLogger } from '@rocket.chat/logger';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -33,7 +33,6 @@ import {
 	LivechatCustomField,
 	LivechatContacts,
 } from '@rocket.chat/models';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -47,8 +46,6 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { FileUpload } from '../../../file-upload/server';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
@@ -60,7 +57,6 @@ import {
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
@@ -70,6 +66,7 @@ import { Visitors, type RegisterGuestType } from './Visitors';
 import { registerGuestData } from './contacts/registerGuestData';
 import { getRequiredDepartment } from './departmentsLib';
 import type { ILivechatMessage } from './localTypes';
+import { cleanGuestHistory } from './tracking';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -98,11 +95,8 @@ type ICRMData = {
 class LivechatClass {
 	logger: Logger;
 
-	webhookLogger: MainLogger;
-
 	constructor() {
 		this.logger = new Logger('Livechat');
-		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
@@ -317,50 +311,6 @@ class LivechatClass {
 		return Users.countBotAgents();
 	}
 
-	async sendRequest(
-		postData: {
-			type: string;
-			[key: string]: any;
-		},
-		attempts = 10,
-	) {
-		if (!attempts) {
-			Livechat.logger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
-			return;
-		}
-		const timeout = settings.get<number>('Livechat_http_timeout');
-		const secretToken = settings.get<string>('Livechat_secret_token');
-		const webhookUrl = settings.get<string>('Livechat_webhookUrl');
-		try {
-			Livechat.webhookLogger.debug({ msg: 'Sending webhook request', postData });
-			const result = await fetch(webhookUrl, {
-				method: 'POST',
-				headers: {
-					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
-				},
-				body: postData,
-				timeout,
-			});
-
-			if (result.status === 200) {
-				metrics.totalLivechatWebhooksSuccess.inc();
-				return result;
-			}
-
-			metrics.totalLivechatWebhooksFailures.inc();
-			throw new Error(await result.text());
-		} catch (err) {
-			const retryAfter = timeout * 4;
-			Livechat.webhookLogger.error({ msg: `Error response on ${11 - attempts} try ->`, err });
-			// try 10 times after 20 seconds each
-			attempts - 1 &&
-				Livechat.webhookLogger.warn({ msg: `Webhook call failed. Retrying`, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
-			setTimeout(async () => {
-				await Livechat.sendRequest(postData, attempts - 1);
-			}, retryAfter);
-		}
-	}
-
 	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
 		check(_id, String);
 		check(agentData, Object);
@@ -453,28 +403,6 @@ class LivechatClass {
 				status,
 			});
 		});
-	}
-
-	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
-		if (!originalMessage?._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		// TODO: Apps sends an `any` object and apparently we just check for _id being present
-		// while updateMessage expects AtLeast<id, msg, rid>
-		await updateMessage(message, guest as unknown as IUser);
-
-		return true;
 	}
 
 	async transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
@@ -603,50 +531,8 @@ class LivechatClass {
 			throw new Error('error-invalid-guest');
 		}
 
-		await this.cleanGuestHistory(guest);
+		await cleanGuestHistory(guest);
 		return LivechatVisitors.disableById(_id);
-	}
-
-	async cleanGuestHistory(guest: ILivechatVisitor) {
-		const { token } = guest;
-
-		// This shouldn't be possible, but just in case
-		if (!token) {
-			throw new Error('error-invalid-guest');
-		}
-
-		const cursor = LivechatRooms.findByVisitorToken(token);
-		for await (const room of cursor) {
-			await Promise.all([
-				Subscriptions.removeByRoomId(room._id, {
-					async onTrash(doc) {
-						void notifyOnSubscriptionChanged(doc, 'removed');
-					},
-				}),
-				FileUpload.removeFilesByRoomId(room._id),
-				Messages.removeByRoomId(room._id),
-				ReadReceipts.removeByRoomId(room._id),
-			]);
-		}
-
-		await LivechatRooms.removeByVisitorToken(token);
-
-		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
-		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
-		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
-	}
-
-	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
-		const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
-		const editOwn = message.u && message.u._id === guest._id;
-
-		if (!deleteAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		await deleteMessage(message, guest as unknown as IUser);
-
-		return true;
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
