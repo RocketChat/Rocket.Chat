@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		".:build-preview-move": "mkdir -p ../../.preview && cp -r ./storybook-static ../../.preview/gazzodown",
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"build-preview": "storybook build --quiet",
 		"build-storybook": "storybook build",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",

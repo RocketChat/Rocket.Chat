@@ -7,7 +7,7 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"build": "tsc",
-		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",
+		"build-containers": "npm run build && docker-compose build && rimraf ./dist",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [

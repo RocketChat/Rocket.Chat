@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"clean": "rm -rf ./dist",
+		"clean": "rimraf ./dist",
 		"build": "tsc",
 		"lint": "eslint ."
 	},

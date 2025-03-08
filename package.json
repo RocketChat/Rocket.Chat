@@ -20,6 +20,7 @@
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
+		"rimraf": "^6.0.1",
 		"ts-node": "^10.9.2",
 		"turbo": "^2.3.4"
 	},

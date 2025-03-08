@@ -14,7 +14,7 @@
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"testunit": "jest --passWithNoTests",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"build": "rm -rf dist && tsc"
+		"build": "rimraf dist && tsc"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

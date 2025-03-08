@@ -7,7 +7,7 @@
 	"browser": "./dist/main.client.js",
 	"types": "./dist/main.server.d.ts",
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint .",

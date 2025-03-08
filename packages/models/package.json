@@ -21,7 +21,7 @@
 		"node-rsa": "^1.1.1"
 	},
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "rimraf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

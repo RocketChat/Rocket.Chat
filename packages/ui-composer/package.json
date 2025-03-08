@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/ui-composer",
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"build-preview": "storybook build",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
