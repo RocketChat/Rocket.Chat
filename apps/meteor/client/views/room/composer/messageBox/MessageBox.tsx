@@ -43,6 +43,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import emojione from 'emojione';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -155,7 +156,11 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emoji: string) => {
+			// chat.composer?.insertText(`:${emoji}:`);
+			const unicodeEmoji = emojione.shortnameToUnicode(`:${emoji}:`);
+			chat.composer?.insertText(`${unicodeEmoji}`);
+		});
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
