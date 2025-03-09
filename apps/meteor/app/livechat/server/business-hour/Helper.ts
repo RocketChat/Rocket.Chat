@@ -1,4 +1,3 @@
-import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment';
@@ -9,17 +8,6 @@ import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener'
 import { businessHourLogger } from '../lib/logger';
 
 export { filterBusinessHoursThatMustBeOpened };
-
-export const filterBusinessHoursThatMustBeOpenedByDay = async (
-	businessHours: ILivechatBusinessHour[],
-	day: string, // Format: moment.format('dddd')
-): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
-	return filterBusinessHoursThatMustBeOpened(
-		businessHours.filter((businessHour) =>
-			businessHour.workHours.some((workHour) => workHour.start.utc.dayOfWeek === day || workHour.finish.utc.dayOfWeek === day),
-		),
-	);
-};
 
 export const openBusinessHourDefault = async (): Promise<void> => {
 	await Users.removeBusinessHoursFromAllUsers();
