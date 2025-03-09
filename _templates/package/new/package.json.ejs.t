@@ -18,7 +18,7 @@ to: packages/<%= name %>/package.json
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/<%= name.toLowerCase() %>"
 	},
 	"main": "./dist/index.js",
