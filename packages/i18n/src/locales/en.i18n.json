@@ -2081,7 +2081,7 @@
   "Enter_the_code_we_just_emailed_you": "Enter the code we just emailed you.",
   "Enter_to": "Enter to",
   "Enter_TOTP_password": "Enter TOTP password",
-  "Enter_your_E2E_password": "Enter your E2E password",
+  "Enter_your_E2E_password": " Enter your E2EE password",
   "Enter_your_E2E_password_to_access": "Enter your end-to-end encryption password to access",
   "Enter_your_password_to_delete_your_account": "Enter your password to delete your account. This cannot be undone.",
   "Enter_your_username_to_delete_your_account": "Enter your username to delete your account. This cannot be undone.",
