@@ -1,11 +1,14 @@
 import { useDebouncedState, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 export const useIsVisible = () => {
 	const [menuVisibility, setMenuVisibility] = useSafely(useDebouncedState(!!window.DISABLE_ANIMATION, 100));
+	const disconnectObserverRef = useRef<(() => void) | null>(null);
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
+			disconnectObserverRef.current?.();
+
 			if (!node) {
 				return;
 			}
@@ -16,6 +19,8 @@ export const useIsVisible = () => {
 			});
 
 			observer.observe(node);
+
+			disconnectObserverRef.current = () => observer.disconnect();
 		},
 		[setMenuVisibility],
 	);

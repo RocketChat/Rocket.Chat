@@ -6,6 +6,7 @@ import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useListIsAtBottom = () => {
+	const disconnectObserverRef = useRef<(() => void) | null>(null);
 	const atBottomRef = useRef(true);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
@@ -29,6 +30,7 @@ export const useListIsAtBottom = () => {
 
 	const ref = useCallback(
 		(node: HTMLElement | null) => {
+			disconnectObserverRef.current?.();
 			if (!node) {
 				return;
 			}
@@ -46,6 +48,8 @@ export const useListIsAtBottom = () => {
 			});
 
 			observer.observe(messageList);
+
+			disconnectObserverRef.current = () => observer.disconnect();
 
 			node.addEventListener(
 				'scroll',

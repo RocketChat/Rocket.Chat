@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent, KeyboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -330,19 +330,7 @@ const MessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback(
-		(node: HTMLTextAreaElement) => {
-			if (node === null) {
-				return;
-			}
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
-				handler(e);
-			});
-		},
-		[handler],
-	);
-
-	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
@@ -388,6 +376,7 @@ const MessageBox = ({
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs}
+					onKeyDown={handler}
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
