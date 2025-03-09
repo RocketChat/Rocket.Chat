@@ -33,6 +33,7 @@
     tasks,
     unorderedList,
     timestamp,
+    isValidCustomDomain
   } = require('./utils');
 
 let skipBold = false;
@@ -295,12 +296,19 @@ URLAuthorityHostName
   = DomainName
   / $(Digits |4, "."|) // TODO: IPv4 and IPv6
 
+
 URLAuthorityPort
   = Digits // TODO: from "0" to "65535"
 
 DomainName
   = "localhost"
+  / CustomDomain
   / $(DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+
+CustomDomain
+  = d:DomainNameLabel &{ 
+      return isValidCustomDomain(d, options.customDomains); 
+    }
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
