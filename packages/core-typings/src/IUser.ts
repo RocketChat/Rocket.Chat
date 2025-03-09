@@ -196,6 +196,7 @@ export interface IUser extends IRocketChatRecord {
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
+	// @deprecated
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
@@ -219,6 +220,43 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 }
+
+export const copyUserEmail = (email: IUserEmail) => ({
+	...email,
+});
+
+export const copyUserSettings = (setting: IUserSettings) => ({
+	...setting,
+	...(setting.preferences && { preferences: { ...setting.preferences } }),
+});
+
+export const copyUserBanners = (banners: IUser['banners']) => ({
+	...(banners &&
+		Object.entries(banners).map((banner) => {
+			const [key, value] = banner;
+			return {
+				[key]: {
+					...value,
+					...(value.textArguments?.length && { textArguments: [...value.textArguments] }),
+					...(value.modifiers?.length && { modifiers: [...value.modifiers] }),
+				},
+			};
+		})),
+});
+
+// ignores deprecated properties
+export const copyUserObject = (user: IUser) => ({
+	...user,
+	...(user.roles?.length && { roles: [...user.roles] }),
+	...(user.emails?.length && { emails: user.emails.map(copyUserEmail) }),
+	...(user.oauth?.authorizedClients?.length && { oauth: { authorizedClients: [...user.oauth.authorizedClients] } }),
+	...(user.e2e && { e2e: { ...user.e2e } }),
+	...(user.customFields && { customFields: { ...user.customFields } }),
+	...(user.settings && { settings: copyUserSettings(user.settings) }),
+	...(user.banners && { banners: copyUserBanners(user.banners) }),
+	...(user.importIds && { importIds: { ...user.importIds } }),
+	...(user.roomRolePriorities && { roomRolePriorities: { ...user.roomRolePriorities } }),
+});
 
 export interface IRegisterUser extends IUser {
 	username: string;

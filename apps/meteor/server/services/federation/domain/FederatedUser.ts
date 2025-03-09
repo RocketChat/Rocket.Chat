@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { UserStatus, copyUserObject } from '@rocket.chat/core-typings';
 import { ObjectId } from 'mongodb'; // This should not be in the domain layer, but its a known "problem"
 
 import { isAnInternalIdentifier } from './FederatedRoom';
@@ -68,6 +68,10 @@ export class FederatedUser {
 			...this.internalReference,
 			_id: this.internalId,
 		});
+	}
+
+	public getInternalReferenceCopy(): IUser {
+		return copyUserObject(this.internalReference);
 	}
 
 	public getStorageRepresentation(): Readonly<IUser> {
