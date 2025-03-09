@@ -14,6 +14,7 @@ import { useGitHubEnterpriseAuth } from '../../../app/github-enterprise/client/h
 import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
+import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
@@ -45,6 +46,7 @@ const AppLayout = () => {
 	useGitHubEnterpriseAuth();
 	useDrupal();
 	useDolphin();
+	useTokenPassAuth();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
