@@ -84,7 +84,7 @@ export class ProxiedApp {
 
     public async setStatus(status: AppStatus, silent?: boolean): Promise<void> {
         await this.call(AppMethod.SETSTATUS, status);
-
+        this.manager.getAppStatusCache().set(this.getID(), status);
         if (!silent) {
             await this.manager.getBridges().getAppActivationBridge().doAppStatusChanged(this, status);
         }
