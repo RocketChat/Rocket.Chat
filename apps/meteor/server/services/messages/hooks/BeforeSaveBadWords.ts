@@ -4,15 +4,18 @@ import type BadWordsFilter from 'bad-words';
 export class BeforeSaveBadWords {
 	badWords: BadWordsFilter | null = null;
 
+	badWordsRegex: RegExp | null = null;
+
 	async configure(badWordsList?: string, goodWordsList?: string) {
 		const { default: Filter } = await import('bad-words');
+		const badWords =
+			badWordsList
+				?.split(',')
+				.map((word) => word.trim())
+				.filter(Boolean) || [];
 
 		const options = {
-			list:
-				badWordsList
-					?.split(',')
-					.map((word) => word.trim())
-					.filter(Boolean) || [],
+			list: badWords,
 			// library definition does not allow optional definition
 			exclude: undefined,
 			splitRegex: undefined,
@@ -24,6 +27,12 @@ export class BeforeSaveBadWords {
 
 		this.badWords = new Filter(options);
 
+		try {
+			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
+		} catch (error) {
+			this.badWordsRegex = null;
+		}
+
 		if (goodWordsList?.length) {
 			this.badWords.removeWords(...goodWordsList.split(',').map((word) => word.trim()));
 		}
@@ -31,6 +40,7 @@ export class BeforeSaveBadWords {
 
 	disable() {
 		this.badWords = null;
+		this.badWordsRegex = null;
 	}
 
 	async filterBadWords({ message }: { message: IMessage }): Promise<IMessage> {
@@ -42,6 +52,10 @@ export class BeforeSaveBadWords {
 			message.msg = this.badWords.clean(message.msg);
 		} catch (error) {
 			// ignore
+		} finally {
+			if (this.badWordsRegex) {
+				message.msg = message.msg.replace(this.badWordsRegex, (match) => '*'.repeat(match.length));
+			}
 		}
 
 		return message;
