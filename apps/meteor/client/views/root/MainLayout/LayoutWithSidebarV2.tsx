@@ -44,7 +44,7 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 	return (
 		<>
 			<AccessibilityShortcut />
-			<NavBar />
+			{!embeddedLayout && <NavBar />}
 			<Box
 				bg='surface-light'
 				id='rocket-chat'
