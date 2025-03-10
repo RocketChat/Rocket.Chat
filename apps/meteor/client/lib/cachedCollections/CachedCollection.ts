@@ -36,7 +36,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export class CachedCollection<T extends { _id: string }, U = T> {
+export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
@@ -49,20 +49,17 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 
 	protected version = 18;
 
-	protected userRelated: boolean;
-
 	protected updatedAt = new Date(0);
 
 	protected log: (...args: any[]) => void;
 
 	private timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType = 'notify-user', userRelated = true }: { name: Name; eventType?: StreamNames; userRelated?: boolean }) {
+	constructor({ name, eventType = 'notify-user' }: { name: Name; eventType?: StreamNames }) {
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
 
 		this.name = name;
 		this.eventType = eventType;
-		this.userRelated = userRelated;
 
 		this.log = [getConfig(`debugCachedCollection-${this.name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true')
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
@@ -78,13 +75,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		return `${this.name}-changed`;
 	}
 
-	getToken() {
-		if (this.userRelated === false) {
-			return undefined;
-		}
-
-		return Accounts._storedLoginToken();
-	}
+	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
 		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
@@ -207,11 +198,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		this.log('saving cache (done)');
 	});
 
-	clearCacheOnLogout() {
-		if (this.userRelated === true) {
-			void this.clearCache();
-		}
-	}
+	abstract clearCacheOnLogout(): void;
 
 	async clearCache() {
 		this.log('clearing cache');
@@ -356,12 +343,33 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 
 	private reconnectionComputation: Tracker.Computation | undefined;
 
-	listen() {
-		if (!this.userRelated) {
-			void this.init();
-			return;
-		}
+	public abstract listen(): void;
+}
 
+export class PublicCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+	protected getToken() {
+		return undefined;
+	}
+
+	clearCacheOnLogout() {
+		// do nothing
+	}
+
+	listen() {
+		void this.init();
+	}
+}
+
+export class PrivateCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+	protected getToken() {
+		return Accounts._storedLoginToken();
+	}
+
+	clearCacheOnLogout() {
+		void this.clearCache();
+	}
+
+	listen() {
 		if (process.env.NODE_ENV === 'test') {
 			return;
 		}
