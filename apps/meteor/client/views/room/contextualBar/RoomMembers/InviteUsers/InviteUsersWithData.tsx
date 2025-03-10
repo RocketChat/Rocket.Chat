@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import InviteUsers from './InviteUsers';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -16,6 +16,8 @@ type InviteUsersWithDataProps = {
 const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const toastShownRef = useRef(false); // Track toast notification
+
 	const [
 		{
 			isEditing,
@@ -84,7 +86,12 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 			try {
 				const data = await findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) });
 				setInviteState((prevState) => ({ ...prevState, url: data?.url, caption: linkExpirationText(data) }));
-				dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+
+				// Show toast only once
+				if (!toastShownRef.current) {
+					dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+					toastShownRef.current = true; // Mark toast as shown
+				}
 			} catch (error) {
 				setInviteState((prevState) => ({ ...prevState, error: error as Error }));
 			}
@@ -93,6 +100,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 
 	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
+		toastShownRef.current = false; // Reset toast state when generating a new link
 	});
 
 	return (
@@ -111,4 +119,4 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	);
 };
 
-export default InviteUsersWithData;
+export default InviteUsersWithData;	
