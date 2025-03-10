@@ -26,6 +26,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
 		}
 
+		if (room.t === 'l' && !room.open) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
+		}
+
 		return Room.join({ room, user: { _id: userId }, ...(code ? { joinCode: code } : {}) });
 	},
 });
