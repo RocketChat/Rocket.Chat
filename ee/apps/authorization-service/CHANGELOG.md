@@ -1,5 +1,92 @@
 # @rocket.chat/authorization-service
 
+## 0.4.17
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#35181](https://github.com/RocketChat/Rocket.Chat/pull/35181)) Bump meteor to 3.1.2 and Node version to 20.13.1
+
+- <details><summary>Updated dependencies [eba8e364e4bef7ed71ebb527738515e8f7914ec7, d5175eeb5be81bab061e5ff8c6991c589bfeb0f4, 0df16c4ca50a6ad8613cfdc11a8ef6cb216fb6a4, 89964144e042c8d9282b51efd89e1e684077fdd7, f80ac66b006080313f4aa5a04706ff9c8790622b, dee90e0791de41997e6df6149c4fe07d3a12c003, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/rest-typings@7.4.0
+  - @rocket.chat/models@1.3.0
+  - @rocket.chat/model-typings@1.4.0
+  - @rocket.chat/network-broker@0.1.9
+  - @rocket.chat/core-typings@7.4.0
+  - @rocket.chat/core-services@0.7.9
+  </details>
+
+## 0.4.17-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.5
+  - @rocket.chat/rest-typings@7.4.0-rc.5
+  - @rocket.chat/core-services@0.7.9-rc.5
+  - @rocket.chat/model-typings@1.4.0-rc.5
+  - @rocket.chat/models@1.3.0-rc.5
+  - @rocket.chat/network-broker@0.1.9-rc.5
+  </details>
+
+## 0.4.17-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.4
+  - @rocket.chat/rest-typings@7.4.0-rc.4
+  - @rocket.chat/core-services@0.7.9-rc.4
+  - @rocket.chat/model-typings@1.4.0-rc.4
+  - @rocket.chat/models@1.3.0-rc.4
+  - @rocket.chat/network-broker@0.1.9-rc.4
+  </details>
+
+## 0.4.16-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.4.0-rc.3
+  - @rocket.chat/rest-typings@7.4.0-rc.3
+  - @rocket.chat/core-services@0.7.8-rc.3
+  - @rocket.chat/model-typings@1.4.0-rc.3
+  - @rocket.chat/models@1.3.0-rc.3
+  - @rocket.chat/network-broker@0.1.8-rc.3
+  </details>
+
+## 0.4.16-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.2
+  - @rocket.chat/rest-typings@7.4.0-rc.2
+  - @rocket.chat/core-services@0.7.8-rc.2
+  - @rocket.chat/model-typings@1.4.0-rc.2
+  - @rocket.chat/models@1.3.0-rc.2
+  - @rocket.chat/network-broker@0.1.8-rc.2
+  </details>
+
+## 0.4.16-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.1
+  - @rocket.chat/rest-typings@7.4.0-rc.1
+  - @rocket.chat/core-services@0.7.8-rc.1
+  - @rocket.chat/model-typings@1.4.0-rc.1
+  - @rocket.chat/models@1.3.0-rc.1
+  - @rocket.chat/network-broker@0.1.8-rc.1
+  </details>
+
 ## 0.4.16-rc.0
 
 ### Patch Changes
@@ -16,6 +103,19 @@
   - @rocket.chat/network-broker@0.1.6-rc.0
   - @rocket.chat/core-typings@7.4.0-rc.0
   - @rocket.chat/core-services@0.7.6-rc.0
+  </details>
+
+## 0.4.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.3.3
+  - @rocket.chat/rest-typings@7.3.3
+  - @rocket.chat/core-services@0.7.8
+  - @rocket.chat/model-typings@1.3.3
+  - @rocket.chat/models@1.2.3
+  - @rocket.chat/network-broker@0.1.8
   </details>
 
 ## 0.4.15
