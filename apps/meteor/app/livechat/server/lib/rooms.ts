@@ -76,12 +76,11 @@ export async function createRoom({
 		throw new Error('error-contact-channel-blocked');
 	}
 
-	const defaultAgent =
-		agent ??
-		(await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, {
-			visitorId: visitor._id,
-			source: roomInfo.source,
-		}));
+	const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, {
+		visitorId: visitor._id,
+		source: roomInfo.source,
+	});
+
 	// if no department selected verify if there is at least one active and pick the first
 	if (!defaultAgent && !visitor.department) {
 		const department = await getRequiredDepartment();
