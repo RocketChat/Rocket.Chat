@@ -1,4 +1,4 @@
-import type { AtLeast, FileAttachmentProps, IMessage } from '@rocket.chat/core-typings';
+import type { AtLeast, FileAttachmentProps, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
 import type { E2ERoom } from '../../../../app/e2e/client/rocketchat.e2e.room';
@@ -6,7 +6,7 @@ import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
-import type { EncryptedUpload } from '../Upload';
+import { isEncryptedUpload, type EncryptedUpload } from '../Upload';
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
@@ -113,19 +113,22 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage) =>
 		return false;
 	}
 
-	const { fileUrls, fileIds } = filesToUpload.reduce<{ fileUrls: string[]; fileIds: string[] }>(
-		(acc, upload) => {
-			if (!upload.url || !upload.id) {
-				return acc;
-			}
+	const fileUrls: string[] = [];
+	const filesToConfirm: IUploadToConfirm[] = [];
 
-			acc.fileIds.push(upload.id);
-			acc.fileUrls.push(upload.url);
+	for await (const upload of filesToUpload) {
+		if (!upload.url || !upload.id) {
+			continue;
+		}
 
-			return acc;
-		},
-		{ fileUrls: [], fileIds: [] },
-	);
+		let content;
+		if (e2eRoom && isEncryptedUpload(upload)) {
+			content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
+		}
+
+		fileUrls.push(upload.url);
+		filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
+	}
 
 	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
 
@@ -147,7 +150,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage) =>
 	try {
 		chat.composer?.clear();
 		store.clear();
-		await sdk.call('sendMessage', composedMessage, fileUrls, fileIds);
+		await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
 	} finally {

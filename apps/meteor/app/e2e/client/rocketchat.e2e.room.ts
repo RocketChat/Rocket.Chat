@@ -1,5 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -631,7 +631,7 @@ export class E2ERoom extends Emitter {
 
 	// Helper function for encryption of content
 	async encryptMessageContent(
-		contentToBeEncrypted: Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>,
+		contentToBeEncrypted: (Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>) | Partial<IUpload>,
 	) {
 		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
 

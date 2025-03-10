@@ -5,7 +5,7 @@ import fileSize from 'filesize';
 
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
-import type { Upload } from './Upload';
+import { isEncryptedUpload, type Upload } from './Upload';
 import { settings } from '../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -45,18 +45,19 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	editUploadFileName = async (uploadId: Upload['id'], fileName: Upload['file']['name']): Promise<void> => {
 		try {
-			await sdk.rest.post(`/v1/rooms.mediaEdit/${this.rid}/${uploadId}`, {
-				fileName,
-			});
-
 			this.set(
 				this.uploads.map((upload) => {
 					if (upload.id !== uploadId) {
 						return upload;
 					}
 
-					// TODO reencrypt file
-					return { ...upload, file: new File([upload.file], fileName, upload.file) };
+					return {
+						...upload,
+						file: new File([upload.file], fileName, upload.file),
+						...(isEncryptedUpload(upload) && {
+							metadataForEncryption: { ...upload.metadataForEncryption, name: fileName },
+						}),
+					};
 				}),
 			);
 		} catch (error) {
@@ -90,6 +91,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				file: encrypted ? encrypted.rawFile : file,
 				percentage: 0,
 				encryptedFile: encrypted?.encryptedFile,
+				metadataForEncryption: encrypted?.fileContent.raw,
 			},
 		]);
 
