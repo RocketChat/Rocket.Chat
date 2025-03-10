@@ -1,6 +1,7 @@
 import type { UseQueryOptions, QueryKey, UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
+import { useEffect, useRef } from 'react';
 
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
@@ -10,13 +11,18 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 	options?: UseQueryOptions<TQueryFnData, Error, TData, TQueryKey>,
 ): UseQueryResult<TData, Error> => {
 	const queryClient = useQueryClient();
+	const computation = useRef<Tracker.Computation | null>(null);
+
+	useEffect(() => {
+		return () => computation.current?.stop();
+	}, []);
 
 	return useQuery({
 		queryKey,
 		queryFn: (): Promise<TQueryFnData> =>
 			new Promise((resolve, reject) => {
 				queueMicrotask(() => {
-					Tracker.autorun((c) => {
+					computation.current = Tracker.autorun((c) => {
 						const data = reactiveQueryFn();
 
 						if (c.firstRun) {
