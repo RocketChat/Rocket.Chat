@@ -224,7 +224,7 @@ export class ListenersModule {
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
 
-			const isOnlyQueueMetadataUpdate = (diff: Record<string, any> | undefined): boolean => {
+			const isOnlyQueueMetadataUpdate = (diff: Record<string, unknown> | undefined): boolean => {
 				if (!diff) {
 					return false;
 				}
