@@ -22,6 +22,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { hasPermission } from '../../../../app/authorization/client';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -63,6 +64,9 @@ const RoomMessage = ({
 	useCountSelected();
 
 	const messageRef = useJumpToMessage(message._id);
+	const deleteAnyAllowed = hasPermission('delete-message', message.rid);
+	const deleteOwnAllowed = hasPermission('delete-own-message');
+	const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
 
 	return (
 		<Message
@@ -73,7 +77,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting && !isOTRMessage ? toggleSelected : undefined}
-			isSelected={selected}
+			isSelected={selected && deleteAllowed}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
@@ -101,7 +105,7 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox disabled={isOTRMessage} checked={selected} onChange={toggleSelected} />}
+				{selecting && deleteAllowed && <CheckBox disabled={isOTRMessage} checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
