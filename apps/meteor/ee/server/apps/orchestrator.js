@@ -206,27 +206,38 @@ export class AppServerOrchestrator {
 		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
 	}
 
-	async findUpgradeToV7Date() {
-		let hadPre7Version = false;
+	async findMajorVersionUpgradeDate(targetVersion = 7) {
 		let upgradeToV7Date = null;
+		let hadPreTargetVersion = false;
 
 		try {
 			const statistics = await this.getStatisticsModel().findInstallationDates();
-			if (statistics && statistics.length > 0) {
-				const statsAscendingByInstallDate = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
+			if (!statistics || statistics.length === 0) {
+				this._rocketchatLogger.info('No statistics found');
+				return upgradeToV7Date;
+			}
 
-				for (const stat of statsAscendingByInstallDate) {
-					const version = stat.version || '';
+			const statsAscendingByInstallDate = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
+			for (const stat of statsAscendingByInstallDate) {
+				const version = stat.version || '';
 
-					if (version && !version.startsWith('7.')) {
-						hadPre7Version = true;
-					}
+				if (!version) {
+					continue;
+				}
 
-					if (hadPre7Version && version && version.startsWith('7.')) {
-						upgradeToV7Date = new Date(stat.installedAt);
-						this._rocketchatLogger.info(`Found upgrade to v7 date: ${upgradeToV7Date.toISOString()}`);
-						break;
-					}
+				const majorVersion = parseInt(version.split('.')[0], 10);
+				if (isNaN(majorVersion)) {
+					continue;
+				}
+
+				if (majorVersion < targetVersion) {
+					hadPreTargetVersion = true;
+				}
+
+				if (hadPreTargetVersion && majorVersion >= targetVersion) {
+					upgradeToV7Date = new Date(stat.installedAt);
+					this._rocketchatLogger.info(`Found upgrade to v${targetVersion} date: ${upgradeToV7Date.toISOString()}`);
+					break;
 				}
 			}
 		} catch (error) {
@@ -245,7 +256,7 @@ export class AppServerOrchestrator {
 	}
 
 	async disableApps(installationSource, grandfatherApps, maxApps) {
-		const upgradeToV7Date = await this.findUpgradeToV7Date();
+		const upgradeToV7Date = await this.findMa();
 		const apps = await this.getManager().get({ installationSource });
 
 		const grandfathered = [];
