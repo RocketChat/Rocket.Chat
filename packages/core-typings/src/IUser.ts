@@ -221,16 +221,12 @@ export interface IUser extends IRocketChatRecord {
 	isOAuthUser?: boolean; // client only field
 }
 
-export const copyUserEmail = (email: IUserEmail) => ({
-	...email,
-});
-
 export const copyUserSettings = (setting: IUserSettings) => ({
 	...setting,
 	...(setting.preferences && { preferences: { ...setting.preferences } }),
 });
 
-export const copyUserBanners = (banners: NonNullable<IUser['banners']>): NonNullable<IUser['banners']> => ({
+export const copyUserBanners = (banners: NonNullable<IUser['banners']>): typeof banners => ({
 	...Object.entries(banners).reduce((accum: NonNullable<IUser['banners']>, [key, value]) => {
 		accum[key] = {
 			...value,
@@ -241,11 +237,35 @@ export const copyUserBanners = (banners: NonNullable<IUser['banners']>): NonNull
 	}, {}),
 });
 
+export const copyUserServices = (services: IUserServices): IUserServices => ({
+	...(services.password && { password: { ...services.password } }),
+	...(services.passwordHistory?.length && { passwordHistory: [...services.passwordHistory] }),
+	...(services.email && { email: { ...services.email } }),
+	...(services.resume && {
+		resume: { ...services.resume, loginTokens: services.resume.loginTokens ? [...services.resume.loginTokens] : [] },
+	}),
+	...(services.cloud && { cloud: { ...services.cloud } }),
+	...(services.totp && { totp: { ...services.totp, hashedBackup: [...(services.totp.hashedBackup || [])] } }),
+	...(services.email2fa && { email2fa: { ...services.email2fa } }),
+	...(services.emailCode && { emailCode: { ...services.emailCode } }),
+	...(services.google && { google: { ...services.google } }),
+	...(services.facebook && { facebook: { ...services.facebook } }),
+	...(services.github && { github: { ...services.github } }),
+	...(services.linkedin && { linkedin: { ...services.linkedin } }),
+	...(services.twitter && { twitter: { ...services.twitter } }),
+	...(services.gitlab && { gitlab: { ...services.gitlab } }),
+	...(services.saml && { saml: { ...services.saml } }),
+	...(services.ldap && { ldap: { ...services.ldap } }),
+	...(services.nextcloud && { nextcloud: { ...services.nextcloud } }),
+	...(services.dolphin && { dolphin: { ...services.dolphin } }),
+});
+
 // ignores deprecated properties
-export const copyUserObject = (user: IUser) => ({
+export const copyUserObject = (user: IUser): IUser => ({
 	...user,
 	...(user.roles?.length && { roles: [...user.roles] }),
-	...(user.emails?.length && { emails: user.emails.map(copyUserEmail) }),
+	...(user.services && { services: copyUserServices(user.services) }),
+	...(user.emails?.length && { emails: user.emails.map((email) => ({ ...email })) }),
 	...(user.oauth?.authorizedClients?.length && { oauth: { authorizedClients: [...user.oauth.authorizedClients] } }),
 	...(user.e2e && { e2e: { ...user.e2e } }),
 	...(user.customFields && { customFields: { ...user.customFields } }),
