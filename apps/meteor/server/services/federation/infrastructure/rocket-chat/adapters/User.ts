@@ -93,8 +93,8 @@ export class RocketChatUserAdapter {
 		return user;
 	}
 
-	public async getInternalUserByUsername(username: string): Promise<IUser | undefined> {
-		return Users.findOneByUsername(username);
+	public async getInternalUserByUsername(username: string): Promise<IUser | null> {
+		return Users.findOneByUsername<IUser>(username);
 	}
 
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
