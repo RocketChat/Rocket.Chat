@@ -22,5 +22,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
 
+	updateFileContentById(fileId: string, content: IUpload['content']): Promise<Document | UpdateResult>;
+
 	deleteFile(fileId: string): Promise<DeleteResult>;
 }

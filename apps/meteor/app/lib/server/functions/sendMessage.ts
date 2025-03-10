@@ -1,6 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import { isE2EEMessage, type IMessage, type IRoom, type IUpload } from '@rocket.chat/core-typings';
+import { isE2EEMessage, type IMessage, type IRoom, type IUpload, type IUploadToConfirm } from '@rocket.chat/core-typings';
 import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -214,6 +214,24 @@ export function prepareMessageObject(
 }
 
 /**
+ * Update file names on the Uploads collection, as the names may have changed between the upload and the sending of the message
+ * For encrypted rooms, the full `content` of the file is updated as well, as the name is included there
+ **/
+const updateFileNames = async (filesToConfirm: IUploadToConfirm[], isE2E: boolean) => {
+	return Promise.all(
+		filesToConfirm.map(async (upload) => {
+			if (isE2E && upload.content) {
+				// on encrypted files, the `upload.name` is an useless attribute, so it doesn't need to be updated
+				// the name will be loaded from the encrypted data on `upload.content` instead
+				await Uploads.updateFileContentById(upload._id, upload.content);
+			} else if (upload.name) {
+				await Uploads.updateFileNameById(upload._id, upload.name);
+			}
+		}),
+	);
+};
+
+/**
  * Validates and sends the message object.
  */
 export const sendMessage = async (
@@ -222,15 +240,23 @@ export const sendMessage = async (
 	room: any,
 	upsert = false,
 	previewUrls?: string[],
-	uploadIdsToConfirm?: string[],
+	filesToConfirm?: IUploadToConfirm[],
 ) => {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 
-	if (uploadIdsToConfirm !== undefined && !isE2EEMessage(message)) {
-		const filesToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
-		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
+	const isE2E = isE2EEMessage(message);
+
+	if (filesToConfirm) {
+		await updateFileNames(filesToConfirm, isE2E);
+	}
+
+	const uploadIdsToConfirm = filesToConfirm?.map(({ _id }) => _id);
+
+	if (uploadIdsToConfirm !== undefined && !isE2E) {
+		const uploadsToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
+		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(uploadsToConfirm, message.rid, user);
 		message.files = files;
 		message.attachments = attachments;
 	}

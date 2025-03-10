@@ -151,6 +151,16 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
+	async updateFileContentById(fileId: string, content: IUpload['content']): Promise<Document | UpdateResult> {
+		const filter = { _id: fileId };
+		const update = {
+			$set: {
+				content,
+			},
+		};
+		return this.updateOne(filter, update);
+	}
+
 	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
 	}
