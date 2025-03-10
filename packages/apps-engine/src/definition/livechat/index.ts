@@ -8,6 +8,8 @@ import { ILivechatTransferData } from './ILivechatTransferData';
 import { ILivechatTransferEventContext, LivechatTransferEventType } from './ILivechatTransferEventContext';
 import { IPostLivechatAgentAssigned } from './IPostLivechatAgentAssigned';
 import { IPostLivechatAgentUnassigned } from './IPostLivechatAgentUnassigned';
+import { IPostLivechatDepartmentDisabled } from './IPostLivechatDepartmentDisabled';
+import { IPostLivechatDepartmentRemoved } from './IPostLivechatDepartmentRemoved';
 import { IPostLivechatGuestSaved } from './IPostLivechatGuestSaved';
 import { IPostLivechatRoomClosed } from './IPostLivechatRoomClosed';
 import { IPostLivechatRoomSaved } from './IPostLivechatRoomSaved';
@@ -37,4 +39,6 @@ export {
     IVisitorEmail,
     IVisitorPhone,
     LivechatTransferEventType,
+    IPostLivechatDepartmentRemoved,
+    IPostLivechatDepartmentDisabled,
 };
