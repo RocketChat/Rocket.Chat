@@ -1,5 +1,5 @@
 import { MongoInternals } from 'meteor/mongo';
-import type { MongoError } from 'mongodb';
+import type { ClientSession, MongoError } from 'mongodb';
 
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -18,3 +18,41 @@ export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mon
 export const shouldRetryTransaction = (e: unknown): boolean =>
 	(e as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
 	(e as MongoError)?.errorLabels?.includes('TransientTransactionError');
+
+export const isTransactionCommited = (sess: ClientSession): boolean => {
+	if (['TRANSACTION_COMMITTED', 'TRANSACTION_COMMITTED_EMPTY'].includes(sess.transaction.state)) {
+		return true;
+	}
+	return false;
+};
+
+export const onceTransactionCommitedSuccessfully = async (cb: () => Promise<void> | void, session?: ClientSession) => {
+	if (session?.inTransaction()) {
+		session.once('ended', (sess) => {
+			if (!isTransactionCommited(sess)) {
+				return;
+			}
+			void cb();
+		});
+		return;
+	}
+	await cb();
+};
+
+export const wrapInSessionTransaction =
+	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
+	async (...args: T): Promise<Awaited<U>> => {
+		const session = client.startSession();
+		try {
+			session.startTransaction();
+			const result = await curriedCallback(session).apply(this, args);
+			await session.commitTransaction();
+			return result;
+		} catch (error) {
+			await session.abortTransaction();
+
+			throw error;
+		} finally {
+			await session.endSession();
+		}
+	};
