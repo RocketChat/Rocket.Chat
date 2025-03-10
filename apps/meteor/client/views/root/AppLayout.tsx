@@ -5,6 +5,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
@@ -45,6 +46,8 @@ const AppLayout = () => {
 	useGitHubEnterpriseAuth();
 	useDrupal();
 	useDolphin();
+
+	useOTRMessaging();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
