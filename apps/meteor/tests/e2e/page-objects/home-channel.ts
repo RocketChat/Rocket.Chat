@@ -102,7 +102,7 @@ export class HomeChannel {
 	}
 
 	get btnRoomEnterE2EEPassword(): Locator {
-		return this.page.getByRole('main').getByRole('button', { name: 'Enter your E2E password' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Enter your E2EE password' });
 	}
 
 	get btnSavedMyPassword(): Locator {
@@ -110,7 +110,7 @@ export class HomeChannel {
 	}
 
 	get btnEnterE2EEPassword(): Locator {
-		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2E password' });
+		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2EE password' });
 	}
 
 	get bannerSaveEncryptionPassword(): Locator {
@@ -118,7 +118,7 @@ export class HomeChannel {
 	}
 
 	get bannerEnterE2EEPassword(): Locator {
-		return this.page.getByRole('button', { name: 'Enter your E2E password' });
+		return this.page.getByRole('button', { name: 'Enter your E2EE password' });
 	}
 
 	get btnNotPossibleDecodeKey(): Locator {
