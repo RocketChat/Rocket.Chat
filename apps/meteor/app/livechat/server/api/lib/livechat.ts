@@ -7,6 +7,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { getInitSettings } from '../../lib/settings';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
@@ -101,7 +102,7 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = await LivechatTyped.getInitSettings();
+	const initSettings = await getInitSettings();
 	const triggers = await findTriggers();
 	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;

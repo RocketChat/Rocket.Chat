@@ -14,7 +14,8 @@ import { Livechat as LivechatTyped } from '../../../livechat/server/lib/Livechat
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
-import { updateMessage } from '../../../livechat/server/lib/messages';
+import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
+import { createRoom } from '../../../livechat/server/lib/rooms';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -56,7 +57,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
-		const msg = await LivechatTyped.sendMessage({
+		const msg = await sendMessage({
 			guest: guest as ILivechatVisitor,
 			message: livechatMessage as ILivechatMessage,
 			agent: undefined,
@@ -110,7 +111,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			agentRoom = { agentId: user._id, username: user.username };
 		}
 
-		const room = await LivechatTyped.createRoom({
+		const room = await createRoom({
 			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			roomInfo: {
 				source: {
