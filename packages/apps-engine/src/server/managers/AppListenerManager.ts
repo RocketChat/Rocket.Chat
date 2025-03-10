@@ -326,6 +326,7 @@ export class AppListenerManager {
         return !!(lockedEventList && lockedEventList.size);
     }
 
+    /* eslint-disable-next-line complexity */
     public async executeListener<I extends keyof IListenerExecutor>(int: I, data: IListenerExecutor[I]['args'][0]): Promise<IListenerExecutor[I]['result']> {
         if (this.isEventBlocked(int)) {
             throw new EssentialAppDisabledException('There is one or more apps that are essential to this event but are disabled');
@@ -794,7 +795,7 @@ export class AppListenerManager {
             }
         }
 
-        return data;
+        return room;
     }
 
     private async executePostRoomCreate(data: IRoom): Promise<void> {
