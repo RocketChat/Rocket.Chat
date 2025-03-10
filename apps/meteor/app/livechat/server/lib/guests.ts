@@ -1,11 +1,21 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatCustomField } from '@rocket.chat/models';
+import {
+	LivechatVisitors,
+	LivechatCustomField,
+	LivechatInquiry,
+	LivechatRooms,
+	Messages,
+	ReadReceipts,
+	Subscriptions,
+} from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../file-upload/server';
+import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 
 export async function saveGuest(
 	guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string },
@@ -66,4 +76,41 @@ export async function saveGuest(
 	});
 
 	return ret;
+}
+
+export async function removeGuest(_id: string) {
+	const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
+	if (!guest) {
+		throw new Error('error-invalid-guest');
+	}
+
+	await cleanGuestHistory(guest.token);
+	return LivechatVisitors.disableById(_id);
+}
+
+async function cleanGuestHistory(token: string) {
+	// This shouldn't be possible, but just in case
+	if (!token) {
+		throw new Error('error-invalid-guest');
+	}
+
+	const cursor = LivechatRooms.findByVisitorToken(token);
+	for await (const room of cursor) {
+		await Promise.all([
+			Subscriptions.removeByRoomId(room._id, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				},
+			}),
+			FileUpload.removeFilesByRoomId(room._id),
+			Messages.removeByRoomId(room._id),
+			ReadReceipts.removeByRoomId(room._id),
+		]);
+	}
+
+	await LivechatRooms.removeByVisitorToken(token);
+
+	const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
+	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }

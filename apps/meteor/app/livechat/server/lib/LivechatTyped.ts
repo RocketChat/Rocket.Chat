@@ -49,7 +49,6 @@ import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByD
 import { RoutingManager } from './RoutingManager';
 import { Visitors, type RegisterGuestType } from './Visitors';
 import { registerGuestData } from './contacts/registerGuestData';
-import { cleanGuestHistory } from './tracking';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -325,16 +324,6 @@ class LivechatClass {
 				departmentId: guest.department,
 			});
 		}
-	}
-
-	async removeGuest(_id: string) {
-		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
-		if (!guest) {
-			throw new Error('error-invalid-guest');
-		}
-
-		await cleanGuestHistory(guest);
-		return LivechatVisitors.disableById(_id);
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {

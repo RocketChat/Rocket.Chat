@@ -1,10 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatRooms, Messages, ReadReceipts, Subscriptions, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
-import { FileUpload } from '../../../file-upload/server';
-import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
 type PageInfo = { title: string; location: { href: string }; change: string };
@@ -54,33 +51,4 @@ export async function savePageHistory(token: string, roomId: string | undefined,
 
 	// @ts-expect-error: Investigating on which case we won't receive a roomId and where that history is supposed to be stored
 	return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
-}
-
-export async function cleanGuestHistory(guest: ILivechatVisitor) {
-	const { token } = guest;
-
-	// This shouldn't be possible, but just in case
-	if (!token) {
-		throw new Error('error-invalid-guest');
-	}
-
-	const cursor = LivechatRooms.findByVisitorToken(token);
-	for await (const room of cursor) {
-		await Promise.all([
-			Subscriptions.removeByRoomId(room._id, {
-				async onTrash(doc) {
-					void notifyOnSubscriptionChanged(doc, 'removed');
-				},
-			}),
-			FileUpload.removeFilesByRoomId(room._id),
-			Messages.removeByRoomId(room._id),
-			ReadReceipts.removeByRoomId(room._id),
-		]);
-	}
-
-	await LivechatRooms.removeByVisitorToken(token);
-
-	const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
-	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
-	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }
