@@ -1,13 +1,22 @@
 import type { IDepartmentAgent } from '../definitions';
 
 export const formatAgentListPayload = (oldAgentList: IDepartmentAgent[], newAgentList: IDepartmentAgent[]) => {
-	return {
-		upsert: newAgentList.filter(
-			(agent) =>
-				!oldAgentList.some(
-					(initialAgent) => initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
-				),
-		),
-		remove: oldAgentList.filter((initialAgent) => !newAgentList.some((agent) => initialAgent._id === agent._id)),
-	};
+	const upsert: IDepartmentAgent[] = [];
+	const remove: IDepartmentAgent[] = [];
+
+	for (const agent of newAgentList) {
+		const initialAgent = agent._id ? oldAgentList.find((initialAgent) => initialAgent._id === agent._id) : undefined;
+
+		if (!initialAgent || agent.count !== initialAgent.count || agent.order !== initialAgent.order) {
+			upsert.push(agent);
+		}
+	}
+
+	for (const initialAgent of oldAgentList) {
+		if (!newAgentList.some((agent) => initialAgent._id === agent._id)) {
+			remove.push(initialAgent);
+		}
+	}
+
+	return { upsert, remove };
 };
