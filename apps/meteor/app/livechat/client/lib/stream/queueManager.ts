@@ -126,7 +126,6 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	return () => {
 		LivechatInquiry.remove({});
 		removeGlobalListener();
-		removeAgentListener(userId);
 		cleanAgentListener?.();
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
