@@ -36,6 +36,7 @@ import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
 import { AppInstallationSource } from './storage/IAppStorageItem';
+import { AppStatusCache } from './AppStatusCache';
 
 export interface IAppInstallParameters {
     enable: boolean;
@@ -101,6 +102,8 @@ export class AppManager {
 
     private readonly runtime: AppRuntimeManager;
 
+    private readonly appStatusCache: AppStatusCache;
+
     private isLoaded: boolean;
 
     constructor({ metadataStorage, logStorage, bridges, sourceStorage }: IAppManagerDeps) {
@@ -137,6 +140,8 @@ export class AppManager {
 
         this.parser = new AppPackageParser();
         this.compiler = new AppCompiler();
+        this.appStatusCache = new AppStatusCache();
+
         this.accessorManager = new AppAccessorManager(this);
         this.listenerManager = new AppListenerManager(this);
         this.commandManager = new AppSlashCommandManager(this);
@@ -231,6 +236,10 @@ export class AppManager {
 
     public getRuntime(): AppRuntimeManager {
         return this.runtime;
+    }
+
+    public getAppStatusCache(): AppStatusCache {
+        return this.appStatusCache;
     }
 
     /** Gets whether the Apps have been loaded or not. */
