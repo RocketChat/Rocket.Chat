@@ -213,9 +213,9 @@ export class AppServerOrchestrator {
 		try {
 			const statistics = await this.getStatisticsModel().findInstallationDates();
 			if (statistics && statistics.length > 0) {
-				const sortedStats = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
+				const statsAscendingByInstallDate = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
 
-				for (const stat of sortedStats) {
+				for (const stat of statsAscendingByInstallDate) {
 					const version = stat.version || '';
 
 					if (version && !version.startsWith('7.')) {
