@@ -19,7 +19,7 @@ export async function getMongoVersion(cwd: string) {
 	return [];
 }
 
-export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; yarn: string; npm: string }> {
+export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; yarn: string; npm: string; deno: string }> {
 	const packageJson = await readPackageJson(cwd);
 
 	return packageJson.engines;
