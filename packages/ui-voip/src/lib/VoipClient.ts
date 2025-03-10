@@ -1,5 +1,9 @@
-import type { IMediaStreamRenderer, SignalingSocketEvents, VoipEvents as CoreVoipEvents } from '@rocket.chat/core-typings';
-import { type VoIPUserConfiguration } from '@rocket.chat/core-typings';
+import type {
+	IMediaStreamRenderer,
+	SignalingSocketEvents,
+	VoipEvents as CoreVoipEvents,
+	VoIPUserConfiguration,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions } from 'sip.js';
 import { Registerer, RequestPendingError, SessionState, UserAgent, Invitation, Inviter, RegistererState, UserAgentState } from 'sip.js';
@@ -47,7 +51,10 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
-	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
+	constructor(
+		private readonly config: VoIPUserConfiguration,
+		mediaRenderer?: IMediaStreamRenderer,
+	) {
 		super();
 
 		this.mediaStreamRendered = mediaRenderer;
@@ -442,11 +449,11 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	public switchMediaRenderer(mediaRenderer: IMediaStreamRenderer): void {
+		this.mediaStreamRendered = mediaRenderer;
 		if (!this.remoteStream) {
 			return;
 		}
 
-		this.mediaStreamRendered = mediaRenderer;
 		this.remoteStream.init(mediaRenderer.remoteMediaElement);
 		this.remoteStream.play();
 	}
@@ -635,10 +642,17 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.remoteStream = new RemoteStream(remoteMediaStream);
 		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 
-		if (mediaElement) {
-			this.remoteStream.init(mediaElement);
-			this.remoteStream.play();
+		if (!mediaElement) {
+			console.error('Unable to play remote media: VoIPClient is missing an AudioElement reference to play it on.');
+			return;
 		}
+
+		this.remoteStream.init(mediaElement);
+		this.remoteStream.play();
+	}
+
+	public isMissingMediaElement(): boolean {
+		return !this.mediaStreamRendered?.remoteMediaElement;
 	}
 
 	private makeURI(calleeURI: string): URI | undefined {

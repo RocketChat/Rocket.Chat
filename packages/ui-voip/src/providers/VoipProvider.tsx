@@ -55,7 +55,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			voipSounds.stopAll();
 			window.addEventListener('beforeunload', onBeforeUnload);
 
-			if (voipClient.isCallee() && remoteAudioMediaRef.current) {
+			if ((voipClient.isCallee() || voipClient.isMissingMediaElement()) && remoteAudioMediaRef.current) {
 				voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 			}
 		};
@@ -87,6 +87,9 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 
 		const onRegistered = () => {
 			setStorageRegistered(true);
+			if (remoteAudioMediaRef.current && voipClient.isMissingMediaElement()) {
+				voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
+			}
 		};
 
 		const onUnregister = () => {
