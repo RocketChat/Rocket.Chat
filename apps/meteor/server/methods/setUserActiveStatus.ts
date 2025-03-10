@@ -12,27 +12,35 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const executeSetUserActiveStatus = async (
+	fromUserId: string,
+	userId: string,
+	active: boolean,
+	confirmRelinquish?: boolean,
+): Promise<boolean> => {
+	check(userId, String);
+	check(active, Boolean);
+
+	if (!fromUserId || (await hasPermissionAsync(fromUserId, 'edit-other-user-active-status')) !== true) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'setUserActiveStatus',
+		});
+	}
+
+	await setUserActiveStatus(userId, active, confirmRelinquish);
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async setUserActiveStatus(userId, active, confirmRelinquish) {
-		check(userId, String);
-		check(active, Boolean);
-
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'setUserActiveStatus',
 			});
 		}
 
-		const uid = Meteor.userId();
-
-		if (!uid || (await hasPermissionAsync(uid, 'edit-other-user-active-status')) !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setUserActiveStatus',
-			});
-		}
-
-		await setUserActiveStatus(userId, active, confirmRelinquish);
-
-		return true;
+		return executeSetUserActiveStatus(uid, userId, active, confirmRelinquish);
 	},
 });
