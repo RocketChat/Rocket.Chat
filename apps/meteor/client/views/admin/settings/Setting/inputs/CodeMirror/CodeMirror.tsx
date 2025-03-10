@@ -93,9 +93,13 @@ function CodeMirror({
 		};
 
 		settingUpRef.current = true;
-		setupCodeMirror().then(() => {
-			settingUpRef.current = false;
-		});
+		setupCodeMirror()
+			.then(() => {
+				settingUpRef.current = false;
+			})
+			.catch((error) => {
+				console.error('CodeMirror initialization failed:', error);
+			});
 
 		const cleanp = () => {
 			if (!editorRef.current) {
