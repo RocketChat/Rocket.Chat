@@ -199,77 +199,76 @@ const validateEmailDomain = (user) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
-	if (!options.skipBeforeCreateUserCallback) {
-		await beforeCreateUserCallback.run(options, user);
-	}
+	try {
+		if (!options.skipBeforeCreateUserCallback) {
+			await beforeCreateUserCallback.run(options, user);
+		}
 
-	user.status = 'offline';
-	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
+		user.status = 'offline';
+		user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
 
-	if (!user.name) {
-		if (options.profile) {
-			if (options.profile.name) {
-				user.name = options.profile.name;
-			} else if (options.profile.firstName) {
-				// LinkedIn format
-				user.name = getLinkedInName(options.profile);
+		if (!user.name) {
+			if (options.profile) {
+				if (options.profile.name) {
+					user.name = options.profile.name;
+				} else if (options.profile.firstName) {
+					// LinkedIn format
+					user.name = getLinkedInName(options.profile);
+				}
 			}
 		}
-	}
 
-	if (user.services) {
-		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+		if (user.services) {
+			const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
-		for (const service of Object.values(user.services)) {
-			if (!user.name) {
-				user.name = service.name || service.username;
-			}
+			for (const service of Object.values(user.services)) {
+				if (!user.name) {
+					user.name = service.name || service.username;
+				}
 
-			if (!user.emails && service.email) {
-				user.emails = [
-					{
-						address: service.email,
-						verified,
-					},
-				];
+				if (!user.emails && service.email) {
+					user.emails = [
+						{
+							address: service.email,
+							verified,
+						},
+					];
+				}
 			}
 		}
+
+		if (!options.skipAdminEmail && !user.active) {
+			const usersInRole = await Roles.findUsersInRole('admin').toArray();
+			const destinations = usersInRole.flatMap(adminUser =>
+				adminUser.emails?.map(email => `${adminUser.name}<${email.address}>`) ?? []
+			);
+
+			const email = {
+				to: destinations,
+				from: settings.get('From_Email'),
+				subject: Accounts.emailTemplates.userToActivate.subject(),
+				html: Accounts.emailTemplates.userToActivate.html({
+					...options,
+					name: options.name || options.profile?.name,
+					email: options.email || user.emails[0].address,
+				}),
+			};
+
+			await Mailer.send(email);
+		}
+
+		if (!options.skipOnCreateUserCallback) {
+			await callbacks.run('onCreateUser', options, user);
+		}
+
+		if (!options.skipEmailValidation && !validateEmailDomain(user)) {
+			throw new Meteor.Error(403, 'User validation failed');
+		}
+
+		return user;
+	} catch (error) {
+		throw new Meteor.Error('error-on-create-user', error.message);
 	}
-
-	if (!options.skipAdminEmail && !user.active) {
-		const destinations = [];
-		const usersInRole = await Roles.findUsersInRole('admin');
-		await usersInRole.forEach((adminUser) => {
-			if (Array.isArray(adminUser.emails)) {
-				adminUser.emails.forEach((email) => {
-					destinations.push(`${adminUser.name}<${email.address}>`);
-				});
-			}
-		});
-
-		const email = {
-			to: destinations,
-			from: settings.get('From_Email'),
-			subject: Accounts.emailTemplates.userToActivate.subject(),
-			html: Accounts.emailTemplates.userToActivate.html({
-				...options,
-				name: options.name || options.profile?.name,
-				email: options.email || user.emails[0].address,
-			}),
-		};
-
-		await Mailer.send(email);
-	}
-
-	if (!options.skipOnCreateUserCallback) {
-		await callbacks.run('onCreateUser', options, user);
-	}
-
-	if (!options.skipEmailValidation && !validateEmailDomain(user)) {
-		throw new Meteor.Error(403, 'User validation failed');
-	}
-
-	return user;
 };
 
 Accounts.onCreateUser(function (...args) {
@@ -475,25 +474,24 @@ Accounts.validateNewUser((user) => {
 		return true;
 	}
 
-	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
-	if (_.isEmpty(domainWhiteList?.trim())) {
+	let domainWhiteList = settings.get('Accounts_AllowedDomainsList')?.trim() ?? '';
+	if (_.isEmpty(domainWhiteList)) {
 		return true;
 	}
 
 	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim());
 
-	if (user.emails && user.emails.length > 0) {
+	if (user.emails?.length > 0) {
 		const email = user.emails[0].address;
 		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 
-		if (inWhiteList === false) {
+		if (!inWhiteList) {
 			throw new Meteor.Error('error-invalid-domain');
 		}
 	}
 
 	return true;
 });
-
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
 		return;
