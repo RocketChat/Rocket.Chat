@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ddp-client' {
@@ -26,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!user.services?.totp) {
+		if (!user.services?.totp?.enabled) {
 			return false;
 		}
 
@@ -41,6 +42,14 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		return (await Users.disable2FAByUserId(userId)).modifiedCount > 0;
+		const { modifiedCount } = await Users.disable2FAByUserId(userId);
+
+		if (!modifiedCount) {
+			return false;
+		}
+
+		void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { 'services.totp.enabled': false } });
+
+		return true;
 	},
 });

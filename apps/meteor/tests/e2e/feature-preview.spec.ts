@@ -161,6 +161,16 @@ test.describe.serial('feature preview', () => {
 			await collapser.click();
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
+
+		test('should not show NavBar in embedded layout', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetChannel);
+			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+			await page.goto(embeddedLayoutURL);
+			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+		});
 	});
 
 	test.describe('Sidepanel', () => {
@@ -272,8 +282,14 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
-			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
+
 			await poHomeChannel.tabs.channels.btnAdd.click();
 			await poHomeChannel.content.waitForChannel();
 
@@ -288,8 +304,13 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.tabs.btnChannels.click();
 			await poHomeChannel.tabs.channels.btnAddExisting.click();
-			await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
-			await page.getByRole('listbox').getByRole('option', { name: targetChannel }).click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
 			await poHomeChannel.tabs.channels.btnAdd.click();
 
 			const sidepanelTeamItem = poHomeChannel.sidepanel.getItemByName(sidepanelTeam);
@@ -298,9 +319,12 @@ test.describe.serial('feature preview', () => {
 			await targetChannelItem.click();
 			expect(page.url()).toContain(`/channel/${targetChannel}`);
 			await poHomeChannel.content.sendMessage('hello channel');
-			await sidepanelTeamItem.focus();
-			await sidepanelTeamItem.click();
-			expect(page.url()).toContain(`/group/${sidepanelTeam}`);
+
+			await expect(async () => {
+				await sidepanelTeamItem.focus();
+				await sidepanelTeamItem.click();
+				expect(page.url()).toContain(`/group/${sidepanelTeam}`);
+			}).toPass();
 			await poHomeChannel.content.sendMessage('hello team');
 
 			await user1Page.goto(`/channel/${targetChannel}`);

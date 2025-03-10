@@ -1,8 +1,7 @@
 import DOMPurify from 'dompurify';
 import type { ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
@@ -86,9 +85,9 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 					xmlnsXlink='http://www.w3.org/1999/xlink'
 					style={{ display: 'none' }}
 					dangerouslySetInnerHTML={{
-						__html: DOMPurify.sanitize(svgIcons.join(''), {
+						__html: DOMPurify.sanitize(`<svg>${svgIcons.join('')}</svg>`, {
 							USE_PROFILES: { svg: true, svgFilters: true },
-						}),
+						}).slice(5, -6),
 					}}
 				/>,
 				document.body,

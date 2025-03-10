@@ -28,7 +28,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	constructor() {
 		super();
 
-		this.serviceStarter = new ServiceStarter(() => Promise.resolve(this.startEvents()));
+		this.serviceStarter = new ServiceStarter(() => this.startEvents());
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id === 'VoIP_TeamCollab_Enabled' && setting.value === true) {
 				void this.serviceStarter.start();
@@ -42,7 +42,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		void this.serviceStarter.start();
 	}
 
-	private startEvents(): void {
+	private async startEvents(): Promise<void> {
 		if (this.listening) {
 			return;
 		}
@@ -50,7 +50,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		try {
 			// #ToDo: Reconnection
 			// #ToDo: Only connect from one rocket.chat instance
-			void listenToEvents(
+			await listenToEvents(
 				async (...args) => wrapExceptions(() => this.onFreeSwitchEvent(...args)).suppress(),
 				this.getConnectionSettings(),
 			);

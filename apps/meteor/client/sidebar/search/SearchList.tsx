@@ -1,19 +1,19 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useEffectEvent, useDebouncedValue, useAutoFocus, useUniqueId, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue, useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler, FormEvent } from 'react';
-import { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import { forwardRef, useState, useMemo, useEffect, useRef, useId } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import Row from './Row';
-import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -191,7 +191,7 @@ type SearchListProps = {
 };
 
 const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, ref): ReactElement {
-	const listId = useUniqueId();
+	const listId = useId();
 	const t = useTranslation();
 	const { setValue: setFilterValue, ...filter } = useInput('');
 
@@ -363,15 +363,16 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				aria-busy={isLoading}
 				onClick={handleClick}
 			>
-				<Virtuoso
-					style={{ height: '100%', width: '100%' }}
-					totalCount={items.length}
-					data={items}
-					components={{ Scroller: VirtuosoScrollbars }}
-					computeItemKey={(_, room) => room._id}
-					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
-					ref={listRef}
-				/>
+				<VirtualizedScrollbars>
+					<Virtuoso
+						style={{ height: '100%', width: '100%' }}
+						totalCount={items.length}
+						data={items}
+						computeItemKey={(_, room) => room._id}
+						itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
+						ref={listRef}
+					/>
+				</VirtualizedScrollbars>
 			</Box>
 		</Box>
 	);

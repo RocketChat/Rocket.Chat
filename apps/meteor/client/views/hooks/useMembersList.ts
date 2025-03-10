@@ -4,6 +4,8 @@ import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+
 type MembersListOptions = {
 	rid: string;
 	type: 'all' | 'online';
@@ -18,27 +20,29 @@ const endpointsByRoomType = {
 	c: '/v1/rooms.membersOrderedByRole',
 } as const;
 
-type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+
+type MembersListPage = { members: RoomMember[]; count: number; total: number; offset: number };
 
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
-	return members.sort((a, b) => {
-		const aRoles = a.roles ?? [];
-		const bRoles = b.roles ?? [];
-		const isOwnerA = aRoles.includes('owner');
-		const isOwnerB = bRoles.includes('owner');
-		const isModeratorA = aRoles.includes('moderator');
-		const isModeratorB = bRoles.includes('moderator');
+	const membersWithRolePriority: (RoomMember & { rolePriority: number })[] = members.map((member) => ({
+		...member,
+		rolePriority: calculateRoomRolePriorityFromRoles(member.roles ?? []),
+	}));
 
-		if (isOwnerA !== isOwnerB) {
-			return isOwnerA ? -1 : 1;
+	return membersWithRolePriority.sort((a, b) => {
+		if (a.rolePriority !== b.rolePriority) {
+			return a.rolePriority - b.rolePriority;
 		}
 
-		if (isModeratorA !== isModeratorB) {
-			return isModeratorA ? -1 : 1;
-		}
-
-		if ((a.status === 'online' || b.status === 'online') && a.status !== b.status) {
-			return a.status === 'online' ? -1 : 1;
+		if (a.status !== b.status) {
+			if (!a.status || a.status === 'offline') {
+				return 1;
+			}
+			if (!b.status || b.status === 'offline') {
+				return -1;
+			}
+			return a.status.localeCompare(b.status) * -1;
 		}
 
 		if (useRealName && a.name && b.name) {
@@ -61,12 +65,12 @@ const updateMemberInCache = (
 ) => {
 	queryClient.setQueryData(
 		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
-		(oldData: InfiniteData<{ members: RoomMember[] }>) => {
+		(oldData: InfiniteData<MembersListPage>) => {
 			if (!oldData) {
 				return oldData;
 			}
 
-			const newPages = oldData.pages.map((page) => {
+			const allMembers = oldData.pages.flatMap((page) => {
 				const members = page.members.map((member) => {
 					if (member._id === memberId) {
 						member.roles = member.roles ?? [];
@@ -78,10 +82,19 @@ const updateMemberInCache = (
 					}
 					return member;
 				});
-				return {
+				return members;
+			});
+
+			const sortedMembers = getSortedMembers(allMembers, useRealName);
+
+			const newPages = oldData.pages.map((page) => {
+				const { count, offset } = page;
+				const newPage = {
 					...page,
-					members: getSortedMembers(members, useRealName),
+					members: sortedMembers.slice(offset, offset + count),
 				};
+
+				return newPage;
 			});
 
 			return {
@@ -121,7 +134,7 @@ export const useMembersList = (options: MembersListOptions) => {
 			return getMembers({
 				roomId: options.rid,
 				offset: start,
-				count: 20,
+				count: options.limit,
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});

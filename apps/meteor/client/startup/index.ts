@@ -19,7 +19,6 @@ import './reloadRoomAfterLogin';
 import './roles';
 import './rootUrlChange';
 import './routes';
-import './setupWizard';
 import './slashCommands';
 import './startup';
 import './streamMessage';
