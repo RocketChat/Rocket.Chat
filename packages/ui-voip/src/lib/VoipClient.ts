@@ -37,7 +37,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	public networkEmitter: Emitter<SignalingSocketEvents>;
 
-	private mediaStreamRendered: IMediaStreamRenderer | undefined;
+	private mediaStreamRenderer: IMediaStreamRenderer | undefined;
 
 	private remoteStream: RemoteStream | undefined;
 
@@ -57,7 +57,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	) {
 		super();
 
-		this.mediaStreamRendered = mediaRenderer;
+		this.mediaStreamRenderer = mediaRenderer;
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 	}
@@ -449,7 +449,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	public switchMediaRenderer(mediaRenderer: IMediaStreamRenderer): void {
-		this.mediaStreamRendered = mediaRenderer;
+		this.mediaStreamRenderer = mediaRenderer;
 		if (!this.remoteStream) {
 			return;
 		}
@@ -620,6 +620,10 @@ class VoipClient extends Emitter<VoipEvents> {
 		};
 	}
 
+	public getMediaElement(): HTMLMediaElement | undefined {
+		return this.mediaStreamRenderer?.remoteMediaElement;
+	}
+
 	public notifyDialer(value: { open: boolean }) {
 		this.emit('dialer', value);
 	}
@@ -640,7 +644,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		const { remoteMediaStream } = this.sessionDescriptionHandler;
 
 		this.remoteStream = new RemoteStream(remoteMediaStream);
-		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
+		const mediaElement = this.mediaStreamRenderer?.remoteMediaElement;
 
 		if (!mediaElement) {
 			console.error('Unable to play remote media: VoIPClient is missing an AudioElement reference to play it on.');
@@ -649,10 +653,6 @@ class VoipClient extends Emitter<VoipEvents> {
 
 		this.remoteStream.init(mediaElement);
 		this.remoteStream.play();
-	}
-
-	public isMissingMediaElement(): boolean {
-		return !this.mediaStreamRendered?.remoteMediaElement;
 	}
 
 	private makeURI(calleeURI: string): URI | undefined {

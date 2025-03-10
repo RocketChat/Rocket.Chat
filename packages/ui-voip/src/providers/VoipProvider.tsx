@@ -8,7 +8,7 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -39,7 +39,15 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	// Refs
-	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null);
+	const remoteAudioMediaRef = useCallback(
+		(node: HTMLMediaElement | null) => {
+			if (!node || !voipClient) {
+				return;
+			}
+			voipClient.switchMediaRenderer({ remoteMediaElement: node });
+		},
+		[voipClient],
+	);
 
 	useEffect(() => {
 		if (!voipClient) {
@@ -54,10 +62,6 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		const onCallEstablished = async (): Promise<void> => {
 			voipSounds.stopAll();
 			window.addEventListener('beforeunload', onBeforeUnload);
-
-			if ((voipClient.isCallee() || voipClient.isMissingMediaElement()) && remoteAudioMediaRef.current) {
-				voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-			}
 		};
 
 		const onNetworkDisconnected = (): void => {
@@ -87,9 +91,6 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 
 		const onRegistered = () => {
 			setStorageRegistered(true);
-			if (remoteAudioMediaRef.current && voipClient.isMissingMediaElement()) {
-				voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
-			}
 		};
 
 		const onUnregister = () => {
@@ -123,11 +124,12 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	}, [dispatchToastMessage, setStorageRegistered, t, voipClient, voipSounds]);
 
 	const changeAudioOutputDevice = useEffectEvent(async (selectedAudioDevice: Device): Promise<void> => {
-		if (!remoteAudioMediaRef.current) {
+		const element = voipClient?.getMediaElement();
+		if (!element) {
 			return;
 		}
 
-		setOutputMediaDevice({ outputDevice: selectedAudioDevice, HTMLAudioElement: remoteAudioMediaRef.current });
+		setOutputMediaDevice({ outputDevice: selectedAudioDevice, HTMLAudioElement: element });
 	});
 
 	const changeAudioInputDevice = useEffectEvent(async (selectedAudioDevice: Device): Promise<void> => {
