@@ -1,5 +1,72 @@
 # @rocket.chat/ui-voip
 
+## 6.0.0
+
+### Patch Changes
+
+- ([#34926](https://github.com/RocketChat/Rocket.Chat/pull/34926)) Enables control of video conference ringing and dialing sounds through the call ringer volume user preference, preventing video conf calls from always playing at maximum volume.
+
+- <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7]:</summary>
+
+  - @rocket.chat/ui-client@16.0.0
+  - @rocket.chat/ui-contexts@16.0.0
+  - @rocket.chat/ui-avatar@12.0.0
+  </details>
+
+## 6.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@16.0.0-rc.5
+  - @rocket.chat/ui-avatar@12.0.0-rc.5
+  - @rocket.chat/ui-client@16.0.0-rc.5
+  </details>
+
+## 6.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@16.0.0-rc.4
+  - @rocket.chat/ui-avatar@12.0.0-rc.4
+  - @rocket.chat/ui-client@16.0.0-rc.4
+  </details>
+
+## 6.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@16.0.0-rc.3
+  - @rocket.chat/ui-avatar@12.0.0-rc.3
+  - @rocket.chat/ui-client@16.0.0-rc.3
+  </details>
+
+## 6.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@16.0.0-rc.2
+  - @rocket.chat/ui-avatar@12.0.0-rc.2
+  - @rocket.chat/ui-client@16.0.0-rc.2
+  </details>
+
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@16.0.0-rc.1
+  - @rocket.chat/ui-avatar@12.0.0-rc.1
+  - @rocket.chat/ui-client@16.0.0-rc.1
+  </details>
+
 ## 6.0.0-rc.0
 
 ### Patch Changes
@@ -11,6 +78,17 @@
   - @rocket.chat/ui-client@16.0.0-rc.0
   - @rocket.chat/ui-contexts@16.0.0-rc.0
   - @rocket.chat/ui-avatar@12.0.0-rc.0
+  </details>
+
+## 5.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@15.0.3
+  - @rocket.chat/ui-avatar@11.0.3
+  - @rocket.chat/ui-client@15.0.3
   </details>
 
 ## 5.0.2

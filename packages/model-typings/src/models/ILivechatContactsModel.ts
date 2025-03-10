@@ -36,6 +36,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		lastChat: ILivechatContact['lastChat'],
 	): Promise<UpdateResult>;
 	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
+	findContactByEmailAndContactManager(email: string): Promise<Pick<ILivechatContact, 'contactManager'> | null>;
 	findOneByVisitor<T extends Document = ILivechatContact>(
 		visitor: ILivechatContactVisitorAssociation,
 		options?: FindOptions<ILivechatContact>,
