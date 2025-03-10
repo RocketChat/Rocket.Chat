@@ -49,7 +49,7 @@ const RoomList = () => {
 
 	return (
 		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
-			<VirtualizedScrollbars>
+			<VirtualizedScrollbars width='full'>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}
 					groupContent={(index) => (
