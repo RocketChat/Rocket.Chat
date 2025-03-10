@@ -11,10 +11,11 @@ import { Method } from './TwoFactorModal';
 type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
+	onDismiss?: () => void;
 	invalidAttempt?: boolean;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
@@ -36,6 +37,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorTot
 			confirmText={t('Verify')}
 			title={t('Enter_TOTP_password')}
 			onClose={onClose}
+			onDismiss={onDismiss}
 			variant='warning'
 			confirmDisabled={!code}
 			tagline={t('Two-factor_authentication')}
