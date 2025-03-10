@@ -144,13 +144,13 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage) =>
 		content,
 		...(e2eRoom && {
 			t: 'e2e',
+			msg: '',
 		}),
 	} as const;
 
 	try {
-		chat.composer?.clear();
-		store.clear();
 		await sdk.call('sendMessage', composedMessage, fileUrls, filesToConfirm);
+		store.clear();
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
 	} finally {
