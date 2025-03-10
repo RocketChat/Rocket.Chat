@@ -1,6 +1,7 @@
 import type { IUpload, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+// test;
 export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> })[]> {
 	const uids = files.map(({ userId }) => userId).filter(Boolean);
 
