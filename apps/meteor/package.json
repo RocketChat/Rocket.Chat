@@ -80,7 +80,7 @@
 		"@storybook/addon-essentials": "^8.5.3",
 		"@storybook/addon-interactions": "^8.5.3",
 		"@storybook/addon-styling-webpack": "^1.0.1",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.5",
 		"@storybook/react": "^8.5.3",
 		"@storybook/react-webpack5": "^8.5.3",
 		"@testing-library/react": "~16.0.1",
