@@ -8,8 +8,14 @@ import {
 	Messages,
 	ReadReceipts,
 	Subscriptions,
+	LivechatContacts,
 } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 
+import { validateEmail } from './Helper';
+import type { RegisterGuestType } from './Visitors';
+import { Visitors } from './Visitors';
+import { ContactMerger, type FieldAndValue } from './contacts/ContactMerger';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
@@ -86,6 +92,46 @@ export async function removeGuest(_id: string) {
 
 	await cleanGuestHistory(guest.token);
 	return LivechatVisitors.disableById(_id);
+}
+
+export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
+	const visitor = await Visitors.registerGuest(newData);
+	if (!visitor) {
+		return null;
+	}
+
+	const { name, phone, email, username } = newData;
+
+	const validatedEmail =
+		email &&
+		wrapExceptions(() => {
+			const trimmedEmail = email.trim().toLowerCase();
+			validateEmail(trimmedEmail);
+			return trimmedEmail;
+		}).suppress();
+
+	const fields = [
+		{ type: 'name', value: name },
+		{ type: 'phone', value: phone?.number },
+		{ type: 'email', value: validatedEmail },
+		{ type: 'username', value: username || visitor.username },
+	].filter((field) => Boolean(field.value)) as FieldAndValue[];
+
+	if (!fields.length) {
+		return null;
+	}
+
+	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
+	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+	for await (const contact of contacts) {
+		await ContactMerger.mergeFieldsIntoContact({
+			fields,
+			contact,
+			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
+		});
+	}
+
+	return visitor;
 }
 
 async function cleanGuestHistory(token: string) {

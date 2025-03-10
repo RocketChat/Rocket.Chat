@@ -13,6 +13,7 @@ import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import { registerGuest } from '../../../livechat/server/lib/guests';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
 import { createRoom } from '../../../livechat/server/lib/rooms';
@@ -210,7 +211,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData);
 
 		if (!livechatVisitor) {
 			throw new Error('Invalid visitor, cannot create');
@@ -234,7 +235,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData);
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}

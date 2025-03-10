@@ -7,7 +7,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { removeGuest } from '../../lib/guests';
+import { registerGuest, removeGuest } from '../../lib/guests';
 import { saveRoomInfo } from '../../lib/rooms';
 import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -58,7 +58,7 @@ API.v1.addRoute(
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
-			const visitor = await LivechatTyped.registerGuest(guest);
+			const visitor = await registerGuest(guest);
 			if (!visitor) {
 				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',

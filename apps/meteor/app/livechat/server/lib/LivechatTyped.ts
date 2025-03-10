@@ -47,8 +47,6 @@ import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';
-import { Visitors, type RegisterGuestType } from './Visitors';
-import { registerGuestData } from './contacts/registerGuestData';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -161,16 +159,6 @@ class LivechatClass {
 				throw new Meteor.Error('error-removing-room', 'Error removing room');
 			}
 		}
-	}
-
-	async registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
-		const result = await Visitors.registerGuest(newData);
-
-		if (result) {
-			await registerGuestData(newData, result);
-		}
-
-		return result;
 	}
 
 	private async getBotAgents(department?: string) {

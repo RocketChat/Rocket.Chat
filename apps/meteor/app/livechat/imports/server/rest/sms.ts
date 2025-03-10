@@ -20,7 +20,7 @@ import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import { setCustomField } from '../../../server/api/lib/customFields';
-import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+import { registerGuest } from '../../../server/lib/guests';
 import type { ILivechatMessage } from '../../../server/lib/localTypes';
 import { sendMessage } from '../../../server/lib/messages';
 import { createRoom } from '../../../server/lib/rooms';
@@ -76,7 +76,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const livechatVisitor = await LivechatTyped.registerGuest(data);
+	const livechatVisitor = await registerGuest(data);
 
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
