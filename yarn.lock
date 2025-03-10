@@ -9076,6 +9076,8 @@ __metadata:
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
+    overlayscrollbars: "npm:^2.11.1"
+    overlayscrollbars-react: "npm:^0.5.6"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
     pdfjs-dist: "npm:^4.2.67"
@@ -9100,7 +9102,6 @@ __metadata:
     query-string: "npm:^7.1.3"
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
-    rc-scrollbars: "npm:^1.1.6"
     re-resizable: "npm:^6.10.1"
     react: "npm:~18.3.1"
     react-aria: "npm:~3.37.0"
@@ -28877,6 +28878,23 @@ __metadata:
   version: 0.8.0
   resolution: "outdent@npm:0.8.0"
   checksum: 10/a556c5c308705ad4e3441be435f2b2cf014cb5f9753a24cbd080eadc473b988c77d0d529a6a9a57c3931fb4178e5a81d668cc4bc49892b668191a5d0ba3df76e
+  languageName: node
+  linkType: hard
+
+"overlayscrollbars-react@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "overlayscrollbars-react@npm:0.5.6"
+  peerDependencies:
+    overlayscrollbars: ^2.0.0
+    react: ">=16.8.0"
+  checksum: 10/473f5af860feab4b5418f9adc8e356fb201e9de61286443ff64002b9c997bc19bf17cf60e314c502c14ca41fa213c12f18111e6fe913be86ad68a15c32e66789
+  languageName: node
+  linkType: hard
+
+"overlayscrollbars@npm:^2.11.1":
+  version: 2.11.1
+  resolution: "overlayscrollbars@npm:2.11.1"
+  checksum: 10/c9eac9be2a76d0906683165b9fae6cf0a44cc1cdfdedc131ed09f76c5d50535d8515a33d3e3507f07fbfcfbfa82605cd32b12d14548c033555b7fa5f6e831974
   languageName: node
   linkType: hard
 
