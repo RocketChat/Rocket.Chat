@@ -490,6 +490,11 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Convert_Ascii_Emojis',
 			});
+			await this.add('Accounts_Default_User_Preferences_toggleFormatting', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Toggle_Formatting',
+			});
 			await this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
 				type: 'boolean',
 				public: true,
