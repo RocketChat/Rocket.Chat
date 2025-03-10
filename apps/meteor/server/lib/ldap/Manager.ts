@@ -1,4 +1,5 @@
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
+import type { LogOperation } from '@rocket.chat/logger';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import { SHA256 } from '@rocket.chat/sha256';
 import ldapEscape from 'ldap-escape';
@@ -157,8 +158,10 @@ export class LDAPManager {
 		};
 	}
 
-	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined): IImportUser {
-		const uniqueId = this.getLdapUserUniqueID(ldapUser);
+	protected static mapUserData(ldapUser: ILDAPEntry, usedUsername?: string | undefined, operation?: LogOperation): IImportUser {
+		const mapOperation = operation?.addOperation('mapUserData', { usedUsername });
+
+		const uniqueId = this.getLdapUserUniqueID(ldapUser, mapOperation);
 		if (!uniqueId) {
 			throw new Error('Failed to generate unique identifier for ldap entry');
 		}
@@ -184,12 +187,14 @@ export class LDAPManager {
 			},
 		};
 
+		mapOperation?.addRecord({ msg: 'Base User Data', userData: structuredClone(userData) });
 		this.onMapUserData(ldapUser, userData);
+		mapOperation?.addRecord({ msg: 'Full User Data', userData });
 		return userData;
 	}
 
-	private static onMapUserData(ldapUser: ILDAPEntry, userData: IImportUser): void {
-		void callbacks.run('mapLDAPUserData', userData, ldapUser);
+	private static onMapUserData(ldapUser: ILDAPEntry, userData: IImportUser, operation?: LogOperation): void {
+		void callbacks.run('mapLDAPUserData', { userData, ldapUser, operation });
 	}
 
 	private static async findUser(ldap: LDAPConnection, username: string, password: string): Promise<ILDAPEntry | undefined> {
@@ -367,7 +372,9 @@ export class LDAPManager {
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}
 
-	private static getLdapUserUniqueID(ldapUser: ILDAPEntry): ILDAPUniqueIdentifierField | undefined {
+	private static getLdapUserUniqueID(ldapUser: ILDAPEntry, operation?: LogOperation): ILDAPUniqueIdentifierField | undefined {
+		const uniqueOperation = operation?.addOperation('getLdapUserUniqueID');
+
 		let uniqueIdentifierField: string | string[] | undefined = settings.get<string>('LDAP_Unique_Identifier_Field');
 
 		if (uniqueIdentifierField) {
@@ -391,12 +398,15 @@ export class LDAPManager {
 
 		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (key) {
+			const value = ldapUser._raw[key].toString('hex');
+			uniqueOperation?.addRecord({ msg: 'found uniqueId', key, value });
 			return {
 				attribute: key,
-				value: ldapUser._raw[key].toString('hex'),
+				value,
 			};
 		}
 
+		uniqueOperation?.addRecord({ msg: 'failed to find unique id', uniqueIdentifierField });
 		connLogger.warn('Failed to generate unique identifier for ldap entry');
 		connLogger.debug(ldapUser);
 	}
