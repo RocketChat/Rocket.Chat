@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { CustomOAuth } from '../../../app/custom-oauth/client/CustomOAuth';
 import { loginServices } from '../../lib/loginServices';
 
-export const useCustmoOAuth = () => {
+export const useCustomOAuth = () => {
 	useEffect(() => {
 		loginServices.onLoad((services) => {
 			for (const service of services) {
@@ -18,5 +18,5 @@ export const useCustmoOAuth = () => {
 				});
 			}
 		});
-	});
+	}, []);
 };

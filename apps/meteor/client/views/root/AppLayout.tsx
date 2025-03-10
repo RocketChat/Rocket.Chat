@@ -18,7 +18,7 @@ import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
-import { useCustmoOAuth } from '../../sidebar/hooks/useCustomOAuth';
+import { useCustomOAuth } from '../../sidebar/hooks/useCustomOAuth';
 import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
@@ -46,7 +46,7 @@ const AppLayout = () => {
 	useGitHubEnterpriseAuth();
 	useDrupal();
 	useDolphin();
-	useCustmoOAuth();
+	useCustomOAuth();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
