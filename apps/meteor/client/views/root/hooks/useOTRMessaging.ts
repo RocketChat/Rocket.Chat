@@ -10,7 +10,7 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 
-export const useOTR = () => {
+export const useOTRMessaging = () => {
 	const uid = useUserId();
 
 	useEffect(() => {
