@@ -230,18 +230,15 @@ export const copyUserSettings = (setting: IUserSettings) => ({
 	...(setting.preferences && { preferences: { ...setting.preferences } }),
 });
 
-export const copyUserBanners = (banners: IUser['banners']) => ({
-	...(banners &&
-		Object.entries(banners).map((banner) => {
-			const [key, value] = banner;
-			return {
-				[key]: {
-					...value,
-					...(value.textArguments?.length && { textArguments: [...value.textArguments] }),
-					...(value.modifiers?.length && { modifiers: [...value.modifiers] }),
-				},
-			};
-		})),
+export const copyUserBanners = (banners: NonNullable<IUser['banners']>): NonNullable<IUser['banners']> => ({
+	...Object.entries(banners).reduce((accum: NonNullable<IUser['banners']>, [key, value]) => {
+		accum[key] = {
+			...value,
+			...(value.textArguments?.length && { textArguments: [...value.textArguments] }),
+			...(value.modifiers?.length && { modifiers: [...value.modifiers] }),
+		};
+		return accum;
+	}, {}),
 });
 
 // ignores deprecated properties
