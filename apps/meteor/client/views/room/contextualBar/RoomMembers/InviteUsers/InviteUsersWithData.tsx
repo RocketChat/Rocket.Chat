@@ -119,4 +119,4 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	);
 };
 
-export default InviteUsersWithData;	
+export default InviteUsersWithData;
