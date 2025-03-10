@@ -47,10 +47,11 @@ function CodeMirror({
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+	const settingUpRef = useRef(false);
 	const handleChange = useEffectEvent(onChange);
 
 	useEffect(() => {
-		if (editorRef.current) {
+		if (editorRef.current || settingUpRef.current) {
 			return;
 		}
 
@@ -91,15 +92,27 @@ function CodeMirror({
 			});
 		};
 
-		setupCodeMirror();
+		settingUpRef.current = true;
+		setupCodeMirror()
+			.then(() => {
+				settingUpRef.current = false;
+			})
+			.catch((error) => {
+				console.error('CodeMirror initialization failed:', error);
+			});
 
-		return (): void => {
+		const cleanp = () => {
 			if (!editorRef.current) {
 				return;
 			}
 
-			editorRef.current.toTextArea();
+			// Checking parent node to avoid error. A null parent node makes the toTextArea method throw an error.
+			if (textAreaRef.current?.parentNode) {
+				editorRef.current.toTextArea();
+			}
 		};
+
+		return cleanp;
 	}, [
 		autoCloseBrackets,
 		foldGutter,
