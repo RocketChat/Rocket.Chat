@@ -23,13 +23,13 @@ const config: OauthConfig = {
 const Tokenpass = new CustomOAuth('tokenpass', config);
 
 export const useTokenPassAuth = () => {
-	const setting = useSetting<string>('API_Tokenpass_URL');
+	const setting = useSetting('API_Tokenpass_URL') as string | undefined;
 
 	useEffect(() => {
 		if (!setting) {
 			return;
 		}
-		config.serverURL = setting as string;
+		config.serverURL = setting;
 		Tokenpass.configure(config);
 	}, [setting]);
 };
