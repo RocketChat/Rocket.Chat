@@ -256,7 +256,7 @@ export class AppServerOrchestrator {
 	}
 
 	async disableApps(installationSource, grandfatherApps, maxApps) {
-		const upgradeToV7Date = await this.findMa();
+		const upgradeToV7Date = await this.findMajorVersionUpgradeDate();
 		const apps = await this.getManager().get({ installationSource });
 
 		const grandfathered = [];
