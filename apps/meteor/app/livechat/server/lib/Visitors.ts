@@ -1,4 +1,5 @@
-import { UserStatus, type ILivechatVisitor } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatContactVisitorAssociation, IOmnichannelSource, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatDepartment, LivechatVisitors, Users } from '@rocket.chat/models';
 
@@ -17,6 +18,16 @@ export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' 
 export const Visitors = {
 	isValidObject(obj: unknown): obj is Record<string, any> {
 		return typeof obj === 'object' && obj !== null;
+	},
+
+	makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
+		return {
+			visitorId,
+			source: {
+				type: roomInfo.type,
+				id: roomInfo.id,
+			},
+		};
 	},
 
 	async registerGuest({
