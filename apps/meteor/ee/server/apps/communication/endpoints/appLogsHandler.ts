@@ -14,14 +14,13 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 				}
 
 				const { offset, count } = await getPaginationItems(this.queryParams);
-				const { sort, fields, query } = await this.parseJsonQuery();
+				const { sort, query } = await this.parseJsonQuery();
 
 				const ourQuery = Object.assign({}, query, { appId: proxiedApp.getID() });
 				const options = {
 					sort: sort || { _updatedAt: -1 },
 					skip: offset,
 					limit: count,
-					fields,
 				};
 
 				const result = await _orch.getLogStorage().find(ourQuery, options);
