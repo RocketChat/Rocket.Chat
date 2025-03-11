@@ -15,7 +15,9 @@ import type {
 	PaginatedAppRequests,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { PaginatedResult } from '../helpers/PaginatedResult';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -98,7 +100,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/logs': {
-		GET: () => PaginatedResult<{
+		GET: (params: PaginatedRequest) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
 	};
