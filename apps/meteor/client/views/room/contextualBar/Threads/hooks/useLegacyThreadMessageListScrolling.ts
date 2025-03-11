@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
-import type { ScrollValues } from 'rc-scrollbars';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
+import type { OverlayScrollbars } from '../../../../../components/CustomScrollbars';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
@@ -13,7 +13,10 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 
 	const atBottomRef = useRef(true);
 
-	const onScroll = useCallback(({ scrollHeight, scrollTop, clientHeight }: ScrollValues) => {
+	const onScroll = useCallback(({ elements }: OverlayScrollbars) => {
+		const {
+			viewport: { scrollTop, scrollHeight, clientHeight },
+		} = elements();
 		atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
 	}, []);
 
