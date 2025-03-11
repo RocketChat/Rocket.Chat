@@ -415,6 +415,20 @@ jobs:
           docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
           docker push ${IMAGE_NAME_BASE}.official
 
+  build-tarball:
+    name: 🚢 Build Tarball for Production
+    needs: [build-prod, release-versions]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-tarball
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   checks:
     needs: [release-versions, packages-build]
 
