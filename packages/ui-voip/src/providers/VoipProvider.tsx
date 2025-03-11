@@ -41,10 +41,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Refs
 	const remoteAudioMediaRef = useCallback(
 		(node: HTMLMediaElement | null) => {
-			if (!node || !voipClient) {
-				return;
-			}
-			voipClient.switchMediaRenderer({ remoteMediaElement: node });
+			voipClient?.switchAudioElement(node);
 		},
 		[voipClient],
 	);
@@ -124,8 +121,9 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 	}, [dispatchToastMessage, setStorageRegistered, t, voipClient, voipSounds]);
 
 	const changeAudioOutputDevice = useEffectEvent(async (selectedAudioDevice: Device): Promise<void> => {
-		const element = voipClient?.getMediaElement();
+		const element = voipClient?.getAudioElement();
 		if (!element) {
+			console.warn(`Failed to change audio output device: missing audio element reference.`);
 			return;
 		}
 
