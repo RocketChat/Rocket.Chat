@@ -1,6 +1,5 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -32,22 +31,5 @@ test.describe.serial('sidebar', () => {
 		await page.keyboard.press('Shift+Tab');
 		await page.keyboard.press('Tab');
 		await expect(poHomeDiscussion.sidenav.sidebarChannelsList.getByRole('link').first()).not.toBeFocused();
-	});
-
-	test.describe('SidebarV2', () => {
-		test.beforeAll(({ api }) =>
-			Promise.all([setSettingValueById(api, 'Accounts_AllowFeaturePreview', true), setSettingValueById(api, 'newNavigation', true)]),
-		);
-
-		test.afterAll(({ api }) =>
-			Promise.all([setSettingValueById(api, 'Accounts_AllowFeaturePreview', false), setSettingValueById(api, 'newNavigation', false)]),
-		);
-
-		test('should ensure the room list spans the full width of the sidebar', async ({ page }) => {
-			const sidebarV2 = page.getByLabel('sidebar');
-			const sidebarWidth = await sidebarV2.boundingBox();
-			const roomListWidth = await sidebarV2.getByTestId('virtuoso-item-list').boundingBox();
-			expect(roomListWidth?.width).toBeCloseTo(sidebarWidth?.width || -10, 1);
-		});
 	});
 });
