@@ -1,6 +1,5 @@
-import type { Box } from '@rocket.chat/fuselage';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
-import type { ComponentProps, ReactElement } from 'react';
+import type { HTMLAttributes, ReactElement } from 'react';
 import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
 
 import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
@@ -8,7 +7,7 @@ import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 type VirtualizedScrollbarsProps = {
 	overflowX?: boolean;
 	children: ReactElement;
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps>(function VirtualizedScrollbars(
 	{ overflowX, ...props },
@@ -37,11 +36,7 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 		return () => osInstance()?.destroy();
 	}, [initialize, osInstance, ref, scroller]);
 
-	return (
-		<BaseScrollbars ref={rootRef} {...props}>
-			{cloneElement(props.children, { scrollerRef: setScroller })}
-		</BaseScrollbars>
-	);
+	return <BaseScrollbars ref={rootRef}>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
 });
 
 export default memo(VirtualizedScrollbars);
