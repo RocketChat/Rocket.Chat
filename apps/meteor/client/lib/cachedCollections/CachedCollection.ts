@@ -342,8 +342,6 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
-
-	public abstract listen(): void;
 }
 
 export class PublicCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
@@ -353,10 +351,6 @@ export class PublicCachedCollection<T extends { _id: string }, U = T> extends Ca
 
 	clearCacheOnLogout() {
 		// do nothing
-	}
-
-	listen() {
-		void this.init();
 	}
 }
 
