@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import * as emojione from 'emoji-toolkit';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
@@ -155,7 +156,9 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emoji: string) => {
+			chat.composer?.insertText(` ${emojione.shortnameToUnicode(`:${emoji}:`)} `);
+		});
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
