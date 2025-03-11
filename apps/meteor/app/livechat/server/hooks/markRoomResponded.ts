@@ -6,13 +6,20 @@ import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
+import { isMessageFromBot } from '../lib/isMessageFromBot';
 
 export async function markRoomResponded(
 	message: IMessage,
 	room: IOmnichannelRoom,
 	roomUpdater: Updater<IOmnichannelRoom>,
 ): Promise<IOmnichannelRoom['responseBy'] | undefined> {
-	if (isSystemMessage(message) || isEditedMessage(message) || isMessageFromVisitor(message)) {
+	if (
+		isSystemMessage(message) ||
+		isEditedMessage(message) ||
+		isMessageFromVisitor(message) ||
+		(settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message)))
+	) {
 		return;
 	}
 

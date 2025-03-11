@@ -64,7 +64,7 @@ const mocks = {
 			},
 		},
 	},
-	'../../../../../app/livechat/server/lib/LivechatTyped': { Livechat: { closeRoom: mockLivechatCloseRoom } },
+	'../../../../../app/livechat/server/lib/closeRoom': { closeRoom: mockLivechatCloseRoom },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {
 		LivechatRooms: mockLivechatRooms,
