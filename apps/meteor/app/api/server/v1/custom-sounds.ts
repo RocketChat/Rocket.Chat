@@ -4,10 +4,9 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../api';
-import type { ExtractEndpoints } from '../definition';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-const customSounds = API.v1.get(
+API.v1.get(
 	'custom-sounds.list',
 	{
 		response: {
@@ -84,5 +83,3 @@ const customSounds = API.v1.get(
 		});
 	},
 );
-
-export type CustomSoundsProps = ExtractEndpoints<typeof customSounds>;
