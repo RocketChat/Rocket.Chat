@@ -152,9 +152,8 @@ const createStreamManager = () => {
 	const streams = new Map<string, StreamMapValue>();
 
 	Accounts.onLogout(() => {
-		streams.forEach((stream, key) => {
+		streams.forEach((stream) => {
 			stream.stop();
-			streams.delete(key);
 		});
 	});
 
