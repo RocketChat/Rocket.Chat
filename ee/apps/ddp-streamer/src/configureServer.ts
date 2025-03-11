@@ -44,7 +44,7 @@ server.publish(loginServiceConfigurationPublication, async function () {
 	this.ready();
 });
 
-const autoUpdateCollection = 'meteor_autoupdate_clientVersions';
+const autoUpdateCollection = 'stream-meteor_autoupdate_clientVersions';
 server.publish(autoUpdateCollection, function () {
 	Autoupdate.getVersions().forEach((version, arch) => {
 		this.added(autoUpdateCollection, arch, version);

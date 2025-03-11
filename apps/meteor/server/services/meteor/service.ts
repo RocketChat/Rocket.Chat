@@ -236,7 +236,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		// to make sure we can send the most up to date versions is using the publication below.
 		// Since it receives each document one at a time, we have to store them to be able to send
 		// them all when needed (i.e.: on ddp-streamer startup).
-		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
+		Meteor.server.publish_handlers['stream-meteor_autoupdate_clientVersions'].call({
 			added(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
 				void api.broadcast('meteor.clientVersionUpdated', version);
