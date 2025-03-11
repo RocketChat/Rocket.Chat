@@ -1,12 +1,16 @@
+import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
+
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { API } from '../api';
 
 API.default.addRoute(
-	'/json',
-	{ authRequired: false },
+	'docs/json',
+	{ authRequired: false, validateParams: isOpenAPIJSONEndpoint },
 	{
 		get() {
+			const { withUndocumented = false } = this.queryParams;
+
 			return API.default.success({
 				openapi: '3.0.3',
 				info: {
@@ -34,7 +38,7 @@ API.default.addRoute(
 					},
 					schemas: {},
 				},
-				paths: API.v1.router.typedRoutes,
+				paths: API.v1.router.getTypedRoutes({ withUndocumented }),
 			});
 		},
 	},

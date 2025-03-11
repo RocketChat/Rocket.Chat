@@ -1,9 +1,42 @@
 import type { Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
-import type { ValidateFunction } from 'ajv';
+import type { AnySchema, ValidateFunction } from 'ajv';
 import express from 'express';
 
 import type { Options, TypedAction, TypedOptions } from './definition';
+
+type Route = {
+	responses: Record<
+		number,
+		{
+			description: string;
+			content: {
+				'application/json': {
+					schema: AnySchema;
+				};
+			};
+		}
+	>;
+	parameters?: {
+		schema: AnySchema;
+		in: 'query';
+		name: 'query';
+		required: true;
+	}[];
+	requestBody?: {
+		required: true;
+		content: {
+			'application/json': {
+				schema: AnySchema;
+			};
+		};
+	};
+	security?: {
+		userId: [];
+		authToken: [];
+	}[];
+	tags?: string[];
+};
 
 export class Router<
 	TBasePath extends string,
@@ -15,7 +48,7 @@ export class Router<
 
 	constructor(readonly base: TBasePath) {}
 
-	public typedRoutes: Record<string, Record<string, unknown>> = {};
+	private typedRoutes: Record<string, Record<string, Route>> = {};
 
 	private registerTypedRoutes<
 		TSubPathPattern extends string,
@@ -269,6 +302,33 @@ export class Router<
 		this.middleware(innerRouter);
 		router.use(this.base, innerRouter);
 		return router;
+	}
+
+	public getTypedRoutes({ withUndocumented = false }: { withUndocumented?: boolean } = {}): Record<string, Record<string, Route>> {
+		if (withUndocumented) {
+			return this.typedRoutes;
+		}
+
+		return Object.entries(this.typedRoutes).reduce(
+			(acc, [path, methods]) => {
+				const filteredMethods = Object.entries(methods)
+					.filter(([_, options]) => !options?.tags?.includes('Missing Documentation'))
+					.reduce(
+						(acc, [method, options]) => {
+							acc[method] = options;
+							return acc;
+						},
+						{} as Record<string, Route>,
+					);
+
+				if (Object.keys(filteredMethods).length > 0) {
+					acc[path] = filteredMethods;
+				}
+
+				return acc;
+			},
+			{} as Record<string, Record<string, Route>>,
+		);
 	}
 }
 
