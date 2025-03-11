@@ -48,7 +48,7 @@ const RoomList = () => {
 	useShortcutOpenMenu(ref);
 
 	return (
-		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
+		<Box position='relative' overflow='hidden' height='full' ref={ref}>
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
 					groupCounts={groupsCount}
