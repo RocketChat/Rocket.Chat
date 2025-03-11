@@ -4,7 +4,7 @@ import EditableSettingsProvider from '../../views/admin/settings/EditableSetting
 
 const SecurityPrivacyRoute = () => {
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<EditableSettingsProvider>
 				<SecurityPrivacyPage />
 			</EditableSettingsProvider>

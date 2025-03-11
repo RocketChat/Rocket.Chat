@@ -16,7 +16,7 @@ const MarketplaceSidebar = (): ReactElement => {
 	const currentPath = useCurrentRoutePath();
 
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<Sidebar>
 				<Sidebar.Header onClose={sidebar.close} title={t('Marketplace')} />
 				<Sidebar.Content>
