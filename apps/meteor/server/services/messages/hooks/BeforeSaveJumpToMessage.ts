@@ -10,8 +10,11 @@ const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, qu
 	if (attachments && isQuoteAttachment(attachments)) {
 		if (deep < quoteChainLimit - 1) {
 			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
-		} else {
-			delete attachments.attachments;
+		} else if (attachments.attachments) {
+			attachments.attachments = attachments.attachments.filter((attachment) => !isQuoteAttachment(attachment));
+			if (attachments.attachments.length === 0) {
+				delete attachments.attachments;
+			}
 		}
 	}
 
@@ -24,7 +27,10 @@ const validateAttachmentDeepness = (message: IMessage, quoteChainLimit: number):
 	}
 
 	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
-		delete message.attachments;
+		message.attachments = message.attachments.filter((attachment) => !isQuoteAttachment(attachment));
+		if (message.attachments.length === 0) {
+			delete message.attachments;
+		}
 	}
 
 	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
