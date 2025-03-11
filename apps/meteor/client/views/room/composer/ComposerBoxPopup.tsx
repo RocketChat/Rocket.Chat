@@ -91,7 +91,7 @@ function ComposerBoxPopup<
 						{title}
 					</Box>
 				)}
-				<Box pb={8} maxHeight='x320'>
+				<Box pb={8} maxHeight='x320' overflowY='auto'>
 					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
 					{isLoading && <OptionSkeleton />}
 					{itemsFlat.map((item, index) => {
