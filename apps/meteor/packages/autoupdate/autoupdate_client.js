@@ -66,133 +66,134 @@ const retry = new Retry({
 
 let failures = 0;
 
-Autoupdate._retrySubscription = () => {
-	Meteor.subscribe('meteor_autoupdate_clientVersions', {
-		onError(error) {
-			Meteor._debug('autoupdate subscription failed', error);
-			failures++;
-			retry.retryLater(failures, function () {
-				// Just retry making the subscription, don't reload the whole
-				// page. While reloading would catch more cases (for example,
-				// the server went back a version and is now doing old-style hot
-				// code push), it would also be more prone to reload loops,
-				// which look really bad to the user. Just retrying the
-				// subscription over DDP means it is at least possible to fix by
-				// updating the server.
-				Autoupdate._retrySubscription();
-			});
-		},
+// Autoupdate._retrySubscription = () => {
+// 	Meteor.subscribe('stream-meteor_autoupdate_clientVersions', {
+// 		onError(error) {
+// 			Meteor._debug('autoupdate subscription failed', error);
+// 			failures++;
+// 			retry.retryLater(failures, function () {
+// 				// Just retry making the subscription, don't reload the whole
+// 				// page. While reloading would catch more cases (for example,
+// 				// the server went back a version and is now doing old-style hot
+// 				// code push), it would also be more prone to reload loops,
+// 				// which look really bad to the user. Just retrying the
+// 				// subscription over DDP means it is at least possible to fix by
+// 				// updating the server.
+// 				Autoupdate._retrySubscription();
+// 			});
+// 		},
 
-		onReady() {
-			// Call checkNewVersionDocument with a slight delay, so that the
-			// const handle declaration is guaranteed to be initialized, even if
-			// the added or changed callbacks are called synchronously.
-			const resolved = Promise.resolve();
-			function check(doc) {
-				resolved.then(() => checkNewVersionDocument(doc));
-			}
+// 		onReady() {
+// 			// Call checkNewVersionDocument with a slight delay, so that the
+// 			// const handle declaration is guaranteed to be initialized, even if
+// 			// the added or changed callbacks are called synchronously.
+// 			const resolved = Promise.resolve();
+// 			function check(doc) {
+// 				resolved.then(() => checkNewVersionDocument(doc));
+// 			}
 
-			const stop = clientVersions.watch(check);
+// 			const stop = clientVersions.watch(check);
 
-			const reloadDelayInSeconds = Meteor.isProduction ? 60 : 0;
+// 			const reloadDelayInSeconds = Meteor.isProduction ? 60 : 0;
 
-			function checkNewVersionDocument(doc) {
-				if (doc._id !== clientArch) {
-					return;
-				}
+// 			function checkNewVersionDocument(doc) {
+// 				console.log('doccccc', doc, clientArch);
+// 				if (doc._id !== clientArch) {
+// 					return;
+// 				}
 
-				if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
-					// Non-refreshable assets have changed, so we have to reload the
-					// whole page rather than just replacing <link> tags.
-					if (stop) stop();
-					if (Package.reload) {
-						// The reload package should be provided by ddp-client, which
-						// is provided by the ddp package that autoupdate depends on.
+// 				if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
+// 					// Non-refreshable assets have changed, so we have to reload the
+// 					// whole page rather than just replacing <link> tags.
+// 					if (stop) stop();
+// 					if (Package.reload) {
+// 						// The reload package should be provided by ddp-client, which
+// 						// is provided by the ddp package that autoupdate depends on.
 
-						// Delay reload in 60 seconds
-						console.warn(
-							'Client version changed from',
-							autoupdateVersions.versionNonRefreshable,
-							'to',
-							doc.versionNonRefreshable,
-							`Page will reload in ${reloadDelayInSeconds} seconds`,
-						);
-						setTimeout(() => {
-							Package.reload.Reload._reload();
-						}, reloadDelayInSeconds * 1000);
-					}
-					return;
-				}
+// 						// Delay reload in 60 seconds
+// 						console.warn(
+// 							'Client version changed from',
+// 							autoupdateVersions.versionNonRefreshable,
+// 							'to',
+// 							doc.versionNonRefreshable,
+// 							`Page will reload in ${reloadDelayInSeconds} seconds`,
+// 						);
+// 						setTimeout(() => {
+// 							Package.reload.Reload._reload();
+// 						}, reloadDelayInSeconds * 1000);
+// 					}
+// 					return;
+// 				}
 
-				if (doc.versionRefreshable !== autoupdateVersions.versionRefreshable) {
-					autoupdateVersions.versionRefreshable = doc.versionRefreshable;
+// 				if (doc.versionRefreshable !== autoupdateVersions.versionRefreshable) {
+// 					autoupdateVersions.versionRefreshable = doc.versionRefreshable;
 
-					// Switch out old css links for the new css links. Inspired by:
-					// https://github.com/guard/guard-livereload/blob/master/js/livereload.js#L710
-					var newCss = doc.assets || [];
-					var oldLinks = [];
+// 					// Switch out old css links for the new css links. Inspired by:
+// 					// https://github.com/guard/guard-livereload/blob/master/js/livereload.js#L710
+// 					var newCss = doc.assets || [];
+// 					var oldLinks = [];
 
-					Array.prototype.forEach.call(document.getElementsByTagName('link'), function (link) {
-						if (link.className === '__meteor-css__') {
-							oldLinks.push(link);
-						}
-					});
+// 					Array.prototype.forEach.call(document.getElementsByTagName('link'), function (link) {
+// 						if (link.className === '__meteor-css__') {
+// 							oldLinks.push(link);
+// 						}
+// 					});
 
-					function waitUntilCssLoads(link, callback) {
-						var called;
+// 					function waitUntilCssLoads(link, callback) {
+// 						var called;
 
-						link.onload = function () {
-							knownToSupportCssOnLoad = true;
-							if (!called) {
-								called = true;
-								callback();
-							}
-						};
+// 						link.onload = function () {
+// 							knownToSupportCssOnLoad = true;
+// 							if (!called) {
+// 								called = true;
+// 								callback();
+// 							}
+// 						};
 
-						if (!knownToSupportCssOnLoad) {
-							var id = Meteor.setInterval(function () {
-								if (link.sheet) {
-									if (!called) {
-										called = true;
-										callback();
-									}
-									Meteor.clearInterval(id);
-								}
-							}, 50);
-						}
-					}
+// 						if (!knownToSupportCssOnLoad) {
+// 							var id = Meteor.setInterval(function () {
+// 								if (link.sheet) {
+// 									if (!called) {
+// 										called = true;
+// 										callback();
+// 									}
+// 									Meteor.clearInterval(id);
+// 								}
+// 							}, 50);
+// 						}
+// 					}
 
-					let newLinksLeftToLoad = newCss.length;
-					function removeOldLinks() {
-						if (oldLinks.length > 0 && --newLinksLeftToLoad < 1) {
-							oldLinks.splice(0).forEach((link) => {
-								link.parentNode.removeChild(link);
-							});
-						}
-					}
+// 					let newLinksLeftToLoad = newCss.length;
+// 					function removeOldLinks() {
+// 						if (oldLinks.length > 0 && --newLinksLeftToLoad < 1) {
+// 							oldLinks.splice(0).forEach((link) => {
+// 								link.parentNode.removeChild(link);
+// 							});
+// 						}
+// 					}
 
-					if (newCss.length > 0) {
-						newCss.forEach((css) => {
-							const newLink = document.createElement('link');
-							newLink.setAttribute('rel', 'stylesheet');
-							newLink.setAttribute('type', 'text/css');
-							newLink.setAttribute('class', '__meteor-css__');
-							newLink.setAttribute('href', css.url);
+// 					if (newCss.length > 0) {
+// 						newCss.forEach((css) => {
+// 							const newLink = document.createElement('link');
+// 							newLink.setAttribute('rel', 'stylesheet');
+// 							newLink.setAttribute('type', 'text/css');
+// 							newLink.setAttribute('class', '__meteor-css__');
+// 							newLink.setAttribute('href', css.url);
 
-							waitUntilCssLoads(newLink, function () {
-								Meteor.setTimeout(removeOldLinks, 200);
-							});
+// 							waitUntilCssLoads(newLink, function () {
+// 								Meteor.setTimeout(removeOldLinks, 200);
+// 							});
 
-							const head = document.getElementsByTagName('head').item(0);
-							head.appendChild(newLink);
-						});
-					} else {
-						removeOldLinks();
-					}
-				}
-			}
-		},
-	});
-};
+// 							const head = document.getElementsByTagName('head').item(0);
+// 							head.appendChild(newLink);
+// 						});
+// 					} else {
+// 						removeOldLinks();
+// 					}
+// 				}
+// 			}
+// 		},
+// 	});
+// };
 
-Autoupdate._retrySubscription();
+// Autoupdate._retrySubscription();
