@@ -3,7 +3,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CounterSet from './CounterSet';
 
 export default {
-	title: 'Components/Data/CounterSet',
+	title: 'Components/CounterSet',
 	component: CounterSet,
 	parameters: {
 		layout: 'padded',
