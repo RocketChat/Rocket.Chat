@@ -34,7 +34,7 @@ API.default.addRoute(
 					},
 					schemas: {},
 				},
-				paths: API.v1.typedRoutes,
+				paths: API.v1.router.typedRoutes,
 			});
 		},
 	},

@@ -1,7 +1,9 @@
 import type { Method } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import type { ValidateFunction } from 'ajv';
 import express from 'express';
 
-import type { TypedAction, TypedOptions } from './definition';
+import type { Options, TypedAction, TypedOptions } from './definition';
 
 export class Router<
 	TBasePath extends string,
@@ -124,6 +126,50 @@ export class Router<
 		};
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
+	}
+
+	registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
+		method: Method,
+		subpath: TSubPathPattern,
+		options: TOptions,
+	): void {
+		const { authRequired, validateParams } = options;
+
+		const opt = {
+			authRequired,
+			...(validateParams &&
+				method.toLowerCase() === 'get' &&
+				('GET' in validateParams
+					? { query: validateParams.GET }
+					: {
+							query: validateParams as ValidateFunction<any>,
+						})),
+
+			...(validateParams &&
+				method.toLowerCase() === 'post' &&
+				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
+
+			...(validateParams &&
+				method.toLowerCase() === 'put' &&
+				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
+			...(validateParams &&
+				method.toLowerCase() === 'delete' &&
+				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
+
+			tags: ['Missing Documentation'],
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean' },
+						error: { type: 'string' },
+					},
+					required: ['success'],
+				}),
+			},
+		};
+
+		this.registerTypedRoutes(method, subpath, opt);
 	}
 
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
