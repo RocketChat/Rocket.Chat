@@ -1,31 +1,32 @@
 import type { AtLeast, IMessage } from '@rocket.chat/core-typings';
 import { isOTRMessage } from '@rocket.chat/core-typings';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import OTR from '../../../../app/otr/client/OTR';
 import { OtrRoomState } from '../../../../app/otr/lib/OtrRoomState';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 
 export const useOTRMessaging = () => {
 	const uid = useUserId();
+	const updateOTRAck = useMethod('updateOTRAck');
+	const notifyUser = useStream('notify-user');
 
 	useEffect(() => {
 		if (!uid) {
 			return;
 		}
 
-		sdk.stream('notify-user', [`${uid}/otr`], (type, data) => {
+		const handleNotifyUser = (type: 'handshake' | 'acknowledge' | 'deny' | 'end', data: { roomId: string; userId: string }) => {
 			if (!data.roomId || !data.userId || data.userId === uid) {
 				return;
 			}
 
 			const otrRoom = OTR.getInstanceByRoomId(uid, data.roomId);
 			otrRoom?.onUserStream(type, data);
-		});
+		};
 
 		const handleBeforeSendMessage = async (
 			message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
@@ -57,12 +58,12 @@ export const useOTRMessaging = () => {
 			}
 
 			const otrRoom = OTR.getInstanceByRoomId(uid, message.rid);
-
 			if (otrRoom && otrRoom.getState() === OtrRoomState.ESTABLISHED) {
 				const decrypted = await otrRoom.decrypt(message.msg);
 				if (typeof decrypted === 'string') {
 					return { ...message, msg: decrypted };
 				}
+
 				const { _id, text: msg, ack, ts, userId } = decrypted;
 
 				if (ts) message.ts = ts;
@@ -79,23 +80,25 @@ export const useOTRMessaging = () => {
 				} else if (userId !== uid) {
 					const encryptedAck = await otrRoom.encryptText(ack);
 
-					void sdk.call('updateOTRAck', { message, ack: encryptedAck });
+					void updateOTRAck({ message, ack: encryptedAck });
 				}
 
 				return { ...message, _id, msg };
 			}
+
 			if (message.t === 'otr') message.msg = '';
 
 			return message;
 		};
 
+		const handleStopNotifyUser = notifyUser(`${uid}/otr`, handleNotifyUser);
 		const unregisterBeforeSendMessage = onClientBeforeSendMessage.use(handleBeforeSendMessage);
 		const unregisterMessageReceived = onClientMessageReceived.use(handleMessageReceived);
 
 		return () => {
-			sdk.stop('notify-user', `${uid}/otr`);
+			handleStopNotifyUser();
 			unregisterBeforeSendMessage();
 			unregisterMessageReceived();
 		};
-	}, [uid]);
+	}, [uid, notifyUser, updateOTRAck]);
 };
