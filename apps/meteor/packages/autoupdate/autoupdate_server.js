@@ -102,7 +102,7 @@ async function updateVersions(shouldReloadClientProgram) {
 }
 
 Meteor.publish(
-	'stream-meteor_autoupdate_clientVersions',
+	'meteor_autoupdate_clientVersions',
 	function (appId) {
 		// `null` happens when a client doesn't have an appId and passes
 		// `undefined` to `Meteor.subscribe`. `undefined` is translated to
@@ -118,7 +118,7 @@ Meteor.publish(
 
 		const stop = clientVersions.watch((version, isNew) => {
 			setTimeout(() => {
-				(isNew ? this.added : this.changed).call(this, 'stream-meteor_autoupdate_clientVersions', version._id, version);
+				(isNew ? this.added : this.changed).call(this, 'meteor_autoupdate_clientVersions', version._id, version);
 			}, randomInterval);
 		});
 
