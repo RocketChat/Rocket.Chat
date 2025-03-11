@@ -417,7 +417,7 @@ jobs:
 
   build-tarball:
     name: 🚢 Build Tarball for Production
-    needs: [build-prod, release-versions]
+    needs: [build, release-versions]
     runs-on: ubuntu-20.04
 
     steps:
