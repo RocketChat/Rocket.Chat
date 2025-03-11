@@ -1,9 +1,9 @@
 // import type { StreamerEvents } from '@rocket.chat/ddp-client';
-import { useStream } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
-// import { ClientVersions } from './client_versions';
+import { ClientVersions } from './client_versions';
+
 // eslint-disable-next-line no-nested-ternary
 const clientArch = Meteor.isCordova ? 'web.cordova' : Meteor.isModern ? 'web.browser' : 'web.browser.legacy';
 const reloadDelayInSeconds = Meteor.isProduction ? 60 : 0;
@@ -29,45 +29,42 @@ type Doc = {
 	];
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	export interface StreamerEvents {
-		meteor_autoupdate_clientVersions: [
-			{
-				key: undefined;
-				args: [Doc];
-			},
-		];
-	}
-}
+const clientVersions = new ClientVersions();
 
 export const useAutoupdate = () => {
-	const stream = useStream('meteor_autoupdate_clientVersions');
+	// const stream = useStream('meteor_autoupdate_clientVersions');
 
 	useEffect(() => {
-		// const clientVersions = new ClientVersions();
-		stream(undefined, (doc) => {
-			checkNewVersionDocument(doc);
+		// Meteor.connection.registerStoreClient('meteor_autoupdate_clientVersions', clientVersions.createStore());
+
+		Meteor.subscribe('meteor_autoupdate_clientVersions', {
+			onReady: () => {
+				console.log('onReady');
+				const checkNewVersionDocument = (doc: Doc) => {
+					console.log('---doc', doc);
+					if (doc._id !== clientArch) {
+						return;
+					}
+					if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
+						if (stop) stop();
+						console.warn(
+							'Client version changed from',
+							autoupdateVersions.versionNonRefreshable,
+							'to',
+							doc.versionNonRefreshable,
+							`Page will reload in ${reloadDelayInSeconds} seconds`,
+						);
+						setTimeout(() => {
+							console.log('timeout');
+						});
+					}
+				};
+
+				const stop = clientVersions.watch(checkNewVersionDocument);
+			},
 		});
-
-		const checkNewVersionDocument = (doc: Doc) => {
-			console.log('---doc', doc);
-			if (doc._id !== clientArch) {
-				return;
-			}
-
-			if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
-				console.warn(
-					'Client version changed from',
-					autoupdateVersions.versionNonRefreshable,
-					'to',
-					doc.versionNonRefreshable,
-					`Page will reload in ${reloadDelayInSeconds} seconds`,
-				);
-				setTimeout(() => {
-					console.log('timeout');
-				});
-			}
-		};
-	}, [stream]);
+		// stream(undefined, (doc) => {
+		// 	checkNewVersionDocument(doc);
+		// });
+	}, []);
 };
