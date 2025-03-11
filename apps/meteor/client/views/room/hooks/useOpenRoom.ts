@@ -122,12 +122,6 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const { error } = result;
 
 	useEffect(() => {
-		return () => {
-			unsubscribeFromRoomOpenedEvent.current?.();
-		};
-	}, []);
-
-	useEffect(() => {
 		if (error) {
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
 				Rooms.remove(reference);
