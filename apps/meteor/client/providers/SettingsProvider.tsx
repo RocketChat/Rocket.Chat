@@ -4,51 +4,30 @@ import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.cha
 import { useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
+
+const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
 type SettingsProviderProps = {
 	children?: ReactNode;
 };
 
 const SettingsProvider = ({ children }: SettingsProviderProps) => {
-	const hasPrivilegedPermission = useAtLeastOnePermission(
-		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
-	);
+	const canManageSettings = useAtLeastOnePermission(settingsManagementPermissions);
 
-	const hasPrivateAccess = hasPrivilegedPermission;
+	const cachedCollection = canManageSettings ? PrivateSettingsCachedCollection : PublicSettingsCachedCollection;
 
-	const cachedCollection = useMemo(
-		() => (hasPrivateAccess ? PrivateSettingsCachedCollection : PublicSettingsCachedCollection),
-		[hasPrivateAccess],
-	);
+	const isLoading = Tracker.nonreactive(() => !cachedCollection.ready.get());
 
-	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
-
-	useEffect(() => {
-		let mounted = true;
-
-		const initialize = async (): Promise<void> => {
-			if (!Tracker.nonreactive(() => cachedCollection.ready.get())) {
-				await cachedCollection.init();
-			}
-
-			if (!mounted) {
-				return;
-			}
-
-			setLoading(false);
-		};
-
-		initialize();
-
-		return (): void => {
-			mounted = false;
-		};
-	}, [cachedCollection]);
+	if (isLoading) {
+		throw (async () => {
+			await cachedCollection.init();
+		})();
+	}
 
 	const querySetting = useMemo(
 		() =>
@@ -107,13 +86,12 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const contextValue = useMemo<SettingsContextValue>(
 		() => ({
-			hasPrivateAccess,
-			isLoading,
+			hasPrivateAccess: canManageSettings,
 			querySetting,
 			querySettings,
 			dispatch,
 		}),
-		[hasPrivateAccess, isLoading, querySetting, querySettings, dispatch],
+		[canManageSettings, querySetting, querySettings, dispatch],
 	);
 
 	return <SettingsContext.Provider children={children} value={contextValue} />;

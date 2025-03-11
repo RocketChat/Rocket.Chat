@@ -33,7 +33,6 @@ export { useEndpoint } from './hooks/useEndpoint';
 export { useGoToRoom } from './hooks/useGoToRoom';
 export type { EndpointFunction } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
-export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
 export { useLanguage } from './hooks/useLanguage';
 export { useLanguages } from './hooks/useLanguages';
 export { useLayout } from './hooks/useLayout';
