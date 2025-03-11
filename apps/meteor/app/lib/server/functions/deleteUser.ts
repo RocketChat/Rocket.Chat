@@ -54,7 +54,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 		const result = await service.verifyMatrixIds([user.username]);
 
-		if (result.get(user.username) !== VerificationStatus.VERIFIED) {
+		if (result.get(user.username) === VerificationStatus.VERIFIED) {
 			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
 				method: 'deleteUser',
 			});
