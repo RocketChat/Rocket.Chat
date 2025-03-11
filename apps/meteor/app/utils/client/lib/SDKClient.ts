@@ -55,6 +55,7 @@ type StreamMapValue = {
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
+	stopAll: () => void;
 };
 
 const getEventLiteral = <N extends StreamNames, K extends StreamKeys<N>>(name: N, key: K) => `stream-${name}/${key}` as const;
@@ -116,18 +117,18 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 
 	const unsubList = new Set<() => void>();
 
-	const stopSubscription = () => {
+	const stopAll = () => {
 		unsubList.forEach((stop) => stop());
-		sub.stop();
 	};
 
-	const offError = ee.once('error', stopSubscription);
+	const offError = ee.once('error', stopAll);
 
 	return {
 		stop: () => {
-			stopSubscription();
+			sub.stop();
 			offError();
 		},
+		stopAll,
 		onChange,
 		ready,
 		error: (cb: (...args: any[]) => void) =>
@@ -153,7 +154,7 @@ const createStreamManager = () => {
 
 	Accounts.onLogout(() => {
 		streams.forEach((stream) => {
-			stream.stop();
+			stream.stopAll();
 		});
 	});
 
@@ -221,7 +222,7 @@ const createStreamManager = () => {
 		const stream = streams.get(getEventLiteral(streamName as StreamNames, key));
 
 		if (stream) {
-			stream.stop();
+			stream.stopAll();
 		}
 	};
 
