@@ -92,14 +92,14 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 
 	if (!isUpdateUserData(userData)) {
 		if (userData.username && !(await checkUsernameAvailability(userData.username))) {
-			throw new MeteorError('error-field-unavailable', `${escape(userData.username)} is already in use :(`, {
+			throw new MeteorError('error-field-unavailable', `${escape(userData.username)} is already in use 😞`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
 			});
 		}
 
 		if (userData.email && !(await checkEmailAvailability(userData.email))) {
-			throw new MeteorError('error-field-unavailable', `${escape(userData.email)} is already in use :(`, {
+			throw new MeteorError('error-field-unavailable', `${escape(userData.email)} is already in use 😞`, {
 				method: 'insertOrUpdateUser',
 				field: userData.email,
 			});
