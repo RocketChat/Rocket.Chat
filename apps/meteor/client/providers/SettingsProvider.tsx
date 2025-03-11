@@ -12,15 +12,14 @@ import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCa
 
 type SettingsProviderProps = {
 	children?: ReactNode;
-	privileged?: boolean;
 };
 
-const SettingsProvider = ({ children, privileged = false }: SettingsProviderProps) => {
+const SettingsProvider = ({ children }: SettingsProviderProps) => {
 	const hasPrivilegedPermission = useAtLeastOnePermission(
 		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
 	);
 
-	const hasPrivateAccess = privileged && hasPrivilegedPermission;
+	const hasPrivateAccess = hasPrivilegedPermission;
 
 	const cachedCollection = useMemo(
 		() => (hasPrivateAccess ? PrivateSettingsCachedCollection : PublicSettingsCachedCollection),
@@ -121,6 +120,3 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 };
 
 export default SettingsProvider;
-
-// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => {}]'
-// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined]'
