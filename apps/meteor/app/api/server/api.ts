@@ -556,7 +556,7 @@ export class APIClass<
 		TOptions extends TypedOptions,
 		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
 	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
-		const path = `/${this._config.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
+		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
 		const { query, authRequired, response, body, tags, ...rest } = options;
@@ -1132,10 +1132,9 @@ export class APIClass<
 
 const createApi = function _createApi(options: { version?: string; useDefaultAuth?: true } = {}): APIClass {
 	return new APIClass({
-		apiPath: 'api/',
+		apiPath: '',
 		useDefaultAuth: false,
 		prettyJson: process.env.NODE_ENV === 'development',
-		auth: getUserAuth(),
 		...options,
 	});
 };

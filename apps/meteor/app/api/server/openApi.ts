@@ -7,7 +7,6 @@ const openApi = new API.ApiClass({
 	useDefaultAuth: false,
 	prettyJson: false,
 	enableCors: false,
-	auth: API.getUserAuth(),
 });
 
 openApi.addRoute('/', {
