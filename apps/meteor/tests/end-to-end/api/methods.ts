@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -7,6 +7,7 @@ import { after, before, describe, it } from 'mocha';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -3924,6 +3925,48 @@ describe('Meteor.methods', () => {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					expect(res.body).to.have.a.property('success', true);
+				});
+		});
+	});
+
+	describe.only('[@joinRoom]', async () => {
+		let room: IOmnichannelRoom;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			const visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+
+			user = await createUser();
+			await createAgent(user.username);
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => Promise.all([deleteUser(user)]));
+
+		it('should not allow an agent to join a closed livechat room', async () => {
+			await request
+				.post(methodCall('joinRoom'))
+				.set(userCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'joinRoom',
+						params: [room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('message', 'Room is closed [room-closed]');
 				});
 		});
 	});
