@@ -6,7 +6,10 @@ import { PrivateCachedCollection } from '../../../../client/lib/cachedCollection
 
 class CachedChatRoom extends PrivateCachedCollection<IRoom> {
 	constructor() {
-		super({ name: 'rooms' });
+		super({
+			name: 'rooms',
+			eventType: 'notify-user',
+		});
 	}
 
 	protected handleLoadFromServer(record: IRoom) {
