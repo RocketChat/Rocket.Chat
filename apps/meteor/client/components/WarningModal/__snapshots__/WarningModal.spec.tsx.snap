@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-98qdbd"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
+              >
+                
+              </i>
+            </div>
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+            >
+              Are_you_sure
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--danger rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
