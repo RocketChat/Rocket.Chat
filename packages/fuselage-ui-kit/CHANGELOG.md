@@ -1,5 +1,18 @@
 # Change Log
 
+## 15.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.4
+  - @rocket.chat/gazzodown@15.0.4
+  - @rocket.chat/ui-contexts@15.0.4
+  - @rocket.chat/ui-avatar@11.0.4
+  - @rocket.chat/ui-video-conf@15.0.4
+  </details>
+
 ## 15.0.3
 
 ### Patch Changes

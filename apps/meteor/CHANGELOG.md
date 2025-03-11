@@ -1,5 +1,42 @@
 # @rocket.chat/meteor
 
+## 7.3.4
+
+### Patch Changes
+
+- ([#35431](https://github.com/RocketChat/Rocket.Chat/pull/35431) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes an issue where videoconf calls could sometimes fail to ring an user after a temporary disconnection
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.4
+  - @rocket.chat/rest-typings@7.3.4
+  - @rocket.chat/license@1.0.8
+  - @rocket.chat/omnichannel-services@0.3.14
+  - @rocket.chat/pdf-worker@0.2.14
+  - @rocket.chat/presence@0.2.17
+  - @rocket.chat/api-client@0.2.17
+  - @rocket.chat/apps@0.2.8
+  - @rocket.chat/core-services@0.7.9
+  - @rocket.chat/cron@0.1.17
+  - @rocket.chat/freeswitch@1.2.4
+  - @rocket.chat/fuselage-ui-kit@15.0.4
+  - @rocket.chat/gazzodown@15.0.4
+  - @rocket.chat/model-typings@1.3.4
+  - @rocket.chat/ui-contexts@15.0.4
+  - @rocket.chat/models@1.2.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.9
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@11.0.4
+  - @rocket.chat/ui-client@15.0.4
+  - @rocket.chat/ui-video-conf@15.0.4
+  - @rocket.chat/ui-voip@5.0.4
+  - @rocket.chat/web-ui-registration@15.0.4
+  - @rocket.chat/instance-status@0.1.17
+  </details>
+
 ## 7.3.3
 
 ### Patch Changes
