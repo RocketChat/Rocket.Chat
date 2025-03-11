@@ -37,7 +37,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 localforage.config({ name: baseURI });
 
 export abstract class CachedCollection<T extends { _id: string }, U = T> {
-	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
+	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
 
@@ -47,15 +47,15 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 
 	protected eventType: StreamNames;
 
-	protected version = 18;
+	private readonly version = 18;
 
-	protected updatedAt = new Date(0);
+	private updatedAt = new Date(0);
 
 	protected log: (...args: any[]) => void;
 
 	private timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType = 'notify-user' }: { name: Name; eventType?: StreamNames }) {
+	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
 
 		this.name = name;
@@ -186,7 +186,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		await this.save();
 	}
 
-	save = withDebouncing({ wait: 1000 })(async () => {
+	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
 		const data = this.collection.find().fetch();
 		await localforage.setItem(this.name, {
@@ -200,13 +200,13 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 
 	abstract clearCacheOnLogout(): void;
 
-	async clearCache() {
+	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
 		this.collection.remove({});
 	}
 
-	async setupListener() {
+	protected async setupListener() {
 		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
@@ -232,7 +232,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		await this.save();
 	}
 
-	trySync(delay = 10) {
+	private trySync(delay = 10) {
 		clearTimeout(this.timer);
 		// Wait for an empty queue to load data again and sync
 		this.timer = setTimeout(async () => {
@@ -243,7 +243,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		}, delay);
 	}
 
-	async sync() {
+	protected async sync() {
 		if (!this.updatedAt || this.updatedAt.getTime() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
