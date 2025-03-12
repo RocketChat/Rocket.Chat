@@ -4,7 +4,6 @@ import './afterLogoutCleanUp';
 import './appRoot';
 import './audit';
 import './callbacks';
-import './customOAuth';
 import './deviceManagement';
 import './e2e';
 import './forceLogout';
