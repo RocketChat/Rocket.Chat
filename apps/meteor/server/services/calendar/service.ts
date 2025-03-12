@@ -131,7 +131,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			}
 		}
 
-		const reminderTime = reminderMinutesBeforeStart ? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const reminderTime = reminderMinutesBeforeStart && startTime
+			? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart)
+			: undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
