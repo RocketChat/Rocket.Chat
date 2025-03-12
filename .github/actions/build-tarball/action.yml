@@ -29,12 +29,12 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: build
-        path: /tmp/build
+        path: build
 
     - name: Unpack build
       shell: bash
       run: |
-        cd /tmp/build
+        cd build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
@@ -65,12 +65,13 @@ runs:
     - name: Setup matrix SDK
       uses: actions/cache@v4
       with:
-        path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
+        path: build/matrix-sdk-crypto.linux-x64-musl.node
         key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
 
     - name: Instalar dependencies
       shell: bash
       run: |
+        cd build
         npm ci --production
 
     - name: Download NodeJS binary
@@ -100,7 +101,7 @@ runs:
         echo 'DIR="$(cd "$(dirname "$0")" && pwd)"' >> start.sh
         echo 'NODE_BIN="$DIR/node-v${{ matrix.node }}-linux-x64/bin/node"' >> start.sh
         echo 'DENO_BIN="$DIR/deno/deno"' >> start.sh
-        echo 'APP_ENTRY="main.js"' >> start.sh
+        echo 'APP_ENTRY="build/main.js"' >> start.sh
         echo 'export PATH="$DENO_DIR:$PATH"' >> start.sh
         echo 'exec "$NODE_BIN" "$DIR/$APP_ENTRY"' >> start.sh
         chmod +x start.sh
@@ -110,16 +111,14 @@ runs:
       run: |
         TAR_NAME="rocketchat-${{ inputs.node-version }}-linux-x64.tar.gz"
         tar -czvf "$TAR_NAME" \
-          --exclude=node_modules/.cache \
+          --exclude=build/node_modules/.cache \
           --exclude=*.log \
           --exclude=.git \
           --exclude=.vscode \
           node-v${{ inputs.node-version }}-linux-x64 \
           deno \
-          node_modules \
-          package.json \
-          start.sh \
-          main.js
+          build \
+          start.sh
 
     - name: Upload tarball
       uses: actions/upload-artifact@v4
