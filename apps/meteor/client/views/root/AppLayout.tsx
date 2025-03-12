@@ -5,6 +5,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
@@ -49,6 +50,8 @@ const AppLayout = () => {
 	useDolphin();
 	useCustomOAuth();
 	useCorsSSLConfig();
+
+	useOTRMessaging();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
