@@ -112,6 +112,18 @@ export class HomeContent {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
 	}
 
+	get createDiscussionModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Create discussion' });
+	}
+
+	get inputDiscussionName(): Locator {
+		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
+	}
+
+	get btnCreateDiscussionModal(): Locator {
+		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
+	}
+
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
