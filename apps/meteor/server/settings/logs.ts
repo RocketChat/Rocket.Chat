@@ -2,7 +2,7 @@ import { settingsRegistry } from '../../app/settings/server';
 
 export const createLogSettings = () =>
 	settingsRegistry.addGroup('Logs', async function () {
-		await this.add('Log_Level', '0', {
+		await this.add('Log_Level', '2', {
 			type: 'select',
 			values: [
 				{
