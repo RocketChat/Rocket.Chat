@@ -38,6 +38,7 @@ import { saveUserPreferences } from '../../../../server/methods/saveUserPreferen
 import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { sendForgotPasswordEmail } from '../../../../server/methods/sendForgotPasswordEmail';
 import { executeSetUserActiveStatus } from '../../../../server/methods/setUserActiveStatus';
+import { CalendarService } from '../../../../server/services/calendar/service';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -1340,6 +1341,9 @@ API.v1.addRoute(
 						user: { status, _id, username, statusText, roles, name },
 						previousStatus: user.status,
 					});
+
+					const calendarService = new CalendarService();
+					void calendarService.cancelUpcomingStatusChanges(user._id);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',
