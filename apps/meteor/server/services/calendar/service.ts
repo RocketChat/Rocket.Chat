@@ -60,7 +60,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		status?: UserStatus,
 		shouldScheduleRemoval?: boolean,
 	): Promise<void> {
-		const hasBusyStatusSetting = true; // settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		const hasBusyStatusSetting = settings.get<boolean>('Calendar_BusyStatus_Enabled');
 		if (!endTime || !hasBusyStatusSetting) {
 			return;
 		}
@@ -242,7 +242,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
-		const hasBusyStatusSetting = true; // settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		const hasBusyStatusSetting = settings.get<boolean>('Calendar_BusyStatus_Enabled');
 		if (!hasBusyStatusSetting) {
 			return;
 		}
