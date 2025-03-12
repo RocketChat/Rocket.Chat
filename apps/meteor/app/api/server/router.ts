@@ -1,9 +1,8 @@
 import type { Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
-import type { AnySchema, ValidateFunction } from 'ajv';
+import type { AnySchema } from 'ajv';
 import express from 'express';
 
-import type { Options, TypedAction, TypedOptions } from './definition';
+import type { TypedAction, TypedOptions } from './definition';
 
 export type Route = {
 	responses: Record<
@@ -121,6 +120,28 @@ export class Router<
 		this.middleware = (router: express.Router) => {
 			prev(router);
 			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
+				if (options.query) {
+					const validatorFn = options.query;
+					if (typeof options.query === 'function' && !validatorFn(req.query)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
+				}
+
+				if (options.body) {
+					const validatorFn = options.body;
+					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || req.body)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
+				}
+
 				const {
 					body,
 					statusCode = 200,
@@ -135,6 +156,15 @@ export class Router<
 					} as any,
 					[req],
 				);
+				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
+					const responseValidatorFn = options.response[statusCode];
+					if (!responseValidatorFn) {
+						console.warn(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+					}
+					if (responseValidatorFn && !responseValidatorFn(body)) {
+						console.warn(`Invalid response for endpoint ${req.method} - ${req.url}`, responseValidatorFn.errors);
+					}
+				}
 
 				const responseHeaders = Object.fromEntries(
 					Object.entries({

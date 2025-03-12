@@ -3,9 +3,12 @@ import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { API } from '../api';
-import { Route } from '../router';
+import type { Route } from '../router';
 
-const getTypedRoutes = (typedRoutes: Record<string, Record<string, Route>>, { withUndocumented = false }: { withUndocumented?: boolean } = {}): Record<string, Record<string, Route>> => {
+const getTypedRoutes = (
+	typedRoutes: Record<string, Record<string, Route>>,
+	{ withUndocumented = false }: { withUndocumented?: boolean } = {},
+): Record<string, Record<string, Route>> => {
 	if (withUndocumented) {
 		return typedRoutes;
 	}
@@ -30,7 +33,7 @@ const getTypedRoutes = (typedRoutes: Record<string, Record<string, Route>>, { wi
 		},
 		{} as Record<string, Record<string, Route>>,
 	);
-}
+};
 
 API.default.addRoute(
 	'docs/json',

@@ -41,7 +41,8 @@ import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
 import { tracerSpanMiddleware } from './middlewares/tracer';
-import { Route, Router } from './router';
+import type { Route } from './router';
+import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { checkCodeForUser } from '../../2fa/server/code';
@@ -886,7 +887,7 @@ export class APIClass<
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
-					{} as any,
+					_options as TypedOptions,
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({

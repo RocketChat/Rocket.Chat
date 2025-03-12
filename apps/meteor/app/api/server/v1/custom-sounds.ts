@@ -26,6 +26,10 @@ API.v1.get(
 						type: 'number',
 						description: 'The total number of sounds that match the query.',
 					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
 					sounds: {
 						type: 'array',
 						items: {
@@ -43,15 +47,15 @@ API.v1.get(
 								createdAt: {
 									type: 'string',
 								},
-								updatedAt: {
-									type: 'string',
+								_updatedAt: {
+									type: 'object',
 								},
 							},
-							required: ['_id', 'name', 'extension', 'createdAt', 'updatedAt'],
+							required: ['_id', 'name', 'extension', '_updatedAt'],
 						},
 					},
 				},
-				required: ['count', 'offset', 'total', 'sounds'],
+				required: ['count', 'offset', 'total', 'sounds', 'success'],
 			}),
 		},
 		query: isCustomSoundsListProps,
