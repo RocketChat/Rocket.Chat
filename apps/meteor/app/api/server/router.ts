@@ -289,33 +289,6 @@ export class Router<
 		router.use(this.base, innerRouter);
 		return router;
 	}
-
-	public getTypedRoutes({ withUndocumented = false }: { withUndocumented?: boolean } = {}): Record<string, Record<string, Route>> {
-		if (withUndocumented) {
-			return this.typedRoutes;
-		}
-
-		return Object.entries(this.typedRoutes).reduce(
-			(acc, [path, methods]) => {
-				const filteredMethods = Object.entries(methods)
-					.filter(([_, options]) => !options?.tags?.includes('Missing Documentation'))
-					.reduce(
-						(acc, [method, options]) => {
-							acc[method] = options;
-							return acc;
-						},
-						{} as Record<string, Route>,
-					);
-
-				if (Object.keys(filteredMethods).length > 0) {
-					acc[path] = filteredMethods;
-				}
-
-				return acc;
-			},
-			{} as Record<string, Record<string, Route>>,
-		);
-	}
 }
 
 type Prettify<T> = {
