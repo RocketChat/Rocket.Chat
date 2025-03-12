@@ -5,7 +5,7 @@ import express from 'express';
 
 import type { Options, TypedAction, TypedOptions } from './definition';
 
-type Route = {
+export type Route = {
 	responses: Record<
 		number,
 		{
@@ -159,50 +159,6 @@ export class Router<
 		};
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
-	}
-
-	registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
-		method: Method,
-		subpath: TSubPathPattern,
-		options: TOptions,
-	): void {
-		const { authRequired, validateParams } = options;
-
-		const opt = {
-			authRequired,
-			...(validateParams &&
-				method.toLowerCase() === 'get' &&
-				('GET' in validateParams
-					? { query: validateParams.GET }
-					: {
-							query: validateParams as ValidateFunction<any>,
-						})),
-
-			...(validateParams &&
-				method.toLowerCase() === 'post' &&
-				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
-
-			...(validateParams &&
-				method.toLowerCase() === 'put' &&
-				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
-			...(validateParams &&
-				method.toLowerCase() === 'delete' &&
-				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
-
-			tags: ['Missing Documentation'],
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success'],
-				}),
-			},
-		};
-
-		this.registerTypedRoutes(method, subpath, opt);
 	}
 
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(

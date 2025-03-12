@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-API.v1.router.get(
+API.v1.get(
 	'custom-sounds.list',
 	{
 		response: {

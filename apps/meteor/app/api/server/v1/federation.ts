@@ -5,7 +5,7 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { API } from '../api';
 
-API.v1.router
+API.v1
 	.get(
 		'federation/matrixIds.verify',
 		{

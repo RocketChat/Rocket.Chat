@@ -15,7 +15,7 @@ import { useInviteToken } from '../../../invites/server/functions/useInviteToken
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
 import { API } from '../api';
 
-API.v1.router
+API.v1
 	.get(
 		'listInvites',
 		{
