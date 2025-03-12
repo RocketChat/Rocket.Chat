@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 100vh;"
+    >
+      <section
+        class="rcx-box rcx-box--full rcx-css-1qro8fv"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-css-1rjww6t"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-8ifoos"
+          >
+            <h1
+              class="rcx-box rcx-box--full rcx-css-19z81xy"
+              data-qa-type="PageHeader-title"
+            >
+              Reports
+            </h1>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1stgkvk rcx-css-heem01"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-tabs__scroll-box"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-tabs__wrapper"
+              role="tablist"
+            >
+              <button
+                aria-selected="true"
+                class="rcx-box rcx-box--full rcx-tabs__item--selected rcx-tabs__item"
+                role="tab"
+              >
+                Logs
+              </button>
+              <button
+                aria-selected="false"
+                class="rcx-box rcx-box--full rcx-tabs__item"
+                role="tab"
+              >
+                Analytic_reports
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1ptgac4"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1uf0icm"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1vw7itl rcx-css-1xf53n7"
+              style="word-break: break-all;"
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-11av1b3"
+              role="button"
+              style="cursor: pointer; transition: transform 0.3s ease-out; transform: translateY(150%);"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-jump rcx-icon rcx-css-1g87xs3"
+              >
+                ᚛
+              </i>
+               
+              New_logs
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+`;
