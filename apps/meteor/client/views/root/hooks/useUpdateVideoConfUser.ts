@@ -1,17 +1,13 @@
+import { useConnectionStatus, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { VideoConfManager } from '../../../lib/VideoConfManager';
 
 export const useUpdateVideoConfUser = () => {
-	const [userId, isLoggingIn, isConnected] = [Meteor.userId(), Meteor.loggingIn(), Meteor.status().connected];
+	const userId = useUserId();
+	const { connected, isLoggingIn } = useConnectionStatus();
 
 	useEffect(() => {
-		console.log('[VideoConf] useUpdateVideoConfUser hook called with:', {
-			userId,
-			isLoggingIn,
-			isConnected,
-		});
-
-		VideoConfManager.updateUser(userId, isLoggingIn, isConnected);
-	}, [userId, isLoggingIn, isConnected]);
+		VideoConfManager.updateUser(userId, isLoggingIn, connected);
+	}, [userId, isLoggingIn, connected]);
 };
