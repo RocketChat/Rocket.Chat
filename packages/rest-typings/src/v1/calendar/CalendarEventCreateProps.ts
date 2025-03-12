@@ -5,6 +5,7 @@ const ajv = new Ajv();
 
 export type CalendarEventCreateProps = {
 	startTime: string;
+	endTime?: string;
 	externalId?: string;
 	subject: string;
 	description: string;
