@@ -157,7 +157,7 @@ export class Router<
 					[req],
 				);
 				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
-					const responseValidatorFn = options.response[statusCode];
+					const responseValidatorFn = options?.response?.[statusCode];
 					if (!responseValidatorFn) {
 						console.warn(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 					}
