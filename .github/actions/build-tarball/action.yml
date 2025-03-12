@@ -71,8 +71,23 @@ runs:
     - name: Instalar dependencies
       shell: bash
       run: |
-        cd build
-        npm ci --production
+        cd build/bundle/programs/server
+        npm install --omit=dev
+        rm -rf npm/node_modules/sharp
+        npm install sharp@0.32.6 --no-save
+        mv node_modules/sharp npm/node_modules/sharp
+        cd -
+        cd build/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk
+        npm install
+        cd /tmp
+        npm install useragent-ng@2.4.4 --no-save
+        cd -
+        rm -rf build/bundle/programs/server/npm/node_modules/meteor/webapp/node_modules/useragent-ng
+        mv /tmp/node_modules/useragent-ng build/bundle/programs/server/npm/node_modules/meteor/webapp/node_modules/useragent-ng
+        rm -rf /tmp/node_modules
+        cd build/bundle/programs/server/npm
+        npm rebuild bcrypt --build-from-source
+        npm cache clear --force
 
     - name: Download NodeJS binary
       shell: bash
