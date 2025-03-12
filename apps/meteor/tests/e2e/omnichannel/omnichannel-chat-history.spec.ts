@@ -84,7 +84,7 @@ test.describe('Omnichannel chat history', () => {
 			await agent.poHomeOmnichannel.contacts.contactInfo.historyMessage.click();
 
 			// Should not show the NoSubscribedRoom.tsx component on livechat rooms
-			await expect(agent.page.getByRole('button', { name: 'Join_channel' })).not.toBeVisible();
+			await expect(agent.page.locator('textarea[name="msg"]')).toBeVisible();
 		});
 	});
 });
