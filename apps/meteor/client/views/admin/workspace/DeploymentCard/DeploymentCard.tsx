@@ -7,9 +7,9 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import InstancesModal from './InstancesModal';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
-import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 
 type DeploymentCardProps = {
