@@ -885,6 +885,16 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
+	updateStatus(_id, status) {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
 	updateStatusByAppId(appId, status) {
 		const query = {
 			appId,

@@ -85,7 +85,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		status?: UserStatus,
 		shouldScheduleRemoval?: boolean,
 	): Promise<void> {
-		const user = await Users.findOneById(uid);
+		const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1 } });
 		if (!user || user.status === UserStatus.OFFLINE) {
 			return;
 		}
@@ -93,15 +93,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const newStatus = status ?? UserStatus.BUSY;
 		const previousStatus = user.status;
 
-		await Users.updateOne(
-			{ _id: uid },
-			{
-				$set: {
-					status: newStatus,
-					statusDefault: newStatus,
-				},
-			},
-		);
+		await Users.updateStatus(uid, newStatus);
 
 		await api.broadcast('presence.status', {
 			user: {
@@ -168,6 +160,19 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
 	}
 
+	private async removeCronJobs(eventId: ICalendarEvent['_id'], uid: IUser['_id']): Promise<void> {
+		const statusChangeJobId = this.generateCronJobId(eventId, uid, 'status');
+		const reminderJobId = this.generateCronJobId(eventId, uid, 'reminder');
+
+		if (await cronJobs.has(statusChangeJobId)) {
+			await cronJobs.remove(statusChangeJobId);
+		}
+
+		if (await cronJobs.has(reminderJobId)) {
+			await cronJobs.remove(reminderJobId);
+		}
+	}
+
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
 		const event = await this.get(eventId);
 		if (!event) {
@@ -220,16 +225,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
 		const event = await this.get(eventId);
 		if (event) {
-			const statusChangeJobId = this.generateCronJobId(eventId, event.uid, 'status');
-			const reminderJobId = this.generateCronJobId(eventId, event.uid, 'reminder');
-
-			if (await cronJobs.has(statusChangeJobId)) {
-				await cronJobs.remove(statusChangeJobId);
-			}
-
-			if (await cronJobs.has(reminderJobId)) {
-				await cronJobs.remove(reminderJobId);
-			}
+			await this.removeCronJobs(eventId, event.uid);
 		}
 
 		return CalendarEvent.deleteOne({
