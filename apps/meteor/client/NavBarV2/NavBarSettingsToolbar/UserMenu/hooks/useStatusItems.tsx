@@ -11,6 +11,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
+import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (): GenericMenuItemProps[] => {
@@ -35,6 +36,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 		mutationFn: async (status: UserStatusDescriptor) => {
 			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
 			void callbacks.run('userStatusManuallySet', status);
+			fireGlobalEvent('user-status-manually-set', status);
 		},
 	});
 
