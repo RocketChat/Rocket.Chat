@@ -7,6 +7,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
 import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
 import { useEmojiOne } from '../../../app/emoji-emojione/client/hooks/useEmojiOne';
@@ -47,6 +48,7 @@ const AppLayout = () => {
 	useDrupal();
 	useDolphin();
 	useCustomOAuth();
+	useCorsSSLConfig();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
