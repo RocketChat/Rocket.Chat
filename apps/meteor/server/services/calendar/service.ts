@@ -19,7 +19,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	protected name = 'calendar';
 
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
-		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
+		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
+		const endTime = 'endTime' in data ? ((data as any).endTime as Date) : undefined;
 
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? this.getShiftedTime(startTime, -minutes) : undefined;
@@ -38,12 +39,17 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
-		await this.setupOnAppointmentStatus(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+		await this.setupOnAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
 
 		return insertResult.insertedId;
 	}
 
-	private async setupOnAppointmentStatus(
+	private generateCronJobId(eventId: ICalendarEvent['_id'], uid: IUser['_id'], isStatusChange = true): string {
+		// Create a unique identifier that includes both event ID and user ID
+		return isStatusChange ? `calendar-presence-status-${eventId}-${uid}` : `calendar-reminder-${eventId}-${uid}`;
+	}
+
+	private async setupOnAppointmentStatusChange(
 		eventId: ICalendarEvent['_id'],
 		uid: IUser['_id'],
 		startTime: Date,
@@ -51,15 +57,21 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		status?: UserStatus,
 		shouldScheduleRemoval?: boolean,
 	): Promise<void> {
-		// TODO: Create a setting for this
-		const hasBusyStatusSetting = true; // settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		const hasBusyStatusSetting = settings.get<boolean>('Calendar_BusyStatus_Enabled');
 		if (!endTime || !hasBusyStatusSetting) {
 			return;
 		}
 
 		const scheduledTime = status ? endTime : startTime;
+		const cronJobId = this.generateCronJobId(eventId, uid);
 
-		await cronJobs.addAtTimestamp('calendar-presence-status', scheduledTime, async () =>
+		// Remove any existing cron job for this event and user
+		if (await cronJobs.has(cronJobId)) {
+			await cronJobs.remove(cronJobId);
+		}
+
+		// Add the new cron job with the unique identifier
+		await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () =>
 			this.applyStatusChange(eventId, uid, startTime, endTime, status, shouldScheduleRemoval),
 		);
 	}
@@ -105,7 +117,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		});
 
 		if (shouldScheduleRemoval && endTime) {
-			await this.setupOnAppointmentStatus(eventId, uid, startTime, endTime, previousStatus, false);
+			await this.setupOnAppointmentStatusChange(eventId, uid, startTime, endTime, previousStatus, false);
 		}
 	}
 
@@ -159,9 +171,39 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
+		const event = await this.get(eventId);
+		if (!event) {
+			// Return a valid UpdateResult structure
+			return { matchedCount: 0, modifiedCount: 0, upsertedCount: 0, upsertedId: null, acknowledged: true };
+		}
+
 		const { startTime, subject, description, reminderMinutesBeforeStart } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description || '');
 		const reminderTime = reminderMinutesBeforeStart && startTime ? this.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+
+		// If we're updating the time or status-related fields, update the associated cron jobs
+		// We use type assertion since endTime is optional in ICalendarEvent
+		const hasEndTimeUpdate = 'endTime' in data;
+		const updatedEndTime = hasEndTimeUpdate ? ((data as any).endTime as Date) : undefined;
+
+		if (startTime || hasEndTimeUpdate) {
+			// Remove existing cron jobs
+			const statusChangeJobId = this.generateCronJobId(eventId, event.uid);
+			if (await cronJobs.has(statusChangeJobId)) {
+				await cronJobs.remove(statusChangeJobId);
+			}
+
+			// Setup new cron job with updated times if we have both required parameters
+			const eventEndTime = 'endTime' in event ? ((event as any).endTime as Date) : undefined;
+
+			if (startTime && updatedEndTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, updatedEndTime, UserStatus.BUSY, true);
+			} else if (startTime && eventEndTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, eventEndTime, UserStatus.BUSY, true);
+			} else if (updatedEndTime && event.startTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, event.startTime, updatedEndTime, UserStatus.BUSY, true);
+			}
+		}
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
@@ -171,6 +213,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			reminderMinutesBeforeStart,
 			reminderTime,
 		};
+
+		// Add endTime if it was in the original data
+		if (hasEndTimeUpdate) {
+			(updateData as any).endTime = updatedEndTime;
+		}
 
 		const updateResult = await CalendarEvent.updateEvent(eventId, updateData);
 
@@ -182,6 +229,22 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
+		// Find the event to get the user ID before deleting
+		const event = await this.get(eventId);
+		if (event) {
+			// Remove any associated cron jobs
+			const statusChangeJobId = this.generateCronJobId(eventId, event.uid);
+			const reminderJobId = this.generateCronJobId(eventId, event.uid, false);
+
+			if (await cronJobs.has(statusChangeJobId)) {
+				await cronJobs.remove(statusChangeJobId);
+			}
+
+			if (await cronJobs.has(reminderJobId)) {
+				await cronJobs.remove(reminderJobId);
+			}
+		}
+
 		return CalendarEvent.deleteOne({
 			_id: eventId,
 		});
