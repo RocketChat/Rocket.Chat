@@ -3,6 +3,8 @@ import type { IUser } from './IUser';
 
 export interface ICalendarEvent extends IRocketChatRecord {
 	startTime: Date;
+	endTime?: Date;
+
 	uid: IUser['_id'];
 	subject: string;
 	description: string;

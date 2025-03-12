@@ -1,10 +1,11 @@
 import type { ICalendarService } from '@rocket.chat/core-services';
 import { ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CalendarEvent } from '@rocket.chat/models';
+import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { settings } from '../../../app/settings/server';
@@ -18,7 +19,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	protected name = 'calendar';
 
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
-		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
+		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
 
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? this.getShiftedTime(startTime, -minutes) : undefined;
@@ -26,6 +27,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const insertData: InsertionModel<ICalendarEvent> = {
 			uid,
 			startTime,
+			...(endTime ? { endTime } : {}),
 			subject,
 			description,
 			meetingUrl,
@@ -36,8 +38,75 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
+		await this.setupOnAppointmentStatus(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
 
 		return insertResult.insertedId;
+	}
+
+	private async setupOnAppointmentStatus(
+		eventId: ICalendarEvent['_id'],
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime?: Date,
+		status?: UserStatus,
+		shouldScheduleRemoval?: boolean,
+	): Promise<void> {
+		// TODO: Create a setting for this
+		const hasBusyStatusSetting = true; // settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		if (!endTime || !hasBusyStatusSetting) {
+			return;
+		}
+
+		const scheduledTime = status ? endTime : startTime;
+
+		await cronJobs.addAtTimestamp('calendar-presence-status', scheduledTime, async () =>
+			this.applyStatusChange(eventId, uid, startTime, endTime, status, shouldScheduleRemoval),
+		);
+	}
+
+	/**
+	 * Applies the actual status change and schedules the reversion if needed
+	 */
+	private async applyStatusChange(
+		eventId: ICalendarEvent['_id'],
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime?: Date,
+		status?: UserStatus,
+		shouldScheduleRemoval?: boolean,
+	): Promise<void> {
+		const user = await Users.findOneById(uid);
+		if (!user || user.status === UserStatus.OFFLINE) {
+			return;
+		}
+
+		const newStatus = status ?? UserStatus.BUSY;
+		const previousStatus = user.status;
+
+		await Users.updateOne(
+			{ _id: uid },
+			{
+				$set: {
+					status: newStatus,
+					statusDefault: newStatus,
+				},
+			},
+		);
+
+		await api.broadcast('presence.status', {
+			user: {
+				status: newStatus,
+				_id: uid,
+				roles: user.roles,
+				username: user.username,
+				name: user.name,
+			},
+			previousStatus,
+		});
+
+		if (shouldScheduleRemoval && endTime) {
+			await this.setupOnAppointmentStatus(eventId, uid, startTime, endTime, previousStatus, false);
+		}
 	}
 
 	public async import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']> {
@@ -123,31 +192,41 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	private async doSetupNextNotification(isRecursive: boolean): Promise<void> {
+		console.log('[CalendarService] doSetupNextNotification');
 		const date = await CalendarEvent.findNextNotificationDate();
+		console.log('[CalendarService] date', date);
 		if (!date) {
+			console.log('[CalendarService] no date');
 			if (await cronJobs.has('calendar-reminders')) {
+				console.log('[CalendarService] removing cron job');
 				await cronJobs.remove('calendar-reminders');
 			}
 			return;
 		}
 
 		date.setSeconds(0);
+		console.log('[CalendarService] date', date);
 		if (!isRecursive && date.valueOf() < Date.now()) {
+			console.log('[CalendarService] sending current notifications');
 			return this.sendCurrentNotifications(date);
 		}
 
+		console.log('[CalendarService] adding cron job');
 		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
 	}
 
 	public async sendCurrentNotifications(date: Date): Promise<void> {
+		console.log('[CalendarService] sendCurrentNotifications', date);
 		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
-
+		console.log('[CalendarService] events', events);
 		for await (const event of events) {
+			console.log('[CalendarService] sending event', event);
 			await this.sendEventNotification(event);
-
+			console.log('[CalendarService] flagging notification sent', event._id);
 			await CalendarEvent.flagNotificationSent(event._id);
 		}
 
+		console.log('[CalendarService] setting up next notification');
 		await this.doSetupNextNotification(true);
 	}
 

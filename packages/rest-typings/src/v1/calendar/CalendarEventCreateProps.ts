@@ -19,6 +19,10 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 			type: 'string',
 			nullable: false,
 		},
+		endTime: {
+			type: 'string',
+			nullable: true,
+		},
 		externalId: {
 			type: 'string',
 			nullable: true,
