@@ -201,7 +201,6 @@ const MessageBox = ({
 				// Scroll to the new line if the message box is at max height
 				if (input.scrollHeight > input.clientHeight) {
 					input.scrollTop = input.scrollHeight; // Scroll to the bottom
-					console.log('scroll to bottom');
 				}
 				return false;
 			}
