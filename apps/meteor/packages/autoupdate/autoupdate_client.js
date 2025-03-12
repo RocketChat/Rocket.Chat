@@ -66,134 +66,133 @@ const retry = new Retry({
 
 let failures = 0;
 
-// Autoupdate._retrySubscription = () => {
-// 	Meteor.subscribe('stream-meteor_autoupdate_clientVersions', {
-// 		onError(error) {
-// 			Meteor._debug('autoupdate subscription failed', error);
-// 			failures++;
-// 			retry.retryLater(failures, function () {
-// 				// Just retry making the subscription, don't reload the whole
-// 				// page. While reloading would catch more cases (for example,
-// 				// the server went back a version and is now doing old-style hot
-// 				// code push), it would also be more prone to reload loops,
-// 				// which look really bad to the user. Just retrying the
-// 				// subscription over DDP means it is at least possible to fix by
-// 				// updating the server.
-// 				Autoupdate._retrySubscription();
-// 			});
-// 		},
+const event = new Event('client_changed');
 
-// 		onReady() {
-// 			// Call checkNewVersionDocument with a slight delay, so that the
-// 			// const handle declaration is guaranteed to be initialized, even if
-// 			// the added or changed callbacks are called synchronously.
-// 			const resolved = Promise.resolve();
-// 			function check(doc) {
-// 				resolved.then(() => checkNewVersionDocument(doc));
-// 			}
+Autoupdate._retrySubscription = () => {
+	Meteor.subscribe('meteor_autoupdate_clientVersions', {
+		onError(error) {
+			Meteor._debug('autoupdate subscription failed', error);
+			failures++;
+			retry.retryLater(failures, function () {
+				// Just retry making the subscription, don't reload the whole
+				// page. While reloading would catch more cases (for example,
+				// the server went back a version and is now doing old-style hot
+				// code push), it would also be more prone to reload loops,
+				// which look really bad to the user. Just retrying the
+				// subscription over DDP means it is at least possible to fix by
+				// updating the server.
+				Autoupdate._retrySubscription();
+			});
+		},
 
-// 			const stop = clientVersions.watch(check);
+		onReady() {
+			// Call checkNewVersionDocument with a slight delay, so that the
+			// const handle declaration is guaranteed to be initialized, even if
+			// the added or changed callbacks are called synchronously.
+			const resolved = Promise.resolve();
+			function check(doc) {
+				resolved.then(() => checkNewVersionDocument(doc));
+			}
 
-// 			const reloadDelayInSeconds = Meteor.isProduction ? 60 : 0;
+			const stop = clientVersions.watch(check);
 
-// 			function checkNewVersionDocument(doc) {
-// 				console.log('doccccc', doc, clientArch);
-// 				if (doc._id !== clientArch) {
-// 					return;
-// 				}
+			const reloadDelayInSeconds = Meteor.isProduction ? 60 : 0;
 
-// 				if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
-// 					// Non-refreshable assets have changed, so we have to reload the
-// 					// whole page rather than just replacing <link> tags.
-// 					if (stop) stop();
-// 					if (Package.reload) {
-// 						// The reload package should be provided by ddp-client, which
-// 						// is provided by the ddp package that autoupdate depends on.
+			function checkNewVersionDocument(doc) {
+				if (doc._id !== clientArch) {
+					return;
+				}
 
-// 						// Delay reload in 60 seconds
-// 						console.warn(
-// 							'Client version changed from',
-// 							autoupdateVersions.versionNonRefreshable,
-// 							'to',
-// 							doc.versionNonRefreshable,
-// 							`Page will reload in ${reloadDelayInSeconds} seconds`,
-// 						);
-// 						setTimeout(() => {
-// 							Package.reload.Reload._reload();
-// 						}, reloadDelayInSeconds * 1000);
-// 					}
-// 					return;
-// 				}
+				if (doc.versionNonRefreshable !== autoupdateVersions.versionNonRefreshable) {
+					// Non-refreshable assets have changed, so we have to reload the
+					// whole page rather than just replacing <link> tags.
+					if (stop) stop();
+					if (Package.reload) {
+						// The reload package should be provided by ddp-client, which
+						// is provided by the ddp package that autoupdate depends on.
 
-// 				if (doc.versionRefreshable !== autoupdateVersions.versionRefreshable) {
-// 					autoupdateVersions.versionRefreshable = doc.versionRefreshable;
+						// Delay reload in 60 seconds
+						console.warn(
+							'Client version changed from',
+							autoupdateVersions.versionNonRefreshable,
+							'to',
+							doc.versionNonRefreshable,
+							`Page will reload in ${reloadDelayInSeconds} seconds`,
+						);
+						document.dispatchEvent(event);
+					}
+					return;
+				}
 
-// 					// Switch out old css links for the new css links. Inspired by:
-// 					// https://github.com/guard/guard-livereload/blob/master/js/livereload.js#L710
-// 					var newCss = doc.assets || [];
-// 					var oldLinks = [];
+				if (doc.versionRefreshable !== autoupdateVersions.versionRefreshable) {
+					autoupdateVersions.versionRefreshable = doc.versionRefreshable;
 
-// 					Array.prototype.forEach.call(document.getElementsByTagName('link'), function (link) {
-// 						if (link.className === '__meteor-css__') {
-// 							oldLinks.push(link);
-// 						}
-// 					});
+					// Switch out old css links for the new css links. Inspired by:
+					// https://github.com/guard/guard-livereload/blob/master/js/livereload.js#L710
+					var newCss = doc.assets || [];
+					var oldLinks = [];
 
-// 					function waitUntilCssLoads(link, callback) {
-// 						var called;
+					Array.prototype.forEach.call(document.getElementsByTagName('link'), function (link) {
+						if (link.className === '__meteor-css__') {
+							oldLinks.push(link);
+						}
+					});
 
-// 						link.onload = function () {
-// 							knownToSupportCssOnLoad = true;
-// 							if (!called) {
-// 								called = true;
-// 								callback();
-// 							}
-// 						};
+					function waitUntilCssLoads(link, callback) {
+						var called;
 
-// 						if (!knownToSupportCssOnLoad) {
-// 							var id = Meteor.setInterval(function () {
-// 								if (link.sheet) {
-// 									if (!called) {
-// 										called = true;
-// 										callback();
-// 									}
-// 									Meteor.clearInterval(id);
-// 								}
-// 							}, 50);
-// 						}
-// 					}
+						link.onload = function () {
+							knownToSupportCssOnLoad = true;
+							if (!called) {
+								called = true;
+								callback();
+							}
+						};
 
-// 					let newLinksLeftToLoad = newCss.length;
-// 					function removeOldLinks() {
-// 						if (oldLinks.length > 0 && --newLinksLeftToLoad < 1) {
-// 							oldLinks.splice(0).forEach((link) => {
-// 								link.parentNode.removeChild(link);
-// 							});
-// 						}
-// 					}
+						if (!knownToSupportCssOnLoad) {
+							var id = Meteor.setInterval(function () {
+								if (link.sheet) {
+									if (!called) {
+										called = true;
+										callback();
+									}
+									Meteor.clearInterval(id);
+								}
+							}, 50);
+						}
+					}
 
-// 					if (newCss.length > 0) {
-// 						newCss.forEach((css) => {
-// 							const newLink = document.createElement('link');
-// 							newLink.setAttribute('rel', 'stylesheet');
-// 							newLink.setAttribute('type', 'text/css');
-// 							newLink.setAttribute('class', '__meteor-css__');
-// 							newLink.setAttribute('href', css.url);
+					let newLinksLeftToLoad = newCss.length;
+					function removeOldLinks() {
+						if (oldLinks.length > 0 && --newLinksLeftToLoad < 1) {
+							oldLinks.splice(0).forEach((link) => {
+								link.parentNode.removeChild(link);
+							});
+						}
+					}
 
-// 							waitUntilCssLoads(newLink, function () {
-// 								Meteor.setTimeout(removeOldLinks, 200);
-// 							});
+					if (newCss.length > 0) {
+						newCss.forEach((css) => {
+							const newLink = document.createElement('link');
+							newLink.setAttribute('rel', 'stylesheet');
+							newLink.setAttribute('type', 'text/css');
+							newLink.setAttribute('class', '__meteor-css__');
+							newLink.setAttribute('href', css.url);
 
-// 							const head = document.getElementsByTagName('head').item(0);
-// 							head.appendChild(newLink);
-// 						});
-// 					} else {
-// 						removeOldLinks();
-// 					}
-// 				}
-// 			}
-// 		},
-// 	});
-// };
+							waitUntilCssLoads(newLink, function () {
+								Meteor.setTimeout(removeOldLinks, 200);
+							});
 
-// Autoupdate._retrySubscription();
+							const head = document.getElementsByTagName('head').item(0);
+							head.appendChild(newLink);
+						});
+					} else {
+						removeOldLinks();
+					}
+				}
+			}
+		},
+	});
+};
+
+Autoupdate._retrySubscription();
