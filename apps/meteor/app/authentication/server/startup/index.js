@@ -267,6 +267,8 @@ const onCreateUserAsync = async function (options, user = {}) {
 
 		return user;
 	} catch (error) {
+		// Log the error and rethrow it to prevent user creation
+                console.error('Error during user creation:', error);
 		throw new Meteor.Error('error-on-create-user', error.message);
 	}
 };
