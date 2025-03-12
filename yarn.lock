@@ -8938,6 +8938,7 @@ __metadata:
     "@types/strict-uri-encode": "npm:^2.0.2"
     "@types/supertest": "npm:^6.0.2"
     "@types/supports-color": "npm:~7.2.1"
+    "@types/swagger-ui-express": "npm:^4.1.8"
     "@types/textarea-caret": "npm:^3.0.3"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@types/underscore": "npm:^1.13.0"
@@ -9129,6 +9130,7 @@ __metadata:
     stylelint-selector-bem-pattern: "npm:^4.0.1"
     supertest: "npm:^7.0.0"
     supports-color: "npm:~7.2.0"
+    swagger-ui-express: "npm:^5.0.1"
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -10253,6 +10255,13 @@ __metadata:
   version: 1.2.4
   resolution: "@samchon/openapi@npm:1.2.4"
   checksum: 10/7d16be3291ee7cd9bd331832ca1cb3abab017593d72e4a7b4f6884ae9f7a2a89ee5f214a233c7a3cdc5f7f5eec10cef7ef87c6330fa73cb5665b587579b93d95
+  languageName: node
+  linkType: hard
+
+"@scarf/scarf@npm:=1.4.0":
+  version: 1.4.0
+  resolution: "@scarf/scarf@npm:1.4.0"
+  checksum: 10/1b39a18fa29e91cfbc134c588e20c5f01a1b21ec4473614123801155b48378e9c3bf72adaca8c67e433ae951ab653268e9502cc5733230d8927532f74a6b89c9
   languageName: node
   linkType: hard
 
@@ -13127,6 +13136,16 @@ __metadata:
   version: 7.2.1
   resolution: "@types/supports-color@npm:7.2.1"
   checksum: 10/abf7d9348deadf5386cf5faec062a4132e647a179584f52cace87435248f520be73c58ac28618cf5684e6b0ed6bb635d5a975cc71ff613af7db2d5648557ef45
+  languageName: node
+  linkType: hard
+
+"@types/swagger-ui-express@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "@types/swagger-ui-express@npm:4.1.8"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/serve-static": "npm:*"
+  checksum: 10/bf4d84fb21c11e820238685cdc102f8d5e82d4382df9450a358bf80f70f5f0699c87645a291c52beee1eba5c0ee594e03714b236f1a0737272941a8708218f8f
   languageName: node
   linkType: hard
 
@@ -34860,6 +34879,26 @@ __metadata:
   bin:
     svgo: ./bin/svgo
   checksum: 10/82fdea9b938884d808506104228e4d3af0050d643d5b46ff7abc903ff47a91bbf6561373394868aaf07a28f006c4057b8fbf14bbd666298abdd7cc590d4f7700
+  languageName: node
+  linkType: hard
+
+"swagger-ui-dist@npm:>=5.0.0":
+  version: 5.20.1
+  resolution: "swagger-ui-dist@npm:5.20.1"
+  dependencies:
+    "@scarf/scarf": "npm:=1.4.0"
+  checksum: 10/6bd82f8bf2bc6d5ba062c1e3d3cb0ef057403784afb009ff0a582f59b14a24c5c8e8b3c4541251d1562f259e6a8ffca42ac9d12714691b2b35a1b35f56df2489
+  languageName: node
+  linkType: hard
+
+"swagger-ui-express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "swagger-ui-express@npm:5.0.1"
+  dependencies:
+    swagger-ui-dist: "npm:>=5.0.0"
+  peerDependencies:
+    express: ">=4.0.0 || >=5.0.0-beta"
+  checksum: 10/13d95e6683214717f98dd53063bf398751ea798e971c43ece949b67a45102cc48995da319547002b2acc262d39f1994bd4af39828d99e95658966d6b332b585e
   languageName: node
   linkType: hard
 

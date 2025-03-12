@@ -1,9 +1,14 @@
 import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
+import express from 'express';
+import { WebApp } from 'meteor/webapp';
+import swaggerUi from 'swagger-ui-express';
 
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { API } from '../api';
 import type { Route } from '../router';
+
+const app = express();
 
 const getTypedRoutes = (
 	typedRoutes: Record<string, Record<string, Route>>,
@@ -35,6 +40,36 @@ const getTypedRoutes = (
 	);
 };
 
+const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
+	openapi: '3.0.3',
+	info: {
+		title: 'Rocket.Chat API',
+		description: 'Rocket.Chat API',
+		version: Info.version,
+	},
+	servers: [
+		{
+			url: settings.get('Site_Url'),
+		},
+	],
+	components: {
+		securitySchemes: {
+			userId: {
+				type: 'apiKey',
+				in: 'header',
+				name: 'X-User-Id',
+			},
+			authToken: {
+				type: 'apiKey',
+				in: 'header',
+				name: 'X-Auth-Token',
+			},
+		},
+		schemas: {},
+	},
+	paths,
+});
+
 API.default.addRoute(
 	'docs/json',
 	{ authRequired: false, validateParams: isOpenAPIJSONEndpoint },
@@ -42,35 +77,14 @@ API.default.addRoute(
 		get() {
 			const { withUndocumented = false } = this.queryParams;
 
-			return API.default.success({
-				openapi: '3.0.3',
-				info: {
-					title: 'Rocket.Chat API',
-					description: 'Rocket.Chat API',
-					version: Info.version,
-				},
-				servers: [
-					{
-						url: settings.get('Site_Url'),
-					},
-				],
-				components: {
-					securitySchemes: {
-						userId: {
-							type: 'apiKey',
-							in: 'header',
-							name: 'X-User-Id',
-						},
-						authToken: {
-							type: 'apiKey',
-							in: 'header',
-							name: 'X-Auth-Token',
-						},
-					},
-					schemas: {},
-				},
-				paths: getTypedRoutes(API.v1.typedRoutes, { withUndocumented }),
-			});
+			return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.v1.typedRoutes, { withUndocumented })));
 		},
 	},
 );
+
+app.use(
+	'/api-docs',
+	swaggerUi.serve,
+	swaggerUi.setup(makeOpenAPIResponse(getTypedRoutes(API.v1.typedRoutes, { withUndocumented: false }))),
+);
+WebApp.connectHandlers.use(app);
