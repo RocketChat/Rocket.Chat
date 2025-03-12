@@ -7,6 +7,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
 import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
 import { useEmojiOne } from '../../../app/emoji-emojione/client/hooks/useEmojiOne';
@@ -19,6 +20,7 @@ import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
+import { useCustomOAuth } from '../../sidebar/hooks/useCustomOAuth';
 import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
@@ -47,6 +49,8 @@ const AppLayout = () => {
 	useDrupal();
 	useDolphin();
 	useTokenPassAuth();
+	useCustomOAuth();
+	useCorsSSLConfig();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
