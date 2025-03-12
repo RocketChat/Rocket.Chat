@@ -1,17 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { MouseEvent, UIEventHandler, MutableRefObject } from 'react';
-import { forwardRef, useRef } from 'react';
+import type { MouseEvent, UIEventHandler } from 'react';
+import { forwardRef, memo, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import EmojiCategoryRow from './EmojiCategoryRow';
-import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import type { EmojiByCategory } from '../../../../app/emoji/client';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 
 type CategoriesResultProps = {
 	emojiListByCategory: EmojiByCategory[];
-	categoriesPosition: MutableRefObject<EmojiCategoryPosition[]>;
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
@@ -19,7 +18,7 @@ type CategoriesResultProps = {
 };
 
 const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(function CategoriesResult(
-	{ emojiListByCategory, categoriesPosition, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
+	{ emojiListByCategory, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
 	ref,
 ) {
 	const wrapper = useRef<HTMLDivElement>(null);
@@ -34,36 +33,36 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			`}
 			height='full'
 		>
-			<Virtuoso
-				ref={ref}
-				totalCount={emojiListByCategory.length}
-				data={emojiListByCategory}
-				onScroll={handleScroll}
-				components={{ Scroller: VirtuosoScrollbars }}
-				isScrolling={(isScrolling: boolean) => {
-					if (!wrapper.current) {
-						return;
-					}
+			<CustomScrollbars>
+				<Virtuoso
+					ref={ref}
+					totalCount={emojiListByCategory.length}
+					data={emojiListByCategory}
+					onScroll={handleScroll}
+					isScrolling={(isScrolling: boolean) => {
+						if (!wrapper.current) {
+							return;
+						}
 
-					if (isScrolling) {
-						wrapper.current.classList.add('pointer-none');
-					} else {
-						wrapper.current.classList.remove('pointer-none');
-					}
-				}}
-				itemContent={(_, data) => (
-					<EmojiCategoryRow
-						categoryKey={data.key}
-						categoriesPosition={categoriesPosition}
-						customItemsLimit={customItemsLimit}
-						handleLoadMore={handleLoadMore}
-						handleSelectEmoji={handleSelectEmoji}
-						{...data}
-					/>
-				)}
-			/>
+						if (isScrolling) {
+							wrapper.current.classList.add('pointer-none');
+						} else {
+							wrapper.current.classList.remove('pointer-none');
+						}
+					}}
+					itemContent={(_, { key, ...data }) => (
+						<EmojiCategoryRow
+							categoryKey={key}
+							customItemsLimit={customItemsLimit}
+							handleLoadMore={handleLoadMore}
+							handleSelectEmoji={handleSelectEmoji}
+							{...data}
+						/>
+					)}
+				/>
+			</CustomScrollbars>
 		</Box>
 	);
 });
 
-export default CategoriesResult;
+export default memo(CategoriesResult);

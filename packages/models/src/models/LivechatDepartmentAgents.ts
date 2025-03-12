@@ -365,7 +365,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	}
 
 	countByDepartmentId(departmentId: string): Promise<number> {
-		return this.col.countDocuments({ departmentId });
+		return this.countDocuments({ departmentId });
 	}
 
 	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document> {

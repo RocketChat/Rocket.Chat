@@ -5,6 +5,7 @@ import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { ModifyUpdater } from '../modify/ModifyUpdater.ts';
+import { RoomBuilder } from "../builders/RoomBuilder.ts";
 
 describe('ModifyUpdater', () => {
     let modifyUpdater: ModifyUpdater;
@@ -61,7 +62,7 @@ describe('ModifyUpdater', () => {
             args: [
                 {
                     method: 'bridges:getMessageBridge:doUpdate',
-                    params: [messageBuilder.getMessage(), 'deno-test'],
+                    params: [{ id: '123', ...messageBuilder.getChanges() }, 'deno-test'],
                 },
             ],
         });
@@ -72,7 +73,7 @@ describe('ModifyUpdater', () => {
     it('correctly formats requests for the update room flow', async () => {
         const _spy = spy(modifyUpdater, 'senderFn' as keyof ModifyUpdater);
 
-        const roomBuilder = await modifyUpdater.room('123', { id: '456' } as any);
+        const roomBuilder = await modifyUpdater.room('123', { id: '456' } as any) as RoomBuilder;
 
         assertSpyCall(_spy, 0, {
             args: [
@@ -102,7 +103,7 @@ describe('ModifyUpdater', () => {
             args: [
                 {
                     method: 'bridges:getRoomBridge:doUpdate',
-                    params: [roomBuilder.getRoom(), roomBuilder.getMembersToBeAddedUsernames(), 'deno-test'],
+                    params: [{ id: '123', ...roomBuilder.getChanges() }, roomBuilder.getMembersToBeAddedUsernames(), 'deno-test'],
                 },
             ],
         });
