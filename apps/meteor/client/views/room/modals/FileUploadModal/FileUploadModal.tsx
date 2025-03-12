@@ -21,7 +21,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors, isDirty, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName } });
 
 	return (
@@ -64,7 +64,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' loading={isSubmitting}>
+						<Button primary type='submit' loading={isSubmitting} disabled={!isDirty}>
 							{t('Update')}
 						</Button>
 					</Modal.FooterControllers>

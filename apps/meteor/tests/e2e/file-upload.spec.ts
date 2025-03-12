@@ -43,7 +43,7 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('should send file with name updated', async () => {
-		const updatedFileName = 'any_file.txt';
+		const updatedFileName = 'any_file1.txt';
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
 		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
