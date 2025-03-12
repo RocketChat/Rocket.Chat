@@ -220,10 +220,12 @@ export function prepareMessageObject(
 const updateFileNames = async (filesToConfirm: IUploadToConfirm[], isE2E: boolean) => {
 	return Promise.all(
 		filesToConfirm.map(async (upload) => {
-			if (isE2E && upload.content) {
+			if (isE2E) {
 				// on encrypted files, the `upload.name` is an useless attribute, so it doesn't need to be updated
 				// the name will be loaded from the encrypted data on `upload.content` instead
-				await Uploads.updateFileContentById(upload._id, upload.content);
+				if (upload.content) {
+					await Uploads.updateFileContentById(upload._id, upload.content);
+				}
 			} else if (upload.name) {
 				await Uploads.updateFileNameById(upload._id, upload.name);
 			}
