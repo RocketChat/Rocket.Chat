@@ -688,19 +688,6 @@ const roomsHideSchema = {
 
 export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
-type RoomsMediaEditProps = {
-	fileName: string;
-};
-
-const mediaEditSchema = {
-	type: 'object',
-	properties: { fileName: { type: 'string' } },
-	required: ['fileName'],
-	additionalProperties: false,
-};
-
-export const isMediaEditProps = ajv.compile<RoomsMediaEditProps>(mediaEditSchema);
-
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -803,10 +790,6 @@ export type RoomsEndpoints = {
 			t?: IMessage['t'];
 			content?: IE2EEMessage['content'];
 		}) => { message: IMessage | null };
-	};
-
-	'/v1/rooms.mediaEdit/:rid/:fileId': {
-		POST: (params: { fileName: string }) => void;
 	};
 
 	'/v1/rooms.saveNotification': {
