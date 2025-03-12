@@ -6,7 +6,7 @@ export type ConnectionStatusContextValue = {
 	retryTime?: number;
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 	reconnect: () => void;
-	isLoggingIn?: boolean;
+	isLoggingIn: boolean;
 };
 
 export const ConnectionStatusContext = createContext<ConnectionStatusContextValue>({
