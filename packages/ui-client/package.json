@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "16.0.0-rc.0",
+	"version": "16.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -34,7 +34,7 @@
 		"@storybook/addon-interactions": "^8.5.3",
 		"@storybook/addon-links": "^8.5.3",
 		"@storybook/addon-styling-webpack": "^1.0.1",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.5",
 		"@storybook/react": "^8.5.3",
 		"@storybook/react-webpack5": "^8.5.3",
 		"@testing-library/react": "~16.0.1",
@@ -61,8 +61,8 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "12.0.0-rc.0",
-		"@rocket.chat/ui-contexts": "16.0.0-rc.0",
+		"@rocket.chat/ui-avatar": "12.0.0",
+		"@rocket.chat/ui-contexts": "16.0.0",
 		"react": "*",
 		"react-i18next": "*"
 	},
