@@ -1,6 +1,5 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
 import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
-import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -50,18 +49,20 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 
 type StreamMapValue = {
 	stop: () => void;
-	error: (cb: (...args: any[]) => void) => OffCallbackHandler;
+	onError: (cb: (...args: any[]) => void) => () => void;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
+	onStop: (cb: () => void) => () => void;
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
-	stopAll: () => void;
 };
 
-const getEventLiteral = <N extends StreamNames, K extends StreamKeys<N>>(name: N, key: K) => `stream-${name}/${key}` as const;
-
 const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
-	const ee = new Emitter();
+	const ee = new Emitter<{
+		ready: [error: any] | [undefined, any];
+		error: [error: any];
+		stop: undefined;
+	}>();
 	const meta = {
 		ready: false,
 	};
@@ -78,6 +79,9 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 			onError: (err: any) => {
 				ee.emit('ready', [err]);
 				ee.emit('error', err);
+			},
+			onStop: () => {
+				ee.emit('stop');
 			},
 		},
 	);
@@ -110,36 +114,31 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		if (meta.ready) {
 			return Promise.resolve();
 		}
-		return new Promise<void>((r) => {
-			ee.once('ready', r);
+		return new Promise<void>((resolve, reject) => {
+			ee.once('ready', ([err]) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+				resolve();
+			});
 		});
 	};
 
-	const unsubList = new Set<() => void>();
-
-	const stopAll = () => {
-		unsubList.forEach((stop) => stop());
-	};
-
-	const offError = ee.once('error', stopAll);
-
 	return {
-		stop: () => {
-			sub.stop();
-			offError();
-		},
-		stopAll,
+		stop: sub.stop,
 		onChange,
 		ready,
-		error: (cb: (...args: any[]) => void) =>
+		onError: (cb: (...args: any[]) => void) =>
 			ee.once('error', (error) => {
 				cb(error);
 			}),
 
+		onStop: (cb: () => void) => ee.once('stop', cb),
 		get isReady() {
 			return meta.ready;
 		},
-		unsubList,
+		unsubList: new Set(),
 	};
 };
 
@@ -154,7 +153,7 @@ const createStreamManager = () => {
 
 	Accounts.onLogout(() => {
 		streams.forEach((stream) => {
-			stream.stopAll();
+			stream.unsubList.forEach((stop) => stop());
 		});
 	});
 
@@ -176,7 +175,7 @@ const createStreamManager = () => {
 		},
 	): ReturnType<ClientStream['subscribe']> => {
 		const [key, ...args] = data;
-		const eventLiteral = getEventLiteral(name, key);
+		const eventLiteral = `stream-${name}/${key}` as const;
 
 		const proxyCallback = (args?: unknown): void => {
 			if (!args || !Array.isArray(args)) {
@@ -204,6 +203,16 @@ const createStreamManager = () => {
 
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
+			const offError = stream.onError(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			const offStop = stream.onStop(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			stream.unsubList.add(offError);
+			stream.unsubList.add(offStop);
 			streams.set(eventLiteral, stream);
 		}
 
@@ -219,10 +228,10 @@ const createStreamManager = () => {
 	};
 
 	const stopAll = (streamName: string, key: string) => {
-		const stream = streams.get(getEventLiteral(streamName as StreamNames, key));
+		const stream = streams.get(`stream-${streamName}/${key}`);
 
 		if (stream) {
-			stream.stopAll();
+			stream.unsubList.forEach((stop) => stop());
 		}
 	};
 
