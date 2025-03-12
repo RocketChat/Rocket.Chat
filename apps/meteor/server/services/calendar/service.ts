@@ -45,7 +45,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	private generateCronJobId(eventId: ICalendarEvent['_id'], uid: IUser['_id'], isStatusChange = true): string {
-		// Create a unique identifier that includes both event ID and user ID
 		return isStatusChange ? `calendar-presence-status-${eventId}-${uid}` : `calendar-reminder-${eventId}-${uid}`;
 	}
 
@@ -65,20 +64,15 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const scheduledTime = status ? endTime : startTime;
 		const cronJobId = this.generateCronJobId(eventId, uid);
 
-		// Remove any existing cron job for this event and user
 		if (await cronJobs.has(cronJobId)) {
 			await cronJobs.remove(cronJobId);
 		}
 
-		// Add the new cron job with the unique identifier
 		await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () =>
 			this.applyStatusChange(eventId, uid, startTime, endTime, status, shouldScheduleRemoval),
 		);
 	}
 
-	/**
-	 * Applies the actual status change and schedules the reversion if needed
-	 */
 	private async applyStatusChange(
 		eventId: ICalendarEvent['_id'],
 		uid: IUser['_id'],
@@ -173,51 +167,42 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
 		const event = await this.get(eventId);
 		if (!event) {
-			// Return a valid UpdateResult structure
 			return { matchedCount: 0, modifiedCount: 0, upsertedCount: 0, upsertedId: null, acknowledged: true };
 		}
 
-		const { startTime, subject, description, reminderMinutesBeforeStart } = data;
+		const { startTime, endTime, subject, description, reminderMinutesBeforeStart } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description || '');
 		const reminderTime = reminderMinutesBeforeStart && startTime ? this.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
-		// If we're updating the time or status-related fields, update the associated cron jobs
-		// We use type assertion since endTime is optional in ICalendarEvent
-		const hasEndTimeUpdate = 'endTime' in data;
-		const updatedEndTime = hasEndTimeUpdate ? ((data as any).endTime as Date) : undefined;
-
-		if (startTime || hasEndTimeUpdate) {
-			// Remove existing cron jobs
+		if (startTime || endTime) {
 			const statusChangeJobId = this.generateCronJobId(eventId, event.uid);
+			const reminderJobId = this.generateCronJobId(eventId, event.uid, false);
 			if (await cronJobs.has(statusChangeJobId)) {
 				await cronJobs.remove(statusChangeJobId);
 			}
 
-			// Setup new cron job with updated times if we have both required parameters
-			const eventEndTime = 'endTime' in event ? ((event as any).endTime as Date) : undefined;
+			if (await cronJobs.has(reminderJobId)) {
+				await cronJobs.remove(reminderJobId);
+			}
 
-			if (startTime && updatedEndTime) {
-				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, updatedEndTime, UserStatus.BUSY, true);
-			} else if (startTime && eventEndTime) {
-				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, eventEndTime, UserStatus.BUSY, true);
-			} else if (updatedEndTime && event.startTime) {
-				await this.setupOnAppointmentStatusChange(eventId, event.uid, event.startTime, updatedEndTime, UserStatus.BUSY, true);
+			if (startTime && endTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, endTime, UserStatus.BUSY, true);
+			} else if (startTime && event.endTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, startTime, event.endTime, UserStatus.BUSY, true);
+			} else if (endTime && event.startTime) {
+				await this.setupOnAppointmentStatusChange(eventId, event.uid, event.startTime, endTime, UserStatus.BUSY, true);
 			}
 		}
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
+			...(endTime ? { endTime } : {}),
 			subject,
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart,
 			reminderTime,
 		};
-
-		// Add endTime if it was in the original data
-		if (hasEndTimeUpdate) {
-			(updateData as any).endTime = updatedEndTime;
-		}
 
 		const updateResult = await CalendarEvent.updateEvent(eventId, updateData);
 
@@ -229,10 +214,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
-		// Find the event to get the user ID before deleting
 		const event = await this.get(eventId);
 		if (event) {
-			// Remove any associated cron jobs
 			const statusChangeJobId = this.generateCronJobId(eventId, event.uid);
 			const reminderJobId = this.generateCronJobId(eventId, event.uid, false);
 
@@ -255,41 +238,29 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	private async doSetupNextNotification(isRecursive: boolean): Promise<void> {
-		console.log('[CalendarService] doSetupNextNotification');
 		const date = await CalendarEvent.findNextNotificationDate();
-		console.log('[CalendarService] date', date);
 		if (!date) {
-			console.log('[CalendarService] no date');
 			if (await cronJobs.has('calendar-reminders')) {
-				console.log('[CalendarService] removing cron job');
 				await cronJobs.remove('calendar-reminders');
 			}
 			return;
 		}
 
 		date.setSeconds(0);
-		console.log('[CalendarService] date', date);
 		if (!isRecursive && date.valueOf() < Date.now()) {
-			console.log('[CalendarService] sending current notifications');
 			return this.sendCurrentNotifications(date);
 		}
 
-		console.log('[CalendarService] adding cron job');
 		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
 	}
 
 	public async sendCurrentNotifications(date: Date): Promise<void> {
-		console.log('[CalendarService] sendCurrentNotifications', date);
 		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
-		console.log('[CalendarService] events', events);
 		for await (const event of events) {
-			console.log('[CalendarService] sending event', event);
 			await this.sendEventNotification(event);
-			console.log('[CalendarService] flagging notification sent', event._id);
 			await CalendarEvent.flagNotificationSent(event._id);
 		}
 
-		console.log('[CalendarService] setting up next notification');
 		await this.doSetupNextNotification(true);
 	}
 

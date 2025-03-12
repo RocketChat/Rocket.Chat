@@ -24,6 +24,10 @@ const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> =
 			type: 'string',
 			nullable: false,
 		},
+		endTime: {
+			type: 'string',
+			nullable: true,
+		},
 		subject: {
 			type: 'string',
 			nullable: false,
