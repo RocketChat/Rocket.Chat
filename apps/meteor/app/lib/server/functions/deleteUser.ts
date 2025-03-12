@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
@@ -168,6 +169,11 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Remove user from users database
 	await Users.removeById(userId);
+
+	// App IPostUserDeleted event hook
+	if (deletedBy) {
+		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
+	}
 
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);

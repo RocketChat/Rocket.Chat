@@ -187,6 +187,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	countUnits(): Promise<number> {
-		return this.col.countDocuments({ type: 'u' });
+		return this.countDocuments({ type: 'u' });
 	}
 }

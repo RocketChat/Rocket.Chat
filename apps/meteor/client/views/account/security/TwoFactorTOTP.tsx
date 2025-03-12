@@ -115,8 +115,8 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 			}
 		};
 
-		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
-	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
+		setModal(<TwoFactorTotpModal onDismiss={() => undefined} onConfirm={onRegenerate} onClose={closeModal} />);
+	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>

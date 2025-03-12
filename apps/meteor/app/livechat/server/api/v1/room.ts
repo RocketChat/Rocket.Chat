@@ -24,8 +24,10 @@ import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivecha
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { closeRoom } from '../../lib/closeRoom';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
+import { createRoom, saveRoomInfo } from '../../lib/rooms';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -81,7 +83,7 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({
+				const newRoom = await createRoom({
 					visitor: guest,
 					roomInfo,
 					agent,
@@ -180,7 +182,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await LivechatTyped.closeRoom({ visitor, room, comment, options });
+			await closeRoom({ visitor, room, comment, options });
 
 			return API.v1.success({ rid, comment });
 		},
@@ -408,7 +410,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

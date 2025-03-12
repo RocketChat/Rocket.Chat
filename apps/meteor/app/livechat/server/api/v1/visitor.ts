@@ -7,6 +7,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { saveRoomInfo } from '../../lib/rooms';
 import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -70,7 +71,7 @@ API.v1.addRoute(
 				rooms.map(
 					(room: IRoom) =>
 						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
+						saveRoomInfo(room, {
 							_id: visitor._id,
 							name: visitor.name,
 							phone: visitor.phone?.[0]?.phoneNumber,

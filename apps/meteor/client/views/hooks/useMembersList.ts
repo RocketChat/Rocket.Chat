@@ -4,6 +4,8 @@ import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+
 type MembersListOptions = {
 	rid: string;
 	type: 'all' | 'online';
@@ -23,20 +25,14 @@ export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'f
 type MembersListPage = { members: RoomMember[]; count: number; total: number; offset: number };
 
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
-	return members.sort((a, b) => {
-		const aRoles = a.roles ?? [];
-		const bRoles = b.roles ?? [];
-		const isOwnerA = aRoles.includes('owner');
-		const isOwnerB = bRoles.includes('owner');
-		const isModeratorA = aRoles.includes('moderator');
-		const isModeratorB = bRoles.includes('moderator');
+	const membersWithRolePriority: (RoomMember & { rolePriority: number })[] = members.map((member) => ({
+		...member,
+		rolePriority: calculateRoomRolePriorityFromRoles(member.roles ?? []),
+	}));
 
-		if (isOwnerA !== isOwnerB) {
-			return isOwnerA ? -1 : 1;
-		}
-
-		if (isModeratorA !== isModeratorB && !isOwnerA) {
-			return isModeratorA ? -1 : 1;
+	return membersWithRolePriority.sort((a, b) => {
+		if (a.rolePriority !== b.rolePriority) {
+			return a.rolePriority - b.rolePriority;
 		}
 
 		if (a.status !== b.status) {

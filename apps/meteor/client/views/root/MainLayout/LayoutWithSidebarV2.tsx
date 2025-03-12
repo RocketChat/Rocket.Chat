@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useLayout, useSetting, useCurrentModal, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
@@ -12,7 +12,6 @@ import Sidebar from '../../../sidebarv2';
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 
-	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
@@ -44,12 +43,11 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 	return (
 		<>
 			<AccessibilityShortcut />
-			<NavBar />
+			{!embeddedLayout && <NavBar />}
 			<Box
 				bg='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
-				aria-hidden={Boolean(modal)}
 			>
 				<MainLayoutStyleTags />
 				{!removeSidenav && <Sidebar />}

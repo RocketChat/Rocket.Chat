@@ -111,15 +111,6 @@ button {
 			height: auto !important /* 1 */;
 		}
 	}
-
-	.rc-scrollbars-container {
-		overflow: visible !important; /* 1 */
-		height: auto !important; /* 1 */
-	}
-
-	.rc-scrollbars-view {
-		position: relative !important; /* 1 */
-	}
 }
 
 .gallery-item {

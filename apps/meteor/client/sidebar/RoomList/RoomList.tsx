@@ -11,7 +11,7 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -121,13 +121,18 @@ const RoomList = (): ReactElement => {
 	return (
 		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)}>
 			<Box h='full' w='full' ref={ref}>
-				<Virtuoso
-					totalCount={roomsList.length}
-					data={roomsList}
-					components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-					computeItemKey={computeItemKey}
-					itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
-				/>
+				<VirtualizedScrollbars>
+					<Virtuoso
+						totalCount={roomsList.length}
+						data={roomsList}
+						components={{
+							Item: RoomListRowWrapper,
+							List: RoomListWrapper,
+						}}
+						computeItemKey={computeItemKey}
+						itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
+					/>
+				</VirtualizedScrollbars>
 			</Box>
 		</Box>
 	);

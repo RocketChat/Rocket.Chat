@@ -215,7 +215,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 	}
 
 	countMessageReportsInRange(latest: Date, oldest: Date, selector: string): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			_hidden: { $ne: true },
 			ts: { $lt: latest, $gt: oldest },
 			...this.getSearchQueryForSelector(selector),
