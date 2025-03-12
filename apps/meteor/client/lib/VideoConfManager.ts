@@ -1,7 +1,6 @@
 import type { CallPreferences, DirectCallData, DirectCallParams, IRoom, IUser, ProviderCapabilities } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 import { getConfig } from './utils/getConfig';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -315,6 +314,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.debugLog(`[VideoConf] Connection lost or login process still pending, skipping user change.`);
 			return;
 		}
+
 		if (userId) {
 			this.connectUser(userId);
 		}
@@ -788,5 +788,3 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return this.dismissedCalls.has(callId);
 	}
 })();
-
-Meteor.startup(() => Tracker.autorun(() => VideoConfManager.updateUser()));
