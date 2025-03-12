@@ -1,8 +1,7 @@
-import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +24,6 @@ type UserCardWithDataProps = {
 const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
-	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
 	const {
@@ -55,7 +53,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 		return {
 			_id,
-			name: getUserDisplayName(name, username, showRealNames),
+			name,
 			username,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
@@ -66,7 +64,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			nickname,
 			freeSwitchExtension,
 		};
-	}, [data, username, showRealNames, isLoading, getRoles]);
+	}, [data, username, isLoading, getRoles]);
 
 	const handleOpenUserInfo = useEffectEvent(() => {
 		onOpenUserInfo();
@@ -100,7 +98,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, title, icon, onClick }]: [string, UserInfoAction]): ReactElement => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} />
+			<UserCardAction key={key} title={content || title} onClick={onClick} icon={icon!} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

@@ -200,7 +200,7 @@ export class FederationHomeContent {
 	}
 
 	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
+		return this.page.getByRole('dialog', { name: 'User card' }).locator('a');
 	}
 
 	get btnContactInformation(): Locator {

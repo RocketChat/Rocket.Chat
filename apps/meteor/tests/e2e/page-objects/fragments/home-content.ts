@@ -215,7 +215,7 @@ export class HomeContent {
 	}
 
 	get userCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"]');
+		return this.page.getByRole('dialog', { name: 'User card' });
 	}
 
 	get linkUserCard(): Locator {
