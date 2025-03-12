@@ -4,7 +4,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import MessageRoles from './MessageRoles';
 
 export default {
-	title: 'components/message/header/MessageRoles',
+	title: 'components/Message/MessageRoles',
 	component: MessageRoles,
 	decorators: [(fn) => <Box>{fn()}</Box>], // TODO: workaround for missing Fuselage default stylesheet
 } satisfies Meta<typeof MessageRoles>;

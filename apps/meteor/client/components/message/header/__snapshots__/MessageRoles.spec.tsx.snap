@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders AdministratorExample without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-message-header__roles"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            admin
+          </span>
+        </span>
+        <span
+          class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            user
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders BotExample without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-message-header__roles"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            user
+          </span>
+        </span>
+        <span
+          class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+        >
+          <span
+            class="rcx-tag__inner"
+          >
+            Bot
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
