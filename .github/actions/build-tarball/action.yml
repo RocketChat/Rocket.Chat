@@ -69,10 +69,12 @@ runs:
         key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
 
     - name: Instalar dependencies
+      shell: bash
       run: |
         npm ci --production
 
     - name: Download NodeJS binary
+      shell: bash
       run: |
         NODE_VERSION="${{ inputs.node-version }}"
         ARCH="linux-x64"
@@ -83,6 +85,7 @@ runs:
         rm "node-v${NODE_VERSION}-${ARCH}.tar.xz"
 
     - name: Download Deno binary
+      shell: bash
       run: |
         DENO_VERSION="${{ inputs.deno-version }}"
         curl -fsSL https://deno.land/install.sh | sh
@@ -91,6 +94,7 @@ runs:
         chmod +x ./deno/deno
 
     - name: Create init script
+      shell: bash
       run: |
         echo '#!/bin/bash' > start.sh
         echo 'DIR="$(cd "$(dirname "$0")" && pwd)"' >> start.sh
