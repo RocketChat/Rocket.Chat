@@ -5,6 +5,7 @@ import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
@@ -15,6 +16,7 @@ import { useGitHubEnterpriseAuth } from '../../../app/github-enterprise/client/h
 import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
+import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
@@ -47,8 +49,11 @@ const AppLayout = () => {
 	useGitHubEnterpriseAuth();
 	useDrupal();
 	useDolphin();
+	useTokenPassAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
+
+	useOTRMessaging();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
