@@ -54,6 +54,14 @@ const getExtendedSession = (session: ClientSession, onceSuccesfulCommit: Extende
 	return Object.assign(session, { onceSuccesfulCommit });
 };
 
+class UnsuccessfulTransactionError extends Error {
+	name = UnsuccessfulTransactionError.name;
+
+	constructor(message?: string) {
+		super(message || 'Something went wrong while trying to commit changes. Please try again.');
+	}
+}
+
 export const wrapInSessionTransaction =
 	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
@@ -72,6 +80,9 @@ export const wrapInSessionTransaction =
 		} catch (error) {
 			await extendedSession.abortTransaction();
 			extendedSession.removeListener('ended', dispatch);
+			if (shouldRetryTransaction(error)) {
+				throw new UnsuccessfulTransactionError('');
+			}
 			throw error;
 		} finally {
 			await extendedSession.endSession();
