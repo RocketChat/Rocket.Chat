@@ -1,4 +1,4 @@
-import type { IRoom, RoomType } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
@@ -97,7 +97,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			const sub = Subscriptions.findOne({ rid: room._id });
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
-			if (user && !sub && !hasPreviewPermission && type !== 'l') {
+			if (user && !sub && !hasPreviewPermission && !isOmnichannelRoom(room)) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 

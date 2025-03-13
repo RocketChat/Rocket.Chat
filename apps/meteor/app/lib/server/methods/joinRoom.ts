@@ -1,5 +1,5 @@
 import { Room } from '@rocket.chat/core-services';
-import { isOmnichannelRoom, type IRoom } from '@rocket.chat/core-typings';
+import { type IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -24,10 +24,6 @@ Meteor.methods<ServerMethods>({
 		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });
-		}
-
-		if (isOmnichannelRoom(room) && !room.open) {
-			throw new Meteor.Error('room-closed', 'Room is closed', { method: 'joinRoom' });
 		}
 
 		return Room.join({ room, user: { _id: userId }, ...(code ? { joinCode: code } : {}) });

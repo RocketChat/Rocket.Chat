@@ -32,7 +32,7 @@ test.describe('Omnichannel chat history', () => {
 		await api.delete('/livechat/users/manager/user1');
 		await agent.page.close();
 
-		await api.post('/permissions.update', { permissions: [{ _id: 'view-c-room', roles: ['admin', 'owner', 'moderator', 'user'] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'owner', 'moderator', 'user'] }] });
 	});
 
 	test('Receiving a message from visitor', async ({ page, api }) => {
@@ -75,7 +75,7 @@ test.describe('Omnichannel chat history', () => {
 			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
 		});
 
-		await api.post('/permissions.update', { permissions: [{ _id: 'view-c-room', roles: [] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: [] }] });
 
 		await test.step('Expect to not be able to see conversation history', async () => {
 			await agent.page.reload();
