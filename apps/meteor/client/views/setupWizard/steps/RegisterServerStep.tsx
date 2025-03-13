@@ -16,6 +16,10 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const { t, i18n } = useTranslation();
+	console.log('testing')
+	console.log(t('page.form.title', { ns: 'onboarding' })); // Should log "Let's launch your workspace"
+	console.log(t('form.registerOfflineForm.title', { ns: 'onboarding' })); // Should log "Register offline"
+
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
@@ -72,28 +76,26 @@ const RegisterServerStep = (): ReactElement => {
 		mutate(token);
 	};
 
-	if (serverOption === SERVER_OPTIONS.OFFLINE) {
-		return (
-			<RegisterOfflinePage
-				termsHref='https://rocket.chat/terms'
-				policyHref='https://rocket.chat/privacy'
-				clientKey={clientKey || ''}
-				onCopySecurityCode={(): void => dispatchToastMessage({ type: 'success', message: t('Copied') })}
-				onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
-				onSubmit={handleConfirmOffline}
-			/>
-		);
-	}
-
 	return (
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
-			<RegisterServerPage
-				onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
-				stepCount={maxSteps}
-				onSubmit={handleRegister}
-				currentStep={currentStep}
-				offline={isError || (!isPending && offline)}
-			/>
+			{serverOption === SERVER_OPTIONS.OFFLINE ? (
+				<RegisterOfflinePage
+					termsHref='https://rocket.chat/terms'
+					policyHref='https://rocket.chat/privacy'
+					clientKey={clientKey || ''}
+					onCopySecurityCode={(): void => dispatchToastMessage({ type: 'success', message: t('Copied') })}
+					onBackButtonClick={(): void => setServerOption(SERVER_OPTIONS.REGISTERED)}
+					onSubmit={handleConfirmOffline}
+				/>
+			) : (
+				<RegisterServerPage
+					onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
+					stepCount={maxSteps}
+					onSubmit={handleRegister}
+					currentStep={currentStep}
+					offline={isError || (!isPending && offline)}
+				/>
+			)}
 		</I18nextProvider>
 	);
 };
