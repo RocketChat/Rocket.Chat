@@ -5,6 +5,7 @@ import { Apps } from '../apps';
 import { disableAppsWithAddonsCallback } from '../lib/apps/disableAppsWithAddonsCallback';
 
 Meteor.startup(() => {
+	console.log('apps callbacks registration')
 	async function migratePrivateAppsCallback() {
 		if (!Apps.isInitialized) return;
 
