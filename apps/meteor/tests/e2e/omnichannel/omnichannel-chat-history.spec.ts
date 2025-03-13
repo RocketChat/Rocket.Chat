@@ -85,7 +85,8 @@ test.describe('Omnichannel chat history', () => {
 			await agent.poHomeOmnichannel.contacts.contactInfo.openChatBtn.click();
 
 			// Should not show the NoSubscribedRoom.tsx component on livechat rooms
-			await expect(agent.page.locator('text=This conversation is already closed.')).toBeVisible();
+			await expect(agent.page.locator('div >> text=This conversation is already closed.')).toBeVisible();
+			await expect(agent.page.locator('div >> text="this_a_test_message_from_visitor"')).toBeVisible();
 		});
 	});
 });
