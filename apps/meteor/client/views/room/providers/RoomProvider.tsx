@@ -11,6 +11,8 @@ import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { omit } from '../../../../lib/utils/omit';
+import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
@@ -85,6 +87,14 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	const isSidepanelFeatureEnabled = useSidePanelNavigation();
+
+	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
+
+	useEffect(() => {
+		if (resultFromLocal.data) {
+			fireRoomOpenedEvent(omit(resultFromLocal.data, 'usernames'));
+		}
+	}, [rid, resultFromLocal.data, fireRoomOpenedEvent]);
 
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {
