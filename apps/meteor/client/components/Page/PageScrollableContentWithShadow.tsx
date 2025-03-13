@@ -6,13 +6,14 @@ import PageScrollableContent from './PageScrollableContent';
 
 type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
 
-const PageScrollableContentWithShadow = ({ onScrollContent, ...props }: PageScrollableContentWithShadowProps) => {
+const PageScrollableContentWithShadow = ({ onScroll, ...props }: PageScrollableContentWithShadowProps) => {
 	const [, setBorder] = useContext(PageContext);
 	return (
 		<PageScrollableContent
-			onScrollContent={({ top, ...args }: { top: boolean }): void => {
+			onScroll={(args) => {
+				const top = args.elements().viewport.scrollTop;
 				setBorder(!!top);
-				onScrollContent?.({ top, ...args });
+				onScroll?.(args);
 			}}
 			{...props}
 		/>
