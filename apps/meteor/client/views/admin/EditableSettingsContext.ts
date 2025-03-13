@@ -1,68 +1,115 @@
-import type { ISettingBase, ISettingColor, ISetting } from '@rocket.chat/core-typings';
-import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
+import type { ISetting } from '@rocket.chat/core-typings';
+import { createContext, useContext, useMemo } from 'react';
 
-export type EditableSetting = (ISettingBase | ISettingColor) & {
+export type EditableSetting = ISetting & {
 	disabled: boolean;
 	changed: boolean;
 	invisible: boolean;
 };
 
-type EditableSettingsContextQuery = SettingsContextQuery & {
-	changed?: boolean;
+export const compareSettings = (a: EditableSetting, b: EditableSetting): number => {
+	const sorter = a.sorter - b.sorter;
+	if (sorter !== 0) return sorter;
+
+	const tab = (a.tab ?? '').localeCompare(b.tab ?? '');
+	if (tab !== 0) return tab;
+
+	const i18nLabel = a.i18nLabel.localeCompare(b.i18nLabel);
+
+	return i18nLabel;
 };
 
+type EditableSettingsContextQuery =
+	| {
+			group: ISetting['_id'];
+	  }
+	| {
+			group: ISetting['_id'];
+			section: string;
+			tab?: ISetting['_id'];
+	  }
+	| {
+			group: ISetting['_id'];
+			changed: true;
+	  };
+
 export type EditableSettingsContextValue = {
-	readonly queryEditableSetting: (
-		_id: ISetting['_id'],
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => EditableSetting | undefined];
-	readonly queryEditableSettings: (
-		query: EditableSettingsContextQuery,
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => EditableSetting[]];
-	readonly queryGroupSections: (
-		_id: ISetting['_id'],
-		tab?: ISetting['_id'],
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => string[]];
-	readonly queryGroupTabs: (
-		_id: ISetting['_id'],
-	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting['_id'][]];
-	readonly dispatch: (changes: Partial<EditableSetting>[]) => void;
+	settings: EditableSetting[];
+	dispatch(changes: Partial<EditableSetting>[]): void;
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
-	queryEditableSetting: () => [(): (() => void) => (): void => undefined, (): undefined => undefined],
-	queryEditableSettings: () => [(): (() => void) => (): void => undefined, (): EditableSetting[] => []],
-	queryGroupSections: () => [(): (() => void) => (): void => undefined, (): string[] => []],
-	queryGroupTabs: () => [(): (() => void) => (): void => undefined, (): ISetting['_id'][] => []],
+	settings: [],
 	dispatch: () => undefined,
 });
 
 export const useEditableSetting = (_id: ISetting['_id']): EditableSetting | undefined => {
-	const { queryEditableSetting } = useContext(EditableSettingsContext);
+	const { settings } = useContext(EditableSettingsContext);
 
-	const [subscribe, getSnapshot] = useMemo(() => queryEditableSetting(_id), [queryEditableSetting, _id]);
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useMemo(() => settings.find((x) => x._id === _id), [settings, _id]);
 };
 
-export const useEditableSettings = (query?: EditableSettingsContextQuery): EditableSetting[] => {
-	const { queryEditableSettings } = useContext(EditableSettingsContext);
-	const [subscribe, getSnapshot] = useMemo(() => queryEditableSettings(query ?? {}), [queryEditableSettings, query]);
-	return useSyncExternalStore(subscribe, getSnapshot);
+export const useEditableSettings = (query: EditableSettingsContextQuery): EditableSetting[] => {
+	const { settings } = useContext(EditableSettingsContext);
+
+	return useMemo(
+		() =>
+			settings
+				.filter((x) => {
+					if ('changed' in query) {
+						return x.group === query.group && x.changed;
+					}
+
+					if ('section' in query) {
+						return (
+							x.group === query.group &&
+							(query.section ? x.section === query.section : !x.section) &&
+							(query.tab ? x.tab === query.tab : !x.tab)
+						);
+					}
+
+					return x.group === query.group;
+				})
+				.sort(compareSettings),
+		[settings, query],
+	);
 };
 
 export const useEditableSettingsGroupSections = (_id: ISetting['_id'], tab?: ISetting['_id']): string[] => {
-	const { queryGroupSections } = useContext(EditableSettingsContext);
+	const { settings } = useContext(EditableSettingsContext);
 
-	const [subscribe, getSnapshot] = useMemo(() => queryGroupSections(_id, tab), [queryGroupSections, _id, tab]);
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useMemo(
+		() =>
+			Array.from(
+				new Set(
+					settings
+						.filter((x) => x.group === _id && (tab !== undefined ? x.tab === tab : !x.tab))
+						.sort(compareSettings)
+						.map(({ section }) => section || ''),
+				),
+			),
+		[_id, settings, tab],
+	);
 };
 
 export const useEditableSettingsGroupTabs = (_id: ISetting['_id']): ISetting['_id'][] => {
-	const { queryGroupTabs } = useContext(EditableSettingsContext);
+	const { settings } = useContext(EditableSettingsContext);
 
-	const [subscribe, getSnapshot] = useMemo(() => queryGroupTabs(_id), [queryGroupTabs, _id]);
-	return useSyncExternalStore(subscribe, getSnapshot);
+	return useMemo(
+		() =>
+			Array.from(
+				new Set(
+					settings
+						.filter((x) => x.group === _id)
+						.sort(compareSettings)
+						.map(({ tab }) => tab || ''),
+				),
+			),
+		[settings, _id],
+	);
 };
 
-export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSetting>[]) => void) =>
-	useContext(EditableSettingsContext).dispatch;
+export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSetting>[]) => void) => {
+	const { dispatch } = useContext(EditableSettingsContext);
+	return dispatch;
+};
