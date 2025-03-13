@@ -1,10 +1,17 @@
 import { type IMessage } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type BadWordsFilter from 'bad-words';
 
 export class BeforeSaveBadWords {
 	badWords: BadWordsFilter | null = null;
 
 	badWordsRegex: RegExp | null = null;
+
+	protected logger: Logger;
+
+	constructor() {
+		this.logger = new Logger('BadWordsFilter');
+	}
 
 	async configure(badWordsList?: string, goodWordsList?: string) {
 		const { default: Filter } = await import('bad-words');
@@ -31,6 +38,7 @@ export class BeforeSaveBadWords {
 			this.badWordsRegex = new RegExp(`(?<=^|[\\p{P}\\p{Z}])(${badWords.join('|')})(?=$|[\\p{P}\\p{Z}])`, 'gmiu');
 		} catch (error) {
 			this.badWordsRegex = null;
+			this.logger.error('Erorr when initializing bad words filter', error);
 		}
 
 		if (goodWordsList?.length) {
