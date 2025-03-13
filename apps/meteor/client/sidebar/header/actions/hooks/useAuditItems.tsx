@@ -3,12 +3,6 @@ import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-context
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
-
 export const useAuditItems = (): GenericMenuItemProps[] => {
 	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
