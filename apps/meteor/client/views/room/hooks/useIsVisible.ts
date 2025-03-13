@@ -1,28 +1,32 @@
 import { useDebouncedState, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
+
+import { useSafeRefCallback } from '../../../hooks/useSafeRefCallback';
 
 export const useIsVisible = () => {
 	const [menuVisibility, setMenuVisibility] = useSafely(useDebouncedState(!!window.DISABLE_ANIMATION, 100));
-	const disconnectObserverRef = useRef<(() => void) | null>(null);
 
-	const callbackRef = useCallback(
-		(node: HTMLElement | null) => {
-			disconnectObserverRef.current?.();
+	const callbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
+				}
 
-			if (!node) {
-				return;
-			}
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach((entry) => {
-					setMenuVisibility(entry.isIntersecting);
+				const observer = new IntersectionObserver((entries) => {
+					entries.forEach((entry) => {
+						setMenuVisibility(entry.isIntersecting);
+					});
 				});
-			});
 
-			observer.observe(node);
+				observer.observe(node);
 
-			disconnectObserverRef.current = () => observer.disconnect();
-		},
-		[setMenuVisibility],
+				return () => {
+					observer.disconnect();
+				};
+			},
+			[setMenuVisibility],
+		),
 	);
 
 	return [callbackRef, menuVisibility] as const;
