@@ -44,6 +44,7 @@ API.v1
 							},
 							expires: {
 								type: 'object',
+								nullable: true,
 							},
 							url: {
 								type: 'string',
@@ -58,7 +59,7 @@ API.v1
 								type: 'number',
 							},
 						},
-						required: ['_id', 'days', 'rid', 'userId', 'createdAt', 'expires', 'url', '_updatedAt', 'maxUses', 'uses'],
+						required: ['_id', 'days', 'rid', 'userId', 'createdAt', 'url', '_updatedAt', 'maxUses', 'uses'],
 					},
 				}),
 				401: ajv.compile({
@@ -119,6 +120,7 @@ API.v1
 						},
 						expires: {
 							type: 'object',
+							nullable: true,
 						},
 						url: {
 							type: 'string',
@@ -137,7 +139,7 @@ API.v1
 							description: 'Indicates if the request was successful.',
 						},
 					},
-					required: ['_id', 'rid', 'createdAt', 'expires', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
+					required: ['_id', 'rid', 'createdAt', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
 				}),
 				400: ajv.compile({
 					additionalProperties: false,
