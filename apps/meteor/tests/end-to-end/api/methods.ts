@@ -3929,7 +3929,7 @@ describe('Meteor.methods', () => {
 		});
 	});
 
-	describe.only('[@joinRoom]', async () => {
+	describe('[@joinRoom]', async () => {
 		let room: IOmnichannelRoom;
 		let user: TestUser<IUser>;
 		let userCredentials: Credentials;
