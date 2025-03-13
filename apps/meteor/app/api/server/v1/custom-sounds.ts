@@ -60,6 +60,7 @@ API.v1.get(
 		},
 		query: isCustomSoundsListProps,
 		authRequired: true,
+		typed: true,
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);

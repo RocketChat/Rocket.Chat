@@ -23,39 +23,68 @@ API.v1
 			response: {
 				200: ajv.compile({
 					additionalProperties: false,
-					type: 'object',
-					properties: {
-						invites: {
-							type: 'array',
-							items: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							_id: {
+								type: 'string',
+							},
+							days: {
+								type: 'number',
+							},
+							rid: {
+								type: 'string',
+							},
+							userId: {
+								type: 'string',
+							},
+							createdAt: {
 								type: 'object',
-								properties: {
-									_id: {
-										type: 'string',
-									},
-									rid: {
-										type: 'string',
-									},
-									createdAt: {
-										type: 'string',
-									},
-									expireAt: {
-										type: 'string',
-									},
-									maxUses: {
-										type: 'number',
-									},
-									uses: {
-										type: 'number',
-									},
-								},
-								required: ['_id', 'rid', 'createdAt', 'expireAt', 'maxUses', 'uses'],
+							},
+							expires: {
+								type: 'object',
+							},
+							url: {
+								type: 'string',
+							},
+							_updatedAt: {
+								type: 'object',
+							},
+							maxUses: {
+								type: 'number',
+							},
+							uses: {
+								type: 'number',
 							},
 						},
+						required: ['_id', 'days', 'rid', 'userId', 'createdAt', 'expires', 'url', '_updatedAt', 'maxUses', 'uses'],
 					},
-					required: ['invites'],
+				}),
+				401: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						status: {
+							type: 'string',
+							nullable: true,
+						},
+						message: {
+							type: 'string',
+							nullable: true,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
 				}),
 			},
+			typed: true,
 		},
 
 		async function () {
@@ -79,22 +108,94 @@ API.v1
 						rid: {
 							type: 'string',
 						},
-						createdAt: {
+						userId: {
 							type: 'string',
 						},
-						expireAt: {
+						createdAt: {
+							type: 'object',
+						},
+						_updatedAt: {
+							type: 'object',
+						},
+						expires: {
+							type: 'object',
+						},
+						url: {
 							type: 'string',
 						},
 						maxUses: {
 							type: 'number',
 						},
+						days: {
+							type: 'number',
+						},
 						uses: {
 							type: 'number',
 						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
 					},
-					required: ['_id', 'rid', 'createdAt', 'expireAt', 'maxUses', 'uses'],
+					required: ['_id', 'rid', 'createdAt', 'expires', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
+				}),
+				400: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						stack: {
+							type: 'string',
+							nullable: true,
+						},
+						errorType: {
+							type: 'string',
+						},
+						details: {
+							type: 'object',
+							nullable: true,
+							properties: {
+								rid: {
+									type: 'string',
+								},
+								method: {
+									type: 'string',
+								},
+							},
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'errorType', 'error'],
+				}),
+				401: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						status: {
+							type: 'string',
+							nullable: true,
+						},
+						message: {
+							type: 'string',
+							nullable: true,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
 				}),
 			},
+			typed: true,
 		},
 
 		async function () {

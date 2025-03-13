@@ -24,10 +24,15 @@ API.v1
 							},
 							additionalProperties: false,
 						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
 					},
-					required: ['results'],
+					required: ['results', 'success'],
 				}),
 			},
+			typed: true,
 		},
 		async function () {
 			const { matrixIds } = this.queryParams;
@@ -50,18 +55,27 @@ API.v1
 					properties: {
 						externalReachability: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'] },
 						appservice: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'] },
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
 					},
-					required: ['externalReachability', 'appservice'],
+					required: ['externalReachability', 'appservice', 'success'],
 				}),
 				400: ajv.compile({
 					type: 'object',
 					properties: {
 						externalReachability: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'] },
 						appservice: { type: 'object', properties: { ok: { type: 'boolean' } }, required: ['ok'] },
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
 					},
-					required: ['externalReachability', 'appservice'],
+					required: ['externalReachability', 'appservice', 'success'],
 				}),
 			},
+			typed: true,
 		},
 		async () => {
 			const service = License.hasValidLicense() ? FederationEE : Federation;
