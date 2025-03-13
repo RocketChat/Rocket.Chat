@@ -134,6 +134,39 @@ test.describe.parallel('register', () => {
 
 			expect(results.violations).toEqual([]);
 		});
+
+		test('should not allow registration with an already registered email', async ({ page }) => {
+			const email = faker.internet.email();
+			await test.step('Register a new user successfully', async () => {
+				await page.goto('/home');
+				await poRegistration.goToRegister.click();
+				await poRegistration.inputName.fill(faker.person.firstName());
+				await poRegistration.inputEmail.fill(email);
+				await poRegistration.username.fill(faker.internet.userName());
+				await poRegistration.inputPassword.fill('any_password');
+				await poRegistration.inputPasswordConfirm.fill('any_password');
+
+				await poRegistration.btnRegister.click();
+
+				await page.locator('button[title="User menu"]').click();
+				await page.locator('div.rcx-option__content', { hasText: 'Logout' }).click();
+			});
+
+			await test.step('Attempt registration with the same email', async () => {
+				await poRegistration.goToRegister.click();
+				await poRegistration.inputName.fill(faker.person.firstName());
+				await poRegistration.inputEmail.fill(email);
+				await poRegistration.username.fill(faker.internet.userName());
+				await poRegistration.inputPassword.fill('any_password');
+				await poRegistration.inputPasswordConfirm.fill('any_password');
+
+				await poRegistration.btnRegister.click();
+
+				const errorMessageLocator = page.locator('[aria-live="assertive"].rcx-field__error');
+				await expect(errorMessageLocator).toBeVisible();
+				await expect(errorMessageLocator).toHaveText('Email already exists');
+			});
+		});
 	});
 
 	test.describe('Registration for secret password', async () => {
