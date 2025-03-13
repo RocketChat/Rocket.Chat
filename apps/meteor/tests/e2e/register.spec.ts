@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
-import {request} from '../data/api-data';
+
 import { Utils, Registration } from './page-objects';
+import { request } from '../data/api-data';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('register', () => {
@@ -143,13 +144,11 @@ test.describe.parallel('register', () => {
 		});
 		test('should not allow registration with an already registered email', async ({ page }) => {
 			const email = faker.internet.email();
-			await request.post('/api/v1/users.register')
-			.set('Content-Type', 'application/json')
-			.send({
+			await request.post('/api/v1/users.register').set('Content-Type', 'application/json').send({
 				name: faker.person.firstName(),
-				email: email,
+				email,
 				username: faker.internet.userName(),
-				pass: "any_password",
+				pass: 'any_password',
 			});
 			await test.step('Attempt registration with the same email', async () => {
 				await page.goto('/home');
@@ -167,7 +166,7 @@ test.describe.parallel('register', () => {
 				await expect(errorMessageLocator).toHaveText('Email already exists');
 			});
 		});
-	})
+	});
 
 	test.describe('Registration for secret password', async () => {
 		test.beforeEach(async ({ api, page }) => {
