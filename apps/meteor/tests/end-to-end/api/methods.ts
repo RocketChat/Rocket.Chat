@@ -3966,7 +3966,7 @@ describe('Meteor.methods', () => {
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('message', 'Room is closed [room-closed]');
+					expect(data.error).to.have.a.property('error', 'room-closed');
 				});
 		});
 	});
