@@ -13,7 +13,6 @@ import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
-import semver from 'semver';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
@@ -40,12 +39,12 @@ import { tracerSpanMiddleware } from './middlewares/tracer';
 import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
+import { shouldBreakInVersion } from '../../../server/lib/shouldBreakInVersion';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
@@ -53,7 +52,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
+const applyBreakingChanges = shouldBreakInVersion('8.0.0');
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;

@@ -23,6 +23,7 @@ import { sendPasswordEmail } from './sendUserEmail';
 import { setPasswordUpdater } from './setPasswordUpdater';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -193,4 +194,14 @@ const _saveUser = (session?: ClientSession) =>
 		return true;
 	};
 
-export const saveUser = wrapInSessionTransaction(_saveUser);
+const isBroken = shouldBreakInVersion('8.0.0');
+export const saveUser = (() => {
+	if (isBroken) {
+		throw new Error('DEBUG_DISABLE_USER_AUDIT flag is deprecated and should be removed');
+	}
+
+	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
+		return wrapInSessionTransaction(_saveUser);
+	}
+	return _saveUser();
+})();
