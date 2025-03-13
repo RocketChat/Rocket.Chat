@@ -1,3 +1,5 @@
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
+import { Emitter } from '@rocket.chat/emitter';
 import { MongoInternals } from 'meteor/mongo';
 import type { ClientSession, MongoError } from 'mongodb';
 
@@ -19,40 +21,49 @@ export const shouldRetryTransaction = (e: unknown): boolean =>
 	(e as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
 	(e as MongoError)?.errorLabels?.includes('TransientTransactionError');
 
-export const isTransactionCommited = (sess: ClientSession): boolean => {
-	if (['TRANSACTION_COMMITTED', 'TRANSACTION_COMMITTED_EMPTY'].includes(sess.transaction.state)) {
-		return true;
-	}
-	return false;
+const isExtendedSession = (session: any): session is ExtendedSession => {
+	return 'onceSuccesfulCommit' in session;
 };
-
-export const onceTransactionCommitedSuccessfully = async (cb: () => Promise<void> | void, session?: ClientSession) => {
-	if (session?.inTransaction()) {
-		session.once('ended', (sess) => {
-			if (!isTransactionCommited(sess)) {
-				return;
-			}
-			void cb();
-		});
+export const onceTransactionCommitedSuccessfully = async <T extends ClientSession>(cb: () => Promise<void> | void, session?: T) => {
+	if (!session) {
+		await cb();
 		return;
 	}
-	await cb();
+	if (session?.inTransaction() && isExtendedSession(session)) {
+		session.onceSuccesfulCommit(() => {
+			void cb();
+		});
+	}
+};
+
+type ExtendedSession = ClientSession & {
+	onceSuccesfulCommit: (cb: (session: ClientSession) => void) => OffCallbackHandler;
+};
+
+const getExtendedSession = (session: ClientSession, onceSuccesfulCommit: ExtendedSession['onceSuccesfulCommit']): ExtendedSession => {
+	return Object.assign(session, { onceSuccesfulCommit });
 };
 
 export const wrapInSessionTransaction =
 	<T extends Array<unknown>, U>(curriedCallback: (session: ClientSession) => (...args: T) => U) =>
 	async (...args: T): Promise<Awaited<U>> => {
-		const session = client.startSession();
+		const ee = new Emitter<{ success: ClientSession }>();
+
+		const extendedSession = getExtendedSession(client.startSession(), (cb) => ee.once('success', cb));
+
+		const dispatch = (session: ClientSession) => ee.emit('success', session);
 		try {
-			session.startTransaction();
-			const result = await curriedCallback(session).apply(this, args);
-			await session.commitTransaction();
+			extendedSession.startTransaction();
+			extendedSession.once('ended', dispatch);
+
+			const result = await curriedCallback(extendedSession).apply(this, args);
+			await extendedSession.commitTransaction();
 			return result;
 		} catch (error) {
-			await session.abortTransaction();
-
+			await extendedSession.abortTransaction();
+			extendedSession.removeListener('ended', dispatch);
 			throw error;
 		} finally {
-			await session.endSession();
+			await extendedSession.endSession();
 		}
 	};
