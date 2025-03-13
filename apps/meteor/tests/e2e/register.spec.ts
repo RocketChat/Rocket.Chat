@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-
+import {request} from '../data/api-data';
 import { Utils, Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
@@ -134,10 +134,24 @@ test.describe.parallel('register', () => {
 
 			expect(results.violations).toEqual([]);
 		});
+	});
 
+	test.describe('Registration form validation', async () => {
+		test.beforeEach(async ({ page }) => {
+			poRegistration = new Registration(page);
+			poUtils = new Utils(page);
+		});
 		test('should not allow registration with an already registered email', async ({ page }) => {
 			const email = faker.internet.email();
-			await test.step('Register a new user successfully', async () => {
+			await request.post('/api/v1/users.register')
+			.set('Content-Type', 'application/json')
+			.send({
+				name: faker.person.firstName(),
+				email: email,
+				username: faker.internet.userName(),
+				pass: "any_password",
+			});
+			await test.step('Attempt registration with the same email', async () => {
 				await page.goto('/home');
 				await poRegistration.goToRegister.click();
 				await poRegistration.inputName.fill(faker.person.firstName());
@@ -148,26 +162,12 @@ test.describe.parallel('register', () => {
 
 				await poRegistration.btnRegister.click();
 
-				await page.locator('button[title="User menu"]').click();
-				await page.locator('div.rcx-option__content', { hasText: 'Logout' }).click();
-			});
-
-			await test.step('Attempt registration with the same email', async () => {
-				await poRegistration.goToRegister.click();
-				await poRegistration.inputName.fill(faker.person.firstName());
-				await poRegistration.inputEmail.fill(email);
-				await poRegistration.username.fill(faker.internet.userName());
-				await poRegistration.inputPassword.fill('any_password');
-				await poRegistration.inputPasswordConfirm.fill('any_password');
-
-				await poRegistration.btnRegister.click();
-
-				const errorMessageLocator = page.locator('[aria-live="assertive"].rcx-field__error');
+				const errorMessageLocator = page.locator('span.rcx-field__error').filter({ hasText: 'Email already exists' });
 				await expect(errorMessageLocator).toBeVisible();
 				await expect(errorMessageLocator).toHaveText('Email already exists');
 			});
 		});
-	});
+	})
 
 	test.describe('Registration for secret password', async () => {
 		test.beforeEach(async ({ api, page }) => {
