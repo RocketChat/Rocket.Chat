@@ -20,6 +20,7 @@ test.describe.serial('OC - Livechat', () => {
 
 	test.beforeAll(async ({ api }) => {
 		expect((await setUserPreferences(api, { newRoomNotification })).status()).toBe(200);
+		expect((await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection')).status()).toBe(200);
 		expect((await setSettingValueById(api, 'Livechat_continuous_sound_notification_new_livechat_room', true)).status()).toBe(200);
 	});
 
@@ -38,6 +39,7 @@ test.describe.serial('OC - Livechat', () => {
 
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
+		expect((await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).status()).toBe(200);
 		expect((await setSettingValueById(api, 'Livechat_continuous_sound_notification_new_livechat_room', false)).status()).toBe(200);
 		await poLiveChat.page.close();
 	});
