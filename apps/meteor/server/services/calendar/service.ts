@@ -131,9 +131,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			}
 		}
 
-		const reminderTime = reminderMinutesBeforeStart && startTime
-			? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart)
-			: undefined;
+		const reminderTime =
+			reminderMinutesBeforeStart && startTime ? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
@@ -190,7 +189,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
 	}
 
-	public async sendCurrentNotifications(date: Date): Promise<void> {
+	private async sendCurrentNotifications(date: Date): Promise<void> {
 		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
 		for await (const event of events) {
 			await this.sendEventNotification(event);
@@ -200,7 +199,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await this.doSetupNextNotification(true);
 	}
 
-	public async sendEventNotification(event: ICalendarEvent): Promise<void> {
+	private async sendEventNotification(event: ICalendarEvent): Promise<void> {
 		if (!(await getUserPreference(event.uid, 'notifyCalendarEvents'))) {
 			return;
 		}
@@ -214,14 +213,14 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		});
 	}
 
-	public async findImportedEvent(
+	private async findImportedEvent(
 		externalId: Required<ICalendarEvent>['externalId'],
 		uid: ICalendarEvent['uid'],
 	): Promise<ICalendarEvent | null> {
 		return CalendarEvent.findOneByExternalIdAndUserId(externalId, uid);
 	}
 
-	public async parseDescriptionForMeetingUrl(description: string): Promise<string | undefined> {
+	private async parseDescriptionForMeetingUrl(description: string): Promise<string | undefined> {
 		if (!description) {
 			return;
 		}

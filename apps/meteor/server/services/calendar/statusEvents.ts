@@ -8,6 +8,10 @@ import { settings } from '../../../app/settings/server';
 
 export class StatusEventManager {
 	public generateCronJobId(eventId: ICalendarEvent['_id'], uid: IUser['_id'], eventType: 'status' | 'reminder'): string {
+		if (!eventId || !uid || !eventType || (eventType !== 'status' && eventType !== 'reminder')) {
+			throw new Error('Missing required parameters. Please provide eventId, uid and eventType (status or reminder)');
+		}
+
 		if (eventType === 'status') {
 			return `calendar-presence-status-${eventId}-${uid}`;
 		}
