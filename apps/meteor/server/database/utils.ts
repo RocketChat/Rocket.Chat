@@ -3,6 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import { MongoInternals } from 'meteor/mongo';
 import type { ClientSession, MongoError } from 'mongodb';
 
+import { SystemLogger } from '../lib/logger/system';
+
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 /**
@@ -30,8 +32,16 @@ export const onceTransactionCommitedSuccessfully = async <T extends ClientSessio
 		return;
 	}
 	if (session?.inTransaction() && isExtendedSession(session)) {
+		const withError = async () => {
+			try {
+				await cb();
+			} catch (error) {
+				SystemLogger.error(error);
+			}
+		};
+
 		session.onceSuccesfulCommit(() => {
-			void cb();
+			void withError();
 		});
 	}
 };
