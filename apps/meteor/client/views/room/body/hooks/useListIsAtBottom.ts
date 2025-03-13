@@ -4,9 +4,9 @@ import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 export const useListIsAtBottom = () => {
-	const disconnectObserverRef = useRef<(() => void) | null>(null);
 	const atBottomRef = useRef(true);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
@@ -28,40 +28,44 @@ export const useListIsAtBottom = () => {
 		return isAtBottomLib(innerBoxRef.current, threshold);
 	}, []);
 
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			disconnectObserverRef.current?.();
-			if (!node) {
-				return;
-			}
-
-			const messageList = node.querySelector('ul');
-
-			if (!messageList) {
-				return;
-			}
-
-			const observer = new ResizeObserver(() => {
-				if (atBottomRef.current === true) {
-					node.scrollTo({ left: 30, top: node.scrollHeight });
+	const ref = useSafeRefCallback(
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
 				}
-			});
 
-			observer.observe(messageList);
+				const messageList = node.querySelector('ul');
 
-			disconnectObserverRef.current = () => observer.disconnect();
+				if (!messageList) {
+					return;
+				}
 
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
+				const observer = new ResizeObserver(() => {
+					if (atBottomRef.current === true) {
+						node.scrollTo({ left: 30, top: node.scrollHeight });
+					}
+				});
+
+				observer.observe(messageList);
+
+				const handleScroll = withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(100);
-				}),
-				{
+				});
+
+				const listenerOptions = {
 					passive: true,
-				},
-			);
-		},
-		[isAtBottom],
+				};
+
+				node.addEventListener('scroll', handleScroll, listenerOptions);
+
+				return () => {
+					observer.disconnect();
+					node.removeEventListener('scroll', handleScroll);
+				};
+			},
+			[isAtBottom],
+		),
 	);
 
 	return {
