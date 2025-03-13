@@ -7,7 +7,7 @@ import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
-import express from 'express';
+import type express from 'express';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
@@ -220,7 +220,6 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-
 		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
@@ -1225,7 +1224,7 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-Meteor.startup(() => {
+export const startRestAPI = () => {
 	(WebApp.rawConnectHandlers as ReturnType<typeof express>).use(
 		API.api
 			.use(cors(settings))
@@ -1235,7 +1234,7 @@ Meteor.startup(() => {
 			.use(API.v1.router)
 			.use(API.default.router).router,
 	);
-});
+};
 
 // (WebApp.connectHandlers as unknown as ReturnType<typeof express>)
 // 	.use(
