@@ -2,7 +2,9 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCannedResponsesStream } from './hooks/useCannedResponsesStream';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useFetchCannedResponses } from './hooks/useFetchCannedResponses';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useOTRMessaging } from './hooks/useOTRMessaging';
@@ -52,8 +54,9 @@ const AppLayout = () => {
 	useTokenPassAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
-
 	useOTRMessaging();
+	useFetchCannedResponses();
+	useCannedResponsesStream();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
