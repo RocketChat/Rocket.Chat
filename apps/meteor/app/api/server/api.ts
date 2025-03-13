@@ -619,7 +619,7 @@ export class APIClass<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		this.addRoute([subpath], { ...options }, { [method.toLowerCase()]: { action } } as any);
+		this.addRoute([subpath], { ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}

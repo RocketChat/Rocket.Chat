@@ -85,7 +85,6 @@ API.v1
 					required: ['success', 'error'],
 				}),
 			},
-			typed: true,
 		},
 
 		async function () {
@@ -197,7 +196,6 @@ API.v1
 					required: ['success', 'error'],
 				}),
 			},
-			typed: true,
 		},
 
 		async function () {

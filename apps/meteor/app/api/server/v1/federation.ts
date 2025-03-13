@@ -32,7 +32,6 @@ API.v1
 					required: ['results', 'success'],
 				}),
 			},
-			typed: true,
 		},
 		async function () {
 			const { matrixIds } = this.queryParams;
@@ -75,7 +74,6 @@ API.v1
 					required: ['externalReachability', 'appservice', 'success'],
 				}),
 			},
-			typed: true,
 		},
 		async () => {
 			const service = License.hasValidLicense() ? FederationEE : Federation;
