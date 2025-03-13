@@ -55,14 +55,14 @@ export class AppsRestApi {
 
 	async loadAPI() {
 		this.api = new API.ApiClass({
-			version: 'apps',
-			apiPath: '/api',
+			apiPath: '/api/apps',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
 		});
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
+
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
 	}
 
 	addManagementRoutes() {
