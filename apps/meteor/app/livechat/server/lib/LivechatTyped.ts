@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -170,6 +171,25 @@ class LivechatClass {
 				Livechat.logger.debug(`Assigning ${visitor._id} to department ${department._id}`);
 				visitor.department = department._id;
 			}
+		}
+
+		// allows prevent room creation
+		const usernames: string[] = [visitor.username, defaultAgent?.username].filter((u): u is string => Boolean(u));
+		const tmpRoom: { _USERNAMES?: (string | undefined)[] } & typeof roomInfo = {
+			...roomInfo,
+			_USERNAMES: usernames,
+		};
+
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, tmpRoom).catch((error) => {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		});
+
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		// delegate room creation to QueueManager
