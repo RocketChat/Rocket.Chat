@@ -11,6 +11,7 @@ export const useFetchCannedResponses = () => {
 	const handleCannedResponses = async () => {
 		const { responses } = await getCannedResponses();
 		responses.forEach((response) => CannedResponse.insert(response));
+		return responses;
 	};
 
 	return useQuery({
