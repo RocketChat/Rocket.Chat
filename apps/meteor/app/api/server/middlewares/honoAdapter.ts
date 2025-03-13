@@ -2,21 +2,13 @@ import type { Request, Response } from 'express';
 import type { Hono } from 'hono';
 
 export const honoAdapter = (hono: Hono) => async (expressReq: Request, res: Response) => {
-	!['GET', 'HEAD'].includes(expressReq.method) &&
-		(await new Promise((resolve) => {
-			let data = '';
-			expressReq.on('data', (chunk) => {
-				data += chunk;
-			});
-			expressReq.on('end', async () => {
-				expressReq.body = data;
-				resolve(expressReq.body);
-			});
-		}));
+	(expressReq as unknown as any).duplex = 'half';
+
+	const { body, ...req } = expressReq;
 
 	const honoRes = await hono.request(expressReq.originalUrl, {
-		...expressReq,
-		body: expressReq.body,
+		...req,
+		...(['POST', 'PUT'].includes(expressReq.method) && { body: expressReq as unknown as ReadableStream }),
 		headers: new Headers(Object.fromEntries(Object.entries(expressReq.headers)) as Record<string, string>),
 	});
 
