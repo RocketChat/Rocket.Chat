@@ -1,4 +1,4 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -275,6 +275,8 @@ describe('[Settings]', () => {
 	});
 
 	describe('/audit.settings', () => {
+		const formatDate = (date: Date) => date.toISOString().slice(0, 10).replace(/-/g, '/');
+
 		it('should return list of settings changed (no filters)', async () => {
 			void request
 				.get(api('audit.settings'))
@@ -288,9 +290,13 @@ describe('[Settings]', () => {
 		});
 
 		it('should return list of settings between date ranges', async () => {
+			const startDate = new Date();
+			const endDate = new Date();
+			endDate.setDate(startDate.getDate() + 1);
+
 			void request
 				.get(api('audit.settings'))
-				.query({ start: '2025/01/01', end: '2025/01/31' })
+				.query({ start: formatDate(startDate), end: formatDate(endDate) })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -323,13 +329,20 @@ describe('[Settings]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
+					res.body.events.find(
+						(event: IServerEvents['settings.changed']) => event.data[0].key === 'id' && event.data[0].value === 'Site_Url',
+					);
 				});
 		});
 
 		it('should return list of changes of an specific setting filtered by an actor between date ranges', async () => {
+			const startDate = new Date();
+			const endDate = new Date();
+			endDate.setDate(startDate.getDate() + 1);
+
 			void request
 				.get(api('audit.settings'))
-				.query({ actor: { type: 'user' }, start: '2025/01/01', end: '2025/01/31' })
+				.query({ actor: { type: 'user' }, start: formatDate(startDate), end: formatDate(endDate) })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
