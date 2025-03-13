@@ -37,7 +37,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 		mutationFn: async (status: UserStatusDescriptor) => {
 			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
 			void callbacks.run('userStatusManuallySet', status);
-			fireGlobalStatusEvent.mutate(status);
+			await fireGlobalStatusEvent.mutateAsync(status);
 		},
 	});
 
