@@ -20,17 +20,18 @@ export const useCannedResponsesStream = () => {
 				return;
 			}
 
-			switch (response.type) {
-				case 'changed': {
+			const handleResponseObject = {
+				changed: () => {
 					const { type, ...fields } = response;
 					CannedResponse.upsert({ _id: response._id }, fields);
-					break;
-				}
-				case 'removed': {
+				},
+				removed: () => {
 					CannedResponse.remove({ _id: response._id });
-					break;
-				}
-			}
+				},
+				default: () => console.warn(`Unknown response type: ${response.type}`),
+			};
+
+			(handleResponseObject[response.type] || handleResponseObject.default)();
 		});
 
 		return () => {
