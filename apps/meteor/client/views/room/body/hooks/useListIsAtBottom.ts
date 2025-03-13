@@ -53,11 +53,9 @@ export const useListIsAtBottom = () => {
 					atBottomRef.current = isAtBottom(100);
 				});
 
-				const listenerOptions = {
+				node.addEventListener('scroll', handleScroll, {
 					passive: true,
-				};
-
-				node.addEventListener('scroll', handleScroll, listenerOptions);
+				});
 
 				return () => {
 					observer.disconnect();
