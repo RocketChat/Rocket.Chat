@@ -156,6 +156,7 @@ describe('#renderSvgLetters', () => {
 		expect(renderSVGLetters('arthur', 16)).to.include('>\nA\n</text>');
 		expect(renderSVGLetters('Bob', 16)).to.include('>\nB\n</text>');
 		expect(renderSVGLetters('yan', 16)).to.include('>\nY\n</text>');
+		expect(renderSVGLetters('山田 太郎', 16)).to.include('>\n山\n</text>');
 	});
 	it('should render question mark with color #000', () => {
 		expect(renderSVGLetters('?', 16)).to.include('>\n?\n</text>').and.to.include('fill="#000"');
