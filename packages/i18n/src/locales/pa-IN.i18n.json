@@ -11,13 +11,13 @@
   "FEDERATION_Status": "ਹਾਲਤ",
   "Incoming_Livechats": "ਕਤਾਰਬੱਧ ਗੱਲਾਂਬਾਤਾਂ",
   "Livechat_forward_open_chats": "ਖੁੱਲ੍ਹੀਆਂ ਗੱਲਾਂਬਾਤਾਂ ਨੂੰ ਅੱਗੇ ਭੇਜੋ",
-  "Last_Status": "ਪਿਛਲੀ ਹਾਲਤ",
-  "Learn_more_about_current_chats": "ਮੌਜੂਦਾ ਗੱਲਾਂਬਾਤਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ",
   "Offline": "ਗੈਰ-ਹਾਜ਼ਰ",
+  "Last_Status": "ਪਿਛਲੀ ਹਾਲਤ",
   "online": "ਹਾਜ਼ਰ",
   "Online": "ਔਨਲਾਈਨ",
   "Past_Chats": "ਪਿਛਲੀਆਂ ਗੱਲਾਂਬਾਤਾਂ",
+  "Learn_more_about_current_chats": "ਮੌਜੂਦਾ ਗੱਲਾਂਬਾਤਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ",
+  "Stats_Online_Users": "ਹਾਜ਼ਰ ਵਰਤੋਂਕਾਰ",
   "offline": "ਗੈਰ-ਹਾਜ਼ਰ",
-  "Private_Chats": "ਨਿੱਜੀ ਗੱਲਾਂਬਾਤਾਂ",
-  "Stats_Online_Users": "ਹਾਜ਼ਰ ਵਰਤੋਂਕਾਰ"
+  "Private_Chats": "ਨਿੱਜੀ ਗੱਲਾਂਬਾਤਾਂ"
 }
