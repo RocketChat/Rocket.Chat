@@ -28,7 +28,9 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 
 	async findLastStatsToken(): Promise<IStats['statsToken']> {
 		const records = await this.find(
-			{},
+			{
+				statsToken: { $exists: true },
+			},
 			{
 				sort: {
 					createdAt: -1,
