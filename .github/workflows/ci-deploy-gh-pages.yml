@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.6
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node

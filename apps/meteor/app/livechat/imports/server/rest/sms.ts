@@ -22,6 +22,8 @@ import { settings } from '../../../../settings/server';
 import { setCustomField } from '../../../server/api/lib/customFields';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 import type { ILivechatMessage } from '../../../server/lib/localTypes';
+import { sendMessage } from '../../../server/lib/messages';
+import { createRoom } from '../../../server/lib/rooms';
 
 const logger = new Logger('SMS');
 
@@ -136,7 +138,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const { token } = visitor;
 		const room =
 			(await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS)) ??
-			(await LivechatTyped.createRoom({
+			(await createRoom({
 				visitor,
 				roomInfo,
 			}));
@@ -238,7 +240,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			}
 		}
 
-		const sendMessage: {
+		const messageToSend: {
 			guest: ILivechatVisitor;
 			message: ILivechatMessage;
 			roomInfo: IOmnichannelRoomInfo;
@@ -257,21 +259,21 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		try {
-			await LivechatTyped.sendMessage(sendMessage);
+			await sendMessage(messageToSend);
 			const msg = SMSService.response();
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						await setCustomField(sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await setCustomField(messageToSend.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						await setCustomField(sendMessage.message.token, 'state', sms.extra.fromState);
+						await setCustomField(messageToSend.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						await setCustomField(sendMessage.message.token, 'city', sms.extra.fromCity);
+						await setCustomField(messageToSend.message.token, 'city', sms.extra.fromCity);
 					}
 					if (sms.extra.fromZip) {
-						await setCustomField(sendMessage.message.token, 'zip', sms.extra.fromZip);
+						await setCustomField(messageToSend.message.token, 'zip', sms.extra.fromZip);
 					}
 				}
 			});

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/LivechatTyped';
+import { sendRequest } from '../lib/webhooks';
 
 callbacks.add(
 	'livechat.offlineMessage',
@@ -19,7 +19,7 @@ callbacks.add(
 			message: data.message,
 		};
 
-		await Livechat.sendRequest(postData);
+		await sendRequest(postData);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message',

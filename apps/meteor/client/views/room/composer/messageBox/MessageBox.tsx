@@ -43,6 +43,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -184,7 +185,7 @@ const MessageBox = ({
 		}
 	};
 
-	const handler = useEffectEvent((event: KeyboardEvent) => {
+	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -330,16 +331,21 @@ const MessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback(
-		(node: HTMLTextAreaElement) => {
-			if (node === null) {
-				return;
-			}
-			node.addEventListener('keydown', (e: KeyboardEvent) => {
-				handler(e);
-			});
-		},
-		[handler],
+	const keyDownHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				if (node === null) {
+					return;
+				}
+				const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+				node.addEventListener('keydown', eventHandler);
+
+				return () => {
+					node.removeEventListener('keydown', eventHandler);
+				};
+			},
+			[keyboardEventHandler],
+		),
 	);
 
 	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);

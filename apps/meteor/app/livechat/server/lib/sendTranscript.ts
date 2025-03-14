@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Omnichannel } from '@rocket.chat/core-services';
 import {
 	type IUser,
 	type MessageTypesValues,
@@ -6,6 +6,7 @@ import {
 	type ILivechatVisitor,
 	isFileAttachment,
 	isFileImageAttachment,
+	type AtLeast,
 } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
@@ -220,5 +221,47 @@ export async function sendTranscript({
 		requestData,
 	});
 
+	return true;
+}
+
+export async function requestTranscript({
+	rid,
+	email,
+	subject,
+	user,
+}: {
+	rid: string;
+	email: string;
+	subject: string;
+	user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
+}) {
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
+
+	if (!room?.open) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+	}
+
+	if (room.transcriptRequest) {
+		throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+	}
+
+	if (!(await Omnichannel.isWithinMACLimit(room))) {
+		throw new Error('error-mac-limit-reached');
+	}
+
+	const { _id, username, name, utcOffset } = user;
+	const transcriptRequest = {
+		requestedAt: new Date(),
+		requestedBy: {
+			_id,
+			username,
+			name,
+			utcOffset,
+		},
+		email,
+		subject,
+	};
+
+	await LivechatRooms.setEmailTranscriptRequestedByRoomId(rid, transcriptRequest);
 	return true;
 }

@@ -384,7 +384,7 @@ test.describe.serial('teams-management', () => {
 
 		await poHomeTeam.tabs.room.confirmDeleteTeam();
 		await poHomeTeam.sidenav.searchRoom(targetTeamNonPrivate);
-		await expect(poHomeTeam.sidenav.getSearchRoomByName(targetTeamNonPrivate)).not.toBeVisible();
+		await expect(poHomeTeam.sidenav.getSearchItemByName(targetTeamNonPrivate)).not.toBeVisible();
 	});
 
 	test('should user1 leave from targetTeam', async ({ browser }) => {
