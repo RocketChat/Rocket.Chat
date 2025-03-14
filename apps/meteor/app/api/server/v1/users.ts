@@ -554,25 +554,49 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
 	{
-		async post() {
-			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
-			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
-
-			return API.v1.success();
+		authRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const { password } = this.bodyParams;
+		if (!password) {
+			return API.v1.failure('Body parameter "password" is required.');
+		}
+		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
+
+		return API.v1.success();
 	},
 );
 
