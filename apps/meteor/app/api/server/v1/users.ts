@@ -1135,17 +1135,45 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.createToken',
-	{ authRequired: true, deprecationVersion: '8.0.0' },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			const data = await generateAccessToken(this.userId, user._id);
-
-			return data ? API.v1.success({ data }) : API.v1.forbidden();
+		authRequired: true,
+		deprecationVersion: '8.0.0',
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					data: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['data', 'success'],
+			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		const data = await generateAccessToken(this.userId, user._id);
+
+		return data ? API.v1.success({ data }) : API.v1.forbidden();
 	},
 );
 
