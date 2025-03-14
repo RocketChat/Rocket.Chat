@@ -126,7 +126,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 	};
 
 	return (
-		<Box style={{ marginBlockStart: '2rem' }} display='flex' justifyContent='center' alignItems='center' height='100vh' bg='neutral-100'>
+		<Box display='flex' justifyContent='center' alignItems='center' height='100vh' bg='neutral-100'>
 			<States>
 				<div
 					style={{
@@ -165,6 +165,9 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 								backgroundColor: 'transparent',
 								color: '#175CFF',
 								border: '1px solid #175CFF',
+								display: 'inline-flex',
+								alignItems: 'center',
+								justifyContent: 'center',
 							}}
 							onClick={handleGoBackClick}
 						>
@@ -176,6 +179,9 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 								backgroundColor: '#175CFF',
 								color: 'white',
 								border: 'none',
+								display: 'inline-flex',
+								alignItems: 'center',
+								justifyContent: 'center',
 							}}
 							onClick={handleGoHomeClick}
 						>
