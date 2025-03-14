@@ -16,9 +16,6 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const { t, i18n } = useTranslation();
-	console.log('testing')
-	console.log(t('page.form.title', { ns: 'onboarding' })); // Should log "Let's launch your workspace"
-	console.log(t('form.registerOfflineForm.title', { ns: 'onboarding' })); // Should log "Register offline"
 
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();
