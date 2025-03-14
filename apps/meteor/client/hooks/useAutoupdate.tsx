@@ -1,0 +1,51 @@
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useIdleDetection } from './useIdleDetection';
+
+export const useAutoupdate = () => {
+	const toast = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const isDevMode = process.env.NODE_ENV === 'development';
+
+	useIdleDetection(() => {
+		// window.location.reload();
+		console.log('callback');
+	});
+
+	useEffect(() => {
+		const fn = () => {
+			// if (isDevMode) {
+			// 	window.location.reload();
+			// 	return;
+			// }
+			toast({
+				type: 'info',
+				options: { isPersistent: true },
+				message: (
+					<Box
+						display='flex'
+						alignItems='center'
+						className={css`
+							gap: 8px;
+						`}
+					>
+						{t('An_update_is_available')}
+						<Button primary small onClick={() => window.location.reload()}>
+							{t('Reload_to_update')}
+						</Button>
+					</Box>
+				),
+			});
+		};
+
+		document.addEventListener('client_changed', fn);
+
+		return () => {
+			document.removeEventListener('client_changed', fn);
+		};
+	}, [isDevMode, t, toast]);
+};
