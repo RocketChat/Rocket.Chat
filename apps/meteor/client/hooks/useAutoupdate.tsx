@@ -2,30 +2,31 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const useAutoupdate = () => {
 	const toast = useToastMessageDispatch();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const fn = () => {
 			toast({
 				type: 'info',
-				title: 'Update available',
+				options: { isPersistent: true },
 				message: (
 					<Box
 						display='flex'
-						flexDirection='column'
+						alignItems='center'
 						className={css`
 							gap: 8px;
 						`}
 					>
-						An update is available
-						<Button small onClick={() => window.location.reload()}>
-							Reload to update
+						{t('An_update_is_available')}
+						<Button primary small onClick={() => window.location.reload()}>
+							{t('Reload_to_update')}
 						</Button>
 					</Box>
 				),
-				options: { position: 'bottom-end', isPersistent: true },
 			});
 		};
 		document.addEventListener('client_changed', fn);
@@ -33,5 +34,5 @@ export const useAutoupdate = () => {
 		return () => {
 			document.removeEventListener('client_changed', fn);
 		};
-	}, [toast]);
+	}, [t, toast]);
 };

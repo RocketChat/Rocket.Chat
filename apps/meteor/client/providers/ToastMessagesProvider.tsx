@@ -49,7 +49,7 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 		() =>
 			subscribeToToastMessages(({ type, message, title = '', options }) => {
 				if (type === 'error' && typeof message === 'object') {
-					dispatchToastBar({ type, message: getErrorMessage(message), ...options });
+					dispatchToastBar({ type, title, message: getErrorMessage(message), ...options });
 					return;
 				}
 
@@ -62,11 +62,11 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 				}
 
 				if (isValidElement(message)) {
-					dispatchToastBar({ type, message, ...options });
+					dispatchToastBar({ type, title, message, ...options });
 					return;
 				}
 
-				dispatchToastBar({ type, message: title + message, ...options });
+				dispatchToastBar({ type, title, message: String(message), ...options });
 			}),
 		[dispatchToastBar],
 	);
