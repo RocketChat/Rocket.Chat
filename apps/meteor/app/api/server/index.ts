@@ -48,5 +48,6 @@ import './v1/voip/omnichannel';
 import './v1/voip';
 import './v1/federation';
 import './v1/moderation';
+import './default/openApi';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';
