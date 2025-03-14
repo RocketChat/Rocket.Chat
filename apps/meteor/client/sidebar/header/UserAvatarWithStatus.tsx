@@ -12,12 +12,6 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to the core when the feature is ready
- * @memberof navigationBar
- */
-
 const UserAvatarWithStatus = () => {
 	const user = useUser();
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);

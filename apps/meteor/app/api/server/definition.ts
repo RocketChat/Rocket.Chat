@@ -238,6 +238,7 @@ export type TypedOptions = {
 	query?: ValidateFunction;
 	body?: ValidateFunction;
 	tags?: string[];
+	typed?: boolean;
 } & Options;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
