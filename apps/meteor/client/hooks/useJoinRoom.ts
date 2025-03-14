@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts/src/hooks/useToastMessageDispatch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-import type { AppPreventedError } from '../lib/errors/AppPreventedError';
-import { dispatchToastMessage } from '../lib/toast';
 
 type UseJoinRoomMutationFunctionProps = {
 	rid: IRoom['_id'];
@@ -11,10 +10,9 @@ type UseJoinRoomMutationFunctionProps = {
 	type: IRoom['t'];
 };
 
-const isAppError = (error: AppPreventedError | Error): error is AppPreventedError => (error as AppPreventedError).reason !== undefined;
-
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
 		mutationFn: async ({ rid, reference, type }: UseJoinRoomMutationFunctionProps) => {
@@ -27,8 +25,8 @@ export const useJoinRoom = () => {
 				queryKey: ['rooms', data],
 			});
 		},
-		onError: (error: AppPreventedError | Error) => {
-			dispatchToastMessage({ message: isAppError(error) ? error.reason : error.message, type: 'error' });
+		onError: (error: unknown) => {
+			dispatchToastMessage({ message: error, type: 'error' });
 		},
 	});
 };
