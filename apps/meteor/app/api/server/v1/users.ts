@@ -527,18 +527,30 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.delete',
-	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			await deleteUser(user._id, confirmRelinquish, this.userId);
-
-			return API.v1.success();
+		authRequired: true,
+		permissionsRequired: ['delete-user'],
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['success'],
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		await deleteUser(user._id, confirmRelinquish, this.userId);
+
+		return API.v1.success();
 	},
 );
 
