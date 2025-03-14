@@ -458,44 +458,72 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.create',
-	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		async post() {
-			// New change made by pull request #5152
-			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
-				this.bodyParams.joinDefaultChannels = true;
-			}
-
-			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (this.bodyParams.customFields) {
-				validateCustomFields(this.bodyParams.customFields);
-			}
-
-			const newUserId = await saveUser(this.userId, this.bodyParams);
-			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
-			}
-
-			if (typeof this.bodyParams.active !== 'undefined') {
-				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
-			}
-
-			const { fields } = await this.parseJsonQuery();
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({ user });
+		authRequired: true,
+		validateParams: isUserCreateParamsPOST,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		// New change made by pull request #5152
+		if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
+			this.bodyParams.joinDefaultChannels = true;
+		}
+
+		if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		if (this.bodyParams.customFields) {
+			validateCustomFields(this.bodyParams.customFields);
+		}
+
+		const newUserId = await saveUser(this.userId, this.bodyParams);
+		const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
+
+		if (this.bodyParams.customFields) {
+			await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
+		}
+
+		if (typeof this.bodyParams.active !== 'undefined') {
+			await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
+		}
+
+		const { fields } = await this.parseJsonQuery();
+
+		const user = await Users.findOneById(userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
