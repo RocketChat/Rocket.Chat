@@ -1008,7 +1008,7 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.register',
 	{
 		authRequired: false,
@@ -1017,60 +1017,85 @@ API.v1.addRoute(
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
 		validateParams: isUserRegisterParamsPOST,
-	},
-	{
-		async post() {
-			const { secret: secretURL, ...params } = this.bodyParams;
-
-			if (this.userId) {
-				return API.v1.failure('Logged in users can not register again.');
-			}
-
-			if (params.name && !validateNameChars(params.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure(`The username provided is not valid`);
-			}
-
-			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
-				return API.v1.failure('Username is already in use');
-			}
-
-			if (this.bodyParams.customFields) {
-				try {
-					await validateCustomFields(this.bodyParams.customFields);
-				} catch (e) {
-					return API.v1.failure(e);
-				}
-			}
-
-			// Register the user
-			const userId = await registerUser({
-				...params,
-				...(secretURL && { secretURL }),
-			});
-
-			if (typeof userId !== 'string') {
-				return API.v1.failure('Error creating user');
-			}
-
-			// Now set their username
-			const { fields } = await this.parseJsonQuery();
-			await setUsernameWithValidation(userId, this.bodyParams.username);
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFields(userId, this.bodyParams.customFields);
-			}
-
-			return API.v1.success({ user });
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const { secret: secretURL, ...params } = this.bodyParams;
+
+		if (this.userId) {
+			return API.v1.failure('Logged in users can not register again.');
+		}
+
+		if (params.name && !validateNameChars(params.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		if (!validateUsername(this.bodyParams.username)) {
+			return API.v1.failure(`The username provided is not valid`);
+		}
+
+		if (!(await checkUsernameAvailability(this.bodyParams.username))) {
+			return API.v1.failure('Username is already in use');
+		}
+
+		if (this.bodyParams.customFields) {
+			try {
+				await validateCustomFields(this.bodyParams.customFields);
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+		}
+
+		// Register the user
+		const userId = await registerUser({
+			...params,
+			...(secretURL && { secretURL }),
+		});
+
+		if (typeof userId !== 'string') {
+			return API.v1.failure('Error creating user');
+		}
+
+		// Now set their username
+		const { fields } = await this.parseJsonQuery();
+		await setUsernameWithValidation(userId, this.bodyParams.username);
+
+		const user = await Users.findOneById(userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		if (this.bodyParams.customFields) {
+			await saveCustomFields(userId, this.bodyParams.customFields);
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
