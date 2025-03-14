@@ -197,41 +197,69 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
 	{
-		async post() {
-			const userData = {
-				email: this.bodyParams.data.email,
-				realname: this.bodyParams.data.name,
-				username: this.bodyParams.data.username,
-				nickname: this.bodyParams.data.nickname,
-				bio: this.bodyParams.data.bio,
-				statusText: this.bodyParams.data.statusText,
-				statusType: this.bodyParams.data.statusType,
-				newPassword: this.bodyParams.data.newPassword,
-				typedPassword: this.bodyParams.data.currentPassword,
-			};
-
-			if (userData.realname && !validateNameChars(userData.realname)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
-			const twoFactorOptions = !userData.typedPassword
-				? null
-				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-					};
-
-			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
-
-			return API.v1.success({
-				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
-			});
+		authRequired: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const userData = {
+			email: this.bodyParams.data.email,
+			realname: this.bodyParams.data.name,
+			username: this.bodyParams.data.username,
+			nickname: this.bodyParams.data.nickname,
+			bio: this.bodyParams.data.bio,
+			statusText: this.bodyParams.data.statusText,
+			statusType: this.bodyParams.data.statusType,
+			newPassword: this.bodyParams.data.newPassword,
+			typedPassword: this.bodyParams.data.currentPassword,
+		};
+
+		if (userData.realname && !validateNameChars(userData.realname)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
+		const twoFactorOptions = !userData.typedPassword
+			? null
+			: {
+					twoFactorCode: userData.typedPassword,
+					twoFactorMethod: 'password',
+				};
+
+		await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+
+		return API.v1.success({
+			user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
+		});
 	},
 );
 
