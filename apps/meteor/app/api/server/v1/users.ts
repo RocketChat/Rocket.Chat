@@ -600,28 +600,52 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.setActiveStatus',
 	{
 		authRequired: true,
 		validateParams: isUserSetActiveStatusParamsPOST,
-		permissionsRequired: {
-			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
+		permissionsRequired: ['edit-other-user-active-status', 'manage-moderation-actions'],
+		permissionsOperator: 'hasAny',
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
 	},
-	{
-		async post() {
-			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
+	async function action() {
+		const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+		await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
 
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			return API.v1.success({
-				user,
-			});
-		},
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+		return API.v1.success({
+			user,
+		});
 	},
 );
 
