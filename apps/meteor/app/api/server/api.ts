@@ -684,28 +684,43 @@ export class APIClass<
 		return this.method('DELETE', subpath, options, action);
 	}
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string>(
 		subpath: TSubPathPattern,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>>(
 		subpaths: TSubPathPattern[],
 		operations: Operations<TPathPattern>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TOptions extends Options>(
 		subpath: TSubPathPattern,
 		options: TOptions,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>, TOptions extends Options>(
 		subpaths: TSubPathPattern[],
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	public addRoute<
 		TSubPathPattern extends string,
 		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,

@@ -108,6 +108,9 @@ export type Options = (
 			queryFields?: string[];
 	  }
 ) & {
+	/**
+	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
+	 */
 	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
