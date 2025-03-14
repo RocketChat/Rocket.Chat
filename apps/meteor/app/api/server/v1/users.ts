@@ -762,112 +762,149 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.list',
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
-			const nonEmptyFields = getNonEmptyFields(fields);
-
-			const inclusiveFields = getInclusiveFields(nonEmptyFields);
-
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					this.queryOperations,
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
-			}
-
-			const actualSort = sort || { username: 1 };
-
-			if (sort?.status) {
-				actualSort.active = sort.status;
-			}
-
-			if (sort?.name) {
-				actualSort.nameInsensitive = sort.name;
-			}
-
-			const limit =
-				count !== 0
-					? [
-							{
-								$limit: count,
-							},
-						]
-					: [];
-
-			const result = await Users.col
-				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-					{
-						$match: nonEmptyQuery,
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$addFields: {
-							nameInsensitive: {
-								$toLower: '$name',
-							},
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
 						},
 					},
-					{
-						$facet: {
-							sortedResults: [
-								{
-									$sort: actualSort,
-								},
-								{
-									$skip: offset,
-								},
-								...limit,
-							],
-							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-						},
+					count: {
+						type: 'number',
 					},
-				])
-				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
-
-			return API.v1.success({
-				users,
-				count: users.length,
-				offset,
-				total,
-			});
+					offset: {
+						type: 'number',
+					},
+					total: {
+						type: 'number',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		const inclusiveFieldsKeys = Object.keys(inclusiveFields);
+
+		if (
+			!isValidQuery(
+				nonEmptyQuery,
+				[
+					...inclusiveFieldsKeys,
+					inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
+					inclusiveFieldsKeys.includes('username') && 'username.*',
+					inclusiveFieldsKeys.includes('name') && 'name.*',
+					inclusiveFieldsKeys.includes('type') && 'type.*',
+					inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
+				].filter(Boolean) as string[],
+				this.queryOperations,
+			)
+		) {
+			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+		}
+
+		const actualSort = sort || { username: 1 };
+
+		if (sort?.status) {
+			actualSort.active = sort.status;
+		}
+
+		if (sort?.name) {
+			actualSort.nameInsensitive = sort.name;
+		}
+
+		const limit =
+			count !== 0
+				? [
+						{
+							$limit: count,
+						},
+					]
+				: [];
+
+		const result = await Users.col
+			.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+				{
+					$match: nonEmptyQuery,
+				},
+				{
+					$project: inclusiveFields,
+				},
+				{
+					$addFields: {
+						nameInsensitive: {
+							$toLower: '$name',
+						},
+					},
+				},
+				{
+					$facet: {
+						sortedResults: [
+							{
+								$sort: actualSort,
+							},
+							{
+								$skip: offset,
+							},
+							...limit,
+						],
+						totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+					},
+				},
+			])
+			.toArray();
+
+		const {
+			sortedResults: users,
+			totalCount: [{ total } = { total: 0 }],
+		} = result[0];
+
+		return API.v1.success({
+			users,
+			count: users.length,
+			offset,
+			total,
+		});
 	},
 );
 
