@@ -44,7 +44,6 @@ type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
 	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
-	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
 export abstract class BaseRaw<
@@ -91,9 +90,6 @@ export abstract class BaseRaw<
 
 	public async createIndexes() {
 		const indexes = this.modelIndexes();
-		if (this.options?._updatedAtIndexOptions) {
-			indexes?.push({ ...this.options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
-		}
 
 		if (indexes?.length) {
 			if (this.pendingIndexes) {
