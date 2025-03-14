@@ -306,6 +306,22 @@ describe('[Settings]', () => {
 				});
 		});
 
+		it('should throw error when sending invalid dates', async () => {
+			const startDate = new Date();
+			const endDate = '2025/01';
+
+			void request
+				.get(api('audit.settings'))
+				.query({ start: formatDate(startDate), end: endDate })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('message', 'The "start" query parameter must be a valid date.');
+				});
+		});
+
 		it('should return list of settings changed filtered by an actor', async () => {
 			void request
 				.get(api('audit.settings'))
