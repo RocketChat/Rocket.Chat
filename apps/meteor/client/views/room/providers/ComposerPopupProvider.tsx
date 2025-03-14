@@ -8,11 +8,12 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
 import { emoji } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
+import { queryClient } from '../../../lib/queryClient';
+import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -29,6 +30,8 @@ type ComposerPopupProviderProps = {
 	children: ReactNode;
 	room: IRoom;
 };
+
+export type CannedResponse = { _id: string; shortcut: string; text: string };
 
 const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
@@ -334,18 +337,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					renderItem: ({ item }) => <ComposerBoxPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
 						const exp = new RegExp(filter, 'i');
-						return CannedResponse.find(
-							{
-								shortcut: exp,
-							},
-							{
-								limit: 12,
-								sort: {
-									shortcut: -1,
-								},
-							},
-						)
-							.fetch()
+						const cannedResponses = queryClient.getQueryData<CannedResponse[]>(cannedResponsesQueryKeys.all) ?? [];
+						return cannedResponses
+							.filter((record) => record.shortcut.match(exp))
+							.sort((a, b) => a.shortcut.localeCompare(b.shortcut))
+							.slice(0, 11)
 							.map((record) => ({
 								_id: record._id,
 								text: record.text,
