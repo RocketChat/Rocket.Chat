@@ -10,6 +10,7 @@ import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 import * as mem from 'mem';
+
 export class ProxiedApp {
     private previousStatus: AppStatus;
 
