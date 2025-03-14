@@ -73,6 +73,83 @@ import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.get(
+	'users.info',
+	{
+		authRequired: true,
+		validateParams: isUsersInfoParamsGetProps,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
+		},
+	},
+	async function action() {
+		const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+
+		if (!searchTerms) {
+			return API.v1.failure('Invalid search query.');
+		}
+
+		const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
+
+		if (!user) {
+			return API.v1.failure('User not found.');
+		}
+		const myself = user._id === this.userId;
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			return API.v1.success({
+				user: {
+					...user,
+					rooms: await Subscriptions.findByUserId(user._id, {
+						projection: {
+							rid: 1,
+							name: 1,
+							t: 1,
+							roles: 1,
+							unread: 1,
+							federated: 1,
+						},
+						sort: {
+							t: 1,
+							name: 1,
+						},
+					}).toArray(),
+				},
+			});
+		}
+
+		return API.v1.success({
+			user,
+		});
+	},
+);
+
+API.v1.get(
 	'users.getAvatar',
 	{
 		authRequired: false,
@@ -682,55 +759,6 @@ API.v1.post(
 		return API.v1.success({
 			count,
 		});
-	},
-);
-
-API.v1.addRoute(
-	'users.info',
-	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
-	{
-		async get() {
-			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
-				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
-				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
-				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
-
-			if (!searchTerms) {
-				return API.v1.failure('Invalid search query.');
-			}
-
-			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
-
-			if (!user) {
-				return API.v1.failure('User not found.');
-			}
-			const myself = user._id === this.userId;
-			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
-				return API.v1.success({
-					user: {
-						...user,
-						rooms: await Subscriptions.findByUserId(user._id, {
-							projection: {
-								rid: 1,
-								name: 1,
-								t: 1,
-								roles: 1,
-								unread: 1,
-								federated: 1,
-							},
-							sort: {
-								t: 1,
-								name: 1,
-							},
-						}).toArray(),
-					},
-				});
-			}
-
-			return API.v1.success({
-				user,
-			});
-		},
 	},
 );
 
