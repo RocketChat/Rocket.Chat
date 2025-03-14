@@ -982,20 +982,29 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.sendWelcomeEmail',
 	{
 		authRequired: true,
 		validateParams: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
-	},
-	{
-		async post() {
-			const { email } = this.bodyParams;
-			await sendWelcomeEmail(email);
-
-			return API.v1.success();
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['success'],
+			}),
 		},
+	},
+	async function action() {
+		const { email } = this.bodyParams;
+		await sendWelcomeEmail(email);
+
+		return API.v1.success();
 	},
 );
 
