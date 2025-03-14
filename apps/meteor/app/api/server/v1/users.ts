@@ -263,47 +263,89 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.setPreferences',
-	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
-		async post() {
-			if (
-				this.bodyParams.userId &&
-				this.bodyParams.userId !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
-			) {
-				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
-			}
-			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
-			if (!(await Users.findOneById(userId))) {
-				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
-			}
-
-			await saveUserPreferences(this.bodyParams.data, userId);
-			const user = await Users.findOneById(userId, {
-				projection: {
-					'settings.preferences': 1,
-					'language': 1,
-				},
-			});
-
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({
-				user: {
-					_id: user._id,
-					settings: {
-						preferences: {
-							...user.settings?.preferences,
-							language: user.language,
+		authRequired: true,
+		validateParams: isUsersSetPreferencesParamsPOST,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+						properties: {
+							_id: {
+								type: 'string',
+							},
+							settings: {
+								type: 'object',
+								properties: {
+									preferences: {
+										type: 'object',
+									},
+								},
+							},
 						},
+						required: ['_id', 'settings'],
 					},
-				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
-			});
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		if (
+			this.bodyParams.userId &&
+			this.bodyParams.userId !== this.userId &&
+			!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
+		) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
+		}
+		const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
+		if (!(await Users.findOneById(userId))) {
+			throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
+		}
+
+		await saveUserPreferences(this.bodyParams.data, userId);
+		const user = await Users.findOneById(userId, {
+			projection: {
+				'settings.preferences': 1,
+				'language': 1,
+			},
+		});
+
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		return API.v1.success({
+			user: {
+				_id: user._id,
+				settings: {
+					preferences: {
+						...user.settings?.preferences,
+						language: user.language,
+					},
+				},
+			} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
+		});
 	},
 );
 
