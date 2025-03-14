@@ -1223,25 +1223,49 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.forgotPassword',
-	{ authRequired: false },
 	{
-		async post() {
-			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
-
-			if (!isPasswordResetEnabled) {
-				return API.v1.failure('Password reset is not enabled');
-			}
-
-			const { email } = this.bodyParams;
-			if (!email) {
-				return API.v1.failure("The 'email' param is required");
-			}
-
-			await sendForgotPasswordEmail(email.toLowerCase());
-			return API.v1.success();
+		authRequired: false,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
+
+		if (!isPasswordResetEnabled) {
+			return API.v1.failure('Password reset is not enabled');
+		}
+
+		const { email } = this.bodyParams;
+		if (!email) {
+			return API.v1.failure("The 'email' param is required");
+		}
+
+		await sendForgotPasswordEmail(email.toLowerCase());
+		return API.v1.success();
 	},
 );
 
