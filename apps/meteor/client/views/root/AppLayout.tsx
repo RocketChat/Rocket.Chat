@@ -56,7 +56,7 @@ const AppLayout = () => {
 	useCorsSSLConfig();
 	useOTRMessaging();
 	useUpdateVideoConfUser();
-  useCannedResponses();
+	useCannedResponses();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
