@@ -17,7 +17,6 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
-import { AppStatusCache } from '../../AppStatusCache';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -112,7 +111,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     private readonly livenessManager: LivenessManager;
     
-    private readonly appStatusCache: AppStatusCache;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
     constructor(
@@ -136,7 +134,6 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.api = manager.getApiManager();
         this.logStorage = manager.getLogStorage();
         this.bridges = manager.getBridges();
-        this.appStatusCache = manager.getAppStatusCache();
     }
 
     public spawnProcess(): void {
@@ -245,16 +242,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             return AppStatus.UNKNOWN;
         }
 
-        const statusCache = this.appStatusCache.get(this.getAppId());
-        if (!statusCache) {
-            this.debug(`${this.getAppId()} status not found in cache, fetching from subprocess`);
-            const status = await this.sendRequest({ method: 'app:getStatus', params: [] }) as AppStatus;
-            this.appStatusCache.set(this.getAppId(), status);
-            return status;
-        }
-
-        this.debug(`${this.getAppId()} status found in cache: ${statusCache}`);
-        return statusCache;
+        return await this.sendRequest({ method: 'app:getStatus', params: [] }) as AppStatus;
     }
 
     public async setupApp() {
