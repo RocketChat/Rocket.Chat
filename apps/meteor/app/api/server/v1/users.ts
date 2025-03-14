@@ -1099,28 +1099,39 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.resetAvatar',
-	{ authRequired: true },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				await resetAvatar(this.userId, this.userId);
-			} else if (
-				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				await resetAvatar(this.userId, user._id);
-			} else {
-				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
-					method: 'users.resetAvatar',
-				});
-			}
-
-			return API.v1.success();
+		authRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['success'],
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
+			await resetAvatar(this.userId, this.userId);
+		} else if (
+			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+		) {
+			await resetAvatar(this.userId, user._id);
+		} else {
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
+		}
+
+		return API.v1.success();
 	},
 );
 
