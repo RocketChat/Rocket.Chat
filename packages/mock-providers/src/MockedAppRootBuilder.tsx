@@ -95,6 +95,7 @@ export class MockedAppRootBuilder {
 		isLoading: false,
 		querySetting: (_id: string) => [() => () => undefined, () => undefined],
 		querySettings: () => [() => () => undefined, () => []],
+		countSettings: () => 0,
 		dispatch: async () => undefined,
 	};
 
