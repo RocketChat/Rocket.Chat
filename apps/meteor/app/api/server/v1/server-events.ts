@@ -6,7 +6,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'audit.settings',
-	{ authRequired: true, validateParams: isServerEventsAuditSettingsProps /* , permissionsRequired: ['can-audit'] */ },
+	{ authRequired: true, validateParams: isServerEventsAuditSettingsProps, permissionsRequired: ['can-audit'] },
 	{
 		async get() {
 			const { start, end, sort, settingId, actor } = this.queryParams;
