@@ -76,7 +76,7 @@ API.v1.get(
 	'users.info',
 	{
 		authRequired: true,
-		validateParams: isUsersInfoParamsGetProps,
+		query: isUsersInfoParamsGetProps,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -212,7 +212,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
-		validateParams: isUsersUpdateParamsPOST,
+		body: isUsersUpdateParamsPOST,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -278,7 +278,7 @@ API.v1.post(
 	'users.updateOwnBasicInfo',
 	{
 		authRequired: true,
-		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		body: isUsersUpdateOwnBasicInfoParamsPOST,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -344,7 +344,7 @@ API.v1.post(
 	'users.setPreferences',
 	{
 		authRequired: true,
-		validateParams: isUsersSetPreferencesParamsPOST,
+		body: isUsersSetPreferencesParamsPOST,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -430,7 +430,7 @@ API.v1.post(
 	'users.setAvatar',
 	{
 		authRequired: true,
-		validateParams: isUsersSetAvatarProps,
+		body: isUsersSetAvatarProps,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -539,7 +539,7 @@ API.v1.post(
 	'users.create',
 	{
 		authRequired: true,
-		validateParams: isUserCreateParamsPOST,
+		body: isUserCreateParamsPOST,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -681,7 +681,7 @@ API.v1.post(
 	'users.setActiveStatus',
 	{
 		authRequired: true,
-		validateParams: isUserSetActiveStatusParamsPOST,
+		body: isUserSetActiveStatusParamsPOST,
 		permissionsRequired: ['edit-other-user-active-status', 'manage-moderation-actions'],
 		permissionsOperator: 'hasAny',
 		response: {
@@ -730,7 +730,7 @@ API.v1.post(
 	'users.deactivateIdle',
 	{
 		authRequired: true,
-		validateParams: isUserDeactivateIdleParamsPOST,
+		body: isUserDeactivateIdleParamsPOST,
 		permissionsRequired: ['edit-other-user-active-status'],
 		response: {
 			200: ajv.compile({
@@ -912,7 +912,7 @@ API.v1.get(
 	'users.listByStatus',
 	{
 		authRequired: true,
-		validateParams: isUsersListStatusProps,
+		query: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
 		response: {
 			200: ajv.compile({
@@ -986,7 +986,7 @@ API.v1.post(
 	'users.sendWelcomeEmail',
 	{
 		authRequired: true,
-		validateParams: isUsersSendWelcomeEmailProps,
+		body: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
 		response: {
 			200: ajv.compile({
@@ -1016,7 +1016,7 @@ API.v1.post(
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
-		validateParams: isUserRegisterParamsPOST,
+		body: isUserRegisterParamsPOST,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -1299,7 +1299,7 @@ API.v1.get(
 	'users.checkUsernameAvailability',
 	{
 		authRequired: true,
-		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+		query: isUsersCheckUsernameAvailabilityParamsGET,
 		response: {
 			200: ajv.compile({
 				type: 'object',
