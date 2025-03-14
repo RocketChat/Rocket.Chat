@@ -811,7 +811,7 @@
   "Delete": "Sil",
   "Delete_message": "Mesajı sil",
   "Delete_my_account": "Hesabımı sil",
-  "Delete_Room_Warning": "Bir otağın silinməsi otaqda yerləşdirilən bütün mesajları silməyəcək. Bunu geri qaytarmaq mümkün deyil.",
+  "Delete_Room_Warning": "Bu {{roomType}} silinməsi, içindəki bütün mesajları da siləcək. Bu geri qaytarıla bilməz.",
   "Delete_User_Warning": "Bir istifadəçi silinməsi həmin istifadəçinin bütün mesajlarını silməyəcək. Bunu geri qaytarmaq mümkün deyil.",
   "Delete_User_Warning_Delete": "Bir istifadəçi silinməsi həmin istifadəçinin bütün mesajlarını silməyəcək. Bunu geri qaytarmaq mümkün deyil.",
   "Delete_User_Warning_Keep": "İstifadəçi silinəcək, lakin onların mesajları görünən qalacaq. Bunu geri qaytarmaq mümkün deyil.",
