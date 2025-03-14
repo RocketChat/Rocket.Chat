@@ -130,41 +130,70 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.update',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
-		async post() {
-			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
-
-			if (userData.name && !validateNameChars(userData.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			await saveUser(this.userId, userData);
-
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
-			}
-
-			if (typeof this.bodyParams.data.active !== 'undefined') {
-				const {
-					userId,
-					data: { active },
-					confirmRelinquish,
-				} = this.bodyParams;
-
-				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
-			}
-			const { fields } = await this.parseJsonQuery();
-
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({ user });
+		authRequired: true,
+		twoFactorRequired: true,
+		validateParams: isUsersUpdateParamsPOST,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['user', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
+
+		if (userData.name && !validateNameChars(userData.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		await saveUser(this.userId, userData);
+
+		if (this.bodyParams.data.customFields) {
+			await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+		}
+
+		if (typeof this.bodyParams.data.active !== 'undefined') {
+			const {
+				userId,
+				data: { active },
+				confirmRelinquish,
+			} = this.bodyParams;
+
+			await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
+		}
+		const { fields } = await this.parseJsonQuery();
+
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
