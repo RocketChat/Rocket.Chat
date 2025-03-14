@@ -73,7 +73,7 @@ export abstract class BaseRaw<
 		private db: Db,
 		protected name: string,
 		protected trash?: Collection<TDeleted>,
-		private options?: ModelOptions,
+		options?: ModelOptions,
 	) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
