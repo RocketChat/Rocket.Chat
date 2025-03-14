@@ -908,40 +908,77 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.listByStatus',
 	{
 		authRequired: true,
 		validateParams: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
-
-			return API.v1.success(
-				await findPaginatedUsersByStatus({
-					uid: this.userId,
-					offset,
-					count,
-					sort,
-					status,
-					roles,
-					searchTerm,
-					hasLoggedIn,
-					type,
-				}),
-			);
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
+						},
+					},
+					count: {
+						type: 'number',
+					},
+					offset: {
+						type: 'number',
+					},
+					total: {
+						type: 'number',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+
+		return API.v1.success(
+			await findPaginatedUsersByStatus({
+				uid: this.userId,
+				offset,
+				count,
+				sort,
+				status,
+				roles,
+				searchTerm,
+				hasLoggedIn,
+				type,
+			}),
+		);
 	},
 );
 
