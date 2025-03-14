@@ -51,7 +51,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	return Boolean(target.value.trim());
 };
 
-const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
+const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI, toggleFormatting: boolean) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -66,7 +66,10 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 	if (!formatter || !('pattern' in formatter)) {
 		return false;
 	}
-
+	if (toggleFormatting) {
+		composer.toggleSelectionWrap(formatter.pattern);
+		return true;
+	}
 	composer.wrapSelection(formatter.pattern);
 	return true;
 };
@@ -112,6 +115,8 @@ const MessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+
+	const toggleFormatting = !!useUserPreference<boolean>('toggleFormatting');
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
@@ -205,7 +210,7 @@ const MessageBox = ({
 			return false;
 		}
 
-		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer, toggleFormatting)) {
 			return;
 		}
 
@@ -406,11 +411,18 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction
+					<MessageComposerAction
 							icon='emoji'
 							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
+						/>
+						<MessageComposerActionsDivider />
+						<MessageComposerAction
+							icon='eye'
+							disabled={!useEmojis || isRecording || !canSend}
+							onClick={handleOpenEmojiPicker}
+							title={t('Preview')}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
@@ -419,6 +431,7 @@ const MessageBox = ({
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
 								disabled={isRecording || !canSend}
+								toggleFormatting={toggleFormatting}
 							/>
 						)}
 						<MessageBoxActionsToolbar
