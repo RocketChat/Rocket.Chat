@@ -70,4 +70,6 @@ export type IE2EEUpload = IUpload & {
 	};
 };
 
+export type IUploadToConfirm = Pick<IUpload, '_id' | 'name' | 'content'>;
+
 export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);
