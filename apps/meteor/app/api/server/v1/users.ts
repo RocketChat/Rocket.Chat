@@ -649,23 +649,39 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
-		async post() {
-			const { daysIdle, role = 'user' } = this.bodyParams;
-
-			const lastLoggedIn = new Date();
-			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
-
-			// since we're deactiving users that are not logged in, there is no need to send data through WS
-			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
-
-			return API.v1.success({
-				count,
-			});
+		authRequired: true,
+		validateParams: isUserDeactivateIdleParamsPOST,
+		permissionsRequired: ['edit-other-user-active-status'],
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					count: {
+						type: 'number',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['count', 'success'],
+			}),
 		},
+	},
+	async function action() {
+		const { daysIdle, role = 'user' } = this.bodyParams;
+
+		const lastLoggedIn = new Date();
+		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
+
+		// since we're deactiving users that are not logged in, there is no need to send data through WS
+		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		return API.v1.success({
+			count,
+		});
 	},
 );
 
