@@ -7,6 +7,12 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useToastMessageDispatch: jest.fn(() => jest.fn()),
 }));
 
+jest.mock('react-i18next', () => ({
+	useTranslation: () => ({
+		t: (key: string) => key,
+	}),
+}));
+
 describe('useAutoupdate', () => {
 	it('should add event listener to document on mount', () => {
 		const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
@@ -34,9 +40,8 @@ describe('useAutoupdate', () => {
 		expect(toastMock).toHaveBeenCalledTimes(1);
 		expect(toastMock).toHaveBeenCalledWith({
 			type: 'info',
-			title: 'Update available',
 			message: expect.anything(),
-			options: { position: 'bottom-end', isPersistent: true },
+			options: { isPersistent: true },
 		});
 	});
 
