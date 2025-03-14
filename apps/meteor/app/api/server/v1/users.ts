@@ -104,17 +104,29 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getAvatarSuggestion',
 	{
 		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					suggestions: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['suggestions', 'success'],
+			}),
 		},
+	},
+	async function action() {
+		const suggestions = await getAvatarSuggestionForUser(this.user);
+
+		return API.v1.success({ suggestions });
 	},
 );
 
