@@ -5,7 +5,7 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-API.v1.router.get(
+API.v1.get(
 	'audit.settings',
 	{
 		response: {
@@ -38,6 +38,22 @@ API.v1.router.get(
 				},
 				required: ['events', 'count', 'offset', 'total', 'success'],
 			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+					errorType: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
 		query: isServerEventsAuditSettingsProps,
 		authRequired: true,
@@ -47,11 +63,11 @@ API.v1.router.get(
 		const { start, end, settingId, actor } = this.queryParams;
 
 		if (start && isNaN(Date.parse(start as string))) {
-			throw API.v1.failure('The "start" query parameter must be a valid date.');
+			return API.v1.failure('The "start" query parameter must be a valid date.');
 		}
 
 		if (end && isNaN(Date.parse(end as string))) {
-			throw API.v1.failure('The "end" query parameter must be a valid date.');
+			return API.v1.failure('The "end" query parameter must be a valid date.');
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
