@@ -1,53 +1,88 @@
 import { ServerEvents } from '@rocket.chat/models';
 import { isServerEventsAuditSettingsProps } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-API.v1.addRoute(
+API.v1.router.get(
 	'audit.settings',
-	{ authRequired: true, validateParams: isServerEventsAuditSettingsProps, permissionsRequired: ['can-audit'] },
 	{
-		async get() {
-			const { start, end, sort, settingId, actor } = this.queryParams;
-
-			if (start && isNaN(Date.parse(start))) {
-				return API.v1.failure('The "start" query parameter must be a valid date.');
-			}
-
-			if (end && isNaN(Date.parse(end))) {
-				return API.v1.failure('The "end" query parameter must be a valid date.');
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const _sort = { ts: sort?.ts ? sort.ts : -1 };
-
-			const { cursor, totalCount } = ServerEvents.findPaginated(
-				{
-					...(settingId && { 'data.key': 'id', 'data.value': settingId }),
-					...(actor && { actor }),
-					ts: {
-						$gte: start ? new Date(start) : new Date(0),
-						$lte: end ? new Date(end) : new Date(),
+		response: {
+			200: ajv.compile({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					events: {
+						type: 'array',
+						items: {
+							type: 'object',
+						},
 					},
-					t: 'settings.changed',
+					count: {
+						type: 'number',
+						description: 'The number of events returned in this response.',
+					},
+					offset: {
+						type: 'number',
+						description: 'The number of events that were skipped in this response.',
+					},
+					total: {
+						type: 'number',
+						description: 'The total number of events that match the query.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
 				},
-				{
-					sort: _sort,
-					skip: offset,
-					limit: count,
-					allowDiskUse: true,
-				},
-			);
-
-			const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				events,
-				count: events.length,
-				offset,
-				total,
-			});
+				required: ['events', 'count', 'offset', 'total', 'success'],
+			}),
 		},
+		query: isServerEventsAuditSettingsProps,
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+	},
+	async function action() {
+		const { start, end, settingId, actor } = this.queryParams;
+
+		if (start && isNaN(Date.parse(start as string))) {
+			throw API.v1.failure('The "start" query parameter must be a valid date.');
+		}
+
+		if (end && isNaN(Date.parse(end as string))) {
+			throw API.v1.failure('The "end" query parameter must be a valid date.');
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { sort } = await this.parseJsonQuery();
+		const _sort = { ts: sort?.ts ? sort?.ts : -1 };
+
+		const { cursor, totalCount } = ServerEvents.findPaginated(
+			{
+				...(settingId && { 'data.key': 'id', 'data.value': settingId }),
+				...(actor && { actor }),
+				ts: {
+					$gte: start ? new Date(start as string) : new Date(0),
+					$lte: end ? new Date(end as string) : new Date(),
+				},
+				t: 'settings.changed',
+			},
+			{
+				sort: _sort,
+				skip: offset,
+				limit: count,
+				allowDiskUse: true,
+			},
+		);
+
+		const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			events,
+			count: events.length,
+			offset,
+			total,
+		});
 	},
 );

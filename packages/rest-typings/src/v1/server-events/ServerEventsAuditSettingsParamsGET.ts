@@ -18,8 +18,14 @@ const ServerEventsAuditSettingsParamsGetSchema = {
 	type: 'object',
 	properties: {
 		sort: {
-			type: 'string',
+			type: 'object',
 			nullable: true,
+			properties: {
+				ts: {
+					type: 'number',
+					nullable: true,
+				},
+			},
 		},
 		count: {
 			type: 'number',
