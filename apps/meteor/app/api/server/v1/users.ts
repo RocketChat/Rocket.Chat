@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -71,21 +72,35 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getAvatar',
-	{ authRequired: false },
 	{
-		async get() {
-			const user = await getUserFromParams(this.queryParams);
-
-			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.setHeader('Location', url);
-
-			return {
-				statusCode: 307,
-				body: url,
-			};
+		authRequired: false,
+		response: {
+			307: ajv.compile({
+				type: 'object',
+				properties: {
+					statusCode: {
+						type: 'number',
+					},
+					body: {
+						type: 'string',
+					},
+				},
+				required: ['statusCode', 'body'],
+			}),
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.queryParams);
+
+		const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		this.response.setHeader('Location', url);
+
+		return {
+			statusCode: 307,
+			body: url,
+		};
 	},
 );
 
