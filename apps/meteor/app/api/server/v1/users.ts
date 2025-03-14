@@ -1177,22 +1177,49 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getPreferences',
-	{ authRequired: true },
 	{
-		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
-
-				return API.v1.success({
-					preferences,
-				});
-			}
-			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+		authRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					preferences: {
+						type: 'object',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['preferences', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const user = await Users.findOneById(this.userId);
+		if (user?.settings) {
+			const { preferences = {} } = user?.settings;
+			preferences.language = user?.language;
+
+			return API.v1.success({
+				preferences,
+			});
+		}
+		return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 );
 
