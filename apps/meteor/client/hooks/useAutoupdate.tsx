@@ -4,17 +4,24 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useIdleDetection } from './useIdleDetection';
+
 export const useAutoupdate = () => {
 	const toast = useToastMessageDispatch();
 	const { t } = useTranslation();
 	const isDevMode = process.env.NODE_ENV === 'development';
 
+	useIdleDetection(() => {
+		// window.location.reload();
+		console.log('callback');
+	});
+
 	useEffect(() => {
 		const fn = () => {
-			if (isDevMode) {
-				window.location.reload();
-				return;
-			}
+			// if (isDevMode) {
+			// 	window.location.reload();
+			// 	return;
+			// }
 			toast({
 				type: 'info',
 				options: { isPersistent: true },
@@ -34,6 +41,7 @@ export const useAutoupdate = () => {
 				),
 			});
 		};
+
 		document.addEventListener('client_changed', fn);
 
 		return () => {
