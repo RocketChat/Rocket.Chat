@@ -1269,64 +1269,146 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getUsernameSuggestion',
-	{ authRequired: true },
 	{
-		async get() {
-			const result = await generateUsernameSuggestion(this.user);
-
-			return API.v1.success({ result });
+		authRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					result: {
+						type: 'string',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['result', 'success'],
+			}),
 		},
+	},
+	async function action() {
+		const result = await generateUsernameSuggestion(this.user);
+
+		return API.v1.success({ result });
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.checkUsernameAvailability',
 	{
 		authRequired: true,
 		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
-	},
-	{
-		async get() {
-			const { username } = this.queryParams;
-
-			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
-
-			return API.v1.success({ result });
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					result: {
+						type: 'boolean',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['result', 'success'],
+			}),
 		},
+	},
+	async function action() {
+		const { username } = this.queryParams;
+
+		const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
+
+		return API.v1.success({ result });
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.generatePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
 	{
-		async post() {
-			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
-			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
-
-			return API.v1.success({ token });
+		authRequired: true,
+		twoFactorRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					token: {
+						type: 'string',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['token', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const { tokenName, bypassTwoFactor = false } = this.bodyParams;
+		if (!tokenName) {
+			return API.v1.failure("The 'tokenName' param is required");
+		}
+		const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
+
+		return API.v1.success({ token });
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.regeneratePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
 	{
-		async post() {
-			const { tokenName } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
-			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
-
-			return API.v1.success({ token });
+		authRequired: true,
+		twoFactorRequired: true,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					token: {
+						type: 'string',
+					},
+					success: {
+						type: 'boolean',
+					},
+				},
+				required: ['token', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
+	async function action() {
+		const { tokenName } = this.bodyParams;
+		if (!tokenName) {
+			return API.v1.failure("The 'tokenName' param is required");
+		}
+		const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
+
+		return API.v1.success({ token });
 	},
 );
 
