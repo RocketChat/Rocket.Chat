@@ -157,8 +157,8 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 				>
 					{displaySubtitle}
 				</StatesSubtitle>
-				<Box mbs={26} style={{ marginTop: '80px' }}>
-					<StatesActions style={{ display: 'flex', gap: '30px', justifyContent: 'center' }}>
+				<Box mbs={26} style={{ marginTop: '5rem' }}>
+					<StatesActions style={{ display: 'flex', gap: '2rem', justifyContent: 'center' }}>
 						<StatesAction
 							style={{
 								...buttonStyle,
