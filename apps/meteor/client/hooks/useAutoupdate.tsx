@@ -7,9 +7,14 @@ import { useTranslation } from 'react-i18next';
 export const useAutoupdate = () => {
 	const toast = useToastMessageDispatch();
 	const { t } = useTranslation();
+	const isDevMode = process.env.NODE_ENV === 'development';
 
 	useEffect(() => {
 		const fn = () => {
+			if (isDevMode) {
+				window.location.reload();
+				return;
+			}
 			toast({
 				type: 'info',
 				options: { isPersistent: true },
@@ -34,5 +39,5 @@ export const useAutoupdate = () => {
 		return () => {
 			document.removeEventListener('client_changed', fn);
 		};
-	}, [t, toast]);
+	}, [isDevMode, t, toast]);
 };
