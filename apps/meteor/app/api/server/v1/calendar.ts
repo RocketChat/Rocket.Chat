@@ -50,11 +50,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
+			const { startTime, endTime, externalId, subject, description, meetingUrl, reminderMinutesBeforeStart } = this.bodyParams;
 
 			const id = await Calendar.create({
 				uid,
 				startTime: new Date(startTime),
+				...(endTime ? { endTime: new Date(endTime) } : {}),
 				externalId,
 				subject,
 				description,

@@ -9,7 +9,6 @@ export interface ICalendarService {
 	list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]>;
 	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult>;
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
-	findImportedEvent(externalId: Required<ICalendarEvent>['externalId'], uid: ICalendarEvent['uid']): Promise<ICalendarEvent | null>;
-	parseDescriptionForMeetingUrl(description: string): Promise<string | undefined>;
 	setupNextNotification(): Promise<void>;
+	cancelUpcomingStatusChanges(uid: IUser['_id'], endTime?: Date): Promise<void>;
 }
