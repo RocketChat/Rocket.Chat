@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { UserRoles, Messages } from '../../app/models/client';
+import { Messages } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { useUserRolesStore } from '../hooks/useUserRolesStore';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.startup(() => {
@@ -11,9 +12,7 @@ Meteor.startup(() => {
 			sdk
 				.call('getUserRoles')
 				.then((results) => {
-					for (const record of results) {
-						UserRoles.upsert({ _id: record._id }, record);
-					}
+					useUserRolesStore.getState().sync(results);
 				})
 				.catch((error) => {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -25,7 +24,7 @@ Meteor.startup(() => {
 						if (!role.u) {
 							return;
 						}
-						UserRoles.upsert({ _id: role.u._id }, { $addToSet: { roles: role._id }, $set: { username: role.u.username } });
+						useUserRolesStore.getState().addRole(role.u._id, role._id);
 						Messages.update({ 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
 					}
 
@@ -37,7 +36,7 @@ Meteor.startup(() => {
 						if (!role.u) {
 							return;
 						}
-						UserRoles.update({ _id: role.u._id }, { $pull: { roles: role._id } });
+						useUserRolesStore.getState().removeRole(role.u._id, role._id);
 						Messages.update({ 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
 					}
 
