@@ -367,8 +367,14 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				},
 		];
 
-		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
-		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
+		const isPossibleToEnableApp =
+			app.installed &&
+			isAdminUser &&
+			!isAppEnabled &&
+			// If the app is migrated, it can be enabled regardless of other validations
+			// If not, and the app isEnterpriseOnly, we need to check the workspace's license
+			(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
+
 		const doesItReachedTheLimit =
 			!app.migrated &&
 			!appCountQuery?.data?.hasUnlimitedApps &&
