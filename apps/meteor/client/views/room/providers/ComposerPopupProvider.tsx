@@ -64,20 +64,10 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const users = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
+					const users = Array.from(usersFromRoomMessages.values())
+						.filter((u) => !!u.ts && (filterRegex ? u.username.match(filterRegex) || u.name?.match(filterRegex) : true))
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
 						.map((u) => {
 							u.suggestion = true;
 							return u;
@@ -106,20 +96,10 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
+					const usernames = Array.from(usersFromRoomMessages.values())
+						.filter((u) => !!u.ts && (filterRegex ? u.username.match(filterRegex) || u.name?.match(filterRegex) : true))
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
 						.map((u) => {
 							return u.username;
 						});
