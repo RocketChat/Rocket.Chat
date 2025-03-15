@@ -1,0 +1,527 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Example without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-card__vertical rcx-card rcx-css-1ichk9z"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1gd28qh"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-cs9uip"
+        >
+          Total_rooms
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Channels
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            12
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-lock rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Private_Groups
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            23
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Direct_Messages
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            21
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Discussions
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            32
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-headset rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Omnichannel
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            31
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            Total
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1gd28qh"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-cs9uip"
+        >
+          Messages
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Channel
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-lock rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_PrivateGroup
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Direct
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            23
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Discussions
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            32
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-headset rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Livechat
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            31
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            Total
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            321
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Vertical without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-card__vertical rcx-card rcx-css-1ichk9z"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1gd28qh"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-cs9uip"
+        >
+          Total_rooms
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Channels
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            12
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-lock rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Private_Groups
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            23
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Direct_Messages
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            21
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Discussions
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            32
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-headset rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Omnichannel
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            31
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            Total
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1gd28qh"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-cs9uip"
+        >
+          Messages
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Channel
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-lock rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_PrivateGroup
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Direct
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            23
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Discussions
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            32
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-headset rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Stats_Total_Messages_Livechat
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            31
+          </span>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1txa97"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-9jnddr"
+          >
+            Total
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1l4r28e"
+          />
+          <span>
+            321
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Example without crashing 1`] = `
+<body>
+  <div>
+    <button
+      class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1eogw2f"
+      data-method-id="method-id"
+      type="button"
+    >
+      <span
+        class="rcx-button--content"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-quote rcx-icon rcx-css-1hdf9ok"
+        >
+          
+        </i>
+        Quote
+      </span>
+    </button>
+  </div>
+</body>
+`;

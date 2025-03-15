@@ -1,10 +1,10 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import GenericUpsellModal from './GenericUpsellModal';
+import GenericUpsellModal from '.';
 
 export default {
-	title: 'Components/GenericUpsellModal',
+	title: 'Components/GenericUpellModal',
 	component: GenericUpsellModal,
 } satisfies Meta<typeof GenericUpsellModal>;
 

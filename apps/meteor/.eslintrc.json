@@ -54,7 +54,11 @@
 					{
 						"selector": ["parameter"],
 						"format": ["camelCase"],
-						"leadingUnderscore": "allow"
+						"leadingUnderscore": "allow",
+						"filter": {
+							"regex": "Story$",
+							"match": false
+						}
 					},
 					{
 						"selector": ["parameter"],

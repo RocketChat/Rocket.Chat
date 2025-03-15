@@ -1,0 +1,179 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Connected without crashing 1`] = `
+<body>
+  <div />
+</body>
+`;
+
+exports[`renders Connecting without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-connection-status-bar rcx-css-12pfr48 rcx-css-y3ttk5"
+      role="alert"
+    >
+      <span
+        class="rcx-connection-status-bar--wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon"
+        >
+          
+        </i>
+        <span
+          class="rcx-connection-status-bar--content"
+        >
+          <strong>
+            meteor_status
+          </strong>
+        </span>
+      </span>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+        disabled=""
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Connect
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Failed without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-connection-status-bar rcx-css-12pfr48 rcx-css-y3ttk5"
+      role="alert"
+    >
+      <span
+        class="rcx-connection-status-bar--wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon"
+        >
+          
+        </i>
+        <span
+          class="rcx-connection-status-bar--content"
+        >
+          <strong>
+            meteor_status
+          </strong>
+          <span
+            class="rcx-connection-status-bar--info"
+          >
+            meteor_status_try_again_later
+          </span>
+        </span>
+      </span>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Connect
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Offline without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-connection-status-bar rcx-css-12pfr48 rcx-css-y3ttk5"
+      role="alert"
+    >
+      <span
+        class="rcx-connection-status-bar--wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon"
+        >
+          
+        </i>
+        <span
+          class="rcx-connection-status-bar--content"
+        >
+          <strong>
+            meteor_status
+          </strong>
+          <span
+            class="rcx-connection-status-bar--info"
+          >
+            meteor_status_try_again_later
+          </span>
+        </span>
+      </span>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Connect
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Waiting without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-connection-status-bar rcx-css-12pfr48 rcx-css-y3ttk5"
+      role="alert"
+    >
+      <span
+        class="rcx-connection-status-bar--wrapper"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon"
+        >
+          
+        </i>
+        <span
+          class="rcx-connection-status-bar--content"
+        >
+          <strong>
+            meteor_status
+          </strong>
+          <span
+            class="rcx-connection-status-bar--info"
+          >
+            meteor_status_reconnect_in
+          </span>
+        </span>
+      </span>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Connect
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;

@@ -4,7 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 import ViewLogsPage from './ViewLogsPage';
 
 export default {
-	title: 'Admin/View Logs/ViewLogsPage',
+	title: 'views/Admin/ViewLogsPage',
 	component: ViewLogsPage,
 	parameters: {
 		layout: 'fullscreen',

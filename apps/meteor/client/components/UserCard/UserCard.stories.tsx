@@ -3,7 +3,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import { UserCard, UserCardRole, UserCardAction } from '.';
 
 const user = {
-	name: 'guilherme.gazzo',
+	username: 'guilherme.gazzo',
 	customStatus: '🛴 currently working on User Card',
 	roles: (
 		<>
@@ -26,8 +26,8 @@ export default {
 		user,
 		actions: (
 			<>
-				<UserCardAction icon='message' />
-				<UserCardAction icon='phone' />
+				<UserCardAction title='message' icon='message' />
+				<UserCardAction title='call' icon='phone' />
 			</>
 		),
 	},
@@ -35,7 +35,7 @@ export default {
 
 const Template: StoryFn<typeof UserCard> = (args) => <UserCard {...args} />;
 
-export const Example = Template.bind({});
+export const Default = Template.bind({});
 
 export const Nickname = Template.bind({});
 Nickname.args = {
