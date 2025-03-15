@@ -811,7 +811,7 @@
   "Delete": "verwyder",
   "Delete_message": "Verwyder boodskap",
   "Delete_my_account": "Vee my rekening uit",
-  "Delete_Room_Warning": "As jy 'n kamer uitvee, sal alle boodskappe wat in die kamer geplaas is, verwyder word. Dit kan nie ongedaan gemaak word nie.",
+  "Delete_Room_Warning": "As jy hierdie {{roomType}} uitvee, sal alle boodskappe wat in die kamer geplaas is, verwyder word. Dit kan nie ongedaan gemaak word nie.",
   "Delete_User_Warning": "As jy 'n gebruiker uitvee, sal alle boodskappe van daardie gebruiker ook verwyder word. Dit kan nie ongedaan gemaak word nie.",
   "Delete_User_Warning_Delete": "As jy 'n gebruiker uitvee, sal alle boodskappe van daardie gebruiker ook verwyder word. Dit kan nie ongedaan gemaak word nie.",
   "Delete_User_Warning_Keep": "Die gebruiker sal uitgevee word, maar hul boodskappe sal sigbaar bly. Dit kan nie ongedaan gemaak word nie.",

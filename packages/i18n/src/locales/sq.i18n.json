@@ -812,7 +812,7 @@
   "Delete": "fshij",
   "Delete_message": "Fshij mesazh",
   "Delete_my_account": "Fshij llogarinë time",
-  "Delete_Room_Warning": "Fshirja e një dhomë do të fshij të gjitha mesazhet e postuara në këtë dhomë. Kjo nuk mund të rikthehet.",
+  "Delete_Room_Warning": "Fshirja e kësaj {{roomType}} do të fshijë të gjitha mesazhet e postuara në të. Kjo nuk mund të rikthehet.",
   "Delete_User_Warning": "Fshirja e një përdoruesi do të fshijë gjithashtu të gjitha mesazhet nga ky përdorues. Kjo nuk mund të rikthehet.",
   "Delete_User_Warning_Delete": "Fshirja e një përdoruesi do të fshijë gjithashtu të gjitha mesazhet nga ky përdorues. Kjo nuk mund të rikthehet.",
   "Delete_User_Warning_Keep": "Përdoruesi do të fshihet, por mesazhet e tyre do të mbeten të dukshme. Kjo nuk mund të zhbëhet.",
