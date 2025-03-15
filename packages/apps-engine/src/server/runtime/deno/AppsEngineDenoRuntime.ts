@@ -241,7 +241,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             return AppStatus.UNKNOWN;
         }
 
-        return this.sendRequest({ method: 'app:getStatus', params: [] }) as Promise<AppStatus>;
+        return await this.sendRequest({ method: 'app:getStatus', params: [] }) as AppStatus;
     }
 
     public async setupApp() {

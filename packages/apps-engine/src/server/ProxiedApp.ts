@@ -9,6 +9,7 @@ import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
+import * as mem from 'mem';
 
 export class ProxiedApp {
     private previousStatus: AppStatus;
@@ -78,13 +79,11 @@ export class ProxiedApp {
         }
     }
 
-    public async getStatus(): Promise<AppStatus> {
-        return this.appRuntime.getStatus().catch(() => AppStatus.UNKNOWN);
-    }
+    public getStatus = mem(() => this.appRuntime.getStatus().catch(() => AppStatus.UNKNOWN), { maxAge: 1000 * 60 * 5 });
 
     public async setStatus(status: AppStatus, silent?: boolean): Promise<void> {
         await this.call(AppMethod.SETSTATUS, status);
-
+        mem.clear(this.getStatus);
         if (!silent) {
             await this.manager.getBridges().getAppActivationBridge().doAppStatusChanged(this, status);
         }
