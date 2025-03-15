@@ -56,6 +56,7 @@ test.describe.serial('mark-unread', () => {
 
 			await poHomeChannelUser2.sidenav.openChat(targetChannel);
 			await poHomeChannelUser2.content.sendMessage('this is a message for reply');
+			await expect(poHomeChannelUser2.content.lastUserMessageBody).toHaveText('this is a message for reply');
 			await user2Page.close();
 
 			await expect(async () => {
