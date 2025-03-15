@@ -48,5 +48,13 @@ test.describe.parallel('administration-settings', () => {
 
 			await expect(page.getByRole('code')).toHaveCSS('width', '920px');
 		});
+
+		test('should render exactly one code mirror element', async ({ page }) => {
+			await poAdmin.getAccordionBtnByName('Custom CSS').click();
+			await poAdmin.btnFullScreen.click();
+
+			const codeMirrorParent = page.getByRole('code');
+			await expect(codeMirrorParent.locator('.CodeMirror')).toHaveCount(1);
+		});
 	});
 });
