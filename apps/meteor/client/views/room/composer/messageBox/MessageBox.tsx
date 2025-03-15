@@ -221,31 +221,35 @@ const MessageBox = ({
 			}
 
 			case 'ArrowUp': {
-				if (input.selectionEnd === 0) {
+				if (event.altKey) {
 					event.preventDefault();
 					event.stopPropagation();
-
-					onNavigateToPreviousMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(0, 0);
-					}
+					input.setSelectionRange(0, 0);
+					return;
 				}
 
+				if (input.selectionEnd === 0) {
+					event.preventDefault(); 
+					event.stopPropagation();
+					onNavigateToPreviousMessage?.();
+				}
 				return;
 			}
 
 			case 'ArrowDown': {
-				if (input.selectionEnd === input.value.length) {
+				if (event.altKey) {
 					event.preventDefault();
 					event.stopPropagation();
-
-					onNavigateToNextMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
-					}
+					input.setSelectionRange(input.value.length, input.value.length);
+					return;
 				}
+
+				if (input.selectionEnd === input.value.length) {
+					event.preventDefault();
+					event.stopPropagation(); 
+					onNavigateToNextMessage?.();
+				}
+				return;
 			}
 		}
 
