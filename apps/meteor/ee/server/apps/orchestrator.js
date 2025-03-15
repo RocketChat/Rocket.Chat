@@ -104,6 +104,10 @@ export class AppServerOrchestrator {
 	}
 
 	getLogStorage() {
+		if (!this._logStorage) {
+			throw new Error('Apps-Engine not yet fully initialized');
+		}
+
 		return this._logStorage;
 	}
 
@@ -165,6 +169,7 @@ export class AppServerOrchestrator {
 	}
 
 	async load() {
+		console.log('load called');
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
