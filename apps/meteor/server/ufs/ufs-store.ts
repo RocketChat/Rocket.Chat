@@ -7,7 +7,7 @@ import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type createServer from 'connect';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { OptionalId } from 'mongodb';
+import type { ClientSession, OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
 import { Filter } from './ufs-filter';
@@ -20,7 +20,7 @@ export type StoreOptions = {
 	onFinishUpload?: (file: IUpload) => Promise<void>;
 	onRead?: (fileId: string, file: IUpload, request: any, response: any) => Promise<boolean>;
 	onReadError?: (err: any, fileId: string, file: IUpload) => void;
-	onValidate?: (file: IUpload) => Promise<void>;
+	onValidate?: (file: IUpload, options?: { session?: ClientSession }) => Promise<void>;
 	onWriteError?: (err: any, fileId: string, file: IUpload) => void;
 	transformRead?: (
 		readStream: stream.Readable,
@@ -42,9 +42,14 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IUpload>) => Promise<string>;
+	public create: (file: OptionalId<IUpload>, options?: { session?: ClientSession }) => Promise<string>;
 
-	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IUpload) => void) => Promise<void>;
+	public write: (
+		rs: stream.Readable,
+		fileId: string,
+		callback: (err?: Error, file?: IUpload) => void,
+		options?: { session?: ClientSession },
+	) => Promise<void>;
 
 	constructor(options: StoreOptions) {
 		options = {
@@ -143,14 +148,14 @@ export class Store {
 			});
 		};
 
-		this.create = async (file) => {
+		this.create = async (file, options) => {
 			check(file, Object);
 			file.store = this.options.name; // assign store to file
-			return (await this.getCollection().insertOne(file)).insertedId;
+			return (await this.getCollection().insertOne(file, { session: options?.session })).insertedId;
 		};
 
-		this.write = async (rs, fileId, callback) => {
-			const file = await this.getCollection().findOne({ _id: fileId });
+		this.write = async (rs, fileId, callback, options) => {
+			const file = await this.getCollection().findOne({ _id: fileId }, { session: options?.session });
 			if (!file) {
 				return callback(new Error('File not found'));
 			}
@@ -207,6 +212,7 @@ export class Store {
 								url: file.url,
 							},
 						},
+						{ session: options?.session },
 					);
 
 					// Return file info
@@ -223,7 +229,7 @@ export class Store {
 		};
 	}
 
-	async removeById(fileId: string) {
+	async removeById(fileId: string, options?: { session?: ClientSession }) {
 		// Delete the physical file in the store
 		await this.delete(fileId);
 
@@ -237,10 +243,10 @@ export class Store {
 				});
 		});
 
-		await this.getCollection().removeById(fileId);
+		await this.getCollection().removeById(fileId, { session: options?.session });
 	}
 
-	async delete(_fileId: string): Promise<any> {
+	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {
 		throw new Error('delete is not implemented');
 	}
 
@@ -324,7 +330,7 @@ export class Store {
 		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
-	async onValidate(_file: IUpload) {
+	async onValidate(_file: IUpload, _options?: { session?: ClientSession }) {
 		//
 	}
 
@@ -355,9 +361,9 @@ export class Store {
 		}
 	}
 
-	async validate(file: IUpload) {
+	async validate(file: IUpload, options?: { session?: ClientSession }) {
 		if (typeof this.onValidate === 'function') {
-			await this.onValidate(file);
+			await this.onValidate(file, options);
 		}
 	}
 }

@@ -10,6 +10,7 @@ import type {
 	Filter,
 	FindOptions,
 	FindCursor,
+	ClientSession,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -91,8 +92,8 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async findOneByName(name: string): Promise<T | null> {
-		return this.findOne({ name });
+	async findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null> {
+		return this.findOne<T>({ name }, { session: options?.session });
 	}
 
 	async findOneByRoomId(rid: string): Promise<T | null> {
@@ -120,7 +121,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
-	async deleteFile(fileId: string): Promise<DeleteResult> {
-		return this.deleteOne({ _id: fileId });
+	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
+		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
 }
