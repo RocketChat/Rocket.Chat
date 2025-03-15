@@ -570,7 +570,7 @@ type POSTLivechatDepartmentProps = {
 		description?: string;
 		showOnRegistration: boolean;
 		showOnOfflineForm: boolean;
-		requestTagsBeforeClosingChat?: boolean;
+		requestTagBeforeClosingChat?: boolean;
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
 	};
@@ -600,7 +600,7 @@ const POSTLivechatDepartmentSchema = {
 				showOnOfflineForm: {
 					type: 'boolean',
 				},
-				requestTagsBeforeClosingChat: {
+				requestTagBeforeClosingChat: {
 					type: 'boolean',
 					nullable: true,
 				},
