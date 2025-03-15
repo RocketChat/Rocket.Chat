@@ -2,6 +2,7 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCannedResponses } from './hooks/useCannedResponses';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
@@ -55,6 +56,7 @@ const AppLayout = () => {
 	useCorsSSLConfig();
 	useOTRMessaging();
 	useUpdateVideoConfUser();
+	useCannedResponses();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
