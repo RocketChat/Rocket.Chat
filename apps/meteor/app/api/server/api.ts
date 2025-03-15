@@ -786,6 +786,7 @@ export class APIClass<
 						let result;
 
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						this.connection = connection;
 
 						try {
 							if (options.deprecation) {
