@@ -1,16 +1,16 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import { useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import { create } from 'zustand';
 
-import type { EditableSetting } from '../EditableSettingsContext';
+import type { EditableSetting, IEditableSettingsState } from '../EditableSettingsContext';
 import { EditableSettingsContext } from '../EditableSettingsContext';
 
 const defaultOmit: Array<ISetting['_id']> = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
 
-const performQuery = (
+const performSettingQuery = (
 	query:
 		| string
 		| {
@@ -29,76 +29,79 @@ const performQuery = (
 	}
 
 	const queries = [].concat(typeof query === 'string' ? JSON.parse(query) : query);
-	return queries.every((query) => settings.filter(createFilterFromQuery(query)).length > 0);
+	return queries.every((query) => settings.some(createFilterFromQuery(query)));
 };
 
 type EditableSettingsProviderProps = {
 	children?: ReactNode;
 };
 
+// TODO: this component can be replaced by RHF state management
 const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) => {
 	const persistedSettings = useSettings();
 
-	const [settings, updateSettings] = useState(() =>
-		persistedSettings
-			.filter((x) => !defaultOmit.includes(x._id))
-			.map(
-				(persisted): EditableSetting => ({
-					...persisted,
-					changed: false,
-					disabled: persisted.blocked || !performQuery(persisted.enableQuery, persistedSettings),
-					invisible: !performQuery(persisted.displayQuery, persistedSettings),
-				}),
-			),
-	);
-
-	useEffect(() => {
-		updateSettings((settings) =>
-			persistedSettings
+	const [useEditableSettingsStore] = useState(() =>
+		create<IEditableSettingsState>()((set) => ({
+			state: persistedSettings
 				.filter((x) => !defaultOmit.includes(x._id))
 				.map(
 					(persisted): EditableSetting => ({
-						...settings.find(({ _id }) => _id === persisted._id),
 						...persisted,
 						changed: false,
-						disabled: persisted.blocked || !performQuery(persisted.enableQuery, settings),
-						invisible: !performQuery(persisted.displayQuery, settings),
+						disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, persistedSettings),
+						invisible: !performSettingQuery(persisted.displayQuery, persistedSettings),
 					}),
 				),
-		);
-	}, [persistedSettings]);
+			initialState: persistedSettings,
+			sync: (newInitialState) => {
+				set(({ state }) => ({
+					state: newInitialState
+						.filter((x) => !defaultOmit.includes(x._id))
+						.map(
+							(persisted): EditableSetting => ({
+								...state.find(({ _id }) => _id === persisted._id),
+								...persisted,
+								changed: false,
+								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
+								invisible: !performSettingQuery(persisted.displayQuery, state),
+							}),
+						),
+				}));
+			},
+			mutate: (changes) => {
+				set(({ state, initialState }) => ({
+					state: initialState
+						.filter((x) => !defaultOmit.includes(x._id))
+						.map((persisted): EditableSetting => {
+							const current = state.find(({ _id }) => _id === persisted._id);
+							if (!current) throw new Error(`Setting ${persisted._id} not found`);
 
-	const dispatch = useEffectEvent((changes: Partial<EditableSetting>[]) => {
-		if (changes.length === 0) {
-			return;
-		}
+							const change = changes.find(({ _id }) => _id === current._id);
 
-		updateSettings((settings) =>
-			persistedSettings
-				.filter((x) => !defaultOmit.includes(x._id))
-				.map((persisted): EditableSetting => {
-					const current = settings.find(({ _id }) => _id === persisted._id);
-					if (!current) throw new Error(`Setting ${persisted._id} not found`);
+							if (!change) {
+								return current;
+							}
 
-					const change = changes.find(({ _id }) => _id === current._id);
+							return {
+								...current,
+								...change,
+								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
+								invisible: !performSettingQuery(persisted.displayQuery, state),
+							};
+						}),
+				}));
+			},
+		})),
+	);
 
-					if (!change) {
-						return current;
-					}
+	const sync = useEditableSettingsStore((state) => state.sync);
 
-					const partial = { ...current, ...change };
-
-					return {
-						...partial,
-						disabled: persisted.blocked || !performQuery(persisted.enableQuery, settings),
-						invisible: !performQuery(persisted.displayQuery, settings),
-					};
-				}),
-		);
-	});
+	useEffect(() => {
+		sync(persistedSettings);
+	}, [persistedSettings, sync]);
 
 	return (
-		<EditableSettingsContext.Provider value={useMemo(() => ({ settings, dispatch }), [settings, dispatch])}>
+		<EditableSettingsContext.Provider value={useMemo(() => ({ useEditableSettingsStore }), [useEditableSettingsStore])}>
 			{children}
 		</EditableSettingsContext.Provider>
 	);
