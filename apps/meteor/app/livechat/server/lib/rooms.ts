@@ -1,5 +1,14 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo, SelectedAgent, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import type {
+	ILivechatVisitor,
+	IMessage,
+	IOmnichannelRoomInfo,
+	SelectedAgent,
+	IOmnichannelRoomExtraData,
+	IOmnichannelRoom,
+} from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatContacts, Messages, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
@@ -90,6 +99,43 @@ export async function createRoom({
 			livechatLogger.debug(`Assigning ${visitor._id} to department ${department._id}`);
 			visitor.department = department._id;
 		}
+	}
+
+	const now = new Date();
+	const roomProps: Omit<IOmnichannelRoom, '_id' | '_updatedAt' | 'priorityWeight' | 'estimatedWaitingTimeQueue' | 'waitingResponse'> = {
+		v: {
+			_id: visitor._id,
+			username: visitor.username,
+			status: visitor.status,
+			name: visitor.name,
+			token: visitor.token,
+			activity: visitor.activity,
+			lastMessageTs: visitor.lastChat?.ts,
+			phone: visitor.phone?.[0]?.phoneNumber ?? undefined,
+		},
+		departmentId: visitor.department,
+		source: roomInfo.source,
+		t: RoomType.LIVE_CHAT,
+		usersCount: 0,
+		msgs: 0,
+		u: {
+			_id: visitor._id,
+			username: visitor.username,
+			name: visitor.name,
+		},
+		ts: now,
+		livechatData: visitor.livechatData,
+		customFields: extraData?.customFields,
+	};
+
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, roomProps);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
 	}
 
 	// delegate room creation to QueueManager

@@ -111,6 +111,12 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.room.v).to.have.property('token', visitor.token);
 			expect(body.room.source.type).to.be.equal('api');
 		});
+		it('should prevent create a room for visitor', async () => {
+			const visitor = await createVisitor(undefined, 'visitor prevent from app');
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body).to.have.property('success', false);
+		});
 		it('should return an existing open room when visitor has one available', async () => {
 			const visitor = await createVisitor();
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
