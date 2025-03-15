@@ -34,10 +34,11 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 		};
 
 		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.LEAVE_WARNING);
+		const roomName = room.fname || room.name;
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, room.fname || room.name)}
+				text={t(warnText as TranslationKey, roomName)}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
