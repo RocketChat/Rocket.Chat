@@ -30,7 +30,14 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, itemsPerPage, current);
+
+	const { permissions, total, roleList } = usePermissionsAndRoles({
+		type,
+		filter,
+		limit: itemsPerPage,
+		skip: current,
+		setCurrent: onSetCurrent,
+	});
 
 	const handlePermissionsTab = useEffectEvent(() => {
 		if (type === 'permissions') {
