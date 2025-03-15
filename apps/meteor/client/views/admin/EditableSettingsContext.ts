@@ -1,5 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext } from 'react';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 
 export type EditableSetting = ISetting & {
 	disabled: boolean;
@@ -33,28 +35,38 @@ type EditableSettingsContextQuery =
 			changed: true;
 	  };
 
+export interface IEditableSettingsState {
+	state: EditableSetting[];
+	initialState: ISetting[];
+	sync(newInitialState: ISetting[]): void;
+	mutate(changes: Partial<EditableSetting>[]): void;
+}
+
 export type EditableSettingsContextValue = {
-	settings: EditableSetting[];
-	dispatch(changes: Partial<EditableSetting>[]): void;
+	useEditableSettingsStore: UseBoundStore<StoreApi<IEditableSettingsState>>;
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
-	settings: [],
-	dispatch: () => undefined,
+	useEditableSettingsStore: create<IEditableSettingsState>()(() => ({
+		state: [],
+		initialState: [],
+		sync: () => undefined,
+		mutate: () => undefined,
+	})),
 });
 
 export const useEditableSetting = (_id: ISetting['_id']): EditableSetting | undefined => {
-	const { settings } = useContext(EditableSettingsContext);
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
-	return useMemo(() => settings.find((x) => x._id === _id), [settings, _id]);
+	return useEditableSettingsStore((state) => state.state.find((x) => x._id === _id));
 };
 
 export const useEditableSettings = (query: EditableSettingsContextQuery): EditableSetting[] => {
-	const { settings } = useContext(EditableSettingsContext);
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
-	return useMemo(
-		() =>
-			settings
+	return useEditableSettingsStore(
+		useShallow((state) =>
+			state.state
 				.filter((x) => {
 					if ('changed' in query) {
 						return x.group === query.group && x.changed;
@@ -71,45 +83,45 @@ export const useEditableSettings = (query: EditableSettingsContextQuery): Editab
 					return x.group === query.group;
 				})
 				.sort(compareSettings),
-		[settings, query],
+		),
 	);
 };
 
 export const useEditableSettingsGroupSections = (_id: ISetting['_id'], tab?: ISetting['_id']): string[] => {
-	const { settings } = useContext(EditableSettingsContext);
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
-	return useMemo(
-		() =>
+	return useEditableSettingsStore(
+		useShallow((state) =>
 			Array.from(
 				new Set(
-					settings
+					state.state
 						.filter((x) => x.group === _id && (tab !== undefined ? x.tab === tab : !x.tab))
 						.sort(compareSettings)
 						.map(({ section }) => section || ''),
 				),
 			),
-		[_id, settings, tab],
+		),
 	);
 };
 
 export const useEditableSettingsGroupTabs = (_id: ISetting['_id']): ISetting['_id'][] => {
-	const { settings } = useContext(EditableSettingsContext);
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
-	return useMemo(
-		() =>
+	return useEditableSettingsStore(
+		useShallow((state) =>
 			Array.from(
 				new Set(
-					settings
+					state.state
 						.filter((x) => x.group === _id)
 						.sort(compareSettings)
 						.map(({ tab }) => tab || ''),
 				),
 			),
-		[settings, _id],
+		),
 	);
 };
 
 export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSetting>[]) => void) => {
-	const { dispatch } = useContext(EditableSettingsContext);
-	return dispatch;
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
+	return useEditableSettingsStore((state) => state.mutate);
 };
