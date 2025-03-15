@@ -20,7 +20,7 @@ export class LDAPUserConverter extends UserConverter {
 		this.mergeExistingUsers = settings.get<boolean>('LDAP_Merge_Existing_Users') ?? true;
 	}
 
-	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
+	async findExistingUser(data: IImportUser): Promise<IUser | undefined | null> {
 		if (data.services?.ldap?.id) {
 			const importedUser = await Users.findOneByLDAPId(data.services.ldap.id, data.services.ldap.idAttribute);
 			if (importedUser) {
@@ -41,7 +41,7 @@ export class LDAPUserConverter extends UserConverter {
 		}
 
 		if (data.username) {
-			return Users.findOneWithoutLDAPByUsernameIgnoringCase(data.username);
+			return Users.findOneWithoutLDAPByUsernameIgnoringCase<IUser>(data.username);
 		}
 	}
 

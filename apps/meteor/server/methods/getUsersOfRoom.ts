@@ -1,4 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -54,7 +55,7 @@ Meteor.methods<ServerMethods>({
 
 		const { cursor } = findUsersOfRoom({
 			rid,
-			status: !showAll ? { $ne: 'offline' } : undefined,
+			status: !showAll ? { $ne: UserStatus.OFFLINE } : undefined,
 			limit,
 			skip,
 			filter,
