@@ -1,9 +1,12 @@
 import type { UsersInfoParamsGet } from '@rocket.chat/rest-typings';
+import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
+export type UserInfoQueryData = Awaited<ReturnType<EndpointFunction<'GET', '/v1/users.info'>>>;
 type UserInfoQueryOptions = {
 	enabled?: boolean;
+	select?: (data: UserInfoQueryData) => UserInfoQueryData;
 	placeholderData?: <T>(previousData: T | undefined) => T | undefined;
 };
 
