@@ -1,5 +1,5 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button, TextAreaInput } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
@@ -7,7 +7,6 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
@@ -24,20 +23,22 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { copy, hasCopied } = useClipboard(permalink);
 	const usersAndRoomsField = useId();
+	const messageField = useId();
 
 	const { control, watch } = useForm({
 		defaultValues: {
 			rooms: [],
+			message: '',
 		},
 	});
 
 	const rooms = watch('rooms');
+	const messageText = watch('message');
 	const sendMessage = useEndpoint('POST', '/v1/chat.postMessage');
 
 	const sendMessageMutation = useMutation({
 		mutationFn: async () => {
-			const optionalMessage = '';
-			const curMsg = await prependReplies(optionalMessage, [message]);
+			const curMsg = await prependReplies(messageText, [message]);
 			const sendPayload = {
 				roomId: rooms,
 				text: curMsg,
@@ -104,6 +105,25 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 						{!rooms.length && (
 							<FieldHint id={`${usersAndRoomsField}-hint`}>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>
 						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={messageField}>{t('Add_a_Message')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='message'
+								control={control}
+								render={({ field: { name, value, onChange } }): ReactElement => (
+									<TextAreaInput
+										id={messageField}
+										name={name}
+										value={value}
+										onChange={onChange}
+										placeholder={t('Add_a_Message')}
+										rows={3}
+									/>
+								)}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
 						<QuoteAttachment attachment={attachment} />
