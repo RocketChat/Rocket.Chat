@@ -87,7 +87,7 @@ const RoomBody = (): ReactElement => {
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const {
-		wrapperRef: unreadBarWrapperRef,
+		wrapperRef,
 		innerRef: unreadBarInnerRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
@@ -133,8 +133,6 @@ const RoomBody = (): ReactElement => {
 		selectAndScrollRef,
 		messageListRef,
 	);
-
-	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -208,7 +206,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
 								{uploads.length > 0 && (
