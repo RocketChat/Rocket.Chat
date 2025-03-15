@@ -1,4 +1,4 @@
-import { parseArgs as $parseArgs } from "https://jsr.io/@std/cli/1.0.9/parse_args.ts";
+import { parseArgs as $parseArgs } from "@std/cli/parse-args";
 
 export type ParsedArgs = {
     subprocess: string;
