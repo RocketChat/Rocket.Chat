@@ -443,7 +443,8 @@
 		"xml-encryption": "~3.0.2",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1",
-		"zod": "^3.24.1"
+		"zod": "^3.24.1",
+		"zustand": "~5.0.3"
 	},
 	"meteor": {
 		"mainModule": {

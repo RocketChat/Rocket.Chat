@@ -1,19 +1,20 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { asReactiveSource } from '../../../../client/lib/tracker';
 import { Messages } from '../../../models/client';
 
-export const usersFromRoomMessages = new Mongo.Collection<{
+type UserFromRoomMessage = {
 	_id: string;
 	username: string;
 	name: string | undefined;
 	ts: Date;
 	suggestion?: boolean;
-}>(null);
+};
+
+export const usersFromRoomMessages = new Map<UserFromRoomMessage['_id'], UserFromRoomMessage>();
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -27,7 +28,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		usersFromRoomMessages.remove({});
+		usersFromRoomMessages.clear();
 
 		const uniqueMessageUsersControl: Record<string, boolean> = {};
 
@@ -53,13 +54,13 @@ Meteor.startup(() => {
 				uniqueMessageUsersControl[username] = true;
 				return notMapped;
 			})
-			.forEach(({ u: { username, name, _id }, ts }) =>
-				usersFromRoomMessages.upsert(_id, {
+			.forEach(({ u: { username, name, _id }, ts }) => {
+				usersFromRoomMessages.set(_id, {
 					_id,
 					username,
 					name,
 					ts,
-				}),
-			);
+				});
+			});
 	});
 });
