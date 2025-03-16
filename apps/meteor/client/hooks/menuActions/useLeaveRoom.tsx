@@ -1,8 +1,7 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch,useTranslation  } from '@rocket.chat/ui-contexts';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
@@ -26,7 +25,7 @@ type LeaveRoomProps = {
 
 // TODO: this menu action should consider team leaving
 export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps) => {
-	const { t } = useTranslation();
+	const t  = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
@@ -49,12 +48,10 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 		};
 
 		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
-		const translatedText = t(warnText as TranslationKey);
-		const finalText = translatedText.replace('%s', name);
 
 		setModal(
 			<WarningModal
-				text={t(finalText)}
+				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
