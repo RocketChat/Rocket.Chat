@@ -84,14 +84,22 @@ const Thread = ({ tmid }: ThreadProps) => {
 					rcx-thread-view
 					className={
 						canExpand && expanded
-							? css`
-									max-width: 855px !important;
-									@media (min-width: 780px) and (max-width: 1135px) {
+							 ? css`
+								  max-width: 855px !important;
+								  transform: scale(1);  
+								  opacity: 1;
+								  transition: max-width 0.3s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+								  @media (min-width: 780px) and (max-width: 1135px) {
 										max-width: calc(100% - var(--sidebar-width)) !important;
-									}
+								  }
 								`
-							: undefined
-					}
+							 : css`
+								  max-width: 400px;  /* Collapsed state */
+								  transform: scale(0.98);  /* Slight shrink effect */
+								  opacity: 0.9;
+								  transition: max-width 0.3s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+								`
+				  }				  
 					position={expanded ? 'fixed' : 'absolute'}
 					display='flex'
 					flexDirection='column'
