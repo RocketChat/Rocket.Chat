@@ -5,7 +5,7 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { memo, useId } from 'react';
+import { memo, useId, useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
@@ -57,7 +57,6 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	});
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
-
 	const displayName = useUserDisplayName(message.u);
 
 	const attachment = {
@@ -76,11 +75,30 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 		}
 	};
 
+	// Animation State
+	const [isVisible, setIsVisible] = useState(false);
+
+	useEffect(() => {
+		// Smoothly show modal
+		setTimeout(() => setIsVisible(true), 10);
+	}, []);
+
+	const handleClose = () => {
+		setIsVisible(false);
+		setTimeout(onClose, 200); // Close after transition
+	};
+
 	return (
-		<Modal>
+		<Modal
+			style={{
+				opacity: isVisible ? 1 : 0,
+				transform: isVisible ? 'scale(1)' : 'scale(0.95)',
+				transition: 'opacity 200ms ease-out, transform 200ms ease-out',
+			}}
+		>
 			<Modal.Header>
 				<Modal.Title>{t('Forward_message')}</Modal.Title>
-				<Modal.Close onClick={onClose} title={t('Close')} />
+				<Modal.Close onClick={handleClose} title={t('Close')} />
 			</Modal.Header>
 			<Modal.Content>
 				<FieldGroup>
@@ -102,7 +120,9 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 							/>
 						</FieldRow>
 						{!rooms.length && (
-							<FieldHint id={`${usersAndRoomsField}-hint`}>{t('Select_atleast_one_channel_to_forward_the_messsage_to')}</FieldHint>
+							<FieldHint id={`${usersAndRoomsField}-hint`}>
+								{t('Select_atleast_one_channel_to_forward_the_messsage_to')}
+							</FieldHint>
 						)}
 					</Field>
 					<Field>
