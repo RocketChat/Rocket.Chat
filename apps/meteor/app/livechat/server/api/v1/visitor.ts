@@ -1,4 +1,4 @@
-import type { ILivechatCustomField, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -7,6 +7,8 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { saveRoomInfo } from '../../lib/rooms';
+import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -69,7 +71,7 @@ API.v1.addRoute(
 				rooms.map(
 					(room: IRoom) =>
 						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
+						saveRoomInfo(room, {
 							_id: visitor._id,
 							name: visitor.name,
 							phone: visitor.phone?.[0]?.phoneNumber,
@@ -79,28 +81,32 @@ API.v1.addRoute(
 			);
 
 			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-				const keys = customFields.map((field) => field.key);
 				const errors: string[] = [];
+				const keys = customFields.map((field) => field.key);
 
+				const livechatCustomFields = await LivechatCustomField.findByScope(
+					'visitor',
+					{ projection: { _id: 1, required: 1 } },
+					false,
+				).toArray();
+				validateRequiredCustomFields(keys, livechatCustomFields);
+
+				const matchingCustomFields = livechatCustomFields.filter((field) => keys.includes(field._id));
 				const processedKeys = await Promise.all(
-					await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
-						projection: { _id: 1 },
-					})
-						.map(async (field) => {
-							const customField = customFields.find((f) => f.key === field._id);
-							if (!customField) {
-								return;
-							}
+					matchingCustomFields.map(async (field) => {
+						const customField = customFields.find((f) => f.key === field._id);
+						if (!customField) {
+							return;
+						}
 
-							const { key, value, overwrite } = customField;
-							// TODO: Change this to Bulk update
-							if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-								errors.push(key);
-							}
+						const { key, value, overwrite } = customField;
+						// TODO: Change this to Bulk update
+						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+							errors.push(key);
+						}
 
-							return key;
-						})
-						.toArray(),
+						return key;
+					}),
 				);
 
 				if (processedKeys.length !== keys.length) {

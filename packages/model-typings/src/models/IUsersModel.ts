@@ -19,6 +19,7 @@ import type {
 	DeleteResult,
 	WithId,
 	UpdateOptions,
+	ClientSession,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -98,10 +99,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getNextLeastBusyAgent(
 		department: any,
 		ignoreAgentId: any,
+		isEnabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[]; count: number }>;
 	getLastAvailableAgentRouted(
 		department: any,
 		ignoreAgentId: any,
+		isEnabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username: string; lastRoutingTime: Date; departments: any[] }>;
 
 	setLastRoutingTime(userId: any): Promise<number>;
@@ -134,7 +137,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	getUserLanguages(): any;
 
-	updateStatusText(_id: any, statusText: any): any;
+	updateStatusText(_id: any, statusText: any, options?: { session?: ClientSession }): any;
 
 	updateStatusByAppId(appId: any, status: any): any;
 
@@ -263,9 +266,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IPersonalAccessToken | null>;
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
-	checkOnlineAgents(agentId?: string): Promise<boolean>;
-	findOnlineAgents(agentId?: string): FindCursor<ILivechatAgent>;
-	countOnlineAgents(agentId: string): Promise<number>;
+	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): Promise<boolean>;
+	findOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): FindCursor<ILivechatAgent>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
 	findOneOnlineAgentById(
 		agentId: string,
@@ -274,7 +276,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
 	countAgents(): Promise<number>;
-	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
+	getNextAgent(
+		ignoreAgentId?: string,
+		extraQuery?: Filter<IUser>,
+		enabledWhenAgentIdle?: boolean,
+	): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
@@ -353,13 +359,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
 	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
 	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
-	setUsername(userId: string, username: string): Promise<UpdateResult>;
-	setEmail(userId: string, email: string, verified?: boolean): Promise<UpdateResult>;
+	setUsername(userId: string, username: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
+	setEmail(userId: string, email: string, verified?: boolean, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
-	setName(userId: string, name: string): Promise<UpdateResult>;
-	unsetName(userId: string): Promise<UpdateResult>;
+	setName(userId: string, name: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
+	unsetName(userId: string, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	setCustomFields(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
-	setAvatarData(userId: string, origin: string, etag?: Date | null | string): Promise<UpdateResult>;
+	setAvatarData(userId: string, origin: string, etag?: Date | null | string, options?: { session?: ClientSession }): Promise<UpdateResult>;
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
 	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;

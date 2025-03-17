@@ -3,7 +3,9 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { wrapExceptions } from '@rocket.chat/tools';
+import type { ValidateFunction } from 'ajv';
 import express from 'express';
 import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
@@ -13,7 +15,6 @@ import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
-import semver from 'semver';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
@@ -29,6 +30,8 @@ import type {
 	PartialThis,
 	SuccessResult,
 	TypedThis,
+	TypedAction,
+	TypedOptions,
 	UnauthorizedResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
@@ -37,15 +40,16 @@ import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
 import { tracerSpanMiddleware } from './middlewares/tracer';
+import type { Route } from './router';
 import { Router } from './router';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
+import { shouldBreakInVersion } from '../../../server/lib/shouldBreakInVersion';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
@@ -53,7 +57,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
+const applyBreakingChanges = shouldBreakInVersion('8.0.0');
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;
@@ -141,7 +145,14 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-export class APIClass<TBasePath extends string = ''> {
+export class APIClass<
+	TBasePath extends string = '',
+	TOperations extends {
+		[x: string]: unknown;
+	} = {},
+> {
+	public typedRoutes: Record<string, Record<string, Route>> = {};
+
 	protected apiPath?: string;
 
 	readonly version?: string;
@@ -496,28 +507,219 @@ export class APIClass<TBasePath extends string = ''> {
 		return routeActions.map((action) => this.getFullRouteName(route, action));
 	}
 
+	private registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
+		method: Method,
+		subpath: TSubPathPattern,
+		options: TOptions,
+	): void {
+		const { authRequired, validateParams } = options;
+
+		const opt = {
+			authRequired,
+			...(validateParams &&
+				method.toLowerCase() === 'get' &&
+				('GET' in validateParams
+					? { query: validateParams.GET }
+					: {
+							query: validateParams as ValidateFunction<any>,
+						})),
+
+			...(validateParams &&
+				method.toLowerCase() === 'post' &&
+				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
+
+			...(validateParams &&
+				method.toLowerCase() === 'put' &&
+				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
+			...(validateParams &&
+				method.toLowerCase() === 'delete' &&
+				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
+
+			tags: ['Missing Documentation'],
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean' },
+						error: { type: 'string' },
+					},
+					required: ['success'],
+				}),
+			},
+		};
+
+		this.registerTypedRoutes(method, subpath, opt);
+	}
+
+	private registerTypedRoutes<
+		TSubPathPattern extends string,
+		TOptions extends TypedOptions,
+		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
+	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
+		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
+		this.typedRoutes = this.typedRoutes || {};
+		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		const { query, authRequired, response, body, tags, ...rest } = options;
+		this.typedRoutes[path][method.toLowerCase()] = {
+			...(response && {
+				responses: Object.fromEntries(
+					Object.entries(response).map(([status, schema]) => [
+						status,
+						{
+							description: '',
+							content: {
+								'application/json': 'schema' in schema ? { schema: schema.schema } : schema,
+							},
+						},
+					]),
+				),
+			}),
+			...(query && {
+				parameters: [
+					{
+						schema: query.schema,
+						in: 'query',
+						name: 'query',
+						required: true,
+					},
+				],
+			}),
+			...(body && {
+				requestBody: {
+					required: true,
+					content: {
+						'application/json': { schema: body.schema },
+					},
+				},
+			}),
+			...(authRequired && {
+				...rest,
+				security: [
+					{
+						userId: [],
+						authToken: [],
+					},
+				],
+			}),
+			tags,
+		};
+	}
+
+	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		method: Method,
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: Method;
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		this.addRoute([subpath], { ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		this.registerTypedRoutes(method, subpath, options);
+		return this;
+	}
+
+	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'GET';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('GET', subpath, options, action);
+	}
+
+	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'POST';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('POST', subpath, options, action);
+	}
+
+	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'PUT';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('PUT', subpath, options, action);
+	}
+
+	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
+		subpath: TSubPathPattern,
+		options: TOptions,
+		action: TypedAction<TOptions>,
+	): APIClass<
+		TBasePath,
+		| TOperations
+		| ({
+				method: 'DELETE';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
+	> {
+		return this.method('DELETE', subpath, options, action);
+	}
+
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string>(
 		subpath: TSubPathPattern,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>>(
 		subpaths: TSubPathPattern[],
 		operations: Operations<TPathPattern>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TOptions extends Options>(
 		subpath: TSubPathPattern,
 		options: TOptions,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>, TOptions extends Options>(
 		subpaths: TSubPathPattern[],
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	public addRoute<
 		TSubPathPattern extends string,
 		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
@@ -598,6 +800,7 @@ export class APIClass<TBasePath extends string = ''> {
 						let result;
 
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						this.connection = connection;
 
 						try {
 							if (options.deprecation) {
@@ -699,13 +902,18 @@ export class APIClass<TBasePath extends string = ''> {
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
-					{} as any,
+					_options as TypedOptions,
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({
 					path: route,
 					options: _options,
-					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, string>,
+					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as unknown as Record<string, string>,
+				});
+
+				this.registerTypedRoutesLegacy(method as Method, route, {
+					...options,
+					...operations[method as keyof Operations<TPathPattern, TOptions>],
 				});
 			});
 		});
@@ -938,17 +1146,13 @@ export class APIClass<TBasePath extends string = ''> {
 	}
 }
 
-const createApi = function _createApi(options: { version?: string; apiPath?: string } = {}): APIClass {
-	return new APIClass(
-		Object.assign(
-			{
-				apiPath: 'api/',
-				useDefaultAuth: true,
-				prettyJson: process.env.NODE_ENV === 'development',
-			},
-			options,
-		) as IAPIProperties,
-	);
+const createApi = function _createApi(options: { version?: string; useDefaultAuth?: true } = {}): APIClass {
+	return new APIClass({
+		apiPath: '',
+		useDefaultAuth: false,
+		prettyJson: process.env.NODE_ENV === 'development',
+		...options,
+	});
 };
 
 export const API: {
@@ -982,12 +1186,10 @@ export const API: {
 	ApiClass: APIClass,
 	api: new Router('/api'),
 	v1: createApi({
-		apiPath: '',
 		version: 'v1',
+		useDefaultAuth: true,
 	}),
-	default: createApi({
-		apiPath: '',
-	}),
+	default: createApi({}),
 };
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
@@ -1014,7 +1216,7 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 Meteor.startup(() => {
-	(WebApp.connectHandlers as ReturnType<typeof express>).use(
+	(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
 			.use((_req, res, next) => {
 				res.removeHeader('X-Powered-By');
@@ -1029,7 +1231,7 @@ Meteor.startup(() => {
 	);
 });
 
-(WebApp.connectHandlers as ReturnType<typeof express>)
+(WebApp.connectHandlers as unknown as ReturnType<typeof express>)
 	.use(
 		express.json({
 			limit: '50mb',

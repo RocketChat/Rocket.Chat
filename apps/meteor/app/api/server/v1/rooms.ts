@@ -12,6 +12,8 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
+	isRoomsChangeArchivationStateProps,
+	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -21,6 +23,7 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -30,7 +33,9 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -741,16 +746,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.changeArchivationState',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
 	{
 		async post() {
 			const { rid, action } = this.bodyParams;
 
 			let result;
 			if (action === 'archive') {
-				result = await Meteor.callAsync('archiveRoom', rid);
+				result = await executeArchiveRoom(this.userId, rid);
 			} else {
-				result = await Meteor.callAsync('unarchiveRoom', rid);
+				result = await executeUnarchiveRoom(this.userId, rid);
 			}
 
 			return API.v1.success({ result });
@@ -957,6 +962,34 @@ API.v1.addRoute(
 			const { roomId } = this.bodyParams;
 
 			await openRoom(this.userId, roomId);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.hide',
+	{ authRequired: true, validateParams: isRoomsHideProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			const modCount = await hideRoomMethod(this.userId, roomId);
+
+			if (!modCount) {
+				return API.v1.failure('error-room-already-hidden');
+			}
 
 			return API.v1.success();
 		},

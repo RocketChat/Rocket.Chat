@@ -15,12 +15,14 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -277,8 +279,9 @@ API.v1.addRoute(
 
 			const objectParams = {
 				rid: room._id,
+				fromUserId: this.userId,
 				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest && new Date(oldest),
+				oldest: oldest ? new Date(oldest) : undefined,
 				inclusive: inclusive === 'true',
 				offset,
 				count,
@@ -286,7 +289,7 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			};
 
-			const result = await Meteor.callAsync('getChannelHistory', objectParams);
+			const result = await getChannelHistory(objectParams);
 
 			if (!result) {
 				return API.v1.forbidden();
@@ -400,7 +403,7 @@ API.v1.addRoute(
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 			};
-			const sortObj = { ts: sort?.ts ?? -1 };
+			const sortObj = sort || { ts: -1 };
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sortObj,
@@ -553,7 +556,7 @@ API.v1.addRoute(
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
 
 			if (!subscription?.open) {
-				await Meteor.callAsync('openRoom', room._id);
+				await openRoom(this.userId, room._id);
 			}
 
 			return API.v1.success();
