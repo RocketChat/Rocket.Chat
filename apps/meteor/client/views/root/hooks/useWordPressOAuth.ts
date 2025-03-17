@@ -86,9 +86,6 @@ export const useWordPressOAuth = (): void => {
 			scope,
 		);
 
-		console.log('WordPress serverType', serverType);
-		console.log('WordPress config', config);
-
 		WordPress.configure(config);
 	}, [authorizePath, identityPath, identityTokenSentVia, scope, serverType, tokenPath, wordpressURL]);
 };
