@@ -66,7 +66,7 @@ export class LocalStore extends Store {
 			return path + (file ? `/${file}` : '');
 		};
 
-		this.delete = async (fileId) => {
+		this.delete = async (fileId, options) => {
 			const path = await this.getFilePath(fileId);
 
 			try {
@@ -79,7 +79,7 @@ export class LocalStore extends Store {
 			}
 
 			await unlink(path);
-			await this.removeById(fileId);
+			await this.removeById(fileId, { session: options?.session });
 		};
 
 		this.getReadStream = async (fileId: string, file: IUpload, options?: { start?: number; end?: number }) => {
