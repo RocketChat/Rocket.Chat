@@ -362,7 +362,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<Controller
 											name='unit'
 											control={control}
-											render={({ field: { value, onChange } }) => <AutoCompleteUnit haveNone value={value} onChange={onChange} />}
+											render={({ field: { value, onChange } }) => (
+												<AutoCompleteUnit disabled={!!id} haveNone value={value} onChange={onChange} />
+											)}
 										/>
 									</FieldRow>
 								</Field>

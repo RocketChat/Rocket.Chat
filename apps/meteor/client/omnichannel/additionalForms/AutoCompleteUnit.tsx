@@ -8,6 +8,7 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../lib/asyncState';
 
 type AutoCompleteUnitProps = {
+	disabled?: boolean;
 	value: string | undefined;
 	error?: string;
 	placeholder?: string;
@@ -15,7 +16,7 @@ type AutoCompleteUnitProps = {
 	onChange: (value: string) => void;
 };
 
-const AutoCompleteUnit = ({ value, error, placeholder, haveNone, onChange }: AutoCompleteUnitProps) => {
+const AutoCompleteUnit = ({ value, disabled = false, error, placeholder, haveNone, onChange }: AutoCompleteUnitProps) => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
 
@@ -33,6 +34,7 @@ const AutoCompleteUnit = ({ value, error, placeholder, haveNone, onChange }: Aut
 			filter={unitsFilter}
 			flexGrow={0}
 			flexShrink={0}
+			disabled={disabled}
 			onChange={onChange}
 			options={unitsList}
 			placeholder={placeholder || t('Select_an_option')}
