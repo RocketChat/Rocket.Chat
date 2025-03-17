@@ -2,7 +2,8 @@ import type { IAuditServerUserActor, IServerEvents, ExtractDataToParams, IUser }
 import { ServerEvents } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
-const keysToObfuscate = ['authorizedClients', 'e2e', 'inviteToken', 'oauth'];
+const userKeysToObfuscate = ['authorizedClients', 'e2e', 'inviteToken', 'oauth'];
+const nestableKeysToObfuscate = ['services', 'password', 'bcrypt']; // ex: services.password.bcrypt
 
 const obfuscateServices = (services: Record<string, any>): Record<string, any> => {
 	return Object.fromEntries(
@@ -34,17 +35,27 @@ export class UserChangedAuditStore {
 		this.updateFilter = Object.fromEntries(
 			Object.entries(updateFilter).map(([key, value]) => {
 				const obfuscatedValue = Object.entries(value).reduce((acc, [k, v]) => {
-					if (keysToObfuscate.includes(k)) {
+					if (userKeysToObfuscate.includes(k)) {
 						return {
 							...acc,
 							[k]: '****',
 						};
 					}
 
+					// I'm not sure if this is necessary anymore
+					// usually nested properties are set using dot notation
+					// ex: services.password.bcrypt
 					if (k === 'services') {
 						return {
 							...acc,
 							[k]: obfuscateServices(v as Record<string, any>),
+						};
+					}
+
+					if (nestableKeysToObfuscate.some((key) => k.includes(key))) {
+						return {
+							...acc,
+							[k]: '****',
 						};
 					}
 
@@ -61,7 +72,8 @@ export class UserChangedAuditStore {
 			return {};
 		}
 
-		const updateFilterKeys = Object.values(updateFilter).reduce((acc, current) => {
+		// extract keys from updateFilter (keys are nested in $set, $unset, $inc, etc)
+		const updateFilterKeys: string[] = Object.values(updateFilter).reduce((acc, current) => {
 			const keys = Object.keys(current);
 			if (keys.length === 0) {
 				return acc;
@@ -70,11 +82,11 @@ export class UserChangedAuditStore {
 		}, []);
 
 		return Object.entries(originalUser).reduce((acc, [key, value]) => {
-			if (!updateFilterKeys.includes(key)) {
+			if (!updateFilterKeys.some((k) => k.includes(key))) {
 				return acc;
 			}
 
-			if (keysToObfuscate.includes(key)) {
+			if (userKeysToObfuscate.includes(key)) {
 				return {
 					...acc,
 					[key]: '****',
@@ -82,18 +94,30 @@ export class UserChangedAuditStore {
 			}
 
 			if (key === 'services') {
+				const changedNestedServices = Object.keys(updateFilter.$set || {})
+					.filter((k) => k.includes(key) && k.includes('.'))
+					.map((serviceKey) => {
+						// service key can be nested with dot notation
+						// ex: services.password.bcrypt
+						const serviceKeyParts = serviceKey.split('.');
+						return [serviceKeyParts[1], value[serviceKey as keyof typeof value]];
+					})
+					.filter(Boolean);
+
 				const changedServices = Object.keys(updateFilter.$set?.[key] || {}).map((serviceKey) => [
 					serviceKey,
 					value[serviceKey as keyof typeof value],
 				]);
 
-				if (!changedServices.length) {
+				const allServices = [...changedNestedServices, ...changedServices];
+
+				if (!allServices.length) {
 					return acc;
 				}
 
 				return {
 					...acc,
-					[key]: obfuscateServices(Object.fromEntries(changedServices) as Record<string, any>),
+					[key]: obfuscateServices(Object.fromEntries(allServices) as Record<string, any>),
 				};
 			}
 

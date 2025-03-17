@@ -245,4 +245,27 @@ describe('userChanged audit module', () => {
 			},
 		]);
 	});
+	it('should obfuscate nested services', async () => {
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField(), ...createObfuscatedFields(false), active: false });
+
+		const store = new UserChangedAuditStore(actor);
+
+		updater.set('services.password.bcrypt', faker.string.uuid());
+		updater.set('services.resume.loginTokens', faker.string.uuid());
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
+
+		expect(event).toEqual([
+			'user.changed',
+			{
+				user: { _id: user._id, username: user.username },
+				user_data: { services: { password: '****', resume: '****' } },
+				operation: { $set: { 'services.password.bcrypt': '****', 'services.resume.loginTokens': '****' } },
+			},
+			{ ...actor, type: 'user' },
+		]);
+	});
 });
