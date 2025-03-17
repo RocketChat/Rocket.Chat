@@ -35,6 +35,5 @@
 		"tmid",
 		"tshow"
 	],
-	"deno.enable": true,
-	"deno.enablePaths": ["./packages/apps-engine"]
+	"deno.enablePaths": ["./packages/apps-engine/deno-runtime/deno.jsonc"],
 }
