@@ -150,7 +150,8 @@ export class OmnichannelDepartments {
 	}
 
 	get inputUnit(): Locator {
-		return this.page.locator('[data-qa="autocomplete-unit"]');
+		// TODO: Improve PaginatedSelectFiltered to allow for more accessible locators
+		return this.page.locator('[data-qa="autocomplete-unit"] input');
 	}
 
 	btnTag(tagName: string) {

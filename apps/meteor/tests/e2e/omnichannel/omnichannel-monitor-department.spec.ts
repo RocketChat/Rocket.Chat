@@ -114,7 +114,17 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 	});
 
-	test('OC - Monitor Role - Edit department business unit', async () => {
+	test('OC - Monitor Role - Not allow editing department business unit', async () => {
+		await test.step('expect not to be able to edit unit', async () => {
+			await poOmnichannelDepartments.search(newDepartmentName);
+			await poOmnichannelDepartments.selectedDepartmentMenu(newDepartmentName).click();
+			await poOmnichannelDepartments.menuEditOption.click();
+			await expect(poOmnichannelDepartments.inputUnit).toBeDisabled();
+		});
+	});
+
+	// TODO: We are going to prevent editing busines unit for now
+	test.skip('OC - Monitor Role - Edit department business unit', async () => {
 		const [departmentA] = departments.map((dep) => dep.data);
 		const [, , unitC] = units.map((unit) => unit.data);
 
@@ -133,7 +143,7 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 	});
 
-	test('OC - Monitor Role - Edit department and remove business unit', async () => {
+	test.skip('OC - Monitor Role - Edit department and remove business unit', async () => {
 		const [departmentA] = departments.map((dep) => dep.data);
 
 		await test.step('expect to edit unit', async () => {
