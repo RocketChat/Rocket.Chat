@@ -1065,19 +1065,13 @@ export class AppListenerManager {
 
     // Livechat
     private async executePreLivechatRoomCreatePrevent(data: ILivechatRoom): Promise<boolean> {
-        let prevented = false;
-
         for (const appId of this.listeners.get(AppInterface.IPreLivechatRoomCreatePrevent)) {
             const app = this.manager.getOneById(appId);
-
-            prevented = (await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data)) as boolean;
-
-            if (prevented) {
-                return prevented;
+            if (await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data)) {
+                return true;
             }
         }
-
-        return prevented;
+        return false;
     }
 
     private async executePostLivechatRoomStarted(data: ILivechatRoom): Promise<void> {
