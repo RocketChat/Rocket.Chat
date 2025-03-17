@@ -476,11 +476,9 @@ export class TestData {
     }
 
     public static getMockApp(id: string, name: string): ProxiedApp {
-        return new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN, info: { id, name } } as IAppStorageItem, new SillyEmitter() as DenoRuntimeSubprocessController);
+        return new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN, info: { id, name } } as IAppStorageItem, new EventEmitter() as DenoRuntimeSubprocessController);
     }
 }
-
-export class SillyEmitter extends EventEmitter {}
 
 export class SimpleClass {
     private readonly world: string;
