@@ -34,5 +34,7 @@
 		"searchbox",
 		"tmid",
 		"tshow"
-	]
+	],
+	"deno.enable": true,
+	"deno.enablePaths": ["./packages/apps-engine"]
 }

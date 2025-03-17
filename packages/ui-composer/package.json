@@ -23,6 +23,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "~0.61.0",
 		"@rocket.chat/icons": "^0.40.0",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/addon-actions": "^8.6.4",
 		"@storybook/addon-docs": "^8.6.4",
 		"@storybook/addon-essentials": "^8.6.4",

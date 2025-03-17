@@ -76,6 +76,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/livechat": "workspace:^",
 		"@rocket.chat/mock-providers": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/addon-a11y": "^8.6.4",
 		"@storybook/addon-essentials": "^8.6.4",
 		"@storybook/addon-interactions": "^8.6.4",

@@ -9,6 +9,7 @@
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
 		"eslint": "~8.45.0",
