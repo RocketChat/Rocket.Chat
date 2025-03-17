@@ -22,6 +22,8 @@ export class ProxiedApp {
         private readonly appRuntime: DenoRuntimeSubprocessController,
     ) {
         this.previousStatus = storageItem.status;
+
+        this.appRuntime.once('processExit', () => mem.clear(this.getStatus));
     }
 
     public getRuntime(): AppsEngineRuntime {
