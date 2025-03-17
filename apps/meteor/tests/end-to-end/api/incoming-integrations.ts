@@ -326,7 +326,7 @@ describe('[Incoming Integrations]', () => {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!res.body.messages.find((m) => m.msg === payload.msg)).to.be.true;
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
 						});
 				});
 		});
