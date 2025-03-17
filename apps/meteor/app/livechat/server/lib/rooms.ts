@@ -129,7 +129,10 @@ export async function createRoom({
 	};
 
 	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, roomProps);
+		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, roomProps);
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+		}
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
