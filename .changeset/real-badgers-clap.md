@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix receiving webhook payloads as x-www-form-urlencoded JSON
+Fixes receiving webhook payloads encoded as x-www-form-urlencoded JSON.
