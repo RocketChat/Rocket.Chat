@@ -2,7 +2,6 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Updater } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
@@ -52,12 +51,12 @@ export type SaveUserData = {
 	sendWelcomeEmail?: boolean;
 
 	customFields?: Record<string, any>;
+	active?: boolean;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
 
 type SaveUserOptions = {
-	_updater?: Updater<IUser>;
 	auditStore?: UserChangedAuditStore;
 };
 
@@ -97,7 +96,7 @@ const _saveUser = (session?: ClientSession) =>
 		await validateUserEditing(userId, userData);
 
 		// update user
-		const updater = options?._updater || Users.getUpdater();
+		const updater = Users.getUpdater();
 
 		if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 			if (
@@ -167,6 +166,16 @@ const _saveUser = (session?: ClientSession) =>
 		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
 
 		await onceTransactionCommitedSuccessfully(async () => {
+			if (session && options?.auditStore) {
+				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
+				// updater will be commited by this point, so it won't affect the external user activation/deactivation
+				if (userData.active) {
+					updater.set('active', userData.active);
+				}
+				options.auditStore.setUpdateFilter(updater._getUpdateFilter());
+				void options.auditStore.commitAuditEvent();
+			}
+
 			// App IPostUserUpdated event hook
 			// We need to pass the session here to ensure this record is fetched
 			// with the uncommited transaction data.
@@ -212,5 +221,9 @@ export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
 	}
-	return _saveUser();
+
+	const saveUserNoSession = _saveUser();
+	return function saveUser(userId: IUser['_id'], userData: SaveUserData, _options?: any) {
+		return saveUserNoSession(userId, userData);
+	};
 })();

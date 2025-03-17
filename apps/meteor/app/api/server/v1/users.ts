@@ -122,8 +122,7 @@ API.v1.addRoute(
 				username: (await Meteor.userAsync())?.username || '',
 			});
 
-			const _updater = Users.getUpdater();
-			await saveUser(this.userId, userData, { _updater, auditStore });
+			await saveUser(this.userId, userData, { auditStore });
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
@@ -132,14 +131,7 @@ API.v1.addRoute(
 					confirmRelinquish,
 				} = this.bodyParams;
 				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
-				// This has no other use than for auditing active status changes
-				// 'setUserActiveStatus' has a lot of side effects making it difficult to use updater
-				// This updater should have been already commited by this point
-				_updater.set('active', active);
 			}
-
-			auditStore.setUpdateFilter(_updater._getUpdateFilter());
-			void auditStore.commitAuditEvent();
 
 			const { fields } = await this.parseJsonQuery();
 
