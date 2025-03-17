@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import EmojiCategoryRow from './EmojiCategoryRow';
 import type { EmojiByCategory } from '../../../../app/emoji/client';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 
 type CategoriesResultProps = {
 	emojiListByCategory: EmojiByCategory[];
@@ -33,7 +33,7 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			`}
 			height='full'
 		>
-			<CustomScrollbars>
+			<VirtualizedScrollbars>
 				<Virtuoso
 					ref={ref}
 					totalCount={emojiListByCategory.length}
@@ -60,7 +60,7 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 						/>
 					)}
 				/>
-			</CustomScrollbars>
+			</VirtualizedScrollbars>
 		</Box>
 	);
 });
