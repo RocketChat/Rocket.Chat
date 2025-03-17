@@ -164,6 +164,14 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		 */
 		query: Record<string, unknown>;
 	}>;
+
+	readonly connection: {
+		token: string;
+		id: string;
+		close: () => void;
+		clientAddress: string;
+		httpHeaders: Record<string, any>;
+	};
 } & (TOptions extends { authRequired: true }
 	? {
 			user: IUser;
