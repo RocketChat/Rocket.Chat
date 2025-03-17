@@ -12,6 +12,7 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
+	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
@@ -32,7 +33,9 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -743,16 +746,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.changeArchivationState',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
 	{
 		async post() {
 			const { rid, action } = this.bodyParams;
 
 			let result;
 			if (action === 'archive') {
-				result = await Meteor.callAsync('archiveRoom', rid);
+				result = await executeArchiveRoom(this.userId, rid);
 			} else {
-				result = await Meteor.callAsync('unarchiveRoom', rid);
+				result = await executeUnarchiveRoom(this.userId, rid);
 			}
 
 			return API.v1.success({ result });
