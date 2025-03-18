@@ -92,10 +92,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
 	}
 
-	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult> {
+	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null> {
 		const event = await this.get(eventId);
 		if (!event) {
-			return { matchedCount: 0, modifiedCount: 0, upsertedCount: 0, upsertedId: null, acknowledged: true };
+			return null;
 		}
 
 		const { startTime, endTime, subject, description, reminderMinutesBeforeStart } = data;

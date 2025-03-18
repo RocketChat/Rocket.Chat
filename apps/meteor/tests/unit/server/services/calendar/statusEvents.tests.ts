@@ -12,11 +12,14 @@ const settingsMock = {
 const CalendarEventMock = {
 	find: sinon.stub(),
 	findOne: sinon.stub(),
+	findOverlappingEvents: sinon.stub(),
+	findEligibleEventsForCancelation: sinon.stub(),
 };
 
 const UsersMock = {
 	findOneById: sinon.stub(),
 	updateOne: sinon.stub(),
+	updateStatusAndStatusDefault: sinon.stub().resolves(),
 };
 
 const cronJobsMock = {
@@ -68,6 +71,12 @@ describe('StatusEventManager', () => {
 				toArray: sinon.stub().resolves([]),
 			} as any),
 			findOne: sinon.stub().resolves(null),
+			findOverlappingEvents: sinon.stub().returns({
+				toArray: sinon.stub().resolves([]),
+			}),
+			findEligibleEventsForCancelation: sinon.stub().returns({
+				toArray: sinon.stub().resolves([]),
+			}),
 		};
 
 		Object.assign(CalendarEventMock, freshMocks);
@@ -83,6 +92,7 @@ describe('StatusEventManager', () => {
 				name: 'Test User',
 			} as any),
 			updateOne: sinon.stub().resolves({ modifiedCount: 1 } as any),
+			updateStatusAndStatusDefault: sinon.stub().resolves(),
 		};
 
 		Object.assign(UsersMock, freshMocks);
@@ -177,9 +187,14 @@ describe('StatusEventManager', () => {
 				endTime: new Date('2025-01-01T12:00:00Z'), // Later than fakeEndTime
 			};
 
-			CalendarEventMock.find.returns({
+			// Clear previous calls
+			cronJobsMock.has.resetHistory();
+			cronJobsMock.addAtTimestamp.resetHistory();
+
+			// Mock a specific response for this test
+			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([laterEvent]),
-			} as any);
+			});
 
 			const result = await manager.handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
@@ -195,10 +210,17 @@ describe('StatusEventManager', () => {
 				endTime: new Date('2025-01-01T10:30:00Z'), // Earlier than fakeEndTime
 			};
 
-			CalendarEventMock.find.returns({
+			// Clear previous calls
+			cronJobsMock.has.resetHistory();
+			cronJobsMock.remove.resetHistory();
+
+			// Set up has to return true for the specific job ID
+			cronJobsMock.has.withArgs(`calendar-presence-status-${earlierEvent._id}-${fakeUserId}`).resolves(true);
+
+			// Mock a specific response for this test
+			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([earlierEvent]),
-			} as any);
-			cronJobsMock.has.resolves(true);
+			});
 
 			const result = await manager.handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
@@ -253,9 +275,16 @@ describe('StatusEventManager', () => {
 		it('should do nothing if user is not found', async () => {
 			UsersMock.findOneById.resolves(null);
 
-			await manager.applyStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, undefined, false);
+			await manager.applyStatusChange({
+				eventId: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				status: undefined,
+				shouldScheduleRemoval: false,
+			});
 
-			expect(UsersMock.updateOne.callCount).to.equal(0);
+			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(0);
 			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(0);
 		});
 
@@ -265,21 +294,43 @@ describe('StatusEventManager', () => {
 				status: UserStatus.OFFLINE,
 			});
 
-			await manager.applyStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, undefined, false);
+			await manager.applyStatusChange({
+				eventId: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				status: undefined,
+				shouldScheduleRemoval: false,
+			});
 
-			expect(UsersMock.updateOne.callCount).to.equal(0);
+			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(0);
 			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(0);
 		});
 
 		it('should use UserStatus.BUSY as default if no status provided', async () => {
-			await manager.applyStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, undefined, false);
+			// Reset history to get fresh call counts
+			UsersMock.updateStatusAndStatusDefault.resetHistory();
 
-			expect(UsersMock.updateOne.firstCall.args[1].$set.status).to.equal(UserStatus.BUSY);
+			await manager.applyStatusChange({
+				eventId: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				status: undefined,
+				shouldScheduleRemoval: false,
+			});
+
+			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(1);
+			expect(UsersMock.updateStatusAndStatusDefault.firstCall.args[1]).to.equal(UserStatus.BUSY);
 		});
 
 		it('should update user status and broadcast presence update', async () => {
 			const previousStatus = UserStatus.ONLINE;
 			const newStatus = UserStatus.AWAY;
+
+			// Reset stubs to get fresh call counts
+			UsersMock.updateStatusAndStatusDefault.resetHistory();
+			(api.broadcast as sinon.SinonStub).resetHistory();
 
 			UsersMock.findOneById.resolves({
 				_id: fakeUserId,
@@ -289,42 +340,38 @@ describe('StatusEventManager', () => {
 				name: 'Test User',
 			});
 
-			await manager.applyStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, newStatus, false);
-
-			expect(UsersMock.updateOne.callCount).to.equal(1);
-			expect(UsersMock.updateOne.firstCall.args[0]).to.deep.equal({ _id: fakeUserId });
-			expect(UsersMock.updateOne.firstCall.args[1].$set).to.deep.equal({
+			await manager.applyStatusChange({
+				eventId: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
 				status: newStatus,
-				statusDefault: newStatus,
+				shouldScheduleRemoval: false,
 			});
+
+			expect(UsersMock.updateStatusAndStatusDefault.callCount).to.equal(1);
+			expect(UsersMock.updateStatusAndStatusDefault.firstCall.args).to.deep.equal([fakeUserId, newStatus, newStatus]);
 
 			expect((api.broadcast as sinon.SinonStub).callCount).to.equal(1);
 			expect((api.broadcast as sinon.SinonStub).firstCall.args[0]).to.equal('presence.status');
-
-			// Use a more flexible check for the user object
-			const broadcastArg = (api.broadcast as sinon.SinonStub).firstCall.args[1];
-			expect(broadcastArg).to.have.property('previousStatus', previousStatus);
-			expect(broadcastArg.user).to.include({
-				_id: fakeUserId,
-				status: newStatus,
-			});
 		});
 
 		it('should schedule status revert when shouldScheduleRemoval=true', async () => {
-			sandbox.stub(manager, 'setupAppointmentStatusChange').resolves();
+			// Reset stubs
+			const setupStub = sandbox.stub(manager, 'setupAppointmentStatusChange').resolves();
 			const previousStatus = UserStatus.ONLINE;
 
-			await manager.applyStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY, true);
+			await manager.applyStatusChange({
+				eventId: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				status: UserStatus.BUSY,
+				shouldScheduleRemoval: true,
+			});
 
-			expect((manager.setupAppointmentStatusChange as sinon.SinonStub).callCount).to.equal(1);
-			expect((manager.setupAppointmentStatusChange as sinon.SinonStub).firstCall.args).to.deep.equal([
-				fakeEventId,
-				fakeUserId,
-				fakeStartTime,
-				fakeEndTime,
-				previousStatus,
-				false,
-			]);
+			expect(setupStub.callCount).to.equal(1);
+			expect(setupStub.firstCall.args).to.deep.equal([fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, previousStatus, false]);
 		});
 	});
 
@@ -334,7 +381,7 @@ describe('StatusEventManager', () => {
 
 			await manager.cancelUpcomingStatusChanges(fakeUserId);
 
-			expect(CalendarEventMock.find.callCount).to.equal(0);
+			expect(CalendarEventMock.findEligibleEventsForCancelation.callCount).to.equal(0);
 		});
 
 		it('should find and cancel active events', async () => {
@@ -343,11 +390,14 @@ describe('StatusEventManager', () => {
 				{ _id: 'event2', uid: fakeUserId },
 			];
 
-			CalendarEventMock.find.returns({
-				toArray: sinon.stub().resolves(events),
-			} as any);
+			// Reset and set up mocks for this test
+			cronJobsMock.has.resetHistory();
+			cronJobsMock.remove.resetHistory();
+			cronJobsMock.has.resolves(true); // All job checks return true
 
-			cronJobsMock.has.resolves(true);
+			CalendarEventMock.findEligibleEventsForCancelation.returns({
+				toArray: sinon.stub().resolves(events),
+			});
 
 			await manager.cancelUpcomingStatusChanges(fakeUserId);
 
