@@ -6,7 +6,7 @@ import type { DeleteResult, UpdateResult } from 'mongodb';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { testPrivateMethod, createFreshServiceInstance } from './utils';
+import { testPrivateMethod, createFreshServiceInstance } from '../utils';
 
 const settingsMock = {
 	get: sinon.stub().callsFake((key) => {

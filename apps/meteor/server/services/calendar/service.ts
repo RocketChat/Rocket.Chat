@@ -9,6 +9,7 @@ import { CalendarEvent } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { statusEventManager } from './statusEvents';
+import { getShiftedTime } from './utils/getShiftedTime';
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 
@@ -22,7 +23,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
-		const reminderTime = minutes ? statusEventManager.getShiftedTime(startTime, -minutes) : undefined;
+		const reminderTime = minutes ? getShiftedTime(startTime, -minutes) : undefined;
 
 		const insertData: InsertionModel<ICalendarEvent> = {
 			uid,
@@ -51,7 +52,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const { uid, startTime, subject, description, reminderMinutesBeforeStart } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
-		const reminderTime = reminderMinutesBeforeStart ? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const reminderTime = reminderMinutesBeforeStart ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid' | 'notificationSent'> = {
 			startTime,
@@ -100,15 +101,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const { startTime, endTime, subject, description, reminderMinutesBeforeStart } = data;
 
-		// Refactored from nested ternary to improve readability
-		let meetingUrl;
-		if (data.meetingUrl !== undefined) {
-			meetingUrl = data.meetingUrl;
-		} else if (description !== undefined) {
-			meetingUrl = await this.parseDescriptionForMeetingUrl(description);
-		} else {
-			meetingUrl = undefined;
-		}
+		const meetingUrl = await this.getMeetingUrl(data);
 
 		if (startTime || endTime) {
 			await statusEventManager.removeCronJobs(eventId, event.uid);
@@ -129,8 +122,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			}
 		}
 
-		const reminderTime =
-			reminderMinutesBeforeStart && startTime ? statusEventManager.getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const reminderTime = reminderMinutesBeforeStart && startTime ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
@@ -168,6 +160,18 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
 		return statusEventManager.cancelUpcomingStatusChanges(uid, endTime);
+	}
+
+	private async getMeetingUrl(eventData: Partial<ICalendarEvent>): Promise<string | undefined> {
+		if (eventData.meetingUrl !== undefined) {
+			return eventData.meetingUrl;
+		}
+
+		if (eventData.description !== undefined) {
+			return this.parseDescriptionForMeetingUrl(eventData.description);
+		}
+
+		return undefined;
 	}
 
 	private async doSetupNextNotification(isRecursive: boolean): Promise<void> {

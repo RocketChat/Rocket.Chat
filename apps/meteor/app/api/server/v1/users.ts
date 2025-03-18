@@ -1,4 +1,4 @@
-import { MeteorError, Team, api } from '@rocket.chat/core-services';
+import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
@@ -19,7 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -38,7 +38,6 @@ import { saveUserPreferences } from '../../../../server/methods/saveUserPreferen
 import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { sendForgotPasswordEmail } from '../../../../server/methods/sendForgotPasswordEmail';
 import { executeSetUserActiveStatus } from '../../../../server/methods/setUserActiveStatus';
-import { CalendarService } from '../../../../server/services/calendar/service';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -1342,8 +1341,7 @@ API.v1.addRoute(
 						previousStatus: user.status,
 					});
 
-					const calendarService = new CalendarService();
-					void calendarService.cancelUpcomingStatusChanges(user._id);
+					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',

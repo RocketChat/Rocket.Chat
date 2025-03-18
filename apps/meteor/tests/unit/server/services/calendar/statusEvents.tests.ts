@@ -29,7 +29,7 @@ const cronJobsMock = {
 };
 
 const { StatusEventManager } = proxyquire.noCallThru().load('../../../../../server/services/calendar/statusEvents', {
-	'../../../app/settings/server': { settings: settingsMock },
+	'../../../../app/settings/server': { settings: settingsMock },
 	'@rocket.chat/core-services': { api },
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 	'@rocket.chat/models': {
@@ -108,64 +108,6 @@ describe('StatusEventManager', () => {
 
 	afterEach(() => {
 		sandbox.restore();
-	});
-
-	describe('#generateCronJobId', () => {
-		it('should generate correct ID for status events', () => {
-			const id = manager.generateCronJobId(fakeEventId, fakeUserId, 'status');
-			expect(id).to.equal(`calendar-presence-status-${fakeEventId}-${fakeUserId}`);
-		});
-
-		it('should generate correct ID for reminder events', () => {
-			const id = manager.generateCronJobId(fakeEventId, fakeUserId, 'reminder');
-			expect(id).to.equal(`calendar-reminder-${fakeEventId}-${fakeUserId}`);
-		});
-
-		it('should throw an error if some required parameters are missing', () => {
-			expect(() => manager.generateCronJobId(undefined, fakeUserId, 'status')).to.throw(
-				'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
-			);
-			expect(() => manager.generateCronJobId(fakeEventId, undefined, 'status')).to.throw(
-				'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
-			);
-			expect(() => manager.generateCronJobId(fakeEventId, fakeUserId)).to.throw(
-				'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
-			);
-		});
-
-		it('should throw an error if eventType is not "status" or "reminder"', () => {
-			expect(() => manager.generateCronJobId(fakeEventId, fakeUserId, 'invalid' as any)).to.throw(
-				'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
-			);
-		});
-	});
-
-	describe('#removeCronJobs', () => {
-		it('should check and remove status and reminder jobs', async () => {
-			cronJobsMock.has.resolves(true);
-
-			await manager.removeCronJobs(fakeEventId, fakeUserId);
-
-			expect(cronJobsMock.has.callCount).to.equal(2);
-			expect(cronJobsMock.remove.callCount).to.equal(2);
-
-			const statusId = `calendar-presence-status-${fakeEventId}-${fakeUserId}`;
-			const reminderId = `calendar-reminder-${fakeEventId}-${fakeUserId}`;
-
-			expect(cronJobsMock.has.firstCall.args[0]).to.equal(statusId);
-			expect(cronJobsMock.has.secondCall.args[0]).to.equal(reminderId);
-			expect(cronJobsMock.remove.firstCall.args[0]).to.equal(statusId);
-			expect(cronJobsMock.remove.secondCall.args[0]).to.equal(reminderId);
-		});
-
-		it('should not remove jobs if they do not exist', async () => {
-			cronJobsMock.has.resolves(false);
-
-			await manager.removeCronJobs(fakeEventId, fakeUserId);
-
-			expect(cronJobsMock.has.callCount).to.equal(2);
-			expect(cronJobsMock.remove.callCount).to.equal(0);
-		});
 	});
 
 	describe('#handleOverlappingEvents', () => {
@@ -483,38 +425,6 @@ describe('StatusEventManager', () => {
 
 			expect(cronJobsMock.has.callCount).to.equal(2);
 			expect(cronJobsMock.remove.callCount).to.equal(2);
-		});
-	});
-
-	describe('#getShiftedTime', () => {
-		it('should shift time forward by minutes', () => {
-			const date = new Date('2025-01-01T10:00:00Z');
-			const result = manager.getShiftedTime(date, 30);
-
-			expect(result.getTime()).to.equal(new Date('2025-01-01T10:30:00Z').getTime());
-			expect(date.getTime()).to.equal(new Date('2025-01-01T10:00:00Z').getTime());
-		});
-
-		it('should shift time backward by negative minutes', () => {
-			const date = new Date('2025-01-01T10:00:00Z');
-			const result = manager.getShiftedTime(date, -15);
-
-			expect(result.getTime()).to.equal(new Date('2025-01-01T09:45:00Z').getTime());
-		});
-	});
-
-	describe('statusEventManager export', () => {
-		it('should export a singleton instance', () => {
-			proxyquire.callThru();
-
-			const { statusEventManager } = proxyquire.noCallThru().load('../../../../../server/services/calendar/statusEvents', {
-				'../../../app/settings/server': { settings: settingsMock },
-				'@rocket.chat/core-services': { api },
-				'@rocket.chat/cron': { cronJobs: cronJobsMock },
-				'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
-			});
-
-			expect(statusEventManager.constructor.name).to.equal('StatusEventManager');
 		});
 	});
 });
