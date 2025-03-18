@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
+import { getBaseUserFields } from '@rocket.chat/rest-typings';
 import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
@@ -127,7 +128,7 @@ export class DDPStreamer extends ServiceClass {
 		async function sendUserData(client: Client, userId: string) {
 			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
 			const loggedUser = await Users.findOneById(userId, {
-				projection: { name: 1, username: 1, settings: 1, roles: 1, active: 1, statusLivechat: 1, statusDefault: 1, status: 1 },
+				projection: { ...getBaseUserFields(), 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 },
 			});
 			if (!loggedUser) {
 				return;
