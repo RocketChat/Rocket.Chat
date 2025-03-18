@@ -8,6 +8,13 @@ export const loggerMiddleware =
 	async (c, next) => {
 		const startTime = Date.now();
 
+		let payload = {};
+
+		try {
+			payload = await c.req.json();
+			// eslint-disable-next-line no-empty
+		} catch {}
+
 		const log = logger.logger.child({
 			method: c.req.method,
 			url: c.req.url,
@@ -17,7 +24,7 @@ export const loggerMiddleware =
 			host: c.req.header('host'),
 			referer: c.req.header('referer'),
 			// remoteIP: c.req.ip,
-			...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && getRestPayload(await c.req.json())),
+			...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && getRestPayload(payload)),
 		});
 
 		await next();
