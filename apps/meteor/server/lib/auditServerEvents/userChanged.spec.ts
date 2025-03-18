@@ -95,13 +95,17 @@ const getObfuscatedFields = (email2faState: { enabled: boolean; changedAt: Date 
 	e2e: '****',
 	oauth: '****',
 	inviteToken: '****',
-	services: {
+	services: getObfuscatedServices(email2faState),
+});
+
+const getObfuscatedServices = (email2faState: { enabled: boolean; changedAt: Date }) => {
+	return {
 		password: '****',
 		email2fa: email2faState,
 		email: '****',
 		resume: '****',
-	},
-});
+	};
+};
 
 describe('userChanged audit module', () => {
 	it('should build event with only name and username fields', async () => {
@@ -264,6 +268,28 @@ describe('userChanged audit module', () => {
 				user: { _id: user._id, username: user.username },
 				user_data: { services: { password: '****', resume: '****' } },
 				operation: { $set: { 'services.password.bcrypt': '****', 'services.resume.loginTokens': '****' } },
+			},
+			{ ...actor, type: 'user' },
+		]);
+	});
+	it('should obfuscate all services when they are set at once', async () => {
+		const [user, updater, actor] = createUserAndUpdater({ ...createEmailsField(), ...createObfuscatedFields(false), active: false });
+
+		const store = new UserChangedAuditStore(actor);
+
+		updater.set('services', { password: { bcrypt: faker.string.uuid() } });
+
+		store.setOriginalUser(user as IUser);
+		store.setUpdateFilter(updater.getUpdateFilter());
+
+		const event = await store.commitAuditEvent();
+
+		expect(event).toEqual([
+			'user.changed',
+			{
+				user: { _id: user._id, username: user.username },
+				user_data: { services: getObfuscatedServices(user.services?.email2fa as any) },
+				operation: { $set: { services: { password: '****' } } },
 			},
 			{ ...actor, type: 'user' },
 		]);

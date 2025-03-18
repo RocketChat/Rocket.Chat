@@ -42,9 +42,7 @@ export class UserChangedAuditStore {
 						};
 					}
 
-					// I'm not sure if this is necessary anymore
-					// usually nested properties are set using dot notation
-					// ex: services.password.bcrypt
+					// In case all services are set at once, we need to obfuscate them
 					if (k === 'services') {
 						return {
 							...acc,
@@ -94,7 +92,16 @@ export class UserChangedAuditStore {
 			}
 
 			if (key === 'services') {
-				const changedNestedServices = Object.keys(updateFilter.$set || {})
+				// In case all services are set at once we should
+				// obfuscate all user services, because they'll all change
+				if (updateFilterKeys.some((k) => k === 'services')) {
+					return {
+						...acc,
+						[key]: obfuscateServices(value as Record<string, any>),
+					};
+				}
+
+				const changedNestedServices = updateFilterKeys
 					.filter((k) => k.includes(key) && k.includes('.'))
 					.map((serviceKey) => {
 						// service key can be nested with dot notation
@@ -104,20 +111,13 @@ export class UserChangedAuditStore {
 					})
 					.filter(Boolean);
 
-				const changedServices = Object.keys(updateFilter.$set?.[key] || {}).map((serviceKey) => [
-					serviceKey,
-					value[serviceKey as keyof typeof value],
-				]);
-
-				const allServices = [...changedNestedServices, ...changedServices];
-
-				if (!allServices.length) {
+				if (!changedNestedServices.length) {
 					return acc;
 				}
 
 				return {
 					...acc,
-					[key]: obfuscateServices(Object.fromEntries(allServices) as Record<string, any>),
+					[key]: obfuscateServices(Object.fromEntries(changedNestedServices) as Record<string, any>),
 				};
 			}
 
