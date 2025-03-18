@@ -1,6 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
+import { getBaseUserFields } from '@rocket.chat/rest-typings';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInDays } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -23,7 +24,6 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
