@@ -6,9 +6,12 @@ import { useIdleDetection } from '../hooks/useIdleDetection';
 
 export const AutoupdateToastMessage = () => {
 	const { t } = useTranslation();
-	useIdleDetection(() => {
-		window.location.reload();
-	});
+	useIdleDetection(
+		() => {
+			window.location.reload();
+		},
+		{ awayOnWindowBlur: true },
+	);
 
 	return (
 		<Box
