@@ -12,7 +12,7 @@ export class Directory {
 	}
 
 	getSearchByChannelName(name: string) {
-		return this.page.locator(`role=link >> text="${name}"`);
+		return this.page.locator(`role=table >> role=link >> text="${name}"`);
 	}
 
 	async openChannel(name: string) {

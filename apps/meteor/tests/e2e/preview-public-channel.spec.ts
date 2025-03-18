@@ -23,7 +23,9 @@ test.describe('Preview public channel', () => {
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
-		targetChannelMessage = await sendTargetChannelMessage(api, targetChannel);
+		targetChannelMessage = await sendTargetChannelMessage(api, targetChannel, { msg: 'This message' });
+
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -31,21 +33,25 @@ test.describe('Preview public channel', () => {
 		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 	});
 
-	test('should let user preview public rooms messages', async () => {
-		await poHomeChannel.sidenav.openDirectory();
-		await poDirectory.openChannel(targetChannel);
+	test.describe('User', () => {
+		test.use({ storageState: Users.user1.state });
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
-	});
+		test('should let user preview public rooms messages', async () => {
+			await poHomeChannel.sidenav.openDirectory();
+			await poDirectory.openChannel(targetChannel);
 
-	test('should not let user role preview public rooms', async ({ api }) => {
-		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
+			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
+		});
 
-		await poHomeChannel.sidenav.openDirectory();
-		await poDirectory.openChannel(targetChannel);
+		test('should not let user role preview public rooms', async ({ api }) => {
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-		await expect(poHomeChannel.content.btnJoinChannel).toBeVisible();
-		await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
+			await poHomeChannel.sidenav.openDirectory();
+			await poDirectory.openChannel(targetChannel);
+
+			await expect(poHomeChannel.content.btnJoinChannel).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
+		});
 	});
 
 	test.describe('App', () => {
@@ -60,7 +66,7 @@ test.describe('Preview public channel', () => {
 
 			await poHomeChannel.btnJoinRoom.click();
 
-			await expect(poUtils.getAlertByText('TEST OF NOT ALLOWED USER')).not.toBeVisible();
+			await expect(poUtils.getAlertByText('TEST OF NOT ALLOWED USER')).toBeVisible();
 		});
 
 		test('should prevent user from join the room without preview permission', async ({ api }) => {

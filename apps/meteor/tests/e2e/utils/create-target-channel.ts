@@ -15,12 +15,14 @@ export async function createTargetChannel(api: BaseTest['api'], options?: Omit<C
 	return name;
 }
 
-export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: string, options?: Omit<IMessage, 'rid'>) {
-	const response = await api.get('/channels.info', { roomName });
+export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: string, options?: Partial<IMessage>) {
+	const response = await api.get(`/channels.info?roomName=${roomName}`);
 
-	const { _id: rid }: IRoom = await response.json();
+	const {
+		channel: { _id: rid },
+	}: { channel: IRoom } = await response.json();
 
-	await api.post('chat.sendMessage', {
+	await api.post('/chat.sendMessage', {
 		message: {
 			rid,
 			msg: options?.msg || 'simple message',
