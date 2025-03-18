@@ -9177,8 +9177,8 @@ __metadata:
     url-polyfill: "npm:^1.1.12"
     uuid: "npm:^11.0.3"
     webdav: "npm:^4.11.4"
-    xml-crypto: "npm:~3.1.0"
-    xml-encryption: "npm:~3.0.2"
+    xml-crypto: "npm:~3.2.1"
+    xml-encryption: "npm:~3.1.0"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     zod: "npm:^3.24.1"
@@ -14215,14 +14215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:0.8.7":
-  version: 0.8.7
-  resolution: "@xmldom/xmldom@npm:0.8.7"
-  checksum: 10/612c12518f25c2c06c1505ea0acca535a6f1293cae594e6329b18b112b720fca7fceeadb65ea203faa081933306a5b0f0967c3c728c77c4b68eccfa0d5537d3c
-  languageName: node
-  linkType: hard
-
-"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5":
+"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5, @xmldom/xmldom@npm:^0.8.8":
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
   checksum: 10/62400bc5e0e75b90650e33a5ceeb8d94829dd11f9b260962b71a784cd014ddccec3e603fe788af9c1e839fa4648d8c521ebd80d8b752878d3a40edabc9ce7ccf
@@ -37920,24 +37913,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-crypto@npm:~3.1.0":
-  version: 3.1.0
-  resolution: "xml-crypto@npm:3.1.0"
+"xml-crypto@npm:~3.2.1":
+  version: 3.2.1
+  resolution: "xml-crypto@npm:3.2.1"
   dependencies:
-    "@xmldom/xmldom": "npm:0.8.7"
+    "@xmldom/xmldom": "npm:^0.8.8"
     xpath: "npm:0.0.32"
-  checksum: 10/1cabdf63f20ab730a8094b1f3b40b3731c5f36e153ba7a55bcc3b9ccd328bacadeeed42ae59011c6700c43032bb6e1664f790fb45656ee10c29cdb80b97cab16
+  checksum: 10/488fe2a8cea138f8a49ac1bbc62613379d8e31802d5da2a865a5553f450fa5962ae7e37dac24a96c732d4df5adf3b03d3284c7e72d16cddc854cf62b1ecef315
   languageName: node
   linkType: hard
 
-"xml-encryption@npm:~3.0.2":
-  version: 3.0.2
-  resolution: "xml-encryption@npm:3.0.2"
+"xml-encryption@npm:~3.1.0":
+  version: 3.1.0
+  resolution: "xml-encryption@npm:3.1.0"
   dependencies:
     "@xmldom/xmldom": "npm:^0.8.5"
     escape-html: "npm:^1.0.3"
     xpath: "npm:0.0.32"
-  checksum: 10/081a42ca7d7e81d23229f2a1149313e934d872c33da57eda25113a613f3940ff66f73e4e2f62d37a3a38c3c7d291784047b5b729988f346fef96c7124f6dbe83
+  checksum: 10/c84c1e11692181c24a1c30123fed4fa31015c58994bbdcf091f07fa79f0fb809774b1533d191c4739bf76bb0fb95f223d393e84cc48417480a1896b2b689373b
   languageName: node
   linkType: hard
 
