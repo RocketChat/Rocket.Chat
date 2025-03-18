@@ -39,18 +39,7 @@ export class StatusEventManager {
 		endTime: Date,
 		status?: UserStatus,
 	): Promise<{ shouldProceed: boolean }> {
-		const overlappingEvents = await CalendarEvent.find({
-			_id: { $ne: eventId }, // Exclude current event
-			uid,
-			$or: [
-				// Event starts during our event
-				{ startTime: { $gte: startTime, $lt: endTime } },
-				// Event ends during our event
-				{ endTime: { $gt: startTime, $lte: endTime } },
-				// Event completely contains our event
-				{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
-			],
-		}).toArray();
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(eventId, uid, startTime, endTime).toArray();
 
 		if (overlappingEvents.length === 0) {
 			return { shouldProceed: true };
@@ -80,7 +69,7 @@ export class StatusEventManager {
 			}
 
 			await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () =>
-				this.applyStatusChange(eventId, uid, startTime, endTime, status, false),
+				this.applyStatusChange({ eventId, uid, startTime, endTime, status, shouldScheduleRemoval: false }),
 			);
 			return { shouldProceed: false };
 		}
@@ -126,18 +115,25 @@ export class StatusEventManager {
 		}
 
 		await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () =>
-			this.applyStatusChange(eventId, uid, startTime, endTime, status, shouldScheduleRemoval),
+			this.applyStatusChange({ eventId, uid, startTime, endTime, status, shouldScheduleRemoval }),
 		);
 	}
 
-	public async applyStatusChange(
-		eventId: ICalendarEvent['_id'],
-		uid: IUser['_id'],
-		startTime: Date,
-		endTime?: Date,
-		status?: UserStatus,
-		shouldScheduleRemoval?: boolean,
-	): Promise<void> {
+	public async applyStatusChange({
+		eventId,
+		uid,
+		startTime,
+		endTime,
+		status,
+		shouldScheduleRemoval,
+	}: {
+		eventId: ICalendarEvent['_id'];
+		uid: IUser['_id'];
+		startTime: Date;
+		endTime?: Date;
+		status?: UserStatus;
+		shouldScheduleRemoval?: boolean;
+	}): Promise<void> {
 		const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1 } });
 		if (!user || user.status === UserStatus.OFFLINE) {
 			return;
@@ -146,15 +142,7 @@ export class StatusEventManager {
 		const newStatus = status ?? UserStatus.BUSY;
 		const previousStatus = user.status;
 
-		await Users.updateOne(
-			{ _id: uid },
-			{
-				$set: {
-					status: newStatus,
-					statusDefault: newStatus,
-				},
-			},
-		);
+		await Users.updateStatusAndStatusDefault(uid, newStatus, newStatus);
 
 		await api.broadcast('presence.status', {
 			user: {
@@ -178,11 +166,7 @@ export class StatusEventManager {
 			return;
 		}
 
-		const events = await CalendarEvent.find({
-			uid,
-			startTime: { $exists: true, $lte: endTime },
-			endTime: { $exists: true, $gte: endTime },
-		}).toArray();
+		const events = await CalendarEvent.findEligibleEventsForCancelation(uid, endTime).toArray();
 
 		for await (const event of events) {
 			const statusChangeJobId = this.generateCronJobId(event._id, event.uid, 'status');
