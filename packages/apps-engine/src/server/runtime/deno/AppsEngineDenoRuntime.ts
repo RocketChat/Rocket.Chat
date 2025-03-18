@@ -241,7 +241,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             return AppStatus.UNKNOWN;
         }
 
-        return await this.sendRequest({ method: 'app:getStatus', params: [] }) as AppStatus;
+        return this.sendRequest({ method: 'app:getStatus', params: [] }) as Promise<AppStatus>;
     }
 
     public async setupApp() {
@@ -378,6 +378,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.state = 'ready';
     }
 
+    /**
+     * Listeners need to be setup every time the reference
+     * in `this.deno` changes, i.e. every time the subprocess
+     * is restarted
+     */
     private setupListeners(): void {
         if (!this.deno) {
             return;
@@ -389,7 +394,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
         });
 
-        this.deno.on('exit', (code) => this.emit('processExit', code));
+        this.deno.once('exit', (code) => this.emit('processExit', code));
 
         this.once('ready', this.onReady.bind(this));
 

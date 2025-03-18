@@ -1,3 +1,5 @@
+import * as mem from 'mem';
+
 import type { AppManager } from './AppManager';
 import { AppStatus } from '../definition/AppStatus';
 import { AppsEngineException } from '../definition/exceptions';
@@ -9,7 +11,6 @@ import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
-import * as mem from 'mem';
 
 export class ProxiedApp {
     private previousStatus: AppStatus;
@@ -23,7 +24,7 @@ export class ProxiedApp {
     ) {
         this.previousStatus = storageItem.status;
 
-        this.appRuntime.once('processExit', () => mem.clear(this.getStatus));
+        this.appRuntime.on('processExit', () => mem.clear(this.getStatus));
     }
 
     public getRuntime(): AppsEngineRuntime {
