@@ -20,9 +20,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	protected name = 'calendar';
 
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
-		const { uid, startTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
-		const endTime = 'endTime' in data ? ((data as any).endTime as Date) : undefined;
-
+		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? statusEventManager.getShiftedTime(startTime, -minutes) : undefined;
 
