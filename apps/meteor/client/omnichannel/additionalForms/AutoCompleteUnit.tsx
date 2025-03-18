@@ -1,11 +1,13 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useMemo, useState } from 'react';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { UnitOption } from '../../components/Omnichannel/hooks/useUnitsList';
 import { useUnitsList } from '../../components/Omnichannel/hooks/useUnitsList';
 import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../lib/asyncState';
+import type { RecordList } from '../../lib/lists/RecordList';
 
 type AutoCompleteUnitProps = {
 	disabled?: boolean;
@@ -14,9 +16,18 @@ type AutoCompleteUnitProps = {
 	placeholder?: string;
 	haveNone?: boolean;
 	onChange: (value: string) => void;
+	onLoadItems?: (list: RecordList<UnitOption>) => void;
 };
 
-const AutoCompleteUnit = ({ value, disabled = false, error, placeholder, haveNone, onChange }: AutoCompleteUnitProps) => {
+const AutoCompleteUnit = ({
+	value,
+	disabled = false,
+	error,
+	placeholder,
+	haveNone,
+	onChange,
+	onLoadItems = () => undefined,
+}: AutoCompleteUnitProps) => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
 
@@ -26,6 +37,12 @@ const AutoCompleteUnit = ({ value, disabled = false, error, placeholder, haveNon
 		useMemo(() => ({ text: debouncedUnitFilter, haveNone }), [debouncedUnitFilter, haveNone]),
 	);
 	const { phase: unitsPhase, itemCount: unitsTotal, items: unitsList } = useRecordList(itemsList);
+
+	const handleLoadItems = useEffectEvent(onLoadItems);
+
+	useEffect(() => {
+		handleLoadItems(itemsList);
+	}, [handleLoadItems, unitsTotal, itemsList]);
 
 	return (
 		<PaginatedSelectFiltered

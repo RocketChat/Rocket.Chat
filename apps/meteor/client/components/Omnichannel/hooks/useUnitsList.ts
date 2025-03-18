@@ -11,7 +11,7 @@ type UnitsListOptions = {
 	haveNone?: boolean;
 };
 
-type UnitOption = { value: string; label: string; _id: string };
+export type UnitOption = { value: string; label: string; _id: string };
 
 export const useUnitsList = (
 	options: UnitsListOptions,
