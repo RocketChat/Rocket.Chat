@@ -8,6 +8,7 @@ import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
+import { useWebRTC } from './hooks/useWebRTC';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
@@ -55,6 +56,7 @@ const AppLayout = () => {
 	useCorsSSLConfig();
 	useOTRMessaging();
 	useUpdateVideoConfUser();
+	useWebRTC();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
