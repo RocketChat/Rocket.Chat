@@ -70,7 +70,7 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 	return subscription;
 };
 
-describe.only('LIVECHAT - rooms', () => {
+describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 
