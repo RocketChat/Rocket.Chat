@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isNotUndefined } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { ClientSession } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomId } from '../lib/notifyListener';
 
@@ -35,7 +36,12 @@ function sortUsersAlphabetically(u1: IUser, u2: IUser): number {
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 
-export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<void> => {
+export const updateGroupDMsName = async (
+	userThatChangedName: IUser,
+	options?: {
+		session?: ClientSession;
+	},
+): Promise<void> => {
 	if (!userThatChangedName.username) {
 		return;
 	}
@@ -47,7 +53,9 @@ export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<vo
 
 	users.set(userThatChangedName._id, userThatChangedName);
 
-	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 } });
+	const { session } = options || {};
+
+	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 }, session });
 
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(isNotUndefined);
@@ -61,10 +69,12 @@ export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<vo
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
-		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 } });
+		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 }, session });
 		for await (const sub of subs) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			const updateNameRespose = await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+			const updateNameRespose = await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers), {
+				session,
+			});
 			if (updateNameRespose.modifiedCount) {
 				void notifyOnSubscriptionChangedByRoomId(room._id);
 			}

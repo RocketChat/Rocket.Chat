@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react';
 import { createContext } from 'react';
 
 type ToastMessagePayload =
 	| {
 			type: 'success' | 'info' | 'warning';
-			message: string;
+			message: ReactNode | string;
 			title?: string;
 			options?: object;
 	  }

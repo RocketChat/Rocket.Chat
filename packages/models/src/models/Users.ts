@@ -981,14 +981,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.aggregate<{ _id: string; total: number }>(pipeline).toArray();
 	}
 
-	updateStatusText(_id: IUser['_id'], statusText: string) {
+	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				statusText,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	updateStatusByAppId(appId: string, status: UserStatus) {
@@ -2804,13 +2804,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	setUsername(_id: IUser['_id'], username: string) {
+	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {
 		const update = { $set: { username } };
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	setEmail(_id: IUser['_id'], email: string, verified = false) {
+	setEmail(_id: IUser['_id'], email: string, verified = false, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				emails: [
@@ -2822,7 +2822,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	// 5
@@ -2846,24 +2846,24 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	setName(_id: IUser['_id'], name: string) {
+	setName(_id: IUser['_id'], name: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	unsetName(_id: IUser['_id']) {
+	unsetName(_id: IUser['_id'], options?: UpdateOptions) {
 		const update = {
 			$unset: {
 				name: 1 as const,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	setCustomFields(_id: IUser['_id'], fields: Record<string, string>) {
@@ -2877,7 +2877,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	setAvatarData(_id: IUser['_id'], origin: string, etag: string) {
+	setAvatarData(_id: IUser['_id'], origin: string, etag: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
@@ -2885,7 +2885,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	unsetAvatarData(_id: IUser['_id']) {
