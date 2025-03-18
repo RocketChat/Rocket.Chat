@@ -52,6 +52,7 @@ export type EditDepartmentProps = {
 };
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
+	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -85,8 +86,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const createDepartment = useEndpoint('POST', '/v1/livechat/department');
 	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
 	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:_id/agents`, { _id: id || '' });
-
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
 		try {
@@ -363,7 +362,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											name='unit'
 											control={control}
 											render={({ field: { value, onChange } }) => (
-												<AutoCompleteUnit disabled={!!id} haveNone value={value} onChange={onChange} />
+												<AutoCompleteUnit disabled={!!value} haveNone value={value} onChange={onChange} />
 											)}
 										/>
 									</FieldRow>
