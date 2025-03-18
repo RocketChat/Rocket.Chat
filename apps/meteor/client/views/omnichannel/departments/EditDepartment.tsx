@@ -18,7 +18,7 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -60,6 +60,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const { department, agents = [] } = data || {};
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const canManageUnits = usePermission('manage-livechat-units');
 
 	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });
 
@@ -74,6 +75,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
+	const [isUnitRequired, setUnitRequired] = useState(false);
 
 	const debouncedFallbackFilter = useDebouncedValue(fallbackFilter, 500);
 
@@ -356,13 +358,23 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</Field>
 
 								<Field>
-									<FieldLabel>{t('Unit')}</FieldLabel>
+									<FieldLabel required={isUnitRequired}>{t('Unit')}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='unit'
 											control={control}
+											rules={{ required: isUnitRequired }}
 											render={({ field: { value, onChange } }) => (
-												<AutoCompleteUnit disabled={!!value} haveNone value={value} onChange={onChange} />
+												<AutoCompleteUnit
+													disabled={!!value}
+													haveNone
+													value={value}
+													onChange={onChange}
+													onLoadItems={(list) => {
+														// NOTE: list.itemCount > 1 to account for the "None" option
+														setUnitRequired(!canManageUnits && list.itemCount > 1);
+													}}
+												/>
 											)}
 										/>
 									</FieldRow>
