@@ -15,7 +15,7 @@ const events = ['mousemove', 'mousedown', 'touchend', 'touchstart', 'keypress'];
  *
  */
 
-export const useIdleDetection = (callback: () => void, { time = 6000, awayOnWindowBlur = false } = {}) => {
+export const useIdleDetection = (callback: () => void, { time = 600000, awayOnWindowBlur = false } = {}) => {
 	const stableCallback = useEffectEvent(callback);
 
 	useEffect(() => {
