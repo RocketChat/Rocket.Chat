@@ -30,6 +30,7 @@ import type {
 	CountDocumentsOptions,
 	DeleteOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import { Rooms, Users } from '../index';
@@ -1444,7 +1445,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document> {
+	updateNameAndFnameById(
+		_id: string,
+		name: string,
+		fname: string,
+		options?: { session?: ClientSession },
+	): Promise<UpdateResult | Document> {
 		const query = { _id };
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1454,7 +1460,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
