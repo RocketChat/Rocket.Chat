@@ -648,30 +648,26 @@ describe('[Groups]', () => {
 				});
 		});
 
-		it('should prioritize roomId over roomName when both are provided', async () => {
+		it('should return error if both roomId and roomName are provided', async () => {
+			const thirdGroup = (await createGroup({ name: `test-priority-${Date.now()}` })).body.group;
 			const secondGroup = (await createGroup({ name: `test-priority-${Date.now()}` })).body.group;
-			await sendMessage({ message: { rid: secondGroup._id, msg: 'Unique message for prioritization test' } });
 
 			try {
 				await request
 					.get(api('groups.messages'))
 					.set(credentials)
 					.query({
-						roomId: testGroup._id,
+						roomId: thirdGroup._id,
 						roomName: secondGroup.name,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages).to.have.lengthOf(5);
-
-						const uniqueMessage = res.body.messages.find((msg: any) => msg.msg === 'Unique message for prioritization test');
-						expect(uniqueMessage).to.be.undefined;
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					});
 			} finally {
-				await deleteGroup({ roomName: secondGroup.name });
+				await Promise.all([deleteGroup({ roomName: secondGroup.name }), deleteGroup({ roomName: thirdGroup.name })]);
 			}
 		});
 	});
