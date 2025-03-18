@@ -3,7 +3,9 @@ import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -46,6 +48,7 @@ const _setEmail = async function (
 	shouldSendVerificationEmail = true,
 	verified = false,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ) {
 	email = email.trim();
 	if (!userId) {
@@ -58,7 +61,7 @@ const _setEmail = async function (
 
 	await validateEmailDomain(email);
 
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { session });
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}
@@ -79,14 +82,16 @@ const _setEmail = async function (
 	const oldEmail = user?.emails?.[0];
 
 	if (oldEmail) {
-		await _sendEmailChangeNotification(oldEmail.address, email);
+		await onceTransactionCommitedSuccessfully(async () => {
+			await _sendEmailChangeNotification(oldEmail.address, email);
+		}, session);
 	}
 
 	// Set new email
 	if (updater) {
 		updater.set('emails', [{ address: email, verified }]);
 	} else {
-		await Users.setEmail(user?._id, email, verified);
+		await Users.setEmail(user?._id, email, verified, { session });
 	}
 
 	const result = {
@@ -94,7 +99,9 @@ const _setEmail = async function (
 		email,
 	};
 	if (shouldSendVerificationEmail === true) {
-		await sendConfirmationEmail(result.email);
+		await onceTransactionCommitedSuccessfully(async () => {
+			await sendConfirmationEmail(result.email);
+		}, session);
 	}
 	return result;
 };

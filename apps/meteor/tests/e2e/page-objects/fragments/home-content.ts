@@ -274,6 +274,10 @@ export class HomeContent {
 		return this.page.getByRole('dialog', { name: 'Emoji picker' });
 	}
 
+	get scrollerEmojiPicker(): Locator {
+		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
+	}
+
 	getEmojiPickerTabByName(name: string) {
 		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
 	}
