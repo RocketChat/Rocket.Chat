@@ -40,10 +40,7 @@ Accounts.config({
  *
  * we are removing the status here because meteor send 'offline'
  */
-Object.assign(
-	Accounts._defaultPublishFields.projection,
-	(({ status, ...rest }) => rest)({ ...getBaseUserFields(), 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 }),
-);
+Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)({ ...getBaseUserFields(true) }));
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
