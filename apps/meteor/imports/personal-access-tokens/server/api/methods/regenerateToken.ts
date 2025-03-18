@@ -33,8 +33,6 @@ export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, use
 
 	await removePersonalAccessTokenOfUser(tokenName, userId);
 
-	// @ts-expect-error - This doesn't make sense. We're querying a user and expecting Mongo to return a token. We should look into this one
-	// or deprecate the method
 	return generatePersonalAccessTokenOfUser({ tokenName, userId, bypassTwoFactor: tokenExist.bypassTwoFactor || false });
 }
 
@@ -46,7 +44,7 @@ Meteor.methods<ServerMethods>({
 				method: 'personalAccessTokens:regenerateToken',
 			});
 		}
-
+		
 		return regeneratePersonalAccessTokenOfUser(tokenName, uid);
 	}),
 });
