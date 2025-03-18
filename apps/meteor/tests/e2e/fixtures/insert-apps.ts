@@ -4,7 +4,7 @@ import { Users } from './userStates';
 import { BASE_API_URL, BASE_URL } from '../config/constants';
 
 const APP_URL =
-	'https://github.com/RocketChat/Apps.RocketChat.Tester/blob/test-new-livechat-event/dist/appsrocketchattester_0.2.0.zip?raw=true';
+	'https://github.com/RocketChat/Apps.RocketChat.Tester/blob/test-new-livechat-event/dist/appsrocketchattester_0.3.0.zip?raw=true';
 
 export default async function insertApp(): Promise<void> {
 	const api = await request.newContext();

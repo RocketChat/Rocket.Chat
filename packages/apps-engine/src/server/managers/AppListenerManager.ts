@@ -168,7 +168,7 @@ interface IListenerExecutor {
     };
     [AppInterface.IPreLivechatRoomCreatePrevent]: {
         args: [ILivechatRoom];
-        result: boolean;
+        result: void;
     };
     [AppInterface.IPostLivechatRoomClosed]: {
         args: [ILivechatRoom];
@@ -1064,14 +1064,12 @@ export class AppListenerManager {
     }
 
     // Livechat
-    private async executePreLivechatRoomCreatePrevent(data: ILivechatRoom): Promise<boolean> {
+    private async executePreLivechatRoomCreatePrevent(data: ILivechatRoom): Promise<void> {
         for (const appId of this.listeners.get(AppInterface.IPreLivechatRoomCreatePrevent)) {
             const app = this.manager.getOneById(appId);
-            if (await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data)) {
-                return true;
-            }
+
+            await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data);
         }
-        return false;
     }
 
     private async executePostLivechatRoomStarted(data: ILivechatRoom): Promise<void> {

@@ -32,6 +32,7 @@ import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } fr
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 
 const logger = new Logger('QueueManager');
 
@@ -328,6 +329,16 @@ export class QueueManager {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
+
+		try {
+			await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
+		} catch (error: any) {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
 
 		// Transactional start of the conversation. This should prevent rooms from being created without inquiries and viceversa.
 		// All the actions that happened inside createLivechatRoom are now outside this transaction

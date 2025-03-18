@@ -15,5 +15,10 @@ export interface IPreLivechatRoomCreatePrevent {
      * @param persis An accessor to the App's persistence
      * @param modify An accessor to the modifier
      */
-    [AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT](room: ILivechatRoom, read: IRead, http: IHttp, persis: IPersistence): Promise<boolean>;
+    [AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT](
+        room: ILivechatRoom,
+        read: IRead,
+        http: IHttp,
+        persis: IPersistence
+    ): Promise<void>;
 }
