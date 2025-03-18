@@ -4,11 +4,17 @@ import { useCallback } from 'react';
 import { Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useRoomRolesStore } from '../../../../hooks/useRoomRolesStore';
-import { useUserRolesStore } from '../../../../hooks/useUserRolesStore';
+import { useUserRolesQuery } from '../../../../hooks/useUserRolesQuery';
 
 export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom['_id'], shouldLoadRoles: boolean): Array<string> => {
-	const userRoles = useUserRolesStore((state) => (userId ? state.rolesByUser.get(userId) : undefined));
-	const roomRoles = useRoomRolesStore((state) => state.records.find((record) => record.rid === roomId && record.u._id === userId));
+	const { data: userRoles } = useUserRolesQuery({
+		select: (records) => records.find((record) => record.uid === userId)?.roles,
+		enabled: shouldLoadRoles && !!userId,
+	});
+
+	const roomRoles = useRoomRolesStore((state) =>
+		userId ? state.records.find((record) => record.rid === roomId && record.u._id === userId) : undefined,
+	);
 
 	return useReactiveValue(
 		useCallback(() => {

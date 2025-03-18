@@ -18,3 +18,8 @@ export const subscriptionsQueryKeys = {
 export const cannedResponsesQueryKeys = {
 	all: ['canned-responses'] as const,
 };
+
+export const rolesQueryKeys = {
+	all: ['roles'] as const,
+	userRoles: () => [...rolesQueryKeys.all, 'user-roles'] as const,
+};
