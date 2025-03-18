@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatDepartment,
@@ -32,7 +33,6 @@ import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } fr
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
-import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 
 const logger = new Logger('QueueManager');
 

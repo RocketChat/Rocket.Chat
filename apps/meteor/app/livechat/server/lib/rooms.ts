@@ -1,11 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type {
-	ILivechatVisitor,
-	IMessage,
-	IOmnichannelRoomInfo,
-	SelectedAgent,
-	IOmnichannelRoomExtraData,
-} from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo, SelectedAgent, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatContacts, Messages, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { QueueManager } from './QueueManager';
