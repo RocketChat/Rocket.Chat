@@ -126,9 +126,8 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		async function sendUserData(client: Client, userId: string) {
-			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
 			const loggedUser = await Users.findOneById(userId, {
-				projection: { ...getBaseUserFields(), 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 },
+				projection: { ...getBaseUserFields(true) },
 			});
 			if (!loggedUser) {
 				return;
