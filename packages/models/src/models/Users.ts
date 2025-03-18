@@ -66,7 +66,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		});
 
-		// @ts-expect-error - not clear what this type wants from me
 		this.defaultFields = {
 			__rooms: 0,
 		};
