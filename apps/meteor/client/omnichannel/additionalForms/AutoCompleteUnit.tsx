@@ -25,7 +25,7 @@ const AutoCompleteUnit = ({ value, disabled = false, error, placeholder, haveNon
 	const { itemsList, loadMoreItems: loadMoreUnits } = useUnitsList(
 		useMemo(() => ({ text: debouncedUnitFilter, haveNone }), [debouncedUnitFilter, haveNone]),
 	);
-	const { phase: agentsPhase, itemCount: agentsTotal, items: unitsList } = useRecordList(itemsList);
+	const { phase: unitsPhase, itemCount: unitsTotal, items: unitsList } = useRecordList(itemsList);
 
 	return (
 		<PaginatedSelectFiltered
@@ -42,7 +42,7 @@ const AutoCompleteUnit = ({ value, disabled = false, error, placeholder, haveNon
 			value={value}
 			width='100%'
 			endReached={
-				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreUnits(start, Math.min(50, agentsTotal))
+				unitsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreUnits(start, Math.min(50, unitsTotal))
 			}
 		/>
 	);
