@@ -16,7 +16,6 @@ const SERVER_OPTIONS = {
 
 const RegisterServerStep = (): ReactElement => {
 	const { t, i18n } = useTranslation();
-
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
@@ -90,7 +89,7 @@ const RegisterServerStep = (): ReactElement => {
 					stepCount={maxSteps}
 					onSubmit={handleRegister}
 					currentStep={currentStep}
-					offline={isError || Boolean(!isPending && offline)}
+					offline={isError || (!isPending && offline)}
 				/>
 			)}
 		</I18nextProvider>
