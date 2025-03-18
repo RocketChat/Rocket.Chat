@@ -671,7 +671,7 @@ describe('[Groups]', () => {
 						expect(uniqueMessage).to.be.undefined;
 					});
 			} finally {
-				await deleteGroup({ groupId: secondGroup._id });
+				await deleteGroup({ roomName: secondGroup.name });
 			}
 		});
 	});
