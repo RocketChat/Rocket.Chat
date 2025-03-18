@@ -9,7 +9,8 @@ const ajv = new Ajv({
 });
 
 export type GroupsMessagesProps = PaginatedRequest<{
-	roomId: IRoom['_id'];
+	roomId?: IRoom['_id'];
+	roomName?: IRoom['name'];
 	mentionIds?: string;
 	starredIds?: string;
 	pinned?: boolean;
@@ -18,6 +19,9 @@ export type GroupsMessagesProps = PaginatedRequest<{
 
 const GroupsMessagesPropsSchema = withGroupBaseProperties({
 	roomId: {
+		type: 'string',
+	},
+	roomName: {
 		type: 'string',
 	},
 	mentionIds: {

@@ -633,6 +633,47 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('total', 1);
 				});
 		});
+
+		it('should return all messages from a group using roomName parameter', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({ roomName: testGroup.name })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages).to.have.lengthOf(5);
+				});
+		});
+
+		it('should prioritize roomId over roomName when both are provided', async () => {
+			const secondGroup = (await createGroup({ name: `test-priority-${Date.now()}` })).body.group;
+			await sendMessage({ message: { rid: secondGroup._id, msg: 'Unique message for prioritization test' } });
+
+			try {
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({
+						roomId: testGroup._id,
+						roomName: secondGroup.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						const uniqueMessage = res.body.messages.find((msg: any) => msg.msg === 'Unique message for prioritization test');
+						expect(uniqueMessage).to.be.undefined;
+					});
+			} finally {
+				await deleteGroup({ groupId: secondGroup._id });
+			}
+		});
 	});
 
 	describe('/groups.invite', async () => {
