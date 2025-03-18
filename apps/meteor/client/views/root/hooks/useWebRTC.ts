@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import type { CandidateData, DescriptionData, JoinData } from '../../../../app/webrtc/client/WebRTCClass';
 import { WebRTC } from '../../../../app/webrtc/client/WebRTCClass';
+import { WEB_RTC_EVENTS } from '../../../../app/webrtc/lib/constants';
 
 export const useWebRTC = () => {
 	const uid = useUserId();
@@ -18,20 +19,21 @@ export const useWebRTC = () => {
 
 			if (!webrtc) return;
 
-			const handleWebRTCTypeObject = {
-				candidate: () => webrtc.onUserStream('candidate', data as CandidateData),
-				description: () => webrtc.onUserStream('description', data as DescriptionData),
-				join: () => webrtc.onUserStream('join', data as JoinData),
-				default: () => console.warn(`WebRTC: Received unexpected event type: ${type}`),
-			};
-
-			(handleWebRTCTypeObject[type] || handleWebRTCTypeObject.default)();
+			switch (type) {
+				case 'candidate':
+					webrtc.onUserStream('candidate', data as CandidateData);
+					break;
+				case 'description':
+					webrtc.onUserStream('description', data as DescriptionData);
+					break;
+				case 'join':
+					webrtc.onUserStream('join', data as JoinData);
+					break;
+				default:
+					console.warn(`WebRTC: Received unexpected event type: ${type}`);
+			}
 		};
 
-		const handleStopNotifyUser = notifyUser(`${uid}/webrtc`, handleNotifyUser);
-
-		return () => {
-			handleStopNotifyUser();
-		};
+		return notifyUser(`${uid}/${WEB_RTC_EVENTS.WEB_RTC}`, handleNotifyUser);
 	}, [notifyUser, uid]);
 };
