@@ -15,7 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
 type RoomFilesProps = {
 	loading: boolean;
@@ -84,18 +84,19 @@ const RoomFiles = ({
 				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-						<Virtuoso
-							style={{
-								height: '100%',
-								width: '100%',
-							}}
-							totalCount={total}
-							endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
-							overscan={50}
-							data={filesItems}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: '100%',
+									width: '100%',
+								}}
+								totalCount={total}
+								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
+								overscan={50}
+								data={filesItems}
+								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
