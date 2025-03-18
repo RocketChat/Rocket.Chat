@@ -21,6 +21,9 @@ export interface IPersonalAccessToken extends ILoginToken {
 	bypassTwoFactor?: boolean;
 }
 
+export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
+	'type' in token && token.type === 'personalAccessToken';
+
 export interface IUserEmailVerificationToken {
 	token: string;
 	address: string;
