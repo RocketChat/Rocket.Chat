@@ -1,23 +1,20 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 
-import { RoomRoles, Roles } from '../../../../../app/models/client';
+import { Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useRoomRolesStore } from '../../../../hooks/useRoomRolesStore';
 import { useUserRolesStore } from '../../../../hooks/useUserRolesStore';
 
 export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom['_id'], shouldLoadRoles: boolean): Array<string> => {
 	const userRoles = useUserRolesStore((state) => (userId ? state.rolesByUser.get(userId) : undefined));
+	const roomRoles = useRoomRolesStore((state) => state.records.find((record) => record.rid === roomId && record.u._id === userId));
 
 	return useReactiveValue(
 		useCallback(() => {
 			if (!shouldLoadRoles || !userId) {
 				return [];
 			}
-
-			const roomRoles = RoomRoles.findOne({
-				'u._id': userId,
-				'rid': roomId,
-			});
 
 			const roles = [...(userRoles ?? []), ...(roomRoles?.roles || [])];
 
@@ -38,6 +35,6 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 				},
 			).fetch();
 			return result.map(({ description }) => description);
-		}, [userId, roomId, shouldLoadRoles, userRoles]),
+		}, [userId, shouldLoadRoles, userRoles, roomRoles]),
 	);
 };

@@ -2,50 +2,15 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { RoomRoles, Messages } from '../../../../../app/models/client';
-
-// const roomRoles = RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>;
+import { useRoomRolesStore } from '../../../../hooks/useRoomRolesStore';
 
 export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 	const getRoomRoles = useMethod('getRoomRoles');
 
 	useEffect(() => {
 		getRoomRoles(rid).then((results) => {
-			Array.from(results).forEach(({ _id, ...data }) => {
-				const {
-					rid,
-					u: { _id: uid },
-				} = data;
-				RoomRoles.upsert({ rid, 'u._id': uid }, { $set: data });
-			});
+			useRoomRolesStore.getState().sync(results);
 		});
-	}, [getRoomRoles, rid]);
-
-	useEffect(() => {
-		const rolesObserve = RoomRoles.find({ rid }).observe({
-			added: (role) => {
-				if (!role.u?._id) {
-					return;
-				}
-				Messages.update({ rid, 'u._id': role.u._id }, { $addToSet: { roles: role._id } }, { multi: true });
-			},
-			changed: (role) => {
-				if (!role.u?._id) {
-					return;
-				}
-				Messages.update({ rid, 'u._id': role.u._id }, { $inc: { rerender: 1 } }, { multi: true });
-			},
-			removed: (role) => {
-				if (!role.u?._id) {
-					return;
-				}
-				Messages.update({ rid, 'u._id': role.u._id }, { $pull: { roles: role._id } }, { multi: true });
-			},
-		});
-
-		return (): void => {
-			rolesObserve.stop();
-		};
 	}, [getRoomRoles, rid]);
 
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
@@ -53,21 +18,17 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 	useEffect(
 		() =>
 			subscribeToNotifyLoggedIn('roles-change', ({ type, ...role }) => {
-				if (!role.scope) {
-					return;
-				}
-
-				if (!role.u?._id) {
+				if (!role.scope || !role.u?._id) {
 					return;
 				}
 
 				switch (type) {
 					case 'added':
-						RoomRoles.upsert({ 'rid': role.scope, 'u._id': role.u._id }, { $setOnInsert: { u: role.u }, $addToSet: { roles: role._id } });
+						useRoomRolesStore.getState().addRole({ rid: role.scope, uid: role.u._id }, role._id);
 						break;
 
 					case 'removed':
-						RoomRoles.update({ 'rid': role.scope, 'u._id': role.u._id }, { $pull: { roles: role._id } });
+						useRoomRolesStore.getState().removeRole({ rid: role.scope, uid: role.u._id }, role._id);
 						break;
 				}
 			}),
@@ -76,21 +37,12 @@ export const useRoomRolesManagement = (rid: IRoom['_id']): void => {
 
 	useEffect(
 		() =>
-			subscribeToNotifyLoggedIn('Users:NameChanged', ({ _id: uid, name }: Partial<IUser>) => {
-				RoomRoles.update(
-					{
-						'u._id': uid,
-					},
-					{
-						$set: {
-							'u.name': name,
-						},
-					},
-					{
-						multi: true,
-					},
-				);
+			subscribeToNotifyLoggedIn('Users:NameChanged', ({ _id: uid, username, name }: Partial<IUser>) => {
+				if (!uid) {
+					return;
+				}
+				useRoomRolesStore.getState().updateUser({ rid, uid }, { username, name });
 			}),
-		[subscribeToNotifyLoggedIn],
+		[rid, subscribeToNotifyLoggedIn],
 	);
 };
