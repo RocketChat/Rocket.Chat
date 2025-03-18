@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import type { DeleteResult, UpdateResult } from 'mongodb';
@@ -39,6 +40,7 @@ const statusEventManagerMock = {
 	setupAppointmentStatusChange: sinon.stub().resolves(),
 	removeCronJobs: sinon.stub().resolves(),
 	cancelUpcomingStatusChanges: sinon.stub().resolves(),
+	handleOverlappingEvents: sinon.stub().resolves(),
 };
 
 const getUserPreferenceMock = sinon.stub();
@@ -118,6 +120,7 @@ describe('CalendarService', () => {
 			setupAppointmentStatusChange: sinon.stub().resolves(),
 			removeCronJobs: sinon.stub().resolves(),
 			cancelUpcomingStatusChanges: sinon.stub().resolves(),
+			handleOverlappingEvents: sinon.stub().resolves(),
 		};
 
 		Object.assign(statusEventManagerMock, freshMocks);
@@ -679,6 +682,89 @@ describe('CalendarService', () => {
 				sinon.assert.notCalled(service.sendCurrentNotifications as sinon.SinonStub);
 				sinon.assert.calledOnce(cronJobsMock.addAtTimestamp);
 			});
+		});
+	});
+
+	describe('Overlapping events', () => {
+		it('should check for overlapping events when creating a new event', async () => {
+			statusEventManagerMock.handleOverlappingEvents.resolves({ shouldProceed: true });
+
+			const eventData = {
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				description: fakeDescription,
+			};
+
+			await service.create(eventData);
+
+			sinon.assert.notCalled(statusEventManagerMock.handleOverlappingEvents);
+			sinon.assert.calledOnce(statusEventManagerMock.setupAppointmentStatusChange);
+			sinon.assert.calledWith(
+				statusEventManagerMock.setupAppointmentStatusChange,
+				sinon.match.any,
+				fakeUserId,
+				fakeStartTime,
+				fakeEndTime,
+				UserStatus.BUSY,
+				true,
+			);
+		});
+
+		it('should handle overlapping events during update', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			const newEndTime = new Date('2025-01-01T12:00:00Z');
+
+			await service.update(fakeEventId, {
+				endTime: newEndTime,
+			});
+
+			sinon.assert.calledWith(statusEventManagerMock.removeCronJobs, fakeEventId, fakeUserId);
+			sinon.assert.calledWith(
+				statusEventManagerMock.setupAppointmentStatusChange,
+				fakeEventId,
+				fakeUserId,
+				fakeStartTime,
+				newEndTime,
+				UserStatus.BUSY,
+				true,
+			);
+		});
+
+		it('should not set up status change if no endTime is provided when updating', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				subject: fakeSubject,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			await service.update(fakeEventId, {
+				subject: 'New Subject',
+			});
+
+			sinon.assert.notCalled(statusEventManagerMock.setupAppointmentStatusChange);
+		});
+
+		it('should cancel upcoming status changes for a user', async () => {
+			const customDate = new Date('2025-02-01');
+
+			await service.cancelUpcomingStatusChanges(fakeUserId, customDate);
+
+			sinon.assert.calledOnce(statusEventManagerMock.cancelUpcomingStatusChanges);
+			sinon.assert.calledWith(statusEventManagerMock.cancelUpcomingStatusChanges, fakeUserId, customDate);
 		});
 	});
 });

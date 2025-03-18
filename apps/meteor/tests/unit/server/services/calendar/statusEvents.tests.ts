@@ -170,7 +170,12 @@ describe('StatusEventManager', () => {
 
 	describe('#handleOverlappingEvents', () => {
 		it('should return shouldProceed=true when no overlapping events', async () => {
-			CalendarEventMock.find.returns({
+			// Clear previous calls
+			CalendarEventMock.findOverlappingEvents.reset();
+			cronJobsMock.addAtTimestamp.reset();
+
+			// Set up the mock to return no overlapping events
+			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([]),
 			});
 
@@ -178,6 +183,7 @@ describe('StatusEventManager', () => {
 
 			expect(result).to.deep.equal({ shouldProceed: true });
 			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(0);
+			sinon.assert.calledWith(CalendarEventMock.findOverlappingEvents, fakeEventId, fakeUserId, fakeStartTime, fakeEndTime);
 		});
 
 		it('should handle case when current event is not the latest ending', async () => {
@@ -227,6 +233,84 @@ describe('StatusEventManager', () => {
 			expect(result).to.deep.equal({ shouldProceed: true });
 			expect(cronJobsMock.remove.callCount).to.equal(1);
 			expect(cronJobsMock.remove.firstCall.args[0]).to.include('earlierEvent');
+		});
+
+		it('should handle multiple overlapping events with different end times', async () => {
+			const earlierEvent = {
+				_id: 'earlierEvent',
+				startTime: new Date('2025-01-01T09:00:00Z'),
+				endTime: new Date('2025-01-01T10:30:00Z'), // Earlier than fakeEndTime
+			};
+
+			const laterEvent = {
+				_id: 'laterEvent',
+				startTime: new Date('2025-01-01T10:30:00Z'),
+				endTime: new Date('2025-01-01T12:00:00Z'), // Later than fakeEndTime
+			};
+
+			cronJobsMock.has.reset();
+			cronJobsMock.remove.reset();
+			cronJobsMock.addAtTimestamp.reset();
+
+			const currentEventJobId = `calendar-presence-status-${fakeEventId}-${fakeUserId}`;
+			cronJobsMock.has.withArgs(currentEventJobId).resolves(false);
+
+			CalendarEventMock.findOverlappingEvents.returns({
+				toArray: sinon.stub().resolves([earlierEvent, laterEvent]),
+			});
+
+			const result = await manager.handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
+
+			expect(result).to.deep.equal({ shouldProceed: false });
+
+			expect(cronJobsMock.has.called).to.be.true;
+
+			expect(cronJobsMock.addAtTimestamp.called).to.be.true;
+			expect(cronJobsMock.addAtTimestamp.getCall(0).args[0]).to.equal(currentEventJobId);
+			expect(cronJobsMock.addAtTimestamp.getCall(0).args[1]).to.equal(fakeStartTime);
+		});
+
+		it('should handle an event completely contained within the current event', async () => {
+			const containedEvent = {
+				_id: 'containedEvent',
+				startTime: new Date('2025-01-01T10:15:00Z'), // After fakeStartTime
+				endTime: new Date('2025-01-01T10:45:00Z'), // Before fakeEndTime
+			};
+
+			cronJobsMock.has.resetHistory();
+			cronJobsMock.remove.resetHistory();
+
+			cronJobsMock.has.withArgs(`calendar-presence-status-${containedEvent._id}-${fakeUserId}`).resolves(true);
+
+			CalendarEventMock.findOverlappingEvents.returns({
+				toArray: sinon.stub().resolves([containedEvent]),
+			});
+
+			const result = await manager.handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
+
+			expect(result).to.deep.equal({ shouldProceed: true });
+			expect(cronJobsMock.remove.callCount).to.equal(1);
+			expect(cronJobsMock.remove.firstCall.args[0]).to.include('containedEvent');
+		});
+
+		it('should handle an event that completely contains the current event', async () => {
+			const containingEvent = {
+				_id: 'containingEvent',
+				startTime: new Date('2025-01-01T09:00:00Z'), // Before fakeStartTime
+				endTime: new Date('2025-01-01T12:00:00Z'), // After fakeEndTime
+			};
+
+			cronJobsMock.has.resetHistory();
+			cronJobsMock.addAtTimestamp.resetHistory();
+
+			CalendarEventMock.findOverlappingEvents.returns({
+				toArray: sinon.stub().resolves([containingEvent]),
+			});
+
+			const result = await manager.handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
+
+			expect(result).to.deep.equal({ shouldProceed: false });
+			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(1);
 		});
 	});
 
@@ -308,7 +392,6 @@ describe('StatusEventManager', () => {
 		});
 
 		it('should use UserStatus.BUSY as default if no status provided', async () => {
-			// Reset history to get fresh call counts
 			UsersMock.updateStatusAndStatusDefault.resetHistory();
 
 			await manager.applyStatusChange({
@@ -328,7 +411,6 @@ describe('StatusEventManager', () => {
 			const previousStatus = UserStatus.ONLINE;
 			const newStatus = UserStatus.AWAY;
 
-			// Reset stubs to get fresh call counts
 			UsersMock.updateStatusAndStatusDefault.resetHistory();
 			(api.broadcast as sinon.SinonStub).resetHistory();
 
@@ -357,7 +439,6 @@ describe('StatusEventManager', () => {
 		});
 
 		it('should schedule status revert when shouldScheduleRemoval=true', async () => {
-			// Reset stubs
 			const setupStub = sandbox.stub(manager, 'setupAppointmentStatusChange').resolves();
 			const previousStatus = UserStatus.ONLINE;
 
@@ -390,10 +471,9 @@ describe('StatusEventManager', () => {
 				{ _id: 'event2', uid: fakeUserId },
 			];
 
-			// Reset and set up mocks for this test
 			cronJobsMock.has.resetHistory();
 			cronJobsMock.remove.resetHistory();
-			cronJobsMock.has.resolves(true); // All job checks return true
+			cronJobsMock.has.resolves(true);
 
 			CalendarEventMock.findEligibleEventsForCancelation.returns({
 				toArray: sinon.stub().resolves(events),
