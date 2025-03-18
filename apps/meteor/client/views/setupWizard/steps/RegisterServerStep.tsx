@@ -90,7 +90,7 @@ const RegisterServerStep = (): ReactElement => {
 					stepCount={maxSteps}
 					onSubmit={handleRegister}
 					currentStep={currentStep}
-					offline={isError || (!isPending && offline)}
+					offline={isError || Boolean(!isPending && offline)}
 				/>
 			)}
 		</I18nextProvider>
