@@ -2,10 +2,11 @@ import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typ
 
 import * as Federation from './Federation';
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { useRoomRolesStore } from '../../hooks/useRoomRolesStore';
+import { queryClient } from '../queryClient';
+import { roomsQueryKeys } from '../queryKeys';
 
 afterEach(() => {
-	useRoomRolesStore.setState({ records: [] });
+	queryClient.resetQueries();
 });
 
 describe('#actionAllowed()', () => {
@@ -46,12 +47,10 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['owner'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [
-						{ rid: 'room-id', u: { _id: me }, roles: myRole },
-						{ rid: 'room-id', u: { _id: them }, roles: theirRole },
-					],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 			});
 
 			it('should return true if the user want to remove himself as an owner', () => {
@@ -73,12 +72,10 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to remove another owners as an owner', () => {
-				useRoomRolesStore.setState({
-					records: [
-						{ rid: 'room-id', u: { _id: me }, roles: myRole },
-						{ rid: 'room-id', u: { _id: them }, roles: theirRole },
-					],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 				expect(
 					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
 						u: { _id: me },
@@ -101,12 +98,10 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['moderator'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [
-						{ rid: 'room-id', u: { _id: me }, roles: myRole },
-						{ rid: 'room-id', u: { _id: them }, roles: theirRole },
-					],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 			});
 
 			it('should return true if the user want to add/remove moderators as an owner', () => {
@@ -174,12 +169,10 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['owner'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [
-						{ rid: 'room-id', u: { _id: me }, roles: myRole },
-						{ rid: 'room-id', u: { _id: them }, roles: theirRole },
-					],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 			});
 
 			it('should return false if the user want to add/remove owners as a moderator', () => {
@@ -223,12 +216,10 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['moderator'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [
-						{ rid: 'room-id', u: { _id: me }, roles: myRole },
-						{ rid: 'room-id', u: { _id: them }, roles: theirRole },
-					],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 			});
 
 			it('should return false if the user want to add/remove moderator as an owner', () => {
@@ -312,9 +303,7 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['owner'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [{ rid: 'room-id', u: { _id: them }, roles: theirRole }],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [{ rid: 'room-id', u: { _id: them }, roles: theirRole }]);
 			});
 
 			it('should return false if the user want to add/remove owners as a normal user', () => {
@@ -346,9 +335,7 @@ describe('#actionAllowed()', () => {
 			const theirRole = ['owner'];
 
 			beforeEach(() => {
-				useRoomRolesStore.setState({
-					records: [{ rid: 'room-id', u: { _id: them }, roles: theirRole }],
-				});
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [{ rid: 'room-id', u: { _id: them }, roles: theirRole }]);
 			});
 
 			it('should return false if the user want to add/remove owner as a normal user', () => {

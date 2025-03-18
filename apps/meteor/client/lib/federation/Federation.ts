@@ -2,7 +2,9 @@ import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typ
 import { isRoomFederated, isDirectMessageRoom, isPublicRoom } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { useRoomRolesStore } from '../../hooks/useRoomRolesStore';
+import type { RoomRoles } from '../../hooks/useRoomRolesQuery';
+import { queryClient } from '../queryClient';
+import { roomsQueryKeys } from '../queryKeys';
 
 const allowedUserActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.REMOVE_USER,
@@ -39,8 +41,11 @@ export const actionAllowed = (
 		return false;
 	}
 
+	// TODO: there is no guarantee that the room roles are already loaded
 	const displayingUserRoomRoles =
-		useRoomRolesStore.getState().records.find((record) => record.rid === room._id && record.u._id === displayingUserId)?.roles || [];
+		queryClient
+			.getQueryData<RoomRoles[]>(roomsQueryKeys.roles(room._id))
+			?.find((record) => record.rid === room._id && record.u._id === displayingUserId)?.roles || [];
 	const loggedInUserRoomRoles = userSubscription.roles || [];
 
 	if (loggedInUserRoomRoles.includes('owner')) {

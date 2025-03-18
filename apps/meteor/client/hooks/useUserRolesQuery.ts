@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 import { rolesQueryKeys } from '../lib/queryKeys';
 
-type UserRoles = {
+export type UserRoles = {
 	uid: IUser['_id'];
 	roles: IRole['_id'][];
 };
@@ -34,7 +34,7 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 					const { _id: roleId, scope, u } = role;
 					if (!!scope || !u) return;
 
-					queryClient.setQueryData(rolesQueryKeys.userRoles(), (data: UserRoles[] | undefined = []) => {
+					queryClient.setQueryData(rolesQueryKeys.userRoles(), (data: UserRoles[] | undefined = []): UserRoles[] => {
 						const index = data?.findIndex((record) => record.uid === u._id) ?? -1;
 
 						if (index < 0) {
@@ -54,7 +54,7 @@ export const useUserRolesQuery = <TData = UserRoles[]>(options?: UseUserRolesQue
 					const { _id: roleId, scope, u } = role;
 					if (!!scope || !u) return;
 
-					queryClient.setQueryData(rolesQueryKeys.userRoles(), (data: UserRoles[] | undefined = []) => {
+					queryClient.setQueryData(rolesQueryKeys.userRoles(), (data: UserRoles[] | undefined = []): UserRoles[] => {
 						const index = data?.findIndex((record) => record.uid === u._id) ?? -1;
 
 						if (index < 0) return data;
