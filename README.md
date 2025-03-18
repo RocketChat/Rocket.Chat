@@ -6,6 +6,7 @@
   The ultimate Free Open Source Solution for team communications
 </h1>
 
+### Local setup tested successfully!
 <p align="center">
   <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version">
   <img src="https://img.shields.io/github/actions/workflow/status/RocketChat/Rocket.Chat/build_and_test.yml">
