@@ -13,15 +13,7 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import {
-	LivechatContacts,
-	LivechatDepartment,
-	LivechatDepartmentAgents,
-	LivechatInquiry,
-	LivechatRooms,
-	LivechatVisitors,
-	Users,
-} from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -184,7 +176,6 @@ export class QueueManager {
 			if (defaultAgent) {
 				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
 				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
-				await LivechatVisitors.updateOne({ _id: inquiry.v._id }, { $set: { agentId: defaultAgent.agentId } });
 			}
 
 			return this.dispatchInquiryQueued(inquiry, room, defaultAgent);
