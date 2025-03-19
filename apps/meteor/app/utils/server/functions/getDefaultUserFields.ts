@@ -1,4 +1,4 @@
-import { getBaseUserFields } from '@rocket.chat/rest-typings';
+import { getBaseUserFields } from './getBaseUserFields';
 
 type UserFields = {
 	[k: string]: number;

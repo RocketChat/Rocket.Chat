@@ -241,7 +241,6 @@ export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
 export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
 export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
-export * from './helpers/getBaseUserFields';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
