@@ -1,4 +1,3 @@
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 export async function testPrivateMethod<T extends (...args: any[]) => any>(
