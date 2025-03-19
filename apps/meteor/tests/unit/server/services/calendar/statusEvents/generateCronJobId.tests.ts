@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 
-const { generateCronJobId } = proxyquire.noCallThru().load('../../../../../server/services/calendar/statusEvents/generateCronJobId', {});
+const { generateCronJobId } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/generateCronJobId', {});
 
 describe('#generateCronJobId', () => {
 	const fakeEventId = 'eventId123';

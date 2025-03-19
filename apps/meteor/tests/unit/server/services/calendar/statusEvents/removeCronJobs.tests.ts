@@ -9,11 +9,11 @@ const cronJobsMock = {
 	addAtTimestamp: sinon.stub().resolves(),
 };
 
-const { removeCronJobs } = proxyquire.noCallThru().load('../../../../../server/services/calendar/statusEvents/removeCronJobs', {
+const { removeCronJobs } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/removeCronJobs', {
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
 });
 
-describe('StatusEventManager', () => {
+describe('Calendar.StatusEvents', () => {
 	const fakeEventId = 'eventId123';
 	const fakeUserId = 'userId456';
 

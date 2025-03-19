@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 
-const { getShiftedTime } = proxyquire.noCallThru().load('../../../../../server/services/calendar/utils/getShiftedTime', {});
+const { getShiftedTime } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/utils/getShiftedTime', {});
 
 describe('#getShiftedTime', () => {
 	it('should shift time forward by minutes', () => {
