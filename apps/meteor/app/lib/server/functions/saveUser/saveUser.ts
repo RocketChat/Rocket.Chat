@@ -176,7 +176,7 @@ const _saveUser = (session?: ClientSession) =>
 			if (session && options?.auditStore) {
 				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
 				// updater will be commited by this point, so it won't affect the external user activation/deactivation
-				if (userData.active) {
+				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
 				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
