@@ -26,6 +26,7 @@ Connected.decorators = [
 		status: 'connected',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -36,6 +37,7 @@ Connecting.decorators = [
 		status: 'connecting',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -46,6 +48,7 @@ Failed.decorators = [
 		status: 'failed',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -56,6 +59,7 @@ Waiting.decorators = [
 		status: 'waiting',
 		retryTime: Date.now() + 300000,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -66,5 +70,6 @@ Offline.decorators = [
 		status: 'offline',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
