@@ -92,7 +92,7 @@ export const startupApp = async function startupApp() {
 		}
 
 		const model = Apps._logModel;
-		await model!.resetTTLIndex(expireAfterSeconds);
+		await model?.resetTTLIndex(expireAfterSeconds);
 	});
 
 	Apps.initialize();
@@ -100,10 +100,10 @@ export const startupApp = async function startupApp() {
 	void Apps.load();
 
 	settings.change<'filesystem' | 'gridfs'>('Apps_Framework_Source_Package_Storage_Type', (value) =>
-		Apps.getAppSourceStorage()!.setStorage(value),
+		Apps.getAppSourceStorage()?.setStorage(value),
 	);
 
 	settings.change<string>('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) =>
-		Apps.getAppSourceStorage()!.setFileSystemStoragePath(value),
+		Apps.getAppSourceStorage()?.setFileSystemStoragePath(value),
 	);
 };
