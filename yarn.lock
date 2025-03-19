@@ -8323,9 +8323,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-toastbar@npm:~0.34.0":
-  version: 0.34.0
-  resolution: "@rocket.chat/fuselage-toastbar@npm:0.34.0"
+"@rocket.chat/fuselage-toastbar@npm:^0.35.0":
+  version: 0.35.0
+  resolution: "@rocket.chat/fuselage-toastbar@npm:0.35.0"
   dependencies:
     react-timing-hooks: "npm:~4.0.2"
   peerDependencies:
@@ -8335,7 +8335,7 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/09523efcd06151106d060405e92593af03eab2c619223bd02ace6f142a1481467d31b715a4c1208faf2ca76f2c3cdf7a4b8beee0a4f37d84c25fd3c346ac29b7
+  checksum: 10/d3d1a89ecc490ad0c913be39694855ffcf603a800c58231cf2806fedbf20bd254560dde82ae9093a523bb58c548f9e6a80d9c91b9b44e0f7f06e03d6c804d7a4
   languageName: node
   linkType: hard
 
@@ -8821,7 +8821,7 @@ __metadata:
     "@rocket.chat/fuselage": "npm:~0.61.0"
     "@rocket.chat/fuselage-hooks": "npm:~0.35.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
-    "@rocket.chat/fuselage-toastbar": "npm:~0.34.0"
+    "@rocket.chat/fuselage-toastbar": "npm:^0.35.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -8943,6 +8943,7 @@ __metadata:
     "@types/strict-uri-encode": "npm:^2.0.2"
     "@types/supertest": "npm:^6.0.2"
     "@types/supports-color": "npm:~7.2.1"
+    "@types/swagger-ui-express": "npm:^4.1.8"
     "@types/textarea-caret": "npm:^3.0.3"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@types/underscore": "npm:^1.13.0"
@@ -9134,6 +9135,7 @@ __metadata:
     stylelint-selector-bem-pattern: "npm:^4.0.1"
     supertest: "npm:^7.0.0"
     supports-color: "npm:~7.2.0"
+    swagger-ui-express: "npm:^5.0.1"
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -9149,8 +9151,8 @@ __metadata:
     url-polyfill: "npm:^1.1.12"
     uuid: "npm:^11.0.3"
     webdav: "npm:^4.11.4"
-    xml-crypto: "npm:~3.1.0"
-    xml-encryption: "npm:~3.0.2"
+    xml-crypto: "npm:~3.2.1"
+    xml-encryption: "npm:~3.1.0"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     zod: "npm:^3.24.1"
@@ -10035,7 +10037,7 @@ __metadata:
     "@rocket.chat/fuselage": "npm:~0.61.0"
     "@rocket.chat/fuselage-hooks": "npm:~0.35.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
-    "@rocket.chat/fuselage-toastbar": "npm:~0.34.0"
+    "@rocket.chat/fuselage-toastbar": "npm:^0.35.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": "npm:^0.40.0"
@@ -10258,6 +10260,13 @@ __metadata:
   version: 1.2.4
   resolution: "@samchon/openapi@npm:1.2.4"
   checksum: 10/7d16be3291ee7cd9bd331832ca1cb3abab017593d72e4a7b4f6884ae9f7a2a89ee5f214a233c7a3cdc5f7f5eec10cef7ef87c6330fa73cb5665b587579b93d95
+  languageName: node
+  linkType: hard
+
+"@scarf/scarf@npm:=1.4.0":
+  version: 1.4.0
+  resolution: "@scarf/scarf@npm:1.4.0"
+  checksum: 10/1b39a18fa29e91cfbc134c588e20c5f01a1b21ec4473614123801155b48378e9c3bf72adaca8c67e433ae951ab653268e9502cc5733230d8927532f74a6b89c9
   languageName: node
   linkType: hard
 
@@ -13122,6 +13131,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/swagger-ui-express@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "@types/swagger-ui-express@npm:4.1.8"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/serve-static": "npm:*"
+  checksum: 10/bf4d84fb21c11e820238685cdc102f8d5e82d4382df9450a358bf80f70f5f0699c87645a291c52beee1eba5c0ee594e03714b236f1a0737272941a8708218f8f
+  languageName: node
+  linkType: hard
+
 "@types/tern@npm:*":
   version: 0.23.4
   resolution: "@types/tern@npm:0.23.4"
@@ -14134,14 +14153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:0.8.7":
-  version: 0.8.7
-  resolution: "@xmldom/xmldom@npm:0.8.7"
-  checksum: 10/612c12518f25c2c06c1505ea0acca535a6f1293cae594e6329b18b112b720fca7fceeadb65ea203faa081933306a5b0f0967c3c728c77c4b68eccfa0d5537d3c
-  languageName: node
-  linkType: hard
-
-"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5":
+"@xmldom/xmldom@npm:^0.8.10, @xmldom/xmldom@npm:^0.8.5, @xmldom/xmldom@npm:^0.8.8":
   version: 0.8.10
   resolution: "@xmldom/xmldom@npm:0.8.10"
   checksum: 10/62400bc5e0e75b90650e33a5ceeb8d94829dd11f9b260962b71a784cd014ddccec3e603fe788af9c1e839fa4648d8c521ebd80d8b752878d3a40edabc9ce7ccf
@@ -34863,6 +34875,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"swagger-ui-dist@npm:>=5.0.0":
+  version: 5.20.1
+  resolution: "swagger-ui-dist@npm:5.20.1"
+  dependencies:
+    "@scarf/scarf": "npm:=1.4.0"
+  checksum: 10/6bd82f8bf2bc6d5ba062c1e3d3cb0ef057403784afb009ff0a582f59b14a24c5c8e8b3c4541251d1562f259e6a8ffca42ac9d12714691b2b35a1b35f56df2489
+  languageName: node
+  linkType: hard
+
+"swagger-ui-express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "swagger-ui-express@npm:5.0.1"
+  dependencies:
+    swagger-ui-dist: "npm:>=5.0.0"
+  peerDependencies:
+    express: ">=4.0.0 || >=5.0.0-beta"
+  checksum: 10/13d95e6683214717f98dd53063bf398751ea798e971c43ece949b67a45102cc48995da319547002b2acc262d39f1994bd4af39828d99e95658966d6b332b585e
+  languageName: node
+  linkType: hard
+
 "swiper@npm:11.1.14":
   version: 11.1.14
   resolution: "swiper@npm:11.1.14"
@@ -37819,24 +37851,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-crypto@npm:~3.1.0":
-  version: 3.1.0
-  resolution: "xml-crypto@npm:3.1.0"
+"xml-crypto@npm:~3.2.1":
+  version: 3.2.1
+  resolution: "xml-crypto@npm:3.2.1"
   dependencies:
-    "@xmldom/xmldom": "npm:0.8.7"
+    "@xmldom/xmldom": "npm:^0.8.8"
     xpath: "npm:0.0.32"
-  checksum: 10/1cabdf63f20ab730a8094b1f3b40b3731c5f36e153ba7a55bcc3b9ccd328bacadeeed42ae59011c6700c43032bb6e1664f790fb45656ee10c29cdb80b97cab16
+  checksum: 10/488fe2a8cea138f8a49ac1bbc62613379d8e31802d5da2a865a5553f450fa5962ae7e37dac24a96c732d4df5adf3b03d3284c7e72d16cddc854cf62b1ecef315
   languageName: node
   linkType: hard
 
-"xml-encryption@npm:~3.0.2":
-  version: 3.0.2
-  resolution: "xml-encryption@npm:3.0.2"
+"xml-encryption@npm:~3.1.0":
+  version: 3.1.0
+  resolution: "xml-encryption@npm:3.1.0"
   dependencies:
     "@xmldom/xmldom": "npm:^0.8.5"
     escape-html: "npm:^1.0.3"
     xpath: "npm:0.0.32"
-  checksum: 10/081a42ca7d7e81d23229f2a1149313e934d872c33da57eda25113a613f3940ff66f73e4e2f62d37a3a38c3c7d291784047b5b729988f346fef96c7124f6dbe83
+  checksum: 10/c84c1e11692181c24a1c30123fed4fa31015c58994bbdcf091f07fa79f0fb809774b1533d191c4739bf76bb0fb95f223d393e84cc48417480a1896b2b689373b
   languageName: node
   linkType: hard
 
