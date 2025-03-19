@@ -233,9 +233,9 @@ const api = {
 		await evaluateChangesAndLoadConfigByFields(async () => {
 			if (!data.token) {
 				data.token = createToken();
-
-				Livechat.unsubscribeAll();
 			}
+
+			Livechat.unsubscribeAll();
 
 			await createOrUpdateGuest(data);
 		});
