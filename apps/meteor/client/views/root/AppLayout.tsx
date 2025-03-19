@@ -20,6 +20,7 @@ import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/us
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
@@ -57,6 +58,7 @@ const AppLayout = () => {
 	useOTRMessaging();
 	useUpdateVideoConfUser();
 	useStoreCookiesOnLogin();
+	useAutoupdate();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
