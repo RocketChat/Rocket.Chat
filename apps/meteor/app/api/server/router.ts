@@ -153,30 +153,38 @@ export class Router<
 				if (options.query) {
 					const validatorFn = options.query;
 					if (typeof options.query === 'function' && !validatorFn(req.query)) {
-						return res.status(400).json({
-							success: false,
-							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-						});
-					}
-				}
-
-				if (options.body) {
-					const validatorFn = options.body;
-					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || req.body)) {
-						return res.status(400).json({
-							success: false,
-							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-						});
+						return c.json(
+							{
+								success: false,
+								errorType: 'error-invalid-params',
+								error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							},
+							400,
+						);
 					}
 				}
 
 				let bodyParams = {};
 				try {
-					bodyParams = await (req.header('content-type')?.includes('application/json') ? c.req.raw.clone().json() : c.req.raw.clone().text());
+					bodyParams = await (req.header('content-type')?.includes('application/json')
+						? c.req.raw.clone().json()
+						: c.req.raw.clone().text());
 					// eslint-disable-next-line no-empty
 				} catch {}
+
+				if (options.body) {
+					const validatorFn = options.body;
+					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+						return c.json(
+							{
+								success: false,
+								errorType: 'error-invalid-params',
+								error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							},
+							400,
+						);
+					}
+				}
 
 				const {
 					body,

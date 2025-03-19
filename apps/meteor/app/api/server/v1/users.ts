@@ -81,7 +81,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.setHeader('Location', url);
+			this.response.headers.set('Location', url);
 
 			return {
 				statusCode: 307,

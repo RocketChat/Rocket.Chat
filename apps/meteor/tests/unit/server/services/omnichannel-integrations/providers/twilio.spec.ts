@@ -82,7 +82,9 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+					};
 
 					return headers[param];
 				},
@@ -110,7 +112,9 @@ describe('Twilio Request Validation', () => {
 			url: '/api/v1/livechat/sms-incoming/twilio?department=1',
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio?department=1', requestBody) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio?department=1', requestBody),
+					};
 
 					return headers[param];
 				},
@@ -135,7 +139,9 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('anotherAuthToken', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('anotherAuthToken', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+					};
 
 					return headers[param];
 				},
@@ -181,7 +187,9 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', {}) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', {}),
+					};
 
 					return headers[param];
 				},
@@ -208,7 +216,9 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+					};
 
 					return headers[param];
 				},
@@ -235,7 +245,9 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				get: (param: string) => {
-					const headers: Record<string, any> = { 'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody) };
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+					};
 
 					return headers[param];
 				},

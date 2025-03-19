@@ -1,5 +1,4 @@
 import { Logger } from '@rocket.chat/logger';
-
 import semver from 'semver';
 
 import { metrics } from '../../../metrics/server';

@@ -8,7 +8,6 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import type express from 'express';
-import type { Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
