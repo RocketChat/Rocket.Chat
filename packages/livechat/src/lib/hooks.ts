@@ -48,7 +48,7 @@ export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	}
 
 	const { token } = guest;
-	token && (await store.setState({ token }));
+	token && store.setState({ token });
 
 	const {
 		iframe: { defaultDepartment },
@@ -150,6 +150,7 @@ const api = {
 		}
 
 		updateIframeData({ defaultDepartment: department });
+		updateIframeGuestData({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
@@ -232,13 +233,6 @@ const api = {
 		await evaluateChangesAndLoadConfigByFields(async () => {
 			if (!data.token) {
 				data.token = createToken();
-			}
-			const {
-				iframe: { defaultDepartment },
-			} = store.state;
-
-			if (defaultDepartment && !data.department) {
-				data.department = defaultDepartment;
 			}
 
 			Livechat.unsubscribeAll();
