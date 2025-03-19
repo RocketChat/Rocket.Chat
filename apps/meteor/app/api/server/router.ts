@@ -174,7 +174,7 @@ export class Router<
 
 				let bodyParams = {};
 				try {
-					bodyParams = await (req.header('content-type')?.includes('application/json') ? c.req.json() : req.text());
+					bodyParams = await (req.header('content-type')?.includes('application/json') ? c.req.raw.clone().json() : c.req.raw.clone().text());
 					// eslint-disable-next-line no-empty
 				} catch {}
 
@@ -187,10 +187,10 @@ export class Router<
 						urlParams: req.param(),
 						queryParams: req.query(),
 						bodyParams,
-						request: req.raw,
+						request: req.raw.clone(),
 						response: res,
 					} as any,
-					[req.raw],
+					[req.raw.clone()],
 				);
 				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
 					const responseValidatorFn = options?.response?.[statusCode];

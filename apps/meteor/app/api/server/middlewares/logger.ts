@@ -11,7 +11,7 @@ export const loggerMiddleware =
 		let payload = {};
 
 		try {
-			payload = await c.req.json();
+			payload = await c.req.raw.clone().json();
 			// eslint-disable-next-line no-empty
 		} catch {}
 
