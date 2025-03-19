@@ -172,7 +172,7 @@ const _saveUser = (session?: ClientSession) =>
 				if (userData.active) {
 					updater.set('active', userData.active);
 				}
-				options.auditStore.setUpdateFilter(updater._getUpdateFilter());
+				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
 				void options.auditStore.commitAuditEvent();
 			}
 
