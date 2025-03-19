@@ -18,7 +18,7 @@ export const useIdleDetection = (callback: () => void, { time = 600000, awayOnWi
 	const stableCallback = useEffectEvent(callback);
 
 	useEffect(() => {
-		let interval: NodeJS.Timeout;
+		let interval: ReturnType<typeof setTimeout>;
 		const handleIdle = () => {
 			clearTimeout(interval);
 			interval = setTimeout(() => {
