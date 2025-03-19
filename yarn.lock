@@ -9168,12 +9168,18 @@ __metadata:
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/mongo-adapter": "workspace:~"
-    "@rocket.chat/ui-contexts": "workspace:*"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:*"
     "@storybook/react": "npm:^8.6.4"
     "@tanstack/react-query": "npm:~5.65.1"
+    "@testing-library/jest-dom": "npm:^6.6.3"
+    "@testing-library/react": "npm:^16.2.0"
+    "@testing-library/react-hooks": "npm:^8.0.1"
+    "@types/react": "npm:~18.3.17"
+    "@types/react-dom": "npm:~18.3.5"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
+    jest: "npm:^29.7.0"
     react: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     typescript: "npm:~5.7.2"
@@ -9843,7 +9849,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-contexts@workspace:*, @rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts, @rocket.chat/ui-contexts@workspace:~":
+"@rocket.chat/ui-contexts@workspace:^, @rocket.chat/ui-contexts@workspace:packages/ui-contexts, @rocket.chat/ui-contexts@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-contexts@workspace:packages/ui-contexts"
   dependencies:
@@ -11280,7 +11286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:~6.6.3":
+"@testing-library/jest-dom@npm:^6.6.3, @testing-library/jest-dom@npm:~6.6.3":
   version: 6.6.3
   resolution: "@testing-library/jest-dom@npm:6.6.3"
   dependencies:
@@ -11292,6 +11298,48 @@ __metadata:
     lodash: "npm:^4.17.21"
     redent: "npm:^3.0.0"
   checksum: 10/1f3427e45870eab9dcc59d6504b780d4a595062fe1687762ae6e67d06a70bf439b40ab64cf58cbace6293a99e3764d4647fdc8300a633b721764f5ce39dade18
+  languageName: node
+  linkType: hard
+
+"@testing-library/react-hooks@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@testing-library/react-hooks@npm:8.0.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+    react-error-boundary: "npm:^3.1.0"
+  peerDependencies:
+    "@types/react": ^16.9.0 || ^17.0.0
+    react: ^16.9.0 || ^17.0.0
+    react-dom: ^16.9.0 || ^17.0.0
+    react-test-renderer: ^16.9.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react-dom:
+      optional: true
+    react-test-renderer:
+      optional: true
+  checksum: 10/f7b69373feebe99bc7d60595822cc5c00a1a5a4801bc4f99b597256a5c1d23c45a51f359051dd8a7bdffcc23b26f324c582e9433c25804934fd351a886812790
+  languageName: node
+  linkType: hard
+
+"@testing-library/react@npm:^16.2.0":
+  version: 16.2.0
+  resolution: "@testing-library/react@npm:16.2.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+  peerDependencies:
+    "@testing-library/dom": ^10.0.0
+    "@types/react": ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/cf10bfa9a363384e6861417696fff4a464a64f98ec6f0bb7f1fa7cbb550d075d23a2f6a943b7df85dded7bde3234f6ea6b6e36f95211f4544b846ea72c288289
   languageName: node
   linkType: hard
 
@@ -31490,7 +31538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^3.1.4":
+"react-error-boundary@npm:^3.1.0, react-error-boundary@npm:^3.1.4":
   version: 3.1.4
   resolution: "react-error-boundary@npm:3.1.4"
   dependencies:
