@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { Editor, EditorFromTextArea } from 'codemirror';
+import type { Editor } from 'codemirror';
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -44,104 +44,68 @@ function CodeMirror({
 	...props
 }: CodeMirrorProps): ReactElement {
 	const [value, setValue] = useState(valueProp || defaultValue);
-
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-	const editorRef = useRef<EditorFromTextArea | null>(null);
-	const settingUpRef = useRef(false);
 	const handleChange = useEffectEvent(onChange);
 
-	useEffect(() => {
-		if (editorRef.current || settingUpRef.current) {
-			return;
-		}
+	const textAreaRef = useCallback(
+		async (node: HTMLTextAreaElement | null) => {
+			if (!node) return;
 
-		const setupCodeMirror = async (): Promise<void> => {
-			const { default: CodeMirror } = await import('codemirror');
-			await Promise.all([
-				import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
-				import('codemirror/addon/edit/matchbrackets'),
-				import('codemirror/addon/edit/closebrackets'),
-				import('codemirror/addon/edit/matchtags'),
-				import('codemirror/addon/edit/trailingspace'),
-				import('codemirror/addon/search/match-highlighter'),
-				import('codemirror/lib/codemirror.css'),
-			]);
+			try {
+				const { default: CodeMirror } = await import('codemirror');
+				await Promise.all([
+					import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+					import('codemirror/addon/edit/matchbrackets'),
+					import('codemirror/addon/edit/closebrackets'),
+					import('codemirror/addon/edit/matchtags'),
+					import('codemirror/addon/edit/trailingspace'),
+					import('codemirror/addon/search/match-highlighter'),
+					import('codemirror/lib/codemirror.css'),
+				]);
 
-			if (!textAreaRef.current) {
-				return;
-			}
+				const editor = CodeMirror.fromTextArea(node, {
+					lineNumbers,
+					lineWrapping,
+					mode,
+					gutters,
+					foldGutter,
+					matchBrackets,
+					autoCloseBrackets,
+					matchTags,
+					showTrailingSpace,
+					highlightSelectionMatches,
+					readOnly,
+				});
 
-			editorRef.current = CodeMirror.fromTextArea(textAreaRef.current, {
-				lineNumbers,
-				lineWrapping,
-				mode,
-				gutters,
-				foldGutter,
-				matchBrackets,
-				autoCloseBrackets,
-				matchTags,
-				showTrailingSpace,
-				highlightSelectionMatches,
-				readOnly,
-			});
+				editor.on('change', (doc: Editor) => {
+					const newValue = doc.getValue();
+					setValue(newValue);
+					handleChange(newValue);
+				});
 
-			editorRef.current.on('change', (doc: Editor) => {
-				const value = doc.getValue();
-				setValue(value);
-				handleChange(value);
-			});
-		};
-
-		settingUpRef.current = true;
-		setupCodeMirror()
-			.then(() => {
-				settingUpRef.current = false;
-			})
-			.catch((error) => {
+				return () => {
+					if (node.parentNode) {
+						editor.toTextArea();
+					}
+				};
+			} catch (error) {
 				console.error('CodeMirror initialization failed:', error);
-			});
-
-		const cleanp = () => {
-			if (!editorRef.current) {
-				return;
 			}
-
-			// Checking parent node to avoid error. A null parent node makes the toTextArea method throw an error.
-			if (textAreaRef.current?.parentNode) {
-				editorRef.current.toTextArea();
-			}
-		};
-
-		return cleanp;
-	}, [
-		autoCloseBrackets,
-		foldGutter,
-		gutters,
-		highlightSelectionMatches,
-		lineNumbers,
-		lineWrapping,
-		matchBrackets,
-		matchTags,
-		mode,
-		handleChange,
-		readOnly,
-		textAreaRef,
-		showTrailingSpace,
-	]);
-
-	useEffect(() => {
-		setValue(valueProp);
-	}, [valueProp]);
-
-	useEffect(() => {
-		if (!editorRef.current) {
-			return;
-		}
-
-		if (value !== editorRef.current.getValue()) {
-			editorRef.current.setValue(value ?? '');
-		}
-	}, [textAreaRef, value]);
+		},
+		[
+			autoCloseBrackets,
+			foldGutter,
+			gutters,
+			highlightSelectionMatches,
+			lineNumbers,
+			lineWrapping,
+			matchBrackets,
+			matchTags,
+			mode,
+			handleChange,
+			readOnly,
+			showTrailingSpace,
+		],
+	);
 
 	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }
