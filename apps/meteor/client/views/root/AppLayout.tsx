@@ -7,6 +7,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
+import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
@@ -19,6 +20,7 @@ import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/us
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
@@ -55,6 +57,8 @@ const AppLayout = () => {
 	useCorsSSLConfig();
 	useOTRMessaging();
 	useUpdateVideoConfUser();
+	useStoreCookiesOnLogin();
+	useAutoupdate();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
