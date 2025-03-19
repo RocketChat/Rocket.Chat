@@ -1261,7 +1261,7 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {

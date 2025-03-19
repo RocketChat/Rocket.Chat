@@ -103,6 +103,19 @@ describe('Apps - Installation', () => {
 				})
 				.end(done);
 		});
+		it('should successfully get app status by id', (done) => {
+			void request
+				.get(apps(`/${app.id}/status`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('status');
+					expect(res.body.status).to.not.be.empty;
+				})
+				.end(done);
+		});
 		(IS_EE ? describe : describe.skip)('Slash commands registration', () => {
 			it('should have created the "test-simple" slash command successfully', (done) => {
 				void request
