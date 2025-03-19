@@ -30,6 +30,7 @@ import type {
 	CountDocumentsOptions,
 	DeleteOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import { Rooms, Users } from '../index';
@@ -142,7 +143,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
@@ -162,7 +163,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countUnarchivedByRoomId(rid: string): Promise<number> {
@@ -171,7 +172,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'archived': { $ne: true },
 			'u._id': { $exists: true },
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean> {
@@ -1163,13 +1164,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			roles: { $in: roles },
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countByUserId(userId: string): Promise<number> {
 		const query = { 'u._id': userId };
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number> {
@@ -1178,10 +1179,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		if (options) {
-			return this.col.countDocuments(query, options);
+			return this.countDocuments(query, options);
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
@@ -1256,7 +1257,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number> {
 		const query = { rid, 'u.username': { $exists: true } };
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findUnreadByUserId(userId: string): FindCursor<ISubscription> {
@@ -1444,7 +1445,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document> {
+	updateNameAndFnameById(
+		_id: string,
+		name: string,
+		fname: string,
+		options?: { session?: ClientSession },
+	): Promise<UpdateResult | Document> {
 		const query = { _id };
 
 		const update: UpdateFilter<ISubscription> = {
@@ -1454,7 +1460,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, { session: options?.session });
 	}
 
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document> {

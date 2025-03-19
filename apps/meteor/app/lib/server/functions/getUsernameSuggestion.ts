@@ -68,7 +68,7 @@ export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'ema
 
 	usernames.push(settings.get('Accounts_DefaultUsernamePrefixSuggestion'));
 
-	let index = await Users.col.countDocuments({ username: new RegExp(`^${usernames[0]}-[0-9]+`) });
+	let index = await Users.countDocuments({ username: new RegExp(`^${usernames[0]}-[0-9]+`) });
 	const username = '';
 	while (!username) {
 		// eslint-disable-next-line no-await-in-loop
