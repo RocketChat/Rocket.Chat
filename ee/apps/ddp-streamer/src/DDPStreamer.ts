@@ -127,7 +127,7 @@ export class DDPStreamer extends ServiceClass {
 
 		async function sendUserData(client: Client, userId: string) {
 			const loggedUser = await Users.findOneById(userId, {
-				projection: { ...getBaseUserFields(true) },
+				projection: getBaseUserFields(true),
 			});
 			if (!loggedUser) {
 				return;
