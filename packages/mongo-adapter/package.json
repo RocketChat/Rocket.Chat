@@ -1,0 +1,20 @@
+{
+	"name": "@rocket.chat/mongo-adapter",
+	"version": "0.0.2",
+	"private": true,
+	"devDependencies": {
+		"eslint": "~8.45.0",
+		"typescript": "~5.7.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	]
+}
