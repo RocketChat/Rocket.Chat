@@ -1265,7 +1265,7 @@ export class AppsRestApi {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+						return API.v1.success({ status: await prl.getStatus() });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
