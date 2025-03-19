@@ -179,8 +179,7 @@ export class QueueManager {
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
 			await callbacks.run('livechat.afterInquiryQueued', inquiry);
-
-			void callbacks.run('livechat.chatQueued', room);
+			await callbacks.run('livechat.chatQueued', room);
 
 			if (defaultAgent) {
 				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
