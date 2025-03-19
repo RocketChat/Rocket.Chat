@@ -27,7 +27,6 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 			<Box mi={4} display='flex' flexGrow={1}>
 				<TextInput
 					{...props}
-					role='searchbox'
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
 					addon={<Icon name='magnifier' size='x20' />}

@@ -8,7 +8,7 @@ export class Directory {
 	}
 
 	async searchChannel(name: string) {
-		await this.page.locator('role=searchbox').fill(name);
+		await this.page.getByRole('textbox', { name: 'Search' }).fill(name);
 	}
 
 	getSearchByChannelName(name: string) {
