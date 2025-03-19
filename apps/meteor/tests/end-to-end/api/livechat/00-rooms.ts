@@ -78,20 +78,41 @@ describe('LIVECHAT - rooms', () => {
 
 	before((done) => getCredentials(done));
 
+	before('install tester app', async () => {
+		// install the app
+		const response = await request.post(apps('/')).set(credentials).send({ url: TEST_APP_URL }).expect(200);
+
+		appId = response.body.app.id;
+
+		// check if app is enabled with 5 max retries
+		const checkAppEnabled = async (retries = 5): Promise<void> => {
+			if (retries === 0) {
+				throw new Error('App is not enabled');
+			}
+
+			const response = await request.get(apps(`/${appId}`)).set(credentials);
+
+			if (response.status !== 200 || response.body.app.status !== 'manually_enabled') {
+				await sleep(100);
+				return checkAppEnabled(retries - 1);
+			}
+		};
+
+		await checkAppEnabled();
+	});
+
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
 		await makeAgentAvailable();
+
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
-
-		const response = await request.post(apps('/')).set(credentials).send({ url: TEST_APP_URL }).expect(200);
-
-		appId = response.body.app.id;
 	});
+
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
 

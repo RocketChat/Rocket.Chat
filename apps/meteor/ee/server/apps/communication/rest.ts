@@ -817,7 +817,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
