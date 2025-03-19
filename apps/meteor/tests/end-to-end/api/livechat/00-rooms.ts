@@ -20,7 +20,7 @@ import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
-import { apps } from '../../../data/apps/apps-data';
+import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
@@ -56,7 +56,7 @@ import {
 } from '../../../data/permissions.helper';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE, TEST_APP_URL } from '../../../e2e/config/constants';
+import { IS_EE } from '../../../e2e/config/constants';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
@@ -78,30 +78,26 @@ describe('LIVECHAT - rooms', () => {
 
 	before((done) => getCredentials(done));
 
-	before('install tester app', async () => {
-		// install the app
-		const response = await request.post(apps('/')).set(credentials).send({ url: TEST_APP_URL }).expect(200);
-
-		appId = response.body.app.id;
-
-		// check if app is enabled with 5 max retries
-		const checkAppEnabled = async (retries = 5): Promise<void> => {
-			if (retries === 0) {
-				throw new Error('App is not enabled');
-			}
-
-			const response = await request.get(apps(`/${appId}`)).set(credentials);
-
-			if (response.status !== 200 || response.body.app.status !== 'manually_enabled') {
-				await sleep(100);
-				return checkAppEnabled(retries - 1);
-			}
-		};
-
-		await checkAppEnabled();
-	});
-
 	before(async () => {
+		if (IS_EE) {
+			// install the app
+			await request
+				.post(apps('/'))
+				.set(credentials)
+				.send({ url: APP_URL })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('app');
+					expect(res.body.app).to.have.a.property('id');
+					expect(res.body.app).to.have.a.property('version');
+					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+
+					appId = res.body.app.id;
+				});
+		}
+
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
@@ -116,10 +112,12 @@ describe('LIVECHAT - rooms', () => {
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
 
-		await request
-			.delete(apps(`/${appId}`))
-			.set(credentials)
-			.expect(200);
+		if (IS_EE) {
+			await request
+				.delete(apps(`/${appId}`))
+				.set(credentials)
+				.expect(200);
+		}
 	});
 
 	describe('livechat/room', () => {
@@ -133,7 +131,7 @@ describe('LIVECHAT - rooms', () => {
 			const visitor = await createVisitor();
 			await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
 		});
-		it('should prevent create a room for visitor if an app throws an error', async () => {
+		(IS_EE ? it : it.skip)('should prevent create a room for visitor if an app throws an error', async () => {
 			// this test relies on the app installed by the insertApp fixture
 			const visitor = await createVisitor(undefined, 'visitor prevent from app');
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
