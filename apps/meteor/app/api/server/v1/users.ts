@@ -116,10 +116,10 @@ API.v1.addRoute(
 				return API.v1.failure('Name contains invalid characters');
 			}
 			const auditStore = new UserChangedAuditStore({
-				_id: this.bodyParams.userId,
+				_id: this.user._id,
 				ip: this.requestIp,
 				useragent: this.request.headers['user-agent'] || '',
-				username: (await Meteor.userAsync())?.username || '',
+				username: this.user.username || '',
 			});
 
 			await saveUser(this.userId, userData, { auditStore });
