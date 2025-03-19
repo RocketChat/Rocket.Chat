@@ -56,8 +56,8 @@ import {
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import insertApp from '../../../e2e/fixtures/insert-apps';
 import injectInitialData from '../../../e2e/fixtures/inject-initial-data';
+import insertApp from '../../../e2e/fixtures/insert-apps';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
