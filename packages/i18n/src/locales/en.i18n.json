@@ -826,6 +826,7 @@
   "Broadcasting_media_server_url": "Broadcasting Media Server URL",
   "Auto_Selection": "Auto Selection",
   "Browse_Files": "Browse Files",
+  "Calling__roomName__": "Calling {{roomName}}",
   "Calls_in_queue": "{{calls}} call in queue",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "Build Environment",

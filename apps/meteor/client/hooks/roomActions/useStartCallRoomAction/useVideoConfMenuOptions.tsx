@@ -3,11 +3,15 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '@rocket.chat/ui-video-conf';
+import {
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfLoadCapabilities,
+} from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { VideoConfManager } from '../../../lib/VideoConfManager';
 import { useRoom } from '../../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
@@ -25,6 +29,7 @@ const useVideoConfMenuOptions = () => {
 
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
+	const loadCapabilities = useVideoConfLoadCapabilities();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 
@@ -57,7 +62,7 @@ const useVideoConfMenuOptions = () => {
 		}
 
 		try {
-			await VideoConfManager.loadCapabilities();
+			await loadCapabilities();
 			dispatchPopup({ rid: room._id });
 		} catch (error: any) {
 			dispatchWarning(error.error);
