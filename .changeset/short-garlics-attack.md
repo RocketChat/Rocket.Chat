@@ -2,4 +2,4 @@
 "@rocket.chat/livechat": patch
 ---
 
-Fixes setDepartment to update visitor's department logically
+Fixes Livechat's setDepartment api method not updating the visitor's department as expected
