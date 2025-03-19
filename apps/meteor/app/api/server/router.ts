@@ -1,7 +1,41 @@
 import type { Method } from '@rocket.chat/rest-typings';
+import type { AnySchema } from 'ajv';
 import express from 'express';
 
 import type { TypedAction, TypedOptions } from './definition';
+
+export type Route = {
+	responses: Record<
+		number,
+		{
+			description: string;
+			content: {
+				'application/json': {
+					schema: AnySchema;
+				};
+			};
+		}
+	>;
+	parameters?: {
+		schema: AnySchema;
+		in: 'query';
+		name: 'query';
+		required: true;
+	}[];
+	requestBody?: {
+		required: true;
+		content: {
+			'application/json': {
+				schema: AnySchema;
+			};
+		};
+	};
+	security?: {
+		userId: [];
+		authToken: [];
+	}[];
+	tags?: string[];
+};
 
 export class Router<
 	TBasePath extends string,
@@ -13,7 +47,7 @@ export class Router<
 
 	constructor(readonly base: TBasePath) {}
 
-	public typedRoutes: Record<string, Record<string, unknown>> = {};
+	private typedRoutes: Record<string, Record<string, Route>> = {};
 
 	private registerTypedRoutes<
 		TSubPathPattern extends string,
@@ -86,6 +120,28 @@ export class Router<
 		this.middleware = (router: express.Router) => {
 			prev(router);
 			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
+				if (options.query) {
+					const validatorFn = options.query;
+					if (typeof options.query === 'function' && !validatorFn(req.query)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
+				}
+
+				if (options.body) {
+					const validatorFn = options.body;
+					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || req.body)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
+				}
+
 				const {
 					body,
 					statusCode = 200,
@@ -100,6 +156,17 @@ export class Router<
 					} as any,
 					[req],
 				);
+				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
+					const responseValidatorFn = options?.response?.[statusCode];
+					if (!responseValidatorFn && options.typed) {
+						throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+					}
+					if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
+						throw new Error(
+							`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+						);
+					}
+				}
 
 				const responseHeaders = Object.fromEntries(
 					Object.entries({
