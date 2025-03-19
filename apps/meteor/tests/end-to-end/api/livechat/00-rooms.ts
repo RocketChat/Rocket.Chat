@@ -56,6 +56,8 @@ import {
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import insertApp from '../../../e2e/fixtures/insert-apps';
+import injectInitialData from '../../../e2e/fixtures/inject-initial-data';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
@@ -77,6 +79,8 @@ describe('LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		await injectInitialData();
+		await insertApp();
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
@@ -101,6 +105,13 @@ describe('LIVECHAT - rooms', () => {
 			const visitor = await createVisitor();
 			await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
 		});
+		it('should prevent create a room for visitor if an app throws an error', async () => {
+			// this test relies on the app installed by the insertApp fixture
+			const visitor = await createVisitor(undefined, 'visitor prevent from app');
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body).to.have.property('success', false);
+		});
 		it('should create a room for visitor', async () => {
 			const visitor = await createVisitor();
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
@@ -110,12 +121,6 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.room).to.have.property('v');
 			expect(body.room.v).to.have.property('token', visitor.token);
 			expect(body.room.source.type).to.be.equal('api');
-		});
-		it('should prevent create a room for visitor', async () => {
-			const visitor = await createVisitor(undefined, 'visitor prevent from app');
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
-
-			expect(body).to.have.property('success', false);
 		});
 		it('should return an existing open room when visitor has one available', async () => {
 			const visitor = await createVisitor();
