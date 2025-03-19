@@ -8,14 +8,14 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsMessagesProps = PaginatedRequest<{
-	roomId?: IRoom['_id'];
-	roomName?: IRoom['name'];
-	mentionIds?: string;
-	starredIds?: string;
-	pinned?: boolean;
-	query?: Record<string, any>;
-}>;
+export type GroupsMessagesProps = PaginatedRequest<
+	({ roomId: IRoom['_id'] } | { roomName: IRoom['name'] }) & {
+		mentionIds?: string;
+		starredIds?: string;
+		pinned?: boolean;
+		query?: Record<string, any>;
+	}
+>;
 
 const GroupsMessagesPropsSchema = withGroupBaseProperties({
 	roomId: {
