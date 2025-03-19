@@ -1,10 +1,7 @@
 import { request } from '@playwright/test';
 
 import { Users } from './userStates';
-import { BASE_API_URL, BASE_URL } from '../config/constants';
-
-const APP_URL =
-	'https://github.com/RocketChat/Apps.RocketChat.Tester/blob/test-new-livechat-event/dist/appsrocketchattester_0.3.0.zip?raw=true';
+import { BASE_API_URL, BASE_URL, TEST_APP_URL } from '../config/constants';
 
 export default async function insertApp(): Promise<void> {
 	const api = await request.newContext();
@@ -14,6 +11,6 @@ export default async function insertApp(): Promise<void> {
 		'X-User-Id': Users.admin.data.username,
 	};
 
-	await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
+	await api.post(`${BASE_URL}/api/apps`, { data: { url: TEST_APP_URL }, headers });
 	await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
 }

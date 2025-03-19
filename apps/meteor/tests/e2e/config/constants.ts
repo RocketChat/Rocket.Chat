@@ -20,3 +20,5 @@ export const DEFAULT_USER_CREDENTIALS = {
 	password: 'password',
 	bcrypt: '$2b$10$LNYaqDreDE7tt9EVEeaS9uw.C3hic9hcqFfIocMBPTMxJaDCC6QWW',
 } as const;
+
+export const TEST_APP_URL = 'https://github.com/RocketChat/Apps.RocketChat.Tester/blob/master/dist/appsrocketchattester_0.3.0.zip?raw=true';

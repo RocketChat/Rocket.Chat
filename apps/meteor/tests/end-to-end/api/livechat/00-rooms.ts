@@ -20,6 +20,7 @@ import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { apps } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
@@ -55,9 +56,7 @@ import {
 } from '../../../data/permissions.helper';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
-import injectInitialData from '../../../e2e/fixtures/inject-initial-data';
-import insertApp from '../../../e2e/fixtures/insert-apps';
+import { IS_EE, TEST_APP_URL } from '../../../e2e/config/constants';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
@@ -75,12 +74,11 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
+	let appId: string;
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		await injectInitialData();
-		await insertApp();
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
@@ -89,9 +87,18 @@ describe('LIVECHAT - rooms', () => {
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
+
+		const response = await request.post(apps('/')).set(credentials).send({ url: TEST_APP_URL }).expect(200);
+
+		appId = response.body.app.id;
 	});
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
+
+		await request
+			.delete(apps(`/${appId}`))
+			.set(credentials)
+			.expect(200);
 	});
 
 	describe('livechat/room', () => {
