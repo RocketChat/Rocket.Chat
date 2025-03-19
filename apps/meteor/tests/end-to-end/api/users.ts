@@ -1704,14 +1704,14 @@ describe('[Users]', () => {
 				.send({
 					userId: targetUser._id,
 					data: {
-						verified: false,
+						verified: true,
 					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
+					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
 				.end(done);
