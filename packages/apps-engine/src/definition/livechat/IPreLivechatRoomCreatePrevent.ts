@@ -4,6 +4,8 @@ import { ILivechatRoom } from "./ILivechatRoom";
 
 /**
  * Handler called before a livechat room is created.
+ *
+ * To prevent the room from being created, the app should throw an `AppsEngineException`
  */
 export interface IPreLivechatRoomCreatePrevent {
     /**
