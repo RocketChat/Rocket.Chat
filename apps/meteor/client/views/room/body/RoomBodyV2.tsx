@@ -1,3 +1,4 @@
+import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
@@ -189,11 +190,13 @@ const RoomBody = (): ReactElement => {
 		}
 	`;
 
+	const renderTopic = isPrivateRoom(room) || isPublicRoom(room);
+
 	return (
 		<>
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
-					<RoomTopic room={room} user={user} />
+					{renderTopic && <RoomTopic room={room} user={user} />}
 					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>
