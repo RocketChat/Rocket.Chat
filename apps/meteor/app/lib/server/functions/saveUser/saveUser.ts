@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { MeteorError } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -86,9 +87,15 @@ const _saveUser = (session?: ClientSession) =>
 			delete userData.setRandomPassword;
 		}
 
-		if (!isUpdateUserData(userData) || !oldUserData) {
+		if (!isUpdateUserData(userData)) {
 			// TODO audit new users
 			return saveNewUser(userData, sendPassword);
+		}
+
+		if (!oldUserData) {
+			throw new MeteorError('error-user-not-found', 'User not found', {
+				method: 'saveUser',
+			});
 		}
 
 		options?.auditStore?.setOriginalUser(oldUserData);
