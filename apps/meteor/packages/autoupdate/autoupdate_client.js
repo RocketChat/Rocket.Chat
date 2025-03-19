@@ -66,8 +66,6 @@ const retry = new Retry({
 
 let failures = 0;
 
-const event = new Event('client_changed');
-
 Autoupdate._retrySubscription = () => {
 	Meteor.subscribe('meteor_autoupdate_clientVersions', {
 		onError(error) {
@@ -119,7 +117,7 @@ Autoupdate._retrySubscription = () => {
 							doc.versionNonRefreshable,
 							`Page will reload in ${reloadDelayInSeconds} seconds`,
 						);
-						document.dispatchEvent(event);
+						document.dispatchEvent(new Event('client_changed'));
 					}
 					return;
 				}

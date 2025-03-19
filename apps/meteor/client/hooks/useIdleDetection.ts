@@ -1,7 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEffect } from 'react';
 
-const event = new Event('idle');
 const events = ['mousemove', 'mousedown', 'touchend', 'touchstart', 'keypress'];
 
 /**
@@ -23,7 +22,7 @@ export const useIdleDetection = (callback: () => void, { time = 600000, awayOnWi
 		const handleIdle = () => {
 			clearTimeout(interval);
 			interval = setTimeout(() => {
-				document.dispatchEvent(event);
+				document.dispatchEvent(new Event('idle'));
 			}, time);
 		};
 
