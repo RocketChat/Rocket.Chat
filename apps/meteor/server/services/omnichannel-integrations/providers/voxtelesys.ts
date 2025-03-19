@@ -2,7 +2,6 @@ import { api } from '@rocket.chat/core-services';
 import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import type { Request } from 'express';
 import filesize from 'filesize';
 
 import { settings } from '../../../../app/settings/server';
@@ -163,7 +162,7 @@ export class Voxtelesys implements ISMSProvider {
 		};
 	}
 
-	validateRequest(_request: Request): boolean {
+	async validateRequest(_request: Request): Promise<boolean> {
 		return true;
 	}
 

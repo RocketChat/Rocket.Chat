@@ -108,7 +108,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const smsDepartment = settings.get<string>('SMS_Default_Omnichannel_Department');
 		const SMSService = await OmnichannelIntegration.getSmsService(service);
 
-		if (!SMSService.validateRequest(this.request)) {
+		if (!await SMSService.validateRequest(this.request.clone())) {
 			return API.v1.failure('Invalid request');
 		}
 

@@ -9,7 +9,7 @@ export const tracerSpanMiddleware: MiddlewareHandler = async (c, next) => {
 				url: c.req.url,
 				// route: c.req.route?.path,
 				method: c.req.method,
-				userId: (c.req.raw as any).userId, // Assuming userId is attached to the request object
+				userId: (c.req.raw.clone() as any).userId, // Assuming userId is attached to the request object
 			},
 		},
 		async (span) => {
