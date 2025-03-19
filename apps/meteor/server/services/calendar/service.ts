@@ -8,7 +8,9 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
-import { statusEventManager } from './statusEvents';
+import { cancelUpcomingStatusChanges } from './statusEvents/cancelUpcomingStatusChanges';
+import { removeCronJobs } from './statusEvents/removeCronJobs';
+import { setupAppointmentStatusChange } from './statusEvents/setupAppointmentStatusChange';
 import { getShiftedTime } from './utils/getShiftedTime';
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
@@ -39,7 +41,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
-		await statusEventManager.setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+		await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
 
 		return insertResult.insertedId;
 	}
@@ -104,21 +106,14 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const meetingUrl = await this.getMeetingUrl(data);
 
 		if (startTime || endTime) {
-			await statusEventManager.removeCronJobs(eventId, event.uid);
+			await removeCronJobs(eventId, event.uid);
 
 			const effectiveStartTime = startTime || event.startTime;
 			const effectiveEndTime = endTime || event.endTime;
 
 			// Only proceed if we have both valid start and end times
 			if (effectiveStartTime && effectiveEndTime) {
-				await statusEventManager.setupAppointmentStatusChange(
-					eventId,
-					event.uid,
-					effectiveStartTime,
-					effectiveEndTime,
-					UserStatus.BUSY,
-					true,
-				);
+				await setupAppointmentStatusChange(eventId, event.uid, effectiveStartTime, effectiveEndTime, UserStatus.BUSY, true);
 			}
 		}
 
@@ -146,7 +141,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
 		const event = await this.get(eventId);
 		if (event) {
-			await statusEventManager.removeCronJobs(eventId, event.uid);
+			await removeCronJobs(eventId, event.uid);
 		}
 
 		return CalendarEvent.deleteOne({
@@ -159,7 +154,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
-		return statusEventManager.cancelUpcomingStatusChanges(uid, endTime);
+		return cancelUpcomingStatusChanges(uid, endTime);
 	}
 
 	private async getMeetingUrl(eventData: Partial<ICalendarEvent>): Promise<string | undefined> {

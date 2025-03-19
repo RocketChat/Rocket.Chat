@@ -22,9 +22,7 @@ export async function testPrivateMethod<T extends (...args: any[]) => any>(
 	}
 }
 
-export function createFreshServiceInstance<T>(servicePath: string, mocks: Record<string, any>, serviceName?: string): T {
-	const moduleExports = proxyquire.noCallThru().load(servicePath, mocks);
-
+export function createFreshServiceInstance<T>(moduleExports: any, serviceName?: string): T {
 	const ServiceClass = serviceName ? moduleExports[serviceName] : Object.values(moduleExports)[0];
 
 	return new ServiceClass();
