@@ -57,7 +57,7 @@ export const useUnitsList = (
 
 			return {
 				items,
-				itemCount: total,
+				itemCount: haveNone ? total + 1 : total,
 			};
 		},
 		[getUnits, haveNone, t, text],
