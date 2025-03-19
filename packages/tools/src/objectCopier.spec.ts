@@ -1,12 +1,5 @@
-import {
-	copyUserBanners,
-	copyUserObject,
-	copyUserServices,
-	copyUserSettings,
-	type IUserServices,
-	type IUserSettings,
-	type IUser,
-} from '../src/IUser';
+import { type IUserServices, type IUserSettings, type IUser } from '@rocket.chat/core-typings';
+import { copyUserBanners, copyUserObject, copyUserServices, copyUserSettings } from './objectCopier';
 
 const USER_BANNERS: IUser['banners'] = {
 	banner1: {
