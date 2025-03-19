@@ -141,8 +141,6 @@ export async function getUploadFormData<
 	}
 
 	function cleanup() {
-		request.unpipe(bb);
-		request.on('readable', request.read.bind(request));
 		bb.removeAllListeners();
 	}
 
@@ -166,7 +164,10 @@ export async function getUploadFormData<
 		returnError();
 	});
 
-	request.pipe(bb);
+	const arrayBuffer = await request.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
+
+	bb.end(buffer);
 
 	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
 		returnResult = resolve;
