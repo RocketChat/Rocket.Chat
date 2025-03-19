@@ -52,9 +52,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	if (isUserFederated(user)) {
 		const service = (await License.hasValidLicense()) ? FederationEE : Federation;
 
-		const result = await service.verifyMatrixIds([user.username]);
+		const result = await service.verifyMatrixIds([user.username as string]);
 
-		if (result.get(user.username) === VerificationStatus.VERIFIED) {
+		if (result.get(user.username as string) === VerificationStatus.VERIFIED) {
 			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
 				method: 'deleteUser',
 			});
