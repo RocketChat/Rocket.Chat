@@ -239,14 +239,15 @@ function integrationInfoRest() {
 }
 
 class WebHookAPI extends APIClass {
-	async authenticatedRoute(request) {
-		request.integration = await Integrations.findOne({
-			_id: request.params.integrationId,
-			token: decodeURIComponent(request.params.token),
+	async authenticatedRoute() {
+		const { integrationId, token } = this.urlParams;
+		this.request.integration = await Integrations.findOne({
+			_id: integrationId,
+			token: decodeURIComponent(token),
 		});
 
-		if (!request.integration) {
-			incomingLogger.info(`Invalid integration id ${request.params.integrationId} or token ${request.params.token}`);
+		if (!this.request.integration) {
+			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
 
 			return {
 				error: {
@@ -259,7 +260,7 @@ class WebHookAPI extends APIClass {
 			};
 		}
 
-		return Users.findOneById(request.integration.userId);
+		return Users.findOneById(this.request.integration.userId);
 	}
 
 	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
@@ -313,28 +314,29 @@ const Api = new WebHookAPI({
 	apiPath: 'hooks/',
 });
 
-// middleware for special requests that are urlencoded but have a json payload (like GitHub webhooks)
-Api.router.use((req, res, next) => {
-	if (req.headers['content-type'] !== 'application/x-www-form-urlencoded') {
-		return next();
-	}
-
-	// make sure body has only one key and it is 'payload'
-	if (!req.body || typeof req.body !== 'object' || !('payload' in req.body) || Object.keys(req.body).length !== 1) {
+const middleware = async (c, next) => {
+	const { req } = c;
+	if (req.raw.headers.get('content-type') !== 'application/x-www-form-urlencoded') {
 		return next();
 	}
 
 	try {
-		req.bodyParams = JSON.parse(req.body.payload);
+		const body = await (req.header('content-type')?.includes('application/json') ? req.raw.clone().json() : req.raw.clone().text());
+		if (!body || typeof body !== 'object' || !('payload' in body) || Object.keys(body).length !== 1) {
+			return next();
+		}
 
-		return next();
+		// need to compose the full payload in this weird way because body-parser thought it was a form
+		c.set('bodyParams-override', JSON.parse(body.payload));
 	} catch (e) {
-		res.writeHead(400);
-		res.end(JSON.stringify({ success: false, error: e.message }));
+		c.body(JSON.stringify({ success: false, error: e.message }), 400);
 	}
 
 	return next();
-});
+};
+
+// middleware for special requests that are urlencoded but have a json payload (like GitHub webhooks)
+Api.router.use(middleware);
 
 Api.addRoute(
 	':integrationId/:userId/:token',
@@ -419,5 +421,5 @@ Api.addRoute(
 );
 
 Meteor.startup(() => {
-	WebApp.connectHandlers.use(Api.router.router);
+	WebApp.rawConnectHandlers.use(Api.router.router);
 });
