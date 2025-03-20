@@ -113,10 +113,14 @@ async function executeIntegrationRest() {
 			},
 		};
 
-		console.log('request chat', request.content.message.chat);
-
-		// if request.user.username is 'telegrambot'
-		// check
+		if (request.user.username === 'telegrambot') {
+			const chatId = request.content.message.chat.id;
+			const tgChatIdChannel = await Channels.findOne({ tgChatId: chatId });
+			console.log('tgChatIdChannel', tgChatIdChannel, chatId);
+			if (!tgChatIdChannel) {
+				await createChannel({ tgChatId: chatId }, this.user);
+			}
+		}
 
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
