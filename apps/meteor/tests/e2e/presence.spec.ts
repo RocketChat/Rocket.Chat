@@ -92,7 +92,7 @@ test.describe.serial('Presence', () => {
 			});
 		});
 
-		test.only('Should not change status to busy if the event is deleted', async ({ page, api }) => {
+		test('Should not change status to busy if the event is deleted', async ({ page, api }) => {
 			await page.goto('/home');
 
 			await expect(page.getByRole('button', { name: 'User menu' }).locator('.rcx-status-bullet--online')).toBeVisible();
