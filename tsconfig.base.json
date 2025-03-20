@@ -13,7 +13,8 @@
 		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"preserveSymlinks": true
 	},
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }
