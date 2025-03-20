@@ -106,7 +106,7 @@ export class MockedAppRootBuilder {
 		hasPrivateAccess: true,
 		isLoading: false,
 		querySetting: (_id: string) => [() => () => undefined, () => undefined],
-		querySettings: (_query: SettingsContextQuery) => [() => () => undefined, () => empty],
+		querySettings: (_query: SettingsContextQuery) => [() => () => undefined, () => empty as unknown as ISetting[]],
 		dispatch: async () => undefined,
 	};
 
