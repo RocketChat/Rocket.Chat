@@ -59,6 +59,7 @@ export const startupApp = async function startupApp() {
 
 	async function migratePrivateAppsCallback() {
 		void Apps.migratePrivateApps();
+		void Apps.disablePrivateApps();
 		void Apps.disableMarketplaceApps();
 	}
 
