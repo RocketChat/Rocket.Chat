@@ -24,7 +24,7 @@ export const startupApp = async function startupApp() {
 					},
 				],
 				public: true,
-				hidden: false,
+				hidden: true,
 				alert: 'Apps_Logs_TTL_Alert',
 			});
 
@@ -68,33 +68,6 @@ export const startupApp = async function startupApp() {
 
 	// Disable apps that depend on add-ons (external modules) if they are invalidated
 	License.onModule(disableAppsWithAddonsCallback);
-
-	settings.watch('Apps_Logs_TTL', async (value) => {
-		// TODO: remove this feature, initialized is always false first time
-		if (!Apps.isInitialized()) {
-			return;
-		}
-		let expireAfterSeconds = 0;
-
-		switch (value) {
-			case '7_days':
-				expireAfterSeconds = 604800;
-				break;
-			case '14_days':
-				expireAfterSeconds = 1209600;
-				break;
-			case '30_days':
-				expireAfterSeconds = 2592000;
-				break;
-		}
-
-		if (!expireAfterSeconds) {
-			return;
-		}
-
-		const model = Apps._logModel;
-		await model?.resetTTLIndex(expireAfterSeconds);
-	});
 
 	Apps.initialize();
 

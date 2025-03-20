@@ -25,11 +25,4 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 	remove(query: Filter<any>): Promise<DeleteResult> {
 		return this.col.deleteMany(query);
 	}
-
-	async resetTTLIndex(expireAfterSeconds: number): Promise<void> {
-		if (await this.col.indexExists('_updatedAt_1')) {
-			await this.col.dropIndex('_updatedAt_1');
-		}
-		await this.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds });
-	}
 }
