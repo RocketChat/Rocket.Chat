@@ -212,6 +212,8 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			return;
 		}
 
+		console.log('PAUSED');
+
 		const sandbox = {
 			request,
 			response: {
