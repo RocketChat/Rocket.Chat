@@ -234,6 +234,8 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 		if (scriptResult?.content) {
 			return scriptResult.content;
 		}
+
+		console.log('gone');
 	}
 
 	public async processIncomingRequest({
