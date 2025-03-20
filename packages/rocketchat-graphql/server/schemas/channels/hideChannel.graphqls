@@ -1,3 +1,0 @@
-type Mutation {
-	hideChannel(channelId: String!): Boolean
-}

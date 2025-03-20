@@ -1,0 +1,67 @@
+{
+	"name": "@rocket.chat/ui-kit",
+	"version": "0.37.0",
+	"description": "Interactive UI elements for Rocket.Chat Apps",
+	"homepage": "https://rocket.chat",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+	},
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/esm/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "run-s .:build:prepare .:build:clean .:build:esm .:build:cjs",
+		".:build:prepare": "ts-patch install && typia patch",
+		".:build:clean": "rimraf dist",
+		".:build:esm": "tsc -p tsconfig.esm.json",
+		".:build:cjs": "tsc -p tsconfig.cjs.json",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint . --ext .ts,.tsx",
+		"test": "jest"
+	},
+	"devDependencies": {
+		"@babel/core": "~7.26.0",
+		"@babel/eslint-parser": "~7.25.9",
+		"@babel/plugin-transform-runtime": "~7.25.9",
+		"@babel/preset-env": "~7.26.0",
+		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/icons": "^0.40.0",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@types/jest": "~29.5.14",
+		"babel-loader": "~9.2.1",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"npm-run-all": "~4.1.5",
+		"prettier": "~3.3.3",
+		"rimraf": "~6.0.1",
+		"ts-jest": "~29.2.5",
+		"ts-loader": "~9.5.1",
+		"ts-node": "~10.9.2",
+		"ts-patch": "^3.2.1",
+		"typescript": "~5.6.3"
+	},
+	"dependencies": {
+		"typia": "~6.12.2"
+	},
+	"peerDependencies": {
+		"@rocket.chat/icons": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

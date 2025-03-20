@@ -1,0 +1,9 @@
+@use '../../../../styles/colors';
+
+.uikit-overflow {
+	&__trigger {
+		padding: 0;
+
+		border-color: colors.$bg-color-grey;
+	}
+}

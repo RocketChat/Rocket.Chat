@@ -1,0 +1,5 @@
+@use '../mixins';
+
+.date-input {
+	@include mixins.form__input-box;
+}

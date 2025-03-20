@@ -1,0 +1,35 @@
+{
+  "Storybook stories module for React component": {
+    "scope": "typescriptreact",
+    "prefix": "sbmodule",
+    "body": [
+      "import type { Meta, StoryFn } from '@storybook/react';",
+      "",
+      "import $1 from './$1';",
+      "",
+      "export default {",
+      "\ttitle: '$2',",
+      "\tcomponent: $1,",
+      "} satisfies Meta<typeof $1>;",
+      "",
+      "export const Example: StoryFn<typeof $1> = (args) => <$1 {...args} />;",
+    ]
+  },
+  "Storybook meta": {
+    "scope": "typescriptreact",
+    "prefix": "sbmeta",
+    "body": [
+      "export default {",
+      "\ttitle: '$1',",
+      "\tcomponent: $2,",
+      "} satisfies Meta<typeof $2>;"
+    ]
+  },
+  "Storybook story": {
+    "scope": "typescriptreact",
+    "prefix": "sbstory",
+    "body": [
+      "export const $1: StoryFn<typeof $2> = (args) => <$2 {...args} />;"
+    ]
+  }
+}

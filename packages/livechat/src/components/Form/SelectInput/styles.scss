@@ -1,0 +1,57 @@
+@use '../mixins';
+@use "../../../styles/colors";
+
+$form-input-select-arrow-size: mixins.$form-input-padding;
+$form-input-select-arrow-padding: mixins.$form-input-padding;
+$form-input-select-arrow-color: colors.$color-text-light;
+
+.select-input {
+	position: relative;
+
+	display: flex;
+	flex: 1;
+
+	&__select {
+		flex: 1;
+
+		padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+
+		color: mixins.$form-input-color;
+
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+
+		&::-ms-expand {
+			display: none;
+		}
+
+		&--placeholder {
+			color: mixins.$form-input-placeholder-color;
+		}
+
+		&--small {
+			padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+		}
+
+		@include mixins.form__input-box;
+	}
+
+	&__option {
+		color: mixins.$form-input-color;
+	}
+
+	&__arrow {
+		position: absolute;
+		top: 50%;
+		right: $form-input-select-arrow-padding;
+
+		width: $form-input-select-arrow-size;
+		height: $form-input-select-arrow-size;
+
+		transform: translateY(-50%) translateY(2px);
+		pointer-events: none;
+
+		color: $form-input-select-arrow-color;
+	}
+}

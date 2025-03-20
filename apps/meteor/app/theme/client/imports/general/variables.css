@@ -1,0 +1,85 @@
+:root {
+	/*
+	* Color palette
+	*/
+	--color-red: #f5455c;
+	--color-yellow: #ffd21f;
+	--color-green: #2de0a5;
+
+	/*
+	* General Colors
+	*/
+	--color-gray: #9ea2a8;
+	--color-gray-medium: #cbced1;
+	--color-gray-lightest: #f2f3f5;
+
+	/* Colors */
+	--rc-color-error: var(--color-red);
+	--rc-color-alert: var(--color-yellow);
+	--rc-color-success: var(--color-green);
+	--rc-color-primary-light: var(--color-gray);
+
+	/* Old Colors */
+	--content-background-color: #ffffff;
+	--primary-font-color: #444444;
+	--primary-action-color: #1d74f5;
+	--secondary-font-color: #a0a0a0;
+	--component-color: #f2f3f5;
+
+	/* Fonts */
+	--body-font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', arial, sans-serif;
+
+	/*
+	* General
+	*/
+	--rc-status-online: var(--rc-color-success);
+	--rc-status-away: var(--rc-color-alert);
+	--rc-status-busy: var(--rc-color-error);
+	--rc-status-invisible: var(--color-gray-medium);
+
+	/*
+	* General Typography
+	*/
+	--text-small-size: 0.875rem;
+
+	/*
+	* Sidebar
+	*/
+	--sidebar-width: 17.5rem;
+	--sidebar-md-width: 20rem;
+	--sidebar-lg-width: 21rem;
+	--sidebar-default-padding: 24px;
+	--sidebar-small-default-padding: 16px;
+
+	/*
+	* Rooms list
+	*/
+	--rooms-list-title-color: var(--rc-color-primary-light);
+	--rooms-list-title-text-size: 0.75rem;
+	--rooms-list-empty-text-color: var(--color-gray);
+	--rooms-list-empty-text-size: 0.75rem;
+
+	/*
+	* Message box
+	*/
+	--message-box-text-size: var(--input-font-size);
+
+	/*
+	* Flex nav
+	*/
+	--flex-nav-background: var(--color-gray-lightest);
+
+	/*
+	* Loading
+	*/
+	--page-loading-background-light: var(--rcx-color-surface-tint, #f7f8fa);
+	--page-loading-background-dark: var(--rcx-color-surface-tint, #1f2329);
+	--loading-bounce-color-light: var(--rcx-color-font-default, #2f343d);
+	--loading-bounce-color-dark: var(--rcx-color-font-default, #e4e7ea);
+}
+
+.rcx-sidebar {
+	&--main {
+		--sidebar-background: var(--rcx-color-surface-tint, #262931);
+	}
+}

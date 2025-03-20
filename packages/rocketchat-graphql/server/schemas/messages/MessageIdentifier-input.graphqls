@@ -1,4 +1,0 @@
-input MessageIdentifier {
-	channelId: String!
-	messageId: String!
-}

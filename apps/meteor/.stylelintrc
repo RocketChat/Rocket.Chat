@@ -1,0 +1,59 @@
+{
+	"extends": ["stylelint-config-standard"],
+	"plugins": ["stylelint-order", "stylelint-selector-bem-pattern"],
+	"rules": {
+		"at-rule-empty-line-before": [
+			"always",
+			{
+				"except": ["blockless-after-same-name-blockless", "first-nested"],
+				"ignore": ["after-comment"]
+			}
+		],
+		"block-no-empty": true,
+		"color-hex-length": "long",
+		"color-no-invalid-hex": true,
+		"comment-empty-line-before": [
+			"always",
+			{
+				"except": ["first-nested"],
+				"ignore": ["stylelint-commands"]
+			}
+		],
+		"comment-no-empty": true,
+		"comment-whitespace-inside": "always",
+		"custom-property-empty-line-before": "never",
+		"declaration-block-no-duplicate-properties": [
+			true,
+			{
+				"ignore": ["consecutive-duplicates-with-different-values"]
+			}
+		],
+		"declaration-block-no-redundant-longhand-properties": true,
+		"declaration-block-no-shorthand-property-overrides": true,
+		"declaration-block-single-line-max-declarations": 1,
+		"font-family-no-duplicate-names": true,
+		"function-linear-gradient-no-nonstandard-direction": true,
+		"function-name-case": "lower",
+		"keyframe-declaration-no-important": true,
+		"length-zero-no-unit": true,
+		"media-feature-name-no-unknown": true,
+		"no-duplicate-selectors": true,
+		"no-empty-source": true,
+		"property-no-unknown": true,
+		"rule-empty-line-before": [
+			"always",
+			{
+				"except": ["first-nested"],
+				"ignore": ["after-comment"]
+			}
+		],
+		"selector-pseudo-class-no-unknown": true,
+		"selector-pseudo-element-colon-notation": "double",
+		"selector-pseudo-element-no-unknown": true,
+		"selector-type-case": "lower",
+		"selector-type-no-unknown": true,
+		"shorthand-property-no-redundant-values": true,
+		"string-no-newline": true,
+		"unit-no-unknown": true
+	}
+}

@@ -1,0 +1,20 @@
+# .kodiak.toml
+version = 1
+
+[merge]
+method = "squash"
+automerge_label = ["stat: ready to merge", "automerge"]
+block_on_neutral_required_check_runs = true
+blocking_labels = ["stat: needs QA", "Invalid PR Title", "do not merge"]
+prioritize_ready_to_merge =  true
+
+[merge.message]
+title = "pull_request_title"
+body = "empty"
+include_coauthors=true
+
+[merge.automerge_dependencies]
+versions = ["minor", "patch"]
+usernames = ["dependabot"]
+[approve]
+auto_approve_usernames = ["dependabot"]

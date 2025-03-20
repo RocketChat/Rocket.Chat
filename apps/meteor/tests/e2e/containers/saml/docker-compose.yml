@@ -1,0 +1,7 @@
+version: '3'
+services:
+  testsamlidp_idp:
+    build: .
+    ports:
+    - "8080:8080"
+    - "8443:8443"

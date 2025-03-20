@@ -1,0 +1,6 @@
+.rc-message-box {
+	position: relative;
+	width: 100%;
+	padding: 0 24px;
+	font-size: var(--message-box-text-size);
+}

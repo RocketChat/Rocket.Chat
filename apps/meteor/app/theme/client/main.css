@@ -1,0 +1,19 @@
+/* General */
+@import url('imports/general/variables.css');
+@import url('imports/general/reset.css');
+@import url('imports/general/base_old.css');
+@import url('imports/general/base.css');
+@import url('imports/general/react-root.css');
+
+/* Main */
+@import url('imports/components/flex-nav.css');
+@import url('imports/components/main-content.css');
+@import url('imports/components/message-box.css');
+@import url('imports/components/emoji.css');
+@import url('imports/components/loading.css');
+
+/* Legacy theming */
+@import url('imports/general/theme_old.css');
+@import url('./vendor/fontello/css/fontello.css');
+@import url('./rocketchat.font.css');
+@import url('../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css');

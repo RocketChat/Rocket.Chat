@@ -1,3 +1,0 @@
-type Query {
-	channelsByUser(userId: String!): [Channel]
-}

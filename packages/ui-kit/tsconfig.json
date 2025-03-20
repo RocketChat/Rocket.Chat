@@ -1,0 +1,20 @@
+{
+	"extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ES2020",
+    "lib": ["ES2020"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "plugins": [{ "transform": "typia/lib/transform" }]
+  },
+	"include": ["./src/**/*.ts"],
+	"exclude": []
+}

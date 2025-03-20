@@ -1,5 +1,0 @@
-http://:8080
-proxy / localhost:3000 {
-  websocket
-  transparent
-}

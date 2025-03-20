@@ -1,5 +1,0 @@
-type MessagesWithCursor {
-	cursor: String
-	channel: Channel
-	messagesArray: [Message]
-}

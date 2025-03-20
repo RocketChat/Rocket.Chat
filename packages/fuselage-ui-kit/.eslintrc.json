@@ -1,0 +1,3 @@
+{
+  "extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react"]
+}

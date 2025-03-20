@@ -1,9 +1,0 @@
-{
-  "schema": {
-    "request": {
-      "url" : "http://localhost:3000/api/graphql",
-      "method" : "POST",
-      "postIntrospectionQuery" : true
-    }
-  }
-}

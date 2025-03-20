@@ -1,0 +1,29 @@
+{
+	"name": "@rocket.chat/release-action",
+	"version": "2.2.3",
+	"private": true,
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint src",
+		"lint:fix": "eslint --fix src"
+	},
+	"main": "dist/index.js",
+	"packageManager": "yarn@3.5.1",
+	"devDependencies": {
+		"@types/node": "~20.17.8",
+		"typescript": "~5.7.2"
+	},
+	"dependencies": {
+		"@actions/core": "^1.11.1",
+		"@actions/exec": "^1.1.1",
+		"@actions/github": "^6.0.0",
+		"@octokit/plugin-throttling": "^6.1.0",
+		"@rocket.chat/eslint-config": "workspace:^",
+		"eslint": "~8.45.0",
+		"mdast-util-to-string": "2.0.0",
+		"remark-parse": "9.0.0",
+		"remark-stringify": "9.0.1",
+		"semver": "^7.6.3",
+		"unified": "9.2.2"
+	}
+}

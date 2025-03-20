@@ -1,0 +1,21 @@
+.popover__overlay {
+	position: absolute;
+	z-index: 10;
+
+	visibility: hidden;
+	inset: 0;
+
+	&--visible {
+		visibility: visible;
+	}
+}
+
+.popover__container {
+	position: relative;
+
+	display: flex;
+	overflow: hidden;
+
+	flex-direction: column;
+	flex: 1;
+}

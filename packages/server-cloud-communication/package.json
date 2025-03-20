@@ -1,0 +1,23 @@
+{
+	"name": "@rocket.chat/server-cloud-communication",
+	"version": "0.0.2",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/license": "workspace:^",
+		"eslint": "~8.45.0",
+		"typescript": "~5.7.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"files": [
+		"/dist"
+	]
+}

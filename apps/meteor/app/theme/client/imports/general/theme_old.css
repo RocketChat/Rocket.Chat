@@ -1,0 +1,37 @@
+* {
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+		background: var(--transparent-dark);
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 50px;
+		background-color: var(--custom-scrollbar-color);
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: var(--transparent-dark);
+	}
+}
+
+.content-background-color {
+	background-color: var(--content-background-color);
+}
+
+.color-primary-font-color {
+	color: var(--primary-font-color);
+}
+
+.secondary-font-color {
+	color: var(--secondary-font-color);
+}
+
+input,
+select,
+textarea {
+	border-style: solid;
+	background-color: transparent;
+}

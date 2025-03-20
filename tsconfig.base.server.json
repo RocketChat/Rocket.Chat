@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"target": "es2020",
+		"lib": ["es2020"],
+		"module": "commonjs",
+		"sourceMap": true,
+	},
+	"exclude": ["node_modules", "**/*.spec.ts"],
+	"ts-node": {
+		"transpileOnly": true
+	}
+}

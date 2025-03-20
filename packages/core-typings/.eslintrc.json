@@ -1,0 +1,15 @@
+{
+	"extends": ["@rocket.chat/eslint-config"],
+	"overrides": [
+		{
+			"files": ["**/*.spec.js", "**/*.spec.jsx"],
+			"env": {
+				"jest": true
+			}
+		}
+	],
+	"ignorePatterns": ["**/dist"],
+	"rules": {
+		"@typescript-eslint/no-empty-interface": "off"
+	}
+}

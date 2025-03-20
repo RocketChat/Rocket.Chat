@@ -1,0 +1,65 @@
+@use '../../styles/colors';
+@use '../../styles/helpers';
+@use '../../styles/variables';
+
+$alert-color: colors.$color-text-lighter;
+$alert-font-family: variables.$font-family;
+$alert-background-color: colors.$bg-color-darker;
+$alert-success-background-color: colors.$color-green;
+$alert-warning-background-color: colors.$color-yellow;
+$alert-error-background-color: colors.$color-red;
+
+.alert {
+	display: flex;
+	overflow: hidden;
+
+	width: 100%;
+	height: 28px;
+	padding: 6px 16px;
+
+	letter-spacing: 0;
+
+	color: $alert-color;
+	background-color: $alert-background-color;
+
+	font-family: $alert-font-family;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 16px;
+	align-items: center;
+	justify-content: space-between;
+
+	&__content {
+		overflow: hidden;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&__close {
+		display: flex;
+
+		padding: 0;
+
+		cursor: pointer;
+
+		color: $alert-color;
+		border: none;
+		outline: none;
+		background: none;
+
+		@include helpers.pressable-button(1px);
+	}
+
+	&--success {
+		background-color: $alert-success-background-color;
+	}
+
+	&--warning {
+		background-color: $alert-warning-background-color;
+	}
+
+	&--error {
+		background-color: $alert-error-background-color;
+	}
+}

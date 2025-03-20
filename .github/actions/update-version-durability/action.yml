@@ -1,0 +1,24 @@
+name: Update Version Durability
+description: Update Version Durability page on Document360
+
+inputs:
+  GH_TOKEN:
+    required: true
+    description: GitHub API Token
+    type: string
+  D360_TOKEN:
+    required: true
+    description: Document360 API Token
+    type: string
+  D360_ARTICLE_ID:
+    required: true
+    description: Document360 Article ID
+    type: string
+  PUBLISH:
+    required: true
+    description: Publish Draft
+    type: boolean
+
+runs:
+  using: node20
+  main: index.js

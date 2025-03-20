@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 20">
+	<g stroke="currentColor" stroke-width="1.5" stroke-linecap="square" fill="none" fill-rule="evenodd">
+		<path d="M6,6 L14.0710678,14.0710678" />
+		<path d="M6,6 L14.0710678,14.0710678" transform="translate(10.035534, 10.035534) scale(-1, 1) translate(-10.035534, -10.035534)"/>
+	</g>
+</svg>

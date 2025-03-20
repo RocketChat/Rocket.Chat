@@ -1,0 +1,1 @@
+import './emojione-sprites.css';

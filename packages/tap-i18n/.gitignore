@@ -1,7 +1,0 @@
-.build*
-.npm
-.DS_Store
-smart.lock
-packages/test-pack-*
-public
-.test-run-log

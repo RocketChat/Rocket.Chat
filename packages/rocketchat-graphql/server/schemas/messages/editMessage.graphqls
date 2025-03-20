@@ -1,3 +1,0 @@
-type Mutation {
-	editMessage(id: MessageIdentifier!, content: String!): Message
-}
