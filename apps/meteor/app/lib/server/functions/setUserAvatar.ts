@@ -5,8 +5,10 @@ import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 
 import { checkUrlForSsrf } from './checkUrlForSsrf';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
@@ -68,6 +70,7 @@ export function setUserAvatar(
 	service: 'rest',
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void>;
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -76,6 +79,7 @@ export function setUserAvatar(
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void>;
 export async function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -84,12 +88,13 @@ export async function setUserAvatar(
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 	updater?: Updater<IUser>,
+	session?: ClientSession,
 ): Promise<void> {
 	if (service === 'initials') {
 		if (updater) {
 			updater.set('avatarOrigin', origin);
 		} else {
-			await Users.setAvatarData(user._id, service, null);
+			await Users.setAvatarData(user._id, service, null, { session });
 		}
 		return;
 	}
@@ -171,7 +176,7 @@ export async function setUserAvatar(
 	})();
 
 	const fileStore = FileUpload.getStore('Avatars');
-	user.username && (await fileStore.deleteByName(user.username));
+	user.username && (await fileStore.deleteByName(user.username, { session }));
 
 	const file = {
 		userId: user._id,
@@ -179,23 +184,24 @@ export async function setUserAvatar(
 		size: buffer.length,
 	};
 
-	const result = await fileStore.insert(file, buffer);
+	const result = await fileStore.insert(file, buffer, { session });
 
 	const avatarETag = etag || result?.etag || '';
 
-	setTimeout(async () => {
-		if (service) {
-			if (updater) {
-				updater.set('avatarOrigin', origin);
-				updater.set('avatarETag', avatarETag);
-			} else {
-				await Users.setAvatarData(user._id, service, avatarETag);
-			}
+	if (service) {
+		if (updater) {
+			updater.set('avatarOrigin', origin);
+			updater.set('avatarETag', avatarETag);
+		} else {
+			// TODO: Why was this timeout added?
+			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+		}
 
+		await onceTransactionCommitedSuccessfully(async () => {
 			void api.broadcast('user.avatarUpdate', {
 				username: user.username,
 				avatarETag,
 			});
-		}
-	}, 500);
+		}, session);
+	}
 }

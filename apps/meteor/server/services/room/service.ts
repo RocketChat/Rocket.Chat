@@ -1,6 +1,6 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -100,6 +100,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+		}
+
+		if (isOmnichannelRoom(room) && !room.open) {
+			throw new MeteorError('room-closed', 'Room is closed', { method: 'joinRoom' });
 		}
 
 		if (!(await Authorization.canAccessRoom(room, user))) {

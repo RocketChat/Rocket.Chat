@@ -30,9 +30,6 @@ function isTesting() {
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
-let appsSourceStorageType;
-let appsSourceStorageFilesystemPath;
-
 export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
@@ -56,7 +53,10 @@ export class AppServerOrchestrator {
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogStorage(this._logModel);
-		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(
+			settings.get('Apps_Framework_Source_Package_Storage_Type'),
+			settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path'),
+		);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -256,19 +256,3 @@ export class AppServerOrchestrator {
 
 export const Apps = new AppServerOrchestrator();
 registerOrchestrator(Apps);
-
-settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageType = value;
-	} else {
-		Apps.getAppSourceStorage().setStorage(value);
-	}
-});
-
-settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
-	if (!Apps.isInitialized()) {
-		appsSourceStorageFilesystemPath = value;
-	} else {
-		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
-	}
-});
