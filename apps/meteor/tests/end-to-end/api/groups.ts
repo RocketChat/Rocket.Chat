@@ -633,6 +633,43 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('total', 1);
 				});
 		});
+
+		it('should return all messages from a group using roomName parameter', async () => {
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({ roomName: testGroup.name })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body.messages).to.have.lengthOf(5);
+				});
+		});
+
+		it('should return error if both roomId and roomName are provided', async () => {
+			const thirdGroup = (await createGroup({ name: `test-priority-${Date.now()}` })).body.group;
+			const secondGroup = (await createGroup({ name: `test-priority-${Date.now()}` })).body.group;
+
+			try {
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({
+						roomId: thirdGroup._id,
+						roomName: secondGroup.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
+					});
+			} finally {
+				await Promise.all([deleteGroup({ roomName: secondGroup.name }), deleteGroup({ roomName: thirdGroup.name })]);
+			}
+		});
 	});
 
 	describe('/groups.invite', async () => {
