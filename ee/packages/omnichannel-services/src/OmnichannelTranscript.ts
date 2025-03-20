@@ -17,6 +17,7 @@ import type {
 	ILivechatVisitor,
 	ILivechatAgent,
 	IOmnichannelSystemMessage,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
@@ -64,7 +65,7 @@ export type MessageData = Pick<
 type WorkerData = {
 	siteName: string;
 	visitor: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'visitorEmails'> | null;
-	agent: ILivechatAgent | undefined;
+	agent: ILivechatAgent | undefined | null;
 	closedAt?: Date;
 	messages: MessageData[];
 	timezone: string;
@@ -101,7 +102,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.log = new loggerClass('OmnichannelTranscript');
 	}
 
-	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
+	async getTimezone(user?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
 		const reportingTimezone = await settingsService.get('Default_Timezone_For_Reporting');
 
 		switch (reportingTimezone) {

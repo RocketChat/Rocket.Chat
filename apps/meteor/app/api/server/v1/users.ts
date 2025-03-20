@@ -233,9 +233,7 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = await (async (): Promise<
-				Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined | null
-			> => {
+			let user = await (async (): Promise<Pick<IUser, '_id' | 'username'> | undefined | null> => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -269,9 +267,11 @@ API.v1.addRoute(
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
 				if (fields.userId) {
-					user = await Users.findOneById(fields.userId, { projection: { username: 1 } });
+					user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(fields.userId, { projection: { username: 1 } });
 				} else if (fields.username) {
-					user = await Users.findOneByUsernameIgnoringCase(fields.username, { projection: { username: 1 } });
+					user = await Users.findOneByUsernameIgnoringCase<Pick<IUser, '_id' | 'username'>>(fields.username, {
+						projection: { username: 1 },
+					});
 				}
 
 				if (!user) {
