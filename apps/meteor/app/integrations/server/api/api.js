@@ -113,7 +113,10 @@ async function executeIntegrationRest() {
 			},
 		};
 
-		console.log('request', request);
+		console.log('request chat', request.content.message.chat);
+
+		// if request.user.username is 'telegrambot'
+		// check
 
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
