@@ -157,7 +157,7 @@ export class DDPStreamer extends ServiceClass {
 					'extension': 1,
 					'openBusinessHours': 1,
 					'services.totp.enabled': 1,
-					'services.email2fa.enabled': 1
+					'services.email2fa.enabled': 1,
 				},
 			});
 			if (!loggedUser) {
