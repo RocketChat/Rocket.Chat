@@ -640,12 +640,15 @@ class RocketChatIntegrationHandler {
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 							setTimeout(() => {
+								console.log('2');
 								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 							}, waitTime);
 						} else {
+							console.log('3');
 							await updateHistory({ historyId, step: 'too-many-retries', error: true });
 						}
 					} else {
+						console.log('4');
 						await updateHistory({
 							historyId,
 							step: 'failed-and-not-configured-to-retry',
@@ -653,12 +656,12 @@ class RocketChatIntegrationHandler {
 						});
 					}
 
-					console.log('2');
+					console.log('5');
 
 					return;
 				}
 
-				console.log('3');
+				console.log('6');
 
 				// process outgoing webhook response as a new message
 				if (content && this.successResults.includes(res.status)) {
