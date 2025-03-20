@@ -11,6 +11,7 @@ export type CalendarEventCreateProps = {
 	description: string;
 	meetingUrl?: string;
 	reminderMinutesBeforeStart?: number;
+	busy?: boolean;
 };
 
 const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> = {
@@ -42,6 +43,10 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 		},
 		reminderMinutesBeforeStart: {
 			type: 'number',
+			nullable: true,
+		},
+		busy: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},

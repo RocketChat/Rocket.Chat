@@ -23,25 +23,28 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	protected name = 'calendar';
 
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
-		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl } = data;
+		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl, busy } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? getShiftedTime(startTime, -minutes) : undefined;
 
 		const insertData: InsertionModel<ICalendarEvent> = {
 			uid,
 			startTime,
-			...(endTime ? { endTime } : {}),
+			...(endTime && { endTime }),
 			subject,
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart: minutes,
 			reminderTime,
 			notificationSent: false,
+			...(busy !== undefined && { busy }),
 		};
 
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
-		await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+		if (busy !== false) {
+			await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+		}
 
 		return insertResult.insertedId;
 	}
@@ -52,18 +55,20 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return this.create(data);
 		}
 
-		const { uid, startTime, subject, description, reminderMinutesBeforeStart } = data;
+		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
 		const reminderTime = reminderMinutesBeforeStart ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid' | 'notificationSent'> = {
 			startTime,
+			...(endTime && { endTime }),
 			subject,
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart,
 			reminderTime,
 			externalId,
+			...(busy !== undefined && { busy }),
 		};
 
 		const event = await this.findImportedEvent(externalId, uid);
@@ -76,12 +81,18 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			});
 
 			await this.setupNextNotification();
+			if (busy !== false) {
+				await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+			}
 			return insertResult.insertedId;
 		}
 
 		const updateResult = await CalendarEvent.updateEvent(event._id, updateData);
 		if (updateResult.modifiedCount > 0) {
 			await this.setupNextNotification();
+			if (busy !== false) {
+				await setupAppointmentStatusChange(event._id, uid, startTime, endTime, UserStatus.BUSY, true);
+			}
 		}
 
 		return event._id;
@@ -101,38 +112,41 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return null;
 		}
 
-		const { startTime, endTime, subject, description, reminderMinutesBeforeStart } = data;
+		const { startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
 		const meetingUrl = await this.getMeetingUrl(data);
-
-		if (startTime || endTime) {
-			await removeCronJobs(eventId, event.uid);
-
-			const effectiveStartTime = startTime || event.startTime;
-			const effectiveEndTime = endTime || event.endTime;
-
-			// Only proceed if we have both valid start and end times
-			if (effectiveStartTime && effectiveEndTime) {
-				await setupAppointmentStatusChange(eventId, event.uid, effectiveStartTime, effectiveEndTime, UserStatus.BUSY, true);
-			}
-		}
-
 		const reminderTime = reminderMinutesBeforeStart && startTime ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
-			...(endTime ? { endTime } : {}),
+			...(endTime && { endTime }),
 			subject,
 			description,
 			meetingUrl,
 			reminderMinutesBeforeStart,
 			reminderTime,
+			...(busy !== undefined && { busy }),
 		};
 
 		const updateResult = await CalendarEvent.updateEvent(eventId, updateData);
 
 		if (updateResult.modifiedCount > 0) {
 			await this.setupNextNotification();
+
+			if (startTime || endTime) {
+				await removeCronJobs(eventId, event.uid);
+
+				const isBusy = busy !== undefined ? busy : event.busy;
+				if (isBusy) {
+					const effectiveStartTime = startTime || event.startTime;
+					const effectiveEndTime = endTime || event.endTime;
+
+					// Only proceed if we have both valid start and end times
+					if (effectiveStartTime && effectiveEndTime) {
+						await setupAppointmentStatusChange(eventId, event.uid, effectiveStartTime, effectiveEndTime, UserStatus.BUSY, true);
+					}
+				}
+			}
 		}
 
 		return updateResult;

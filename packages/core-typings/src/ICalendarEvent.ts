@@ -15,4 +15,6 @@ export interface ICalendarEvent extends IRocketChatRecord {
 
 	reminderMinutesBeforeStart?: number;
 	reminderTime?: Date;
+
+	busy?: boolean;
 }

@@ -7,10 +7,12 @@ const ajv = new Ajv();
 export type CalendarEventUpdateProps = {
 	eventId: ICalendarEvent['_id'];
 	startTime: string;
+	endTime?: string;
 	subject: string;
 	description: string;
 	meetingUrl?: string;
 	reminderMinutesBeforeStart?: number;
+	busy?: boolean;
 };
 
 const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> = {
@@ -42,6 +44,10 @@ const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> =
 		},
 		reminderMinutesBeforeStart: {
 			type: 'number',
+			nullable: true,
+		},
+		busy: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},
