@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { Editor } from 'codemirror';
+import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -46,6 +46,7 @@ function CodeMirror({
 	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useEffectEvent(onChange);
 
+	const editorRef = useRef<EditorFromTextArea | null>(null);
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
@@ -62,7 +63,7 @@ function CodeMirror({
 					import('codemirror/lib/codemirror.css'),
 				]);
 
-				const editor = CodeMirror.fromTextArea(node, {
+				editorRef.current = CodeMirror.fromTextArea(node, {
 					lineNumbers,
 					lineWrapping,
 					mode,
@@ -76,7 +77,7 @@ function CodeMirror({
 					readOnly,
 				});
 
-				editor.on('change', (doc: Editor) => {
+				editorRef.current.on('change', (doc: Editor) => {
 					const newValue = doc.getValue();
 					setValue(newValue);
 					handleChange(newValue);
@@ -84,7 +85,7 @@ function CodeMirror({
 
 				return () => {
 					if (node.parentNode) {
-						editor.toTextArea();
+						editorRef.current?.toTextArea();
 					}
 				};
 			} catch (error) {
@@ -106,6 +107,20 @@ function CodeMirror({
 			showTrailingSpace,
 		],
 	);
+
+	useEffect(() => {
+		setValue(valueProp);
+	}, [valueProp]);
+
+	useEffect(() => {
+		if (!editorRef.current) {
+			return;
+		}
+
+		if (value !== editorRef.current.getValue()) {
+			editorRef.current.setValue(value ?? '');
+		}
+	}, [textAreaRef, value]);
 
 	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }

@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
-import { getSettingValueById } from './utils';
+import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -42,6 +42,8 @@ test.describe.parallel('administration-settings', () => {
 			await page.goto('/admin/settings/Layout');
 		});
 
+		test.afterAll(async ({ api }) => setSettingValueById(api, 'theme-custom-css', ''));
+
 		test('should code mirror full screen be displayed correctly', async ({ page }) => {
 			await poAdmin.getAccordionBtnByName('Custom CSS').click();
 			await poAdmin.btnFullScreen.click();
@@ -55,6 +57,17 @@ test.describe.parallel('administration-settings', () => {
 
 			const codeMirrorParent = page.getByRole('code');
 			await expect(codeMirrorParent.locator('.CodeMirror')).toHaveCount(1);
+		});
+
+		test('should reflect updated value when valueProp changes after server update', async ({ page, api }) => {
+			await poAdmin.getAccordionBtnByName('Custom CSS').click();
+			await poAdmin.btnFullScreen.click();
+
+			const codeValue = `.test-class-${Date.now()} { background-color: red; }`;
+			await setSettingValueById(api, 'theme-custom-css', codeValue);
+
+			const codeMirrorParent = page.getByRole('code');
+			await expect(codeMirrorParent.locator('.CodeMirror-line')).toHaveText(codeValue);
 		});
 	});
 });
