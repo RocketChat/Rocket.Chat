@@ -1261,11 +1261,11 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+						return API.v1.success({ status: await prl.getStatus() });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
