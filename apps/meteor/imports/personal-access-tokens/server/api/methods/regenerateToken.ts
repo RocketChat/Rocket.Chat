@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
+import { isPersonalAccessToken } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
@@ -33,8 +34,14 @@ export const regeneratePersonalAccessTokenOfUser = async (tokenName: string, use
 
 	await removePersonalAccessTokenOfUser(tokenName, userId);
 
-	return generatePersonalAccessTokenOfUser({ tokenName, userId, bypassTwoFactor: tokenExist.bypassTwoFactor || false });
-}
+	const tokenObject = tokenExist.services?.resume?.loginTokens?.find((token) => isPersonalAccessToken(token) && token.name === tokenName);
+
+	return generatePersonalAccessTokenOfUser({
+		tokenName,
+		userId,
+		bypassTwoFactor: (tokenObject && isPersonalAccessToken(tokenObject) && tokenObject.bypassTwoFactor) || false,
+	});
+};
 
 Meteor.methods<ServerMethods>({
 	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }) {
@@ -44,7 +51,7 @@ Meteor.methods<ServerMethods>({
 				method: 'personalAccessTokens:regenerateToken',
 			});
 		}
-		
+
 		return regeneratePersonalAccessTokenOfUser(tokenName, uid);
 	}),
 });
