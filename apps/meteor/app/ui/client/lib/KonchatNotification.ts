@@ -1,4 +1,4 @@
-import type { INotificationDesktop, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { INotificationDesktop, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -8,12 +8,9 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
-import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
-import { Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
-import { getUserNotificationsSoundVolume } from '../../../utils/client/getUserNotificationsSoundVolume';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
@@ -168,43 +165,6 @@ class KonchatNotification {
 			notification.icon = avatarAsPng;
 			return this.notify(notification);
 		});
-	}
-
-	public async newMessage(rid: IRoom['_id'] | undefined) {
-		if ((Meteor.user() as IUser | null)?.status === 'busy') {
-			return;
-		}
-
-		const userId = Meteor.userId();
-		const newMessageNotification = getUserPreference<string>(userId, 'newMessageNotification');
-		const audioVolume = getUserNotificationsSoundVolume(userId);
-
-		if (!rid) {
-			return;
-		}
-
-		const sub = Subscriptions.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
-
-		if (!sub || sub.audioNotificationValue === 'none') {
-			return;
-		}
-
-		try {
-			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				void CustomSounds.play(sub.audioNotificationValue, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-				return;
-			}
-
-			if (newMessageNotification && newMessageNotification !== 'none') {
-				void CustomSounds.play(newMessageNotification, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-			}
-		} catch (e) {
-			// do nothing
-		}
 	}
 }
 
