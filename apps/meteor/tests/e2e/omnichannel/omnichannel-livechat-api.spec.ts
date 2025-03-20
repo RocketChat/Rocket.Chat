@@ -565,28 +565,24 @@ test.describe('OC - Livechat API', () => {
 
 				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
 
-				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+				await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
+				await poLiveChat.page.evaluate((registerGuestVisitor) => {
+					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
+					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
+				}, registerGuestVisitor);
 
 				await page.waitForResponse('**/api/v1/livechat/visitor');
+				await page.waitForTimeout(500); // NOTE: timeout is necessary to allow websocket unsubscribes to happen
+
+				await poLiveChat.onlineAgentMessage.fill('this_a_new_test_message_from_visitor');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
-
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
-
-				await page.waitForResponse('**/api/v1/livechat/visitor');
-
-				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(poLiveChat.txtChatMessage('this_a_new_test_message_from_visitor')).toBeVisible();
 			});
 		});
 
