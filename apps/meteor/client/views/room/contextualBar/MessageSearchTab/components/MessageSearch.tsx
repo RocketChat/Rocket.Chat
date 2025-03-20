@@ -6,7 +6,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -41,7 +41,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 						<MessageListErrorBoundary>
 							<MessageListProvider>
 								<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
-									<CustomScrollbars>
+									<VirtualizedScrollbars>
 										<Virtuoso
 											totalCount={messageSearchQuery.data.length}
 											overscan={25}
@@ -82,7 +82,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 												setLimit((limit) => limit + pageSize);
 											}}
 										/>
-									</CustomScrollbars>
+									</VirtualizedScrollbars>
 								</Box>
 							</MessageListProvider>
 						</MessageListErrorBoundary>

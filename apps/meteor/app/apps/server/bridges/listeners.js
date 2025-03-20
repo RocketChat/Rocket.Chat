@@ -42,6 +42,7 @@ export class AppListenerBridge {
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
 				 */
 				case AppInterface.ILivechatRoomClosedHandler:
+				case AppInterface.IPreLivechatRoomCreatePrevent:
 				case AppInterface.IPostLivechatRoomStarted:
 				case AppInterface.IPostLivechatRoomClosed:
 				case AppInterface.IPostLivechatAgentAssigned:
