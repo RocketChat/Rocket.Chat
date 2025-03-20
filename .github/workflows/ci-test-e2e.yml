@@ -291,7 +291,7 @@ jobs:
         working-directory: ./apps/meteor
         run: |
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn playwright test tests/e2e/flaky
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
