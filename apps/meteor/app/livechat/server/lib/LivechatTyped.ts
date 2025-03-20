@@ -4,21 +4,15 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 	ILivechatVisitor,
-	SelectedAgent,
 	ILivechatAgent,
-	IMessage,
 	ILivechatDepartment,
 	AtLeast,
 	TransferData,
 	IOmnichannelAgent,
 	UserStatus,
-	IOmnichannelRoomInfo,
-	IOmnichannelRoomExtraData,
-	IOmnichannelSource,
-	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import { Logger, type MainLogger } from '@rocket.chat/logger';
+import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
 	LivechatInquiry,
@@ -31,9 +25,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
-	LivechatContacts,
 } from '@rocket.chat/models';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -47,29 +39,20 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { FileUpload } from '../../../file-upload/server';
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
 	notifyOnLivechatInquiryChanged,
-	notifyOnLivechatInquiryChangedByRoom,
-	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
 	notifyOnUserChange,
-	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
-import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Visitors, type RegisterGuestType } from './Visitors';
 import { registerGuestData } from './contacts/registerGuestData';
-import { getRequiredDepartment } from './departmentsLib';
-import type { ILivechatMessage } from './localTypes';
+import { cleanGuestHistory } from './tracking';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -98,11 +81,8 @@ type ICRMData = {
 class LivechatClass {
 	logger: Logger;
 
-	webhookLogger: MainLogger;
-
 	constructor() {
 		this.logger = new Logger('Livechat');
-		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
@@ -127,111 +107,6 @@ class LivechatClass {
 		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
-	}
-
-	private makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
-		return {
-			visitorId,
-			source: {
-				type: roomInfo.type,
-				id: roomInfo.id,
-			},
-		};
-	}
-
-	async createRoom({
-		visitor,
-		message,
-		rid,
-		roomInfo,
-		agent,
-		extraData,
-	}: {
-		visitor: ILivechatVisitor;
-		message?: string;
-		rid?: string;
-		roomInfo: IOmnichannelRoomInfo;
-		agent?: SelectedAgent;
-		extraData?: IOmnichannelRoomExtraData;
-	}) {
-		if (!settings.get('Livechat_enabled')) {
-			throw new Meteor.Error('error-omnichannel-is-disabled');
-		}
-
-		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
-			throw new Error('error-contact-channel-blocked');
-		}
-
-		const defaultAgent =
-			agent ??
-			(await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, {
-				visitorId: visitor._id,
-				source: roomInfo.source,
-			}));
-		// if no department selected verify if there is at least one active and pick the first
-		if (!defaultAgent && !visitor.department) {
-			const department = await getRequiredDepartment();
-			Livechat.logger.debug(`No department or default agent selected for ${visitor._id}`);
-
-			if (department) {
-				Livechat.logger.debug(`Assigning ${visitor._id} to department ${department._id}`);
-				visitor.department = department._id;
-			}
-		}
-
-		// delegate room creation to QueueManager
-		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
-
-		const room = await QueueManager.requestRoom({
-			guest: visitor,
-			message,
-			rid,
-			roomInfo,
-			agent: defaultAgent,
-			extraData,
-		});
-
-		Livechat.logger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
-
-		await Messages.setRoomIdByToken(visitor.token, room._id);
-
-		return room;
-	}
-
-	async getRoom(
-		guest: ILivechatVisitor,
-		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
-		roomInfo: IOmnichannelRoomInfo,
-		agent?: SelectedAgent,
-		extraData?: IOmnichannelRoomExtraData,
-	) {
-		if (!settings.get('Livechat_enabled')) {
-			throw new Meteor.Error('error-omnichannel-is-disabled');
-		}
-		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-		const room = await LivechatRooms.findOneById(message.rid);
-
-		if (room?.v._id && (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(room.v._id, room.source)))) {
-			throw new Error('error-contact-channel-blocked');
-		}
-
-		if (room && !room.open) {
-			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
-		}
-
-		if (!room?.open) {
-			return {
-				room: await this.createRoom({ visitor: guest, message: message.msg, roomInfo, agent, extraData }),
-				newRoom: true,
-			};
-		}
-
-		if (room.v.token !== guest.token) {
-			Livechat.logger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
-			throw new Meteor.Error('cannot-access-room');
-		}
-
-		return { room, newRoom: false };
 	}
 
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
@@ -316,50 +191,6 @@ class LivechatClass {
 		}
 
 		return Users.countBotAgents();
-	}
-
-	async sendRequest(
-		postData: {
-			type: string;
-			[key: string]: any;
-		},
-		attempts = 10,
-	) {
-		if (!attempts) {
-			Livechat.logger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
-			return;
-		}
-		const timeout = settings.get<number>('Livechat_http_timeout');
-		const secretToken = settings.get<string>('Livechat_secret_token');
-		const webhookUrl = settings.get<string>('Livechat_webhookUrl');
-		try {
-			Livechat.webhookLogger.debug({ msg: 'Sending webhook request', postData });
-			const result = await fetch(webhookUrl, {
-				method: 'POST',
-				headers: {
-					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
-				},
-				body: postData,
-				timeout,
-			});
-
-			if (result.status === 200) {
-				metrics.totalLivechatWebhooksSuccess.inc();
-				return result;
-			}
-
-			metrics.totalLivechatWebhooksFailures.inc();
-			throw new Error(await result.text());
-		} catch (err) {
-			const retryAfter = timeout * 4;
-			Livechat.webhookLogger.error({ msg: `Error response on ${11 - attempts} try ->`, err });
-			// try 10 times after 20 seconds each
-			attempts - 1 &&
-				Livechat.webhookLogger.warn({ msg: `Webhook call failed. Retrying`, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
-			setTimeout(async () => {
-				await Livechat.sendRequest(postData, attempts - 1);
-			}, retryAfter);
-		}
 	}
 
 	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
@@ -456,28 +287,6 @@ class LivechatClass {
 		});
 	}
 
-	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
-		check(message, Match.ObjectIncluding({ _id: String }));
-
-		const originalMessage = await Messages.findOneById<Pick<IMessage, 'u' | '_id'>>(message._id, { projection: { u: 1 } });
-		if (!originalMessage?._id) {
-			return;
-		}
-
-		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
-
-		if (!editAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		// TODO: Apps sends an `any` object and apparently we just check for _id being present
-		// while updateMessage expects AtLeast<id, msg, rid>
-		await updateMessage(message, guest as unknown as IUser);
-
-		return true;
-	}
-
 	async transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
 		this.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
 		if (room.onHold) {
@@ -521,133 +330,14 @@ class LivechatClass {
 		}
 	}
 
-	showConnecting() {
-		return RoutingManager.getConfig()?.showConnecting || false;
-	}
-
-	async getInitSettings() {
-		const validSettings = [
-			'Livechat_title',
-			'Livechat_title_color',
-			'Livechat_enable_message_character_limit',
-			'Livechat_message_character_limit',
-			'Message_MaxAllowedSize',
-			'Livechat_enabled',
-			'Livechat_registration_form',
-			'Livechat_allow_switching_departments',
-			'Livechat_offline_title',
-			'Livechat_offline_title_color',
-			'Livechat_offline_message',
-			'Livechat_offline_success_message',
-			'Livechat_offline_form_unavailable',
-			'Livechat_display_offline_form',
-			'Omnichannel_call_provider',
-			'Language',
-			'Livechat_enable_transcript',
-			'Livechat_transcript_message',
-			'Livechat_fileupload_enabled',
-			'FileUpload_Enabled',
-			'Livechat_conversation_finished_message',
-			'Livechat_conversation_finished_text',
-			'Livechat_name_field_registration_form',
-			'Livechat_email_field_registration_form',
-			'Livechat_registration_form_message',
-			'Livechat_force_accept_data_processing_consent',
-			'Livechat_data_processing_consent_text',
-			'Livechat_show_agent_info',
-			'Livechat_clear_local_storage_when_chat_ended',
-			'Livechat_history_monitor_type',
-			'Livechat_hide_system_messages',
-			'Livechat_widget_position',
-			'Livechat_background',
-			'Assets_livechat_widget_logo',
-			'Livechat_hide_watermark',
-			'Omnichannel_allow_visitors_to_close_conversation',
-		] as const;
-
-		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
-
-		const rcSettings = validSettings.reduce<Record<SettingTypes, string | boolean>>((acc, setting) => {
-			acc[setting] = settings.get(setting);
-			return acc;
-		}, {} as any);
-
-		rcSettings.Livechat_Show_Connecting = this.showConnecting();
-
-		return rcSettings;
-	}
-
-	async sendMessage({
-		guest,
-		message,
-		roomInfo,
-		agent,
-	}: {
-		guest: ILivechatVisitor;
-		message: ILivechatMessage;
-		roomInfo: IOmnichannelRoomInfo;
-		agent?: SelectedAgent;
-	}) {
-		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);
-		if (guest.name) {
-			message.alias = guest.name;
-		}
-		return Object.assign(await sendMessage(guest, { ...message, token: guest.token }, room), {
-			newRoom,
-			showConnecting: this.showConnecting(),
-		});
-	}
-
 	async removeGuest(_id: string) {
 		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
 		if (!guest) {
 			throw new Error('error-invalid-guest');
 		}
 
-		await this.cleanGuestHistory(guest);
+		await cleanGuestHistory(guest);
 		return LivechatVisitors.disableById(_id);
-	}
-
-	async cleanGuestHistory(guest: ILivechatVisitor) {
-		const { token } = guest;
-
-		// This shouldn't be possible, but just in case
-		if (!token) {
-			throw new Error('error-invalid-guest');
-		}
-
-		const cursor = LivechatRooms.findByVisitorToken(token);
-		for await (const room of cursor) {
-			await Promise.all([
-				Subscriptions.removeByRoomId(room._id, {
-					async onTrash(doc) {
-						void notifyOnSubscriptionChanged(doc, 'removed');
-					},
-				}),
-				FileUpload.removeFilesByRoomId(room._id),
-				Messages.removeByRoomId(room._id),
-				ReadReceipts.removeByRoomId(room._id),
-			]);
-		}
-
-		await LivechatRooms.removeByVisitorToken(token);
-
-		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
-		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
-		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
-	}
-
-	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
-		const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
-		const editOwn = message.u && message.u._id === guest._id;
-
-		if (!deleteAllowed || !editOwn) {
-			throw new Error('error-action-not-allowed');
-		}
-
-		await deleteMessage(message, guest as unknown as IUser);
-
-		return true;
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
@@ -1004,78 +694,6 @@ class LivechatClass {
 		}
 
 		return false;
-	}
-
-	async saveRoomInfo(
-		roomData: {
-			_id: string;
-			topic?: string;
-			tags?: string[];
-			livechatData?: { [k: string]: string };
-			// For priority and SLA, if the value is blank (ie ""), then system will remove the priority or SLA from the room
-			priorityId?: string;
-			slaId?: string;
-		},
-		guestData?: {
-			_id: string;
-			name?: string;
-			email?: string;
-			phone?: string;
-			livechatData?: { [k: string]: string };
-		},
-		userId?: string,
-	) {
-		this.logger.debug(`Saving room information on room ${roomData._id}`);
-		const { livechatData = {} } = roomData;
-		const customFields: Record<string, string> = {};
-
-		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
-			const fields = LivechatCustomField.findByScope('room');
-			for await (const field of fields) {
-				if (!livechatData.hasOwnProperty(field._id)) {
-					continue;
-				}
-				const value = trim(livechatData[field._id]);
-				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-					const regexp = new RegExp(field.regexp);
-					if (!regexp.test(value)) {
-						throw new Meteor.Error(i18n.t('error-invalid-custom-field-value', { field: field.label }));
-					}
-				}
-				customFields[field._id] = value;
-			}
-			roomData.livechatData = customFields;
-			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields on room ${roomData._id}`);
-		}
-
-		await LivechatRooms.saveRoomById(roomData);
-
-		setImmediate(() => {
-			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
-		});
-
-		if (guestData?.name?.trim().length) {
-			const { _id: rid } = roomData;
-			const { name } = guestData;
-
-			const responses = await Promise.all([
-				Rooms.setFnameById(rid, name),
-				LivechatInquiry.setNameByRoomId(rid, name),
-				Subscriptions.updateDisplayNameByRoomId(rid, name),
-			]);
-
-			if (responses[1]?.modifiedCount) {
-				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
-			}
-
-			if (responses[2]?.modifiedCount) {
-				await notifyOnSubscriptionChangedByRoomId(rid);
-			}
-		}
-
-		void notifyOnRoomChangedById(roomData._id);
-
-		return true;
 	}
 }
 

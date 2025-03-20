@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 
 import { slashCommands } from '../../app/utils/client/slashCommand';
 
+type SlashCommandBasicInfo = Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>;
+
 export const useAppSlashCommands = () => {
 	const queryClient = useQueryClient();
 
@@ -41,20 +43,20 @@ export const useAppSlashCommands = () => {
 	const { data } = useQuery({
 		queryKey: ['apps', 'slashCommands'] as const,
 		queryFn: async () => {
-			let allCommands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[] = [];
-			let hasMore = true;
-			let offset = 0;
-			const count = 50;
+			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
+				const count = 50;
+				const { commands, total } = await getSlashCommands({ offset: currentOffset, count });
 
-			while (hasMore) {
-				// eslint-disable-next-line no-await-in-loop
-				const { commands, total } = await getSlashCommands({ offset, count });
-				allCommands = allCommands.concat(commands);
-				hasMore = allCommands.length < total;
-				offset += count;
-			}
+				const newAccumulator = [...accumulator, ...commands];
 
-			return allCommands;
+				if (newAccumulator.length < total) {
+					return fetchBatch(currentOffset + count, newAccumulator);
+				}
+
+				return newAccumulator;
+			};
+
+			return fetchBatch(0);
 		},
 		enabled: !!uid,
 	});
