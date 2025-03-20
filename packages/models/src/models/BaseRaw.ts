@@ -53,7 +53,7 @@ export abstract class BaseRaw<
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
 > implements IBaseModel<T, C, TDeleted>
 {
-	public readonly defaultFields: C | undefined;
+	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
 
