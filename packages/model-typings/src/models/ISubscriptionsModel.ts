@@ -13,6 +13,7 @@ import type {
 	DeleteOptions,
 	CountDocumentsOptions,
 	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -238,7 +239,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document>;
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;

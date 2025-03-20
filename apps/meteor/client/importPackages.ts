@@ -5,7 +5,6 @@ import '../app/custom-sounds/client';
 import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/emoji-custom/client';
-import '../app/file-upload/client';
 import '../app/gitlab/client';
 import '../app/iframe-login/client';
 import '../app/license/client';

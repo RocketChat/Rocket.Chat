@@ -117,10 +117,6 @@ API.v1.addRoute(
 
 			await saveUser(this.userId, userData);
 
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
-			}
-
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
 					userId,

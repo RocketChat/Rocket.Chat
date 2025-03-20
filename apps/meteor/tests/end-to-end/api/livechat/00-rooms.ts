@@ -20,6 +20,7 @@ import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
@@ -73,21 +74,50 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
+	let appId: string;
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		if (IS_EE) {
+			// install the app
+			await request
+				.post(apps('/'))
+				.set(credentials)
+				.send({ url: APP_URL })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('app');
+					expect(res.body.app).to.have.a.property('id');
+					expect(res.body.app).to.have.a.property('version');
+					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+
+					appId = res.body.app.id;
+				});
+		}
+
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
 		await createAgent();
 		await makeAgentAvailable();
+
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
 	});
+
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
+
+		if (IS_EE) {
+			await request
+				.delete(apps(`/${appId}`))
+				.set(credentials)
+				.expect(200);
+		}
 	});
 
 	describe('livechat/room', () => {
@@ -100,6 +130,13 @@ describe('LIVECHAT - rooms', () => {
 		it('should fail if rid is passed but doesnt point to a valid room', async () => {
 			const visitor = await createVisitor();
 			await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
+		});
+		(IS_EE ? it : it.skip)('should prevent create a room for visitor if an app throws an error', async () => {
+			// this test relies on the app installed by the insertApp fixture
+			const visitor = await createVisitor(undefined, 'visitor prevent from app');
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			expect(body).to.have.property('success', false);
 		});
 		it('should create a room for visitor', async () => {
 			const visitor = await createVisitor();

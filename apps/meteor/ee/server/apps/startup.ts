@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import { License } from '@rocket.chat/license';
 
 import { Apps } from './orchestrator';
 import { settings, settingsRegistry } from '../../../app/settings/server';
+import { disableAppsWithAddonsCallback } from '../lib/apps/disableAppsWithAddonsCallback';
 
-Meteor.startup(async function _appServerOrchestrator() {
+export const startupApp = async function startupApp() {
 	await settingsRegistry.addGroup('General', async function () {
 		await this.section('Apps', async function () {
 			await this.add('Apps_Logs_TTL', '30_days', {
@@ -56,11 +57,23 @@ Meteor.startup(async function _appServerOrchestrator() {
 		});
 	});
 
+	async function migratePrivateAppsCallback() {
+		void Apps.migratePrivateApps();
+		void Apps.disablePrivateApps();
+		void Apps.disableMarketplaceApps();
+	}
+
+	License.onInvalidateLicense(migratePrivateAppsCallback);
+	License.onRemoveLicense(migratePrivateAppsCallback);
+
+	// Disable apps that depend on add-ons (external modules) if they are invalidated
+	License.onModule(disableAppsWithAddonsCallback);
+
 	settings.watch('Apps_Logs_TTL', async (value) => {
+		// TODO: remove this feature, initialized is always false first time
 		if (!Apps.isInitialized()) {
 			return;
 		}
-
 		let expireAfterSeconds = 0;
 
 		switch (value) {
@@ -80,11 +93,18 @@ Meteor.startup(async function _appServerOrchestrator() {
 		}
 
 		const model = Apps._logModel;
-
-		await model!.resetTTLIndex(expireAfterSeconds);
+		await model?.resetTTLIndex(expireAfterSeconds);
 	});
 
 	Apps.initialize();
 
 	void Apps.load();
-});
+
+	settings.change<'filesystem' | 'gridfs'>('Apps_Framework_Source_Package_Storage_Type', (value) =>
+		Apps.getAppSourceStorage()?.setStorage(value),
+	);
+
+	settings.change<string>('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) =>
+		Apps.getAppSourceStorage()?.setFileSystemStoragePath(value),
+	);
+};
