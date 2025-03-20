@@ -20,6 +20,15 @@
   - @rocket.chat/message-parser@0.31.32-rc.0
   </details>
 
+## 7.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.1
+  </details>
+
 ## 7.4.0
 
 ### Minor Changes

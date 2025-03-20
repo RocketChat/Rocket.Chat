@@ -15,6 +15,15 @@
   - @rocket.chat/core-typings@7.5.0-rc.0
   </details>
 
+## 1.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.1
+  </details>
+
 ## 1.4.0
 
 ### Minor Changes

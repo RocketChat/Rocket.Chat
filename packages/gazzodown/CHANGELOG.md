@@ -14,6 +14,17 @@
   - @rocket.chat/message-parser@0.31.32-rc.0
   </details>
 
+## 16.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.1
+  - @rocket.chat/ui-contexts@16.0.1
+  - @rocket.chat/ui-client@16.0.1
+  </details>
+
 ## 16.0.0
 
 ### Patch Changes

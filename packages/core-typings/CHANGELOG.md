@@ -15,6 +15,8 @@
   - @rocket.chat/message-parser@0.31.32-rc.0
   </details>
 
+## 7.4.1
+
 ## 7.4.0
 
 ### Minor Changes
