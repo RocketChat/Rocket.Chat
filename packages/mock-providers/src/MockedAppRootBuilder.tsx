@@ -11,6 +11,7 @@ import type {
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
+import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { Device, ModalContextValue, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -40,12 +41,23 @@ type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
 };
 
+export type SettingsContextQuery = {
+	readonly _id?: ISetting['_id'][] | RegExp;
+	readonly group?: ISetting['_id'];
+	readonly section?: string;
+	readonly tab?: ISetting['_id'];
+};
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface MockedAppRootEvents {
 	'update-modal': void;
 }
 
+const empty = [] as const;
+
 export class MockedAppRootBuilder {
+	private _settings: Map<string, ISetting> = new Map();
+
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
 	private connectionStatus: ContextType<typeof ConnectionStatusContext> = {
@@ -92,9 +104,8 @@ export class MockedAppRootBuilder {
 
 	private settings: Mutable<ContextType<typeof SettingsContext>> = {
 		hasPrivateAccess: true,
-		isLoading: false,
 		querySetting: (_id: string) => [() => () => undefined, () => undefined],
-		querySettings: () => [() => () => undefined, () => []],
+		querySettings: (_query: SettingsContextQuery) => [() => () => undefined, () => empty as unknown as ISetting[]],
 		dispatch: async () => undefined,
 	};
 
@@ -373,7 +384,6 @@ export class MockedAppRootBuilder {
 		} as ISetting;
 
 		const innerFn = this.settings.querySetting;
-
 		const outerFn = (
 			innerSetting: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined] => {
@@ -385,6 +395,27 @@ export class MockedAppRootBuilder {
 		};
 
 		this.settings.querySetting = outerFn;
+
+		this._settings.set(id, setting);
+
+		const cache = new WeakMap();
+
+		this.settings.querySettings = (query: SettingsContextQuery) => {
+			const filter =
+				cache.get(query) ??
+				createFilterFromQuery({
+					...query,
+					...(query._id ? { _id: { $in: query._id } } : {}),
+				} as any);
+			cache.set(query, filter);
+			const arr = cache.get(filter) ?? Array.from(this._settings.values()).filter(filter);
+			return [
+				() => () => undefined,
+				() => {
+					return arr;
+				},
+			];
+		};
 
 		return this;
 	}
