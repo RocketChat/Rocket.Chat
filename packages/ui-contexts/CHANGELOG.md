@@ -1,5 +1,19 @@
 # @rocket.chat/ui-contexts
 
+## 17.0.0-rc.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- <details><summary>Updated dependencies [4ce00382e9877c4d9241747fdd4f4223d70b58a7, 280fcce8488475298ccd3ae4dd7ded29a32d8a4b, a0c5f3901df223f9403bef2b2a4ad5d24e843339, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 96432420860651a3279069111972af6ec18c3b8a, bb4ff0db3dcedcc715eb4b69b3f8d5c79ce0cb5f]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.0
+  - @rocket.chat/i18n@1.5.0-rc.0
+  - @rocket.chat/ddp-client@0.3.18-rc.0
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  </details>
+
 ## 16.0.0
 
 ### Patch Changes

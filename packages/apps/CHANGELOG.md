@@ -1,5 +1,20 @@
 # @rocket.chat/apps
 
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#35486](https://github.com/RocketChat/Rocket.Chat/pull/35486)) Adds the executeLivechatRoomCreatePrevent hook to the Rocket.Chat Apps-Engine to prevent the creation of live chat rooms.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3b5406172c5575f09e9f5a2cb3ff99122900afde, 4e9d3155db516718fdd28be30a53d0051c9144d3, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 38f1c508c9f95cd34744066019927add53470446, c44331e0d9b0e4e04d1ec64bea74b439a1125aa0, 0d96d633a653f52d07bc9ebeead16dcb90c75e2c]:</summary>
+
+  - @rocket.chat/model-typings@1.5.0-rc.0
+  - @rocket.chat/apps-engine@1.50.0-rc.0
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  </details>
+
 ## 0.3.0
 
 ### Minor Changes

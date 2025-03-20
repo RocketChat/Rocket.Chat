@@ -1,5 +1,25 @@
 # @rocket.chat/rest-typings
 
+## 7.5.0-rc.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+- ([#34983](https://github.com/RocketChat/Rocket.Chat/pull/34983)) feat: Adds OpenAPI support
+
+- ([#35258](https://github.com/RocketChat/Rocket.Chat/pull/35258)) Introduces `/v1/audit.settings` endpoint for querying changed settings audit events
+
+### Patch Changes
+
+- ([#35546](https://github.com/RocketChat/Rocket.Chat/pull/35546)) Restores `roomName` property in the `GET /groups.messages` endpoint to fix unintended removal.
+
+- <details><summary>Updated dependencies [25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  - @rocket.chat/message-parser@0.31.32-rc.0
+  </details>
+
 ## 7.4.0
 
 ### Minor Changes

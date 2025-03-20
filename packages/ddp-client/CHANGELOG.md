@@ -1,5 +1,18 @@
 # @rocket.chat/ddp-client
 
+## 0.3.18-rc.0
+
+### Patch Changes
+
+- ([#35328](https://github.com/RocketChat/Rocket.Chat/pull/35328)) Fixes livechat inquiries not routing to the manager queue when manual routing is enabled.
+
+- <details><summary>Updated dependencies [4ce00382e9877c4d9241747fdd4f4223d70b58a7, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 96432420860651a3279069111972af6ec18c3b8a, bb4ff0db3dcedcc715eb4b69b3f8d5c79ce0cb5f]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.0
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  - @rocket.chat/api-client@0.2.18-rc.0
+  </details>
+
 ## 0.3.17
 
 ### Patch Changes

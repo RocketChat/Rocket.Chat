@@ -1,5 +1,20 @@
 # @rocket.chat/core-typings
 
+## 7.5.0-rc.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+### Patch Changes
+
+- ([#35369](https://github.com/RocketChat/Rocket.Chat/pull/35369)) Fixes an issue where recursively quoting messages multiple times (up to the configured chained quote limit) caused the inner attachment to appear empty.
+
+- <details><summary>Updated dependencies [335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
+
+  - @rocket.chat/message-parser@0.31.32-rc.0
+  </details>
+
 ## 7.4.0
 
 ### Minor Changes

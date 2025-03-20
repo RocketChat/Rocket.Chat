@@ -1,5 +1,23 @@
 # @rocket.chat/livechat Change Log
 
+## 1.22.5-rc.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- ([#35205](https://github.com/RocketChat/Rocket.Chat/pull/35205)) Fixes livechat routing algorithm to ensure conversations are correctly assigned to the contact manager when triggers and/or automatic agent routing are enabled.
+
+- ([#35555](https://github.com/RocketChat/Rocket.Chat/pull/35555)) Fixes an issue causing Livechat to disconnect from the websocket when registerGuest is called multiple times with the same token
+
+- ([#35551](https://github.com/RocketChat/Rocket.Chat/pull/35551)) Fixes Livechat's setDepartment api method not updating the visitor's department as expected
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.32-rc.0
+  </details>
+
 ## 1.22.4
 
 ### Patch Changes
