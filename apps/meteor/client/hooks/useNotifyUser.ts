@@ -4,6 +4,7 @@ import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/u
 import { useEffect } from 'react';
 
 import { useEmbeddedLayout } from './useEmbeddedLayout';
+import { useNewMessageNotification } from './useNewMessageNotification';
 import { useNotifyNewRoom } from './useNotifyNewRoom';
 import { CachedChatSubscription } from '../../app/models/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
@@ -17,6 +18,7 @@ export const useNotifyUser = () => {
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
 	const newRoomNotification = useNotifyNewRoom();
+	const newMessageNotification = useNewMessageNotification();
 
 	const notifyNewRoom = useEffectEvent(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
 		if (!user || user.status === 'busy') {
@@ -45,12 +47,12 @@ export const useNotifyUser = () => {
 		if (isLayoutEmbedded) {
 			if (!hasFocus && messageIsInOpenedRoom) {
 				// Play a notification sound
-				void KonchatNotification.newMessage(rid);
+				newMessageNotification(notification.payload);
 				void KonchatNotification.showDesktop(notification);
 			}
 		} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
 			// Play a notification sound
-			void KonchatNotification.newMessage(rid);
+			newMessageNotification(notification.payload);
 			void KonchatNotification.showDesktop(notification);
 		}
 	});
