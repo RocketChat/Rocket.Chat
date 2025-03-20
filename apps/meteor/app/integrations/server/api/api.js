@@ -124,6 +124,8 @@ async function executeIntegrationRest() {
 			}
 		}
 
+		console.log('END');
+
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
 			request,
