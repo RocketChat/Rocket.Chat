@@ -2,8 +2,8 @@ import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { useUserSoundPreferences } from './useUserSoundPreferences';
-import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
+import { CustomSounds } from '../../../app/custom-sounds/client/lib/CustomSounds';
+import { useUserSoundPreferences } from '../useUserSoundPreferences';
 
 export const useNewMessageNotification = () => {
 	const newMessageNotification = useUserPreference<string>('newMessageNotification');

@@ -3,13 +3,13 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useEmbeddedLayout } from './useEmbeddedLayout';
+import { useEmbeddedLayout } from '../useEmbeddedLayout';
 import { useNewMessageNotification } from './useNewMessageNotification';
-import { useNotifyNewRoom } from './useNotifyNewRoom';
-import { CachedChatSubscription } from '../../app/models/client';
-import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
-import { RoomManager } from '../lib/RoomManager';
-import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
+import { useNewRoomNotification } from './useNewRoomNotification';
+import { CachedChatSubscription } from '../../../app/models/client';
+import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
+import { RoomManager } from '../../lib/RoomManager';
+import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 
 export const useNotifyUser = () => {
 	const user = useUser();
@@ -17,7 +17,7 @@ export const useNotifyUser = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
-	const newRoomNotification = useNotifyNewRoom();
+	const newRoomNotification = useNewRoomNotification();
 	const newMessageNotification = useNewMessageNotification();
 
 	const notifyNewRoom = useEffectEvent(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
