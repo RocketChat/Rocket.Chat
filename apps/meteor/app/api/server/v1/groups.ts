@@ -764,10 +764,13 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGroupsMessagesProps },
 	{
 		async get() {
-			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+			const { roomId, roomName, mentionIds, starredIds, pinned } = this.queryParams;
 
 			const findResult = await findPrivateGroupByIdOrName({
-				params: { roomId },
+				params: {
+					...(roomId && { roomId }),
+					...(roomName && { roomName }),
+				},
 				userId: this.userId,
 			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
