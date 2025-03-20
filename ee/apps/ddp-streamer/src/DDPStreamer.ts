@@ -12,7 +12,6 @@ import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
-import { getBaseUserFields } from '../../../../apps/meteor/app/utils/server/functions/getBaseUserFields';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
@@ -126,8 +125,40 @@ export class DDPStreamer extends ServiceClass {
 		});
 
 		async function sendUserData(client: Client, userId: string) {
+			// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
 			const loggedUser = await Users.findOneById(userId, {
-				projection: getBaseUserFields(true),
+				projection: {
+					'name': 1,
+					'username': 1,
+					'nickname': 1,
+					'emails': 1,
+					'status': 1,
+					'statusDefault': 1,
+					'statusText': 1,
+					'statusConnection': 1,
+					'bio': 1,
+					'avatarOrigin': 1,
+					'utcOffset': 1,
+					'language': 1,
+					'settings': 1,
+					'enableAutoAway': 1,
+					'idleTimeLimit': 1,
+					'roles': 1,
+					'active': 1,
+					'defaultRoom': 1,
+					'customFields': 1,
+					'requirePasswordChange': 1,
+					'requirePasswordChangeReason': 1,
+					'statusLivechat': 1,
+					'banners': 1,
+					'oauth.authorizedClients': 1,
+					'_updatedAt': 1,
+					'avatarETag': 1,
+					'extension': 1,
+					'openBusinessHours': 1,
+					'services.totp.enabled': 1,
+					'services.email2fa.enabled': 1
+				},
 			});
 			if (!loggedUser) {
 				return;
