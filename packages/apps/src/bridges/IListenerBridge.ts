@@ -29,7 +29,11 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 		roomEvent(int: 'IPostRoomCreate' | 'IPostRoomDeleted', room: IRoom): Promise<void>;
 
 		livechatEvent(
-			int: 'IPostLivechatAgentAssigned' | 'IPostLivechatAgentUnassigned',
+			int:
+				| 'IPostLivechatAgentAssigned'
+				| 'IPostLivechatAgentUnassigned'
+				| 'IPostLivechatDepartmentRemoved'
+				| 'IPostLivechatDepartmentDisabled',
 			data: { user: IUser; room: IOmnichannelRoom },
 		): Promise<void>;
 		livechatEvent(
