@@ -1,3 +1,4 @@
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel, Utils } from './page-objects';
 import { Directory } from './page-objects/directory';
@@ -55,6 +56,7 @@ test.describe('Preview public channel', () => {
 	});
 
 	test.describe('App', () => {
+		test.skip(!IS_EE, 'Premium Only');
 		test.use({ storageState: Users.userNotAllowedByApp.state });
 
 		test('should prevent user from join the room', async ({ api }) => {
