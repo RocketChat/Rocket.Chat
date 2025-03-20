@@ -560,9 +560,6 @@ class RocketChatIntegrationHandler {
 					}),
 				);
 
-				console.log('responseContent', responseContent);
-				console.log('room', room);
-
 				if (responseContent) {
 					const resultMessage = await this.sendMessage({
 						trigger,
@@ -579,10 +576,14 @@ class RocketChatIntegrationHandler {
 					return;
 				}
 
+				console.log('1');
+
 				if (responseContent === false) {
 					await updateHistory({ historyId, step: 'after-process-false-result', finished: true });
 					return;
 				}
+
+				console.log('2');
 
 				// if the result contained nothing or wasn't a successful statusCode
 				if (!content || !this.successResults.includes(res.status)) {
@@ -657,6 +658,8 @@ class RocketChatIntegrationHandler {
 
 					return;
 				}
+
+				console.log('content', content);
 
 				// process outgoing webhook response as a new message
 				if (content && this.successResults.includes(res.status)) {
