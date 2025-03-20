@@ -35,6 +35,7 @@ import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { executeSaveUserProfile } from '../../../../server/methods/saveUserProfile';
 import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
 import { sendForgotPasswordEmail } from '../../../../server/methods/sendForgotPasswordEmail';
 import { executeSetUserActiveStatus } from '../../../../server/methods/setUserActiveStatus';
@@ -116,10 +117,6 @@ API.v1.addRoute(
 
 			await saveUser(this.userId, userData);
 
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
-			}
-
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
 					userId,
@@ -170,7 +167,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
