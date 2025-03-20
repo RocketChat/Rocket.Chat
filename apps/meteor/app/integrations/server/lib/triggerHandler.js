@@ -560,6 +560,9 @@ class RocketChatIntegrationHandler {
 					}),
 				);
 
+				console.log('responseContent', responseContent);
+				console.log('room', room);
+
 				if (responseContent) {
 					const resultMessage = await this.sendMessage({
 						trigger,
