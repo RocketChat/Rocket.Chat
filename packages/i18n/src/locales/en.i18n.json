@@ -5559,8 +5559,6 @@
   "view-other-user-phone_description": "Permission to view the phone number of other users.",
   "view-other-user-roles": "View Other User Emails",
   "view-other-user-roles_description": "Permission to view roles of other users.",
-  "view-other-user-utcoffset": "View Other User UTC Offset",
-  "view-other-user-utcoffset_description": "Permission to view the ufc offset of other users.",
   "Share": "Share",
   "Share_screen": "Share screen",
   "New_CannedResponse": "New Canned Response",

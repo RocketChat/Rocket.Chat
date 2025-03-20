@@ -76,7 +76,6 @@ export const permissions = [
 	{ _id: 'view-other-user-emails', roles: ['admin'] },
 	{ _id: 'view-other-user-phone', roles: ['admin'] },
 	{ _id: 'view-other-user-roles', roles: ['admin', 'user', 'bot'] },
-	{ _id: 'view-other-user-utcoffset', roles: ['admin', 'user', 'bot'] },
 	{ _id: 'view-device-management', roles: ['admin'] },
 	{ _id: 'view-engagement-dashboard', roles: ['admin'] },
 	{ _id: 'view-full-other-user-info', roles: ['admin'] },
