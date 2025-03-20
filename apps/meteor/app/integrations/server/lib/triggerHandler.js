@@ -692,6 +692,8 @@ class RocketChatIntegrationHandler {
 		const message = await Messages.findOneById(history.data.message_id);
 		const room = await Rooms.findOneById(history.data.channel_id);
 		const user = await Users.findOneById(history.data.user_id);
+
+		console.log('TESTING', message, room, user);
 		let owner;
 
 		if (history.data.owner && history.data.owner._id) {
