@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isTeamRoom } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useUserId, useTranslation, useRouter, useUserPresence } from '@rocket.chat/ui-contexts';
@@ -32,7 +32,7 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	return (
 		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
 			<RoomBannerContent>
-				{!topic && canEdit ? (
+				{!topic && canEdit && (isPublicRoom(room) || isPrivateRoom(room)) ? (
 					<Box is='a' href={href}>
 						{t('Add_topic')}
 					</Box>
