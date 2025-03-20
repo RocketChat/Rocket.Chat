@@ -385,7 +385,6 @@ export class MockedAppRootBuilder {
 		} as ISetting;
 
 		const innerFn = this.settings.querySetting;
-		console.log('withSettinsg', id, value);
 		const outerFn = (
 			innerSetting: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined] => {
@@ -415,10 +414,6 @@ export class MockedAppRootBuilder {
 			return [
 				() => () => undefined,
 				() => {
-					console.log('querySettings', query, filter, arr, this._settings.values());
-
-					console.log('querySettings 2', [...this._settings.values().filter(filter)]);
-
 					return arr;
 				},
 			];
