@@ -1,24 +1,23 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
+import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const settingsMock = {
-	get: sinon.stub().returns(true),
-};
+import { MockedCronJobs } from '../mocks/cronJobs';
 
+const settingsMock = new Map<string, any>();
+
+const fakeUserId = 'userId456';
 const CalendarEventMock = {
-	find: sinon.stub(),
-	findOne: sinon.stub(),
-	findOverlappingEvents: sinon.stub(),
-	findEligibleEventsForCancelation: sinon.stub(),
+	findEligibleEventsForCancelation: sinon.stub().returns({
+		toArray: sinon.stub().resolves([
+			{ _id: 'event1', uid: fakeUserId },
+			{ _id: 'event2', uid: fakeUserId },
+		]),
+	}),
 };
 
-const cronJobsMock = {
-	has: sinon.stub().resolves(false),
-	remove: sinon.stub().resolves(),
-	addAtTimestamp: sinon.stub().resolves(),
-};
+const cronJobsMock = new MockedCronJobs();
 
 const { cancelUpcomingStatusChanges } = proxyquire
 	.noCallThru()
@@ -31,65 +30,19 @@ const { cancelUpcomingStatusChanges } = proxyquire
 	});
 
 describe('Calendar.StatusEvents', () => {
-	const fakeUserId = 'userId456';
-
-	beforeEach(() => {
-		setupCronJobsMocks();
-		setupCalendarEventMocks();
-		setupSettingsMocks();
-	});
-
-	function setupCronJobsMocks() {
-		const freshMocks = {
-			has: sinon.stub().resolves(false),
-			remove: sinon.stub().resolves(),
-			addAtTimestamp: sinon.stub().resolves(),
-		};
-
-		Object.assign(cronJobsMock, freshMocks);
-	}
-
-	function setupCalendarEventMocks() {
-		const freshMocks = {
-			find: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			} as any),
-			findOne: sinon.stub().resolves(null),
-			findOverlappingEvents: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
-			findEligibleEventsForCancelation: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
-		};
-
-		Object.assign(CalendarEventMock, freshMocks);
-	}
-
-	function setupSettingsMocks() {
-		Object.assign(settingsMock, {
-			get: sinon.stub().returns(true),
-		});
-	}
-
 	describe('#cancelUpcomingStatusChanges', () => {
 		it('should do nothing if busy status setting is disabled', async () => {
-			settingsMock.get.returns(false);
+			settingsMock.set('Calendar_BusyStatus_Enabled', false);
 
-			await cancelUpcomingStatusChanges(fakeUserId);
-
-			expect(CalendarEventMock.findEligibleEventsForCancelation.callCount).to.equal(0);
-		});
-
-		it('should find and cancel active events', async () => {
 			const events = [
 				{ _id: 'event1', uid: fakeUserId },
 				{ _id: 'event2', uid: fakeUserId },
 			];
 
-			cronJobsMock.has.resetHistory();
-			cronJobsMock.remove.resetHistory();
-			cronJobsMock.has.resolves(true);
+			cronJobsMock.jobNames.clear();
+			cronJobsMock.jobNames.add(`calendar-presence-status-event1-${fakeUserId}`);
+			cronJobsMock.jobNames.add(`calendar-presence-status-event2-${fakeUserId}`);
+			cronJobsMock.jobNames.add(`calendar-presence-status-event3-${fakeUserId}`);
 
 			CalendarEventMock.findEligibleEventsForCancelation.returns({
 				toArray: sinon.stub().resolves(events),
@@ -97,8 +50,33 @@ describe('Calendar.StatusEvents', () => {
 
 			await cancelUpcomingStatusChanges(fakeUserId);
 
-			expect(cronJobsMock.has.callCount).to.equal(2);
-			expect(cronJobsMock.remove.callCount).to.equal(2);
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event1-${fakeUserId}`)).to.true;
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event2-${fakeUserId}`)).to.true;
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event3-${fakeUserId}`)).to.true;
+		});
+
+		it('should find and cancel active events', async () => {
+			settingsMock.set('Calendar_BusyStatus_Enabled', true);
+
+			const events = [
+				{ _id: 'event1', uid: fakeUserId },
+				{ _id: 'event2', uid: fakeUserId },
+			];
+
+			cronJobsMock.jobNames.clear();
+			cronJobsMock.jobNames.add(`calendar-presence-status-event1-${fakeUserId}`);
+			cronJobsMock.jobNames.add(`calendar-presence-status-event2-${fakeUserId}`);
+			cronJobsMock.jobNames.add(`calendar-presence-status-event3-${fakeUserId}`);
+
+			CalendarEventMock.findEligibleEventsForCancelation.returns({
+				toArray: sinon.stub().resolves(events),
+			});
+
+			await cancelUpcomingStatusChanges(fakeUserId);
+
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event1-${fakeUserId}`)).to.false;
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event2-${fakeUserId}`)).to.false;
+			expect(cronJobsMock.jobNames.has(`calendar-presence-status-event3-${fakeUserId}`)).to.true;
 		});
 	});
 });

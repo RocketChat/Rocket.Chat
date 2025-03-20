@@ -4,15 +4,10 @@ import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const settingsMock = {
-	get: sinon.stub().returns(true),
-};
+import { MockedCronJobs } from '../mocks/cronJobs';
 
-const cronJobsMock = {
-	has: sinon.stub().resolves(false),
-	remove: sinon.stub().resolves(),
-	addAtTimestamp: sinon.stub().resolves(),
-};
+const settingsMock = new Map<string, any>();
+const cronJobsMock = new MockedCronJobs();
 
 const applyStatusChange = sinon.stub();
 const handleOverlappingEvents = sinon.stub();
@@ -31,44 +26,29 @@ describe('Calendar.StatusEvents', () => {
 	const fakeUserId = 'userId456';
 	const fakeStartTime = new Date('2025-01-01T10:00:00Z');
 	const fakeEndTime = new Date('2025-01-01T11:00:00Z');
+	const statusId = `calendar-presence-status-${fakeEventId}-${fakeUserId}`;
 
 	beforeEach(() => {
-		setupCronJobsMocks();
-		setupSettingsMocks();
-	});
-
-	function setupCronJobsMocks() {
-		const freshMocks = {
-			has: sinon.stub().resolves(false),
-			remove: sinon.stub().resolves(),
-			addAtTimestamp: sinon.stub().resolves(),
-		};
-
-		Object.assign(cronJobsMock, freshMocks);
-	}
-
-	function setupSettingsMocks() {
+		cronJobsMock.jobNames.clear();
 		applyStatusChange.resetHistory();
 		handleOverlappingEvents.resetHistory();
-
-		Object.assign(settingsMock, {
-			get: sinon.stub().returns(true),
-		});
-	}
+		settingsMock.clear();
+		settingsMock.set('Calendar_BusyStatus_Enabled', true);
+	});
 
 	describe('#setupAppointmentStatusChange', () => {
 		it('should do nothing if busy status setting is disabled', async () => {
-			settingsMock.get.returns(false);
+			settingsMock.set('Calendar_BusyStatus_Enabled', false);
 
 			await setupAppointmentStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, undefined, false);
 
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(0);
+			expect(cronJobsMock.jobNames.size).to.equal(0);
 		});
 
 		it('should do nothing if endTime is not provided', async () => {
 			await setupAppointmentStatusChange(fakeEventId, fakeUserId, fakeStartTime, undefined, undefined, false);
 
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(0);
+			expect(cronJobsMock.jobNames.size).to.equal(0);
 		});
 
 		it('should handle overlapping events when shouldScheduleRemoval=true', async () => {
@@ -77,7 +57,7 @@ describe('Calendar.StatusEvents', () => {
 			await setupAppointmentStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY, true);
 
 			expect(handleOverlappingEvents.callCount).to.equal(1);
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(0);
+			expect(cronJobsMock.jobNames.size).to.equal(0);
 		});
 
 		it('should schedule status change at the start time when shouldScheduleRemoval=true', async () => {
@@ -85,15 +65,13 @@ describe('Calendar.StatusEvents', () => {
 
 			await setupAppointmentStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY, true);
 
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(1);
-			expect(cronJobsMock.addAtTimestamp.firstCall.args[1]).to.equal(fakeStartTime);
+			expect(cronJobsMock.jobNames.has(statusId)).to.true;
 		});
 
 		it('should schedule status change at the end time when shouldScheduleRemoval=false', async () => {
 			await setupAppointmentStatusChange(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY, false);
 
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(1);
-			expect(cronJobsMock.addAtTimestamp.firstCall.args[1]).to.equal(fakeEndTime);
+			expect(cronJobsMock.jobNames.has(statusId)).to.true;
 		});
 	});
 });

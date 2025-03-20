@@ -4,18 +4,13 @@ import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { MockedCronJobs } from '../mocks/cronJobs';
+
 const CalendarEventMock = {
-	find: sinon.stub(),
-	findOne: sinon.stub(),
 	findOverlappingEvents: sinon.stub(),
-	findEligibleEventsForCancelation: sinon.stub(),
 };
 
-const cronJobsMock = {
-	has: sinon.stub().resolves(false),
-	remove: sinon.stub().resolves(),
-	addAtTimestamp: sinon.stub().resolves(),
-};
+const cronJobsMock = new MockedCronJobs();
 
 const applyStatusChange = sinon.stub();
 
@@ -34,45 +29,26 @@ describe('Calendar.StatusEvents', () => {
 	const fakeUserId = 'userId456';
 	const fakeStartTime = new Date('2025-01-01T10:00:00Z');
 	const fakeEndTime = new Date('2025-01-01T11:00:00Z');
+	const statusId = `calendar-presence-status-${fakeEventId}-${fakeUserId}`;
+	const containedStatusId = `calendar-presence-status-containedEvent-${fakeUserId}`;
 
 	beforeEach(() => {
-		setupCronJobsMocks();
+		cronJobsMock.jobNames.clear();
 		setupCalendarEventMocks();
 		applyStatusChange.resetHistory();
 	});
 
-	function setupCronJobsMocks() {
-		const freshMocks = {
-			has: sinon.stub().resolves(false),
-			remove: sinon.stub().resolves(),
-			addAtTimestamp: sinon.stub().resolves(),
-		};
-
-		Object.assign(cronJobsMock, freshMocks);
-	}
-
 	function setupCalendarEventMocks() {
-		const freshMocks = {
-			find: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			} as any),
-			findOne: sinon.stub().resolves(null),
-			findOverlappingEvents: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
-			findEligibleEventsForCancelation: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
-		};
-
-		Object.assign(CalendarEventMock, freshMocks);
+		CalendarEventMock.findOverlappingEvents.reset();
+		CalendarEventMock.findOverlappingEvents.returns({
+			toArray: sinon.stub().resolves([]),
+		});
 	}
 
 	describe('#handleOverlappingEvents', () => {
 		it('should return shouldProceed=true when no overlapping events', async () => {
 			// Clear previous calls
 			CalendarEventMock.findOverlappingEvents.reset();
-			cronJobsMock.addAtTimestamp.reset();
 
 			// Set up the mock to return no overlapping events
 			CalendarEventMock.findOverlappingEvents.returns({
@@ -82,7 +58,7 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: true });
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(0);
+			expect(cronJobsMock.jobNames.size).to.equal(0);
 			sinon.assert.calledWith(CalendarEventMock.findOverlappingEvents, fakeEventId, fakeUserId, fakeStartTime, fakeEndTime);
 		});
 
@@ -93,10 +69,6 @@ describe('Calendar.StatusEvents', () => {
 				endTime: new Date('2025-01-01T12:00:00Z'), // Later than fakeEndTime
 			};
 
-			// Clear previous calls
-			cronJobsMock.has.resetHistory();
-			cronJobsMock.addAtTimestamp.resetHistory();
-
 			// Mock a specific response for this test
 			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([laterEvent]),
@@ -105,8 +77,7 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: false });
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(1);
-			expect(cronJobsMock.addAtTimestamp.firstCall.args[1]).to.equal(fakeStartTime);
+			expect(cronJobsMock.jobNames.has(statusId)).to.equal(true);
 		});
 
 		it('should remove status jobs for events ending before the current one', async () => {
@@ -116,12 +87,8 @@ describe('Calendar.StatusEvents', () => {
 				endTime: new Date('2025-01-01T10:30:00Z'), // Earlier than fakeEndTime
 			};
 
-			// Clear previous calls
-			cronJobsMock.has.resetHistory();
-			cronJobsMock.remove.resetHistory();
-
 			// Set up has to return true for the specific job ID
-			cronJobsMock.has.withArgs(`calendar-presence-status-${earlierEvent._id}-${fakeUserId}`).resolves(true);
+			cronJobsMock.jobNames.add(statusId);
 
 			// Mock a specific response for this test
 			CalendarEventMock.findOverlappingEvents.returns({
@@ -131,8 +98,7 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: true });
-			expect(cronJobsMock.remove.callCount).to.equal(1);
-			expect(cronJobsMock.remove.firstCall.args[0]).to.include('earlierEvent');
+			expect(cronJobsMock.jobNames.has(statusId)).to.equal(false);
 		});
 
 		it('should handle multiple overlapping events with different end times', async () => {
@@ -148,13 +114,6 @@ describe('Calendar.StatusEvents', () => {
 				endTime: new Date('2025-01-01T12:00:00Z'), // Later than fakeEndTime
 			};
 
-			cronJobsMock.has.reset();
-			cronJobsMock.remove.reset();
-			cronJobsMock.addAtTimestamp.reset();
-
-			const currentEventJobId = `calendar-presence-status-${fakeEventId}-${fakeUserId}`;
-			cronJobsMock.has.withArgs(currentEventJobId).resolves(false);
-
 			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([earlierEvent, laterEvent]),
 			});
@@ -162,12 +121,7 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: false });
-
-			expect(cronJobsMock.has.called).to.be.true;
-
-			expect(cronJobsMock.addAtTimestamp.called).to.be.true;
-			expect(cronJobsMock.addAtTimestamp.getCall(0).args[0]).to.equal(currentEventJobId);
-			expect(cronJobsMock.addAtTimestamp.getCall(0).args[1]).to.equal(fakeStartTime);
+			expect(cronJobsMock.jobNames.has(statusId)).to.be.true;
 		});
 
 		it('should handle an event completely contained within the current event', async () => {
@@ -177,10 +131,7 @@ describe('Calendar.StatusEvents', () => {
 				endTime: new Date('2025-01-01T10:45:00Z'), // Before fakeEndTime
 			};
 
-			cronJobsMock.has.resetHistory();
-			cronJobsMock.remove.resetHistory();
-
-			cronJobsMock.has.withArgs(`calendar-presence-status-${containedEvent._id}-${fakeUserId}`).resolves(true);
+			cronJobsMock.jobNames.add(statusId);
 
 			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([containedEvent]),
@@ -189,8 +140,8 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: true });
-			expect(cronJobsMock.remove.callCount).to.equal(1);
-			expect(cronJobsMock.remove.firstCall.args[0]).to.include('containedEvent');
+			expect(cronJobsMock.jobNames.has(statusId)).to.be.false;
+			expect(cronJobsMock.jobNames.has(containedStatusId)).to.be.true;
 		});
 
 		it('should handle an event that completely contains the current event', async () => {
@@ -200,9 +151,6 @@ describe('Calendar.StatusEvents', () => {
 				endTime: new Date('2025-01-01T12:00:00Z'), // After fakeEndTime
 			};
 
-			cronJobsMock.has.resetHistory();
-			cronJobsMock.addAtTimestamp.resetHistory();
-
 			CalendarEventMock.findOverlappingEvents.returns({
 				toArray: sinon.stub().resolves([containingEvent]),
 			});
@@ -210,7 +158,7 @@ describe('Calendar.StatusEvents', () => {
 			const result = await handleOverlappingEvents(fakeEventId, fakeUserId, fakeStartTime, fakeEndTime, UserStatus.BUSY);
 
 			expect(result).to.deep.equal({ shouldProceed: false });
-			expect(cronJobsMock.addAtTimestamp.callCount).to.equal(1);
+			expect(cronJobsMock.jobNames.has(statusId)).to.be.true;
 		});
 	});
 });

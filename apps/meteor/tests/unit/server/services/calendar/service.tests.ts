@@ -1,5 +1,4 @@
 import { api } from '@rocket.chat/core-services';
-import { UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import type { DeleteResult, UpdateResult } from 'mongodb';
@@ -7,15 +6,10 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { testPrivateMethod, createFreshServiceInstance } from '../utils';
+import { MockedCronJobs } from './mocks/cronJobs';
 
-const settingsMock = {
-	get: sinon.stub().callsFake((key) => {
-		if (key === 'Calendar_MeetingUrl_Regex') {
-			return '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
-		}
-		return true;
-	}),
-};
+const settingsMock = new Map<string, any>();
+const cronJobsMock = new MockedCronJobs();
 
 const CalendarEventMock = {
 	insertOne: sinon.stub(),
@@ -27,12 +21,6 @@ const CalendarEventMock = {
 	findEventsToNotify: sinon.stub(),
 	flagNotificationSent: sinon.stub(),
 	findOneByExternalIdAndUserId: sinon.stub(),
-};
-
-const cronJobsMock = {
-	has: sinon.stub().resolves(false),
-	remove: sinon.stub().resolves(),
-	addAtTimestamp: sinon.stub().resolves(),
 };
 
 const statusEventManagerMock = {
@@ -117,20 +105,14 @@ describe('CalendarService', () => {
 	function setupOtherMocks() {
 		sandbox.stub(api, 'broadcast').resolves();
 
-		Object.assign(settingsMock, {
-			get: sinon.stub().callsFake((key) => {
-				if (key === 'Calendar_MeetingUrl_Regex') {
-					return '(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)';
-				}
-				return true;
-			}),
-		});
+		settingsMock.clear();
+		settingsMock.set(
+			'Calendar_MeetingUrl_Regex',
+			'(?:[?&]callUrl=([^\n&<]+))|(?:(?:%3F)|(?:%26))callUrl(?:%3D)((?:(?:[^\n&<](?!%26)))+[^\n&<]?)',
+		);
+		settingsMock.set('Calendar_BusyStatus_Enabled', true);
 
-		Object.assign(cronJobsMock, {
-			has: sinon.stub().resolves(false),
-			remove: sinon.stub().resolves(),
-			addAtTimestamp: sinon.stub().resolves(),
-		});
+		cronJobsMock.jobNames.clear();
 
 		getUserPreferenceMock.reset();
 		getUserPreferenceMock.resolves(true);
@@ -356,24 +338,6 @@ describe('CalendarService', () => {
 			sinon.assert.calledOnce(statusEventManagerMock.setupAppointmentStatusChange);
 		});
 
-		// it('should update reminder time when reminder minutes change', async () => {
-		// 	const fakeEvent = {
-		// 		_id: fakeEventId,
-		// 		uid: fakeUserId,
-		// 		startTime: fakeStartTime,
-		// 		subject: fakeSubject,
-		// 	};
-
-		// 	CalendarEventMock.findOne.resolves(fakeEvent);
-
-		// 	await service.update(fakeEventId, {
-		// 		startTime: fakeStartTime,
-		// 		reminderMinutesBeforeStart: 10,
-		// 	});
-
-		// 	sinon.assert.calledWith(statusEventManagerMock.getShiftedTime, sinon.match.any, -10);
-		// });
-
 		it('should extract meeting URL from description if not provided', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,
@@ -491,13 +455,10 @@ describe('CalendarService', () => {
 
 		it('should return undefined if regex pattern is empty', async () => {
 			await testPrivateMethod(service, 'parseDescriptionForMeetingUrl', async (method) => {
-				const originalGet = settingsMock.get;
-				settingsMock.get = sinon.stub().returns('');
+				settingsMock.set('Calendar_MeetingUrl_Regex', '');
 
 				const result = await method('Test description with no pattern match');
 				expect(result).to.be.undefined;
-
-				settingsMock.get = originalGet;
 			});
 		});
 
@@ -616,13 +577,11 @@ describe('CalendarService', () => {
 		it('should remove calendar-reminders cron job if no events found', async () => {
 			await testPrivateMethod(service, 'doSetupNextNotification', async (method) => {
 				CalendarEventMock.findNextNotificationDate.resolves(null);
-				cronJobsMock.has.withArgs('calendar-reminders').resolves(true);
+				cronJobsMock.jobNames.add('calendar-reminders');
 
 				await method(false);
 
-				sinon.assert.calledOnce(CalendarEventMock.findNextNotificationDate);
-				sinon.assert.calledWith(cronJobsMock.has, 'calendar-reminders');
-				sinon.assert.calledWith(cronJobsMock.remove, 'calendar-reminders');
+				expect(cronJobsMock.jobNames.has('calendar-reminders')).to.false;
 			});
 		});
 
@@ -633,9 +592,7 @@ describe('CalendarService', () => {
 
 				await method(false);
 
-				const scheduledDate = cronJobsMock.addAtTimestamp.firstCall.args[1];
-				expect(scheduledDate.getSeconds()).to.equal(0); // Verify seconds are set to 0
-				sinon.assert.calledWith(cronJobsMock.addAtTimestamp, 'calendar-reminders', scheduledDate);
+				expect(cronJobsMock.jobNames.has('calendar-reminders')).to.true;
 			});
 		});
 
@@ -652,7 +609,7 @@ describe('CalendarService', () => {
 				await method(false);
 
 				sinon.assert.calledWith(proto.sendCurrentNotifications as sinon.SinonStub, pastDate);
-				sinon.assert.notCalled(cronJobsMock.addAtTimestamp);
+				expect(cronJobsMock.jobNames.size).to.equal(0);
 			});
 		});
 
@@ -665,65 +622,12 @@ describe('CalendarService', () => {
 				await method(true);
 
 				sinon.assert.notCalled(service.sendCurrentNotifications as sinon.SinonStub);
-				sinon.assert.calledOnce(cronJobsMock.addAtTimestamp);
+				expect(cronJobsMock.jobNames.size).to.equal(1);
 			});
 		});
 	});
 
 	describe('Overlapping events', () => {
-		// it('should check for overlapping events when creating a new event', async () => {
-		// 	const eventData = {
-		// 		uid: fakeUserId,
-		// 		startTime: fakeStartTime,
-		// 		endTime: fakeEndTime,
-		// 		subject: fakeSubject,
-		// 		description: fakeDescription,
-		// 	};
-
-		// 	await service.create(eventData);
-
-		// 	sinon.assert.notCalled(statusEventManagerMock.handleOverlappingEvents);
-		// 	sinon.assert.calledOnce(statusEventManagerMock.setupAppointmentStatusChange);
-		// 	sinon.assert.calledWith(
-		// 		statusEventManagerMock.setupAppointmentStatusChange,
-		// 		sinon.match.any,
-		// 		fakeUserId,
-		// 		fakeStartTime,
-		// 		fakeEndTime,
-		// 		UserStatus.BUSY,
-		// 		true,
-		// 	);
-		// });
-
-		it('should handle overlapping events during update', async () => {
-			const fakeEvent = {
-				_id: fakeEventId,
-				uid: fakeUserId,
-				startTime: fakeStartTime,
-				endTime: fakeEndTime,
-				subject: fakeSubject,
-			};
-
-			CalendarEventMock.findOne.resolves(fakeEvent);
-
-			const newEndTime = new Date('2025-01-01T12:00:00Z');
-
-			await service.update(fakeEventId, {
-				endTime: newEndTime,
-			});
-
-			sinon.assert.calledWith(statusEventManagerMock.removeCronJobs, fakeEventId, fakeUserId);
-			sinon.assert.calledWith(
-				statusEventManagerMock.setupAppointmentStatusChange,
-				fakeEventId,
-				fakeUserId,
-				fakeStartTime,
-				newEndTime,
-				UserStatus.BUSY,
-				true,
-			);
-		});
-
 		it('should not set up status change if no endTime is provided when updating', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,

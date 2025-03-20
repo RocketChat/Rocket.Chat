@@ -136,7 +136,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			if (startTime || endTime) {
 				await removeCronJobs(eventId, event.uid);
 
-				const isBusy = busy !== undefined ? busy : event.busy;
+				const isBusy = busy !== undefined ? busy : event.busy !== false;
 				if (isBusy) {
 					const effectiveStartTime = startTime || event.startTime;
 					const effectiveEndTime = endTime || event.endTime;
