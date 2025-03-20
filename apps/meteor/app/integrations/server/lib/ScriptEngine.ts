@@ -223,11 +223,9 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			},
 		};
 
-		console.log('sandbox', sandbox);
-
 		const scriptResult = await this.executeOutgoingScript(integration, 'process_outgoing_response', sandbox, historyId);
 
-		console.log('thru');
+		console.log('scriptResult', scriptResult);
 
 		if (scriptResult === false) {
 			return scriptResult;
@@ -266,8 +264,6 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			return;
 		}
 
-		console.log('1');
-
 		const script = await wrapExceptions(() => this.getIntegrationScript(integration)).suppress((e: any) =>
 			updateHistory({
 				historyId,
@@ -277,21 +273,15 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			}),
 		);
 
-		console.log('2');
-
 		if (!script) {
 			return;
 		}
-
-		console.log('3');
 
 		if (!script[method]) {
 			this.logger.error(`Method "${method}" not found in the Integration "${integration.name}"`);
 			await updateHistory({ historyId, step: `execute-script-no-method-${method}` });
 			return;
 		}
-
-		console.log('4');
 
 		try {
 			await updateHistory({ historyId, step: `execute-script-before-running-${method}` });
