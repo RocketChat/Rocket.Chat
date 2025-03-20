@@ -7,7 +7,7 @@ import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 
-import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
+import { getAppsEngineVersion, getDenoVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
 
 export const BumpLevels = {
 	dep: 0,
@@ -108,8 +108,9 @@ Bump ${pkgName} version.
 }
 
 export async function getEngineVersionsMd(cwd: string) {
-	const { node, deno } = await getNodeNpmVersions(cwd);
+	const { node } = await getNodeNpmVersions(cwd);
 	const appsEngine = await getAppsEngineVersion(cwd);
+	const deno = await getDenoVersion(cwd);
 	const mongo = await getMongoVersion(cwd);
 
 	return `### Engine versions
