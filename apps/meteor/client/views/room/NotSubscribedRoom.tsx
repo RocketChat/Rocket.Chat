@@ -19,7 +19,6 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 	const { t } = useTranslation();
 
 	const handleJoinClick = useJoinRoom();
-	// TODO: Handle onJoinClick error
 
 	const { isMobile } = useLayout();
 
