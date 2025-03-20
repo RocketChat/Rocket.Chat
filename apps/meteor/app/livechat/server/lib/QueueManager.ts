@@ -143,6 +143,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
+		if (settings.get('Livechat_Routing_Method') === 'Manual_Selection' && agent) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -167,8 +171,12 @@ export class QueueManager {
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
 			await callbacks.run('livechat.afterInquiryQueued', inquiry);
+			await callbacks.run('livechat.chatQueued', room);
 
-			void callbacks.run('livechat.chatQueued', room);
+			if (defaultAgent) {
+				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
+				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			}
 
 			return this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 		}
