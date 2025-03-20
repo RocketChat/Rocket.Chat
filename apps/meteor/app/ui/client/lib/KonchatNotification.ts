@@ -10,7 +10,7 @@ import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
-import { Subscriptions, Users } from '../../../models/client';
+import { Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
 import { getUserNotificationsSoundVolume } from '../../../utils/client/getUserNotificationsSoundVolume';
@@ -205,31 +205,6 @@ class KonchatNotification {
 		} catch (e) {
 			// do nothing
 		}
-	}
-
-	public newRoom() {
-		Tracker.nonreactive(() => {
-			const uid = Meteor.userId();
-			if (!uid) {
-				return;
-			}
-			const user = Users.findOne(uid, {
-				fields: {
-					'settings.preferences.newRoomNotification': 1,
-					'settings.preferences.notificationsSoundVolume': 1,
-				},
-			});
-			const newRoomNotification = getUserPreference<string>(user, 'newRoomNotification');
-			const audioVolume = getUserNotificationsSoundVolume(user?._id);
-
-			if (!newRoomNotification) {
-				return;
-			}
-
-			void CustomSounds.play(newRoomNotification, {
-				volume: Number((audioVolume / 100).toPrecision(2)),
-			});
-		});
 	}
 }
 
