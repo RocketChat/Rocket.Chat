@@ -990,7 +990,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	updateStatus(_id, status) {
+	updateStatus(_id: IUser['_id'], status: UserStatus) {
 		const update = {
 			$set: {
 				status,
@@ -1000,7 +1000,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	updateStatusAndStatusDefault(_id, status, statusDefault) {
+	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
 		const update = {
 			$set: {
 				status,
