@@ -826,6 +826,7 @@
   "Broadcasting_media_server_url": "Broadcasting Media Server URL",
   "Auto_Selection": "Auto Selection",
   "Browse_Files": "Browse Files",
+  "Calling__roomName__": "Calling {{roomName}}",
   "Calls_in_queue": "{{calls}} call in queue",
   "Bugsnag_api_key": "Bugsnag API Key",
   "Build_Environment": "Build Environment",
@@ -2159,6 +2160,7 @@
   "Exit_Full_Screen": "Exit Full Screen",
   "EmojiCustomFilesystem_Description": "Specify how emojis are stored.",
   "Empty_no_agent_selected": "Empty, no agent selected",
+  "Empty_no_unit_selected": "Empty, no unit selected",
   "Enable_CSP": "Enable Content-Security-Policy",
   "Enable_CSP_Description": "Do not disable this option unless you have a custom build and are having problems due to inline-scripts",
   "Export_My_Data": "Export My Data (JSON)",
@@ -5988,6 +5990,7 @@
   "Uncollapse": "Uncollapse",
   "Undefined": "Undefined",
   "Units": "Units",
+  "Unit": "Unit",
   "Unit_removed": "Unit Removed",
   "Unique_ID_change_detected_description": "Information that identifies this workspace has changed. This can happen when the site URL or database connection string are changed or when a new workspace is created from a copy of an existing database.<br/><br/>Would you like to proceed with a configuration update to the existing workspace or create a new workspace and unique ID?",
   "Unique_ID_change_detected_learn_more_link": "<a href=\"https://go.rocket.chat/i/fingerprint-changed-faq\" target=\"_blank\">Learn more</a>",
@@ -6786,5 +6789,7 @@
   "Recent": "Recent",
   "On_All_Contacts": "On All Contacts",
   "Once": "Once",
-  "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}"
+  "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}",
+  "An_update_is_available": "An update is available",
+  "Reload_to_update": "Reload to update"
 }
