@@ -119,10 +119,11 @@ async function executeIntegrationRest() {
 			const channelName = 'tg-' + request.content.message.chat.id;
 			const projection = { ...API.v1.defaultFieldsToExclude };
 
-			console.log('channelName', channelName, projection);
+			console.log('About to find room by name:', channelName);
 			const tgChannel = await Rooms.findOneByName(channelName || '', { projection });
-			console.log('tgChannel', tgChatIdChannel, channelName);
+			console.log('Found room:', tgChannel);
 			if (!tgChannel) {
+				console.log('About to create channel:', channelName);
 				await createChannelMethod(this.user._id, channelName, [], false, {}, {}, false);
 			}
 		}
