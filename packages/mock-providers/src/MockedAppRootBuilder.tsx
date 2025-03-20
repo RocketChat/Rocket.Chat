@@ -388,7 +388,6 @@ export class MockedAppRootBuilder {
 		const outerFn = (
 			innerSetting: string,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined] => {
-			console.log('innerSetting', innerSetting);
 			if (innerSetting === id) {
 				return [() => () => undefined, () => setting];
 			}
