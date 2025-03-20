@@ -14,10 +14,10 @@ import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
-import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useNewRoomNotification } from '../hooks/notification/useNewRoomNotification';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useReactiveValue } from '../hooks/useReactiveValue';
@@ -75,6 +75,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const queryClient = useQueryClient();
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
+
+	const notifyNewRoom = useNewRoomNotification();
 
 	const {
 		data: { priorities = [] } = {},
@@ -158,10 +160,10 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	useEffect(() => {
 		if (lastQueueSize.current < (queue?.length ?? 0)) {
-			KonchatNotification.newRoom();
+			notifyNewRoom();
 		}
 		lastQueueSize.current = queue?.length ?? 0;
-	}, [queue?.length]);
+	}, [notifyNewRoom, queue?.length]);
 
 	useOmnichannelContinuousSoundNotification(queue ?? []);
 
