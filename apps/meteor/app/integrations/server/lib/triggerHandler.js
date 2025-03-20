@@ -581,8 +581,6 @@ class RocketChatIntegrationHandler {
 					return;
 				}
 
-				console.log('content', content, res.status);
-
 				// if the result contained nothing or wasn't a successful statusCode
 				if (!content || !this.successResults.includes(res.status)) {
 					if (content) {
@@ -609,10 +607,13 @@ class RocketChatIntegrationHandler {
 						}
 					}
 
+					console.log('trigger', trigger, tries);
+
 					if (trigger.retryFailedCalls) {
 						if (tries < trigger.retryCount && trigger.retryDelay) {
+							console.log('1');
 							await updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
-
+							console.log('2');
 							let waitTime;
 
 							switch (trigger.retryDelay) {
