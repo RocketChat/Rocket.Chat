@@ -512,6 +512,8 @@ class RocketChatIntegrationHandler {
 			opts.headers['Content-Type'] = 'application/json';
 		}
 
+		console.log('opts', opts);
+
 		fetch(
 			opts.url,
 			{
@@ -668,7 +670,6 @@ class RocketChatIntegrationHandler {
 				}
 			})
 			.catch(async (error) => {
-				console.log('error', error);
 				outgoingLogger.error(error);
 				await updateHistory({
 					historyId,
@@ -677,8 +678,6 @@ class RocketChatIntegrationHandler {
 					httpResult: null,
 				});
 			});
-
-		console.log('okay?');
 	}
 
 	async replay(integration, history) {
