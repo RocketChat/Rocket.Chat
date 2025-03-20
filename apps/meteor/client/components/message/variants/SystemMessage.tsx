@@ -19,8 +19,6 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../hooks/useFormatTime';
 import { useUserData } from '../../../hooks/useUserData';
 import type { UserPresence } from '../../../lib/presence';
 import {
@@ -32,7 +30,12 @@ import {
 import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
-import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
+import {
+	useMessageListShowRealName,
+	useMessageListShowUsername,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+} from '../list/MessageListContext';
 
 type SystemMessageProps = {
 	message: IMessage;
@@ -41,8 +44,8 @@ type SystemMessageProps = {
 
 const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps): ReactElement => {
 	const { t } = useTranslation();
-	const formatTime = useFormatTime();
-	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useMessageListFormatTime();
+	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();

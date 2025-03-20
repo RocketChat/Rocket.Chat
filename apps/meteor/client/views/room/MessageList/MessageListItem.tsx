@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
-import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useDateRef } from '../providers/DateListProvider';
 import { isMessageNewDay } from './lib/isMessageNewDay';
+import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 
 type MessageListItemProps = {
 	message: IMessage;
@@ -31,7 +31,7 @@ export const MessageListItem = ({
 	system,
 }: MessageListItemProps) => {
 	const { t } = useTranslation();
-	const formatDate = useFormatDate();
+	const formatDate = useMessageListFormatDate();
 
 	const ref = useDateRef();
 
