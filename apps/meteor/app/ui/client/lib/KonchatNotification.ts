@@ -1,14 +1,11 @@
-import type { INotificationDesktop, IUser } from '@rocket.chat/core-typings';
+import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { RoomManager } from '../../../../client/lib/RoomManager';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
-import { e2e } from '../../../e2e/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
 import { sdk } from '../../../utils/client/lib/SDKClient';
@@ -136,35 +133,6 @@ class KonchatNotification {
 					});
 			}
 		};
-	}
-
-	public async showDesktop(notification: INotificationDesktop) {
-		if (!notification.payload.rid) {
-			return;
-		}
-
-		if (
-			notification.payload?.rid === RoomManager.opened &&
-			(typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)
-		) {
-			return;
-		}
-
-		if ((Meteor.user() as IUser | null)?.status === 'busy') {
-			return;
-		}
-
-		if (notification.payload?.message?.t === 'e2e') {
-			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
-			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
-			}
-		}
-
-		return getAvatarAsPng(notification.payload?.sender?.username, (avatarAsPng) => {
-			notification.icon = avatarAsPng;
-			return this.notify(notification);
-		});
 	}
 }
 
