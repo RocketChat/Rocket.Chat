@@ -46,7 +46,10 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 		): Promise<void>;
 		livechatEvent(int: 'IPostLivechatGuestSaved', data: ILivechatVisitor['_id']): Promise<void>;
 		livechatEvent(int: 'IPostLivechatRoomSaved', data: IRoom['_id']): Promise<void>;
-		livechatEvent(int: 'ILivechatRoomClosedHandler' | 'IPostLivechatRoomStarted' | 'IPostLivechatRoomClosed', data: IRoom): Promise<void>;
+		livechatEvent(
+			int: 'ILivechatRoomClosedHandler' | 'IPostLivechatRoomStarted' | 'IPostLivechatRoomClosed' | 'IPreLivechatRoomCreatePrevent',
+			data: IRoom,
+		): Promise<void>;
 		livechatEvent(int: AppEvents | AppEvents[keyof AppEvents], data: any): Promise<void>;
 	}
 }

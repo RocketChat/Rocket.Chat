@@ -15,6 +15,7 @@ import { IPostLivechatRoomClosed } from './IPostLivechatRoomClosed';
 import { IPostLivechatRoomSaved } from './IPostLivechatRoomSaved';
 import { IPostLivechatRoomStarted } from './IPostLivechatRoomStarted';
 import { IPostLivechatRoomTransferred } from './IPostLivechatRoomTransferred';
+import { IPreLivechatRoomCreatePrevent } from './IPreLivechatRoomCreatePrevent';
 import { IVisitor } from './IVisitor';
 import { IVisitorEmail } from './IVisitorEmail';
 import { IVisitorPhone } from './IVisitorPhone';
@@ -24,6 +25,7 @@ export {
     ILivechatMessage,
     ILivechatRoom,
     IPostLivechatAgentAssigned,
+    IPreLivechatRoomCreatePrevent,
     ILivechatContact,
     IPostLivechatAgentUnassigned,
     IPostLivechatGuestSaved,

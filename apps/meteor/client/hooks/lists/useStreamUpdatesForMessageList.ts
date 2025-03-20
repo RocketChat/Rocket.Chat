@@ -1,10 +1,10 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { FieldExpression, Query } from '@rocket.chat/mongo-adapter';
+import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import type { MessageList } from '../../lib/lists/MessageList';
-import type { FieldExpression, Query } from '../../lib/minimongo';
-import { createFilterFromQuery } from '../../lib/minimongo';
 
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
