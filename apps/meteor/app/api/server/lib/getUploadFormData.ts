@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
@@ -164,10 +164,29 @@ export async function getUploadFormData<
 		returnError();
 	});
 
-	const arrayBuffer = await request.arrayBuffer();
-	const buffer = Buffer.from(arrayBuffer);
+	const webReadableStream = await request.blob().then((blob) => blob.stream());
 
-	bb.end(buffer);
+	const nodeReadableStream = new Readable({
+		async read() {
+			const reader = webReadableStream.getReader();
+			try {
+				const processChunk = async () => {
+					const { done, value } = await reader.read();
+					if (done) {
+						this.push(null);
+						return;
+					}
+					this.push(Buffer.from(value));
+					await processChunk();
+				};
+				await processChunk();
+			} catch (err: any) {
+				this.destroy(err);
+			}
+		},
+	});
+
+	nodeReadableStream.pipe(bb);
 
 	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
 		returnResult = resolve;

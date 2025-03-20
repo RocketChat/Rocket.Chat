@@ -777,7 +777,7 @@ export class APIClass<
 						this.requestIp = getRequestIP(this.request)!;
 
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute(this.request);
+							const user = await api.authenticatedRoute.call(this, this.request);
 							this.user = user!;
 							this.userId = String(this.request.headers.get('x-user-id'));
 							this.userId = this.user?._id;
