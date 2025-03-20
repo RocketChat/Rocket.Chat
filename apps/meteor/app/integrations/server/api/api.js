@@ -113,6 +113,7 @@ async function executeIntegrationRest() {
 			},
 		};
 
+		console.log('request', request.user.username);
 		if (request.user.username === 'telegrambot') {
 			const chatId = request.content.message.chat.id;
 			const tgChatIdChannel = await Channels.findOne({ tgChatId: chatId });
