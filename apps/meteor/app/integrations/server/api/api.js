@@ -113,22 +113,14 @@ async function executeIntegrationRest() {
 			},
 		};
 
-		console.log('request', request.user.username);
 		if (request.user.username == 'telegrambot') {
-			console.log('HERE');
 			const channelName = 'tg-' + request.content.message.chat.id;
 			const projection = { ...API.v1.defaultFieldsToExclude };
-
-			console.log('About to find room by name:', channelName);
 			const tgChannel = await Rooms.findOneByName(channelName || '', { projection });
-			console.log('Found room:', tgChannel);
 			if (!tgChannel) {
-				console.log('About to create channel:', channelName);
 				await createChannelMethod(this.user._id, channelName, [], false, {}, {}, false);
 			}
 		}
-
-		console.log('END');
 
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
