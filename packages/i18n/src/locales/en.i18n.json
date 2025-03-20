@@ -6789,5 +6789,7 @@
   "Recent": "Recent",
   "On_All_Contacts": "On All Contacts",
   "Once": "Once",
-  "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}"
+  "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}",
+  "An_update_is_available": "An update is available",
+  "Reload_to_update": "Reload to update"
 }
