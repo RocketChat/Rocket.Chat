@@ -2,11 +2,11 @@ import { faker } from '@faker-js/faker';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps-engine/client/definition';
+import { createFakeApp, createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '@rocket.chat/mock-providers';
 import type { ReactNode } from 'react';
 
 import { AppsContext, type IAppsOrchestrator } from '../../../client/contexts/AppsContext';
 import { AsyncStatePhase } from '../../../client/lib/asyncState';
-import { createFakeApp, createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '../data';
 
 class MockedAppsEngineUIHost extends AppsEngineUIHost {
 	public async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {

@@ -1,7 +1,7 @@
+import { createFakeUser } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 
 import { parseMessageSearchQuery } from '../../../../server/lib/parseMessageSearchQuery';
-import { createFakeUser } from '../../../mocks/data';
 
 describe('parseMessageSearchQuery', () => {
 	const params = {

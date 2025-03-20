@@ -1,4 +1,4 @@
-import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageWithMdEnforced, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	isFileAttachment,
 	isE2EEMessage,
@@ -14,12 +14,6 @@ import { parse } from '@rocket.chat/message-parser';
 import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
 import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
 
-type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
-	[Property in Key]-?: Type[Property];
-};
-
-export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
-	WithRequiredProperty<TMessage, 'md'>;
 /**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.

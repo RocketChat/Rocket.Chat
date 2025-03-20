@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
 import type { Page } from '@playwright/test';
+import { createFakeVisitor } from '@rocket.chat/mock-providers';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';

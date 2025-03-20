@@ -1,8 +1,7 @@
+import { createFakeMessage } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
-
-import { createFakeMessage } from '../../../../../mocks/data';
 
 const modelsMock = {
 	Users: {

@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { createFakeRoom, createFakeSubscription } from '@rocket.chat/mock-providers';
 import type { ReactNode, ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import { RoomContext } from '../../../client/views/room/contexts/RoomContext';
-import { createFakeRoom, createFakeSubscription } from '../data';
 
 type FakeRoomProviderProps = {
 	children?: ReactNode;

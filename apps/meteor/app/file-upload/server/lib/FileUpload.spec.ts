@@ -1,9 +1,8 @@
+import { createFakeMessageWithAttachment } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-import { createFakeMessageWithAttachment } from '../../../../tests/mocks/data';
 
 const fakeStorageModel = { findOneById: sinon.stub(), deleteFile: sinon.stub() };
 const settingsStub = { watch: sinon.stub(), get: sinon.stub() };

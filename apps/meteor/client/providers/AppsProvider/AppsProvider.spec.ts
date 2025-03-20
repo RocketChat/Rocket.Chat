@@ -1,9 +1,8 @@
 import type { App } from '@rocket.chat/core-typings';
+import { createFakeApp, createFakeAppPrivate, createFakeAppInstalledMarketplace } from '@rocket.chat/mock-providers';
 import type { UseQueryResult } from '@tanstack/react-query';
 
 import { storeQueryFunction } from './storeQueryFunction';
-import { createFakeApp } from '../../../tests/mocks/data';
-import { createFakeAppInstalledMarketplace, createFakeAppPrivate } from '../../../tests/mocks/data/marketplace';
 
 describe(`when an app installed from the Marketplace, but has since been unpublished`, () => {
 	it(`should still be present in the installed app data provided`, () => {
