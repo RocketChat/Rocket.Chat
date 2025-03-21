@@ -20,7 +20,6 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-// TODO: Test Notification Button not working
 const PreferencesNotificationsSection = () => {
 	const { t, i18n } = useTranslation();
 
