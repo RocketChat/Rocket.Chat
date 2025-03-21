@@ -31,7 +31,7 @@ const user = createFakeUser({
 	status: UserStatus.ONLINE,
 });
 
-describe('useUserPreference', () => {
+describe('useUserPresence', () => {
 	it('should return presence from context', () => {
 		const { result } = renderHook(() => useUserPresence(user._id), {
 			wrapper: mockAppRoot().withUsers([user]).build(),
