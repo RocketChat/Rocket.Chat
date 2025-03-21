@@ -121,4 +121,32 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			},
 		);
 	}
+
+	public findOverlappingEvents(
+		eventId: ICalendarEvent['_id'],
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime: Date,
+	): FindCursor<ICalendarEvent> {
+		return this.find({
+			_id: { $ne: eventId }, // Exclude current event
+			uid,
+			$or: [
+				// Event starts during our event
+				{ startTime: { $gte: startTime, $lt: endTime } },
+				// Event ends during our event
+				{ endTime: { $gt: startTime, $lte: endTime } },
+				// Event completely contains our event
+				{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
+			],
+		});
+	}
+
+	public findEligibleEventsForCancelation(uid: IUser['_id'], endTime: Date): FindCursor<ICalendarEvent> {
+		return this.find({
+			uid,
+			startTime: { $exists: true, $lte: endTime },
+			endTime: { $exists: true, $gte: endTime },
+		});
+	}
 }
