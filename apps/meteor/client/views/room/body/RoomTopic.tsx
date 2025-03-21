@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useUserId, useTranslation, useRouter, useUserPresence } from '@rocket.chat/ui-contexts';
@@ -23,7 +23,8 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	const currentRoute = router.getLocationPathname();
 	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
 
-	const topic = room.t === 'd' && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
+	const topic = isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
+	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
 	if (!topic && !canEdit) {
 		return null;
@@ -32,7 +33,7 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	return (
 		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
 			<RoomBannerContent>
-				{!topic && canEdit && (isPublicRoom(room) || isPrivateRoom(room)) ? (
+				{!topic && canEditTopic ? (
 					<Box is='a' href={href}>
 						{t('Add_topic')}
 					</Box>
