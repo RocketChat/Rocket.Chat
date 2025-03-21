@@ -366,7 +366,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											rules={{ required: isUnitRequired }}
 											render={({ field: { value, onChange } }) => (
 												<AutoCompleteUnit
-													disabled={!!value}
+													disabled={!!initialValues.unit}
 													haveNone
 													value={value}
 													onChange={onChange}
