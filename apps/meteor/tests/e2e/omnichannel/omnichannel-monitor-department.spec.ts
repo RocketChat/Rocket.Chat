@@ -96,10 +96,17 @@ test.describe.serial('OC - Monitor Role', () => {
 		});
 
 		await test.step('expect to only have the units from monitor visible', async () => {
+			await expect(poOmnichannelDepartments.inputUnit).not.toBeDisabled();
 			await poOmnichannelDepartments.inputUnit.click();
 			await expect(poOmnichannelDepartments.findOption(unitA.name)).not.toBeVisible();
 			await expect(poOmnichannelDepartments.findOption(unitB.name)).toBeVisible();
 			await expect(poOmnichannelDepartments.findOption(unitC.name)).toBeVisible();
+		});
+
+		await test.step('expect to be able to switch freely between available units', async () => {
+			await poOmnichannelDepartments.findOption(unitC.name).click();
+			await expect(poOmnichannelDepartments.inputUnit).not.toBeDisabled();
+			await poOmnichannelDepartments.inputUnit.click();
 			await poOmnichannelDepartments.findOption(unitB.name).click();
 		});
 
