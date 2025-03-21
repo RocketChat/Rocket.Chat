@@ -199,6 +199,7 @@ export interface IUser extends IRocketChatRecord {
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
+	// @deprecated
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
