@@ -1,10 +1,10 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { useUserSoundPreferences } from './useUserSoundPreferences';
-import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
+import { CustomSounds } from '../../../app/custom-sounds/client/lib/CustomSounds';
+import { useUserSoundPreferences } from '../useUserSoundPreferences';
 
-export const useNotifyNewRoom = () => {
+export const useNewRoomNotification = () => {
 	const newRoomNotification = useUserPreference<string>('newRoomNotification');
 	const { notificationsSoundVolume } = useUserSoundPreferences();
 

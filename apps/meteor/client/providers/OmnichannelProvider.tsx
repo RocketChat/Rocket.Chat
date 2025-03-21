@@ -17,8 +17,8 @@ import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useNewRoomNotification } from '../hooks/notification/useNewRoomNotification';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
-import { useNotifyNewRoom } from '../hooks/useNotifyNewRoom';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
@@ -76,7 +76,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
 
-	const notifyNewRoom = useNotifyNewRoom();
+	const notifyNewRoom = useNewRoomNotification();
 
 	const {
 		data: { priorities = [] } = {},
