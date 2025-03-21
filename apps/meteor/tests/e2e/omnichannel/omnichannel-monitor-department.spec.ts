@@ -110,6 +110,16 @@ test.describe.serial('OC - Monitor Role', () => {
 			await poOmnichannelDepartments.findOption(unitB.name).click();
 		});
 
+		await test.step('expect unit field to be required', async () => {
+			await poOmnichannelDepartments.inputUnit.click();
+			await poOmnichannelDepartments.findOption('None').click();
+			await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+			await expect(poOmnichannelDepartments.errorMessage('Unit required')).toBeVisible();
+			await poOmnichannelDepartments.inputUnit.click();
+			await poOmnichannelDepartments.findOption(unitB.name).click();
+			await expect(poOmnichannelDepartments.btnSave).toBeEnabled();
+		});
+
 		await test.step('expect to save department', async () => {
 			await poOmnichannelDepartments.btnEnabled.click();
 			await poOmnichannelDepartments.btnSave.click();
