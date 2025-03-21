@@ -113,14 +113,15 @@ async function executeIntegrationRest() {
 			},
 		};
 
-		// if (request.user.username == 'telegrambot') {
-		// 	const channelName = 'tg-' + request.content.message.chat.id;
-		// 	const projection = { ...API.v1.defaultFieldsToExclude };
-		// 	const tgChannel = await Rooms.findOneByName(channelName || '', { projection });
-		// 	if (!tgChannel) {
-		// 		await createChannelMethod(this.user._id, channelName, [], false, {}, {}, false);
-		// 	}
-		// }
+		console.log('trigger outgoing');
+		if (request.user.username == 'telegrambot') {
+			const channelName = 'tg-' + request.content.message.chat.id;
+			const projection = { ...API.v1.defaultFieldsToExclude };
+			const tgChannel = await Rooms.findOneByName(channelName || '', { projection });
+			if (!tgChannel) {
+				await createChannelMethod(this.user._id, channelName, [], false, {}, {}, false);
+			}
+		}
 
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
