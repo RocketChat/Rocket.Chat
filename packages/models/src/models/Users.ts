@@ -1,10 +1,37 @@
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import type {
+	AtLeast,
+	DeepWritable,
+	ILivechatAgent,
+	ILoginToken,
+	IMeteorLoginToken,
+	IPersonalAccessToken,
+	IRole,
+	IRoom,
+	IUser,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
+import type { DefaultFields, InsertionModel, IUsersModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type {
+	Collection,
+	Db,
+	Filter,
+	FindOptions,
+	IndexDescription,
+	Document,
+	UpdateFilter,
+	UpdateOptions,
+	FindCursor,
+	SortDirection,
+	UpdateResult,
+	FindOneAndUpdateOptions,
+} from 'mongodb';
 
+import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 
-const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
+const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
 	// ignore deactivated users
@@ -14,7 +41,7 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 			{
 				status: {
 					$exists: true,
-					$ne: 'offline',
+					$ne: UserStatus.OFFLINE,
 				},
 				roles: {
 					$ne: 'bot',
@@ -31,8 +58,8 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 	}),
 });
 
-export class UsersRaw extends BaseRaw {
-	constructor(db, trash) {
+export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
 			collectionNameResolver(name) {
 				return name;
@@ -45,19 +72,19 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// Move index from constructor to here
-	modelIndexes() {
+	modelIndexes(): IndexDescription[] {
 		return [
-			{ key: { __rooms: 1 }, sparse: 1 },
-			{ key: { roles: 1 }, sparse: 1 },
+			{ key: { __rooms: 1 }, sparse: true },
+			{ key: { roles: 1 }, sparse: true },
 			{ key: { name: 1 } },
-			{ key: { bio: 1 }, sparse: 1 },
-			{ key: { nickname: 1 }, sparse: 1 },
+			{ key: { bio: 1 }, sparse: true },
+			{ key: { nickname: 1 }, sparse: true },
 			{ key: { createdAt: 1 } },
 			{ key: { lastLogin: 1 } },
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
-			{ key: { statusConnection: 1 }, sparse: 1 },
-			{ key: { appId: 1 }, sparse: 1 },
+			{ key: { statusConnection: 1 }, sparse: true },
+			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
 			{ key: { federation: 1 }, sparse: true },
@@ -106,7 +133,7 @@ export class UsersRaw extends BaseRaw {
 	 * @param {string} uid
 	 * @param {IRole['_id'][]} roles list of role ids
 	 */
-	addRolesByUserId(uid, roles) {
+	addRolesByUserId(uid: string, roles: string | string[]) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
@@ -129,8 +156,8 @@ export class UsersRaw extends BaseRaw {
 	 * @param {null} scope the value for the role scope (room id) - not used in the users collection
 	 * @param {any} options
 	 */
-	findUsersInRoles(roles, scope, options) {
-		roles = [].concat(roles);
+	findUsersInRoles(roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: FindOptions<IUser>) {
+		roles = ([] as string[]).concat(roles);
 
 		const query = {
 			roles: { $in: roles },
@@ -139,8 +166,8 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countUsersInRoles(roles) {
-		roles = [].concat(roles);
+	countUsersInRoles(roles: IRole['_id'][] | IRole['_id']) {
+		roles = ([] as string[]).concat(roles);
 
 		const query = {
 			roles: { $in: roles },
@@ -149,8 +176,8 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query);
 	}
 
-	findPaginatedUsersInRoles(roles, options) {
-		roles = [].concat(roles);
+	findPaginatedUsersInRoles(roles: IRole['_id'][] | IRole['_id'], options?: FindOptions<IUser>) {
+		roles = ([] as string[]).concat(roles);
 
 		const query = {
 			roles: { $in: roles },
@@ -159,19 +186,19 @@ export class UsersRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findOneByUsername(username, options = null) {
+	findOneByUsername<T extends Document = IUser>(username: string, options?: FindOptions<IUser>) {
 		const query = { username };
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
-	findOneAgentById(_id, options) {
+	findOneAgentById<T extends Document = ILivechatAgent>(_id: IUser['_id'], options?: FindOptions<IUser>) {
 		const query = {
 			_id,
 			roles: 'livechat-agent',
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
 	/**
@@ -179,8 +206,8 @@ export class UsersRaw extends BaseRaw {
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findUsersInRolesWithQuery(roles, query, options) {
-		roles = [].concat(roles);
+	findUsersInRolesWithQuery(roles: IRole['_id'][] | IRole['_id'], query: Filter<IUser>, options?: FindOptions<IUser>) {
+		roles = ([] as string[]).concat(roles);
 
 		Object.assign(query, { roles: { $in: roles } });
 
@@ -192,16 +219,24 @@ export class UsersRaw extends BaseRaw {
 	 * @param {any} query
 	 * @param {any} options
 	 */
-	findPaginatedUsersInRolesWithQuery(roles, query, options) {
-		roles = [].concat(roles);
+	findPaginatedUsersInRolesWithQuery<T extends Document = IUser>(
+		roles: IRole['_id'][] | IRole['_id'],
+		query: Filter<IUser>,
+		options?: FindOptions<IUser>,
+	) {
+		roles = ([] as string[]).concat(roles);
 
 		Object.assign(query, { roles: { $in: roles } });
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T>(query, options);
 	}
 
-	findAgentsWithDepartments(role, query, options) {
-		const roles = [].concat(role);
+	findAgentsWithDepartments<T extends Document = ILivechatAgent>(
+		role: IRole['_id'][] | IRole['_id'],
+		query: Filter<IUser>,
+		options?: FindOptions<IUser>,
+	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]> {
+		const roles = ([] as string[]).concat(role);
 
 		Object.assign(query, { roles: { $in: roles } });
 
@@ -237,16 +272,16 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$facet: {
-					sortedResults: [{ $sort: options.sort }, { $skip: options.skip }, options.limit && { $limit: options.limit }],
+					sortedResults: [{ $sort: options?.sort }, { $skip: options?.skip }, options?.limit && { $limit: options.limit }],
 					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 				},
 			},
 		];
 
-		return this.col.aggregate(aggregate).toArray();
+		return this.col.aggregate<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }>(aggregate).toArray();
 	}
 
-	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+	findOneByUsernameAndRoomIgnoringCase(username: string | RegExp, rid: string, options?: FindOptions<IUser>) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -259,7 +294,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
+	findOneByIdAndLoginHashedToken(_id: IUser['_id'], token: string, options: FindOptions<IUser> = {}) {
 		const query = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -268,48 +303,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
-		if (exceptions == null) {
-			exceptions = [];
-		}
-		if (options == null) {
-			options = {};
-		}
-		if (!Array.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-
-		const orStmt = (searchFields || []).reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
-
-		const query = {
-			$and: [
-				{
-					active: true,
-					username: {
-						$exists: true,
-						...(exceptions.length > 0 && { $nin: exceptions }),
-					},
-					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
-				},
-				...extraQuery,
-			],
-		};
-
-		return this.find(query, options);
-	}
-
-	findPaginatedByActiveUsersExcept(
-		searchTerm,
-		exceptions,
-		options,
-		searchFields,
-		extraQuery = [],
+	findByActiveUsersExcept(
+		searchTerm: string,
+		exceptions: string[],
+		options?: FindOptions<IUser>,
+		searchFields?: string[],
+		extraQuery: Filter<IUser>[] = [],
 		{ startsWith = false, endsWith = false } = {},
 	) {
 		if (exceptions == null) {
@@ -324,10 +323,13 @@ export class UsersRaw extends BaseRaw {
 
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
-		const orStmt = (searchFields || []).reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
+		const orStmt = (searchFields || []).reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as Record<string, RegExp>[],
+		);
 
 		const query = {
 			$and: [
@@ -344,30 +346,88 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
-		return this.findPaginated(query, options);
+		return this.find(query, options);
 	}
 
-	findPaginatedByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
+	findPaginatedByActiveUsersExcept<T extends Document = IUser>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: FindOptions<IUser>,
+		searchFields: string[] = [],
+		extraQuery: Filter<IUser>[] = [],
+		{ startsWith = false, endsWith = false } = {},
+	) {
+		if (exceptions == null) {
+			exceptions = [];
+		}
+		if (options == null) {
+			options = {};
+		}
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+		const orStmt = (searchFields || []).reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as Record<string, RegExp>[],
+		);
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					username: {
+						$exists: true,
+						...(exceptions.length > 0 && { $nin: exceptions }),
+					},
+					// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+					...(searchTerm && orStmt.length > 0 && { $or: orStmt }),
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.findPaginated<T>(query, options);
+	}
+
+	findPaginatedByActiveLocalUsersExcept<T extends Document = IUser>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: FindOptions<IUser>,
+		forcedSearchFields?: string[],
+		localDomain?: string,
+	) {
 		const extraQuery = [
 			{
 				$or: [{ federation: { $exists: false } }, { 'federation.origin': localDomain }],
 			},
 		];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept<T>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findPaginatedByActiveExternalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
+	findPaginatedByActiveExternalUsersExcept<T extends Document = IUser>(
+		searchTerm: string,
+		exceptions?: string[],
+		options?: FindOptions<IUser>,
+		forcedSearchFields?: string[],
+		localDomain?: string,
+	) {
 		const extraQuery = [{ federation: { $exists: true } }, { 'federation.origin': { $ne: localDomain } }];
-		return this.findPaginatedByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
+		return this.findPaginatedByActiveUsersExcept<T>(searchTerm, exceptions, options, forcedSearchFields, extraQuery);
 	}
 
-	findActive(query, options = {}) {
+	findActive(query: Filter<IUser>, options: FindOptions<IUser> = {}) {
 		Object.assign(query, { active: true });
 
 		return this.find(query, options);
 	}
 
-	findActiveByIds(userIds, options = {}) {
+	findActiveByIds(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			_id: { $in: userIds },
 			active: true,
@@ -376,7 +436,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findActiveByIdsOrUsernames(userIds, options = {}) {
+	findActiveByIdsOrUsernames(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			$or: [{ _id: { $in: userIds } }, { username: { $in: userIds } }],
 			active: true,
@@ -385,32 +445,32 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByIds(userIds, options = {}) {
+	findByIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			_id: { $in: userIds },
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	findOneByImportId(_id, options) {
-		return this.findOne({ importIds: _id }, options);
+	findOneByImportId<T extends Document = IUser>(_id: IUser['_id'], options?: FindOptions<IUser>) {
+		return this.findOne<T>({ importIds: _id }, options);
 	}
 
-	findOneByUsernameIgnoringCase(username, options) {
+	findOneByUsernameIgnoringCase<T extends Document = IUser>(username: IUser['username'], options?: FindOptions<IUser>) {
 		if (!username) {
 			throw new Error('invalid username');
 		}
 
 		const query = { username };
 
-		return this.findOne(query, {
+		return this.findOne<T>(query, {
 			collation: { locale: 'en', strength: 2 }, // Case insensitive
 			...options,
 		});
 	}
 
-	findOneWithoutLDAPByUsernameIgnoringCase(username, options) {
+	findOneWithoutLDAPByUsernameIgnoringCase<T extends Document = IUser>(username: string, options?: FindOptions<IUser>) {
 		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 
 		const query = {
@@ -420,34 +480,31 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
-	async findOneByLDAPId(id, attribute = undefined) {
+	async findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string) {
 		const query = {
 			'services.ldap.id': id,
+			...(attribute && { 'services.ldap.idAttribute': attribute }),
 		};
 
-		if (attribute) {
-			query['services.ldap.idAttribute'] = attribute;
-		}
-
-		return this.findOne(query);
+		return this.findOne<T>(query);
 	}
 
-	async findOneByAppId(appId, options) {
+	async findOneByAppId<T extends Document = IUser>(appId: string, options?: FindOptions<IUser>) {
 		const query = { appId };
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
-	findLDAPUsers(options) {
+	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>) {
 		const query = { ldap: true };
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	findLDAPUsersExceptIds(userIds, options = {}) {
+	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			ldap: true,
 			_id: {
@@ -455,10 +512,10 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	findConnectedLDAPUsers(options) {
+	findConnectedLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>) {
 		const query = {
 			'ldap': true,
 			'services.resume.loginTokens': {
@@ -467,25 +524,29 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	isUserInRole(userId, roleId) {
+	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']) {
 		const query = {
 			_id: userId,
 			roles: roleId,
 		};
 
-		return this.findOne(query, { projection: { roles: 1 } });
+		return this.findOne<Pick<IUser, 'roles' | '_id'>>(query, { projection: { roles: 1 } });
 	}
 
 	getDistinctFederationDomains() {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department, ignoreAgentId, isEnabledWhenAgentIdle) {
+	async getNextLeastBusyAgent(
+		department?: string,
+		ignoreAgentId?: string,
+		isEnabledWhenAgentIdle?: boolean,
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }> {
 		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
-		const aggregate = [
+		const aggregate: Document[] = [
 			{ $match: match },
 			{
 				$lookup: {
@@ -535,7 +596,9 @@ export class UsersRaw extends BaseRaw {
 
 		aggregate.push({ $limit: 1 });
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
+		const [agent] = await this.col
+			.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }>(aggregate)
+			.toArray();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
 		}
@@ -543,9 +606,13 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	async getLastAvailableAgentRouted(department, ignoreAgentId, isEnabledWhenAgentIdle) {
+	async getLastAvailableAgentRouted(
+		department?: string,
+		ignoreAgentId?: string,
+		isEnabledWhenAgentIdle?: boolean,
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }> {
 		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
-		const aggregate = [
+		const aggregate: Document[] = [
 			{ $match: match },
 			{
 				$lookup: {
@@ -566,7 +633,9 @@ export class UsersRaw extends BaseRaw {
 
 		aggregate.push({ $limit: 1 });
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
+		const [agent] = await this.col
+			.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }>(aggregate)
+			.toArray();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
 		}
@@ -574,7 +643,7 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	async setLastRoutingTime(userId) {
+	async setLastRoutingTime(userId: IUser['_id']) {
 		const result = await this.findOneAndUpdate(
 			{ _id: userId },
 			{
@@ -584,12 +653,17 @@ export class UsersRaw extends BaseRaw {
 			},
 			{ returnDocument: 'after' },
 		);
-		return result.value;
+		return result;
 	}
 
-	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) {
+	setLivechatStatusIf(
+		userId: IUser['_id'],
+		status: ILivechatAgentStatus,
+		conditions: Filter<IUser> = {},
+		extraFields: UpdateFilter<IUser>['$set'] = {},
+	) {
 		// TODO: Create class Agent
-		const query = {
+		const query: Filter<IUser> = {
 			_id: userId,
 			...conditions,
 		};
@@ -604,7 +678,13 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	async getAgentAndAmountOngoingChats(userId) {
+	async getAgentAndAmountOngoingChats(userId: IUser['_id']): Promise<{
+		agentId: string;
+		username?: string;
+		lastAssignTime?: Date;
+		lastRoutingTime?: Date;
+		queueInfo: { chats: number };
+	}> {
 		const aggregate = [
 			{
 				$match: {
@@ -643,13 +723,21 @@ export class UsersRaw extends BaseRaw {
 			{ $sort: { 'queueInfo.chats': 1, 'lastAssignTime': 1, 'lastRoutingTime': 1, 'username': 1 } },
 		];
 
-		const [agent] = await this.col.aggregate(aggregate).toArray();
+		const [agent] = await this.col
+			.aggregate<{
+				agentId: string;
+				username?: string;
+				lastAssignTime?: Date;
+				lastRoutingTime?: Date;
+				queueInfo: { chats: number };
+			}>(aggregate)
+			.toArray();
 		return agent;
 	}
 
-	findAllResumeTokensByUserId(userId) {
+	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]> {
 		return this.col
-			.aggregate([
+			.aggregate<{ tokens: IMeteorLoginToken[] }>([
 				{
 					$match: {
 						_id: userId,
@@ -675,7 +763,12 @@ export class UsersRaw extends BaseRaw {
 			.toArray();
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(termRegex, exceptions, conditions, options) {
+	findActiveByUsernameOrNameRegexWithExceptionsAndConditions<T extends Document = IUser>(
+		termRegex: { $regex: string; $options: string } | RegExp,
+		exceptions?: string[],
+		conditions?: Filter<IUser>,
+		options?: FindOptions<IUser>,
+	) {
 		if (exceptions == null) {
 			exceptions = [];
 		}
@@ -722,16 +815,20 @@ export class UsersRaw extends BaseRaw {
 			],
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	countAllAgentsStatus({ departmentId = undefined }) {
-		const match = {
+	countAllAgentsStatus({
+		departmentId,
+	}: {
+		departmentId?: string;
+	}): Promise<{ offline: number; away: number; busy: number; available: number }[]> {
+		const match: Document = {
 			$match: {
 				roles: { $in: ['livechat-agent'] },
 			},
 		};
-		const group = {
+		const group: Document = {
 			$group: {
 				_id: null,
 				offline: {
@@ -785,7 +882,7 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		};
-		const lookup = {
+		const lookup: Document = {
 			$lookup: {
 				from: 'rocketchat_livechat_department_agents',
 				localField: '_id',
@@ -793,13 +890,13 @@ export class UsersRaw extends BaseRaw {
 				as: 'departments',
 			},
 		};
-		const unwind = {
+		const unwind: Document = {
 			$unwind: {
 				path: '$departments',
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const departmentsMatch = {
+		const departmentsMatch: Document = {
 			$match: {
 				'departments.departmentId': departmentId,
 			},
@@ -811,11 +908,19 @@ export class UsersRaw extends BaseRaw {
 			params.push(departmentsMatch);
 		}
 		params.push(group);
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate<{ offline: number; away: number; busy: number; available: number }>(params).toArray();
 	}
 
-	getTotalOfRegisteredUsersByDate({ start, end, options = {} }) {
-		const params = [
+	getTotalOfRegisteredUsersByDate({
+		start,
+		end,
+		options = {},
+	}: {
+		start: Date;
+		end: Date;
+		options?: { count?: number; sort?: Record<string, 1 | -1> };
+	}): Promise<{ date: string; users: number; type: 'users' }[]> {
+		const params: Document[] = [
 			{
 				$match: {
 					createdAt: { $gte: start, $lte: end },
@@ -851,10 +956,10 @@ export class UsersRaw extends BaseRaw {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate<{ date: string; users: number; type: 'users' }>(params).toArray();
 	}
 
-	getUserLanguages() {
+	getUserLanguages(): Promise<{ _id: string; total: number }[]> {
 		const pipeline = [
 			{
 				$match: {
@@ -872,18 +977,10 @@ export class UsersRaw extends BaseRaw {
 			},
 		];
 
-		return this.col.aggregate(pipeline).toArray();
+		return this.col.aggregate<{ _id: string; total: number }>(pipeline).toArray();
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {string} statusText
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	updateStatusText(_id, statusText, options) {
+	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				statusText,
@@ -893,7 +990,28 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	updateStatusByAppId(appId, status) {
+	updateStatus(_id: IUser['_id'], status: UserStatus) {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
+		const update = {
+			$set: {
+				status,
+				statusDefault,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	updateStatusByAppId(appId: string, status: UserStatus) {
 		const query = {
 			appId,
 			status: { $ne: status },
@@ -916,7 +1034,15 @@ export class UsersRaw extends BaseRaw {
 	 * @param {string} [status.statusDefault]
 	 * @param {string} [status.statusText]
 	 */
-	updateStatusById(userId, { statusDefault, status, statusConnection, statusText }) {
+	updateStatusById(
+		userId: IUser['_id'],
+		{
+			statusDefault,
+			status,
+			statusConnection,
+			statusText,
+		}: { statusDefault?: UserStatus; status: UserStatus; statusConnection: UserStatus; statusText?: string },
+	) {
 		const query = {
 			_id: userId,
 		};
@@ -937,7 +1063,7 @@ export class UsersRaw extends BaseRaw {
 		return this.col.updateOne(query, update);
 	}
 
-	openAgentsBusinessHoursByBusinessHourId(businessHourIds) {
+	openAgentsBusinessHoursByBusinessHourId(businessHourIds: string[]) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -951,7 +1077,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds, agentId) {
+	openAgentBusinessHoursByBusinessHourIdsAndAgentId(businessHourIds: string[], agentId: IUser['_id']) {
 		const query = {
 			_id: agentId,
 			roles: 'livechat-agent',
@@ -966,7 +1092,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	addBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	addBusinessHourByAgentIds(agentIds: IUser['_id'][] = [], businessHourId: string) {
 		const query = {
 			_id: { $in: agentIds },
 			roles: 'livechat-agent',
@@ -981,20 +1107,20 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	findOnlineButNotAvailableAgents(userIds) {
+	findOnlineButNotAvailableAgents<T extends Document = ILivechatAgent>(userIds?: IUser['_id'][]) {
 		const query = {
 			...(userIds && { _id: { $in: userIds } }),
 			roles: 'livechat-agent',
 			// Exclude away users
-			status: 'online',
+			status: UserStatus.ONLINE,
 			// Exclude users that are already available, maybe due to other business hour
-			statusLivechat: 'not-available',
+			statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
 		};
 
-		return this.find(query);
+		return this.find<T>(query);
 	}
 
-	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
+	removeBusinessHourByAgentIds(agentIds: IUser['_id'][] = [], businessHourId: string) {
 		const query = {
 			_id: { $in: agentIds },
 			roles: 'livechat-agent',
@@ -1009,7 +1135,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: IUser['_id'][] = [], businessHourId: string) {
 		const query = {
 			_id: { $nin: agentIdsWithDepartment },
 		};
@@ -1023,7 +1149,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment = [], businessHourId) {
+	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: IUser['_id'][] = [], businessHourId: string) {
 		const query = {
 			_id: { $nin: agentIdsWithDepartment },
 		};
@@ -1037,7 +1163,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds) {
+	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: string[]) {
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -1051,15 +1177,15 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	findAgentsAvailableWithoutBusinessHours(userIds = []) {
-		return this.find(
+	findAgentsAvailableWithoutBusinessHours(userIds: IUser['_id'][] = []) {
+		return this.find<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>(
 			{
 				$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
 				$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
 				// exclude deactivated users
 				active: true,
 				// Avoid unnecessary updates
-				statusLivechat: 'available',
+				statusLivechat: ILivechatAgentStatus.AVAILABLE,
 				...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 			},
 			{
@@ -1068,10 +1194,10 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+	setLivechatStatusActiveBasedOnBusinessHours(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
-			statusDefault: { $ne: 'offline' },
+			statusDefault: { $ne: UserStatus.OFFLINE },
 			openBusinessHours: {
 				$exists: true,
 				$not: { $size: 0 },
@@ -1080,14 +1206,14 @@ export class UsersRaw extends BaseRaw {
 
 		const update = {
 			$set: {
-				statusLivechat: 'available',
+				statusLivechat: ILivechatAgentStatus.AVAILABLE,
 			},
 		};
 
 		return this.updateOne(query, update);
 	}
 
-	async isAgentWithinBusinessHours(agentId) {
+	async isAgentWithinBusinessHours(agentId: IUser['_id']) {
 		const query = {
 			_id: agentId,
 			$or: [
@@ -1116,14 +1242,14 @@ export class UsersRaw extends BaseRaw {
 
 		const update = {
 			$unset: {
-				openBusinessHours: 1,
+				openBusinessHours: 1 as const,
 			},
 		};
 
 		return this.updateMany(query, update);
 	}
 
-	resetTOTPById(userId) {
+	resetTOTPById(userId: IUser['_id']) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1136,7 +1262,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	unsetOneLoginToken(_id, token) {
+	unsetOneLoginToken(_id: IUser['_id'], token: string) {
 		const update = {
 			$pull: {
 				'services.resume.loginTokens': { hashedToken: token },
@@ -1146,7 +1272,7 @@ export class UsersRaw extends BaseRaw {
 		return this.col.updateOne({ _id }, update);
 	}
 
-	unsetLoginTokens(userId) {
+	unsetLoginTokens(userId: IUser['_id']) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1159,7 +1285,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeNonPATLoginTokensExcept(userId, authToken) {
+	removeNonPATLoginTokensExcept(userId: IUser['_id'], authToken: string) {
 		return this.col.updateOne(
 			{
 				_id: userId,
@@ -1175,7 +1301,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeRoomsByRoomIdsAndUserId(rids, userId) {
+	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']) {
 		return this.updateMany(
 			{
 				_id: userId,
@@ -1183,10 +1309,13 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$pullAll: { __rooms: rids },
-				$unset: rids.reduce((acc, rid) => {
-					acc[`roomRolePriorities.${rid}`] = '';
-					return acc;
-				}, {}),
+				$unset: rids.reduce(
+					(acc, rid) => {
+						acc[`roomRolePriorities.${rid}`] = '';
+						return acc;
+					},
+					{} as Record<string, ''>,
+				),
 			},
 		);
 	}
@@ -1195,7 +1324,7 @@ export class UsersRaw extends BaseRaw {
 	 * @param {string} uid
 	 * @param {IRole['_id']} roles the list of role ids to remove
 	 */
-	removeRolesByUserId(uid, roles) {
+	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]) {
 		const query = {
 			_id: uid,
 		};
@@ -1209,7 +1338,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	async isUserInRoleScope(uid) {
+	async isUserInRoleScope(uid: IUser['_id']) {
 		const query = {
 			_id: uid,
 		};
@@ -1222,7 +1351,7 @@ export class UsersRaw extends BaseRaw {
 		return !!found;
 	}
 
-	addBannerById(_id, banner) {
+	addBannerById(_id: IUser['_id'], banner: { id: string }) {
 		const query = {
 			_id,
 			[`banners.${banner.id}.read`]: {
@@ -1240,13 +1369,13 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// Voip functions
-	findOneByAgentUsername(username, options) {
+	findOneByAgentUsername(username: string, options?: FindOptions<IUser>) {
 		const query = { username, roles: 'livechat-agent' };
 
 		return this.findOne(query, options);
 	}
 
-	findOneByExtension(extension, options) {
+	findOneByExtension(extension: string, options?: FindOptions<IUser>) {
 		const query = {
 			extension,
 		};
@@ -1254,7 +1383,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findByExtensions(extensions, options) {
+	findByExtensions(extensions: string[], options?: FindOptions<IUser>) {
 		const query = {
 			extension: {
 				$in: extensions,
@@ -1264,7 +1393,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	getVoipExtensionByUserId(userId, options) {
+	getVoipExtensionByUserId(userId: IUser['_id'], options?: FindOptions<IUser>) {
 		const query = {
 			_id: userId,
 			extension: { $exists: true },
@@ -1272,7 +1401,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	setExtension(userId, extension) {
+	setExtension(userId: IUser['_id'], extension: string) {
 		const query = {
 			_id: userId,
 		};
@@ -1285,33 +1414,33 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	unsetExtension(userId) {
+	unsetExtension(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
 		};
 		const update = {
 			$unset: {
-				extension: true,
+				extension: 1 as const,
 			},
 		};
 		return this.updateOne(query, update);
 	}
 
-	getAvailableAgentsIncludingExt(includeExt, text, options) {
+	getAvailableAgentsIncludingExt<T extends Document = ILivechatAgent>(includeExt?: string, text?: string, options?: FindOptions<IUser>) {
 		const query = {
 			roles: { $in: ['livechat-agent'] },
 			$and: [
-				...(text && text.trim()
+				...(text?.trim()
 					? [{ $or: [{ username: new RegExp(escapeRegExp(text), 'i') }, { name: new RegExp(escapeRegExp(text), 'i') }] }]
 					: []),
 				{ $or: [{ extension: { $exists: false } }, ...(includeExt ? [{ extension: includeExt }] : [])] },
 			],
 		};
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<T>(query, options);
 	}
 
-	findActiveUsersTOTPEnable(options) {
+	findActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
 			'services.totp.enabled': true,
@@ -1319,7 +1448,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countActiveUsersTOTPEnable(options) {
+	countActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
 			'services.totp.enabled': true,
@@ -1327,7 +1456,7 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query, options);
 	}
 
-	findActiveUsersEmail2faEnable(options) {
+	findActiveUsersEmail2faEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
 			'services.email2fa.enabled': true,
@@ -1335,7 +1464,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countActiveUsersEmail2faEnable(options) {
+	countActiveUsersEmail2faEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
 			'services.email2fa.enabled': true,
@@ -1343,7 +1472,7 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query, options);
 	}
 
-	setAsFederated(uid) {
+	setAsFederated(uid: IUser['_id']) {
 		const query = {
 			_id: uid,
 		};
@@ -1356,7 +1485,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	removeRoomByRoomId(rid, options) {
+	removeRoomByRoomId(rid: IRoom['_id'], options?: UpdateOptions) {
 		return this.updateMany(
 			{
 				__rooms: rid,
@@ -1369,11 +1498,11 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findOneByResetToken(token, options) {
+	findOneByResetToken(token: string, options?: FindOptions<IUser>) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
 
-	findOneByIdWithEmailAddress(userId, options) {
+	findOneByIdWithEmailAddress(userId: IUser['_id'], options?: FindOptions<IUser>) {
 		return this.findOne(
 			{
 				_id: userId,
@@ -1383,7 +1512,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	setFederationAvatarUrlById(userId, federationAvatarUrl) {
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1396,8 +1525,8 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	async findSearchedServerNamesByUserId(userId) {
-		const user = await this.findOne(
+	async findSearchedServerNamesByUserId(userId: IUser['_id']): Promise<string[]> {
+		const user = await this.findOne<Pick<IUser, 'federation'>>(
 			{
 				_id: userId,
 			},
@@ -1408,10 +1537,10 @@ export class UsersRaw extends BaseRaw {
 			},
 		);
 
-		return user.federation?.searchedServerNames || [];
+		return user?.federation?.searchedServerNames || [];
 	}
 
-	addServerNameToSearchedServerNamesList(userId, serverName) {
+	addServerNameToSearchedServerNamesList(userId: IUser['_id'], serverName: string) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1424,7 +1553,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeServerNameFromSearchedServerNamesList(userId, serverName) {
+	removeServerNameFromSearchedServerNamesList(userId: IUser['_id'], serverName: string) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1443,21 +1572,21 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+	findOnlineUserFromList<T extends Document = ILivechatAgent>(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		const username = {
-			$in: [].concat(userList),
+			$in: ([] as string[]).concat(userList),
 		};
 
 		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
 
-		return this.find(query);
+		return this.find<T>(query);
 	}
 
-	countOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		const username = {
-			$in: [].concat(userList),
+			$in: ([] as string[]).concat(userList),
 		};
 
 		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
@@ -1465,10 +1594,10 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query);
 	}
 
-	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
+	findOneOnlineAgentByUserList(userList: string | string[], options?: FindOptions<IUser>, isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO:: Create class Agent
 		const username = {
-			$in: [].concat(userList),
+			$in: ([] as string[]).concat(userList),
 		};
 
 		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
@@ -1476,11 +1605,30 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	getUnavailableAgents() {
-		return [];
+	async getUnavailableAgents(
+		_departmentId?: string | undefined,
+		_extraQuery?: Document | undefined,
+	): Promise<
+		{
+			agentId: string;
+			username: string;
+			lastAssignTime: string;
+			lastRoutingTime: string;
+			livechat: { maxNumberSimultaneousChat: number };
+			queueInfo: { chats: number };
+		}[]
+	> {
+		return [] as {
+			agentId: string;
+			username: string;
+			lastAssignTime: string;
+			lastRoutingTime: string;
+			livechat: { maxNumberSimultaneousChat: number };
+			queueInfo: { chats: number };
+		}[];
 	}
 
-	findBotAgents(usernameList) {
+	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T> {
 		// TODO:: Create class Agent
 		const query = {
 			roles: {
@@ -1488,15 +1636,15 @@ export class UsersRaw extends BaseRaw {
 			},
 			...(usernameList && {
 				username: {
-					$in: [].concat(usernameList),
+					$in: ([] as string[]).concat(usernameList),
 				},
 			}),
 		};
 
-		return this.find(query);
+		return this.find<T>(query);
 	}
 
-	countBotAgents(usernameList) {
+	countBotAgents(usernameList?: string | string[]) {
 		// TODO:: Create class Agent
 		const query = {
 			roles: {
@@ -1504,7 +1652,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			...(usernameList && {
 				username: {
-					$in: [].concat(usernameList),
+					$in: ([] as string[]).concat(usernameList),
 				},
 			}),
 		};
@@ -1512,7 +1660,7 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query);
 	}
 
-	removeAllRoomsByUserId(_id) {
+	removeAllRoomsByUserId(_id: IUser['_id']) {
 		return this.updateOne(
 			{
 				_id,
@@ -1524,7 +1672,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeRoomByUserId(_id, rid) {
+	removeRoomByUserId(_id: IUser['_id'], rid: IRoom['_id']) {
 		return this.updateOne(
 			{
 				_id,
@@ -1537,7 +1685,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	addRoomByUserId(_id, rid) {
+	addRoomByUserId(_id: IUser['_id'], rid: IRoom['_id']) {
 		return this.updateOne(
 			{
 				_id,
@@ -1549,7 +1697,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	addRoomByUserIds(uids, rid) {
+	addRoomByUserIds(uids: IUser['_id'][], rid: IRoom['_id']) {
 		return this.updateMany(
 			{
 				_id: { $in: uids },
@@ -1561,22 +1709,25 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeRoomByRoomIds(rids) {
+	removeRoomByRoomIds(rids: IRoom['_id'][]) {
 		return this.updateMany(
 			{
 				__rooms: { $in: rids },
 			},
 			{
 				$pullAll: { __rooms: rids },
-				$unset: rids.reduce((acc, rid) => {
-					acc[`roomRolePriorities.${rid}`] = '';
-					return acc;
-				}, {}),
+				$unset: rids.reduce(
+					(acc, rid) => {
+						acc[`roomRolePriorities.${rid}`] = '';
+						return acc;
+					},
+					{} as Record<string, ''>,
+				),
 			},
 		);
 	}
 
-	addRoomRolePriorityByUserId(userId, rid, priority) {
+	addRoomRolePriorityByUserId(userId: IUser['_id'], rid: IRoom['_id'], priority: number) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1589,7 +1740,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeRoomRolePriorityByUserId(userId, rid) {
+	removeRoomRolePriorityByUserId(userId: IUser['_id'], rid: IRoom['_id']) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1602,7 +1753,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	async assignRoomRolePrioritiesByUserIdPriorityMap(userIdAndrolePriorityMap, rid) {
+	async assignRoomRolePrioritiesByUserIdPriorityMap(userIdAndrolePriorityMap: Record<string, number>, rid: IRoom['_id']) {
 		const bulk = this.col.initializeUnorderedBulkOp();
 
 		for (const [userId, priority] of Object.entries(userIdAndrolePriorityMap)) {
@@ -1617,7 +1768,7 @@ export class UsersRaw extends BaseRaw {
 		return 0;
 	}
 
-	unassignRoomRolePrioritiesByRoomId(rid) {
+	unassignRoomRolePrioritiesByRoomId(rid: IRoom['_id']) {
 		return this.updateMany(
 			{
 				__rooms: rid,
@@ -1630,7 +1781,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	getLoginTokensByUserId(userId) {
+	getLoginTokensByUserId(userId: IUser['_id']) {
 		const query = {
 			'services.resume.loginTokens.type': {
 				$exists: true,
@@ -1639,10 +1790,10 @@ export class UsersRaw extends BaseRaw {
 			'_id': userId,
 		};
 
-		return this.find(query, { projection: { 'services.resume.loginTokens': 1 } });
+		return this.find<ILoginToken>(query, { projection: { 'services.resume.loginTokens': 1 } });
 	}
 
-	addPersonalAccessTokenToUser({ userId, loginTokenObject }) {
+	addPersonalAccessTokenToUser({ userId, loginTokenObject }: { userId: IUser['_id']; loginTokenObject: ILoginToken }) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -1653,7 +1804,13 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removePersonalAccessTokenOfUser({ userId, loginTokenObject }) {
+	removePersonalAccessTokenOfUser({
+		userId,
+		loginTokenObject,
+	}: {
+		userId: IUser['_id'];
+		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
+	}) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -1664,7 +1821,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }) {
+	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }: { userId: IUser['_id']; tokenName: string }) {
 		const query = {
 			'services.resume.loginTokens': {
 				$elemMatch: { name: tokenName, type: 'personalAccessToken' },
@@ -1675,7 +1832,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	setOperator(_id, operator) {
+	// TODO: check if this is still valid/used for something
+	setOperator(_id: IUser['_id'], operator: boolean) {
 		// TODO:: Create class Agent
 		const update = {
 			$set: {
@@ -1686,21 +1844,28 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	async checkOnlineAgents(agentId, isLivechatEnabledWhenAgentIdle) {
+	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
 
 		return !!(await this.findOne(query));
 	}
 
-	findOnlineAgents(agentId, isLivechatEnabledWhenAgentIdle) {
+	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
 
-		return this.find(query);
+		return this.find<T>(query);
 	}
 
-	findOneBotAgent() {
+	countOnlineAgents(agentId: IUser['_id']) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
+	findOneBotAgent<T extends Document = ILivechatAgent>() {
 		// TODO:: Create class Agent
 		const query = {
 			roles: {
@@ -1708,23 +1873,27 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.findOne(query);
+		return this.findOne<T>(query);
 	}
 
-	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle, options) {
+	findOneOnlineAgentById<T extends Document = ILivechatAgent>(
+		_id: IUser['_id'],
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		options?: FindOptions<IUser>,
+	) {
 		// TODO: Create class Agent
 		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
-	findAgents() {
+	findAgents<T extends Document = ILivechatAgent>() {
 		// TODO: Create class Agent
 		const query = {
 			roles: 'livechat-agent',
 		};
 
-		return this.find(query);
+		return this.find<T>(query);
 	}
 
 	countAgents() {
@@ -1737,10 +1906,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId, extraQuery, enabledWhenAgentIdle) {
+	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>, enabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = (await this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
@@ -1749,7 +1918,7 @@ export class UsersRaw extends BaseRaw {
 
 		const query = queryStatusAgentOnline(extraFilters, enabledWhenAgentIdle);
 
-		const sort = {
+		const sort: Record<string, SortDirection> = {
 			livechatCount: 1,
 			username: 1,
 		};
@@ -1770,7 +1939,7 @@ export class UsersRaw extends BaseRaw {
 		return null;
 	}
 
-	async getNextBotAgent(ignoreAgentId) {
+	async getNextBotAgent(ignoreAgentId?: string) {
 		// TODO: Create class Agent
 		const query = {
 			roles: {
@@ -1790,7 +1959,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
+		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' } as FindOneAndUpdateOptions);
 		if (user) {
 			return {
 				agentId: user._id,
@@ -1800,7 +1969,7 @@ export class UsersRaw extends BaseRaw {
 		return null;
 	}
 
-	setLivechatStatus(userId, status) {
+	setLivechatStatus(userId: IUser['_id'], status: ILivechatAgentStatus) {
 		// TODO: Create class Agent
 		const query = {
 			_id: userId,
@@ -1816,7 +1985,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	makeAgentUnavailableAndUnsetExtension(userId) {
+	makeAgentUnavailableAndUnsetExtension(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
 			roles: 'livechat-agent',
@@ -1827,14 +1996,15 @@ export class UsersRaw extends BaseRaw {
 				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
 			},
 			$unset: {
-				extension: 1,
+				extension: 1 as const,
 			},
 		};
 
 		return this.updateOne(query, update);
 	}
 
-	setLivechatData(userId, data = {}) {
+	// TODO: improve type of livechatData
+	setLivechatData(userId: IUser['_id'], data: Record<string, unknown> = {}) {
 		// TODO: Create class Agent
 		const query = {
 			_id: userId,
@@ -1849,21 +2019,31 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
+	// TODO: why this needs to be one by one instead of an updateMany?
 	async closeOffice() {
 		// TODO: Create class Agent
-		const promises = [];
-		await this.findAgents().forEach((agent) => promises.push(this.setLivechatStatus(agent._id, 'not-available')));
+		const promises: Promise<UpdateResult<Document>>[] = [];
+		// TODO: limit the data returned by findAgents
+		await this.findAgents().forEach((agent) => {
+			promises.push(this.setLivechatStatus(agent._id, ILivechatAgentStatus.NOT_AVAILABLE));
+		});
 		await Promise.all(promises);
 	}
 
+	// Same todo's as the above
 	async openOffice() {
 		// TODO: Create class Agent
-		const promises = [];
-		await this.findAgents().forEach((agent) => promises.push(this.setLivechatStatus(agent._id, 'available')));
+		const promises: Promise<UpdateResult<Document>>[] = [];
+		await this.findAgents().forEach((agent) => {
+			promises.push(this.setLivechatStatus(agent._id, ILivechatAgentStatus.AVAILABLE));
+		});
 		await Promise.all(promises);
 	}
 
-	getAgentInfo(agentId, showAgentEmail = false) {
+	getAgentInfo(
+		agentId: IUser['_id'],
+		showAgentEmail = false,
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
 		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
@@ -1884,11 +2064,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	roleBaseQuery(userId) {
+	roleBaseQuery(userId: IUser['_id']) {
 		return { _id: userId };
 	}
 
-	setE2EPublicAndPrivateKeysByUserId(userId, { public_key, private_key }) {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	setE2EPublicAndPrivateKeysByUserId(userId: IUser['_id'], { public_key, private_key }: { public_key: string; private_key: string }) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -1900,7 +2081,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	async rocketMailUnsubscribe(_id, createdAt) {
+	async rocketMailUnsubscribe(_id: IUser['_id'], createdAt: string) {
 		const query = {
 			_id,
 			createdAt: new Date(parseInt(createdAt)),
@@ -1910,11 +2091,11 @@ export class UsersRaw extends BaseRaw {
 				'mailer.unsubscribed': true,
 			},
 		};
-		const affectedRows = (await this.updateOne(query, update)).updatedCount;
+		const affectedRows = (await this.updateOne(query, update)).modifiedCount;
 		return affectedRows;
 	}
 
-	async fetchKeysByUserId(userId) {
+	async fetchKeysByUserId(userId: IUser['_id']) {
 		const user = await this.findOne({ _id: userId }, { projection: { e2e: 1 } });
 
 		if (!user?.e2e?.public_key) {
@@ -1927,7 +2108,7 @@ export class UsersRaw extends BaseRaw {
 		};
 	}
 
-	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
+	disable2FAAndSetTempSecretByUserId(userId: IUser['_id'], tempToken: string) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1943,7 +2124,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	enable2FAAndSetSecretAndCodesByUserId(userId, secret, backupCodes) {
+	enable2FAAndSetSecretAndCodesByUserId(userId: IUser['_id'], secret: string, backupCodes: string[]) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1961,7 +2142,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	disable2FAByUserId(userId) {
+	disable2FAByUserId(userId: IUser['_id']) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1976,7 +2157,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	update2FABackupCodesByUserId(userId, backupCodes) {
+	update2FABackupCodesByUserId(userId: IUser['_id'], backupCodes: string[]) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -1989,7 +2170,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	enableEmail2FAByUserId(userId) {
+	enableEmail2FAByUserId(userId: IUser['_id']) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -2005,7 +2186,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	disableEmail2FAByUserId(userId) {
+	disableEmail2FAByUserId(userId: IUser['_id']) {
 		return this.updateOne(
 			{
 				_id: userId,
@@ -2021,7 +2202,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findByIdsWithPublicE2EKey(ids, options) {
+	findByIdsWithPublicE2EKey(ids: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			'_id': {
 				$in: ids,
@@ -2034,7 +2215,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	resetE2EKey(userId) {
+	resetE2EKey(userId: IUser['_id']) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -2045,7 +2226,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeExpiredEmailCodeOfUserId(userId) {
+	removeExpiredEmailCodeOfUserId(userId: IUser['_id']) {
 		return this.updateOne(
 			{ '_id': userId, 'services.emailCode.expire': { $lt: new Date() } },
 			{
@@ -2054,7 +2235,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	removeEmailCodeOfUserId(userId) {
+	removeEmailCodeOfUserId(userId: IUser['_id']) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -2063,7 +2244,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	incrementInvalidEmailCodeAttempt(userId) {
+	incrementInvalidEmailCodeAttempt(userId: IUser['_id']) {
 		return this.findOneAndUpdate(
 			{ _id: userId },
 			{
@@ -2078,7 +2259,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	async maxInvalidEmailCodeAttemptsReached(userId, maxAttempts) {
+	async maxInvalidEmailCodeAttemptsReached(userId: IUser['_id'], maxAttempts: number) {
 		const result = await this.findOne(
 			{
 				'_id': userId,
@@ -2093,7 +2274,7 @@ export class UsersRaw extends BaseRaw {
 		return !!result?._id;
 	}
 
-	addEmailCodeByUserId(userId, code, expire) {
+	addEmailCodeByUserId(userId: IUser['_id'], code: string, expire: Date) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -2112,8 +2293,8 @@ export class UsersRaw extends BaseRaw {
 	 * @param {IRole['_id'][]} roles the list of role ids
 	 * @param {any} options
 	 */
-	findActiveUsersInRoles(roles, options) {
-		roles = [].concat(roles);
+	findActiveUsersInRoles(roles: IRole['_id'][], options?: FindOptions<IUser>) {
+		roles = ([] as string[]).concat(roles);
 
 		const query = {
 			roles: { $in: roles },
@@ -2123,8 +2304,8 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countActiveUsersInRoles(roles, options) {
-		roles = [].concat(roles);
+	countActiveUsersInRoles(roles: IRole['_id'][], options?: FindOptions<IUser>) {
+		roles = ([] as string[]).concat(roles);
 
 		const query = {
 			roles: { $in: roles },
@@ -2134,7 +2315,12 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
+	findOneByUsernameAndServiceNameIgnoringCase(
+		username: string | RegExp,
+		userId: IUser['_id'],
+		serviceName: string,
+		options?: FindOptions<IUser>,
+	) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
 		}
@@ -2144,7 +2330,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+	findOneByEmailAddressAndServiceNameIgnoringCase(
+		emailAddress: string,
+		userId: IUser['_id'],
+		serviceName: string,
+		options?: FindOptions<IUser>,
+	) {
 		const query = {
 			'emails.address': String(emailAddress).trim(),
 			[`services.${serviceName}.id`]: userId,
@@ -2156,7 +2347,7 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	findOneByEmailAddress(emailAddress, options) {
+	findOneByEmailAddress(emailAddress: string, options?: FindOptions<IUser>) {
 		const query = { 'emails.address': String(emailAddress).trim() };
 
 		return this.findOne(query, {
@@ -2165,7 +2356,7 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	findOneWithoutLDAPByEmailAddress(emailAddress, options) {
+	findOneWithoutLDAPByEmailAddress(emailAddress: string, options?: FindOptions<IUser>) {
 		const query = {
 			'email.address': emailAddress.trim().toLowerCase(),
 			'services.ldap': {
@@ -2176,13 +2367,13 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneAdmin(userId, options) {
+	findOneAdmin(userId: IUser['_id'], options?: FindOptions<IUser>) {
 		const query = { roles: { $in: ['admin'] }, _id: userId };
 
 		return this.findOne(query, options);
 	}
 
-	findOneByIdAndLoginToken(_id, token, options) {
+	findOneByIdAndLoginToken(_id: IUser['_id'], token: string, options?: FindOptions<IUser>) {
 		const query = {
 			_id,
 			'services.resume.loginTokens.hashedToken': token,
@@ -2191,13 +2382,13 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId, options = {}) {
+	findOneById(userId: IUser['_id'], options: FindOptions<IUser> = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
 	}
 
-	findOneActiveById(userId, options) {
+	findOneActiveById(userId?: IUser['_id'], options?: FindOptions<IUser>) {
 		const query = {
 			_id: userId,
 			active: true,
@@ -2206,7 +2397,7 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByIdOrUsername(idOrUsername, options) {
+	findOneByIdOrUsername(idOrUsername: IUser['_id'] | IUser['username'], options?: FindOptions<IUser>) {
 		const query = {
 			$or: [
 				{
@@ -2221,53 +2412,53 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneByRolesAndType(roles, type, options) {
+	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>) {
 		const query = { roles, type };
 
-		return this.findOne(query, options);
+		return this.findOne<T>(query, options);
 	}
 
-	findNotOfflineByIds(users, options) {
+	findNotOfflineByIds(users?: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: { $in: users },
 			status: {
-				$in: ['online', 'away', 'busy'],
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
 			},
 		};
 		return this.find(query, options);
 	}
 
-	findUsersNotOffline(options) {
+	findUsersNotOffline(options?: FindOptions<IUser>) {
 		const query = {
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 			status: {
-				$in: ['online', 'away', 'busy'],
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
 			},
 		};
 
 		return this.find(query, options);
 	}
 
-	countUsersNotOffline(options) {
+	countUsersNotOffline(options?: FindOptions<IUser>) {
 		const query = {
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 			status: {
-				$in: ['online', 'away', 'busy'],
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
 			},
 		};
 
 		return this.col.countDocuments(query, options);
 	}
 
-	findNotIdUpdatedFrom(uid, from, options) {
-		const query = {
+	findNotIdUpdatedFrom(uid: IUser['_id'], from: Date, options?: FindOptions<IUser>) {
+		const query: Filter<IUser> = {
 			_id: { $ne: uid },
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 			_updatedAt: { $gte: from },
 		};
@@ -2275,7 +2466,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	async findByRoomId(rid, options) {
+	async findByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
 		const data = (await Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
 		const query = {
 			_id: {
@@ -2286,19 +2477,19 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByUsername(username, options) {
+	findByUsername(username: string, options?: FindOptions<IUser>) {
 		const query = { username };
 
 		return this.find(query, options);
 	}
 
-	findByUsernames(usernames, options) {
+	findByUsernames(usernames: string[], options?: FindOptions<IUser>) {
 		const query = { username: { $in: usernames } };
 
 		return this.find(query, options);
 	}
 
-	findByUsernamesIgnoringCase(usernames, options) {
+	findByUsernamesIgnoringCase(usernames: string[], options?: FindOptions<IUser>) {
 		const query = {
 			username: {
 				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${escapeRegExp(u)}$`, 'i')),
@@ -2308,7 +2499,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findActiveByUserIds(ids, options = {}) {
+	findActiveByUserIds(ids: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		return this.find(
 			{
 				active: true,
@@ -2319,8 +2510,8 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findActiveLocalGuests(idExceptions = [], options = {}) {
-		const query = {
+	findActiveLocalGuests(idExceptions: IUser['_id'] | IUser['_id'][] = [], options: FindOptions<IUser> = {}) {
+		const query: Filter<IUser> = {
 			active: true,
 			type: { $nin: ['app'] },
 			roles: {
@@ -2341,8 +2532,8 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countActiveLocalGuests(idExceptions = []) {
-		const query = {
+	countActiveLocalGuests(idExceptions: IUser['_id'] | IUser['_id'][] = []) {
+		const query: Filter<IUser> = {
 			active: true,
 			type: { $nin: ['app'] },
 			roles: {
@@ -2364,10 +2555,10 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// 4
-	findUsersByNameOrUsername(nameOrUsername, options) {
+	findUsersByNameOrUsername(nameOrUsername: string, options?: FindOptions<IUser>) {
 		const query = {
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 
 			$or: [{ name: nameOrUsername }, { username: nameOrUsername }],
@@ -2380,7 +2571,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByUsernameNameOrEmailAddress(usernameNameOrEmailAddress, options) {
+	findByUsernameNameOrEmailAddress(usernameNameOrEmailAddress: string, options?: FindOptions<IUser>) {
 		const query = {
 			$or: [
 				{ name: usernameNameOrEmailAddress },
@@ -2395,29 +2586,29 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findCrowdUsers(options) {
+	findCrowdUsers(options?: FindOptions<IUser>) {
 		const query = { crowd: true };
 
 		return this.find(query, options);
 	}
 
-	async getLastLogin(options = { projection: { _id: 0, lastLogin: 1 } }) {
+	async getLastLogin(options: FindOptions<IUser> = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		const user = await this.findOne({}, options);
 		return user?.lastLogin;
 	}
 
-	findUsersByUsernames(usernames, options) {
+	findUsersByUsernames<T extends Document = IUser>(usernames: string[], options?: FindOptions<IUser>) {
 		const query = {
 			username: {
 				$in: usernames,
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
-	findUsersByIds(ids, options) {
+	findUsersByIds(ids: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: {
 				$in: ids,
@@ -2426,29 +2617,29 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findUsersWithUsernameByIds(ids, options) {
+	findUsersWithUsernameByIds(ids: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: {
 				$in: ids,
 			},
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 		};
 
 		return this.find(query, options);
 	}
 
-	findUsersWithUsernameByIdsNotOffline(ids, options) {
+	findUsersWithUsernameByIdsNotOffline(ids: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: {
 				$in: ids,
 			},
 			username: {
-				$exists: 1,
+				$exists: true,
 			},
 			status: {
-				$in: ['online', 'away', 'busy'],
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
 			},
 		};
 
@@ -2458,14 +2649,14 @@ export class UsersRaw extends BaseRaw {
 	/**
 	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} projection
 	 */
-	getOldest(optionsParams) {
+	getOldest(optionsParams?: FindOptions<IUser>) {
 		const query = {
 			_id: {
 				$ne: 'rocket.cat',
 			},
 		};
 
-		const options = {
+		const options: FindOptions<IUser> = {
 			...optionsParams,
 			sort: {
 				createdAt: 1,
@@ -2475,11 +2666,11 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	countRemote(options = {}) {
+	countRemote(options: FindOptions<IUser> = {}) {
 		return this.countDocuments({ isRemote: true }, options);
 	}
 
-	findActiveRemote(options = {}) {
+	findActiveRemote(options: FindOptions<IUser> = {}) {
 		return this.find(
 			{
 				active: true,
@@ -2490,7 +2681,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findActiveFederated(options = {}) {
+	findActiveFederated(options: FindOptions<IUser> = {}) {
 		return this.find(
 			{
 				active: true,
@@ -2500,38 +2691,44 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	getSAMLByIdAndSAMLProvider(_id, provider) {
+	getSAMLByIdAndSAMLProvider(_id: IUser['_id'], provider: string) {
 		return this.findOne(
 			{
 				_id,
 				'services.saml.provider': provider,
 			},
 			{
-				'services.saml': 1,
+				projection: { 'services.saml': 1 },
 			},
 		);
 	}
 
-	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
-		return this.find({
-			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
-		});
+	findBySAMLNameIdOrIdpSession(nameID: string, idpSession: string, options?: FindOptions<IUser>) {
+		return this.find(
+			{
+				$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
+			},
+			options,
+		);
 	}
 
-	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
+	countBySAMLNameIdOrIdpSession(nameID: string, idpSession: string) {
 		return this.countDocuments({
 			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
 		});
 	}
 
-	findBySAMLInResponseTo(inResponseTo) {
-		return this.find({
-			'services.saml.inResponseTo': inResponseTo,
-		});
+	findBySAMLInResponseTo(inResponseTo: string, options?: FindOptions<IUser>) {
+		return this.find(
+			{
+				'services.saml.inResponseTo': inResponseTo,
+			},
+			options,
+		);
 	}
 
-	findOneByFreeSwitchExtension(freeSwitchExtension, options = {}) {
-		return this.findOne(
+	findOneByFreeSwitchExtension<T extends Document = IUser>(freeSwitchExtension: string, options: FindOptions<IUser> = {}) {
+		return this.findOne<T>(
 			{
 				freeSwitchExtension,
 			},
@@ -2539,8 +2736,8 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	findOneByFreeSwitchExtensions(freeSwitchExtensions, options = {}) {
-		return this.findOne(
+	findOneByFreeSwitchExtensions<T extends Document = IUser>(freeSwitchExtensions: string[], options: FindOptions<IUser> = {}) {
+		return this.findOne<T>(
 			{
 				freeSwitchExtension: { $in: freeSwitchExtensions },
 			},
@@ -2556,11 +2753,11 @@ export class UsersRaw extends BaseRaw {
 		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
 	}
 
-	findUsersWithAssignedFreeSwitchExtensions(options = {}) {
-		return this.find(
+	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options: FindOptions<IUser> = {}) {
+		return this.find<T>(
 			{
 				freeSwitchExtension: {
-					$exists: 1,
+					$exists: true,
 				},
 			},
 			options,
@@ -2568,8 +2765,8 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// UPDATE
-	addImportIds(_id, importIds) {
-		importIds = [].concat(importIds);
+	addImportIds(_id: IUser['_id'], importIds: string[]) {
+		importIds = ([] as string[]).concat(importIds);
 
 		const query = { _id };
 
@@ -2584,7 +2781,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	updateInviteToken(_id, inviteToken) {
+	updateInviteToken(_id: IUser['_id'], inviteToken: string) {
 		const update = {
 			$set: {
 				inviteToken,
@@ -2594,7 +2791,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	updateLastLoginById(_id) {
+	updateLastLoginById(_id: IUser['_id']) {
 		const update = {
 			$set: {
 				lastLogin: new Date(),
@@ -2604,7 +2801,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	addPasswordToHistory(_id, password, passwordHistoryAmount) {
+	addPasswordToHistory(_id: IUser['_id'], password: string, passwordHistoryAmount: number) {
 		const update = {
 			$push: {
 				'services.passwordHistory': {
@@ -2616,39 +2813,24 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setServiceId(_id, serviceName, serviceId) {
-		const update = { $set: {} };
+	setServiceId(_id: IUser['_id'], serviceName: string, serviceId: string) {
+		const update: UpdateFilter<IUser> = { $set: {} };
 
 		const serviceIdKey = `services.${serviceName}.id`;
-		update.$set[serviceIdKey] = serviceId;
+		if (update.$set) {
+			update.$set[serviceIdKey] = serviceId;
+		}
 
 		return this.updateOne({ _id }, update);
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {string} username
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	setUsername(_id, username, options) {
+	setUsername(_id: IUser['_id'], username: string, options?: UpdateOptions) {
 		const update = { $set: { username } };
 
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {string} email
-	 * @param {boolean} verified
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	setEmail(_id, email, verified = false, options) {
+	setEmail(_id: IUser['_id'], email: string, verified = false, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				emails: [
@@ -2664,7 +2846,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// 5
-	setEmailVerified(_id, email) {
+	setEmailVerified(_id: IUser['_id'], email: string) {
 		const query = {
 			_id,
 			emails: {
@@ -2684,15 +2866,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {string} name
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	setName(_id, name, options) {
+	setName(_id: IUser['_id'], name: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				name,
@@ -2702,25 +2876,18 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	unsetName(_id, options) {
+	unsetName(_id: IUser['_id'], options?: UpdateOptions) {
 		const update = {
 			$unset: {
-				name,
+				name: 1 as const,
 			},
 		};
 
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	setCustomFields(_id, fields) {
-		const values = {};
+	setCustomFields(_id: IUser['_id'], fields: Record<string, string>) {
+		const values: Record<string, string> = {};
 		Object.keys(fields).forEach((key) => {
 			values[`customFields.${key}`] = fields[key];
 		});
@@ -2730,16 +2897,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	/**
-	 *
-	 * @param {string} _id
-	 * @param {string} origin
-	 * @param {string} etag
-	 * @param {Object} options
-	 * @param {ClientSession} options.session
-	 * @returns {Promise<UpdateResult>}
-	 */
-	setAvatarData(_id, origin, etag, options) {
+	setAvatarData(_id: IUser['_id'], origin: string, etag: string, options?: UpdateOptions) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
@@ -2750,8 +2908,8 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	unsetAvatarData(_id) {
-		const update = {
+	unsetAvatarData(_id: IUser['_id']) {
+		const update: UpdateFilter<IUser> = {
 			$unset: {
 				avatarOrigin: 1,
 				avatarETag: 1,
@@ -2761,7 +2919,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setUserActive(_id, active) {
+	setUserActive(_id: IUser['_id'], active: boolean | null) {
 		if (active == null) {
 			active = true;
 		}
@@ -2774,7 +2932,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setAllUsersActive(active) {
+	setAllUsersActive(active: boolean) {
 		const update = {
 			$set: {
 				active,
@@ -2789,8 +2947,8 @@ export class UsersRaw extends BaseRaw {
 	 * @param {IRole['_id']} role the role id
 	 * @param {boolean} active
 	 */
-	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
-		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role: IRole['_id'] = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: false }, createdAt: { $lte: latestLastLoginDate } };
 		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
 
 		const query = {
@@ -2808,8 +2966,8 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	unsetRequirePasswordChange(_id) {
-		const update = {
+	unsetRequirePasswordChange(_id: IUser['_id']) {
+		const update: UpdateFilter<IUser> = {
 			$unset: {
 				requirePasswordChange: true,
 				requirePasswordChangeReason: true,
@@ -2819,10 +2977,10 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	resetPasswordAndSetRequirePasswordChange(_id, requirePasswordChange, requirePasswordChangeReason) {
+	resetPasswordAndSetRequirePasswordChange(_id: IUser['_id'], requirePasswordChange: boolean, requirePasswordChangeReason: string) {
 		const update = {
 			$unset: {
-				'services.password': 1,
+				'services.password': 1 as const,
 			},
 			$set: {
 				requirePasswordChange,
@@ -2833,7 +2991,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setLanguage(_id, language) {
+	setLanguage(_id: IUser['_id'], language: string) {
 		const update = {
 			$set: {
 				language,
@@ -2843,7 +3001,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setProfile(_id, profile) {
+	setProfile(_id: IUser['_id'], profile: Record<string, unknown>) {
 		const update = {
 			$set: {
 				'settings.profile': profile,
@@ -2853,8 +3011,8 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setBio(_id, bio = '') {
-		const update = {
+	setBio(_id: IUser['_id'], bio = '') {
+		const update: UpdateFilter<IUser> = {
 			...(bio.trim()
 				? {
 						$set: {
@@ -2870,8 +3028,8 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setNickname(_id, nickname = '') {
-		const update = {
+	setNickname(_id: IUser['_id'], nickname = '') {
+		const update: UpdateFilter<IUser> = {
 			...(nickname.trim()
 				? {
 						$set: {
@@ -2887,7 +3045,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	clearSettings(_id) {
+	clearSettings(_id: IUser['_id']) {
 		const update = {
 			$set: {
 				settings: {},
@@ -2897,7 +3055,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setPreferences(_id, preferences) {
+	setPreferences(_id: IUser['_id'], preferences: Record<string, string>) {
 		const settingsObject = Object.assign(
 			{},
 			...Object.keys(preferences).map((key) => ({
@@ -2905,18 +3063,18 @@ export class UsersRaw extends BaseRaw {
 			})),
 		);
 
-		const update = {
+		const update: DeepWritable<UpdateFilter<IUser>> = {
 			$set: settingsObject,
 		};
 		if (parseInt(preferences.clockMode) === 0) {
-			delete update.$set['settings.preferences.clockMode'];
+			delete update.$set?.['settings.preferences.clockMode'];
 			update.$unset = { 'settings.preferences.clockMode': 1 };
 		}
 
 		return this.updateOne({ _id }, update);
 	}
 
-	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id: IUser['_id'], token: string, hash: string, until: Date) {
 		return this.updateOne(
 			{
 				_id,
@@ -2931,7 +3089,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	setUtcOffset(_id, utcOffset) {
+	setUtcOffset(_id: IUser['_id'], utcOffset: number) {
 		const query = {
 			_id,
 			utcOffset: {
@@ -2948,52 +3106,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	saveUserById(_id, data) {
-		const setData = {};
-		const unsetData = {};
-
-		if (data.name != null) {
-			if (data.name.trim()) {
-				setData.name = data.name.trim();
-			} else {
-				unsetData.name = 1;
-			}
-		}
-
-		if (data.email != null) {
-			if (data.email.trim()) {
-				setData.emails = [{ address: data.email.trim() }];
-			} else {
-				unsetData.emails = 1;
-			}
-		}
-
-		if (data.phone != null) {
-			if (data.phone.trim()) {
-				setData.phone = [{ phoneNumber: data.phone.trim() }];
-			} else {
-				unsetData.phone = 1;
-			}
-		}
-
-		const update = {};
-
-		if (setData) {
-			update.$set = setData;
-		}
-
-		if (unsetData) {
-			update.$unset = unsetData;
-		}
-
-		if (update) {
-			return true;
-		}
-
-		return this.updateOne({ _id }, update);
-	}
-
-	setReason(_id, reason) {
+	setReason(_id: IUser['_id'], reason: string) {
 		const update = {
 			$set: {
 				reason,
@@ -3003,17 +3116,17 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	unsetReason(_id) {
+	unsetReason(_id: IUser['_id']) {
 		const update = {
 			$unset: {
-				reason: true,
+				reason: true as const,
 			},
 		};
 
 		return this.updateOne({ _id }, update);
 	}
 
-	async bannerExistsById(_id, bannerId) {
+	async bannerExistsById(_id: IUser['_id'], bannerId: string) {
 		const query = {
 			_id,
 			[`banners.${bannerId}`]: {
@@ -3024,7 +3137,7 @@ export class UsersRaw extends BaseRaw {
 		return (await this.countDocuments(query)) !== 0;
 	}
 
-	setBannerReadById(_id, bannerId) {
+	setBannerReadById(_id: IUser['_id'], bannerId: string) {
 		const update = {
 			$set: {
 				[`banners.${bannerId}.read`]: true,
@@ -3034,27 +3147,27 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	removeBannerById(_id, bannerId) {
+	removeBannerById(_id: IUser['_id'], bannerId: string) {
 		const update = {
 			$unset: {
-				[`banners.${bannerId}`]: true,
+				[`banners.${bannerId}`]: true as const,
 			},
 		};
 
 		return this.updateOne({ _id }, update);
 	}
 
-	removeSamlServiceSession(_id) {
+	removeSamlServiceSession(_id: IUser['_id']) {
 		const update = {
 			$unset: {
-				'services.saml.idpSession': '',
+				'services.saml.idpSession': 1 as const,
 			},
 		};
 
 		return this.updateOne({ _id }, update);
 	}
 
-	updateDefaultStatus(_id, statusDefault) {
+	updateDefaultStatus(_id: IUser['_id'], statusDefault: UserStatus) {
 		return this.updateOne(
 			{
 				_id,
@@ -3068,8 +3181,8 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	setSamlInResponseTo(_id, inResponseTo) {
-		this.updateOne(
+	setSamlInResponseTo(_id: IUser['_id'], inResponseTo: string) {
+		return this.updateOne(
 			{
 				_id,
 			},
@@ -3081,7 +3194,7 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	async setFreeSwitchExtension(_id, extension) {
+	async setFreeSwitchExtension(_id: IUser['_id'], extension?: string) {
 		return this.updateOne(
 			{
 				_id,
@@ -3093,11 +3206,11 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// INSERT
-	create(data) {
+	create(data: InsertionModel<IUser>) {
 		const user = {
 			createdAt: new Date(),
 			avatarOrigin: 'none',
-		};
+		} as InsertionModel<IUser>;
 
 		Object.assign(user, data);
 
@@ -3105,18 +3218,18 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// REMOVE
-	removeById(_id) {
+	removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
 	}
 
-	removeLivechatData(userId) {
+	removeLivechatData(userId: IUser['_id']) {
 		const query = {
 			_id: userId,
 		};
 
 		const update = {
 			$unset: {
-				livechat: true,
+				livechat: 1 as const,
 			},
 		};
 
@@ -3130,15 +3243,15 @@ export class UsersRaw extends BaseRaw {
 		- has not disabled email notifications
 		- `active` is equal to true (false means they were deactivated and can't login)
 	*/
-	getUsersToSendOfflineEmail(usersIds) {
+	getUsersToSendOfflineEmail(usersIds: IUser['_id'][]) {
 		const query = {
 			'_id': {
 				$in: usersIds,
 			},
 			'active': true,
-			'status': 'offline',
+			'status': UserStatus.OFFLINE,
 			'statusConnection': {
-				$ne: 'online',
+				$ne: UserStatus.ONLINE,
 			},
 			'emails.verified': true,
 		};
@@ -3156,7 +3269,7 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	countActiveUsersByService(serviceName, options) {
+	countActiveUsersByService(serviceName: string, options?: FindOptions<IUser>) {
 		const query = {
 			active: true,
 			type: { $nin: ['app'] },
@@ -3168,7 +3281,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	// here
-	getActiveLocalUserCount() {
+	async getActiveLocalUserCount() {
 		return Promise.all([
 			// Count all active users (fast based on index)
 			this.countDocuments({
@@ -3188,8 +3301,8 @@ export class UsersRaw extends BaseRaw {
 		return this.countActiveLocalGuests(idExceptions);
 	}
 
-	removeOlderResumeTokensByUserId(userId, fromDate) {
-		this.updateOne(
+	removeOlderResumeTokensByUserId(userId: IUser['_id'], fromDate: Date) {
+		return this.updateOne(
 			{ _id: userId },
 			{
 				$pull: {
@@ -3229,7 +3342,7 @@ export class UsersRaw extends BaseRaw {
 		return this.countDocuments(query);
 	}
 
-	updateCustomFieldsById(userId, customFields) {
+	updateCustomFieldsById(userId: IUser['_id'], customFields: Record<string, unknown>) {
 		return this.updateOne(
 			{ _id: userId },
 			{
@@ -3240,12 +3353,12 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	countRoomMembers(roomId) {
+	countRoomMembers(roomId: IRoom['_id']) {
 		return this.countDocuments({ __rooms: roomId, active: true });
 	}
 
-	removeAgent(_id) {
-		const update = {
+	removeAgent(_id: IUser['_id']) {
+		const update: UpdateFilter<IUser> = {
 			$set: {
 				operator: false,
 			},
@@ -3260,11 +3373,11 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	countByRole(role) {
+	countByRole(role: IRole['_id']) {
 		return this.countDocuments({ roles: role });
 	}
 
-	updateLivechatStatusByAgentIds(userIds, status) {
+	updateLivechatStatusByAgentIds(userIds: IUser['_id'][], status: ILivechatAgentStatus) {
 		return this.updateMany(
 			{
 				_id: { $in: userIds },

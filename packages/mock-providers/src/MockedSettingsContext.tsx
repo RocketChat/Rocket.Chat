@@ -4,7 +4,6 @@ import type { ContextType, ReactNode } from 'react';
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
-	isLoading: false,
 	querySetting: (_id: string) => [() => () => undefined, () => undefined],
 	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,

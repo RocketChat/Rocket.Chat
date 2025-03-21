@@ -1,8 +1,8 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 
-import { CachedCollection } from '../../../../client/lib/cachedCollections';
+import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections';
 
-export const AuthzCachedCollection = new CachedCollection<IPermission>({
+export const AuthzCachedCollection = new PrivateCachedCollection<IPermission>({
 	name: 'permissions',
 	eventType: 'notify-logged',
 });

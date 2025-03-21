@@ -21,6 +21,9 @@ export interface IPersonalAccessToken extends ILoginToken {
 	bypassTwoFactor?: boolean;
 }
 
+export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
+	'type' in token && token.type === 'personalAccessToken';
+
 export interface IUserEmailVerificationToken {
 	token: string;
 	address: string;
@@ -219,6 +222,7 @@ export interface IUser extends IRocketChatRecord {
 	requirePasswordChangeReason?: string;
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
+	__rooms?: string[];
 }
 
 export interface IRegisterUser extends IUser {

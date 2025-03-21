@@ -14,3 +14,7 @@ export const subscriptionsQueryKeys = {
 	all: ['subscriptions'] as const,
 	subscription: (rid: IRoom['_id']) => [...subscriptionsQueryKeys.all, { rid }] as const,
 };
+
+export const cannedResponsesQueryKeys = {
+	all: ['canned-responses'] as const,
+};
