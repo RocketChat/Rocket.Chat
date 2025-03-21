@@ -10,6 +10,7 @@ import type {
 	TransferData,
 	IOmnichannelAgent,
 	UserStatus,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -25,6 +26,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -507,6 +509,16 @@ class LivechatClass {
 		if (customField.scope === 'room') {
 			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		} else {
+			const visitor = await LivechatVisitors.getVisitorByToken(token);
+			if (!visitor) {
+				throw new Error(`Visitor with token "${token}" not found.`);
+			}
+
+			const contact = await LivechatContacts.findContactMatchingVisitor(visitor);
+			if (contact) {
+				await this.updateContactsCustomFields(contact, key, value, overwrite);
+			}
+
 			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 		}
 
@@ -516,6 +528,20 @@ class LivechatClass {
 		}
 
 		return result.modifiedCount;
+	}
+
+	async updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+		if (contact.customFields === undefined || overwrite) {
+			contact.customFields = {
+				[key]: value,
+			};
+		} else {
+			contact.conflictingFields ??= [];
+			contact.conflictingFields.push({ field: `customFields.${key}`, value });
+		}
+
+		await LivechatContacts.updateContact(contact._id, contact);
+		Livechat.logger.debug(`Contact "${contact._id}" successfully updated.`);
 	}
 
 	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
