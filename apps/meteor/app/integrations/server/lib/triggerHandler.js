@@ -512,7 +512,17 @@ class RocketChatIntegrationHandler {
 			opts.headers['Content-Type'] = 'application/json';
 		}
 
-		console.log('opts', opts);
+		console.log(
+			'POST',
+			opts.url,
+			{
+				method: opts.method,
+				headers: opts.headers,
+				...(opts.timeout && { timeout: opts.timeout }),
+				...(opts.data && { body: opts.data }),
+			},
+			settings.get('Allow_Invalid_SelfSigned_Certs'),
+		);
 
 		fetch(
 			opts.url,
