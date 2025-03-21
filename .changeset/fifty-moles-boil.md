@@ -4,4 +4,4 @@
 "@rocket.chat/models": patch
 ---
 
-Fixes an issue where the app log ttl were being ignored, also set to be always 30 days 
+Fixes an issue where the app's logs index was not being created by default sometimes, also set to be always 30 days 
