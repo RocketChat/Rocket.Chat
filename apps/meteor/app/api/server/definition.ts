@@ -253,7 +253,7 @@ type Range<N extends number, Result extends number[] = []> = Result['length'] ex
 	? Result[number]
 	: Range<N, [...Result, Result['length']]>;
 
-type HTTPStatusCodes = SuccessResult | RedirectResult | AuthorizationStatusCodes | ErrorStatusCodes;
+type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
 export type TypedOptions = {
 	response: {
 		[K in HTTPStatusCodes]?: ValidateFunction;
