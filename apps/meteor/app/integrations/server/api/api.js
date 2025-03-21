@@ -113,7 +113,7 @@ async function executeIntegrationRest() {
 			},
 		};
 
-		console.log('trigger outgoing');
+		console.log('trigger outgoing', request);
 		if (request.user.username == 'telegrambot') {
 			const channelName = 'tg-' + request.content.message.chat.id;
 			const projection = { ...API.v1.defaultFieldsToExclude };
