@@ -510,6 +510,10 @@ class RocketChatIntegrationHandler {
 
 		if (opts.data) {
 			opts.headers['Content-Type'] = 'application/json';
+			if (opts.data.channel_name && opts.data.channel_name.startsWith('tg-')) {
+				// telegram outgoing integration
+				opts.data.chat_id = opts.data.channel_name.split('-')[1];
+			}
 		}
 
 		console.log(
