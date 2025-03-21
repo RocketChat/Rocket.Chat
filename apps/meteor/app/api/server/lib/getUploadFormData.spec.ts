@@ -30,14 +30,28 @@ const createMockRequest = (
 
 	parts.push(`--${boundary}--`);
 
+	const buffer = Buffer.from(parts.join('\r\n'));
+
 	const mockRequest: any = {
 		headers: {
-			entries: () => new Map([['content-type', `multipart/form-data; boundary=${boundary}`]]),
+			entries: () => [['content-type', `multipart/form-data; boundary=${boundary}`]],
 		},
-		arrayBuffer: async () => {
-			const buffer = Buffer.from(parts.join('\r\n'));
-			return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-		},
+		blob: async () => ({
+			stream: () => {
+				let hasRead = false;
+				return {
+					getReader: () => ({
+						read: async () => {
+							if (!hasRead) {
+								hasRead = true;
+								return { value: buffer, done: false };
+							}
+							return { done: true };
+						},
+					}),
+				};
+			},
+		}),
 	};
 
 	return mockRequest as Request & { headers: Record<string, string> };
