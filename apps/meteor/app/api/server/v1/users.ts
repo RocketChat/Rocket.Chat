@@ -1,6 +1,6 @@
 import { MeteorError, Team, api } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, UsersSessions, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -57,6 +57,11 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import {
+	generateRegistrationOptions,
+	VerifiedRegistrationResponse,
+	verifyRegistrationResponse,
+} from '@simplewebauthn/server';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -859,6 +864,152 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'users.generateRegistrationOptions',
+	{ authRequired: true, twoFactorRequired: true },
+	{
+		async get() {
+			const options = await generateRegistrationOptions({
+				rpName: 'WebAuthn Demo',
+				rpID: 'localhost',
+				userID: this.user.id,
+				userName: this.user.username,
+				attestationType: 'none',
+				excludeCredentials: this.user.credentials?.map((cred) => ({
+					id: cred.id,
+					type: 'public-key',
+					transports: cred.transports,
+				})),
+				authenticatorSelection: {
+					residentKey: 'discouraged',
+					userVerification: 'preferred',
+				},
+				supportedAlgorithmIDs: [-7, -257],
+			});
+
+			await UsersSessions.updateOne(
+				{ _id: this.userId },
+				{
+					$set: {
+						'challenge': options.challenge,
+					},
+				},
+			)
+
+			return API.v1.success(options);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.verifyRegistrationResponse',
+	{ authRequired: true, twoFactorRequired: true },
+	{
+		async post() {
+			const usersSession = await UsersSessions.findOneById(this.userId)
+			const expectedChallenge = usersSession.challenge;
+
+			let verification: VerifiedRegistrationResponse
+			try {
+				verification = await verifyRegistrationResponse({
+					response: this.bodyParams,
+					expectedChallenge: expectedChallenge,
+					expectedOrigin: 'http://localhost:3000',
+					expectedRPID: 'localhost',
+					requireUserVerification: false,
+				});
+			} catch (e) {
+				const _e = e as Error;
+				return API.v1.failure(_e.message)
+			}
+
+			if (!verification.verified) {
+				return API.v1.failure("verification failed")
+			}
+
+			const user = await Users.findOneById(this.userId);
+			let credentials
+			if (user.credentials !== undefined)
+				credentials = user.credentials
+			else
+				credentials = []
+			const credential = verification.registrationInfo!.credential;
+			const existingCredential = credentials.find((cred) => cred.id === credential.id);
+
+			if (!existingCredential) { // unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
+				// dbCredential.credentialId = credential.id
+				// dbCredential.publicKey = Buffer.from(credential.publicKey).toString('base64url')
+				// dbCredential.counter = credential.counter
+				// dbCredential.transports = body.response.transports
+				// dbCredential.user = user
+
+				// credential.publicKey = new BinData(credential.publicKey).toString('base64url')
+				credentials.push(credential);
+				await Users.updateOne(
+					{ _id: this.userId },
+					{
+						$set: {
+							'credentials': credentials,
+						},
+					},
+				)
+			}
+
+			return API.v1.success();
+		},
+	},
+);
+
+// API.v1.addRoute(
+// 	'users.generateAuthenticationOptions',
+// 	{ authRequired: true, twoFactorRequired: true },
+// 	{
+// 		async post() {
+// 			const { tokenName, bypassTwoFactor } = this.bodyParams;
+// 			if (!tokenName) {
+// 				return API.v1.failure("The 'tokenName' param is required");
+// 			}
+// 			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+//
+// 			return API.v1.success({ token });
+// 		},
+// 	},
+// );
+//
+// API.v1.addRoute(
+// 	'users.verifyAuthenticationResponse',
+// 	{ authRequired: true, twoFactorRequired: true },
+// 	{
+// 		async post() {
+// 			const { tokenName, bypassTwoFactor } = this.bodyParams;
+// 			if (!tokenName) {
+// 				return API.v1.failure("The 'tokenName' param is required");
+// 			}
+// 			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+//
+// 			return API.v1.success({ token });
+// 		},
+// 	},
+// );
+
+// API.v1.addRoute(
+// 	'users.deletePasskey',
+// 	{ authRequired: true, twoFactorRequired: true },
+// 	{
+// 		async post() {
+// 			const { tokenName } = this.bodyParams;
+// 			if (!tokenName) {
+// 				return API.v1.failure("The 'tokenName' param is required");
+// 			}
+// 			await Meteor.callAsync('personalAccessTokens:removeToken', {
+// 				tokenName,
+// 			});
+//
+// 			return API.v1.success();
+// 		},
+// 	},
+// );
 
 API.v1.addRoute(
 	'users.2fa.enableEmail',
