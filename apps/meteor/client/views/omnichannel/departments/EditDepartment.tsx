@@ -138,6 +138,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const requestTagBeforeClosingChatField = useId();
 	const chatClosingTagsField = useId();
 	const allowReceiveForwardOffline = useId();
+	const unitFieldId = useId();
 
 	return (
 		<Page flexDirection='row'>
@@ -358,16 +359,21 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</Field>
 
 								<Field>
-									<FieldLabel required={isUnitRequired}>{t('Unit')}</FieldLabel>
+									<FieldLabel htmlFor={unitFieldId} required={isUnitRequired}>
+										{t('Unit')}
+									</FieldLabel>
 									<FieldRow>
 										<Controller
 											name='unit'
 											control={control}
-											rules={{ required: isUnitRequired }}
+											rules={{ required: isUnitRequired ? t('Required_field', { field: t('Unit') }) : false }}
 											render={({ field: { value, onChange } }) => (
 												<AutoCompleteUnit
 													disabled={!!initialValues.unit}
 													haveNone
+													id={unitFieldId}
+													error={errors.unit?.message as string}
+													aria-describedby={`${unitFieldId}-error`}
 													value={value}
 													onChange={onChange}
 													onLoadItems={(list) => {
@@ -378,6 +384,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											)}
 										/>
 									</FieldRow>
+									{errors.unit && (
+										<FieldError aria-live='assertive' id={`${unitFieldId}-error`}>
+											{errors.unit?.message}
+										</FieldError>
+									)}
 								</Field>
 							</>
 						)}
