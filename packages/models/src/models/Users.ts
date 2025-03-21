@@ -990,6 +990,27 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
+	updateStatus(_id: IUser['_id'], status: UserStatus) {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
+		const update = {
+			$set: {
+				status,
+				statusDefault,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
 	updateStatusByAppId(appId: string, status: UserStatus) {
 		const query = {
 			appId,
