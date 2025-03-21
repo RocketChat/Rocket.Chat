@@ -2,10 +2,9 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
-import { useUserId, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useUserId, useTranslation, useRouter, useUserPresence } from '@rocket.chat/ui-contexts';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { usePresence } from '../../../hooks/usePresence';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
@@ -18,7 +17,7 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	const canEdit = useCanEditRoom(room);
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const directUserData = usePresence(directUserId);
+	const directUserData = useUserPresence(directUserId);
 	const router = useRouter();
 
 	const currentRoute = router.getLocationPathname();
