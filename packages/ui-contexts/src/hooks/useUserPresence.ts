@@ -1,16 +1,16 @@
+import type { UserPresence } from '@rocket.chat/core-typings';
 import { useContext, useMemo, useSyncExternalStore } from 'react';
 
-import { UserPresenceContext } from '../contexts/UserPresenceContext';
-import type { UserPresence } from '../lib/presence';
+import { UserPresenceContext } from '../UserPresenceContext';
 
 /**
- * Hook to fetch and subscribe users data
+ * Hook to fetch and subscribe user presence data
  *
  * @param uid - User Id
- * @returns Users data: status, statusText, username, name
+ * @returns status, statusText, username, name
  * @public
  */
-export const useUserData = (uid: string): UserPresence | undefined => {
+export const useUserPresence = (uid: string | undefined): UserPresence | undefined => {
 	const userPresence = useContext(UserPresenceContext);
 
 	const { subscribe, get } = useMemo(

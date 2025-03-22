@@ -8,6 +8,7 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useUserPresence } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,8 +18,6 @@ import MessageRoles from './header/MessageRoles';
 import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
-import { useUserData } from '../../hooks/useUserData';
-import type { UserPresence } from '../../lib/presence';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
 import { useUserCard } from '../../views/room/contexts/UserCardContext';
 
@@ -34,7 +33,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
-	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
