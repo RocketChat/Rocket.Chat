@@ -17,13 +17,15 @@ import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { startAuthentication } from '@simplewebauthn/browser';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -140,6 +142,44 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
 
+	const dispatchToastMessage = useToastMessageDispatch();
+	// const user = useUser();
+
+	// const isEnabled = user?.services?.email2fa?.enabled;
+
+	const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
+
+	const handleLoginWithPasskey = useCallback(async () => {
+		try {
+			const { id, options } = await generateAuthenticationOptionsFn();
+
+			const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
+
+			// await verifyAuthenticationResponseFn(id, authenticationResponse)
+
+			Accounts.callLoginMethod({
+				methodArguments: [{
+					'id': id,
+					'authenticationResponse': authenticationResponse,
+				}],
+				userCallback(error) {
+					if (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+						return
+					}
+					dispatchToastMessage({ type: 'success', message: t('Login_successfully') as string });
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [generateAuthenticationOptionsFn]);
+
+	useEffect(() => {
+		handleLoginWithPasskey().then()
+	}, []);
+	loginFormRef.current?.focus()
 	return (
 		<Form
 			tabIndex={-1}
@@ -169,6 +209,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
+										autoComplete="username webauthn"
 									/>
 								</FieldRow>
 								{errors.usernameOrEmail && (
@@ -219,6 +260,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						<ButtonGroup>
 							<Button loading={loginMutation.isLoading} type='submit' primary>
 								{t('registration.component.login')}
+							</Button>
+							<Button loading={loginMutation.isLoading} onClick={handleLoginWithPasskey}>
+								{t('registration.component.loginWithPasskey')}
 							</Button>
 						</ButtonGroup>
 						<p>

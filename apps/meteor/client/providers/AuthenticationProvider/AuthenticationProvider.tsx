@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { loginServices } from '../../lib/loginServices';
+import { startAuthentication } from '@simplewebauthn/browser';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -71,6 +72,33 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						});
 					});
 			},
+			// loginWithPasskey: (token: string): Promise<void> => {
+			// 	const generateRegistrationOptionsFn = useMethod('passkey:generateRegistrationOptions');
+			// 	const verifyRegistrationResponseFn = useMethod('passkey:verifyRegistrationResponse');
+			// 	new Promise((resolve, reject) => {
+			// 			try {
+			// 				const { id, options } = await generateAuthenticationOptionsFn();
+			//
+			// 				const AuthenticationResponse = await startAuthentication({
+			// 					optionsJSON: options,
+			// 					useBrowserAutofill: true,
+			// 				});
+			//
+			// 				await verifyAuthenticationResponseFn(id, AuthenticationResponse);
+			//
+			// 				dispatchToastMessage({ type: 'success', message: t('Registered_successfully') as string });
+			// 			} catch (error) {
+			// 				dispatchToastMessage({ type: 'error', message: error });
+			// 			}
+			// 			Meteor.loginWithToken(token, (err) => {
+			// 				if (err) {
+			// 					return reject(err);
+			// 				}
+			// 				resolve(undefined);
+			// 			}),
+			// 		}
+			// 	),
+			// },
 
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),

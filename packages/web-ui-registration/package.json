@@ -57,5 +57,8 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"dependencies": {
+		"@simplewebauthn/browser": "^13.1.0"
 	}
 }

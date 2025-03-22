@@ -1,6 +1,6 @@
 import { MeteorError, Team, api } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users, UsersSessions, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
@@ -62,6 +62,7 @@ import {
 	VerifiedRegistrationResponse,
 	verifyRegistrationResponse,
 } from '@simplewebauthn/server';
+import { log } from '/tests/data/api-data';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -865,101 +866,102 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'users.generateRegistrationOptions',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async get() {
-			const options = await generateRegistrationOptions({
-				rpName: 'WebAuthn Demo',
-				rpID: 'localhost',
-				userID: this.user.id,
-				userName: this.user.username,
-				attestationType: 'none',
-				excludeCredentials: this.user.credentials?.map((cred) => ({
-					id: cred.id,
-					type: 'public-key',
-					transports: cred.transports,
-				})),
-				authenticatorSelection: {
-					residentKey: 'discouraged',
-					userVerification: 'preferred',
-				},
-				supportedAlgorithmIDs: [-7, -257],
-			});
-
-			await UsersSessions.updateOne(
-				{ _id: this.userId },
-				{
-					$set: {
-						'challenge': options.challenge,
-					},
-				},
-			)
-
-			return API.v1.success(options);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.verifyRegistrationResponse',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
-			const usersSession = await UsersSessions.findOneById(this.userId)
-			const expectedChallenge = usersSession.challenge;
-
-			let verification: VerifiedRegistrationResponse
-			try {
-				verification = await verifyRegistrationResponse({
-					response: this.bodyParams,
-					expectedChallenge: expectedChallenge,
-					expectedOrigin: 'http://localhost:3000',
-					expectedRPID: 'localhost',
-					requireUserVerification: false,
-				});
-			} catch (e) {
-				const _e = e as Error;
-				return API.v1.failure(_e.message)
-			}
-
-			if (!verification.verified) {
-				return API.v1.failure("verification failed")
-			}
-
-			const user = await Users.findOneById(this.userId);
-			let credentials
-			if (user.credentials !== undefined)
-				credentials = user.credentials
-			else
-				credentials = []
-			const credential = verification.registrationInfo!.credential;
-			const existingCredential = credentials.find((cred) => cred.id === credential.id);
-
-			if (!existingCredential) { // unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
-				// dbCredential.credentialId = credential.id
-				// dbCredential.publicKey = Buffer.from(credential.publicKey).toString('base64url')
-				// dbCredential.counter = credential.counter
-				// dbCredential.transports = body.response.transports
-				// dbCredential.user = user
-
-				// credential.publicKey = new BinData(credential.publicKey).toString('base64url')
-				credentials.push(credential);
-				await Users.updateOne(
-					{ _id: this.userId },
-					{
-						$set: {
-							'credentials': credentials,
-						},
-					},
-				)
-			}
-
-			return API.v1.success();
-		},
-	},
-);
+// API.v1.addRoute(
+// 	'users.generateRegistrationOptions',
+// 	{ authRequired: true, twoFactorRequired: true },
+// 	{
+// 		async get() {
+// 			console.log(1111111111111);
+// 			console.log(this.request.headers);
+// 			console.log(Meteor.server.sessions)
+// 			// const session = Meteor.server.sessions.get(this.request.headers['x-meteor-session']);
+// 			// if (session) {
+// 			// 	session.challenge = challenge;
+// 			// }
+// 			return API.v1.success();
+//
+// 			// const options = await generateRegistrationOptions({
+// 			// 	rpName: 'WebAuthn Demo',
+// 			// 	rpID: 'localhost',
+// 			// 	userID: this.user.id,
+// 			// 	userName: this.user.username,
+// 			// 	attestationType: 'none',
+// 			// 	excludeCredentials: this.user.credentials?.map((cred) => ({
+// 			// 		id: cred.id,
+// 			// 		type: 'public-key',
+// 			// 		transports: cred.transports,
+// 			// 	})),
+// 			// 	authenticatorSelection: {
+// 			// 		residentKey: 'discouraged',
+// 			// 		userVerification: 'preferred',
+// 			// 	},
+// 			// 	supportedAlgorithmIDs: [-7, -257],
+// 			// });
+// 			//
+// 			// await Users.updateOne(
+// 			// 	{ _id: this.userId },
+// 			// 	{
+// 			// 		$set: {
+// 			// 			'challenge': options.challenge,
+// 			// 		},
+// 			// 	},
+// 			// )
+// 			//
+// 			// return API.v1.success(options);
+// 		},
+// 	},
+// );
+//
+// API.v1.addRoute(
+// 	'users.verifyRegistrationResponse',
+// 	{ authRequired: true, twoFactorRequired: true },
+// 	{
+// 		async post() {
+// 			const user = await Users.findOneById(this.userId)
+// 			const expectedChallenge = user.challenge;
+//
+// 			let verification: VerifiedRegistrationResponse
+// 			try {
+// 				verification = await verifyRegistrationResponse({
+// 					response: this.bodyParams,
+// 					expectedChallenge: expectedChallenge,
+// 					expectedOrigin: 'http://localhost:3000',
+// 					expectedRPID: 'localhost',
+// 					requireUserVerification: false,
+// 				});
+// 			} catch (e) {
+// 				const _e = e as Error;
+// 				return API.v1.failure(_e.message)
+// 			}
+//
+// 			if (!verification.verified) {
+// 				return API.v1.failure("verification failed")
+// 			}
+//
+// 			let credentials
+// 			if (user.credentials !== undefined)
+// 				credentials = user.credentials
+// 			else
+// 				credentials = []
+// 			const credential = verification.registrationInfo!.credential;
+// 			const existingCredential = credentials.find((cred) => cred.id === credential.id);
+//
+// 			if (!existingCredential) { // unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
+// 				credentials.push(credential);
+// 				await Users.updateOne(
+// 					{ _id: this.userId },
+// 					{
+// 						$set: {
+// 							'credentials': credentials,
+// 						},
+// 					},
+// 				)
+// 			}
+//
+// 			return API.v1.success();
+// 		},
+// 	},
+// );
 
 // API.v1.addRoute(
 // 	'users.generateAuthenticationOptions',

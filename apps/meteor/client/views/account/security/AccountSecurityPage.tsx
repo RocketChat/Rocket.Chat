@@ -9,7 +9,7 @@ import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
-import Passkeys from './Passkeys';
+import Passkey from './Passkey';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
@@ -37,8 +37,8 @@ const AccountSecurityPage = (): ReactElement => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
 	const showEmailTwoFactor = twoFactorByEmailEnabled && isEmail2FAAllowed;
-	// const passkeysEnabled = useSetting('Passkeys_Enable');
-	const passkeysEnabled = true;
+	// const passkeyEnabled = useSetting('Passkey_Enable'); TODO
+	const passkeyEnabled = true;
 
 	const passwordFormId = useUniqueId();
 
@@ -57,14 +57,13 @@ const AccountSecurityPage = (): ReactElement => {
 						</FormProvider>
 					)}
 					<Accordion>
-						{passkeysEnabled && (
-							<Accordion.Item title={t('Passkeys')}>
-								<Passkeys />
+						{passkeyEnabled && (
+							<Accordion.Item title={t('Passkey')}>
+								<Passkey />
 							</Accordion.Item>
 						)}
 					</Accordion>
 					<Accordion>
-						Preferred 2FA method: xxxxxxxxxx
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<Accordion.Item title={t('Two Factor Authentication')}>
 								{twoFactorTOTP && <TwoFactorTOTP />}
