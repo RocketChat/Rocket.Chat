@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	isDmDeleteProps,
@@ -13,8 +13,10 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { FindOptions } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -337,7 +339,7 @@ API.v1.addRoute(
 				room._id,
 			);
 
-			const options = {
+			const options: FindOptions<IUser> = {
 				projection: {
 					_id: 1,
 					username: 1,
@@ -555,7 +557,7 @@ API.v1.addRoute(
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
 
 			if (!subscription?.open) {
-				await Meteor.callAsync('openRoom', room._id);
+				await openRoom(this.userId, room._id);
 			}
 
 			return API.v1.success();
