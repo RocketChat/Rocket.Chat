@@ -20,12 +20,14 @@ import type { ReactElement } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { startAuthentication } from '@simplewebauthn/browser';
+import { useEndpointAction } from './hooks/useEndpointAction';
+import { PathPattern } from '@rocket.chat/rest-typings';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -147,11 +149,13 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	// const isEnabled = user?.services?.email2fa?.enabled;
 
-	const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
+	// const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
+	const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
 
 	const handleLoginWithPasskey = useCallback(async () => {
 		try {
-			const { id, options } = await generateAuthenticationOptionsFn();
+			// @ts-ignore
+			const { id, options } = await generateAuthenticationOptions();
 
 			const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
 
@@ -174,12 +178,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			console.log(error);
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [generateAuthenticationOptionsFn]);
+	}, [generateAuthenticationOptionsAction]);
 
 	useEffect(() => {
 		handleLoginWithPasskey().then()
 	}, []);
-	loginFormRef.current?.focus()
+
 	return (
 		<Form
 			tabIndex={-1}

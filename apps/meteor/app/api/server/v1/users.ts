@@ -63,6 +63,13 @@ import {
 	verifyRegistrationResponse,
 } from '@simplewebauthn/server';
 import { log } from '/tests/data/api-data';
+import {
+	generateAuthenticationOptions,
+	VerifiedAuthenticationResponse,
+	verifyAuthenticationResponse,
+} from '@simplewebauthn/server/esm';
+import { Random } from 'meteor/random';
+import { passkey } from '/app/passkey/server';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -866,131 +873,166 @@ API.v1.addRoute(
 	},
 );
 
+API.v1.addRoute(
+	'users.generateRegistrationOptions',
+	{ authRequired: true },
+	{
+		async get() {
+			// const options = await generateRegistrationOptions({
+			// 	rpName: 'WebAuthn Demo',
+			// 	rpID: 'localhost',
+			// 	userID: this.user.id,
+			// 	userName: this.user.username,
+			// 	attestationType: 'none',
+			// 	excludeCredentials: this.user.credentials?.map((cred) => ({
+			// 		id: cred.id,
+			// 		type: 'public-key',
+			// 		transports: cred.transports,
+			// 	})),
+			// 	authenticatorSelection: {
+			// 		residentKey: 'discouraged',
+			// 		userVerification: 'preferred',
+			// 	},
+			// 	supportedAlgorithmIDs: [-7, -257],
+			// });
+			//
+			// await Users.updateOne(
+			// 	{ _id: this.userId },
+			// 	{
+			// 		$set: {
+			// 			'challenge': options.challenge,
+			// 		},
+			// 	},
+			// )
+
+			const result = await passkey.generateRegistrationOptions(this.user)
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.verifyRegistrationResponse',
+	{ authRequired: true },
+	{
+		async post() {
+			// const { id, registrationResponse } = this.bodyParams
+			// const expectedChallenge = idAndChallenge[id];
+			// delete idAndChallenge[id]
+			//
+			// let verification: VerifiedRegistrationResponse
+			// try {
+			// 	verification = await verifyRegistrationResponse({
+			// 		response: registrationResponse,
+			// 		expectedChallenge: expectedChallenge,
+			// 		expectedOrigin: 'http://localhost:3000',
+			// 		expectedRPID: 'localhost',
+			// 		requireUserVerification: false,
+			// 	});
+			// } catch (error) {
+			// 	return API.v1.failure(error.message)
+			// }
+			//
+			// if (!verification.verified) {
+			// 	return API.v1.failure("verification failed")
+			// }
+			//
+			// let credentials
+			// const user = await Users.findOneById(this.userId)
+			// if (user.credentials !== undefined)
+			// 	credentials = user.credentials
+			// else
+			// 	credentials = []
+			// const credential = verification.registrationInfo!.credential;
+			// const existingCredential = credentials.find((cred) => cred.id === credential.id);
+			//
+			// if (!existingCredential) { // TODO unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
+			// 	credentials.push(credential);
+			// 	await Users.updateOne({ _id: this.userId },
+			// 		{
+			// 			$set: {
+			// 				'credentials': credentials,
+			// 			},
+			// 		},
+			// 	)
+			// }
+
+			await passkey.verifyRegistrationResponse(this.bodyParams.id, this.bodyParams.registrationResponse)
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.generateAuthenticationOptions',
+	{ authRequired: false },
+	{
+		async post() {
+			// const options = await generateAuthenticationOptions({
+			// 	timeout: 60000,
+			// 	// allowCredentials: user.credentials.map((cred) => ({
+			// 	// 	id: cred.credentialId,
+			// 	// 	type: 'public-key',
+			// 	// 	transports: cred.transports,
+			// 	// })),
+			// 	userVerification: 'preferred',
+			// 	rpID: 'localhost',
+			// });
+			//
+			// let id;
+			// do {
+			// 	id = Random.id()
+			// } while(idAndChallenge[id])
+			// idAndChallenge[id] = options.challenge
+
+			const result = await passkey.generateAuthenticationOptions()
+			return API.v1.success(result);
+		},
+	},
+);
+
 // API.v1.addRoute(
-// 	'users.generateRegistrationOptions',
-// 	{ authRequired: true, twoFactorRequired: true },
+// 	'users.verifyAuthenticationResponse',
+// 	{ authRequired: true },
 // 	{
-// 		async get() {
-// 			console.log(1111111111111);
-// 			console.log(this.request.headers);
-// 			console.log(Meteor.server.sessions)
-// 			// const session = Meteor.server.sessions.get(this.request.headers['x-meteor-session']);
-// 			// if (session) {
-// 			// 	session.challenge = challenge;
+// 		async post() {
+// 			// const {id, authenticationResponse } = this.bodyParams
+// 			// const expectedChallenge = idAndChallenge[id];
+// 			// delete idAndChallenge[id]
+// 			// // user是谁?
+// 			// const user = await Users.findOne({ credentials: { $elemMatch: { id: authenticationResponse.id } } })
+// 			// if (!user)
+// 			// 	throw new Meteor.Error('Authenticator is not registered with this site');
+// 			// const credential = user.credentials.find(cred => cred.id = authenticationResponse.id)
+// 			// credential.publicKey = credential.publicKey.buffer
+// 			//
+// 			// let verification: VerifiedAuthenticationResponse
+// 			// try {
+// 			// 	verification = await verifyAuthenticationResponse({
+// 			// 		response: authenticationResponse,
+// 			// 		expectedChallenge: expectedChallenge,
+// 			// 		expectedOrigin: 'http://localhost:3000',
+// 			// 		expectedRPID: 'localhost',
+// 			// 		credential,
+// 			// 		requireUserVerification: false,
+// 			// 	});
+// 			// } catch (error) {
+// 			// 	throw new Meteor.Error("verification error", error.message);
 // 			// }
-// 			return API.v1.success();
-//
-// 			// const options = await generateRegistrationOptions({
-// 			// 	rpName: 'WebAuthn Demo',
-// 			// 	rpID: 'localhost',
-// 			// 	userID: this.user.id,
-// 			// 	userName: this.user.username,
-// 			// 	attestationType: 'none',
-// 			// 	excludeCredentials: this.user.credentials?.map((cred) => ({
-// 			// 		id: cred.id,
-// 			// 		type: 'public-key',
-// 			// 		transports: cred.transports,
-// 			// 	})),
-// 			// 	authenticatorSelection: {
-// 			// 		residentKey: 'discouraged',
-// 			// 		userVerification: 'preferred',
-// 			// 	},
-// 			// 	supportedAlgorithmIDs: [-7, -257],
-// 			// });
+// 			//
+// 			// if (!verification.verified) {
+// 			// 	throw new Meteor.Error("verification failed");
+// 			// }
 // 			//
 // 			// await Users.updateOne(
-// 			// 	{ _id: this.userId },
+// 			// 	{ _id: user._id, credentials: { $elemMatch: { id: authenticationResponse.id } } },
 // 			// 	{
 // 			// 		$set: {
-// 			// 			'challenge': options.challenge,
+// 			// 			'credentials.$.count': verification.authenticationInfo.newCounter,
 // 			// 		},
 // 			// 	},
 // 			// )
-// 			//
-// 			// return API.v1.success(options);
-// 		},
-// 	},
-// );
 //
-// API.v1.addRoute(
-// 	'users.verifyRegistrationResponse',
-// 	{ authRequired: true, twoFactorRequired: true },
-// 	{
-// 		async post() {
-// 			const user = await Users.findOneById(this.userId)
-// 			const expectedChallenge = user.challenge;
-//
-// 			let verification: VerifiedRegistrationResponse
-// 			try {
-// 				verification = await verifyRegistrationResponse({
-// 					response: this.bodyParams,
-// 					expectedChallenge: expectedChallenge,
-// 					expectedOrigin: 'http://localhost:3000',
-// 					expectedRPID: 'localhost',
-// 					requireUserVerification: false,
-// 				});
-// 			} catch (e) {
-// 				const _e = e as Error;
-// 				return API.v1.failure(_e.message)
-// 			}
-//
-// 			if (!verification.verified) {
-// 				return API.v1.failure("verification failed")
-// 			}
-//
-// 			let credentials
-// 			if (user.credentials !== undefined)
-// 				credentials = user.credentials
-// 			else
-// 				credentials = []
-// 			const credential = verification.registrationInfo!.credential;
-// 			const existingCredential = credentials.find((cred) => cred.id === credential.id);
-//
-// 			if (!existingCredential) { // unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
-// 				credentials.push(credential);
-// 				await Users.updateOne(
-// 					{ _id: this.userId },
-// 					{
-// 						$set: {
-// 							'credentials': credentials,
-// 						},
-// 					},
-// 				)
-// 			}
-//
-// 			return API.v1.success();
-// 		},
-// 	},
-// );
-
-// API.v1.addRoute(
-// 	'users.generateAuthenticationOptions',
-// 	{ authRequired: true, twoFactorRequired: true },
-// 	{
-// 		async post() {
-// 			const { tokenName, bypassTwoFactor } = this.bodyParams;
-// 			if (!tokenName) {
-// 				return API.v1.failure("The 'tokenName' param is required");
-// 			}
-// 			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
-//
-// 			return API.v1.success({ token });
-// 		},
-// 	},
-// );
-//
-// API.v1.addRoute(
-// 	'users.verifyAuthenticationResponse',
-// 	{ authRequired: true, twoFactorRequired: true },
-// 	{
-// 		async post() {
-// 			const { tokenName, bypassTwoFactor } = this.bodyParams;
-// 			if (!tokenName) {
-// 				return API.v1.failure("The 'tokenName' param is required");
-// 			}
-// 			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
-//
-// 			return API.v1.success({ token });
 // 		},
 // 	},
 // );

@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointAction } from '/client/hooks/useEndpointAction';
 import { startRegistration } from '@simplewebauthn/browser';
 
 const Passkey = (props: ComponentProps<typeof Box>) => {
@@ -14,24 +14,24 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 
 	// const isEnabled = user?.services?.email2fa?.enabled;
 
-	const generateRegistrationOptionsFn = useMethod('passkey:generateRegistrationOptions');
-	const verifyRegistrationResponseFn = useMethod('passkey:verifyRegistrationResponse');
-	// const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
-	// const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
+	// const generateRegistrationOptionsFn = useMethod('passkey:generateRegistrationOptions');
+	// const verifyRegistrationResponseFn = useMethod('passkey:verifyRegistrationResponse');
+	const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
+	const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
 
 	const handleCreate = useCallback(async () => {
 		try {
-			const { id, options } = await generateRegistrationOptionsFn();
+			const { id, options } = await generateRegistrationOptionsAction();
 
 			const registrationResponse = await startRegistration({ optionsJSON: options});
 
-			await verifyRegistrationResponseFn(id, registrationResponse)
+			await verifyRegistrationResponseAction(id, registrationResponse)
 
 			dispatchToastMessage({ type: 'success', message: t('Registered_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [generateRegistrationOptionsFn, verifyRegistrationResponseFn]);
+	}, [generateRegistrationOptionsAction, verifyRegistrationResponseAction]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
