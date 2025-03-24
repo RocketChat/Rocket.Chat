@@ -4,6 +4,7 @@ import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
+import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { TypedAction, TypedOptions } from './definition';
 import { honoAdapter } from './middlewares/honoAdapter';
@@ -132,9 +133,16 @@ export class Router<
 
 	private async parseBodyParams(request: HonoRequest, overrideBodyParams: Record<string, any> = {}) {
 		try {
-			const parsedBody = await (request.header('content-type')?.includes('application/json')
-				? request.raw.clone().json()
-				: request.raw.clone().text());
+			let parsedBody = {};
+			const contentType = request.header('content-type');
+
+			if (contentType?.includes('application/json')) {
+				parsedBody = await request.raw.clone().json();
+			} else if (contentType?.includes('multipart/form-data')) {
+				parsedBody = await request.raw.clone().formData();
+			} else {
+				parsedBody = await request.raw.clone().text();
+			}
 			// This is necessary to keep the compatibility with the previous version, otherwise the bodyParams will be an empty string when no content-type is sent
 			if (parsedBody === '') {
 				return { ...overrideBodyParams };
@@ -152,21 +160,7 @@ export class Router<
 	}
 
 	private parseQueryParams(request: HonoRequest) {
-		const removeArraySuffixFromKey = (key: string) => key.replaceAll('[]', '');
-
-		const queryParams = {
-			...Object.keys(request.query())
-				.filter((key) => key.endsWith('[]'))
-				.reduce(
-					(acc, key) => {
-						acc[removeArraySuffixFromKey(key)] = request.queries(key);
-						return acc;
-					},
-					{} as Record<string, any>,
-				),
-			...Object.fromEntries(Object.entries(request.query()).filter(([key]) => !key.endsWith('[]'))),
-		};
-		return queryParams;
+		return request.raw.url.includes('?') ? qs.parse(request.raw.url.split('?')?.[1] || '') : {};
 	}
 
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
