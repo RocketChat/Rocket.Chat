@@ -1,6 +1,7 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
+import { UpdateFilter, UpdateOptions } from 'mongodb';
 
 export class AppRealStorage extends AppMetadataStorage {
 	constructor(private db: typeof Apps) {
@@ -46,7 +47,18 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		await this.db.updateOne({ id: item.id, _id: item._id }, { $set: item });
+		const updateQuery: UpdateFilter<IAppStorageItem> = {
+			$set: item,
+		};
+		
+		// Note: This is really important, since we currently store the permissionsGranted as null if none are present
+		//       in the App's manifest. So, if there was a permissionGranted and it was removed, we must see the app as having
+		//       no permissionsGranted at all (which means default permissions). So we must actively unset the field.
+		if (!item.permissionsGranted) {
+			updateQuery.$unset = { permissionsGranted: 1 };
+		}
+
+		await this.db.updateOne({ id: item.id, _id: item._id }, updateQuery);
 		return this.retrieveOne(item.id);
 	}
 
