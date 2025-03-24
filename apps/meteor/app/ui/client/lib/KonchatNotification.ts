@@ -1,19 +1,13 @@
-import type { INotificationDesktop, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { RoomManager } from '../../../../client/lib/RoomManager';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
-import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
-import { e2e } from '../../../e2e/client';
-import { Subscriptions, Users } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
-import { getUserNotificationsSoundVolume } from '../../../utils/client/getUserNotificationsSoundVolume';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
@@ -139,97 +133,6 @@ class KonchatNotification {
 					});
 			}
 		};
-	}
-
-	public async showDesktop(notification: INotificationDesktop) {
-		if (!notification.payload.rid) {
-			return;
-		}
-
-		if (
-			notification.payload?.rid === RoomManager.opened &&
-			(typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)
-		) {
-			return;
-		}
-
-		if ((Meteor.user() as IUser | null)?.status === 'busy') {
-			return;
-		}
-
-		if (notification.payload?.message?.t === 'e2e') {
-			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
-			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
-			}
-		}
-
-		return getAvatarAsPng(notification.payload?.sender?.username, (avatarAsPng) => {
-			notification.icon = avatarAsPng;
-			return this.notify(notification);
-		});
-	}
-
-	public async newMessage(rid: IRoom['_id'] | undefined) {
-		if ((Meteor.user() as IUser | null)?.status === 'busy') {
-			return;
-		}
-
-		const userId = Meteor.userId();
-		const newMessageNotification = getUserPreference<string>(userId, 'newMessageNotification');
-		const audioVolume = getUserNotificationsSoundVolume(userId);
-
-		if (!rid) {
-			return;
-		}
-
-		const sub = Subscriptions.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
-
-		if (!sub || sub.audioNotificationValue === 'none') {
-			return;
-		}
-
-		try {
-			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				void CustomSounds.play(sub.audioNotificationValue, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-				return;
-			}
-
-			if (newMessageNotification && newMessageNotification !== 'none') {
-				void CustomSounds.play(newMessageNotification, {
-					volume: Number((audioVolume / 100).toPrecision(2)),
-				});
-			}
-		} catch (e) {
-			// do nothing
-		}
-	}
-
-	public newRoom() {
-		Tracker.nonreactive(() => {
-			const uid = Meteor.userId();
-			if (!uid) {
-				return;
-			}
-			const user = Users.findOne(uid, {
-				fields: {
-					'settings.preferences.newRoomNotification': 1,
-					'settings.preferences.notificationsSoundVolume': 1,
-				},
-			});
-			const newRoomNotification = getUserPreference<string>(user, 'newRoomNotification');
-			const audioVolume = getUserNotificationsSoundVolume(user?._id);
-
-			if (!newRoomNotification) {
-				return;
-			}
-
-			void CustomSounds.play(newRoomNotification, {
-				volume: Number((audioVolume / 100).toPrecision(2)),
-			});
-		});
 	}
 }
 

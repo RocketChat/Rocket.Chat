@@ -17,7 +17,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 } from '../../../components/Contextualbar';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -67,7 +67,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 							<MessageListErrorBoundary>
 								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
-										<CustomScrollbars>
+										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}
 												overscan={25}
@@ -104,7 +104,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 													);
 												}}
 											/>
-										</CustomScrollbars>
+										</VirtualizedScrollbars>
 									</Box>
 								</MessageListProvider>
 							</MessageListErrorBoundary>
