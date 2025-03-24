@@ -21,6 +21,19 @@ export class OAuth2Server {
 
 		this.config = config;
 		this.app = express();
+		this.app
+			.use(
+				express.json({
+					limit: '50mb',
+				}),
+			)
+			.use(
+				express.urlencoded({
+					extended: true,
+					limit: '50mb',
+				}),
+			)
+			.use(express.query({}));
 
 		this.oauth = new OAuthServer({
 			model: new Model(this.config),
