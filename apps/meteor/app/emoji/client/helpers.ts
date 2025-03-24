@@ -1,9 +1,28 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import type { EmojiCategory, EmojiItem } from '.';
-import { emoji } from './lib';
+import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
+
+export const createEmojiListByCategorySubscription = (
+	customItemsLimit: number,
+	actualTone: number,
+	recentEmojis: string[],
+	setRecentEmojis: (emojis: string[]) => void,
+): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
+	updateRecent(recentEmojis);
+
+	let emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+
+	const sub = (cb: () => void) =>
+		emojiEmitter.on('updated', () => {
+			emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+			cb();
+		});
+
+	return [sub, () => emojis];
+};
 
 export const createPickerEmojis = (
 	customItemsLimit: number,
@@ -149,6 +168,8 @@ export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecen
 	setRecentEmojis?.(recentEmojis);
 };
 
+// There's no need to dispatchUpdate here. This helper is called before the list is generated.
+// This means that the recent list will always be up to date by the time it is used.
 export const updateRecent = (recentList: string[]) => {
 	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
 	recentList?.forEach((_emoji) => {
@@ -162,6 +183,7 @@ export const replaceEmojiInRecent = ({ oldEmoji, newEmoji }: { oldEmoji: string;
 
 	if (pos !== -1) {
 		recentPkgList[pos] = newEmoji;
+		emoji.dispatchUpdate();
 	}
 };
 

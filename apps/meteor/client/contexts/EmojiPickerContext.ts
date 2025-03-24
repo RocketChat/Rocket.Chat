@@ -16,7 +16,7 @@ type EmojiPickerContextValue = {
 	handlePreview: (emoji: string, name: string) => void;
 	handleRemovePreview: () => void;
 	addRecentEmoji: (emoji: string) => void;
-	getEmojiListsByCategory: () => EmojiByCategory[];
+	emojiListByCategory: EmojiByCategory[];
 	recentEmojis: string[];
 	setRecentEmojis: (emoji: string[]) => void;
 	actualTone: number;
@@ -58,7 +58,7 @@ export const useEmojiPickerData = () => {
 		currentCategory,
 		categoriesPosition,
 		customItemsLimit,
-		getEmojiListsByCategory,
+		emojiListByCategory,
 		quickReactions,
 		recentEmojis,
 		setActualTone,
@@ -69,7 +69,7 @@ export const useEmojiPickerData = () => {
 
 	return {
 		addRecentEmoji,
-		getEmojiListsByCategory,
+		emojiListByCategory,
 		recentEmojis,
 		setRecentEmojis,
 		actualTone,

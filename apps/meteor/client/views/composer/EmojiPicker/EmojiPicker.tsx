@@ -61,7 +61,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		actualTone,
 		currentCategory,
 		categoriesPosition,
-		getEmojiListsByCategory,
+		emojiListByCategory,
 		customItemsLimit,
 		setActualTone,
 		setCustomItemsLimit,
@@ -212,7 +212,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 					{!searching && (
 						<CategoriesResult
 							ref={virtuosoRef}
-							emojiListByCategory={getEmojiListsByCategory()}
+							emojiListByCategory={emojiListByCategory}
 							customItemsLimit={customItemsLimit}
 							handleLoadMore={handleLoadMore}
 							handleSelectEmoji={handleSelectEmoji}
