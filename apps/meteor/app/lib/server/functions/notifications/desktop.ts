@@ -22,6 +22,7 @@ export async function notifyDesktopUser({
 	room,
 	duration,
 	notificationMessage,
+	reaction,
 }: {
 	userId: string;
 	user: AtLeast<IUser, '_id' | 'name' | 'username'>;
@@ -29,14 +30,16 @@ export async function notifyDesktopUser({
 	room: IRoom;
 	duration?: number;
 	notificationMessage: string;
+	reaction: string;
 }): Promise<void> {
 	const { title, text, name } = await roomCoordinator
 		.getRoomDirectives(room.t)
-		.getNotificationDetails(room, user, notificationMessage, userId);
+		.getNotificationDetails(room, user, notificationMessage, userId, reaction);
 
 	const payload = {
 		title: title || '',
 		text,
+		reaction,
 		duration,
 		payload: {
 			_id: '',
@@ -77,6 +80,7 @@ export function shouldNotifyDesktop({
 	hasReplyToThread,
 	roomType,
 	isThread,
+	reaction = '',
 }: {
 	disableAllMessageNotifications: boolean;
 	status: string;
@@ -89,6 +93,7 @@ export function shouldNotifyDesktop({
 	hasReplyToThread: boolean;
 	roomType: string;
 	isThread: boolean;
+	reaction: string;
 }): boolean {
 	if (disableAllMessageNotifications && !desktopNotifications && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
@@ -107,11 +112,16 @@ export function shouldNotifyDesktop({
 		}
 	}
 
+	if (reaction !== '' && desktopNotifications !== 'allAndReaction') {
+		return false;
+	}
+
 	return (
 		(roomType === 'd' ||
 			(!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) ||
 			isHighlighted ||
 			desktopNotifications === 'all' ||
+			desktopNotifications === 'allAndReaction' ||
 			hasMentionToUser) &&
 		(isHighlighted || !isThread || hasReplyToThread)
 	);
