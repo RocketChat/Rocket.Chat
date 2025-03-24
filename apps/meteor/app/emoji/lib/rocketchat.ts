@@ -42,5 +42,4 @@ export type EmojiPackages = {
 					etag?: string;
 			  };
 	};
-	dispatchUpdate: () => void;
 };
