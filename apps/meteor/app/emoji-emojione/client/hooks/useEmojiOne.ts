@@ -11,7 +11,6 @@ const config = getEmojiConfig();
 export const useEmojiOne = () => {
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
-	// Waiting for another PR to be merged that adds this useEffect.
 	useEffect(() => {
 		queueMicrotask(() => {
 			emoji.packages.emojione = config.emojione as any;
@@ -39,6 +38,7 @@ export const useEmojiOne = () => {
 		});
 		emoji.dispatchUpdate();
 	}, []);
+
 	useEffect(() => {
 		if (emoji.packages.emojione) {
 			// Additional settings -- ascii emojis
