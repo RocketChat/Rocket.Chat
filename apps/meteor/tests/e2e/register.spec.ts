@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
+import injectInitialData from './fixtures/inject-initial-data';
 import { Utils, Registration } from './page-objects';
-import { request } from '../data/api-data';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('register', () => {
@@ -143,13 +143,7 @@ test.describe.parallel('register', () => {
 			poUtils = new Utils(page);
 		});
 		test('should not allow registration with existing username', async ({ page }) => {
-			const username = faker.internet.userName();
-			await request.post('/api/v1/users.register').set('Content-Type', 'application/json').send({
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				username,
-				pass: 'any_password',
-			});
+			const { username } = (await injectInitialData()).usersFixtures[0];
 			await test.step('Attempt registration with the same username', async () => {
 				await page.goto('/home');
 				await poRegistration.goToRegister.click();
