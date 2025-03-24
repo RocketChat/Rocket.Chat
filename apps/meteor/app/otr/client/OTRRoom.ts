@@ -1,4 +1,4 @@
-import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
@@ -8,7 +8,6 @@ import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import type { UserPresence } from '../../../client/lib/presence';
 import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';

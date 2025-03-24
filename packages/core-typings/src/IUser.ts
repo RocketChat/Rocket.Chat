@@ -21,6 +21,9 @@ export interface IPersonalAccessToken extends ILoginToken {
 	bypassTwoFactor?: boolean;
 }
 
+export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
+	'type' in token && token.type === 'personalAccessToken';
+
 export interface IUserEmailVerificationToken {
 	token: string;
 	address: string;
@@ -196,6 +199,7 @@ export interface IUser extends IRocketChatRecord {
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
+	// @deprecated
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
@@ -218,6 +222,7 @@ export interface IUser extends IRocketChatRecord {
 	requirePasswordChangeReason?: string;
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
+	__rooms?: string[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -248,6 +253,10 @@ export type IUserDataEvent = {
 export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
+>;
+
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
 export type AvatarUrlObj = {
