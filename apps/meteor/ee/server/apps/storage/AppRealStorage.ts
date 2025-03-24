@@ -1,7 +1,7 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
-import { UpdateFilter, UpdateOptions } from 'mongodb';
+import { UpdateFilter } from 'mongodb';
 
 export class AppRealStorage extends AppMetadataStorage {
 	constructor(private db: typeof Apps) {
