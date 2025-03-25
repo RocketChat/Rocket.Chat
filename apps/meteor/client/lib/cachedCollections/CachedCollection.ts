@@ -36,8 +36,8 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export class CachedCollection<T extends { _id: string }, U = T> {
-	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
+export abstract class CachedCollection<T extends { _id: string }, U = T> {
+	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
 
@@ -47,45 +47,25 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 
 	protected eventType: StreamNames;
 
-	protected version = 18;
+	private readonly version = 18;
 
-	protected userRelated: boolean;
-
-	protected updatedAt = new Date(0);
+	private updatedAt = new Date(0);
 
 	protected log: (...args: any[]) => void;
 
 	private timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType = 'notify-user', userRelated = true }: { name: Name; eventType?: StreamNames; userRelated?: boolean }) {
+	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
 
 		this.name = name;
 		this.eventType = eventType;
-		this.userRelated = userRelated;
 
 		this.log = [getConfig(`debugCachedCollection-${this.name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true')
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
 			: () => undefined;
 
 		CachedCollectionManager.register(this);
-
-		if (!userRelated) {
-			void this.init();
-			return;
-		}
-
-		if (process.env.NODE_ENV === 'test') {
-			return;
-		}
-
-		onLoggedIn(() => {
-			void this.init();
-		});
-
-		Accounts.onLogout(() => {
-			this.ready.set(false);
-		});
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -95,13 +75,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		return `${this.name}-changed`;
 	}
 
-	getToken() {
-		if (this.userRelated === false) {
-			return undefined;
-		}
-
-		return Accounts._storedLoginToken();
-	}
+	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
 		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
@@ -212,7 +186,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		await this.save();
 	}
 
-	save = withDebouncing({ wait: 1000 })(async () => {
+	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
 		const data = this.collection.find().fetch();
 		await localforage.setItem(this.name, {
@@ -224,41 +198,41 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		this.log('saving cache (done)');
 	});
 
-	clearCacheOnLogout() {
-		if (this.userRelated === true) {
-			void this.clearCache();
-		}
-	}
+	abstract clearCacheOnLogout(): void;
 
-	async clearCache() {
+	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
 		this.collection.remove({});
 	}
 
-	async setupListener() {
+	protected async setupListener() {
 		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
-			const newRecord = this.handleReceived(record, action);
-
-			if (!hasId(newRecord)) {
-				return;
-			}
-
-			if (action === 'removed') {
-				this.collection.remove(newRecord._id);
-			} else {
-				const { _id } = newRecord;
-				if (!_id) {
-					return;
-				}
-				this.collection.upsert({ _id } as any, newRecord);
-			}
-			await this.save();
+			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	trySync(delay = 10) {
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
+		const newRecord = this.handleReceived(record, action);
+
+		if (!hasId(newRecord)) {
+			return;
+		}
+
+		if (action === 'removed') {
+			this.collection.remove(newRecord._id);
+		} else {
+			const { _id } = newRecord;
+			if (!_id) {
+				return;
+			}
+			this.collection.upsert({ _id } as any, newRecord);
+		}
+		await this.save();
+	}
+
+	private trySync(delay = 10) {
 		clearTimeout(this.timer);
 		// Wait for an empty queue to load data again and sync
 		this.timer = setTimeout(async () => {
@@ -269,7 +243,7 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 		}, delay);
 	}
 
-	async sync() {
+	protected async sync() {
 		if (!this.updatedAt || this.updatedAt.getTime() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
@@ -368,4 +342,38 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
+}
+
+export class PublicCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+	protected getToken() {
+		return undefined;
+	}
+
+	clearCacheOnLogout() {
+		// do nothing
+	}
+}
+
+export class PrivateCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+	protected getToken() {
+		return Accounts._storedLoginToken();
+	}
+
+	clearCacheOnLogout() {
+		void this.clearCache();
+	}
+
+	listen() {
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
+		onLoggedIn(() => {
+			void this.init();
+		});
+
+		Accounts.onLogout(() => {
+			this.ready.set(false);
+		});
+	}
 }

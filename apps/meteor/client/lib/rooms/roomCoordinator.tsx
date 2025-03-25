@@ -2,7 +2,6 @@ import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@r
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { Rooms, Subscriptions } from '../../../app/models/client';
@@ -219,7 +218,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 					id: name,
 					element: appLayout.wrap(
 						<MainLayout>
-							<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
+							<RoomRoute key={name} extractOpenRoomParams={extractOpenRoomParams} />
 						</MainLayout>,
 					),
 				},

@@ -4,7 +4,7 @@ import { trim } from '../../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../utils/lib/i18n';
 
 export function validateCustomFields(
-	allowedCustomFields: AtLeast<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[],
+	allowedCustomFields: AtLeast<ILivechatCustomField, '_id'>[],
 	customFields: Record<string, string | unknown>,
 	{
 		ignoreAdditionalFields = false,
@@ -16,7 +16,7 @@ export function validateCustomFields(
 	for (const cf of allowedCustomFields) {
 		if (!customFields.hasOwnProperty(cf._id)) {
 			if (cf.required && !ignoreValidationErrors) {
-				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
 			}
 			continue;
 		}
@@ -24,7 +24,7 @@ export function validateCustomFields(
 
 		if (!cfValue || typeof cfValue !== 'string') {
 			if (cf.required && !ignoreValidationErrors) {
-				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
 			}
 			continue;
 		}
@@ -36,7 +36,7 @@ export function validateCustomFields(
 					continue;
 				}
 
-				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label || cf._id }));
 			}
 		}
 

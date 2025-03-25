@@ -2,13 +2,11 @@ import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typin
 import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUserData } from '../../../../hooks/useUserData';
-import type { UserPresence } from '../../../../lib/presence';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
@@ -32,7 +30,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
-	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 
 	const { t } = useTranslation();

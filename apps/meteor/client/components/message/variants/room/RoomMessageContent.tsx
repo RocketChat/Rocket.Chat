@@ -2,12 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
-import { useUserData } from '../../../../hooks/useUserData';
-import type { UserPresence } from '../../../../lib/presence';
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
@@ -38,7 +36,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
-	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 	const chat = useChat();
 	const t = useTranslation();

@@ -1,9 +1,8 @@
 import { Button, Field, FieldHint, FieldLabel, FieldRow, Modal } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type VoipTransferModalProps = {
@@ -17,18 +16,16 @@ const VoipTransferModal = ({ extension, isLoading = false, onCancel, onConfirm }
 	const { t } = useTranslation();
 	const [username, setTransferTo] = useState('');
 	const user = useUser();
-	const transferToId = useUniqueId();
-	const modalId = useUniqueId();
+	const transferToId = useId();
+	const modalId = useId();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
-	const { data: targetUser, isInitialLoading: isTargetInfoLoading } = useQuery(
-		['/v1/users.info', username],
-		() => getUserInfo({ username }),
-		{
-			enabled: Boolean(username),
-			select: (data) => data?.user || {},
-		},
-	);
+	const { data: targetUser, isLoading: isTargetInfoLoading } = useQuery({
+		queryKey: ['/v1/users.info', username],
+		queryFn: () => getUserInfo({ username }),
+		enabled: Boolean(username),
+		select: (data) => data?.user || {},
+	});
 
 	const handleConfirm = () => {
 		if (!targetUser?.freeSwitchExtension) {

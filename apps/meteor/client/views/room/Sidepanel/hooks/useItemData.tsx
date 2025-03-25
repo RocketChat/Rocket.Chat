@@ -1,6 +1,6 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
@@ -10,7 +10,7 @@ import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 
 export const useItemData = (
-	room: ISubscription & IRoom,
+	room: SubscriptionWithRoom,
 	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
 	const { t } = useTranslation();
@@ -30,7 +30,7 @@ export const useItemData = (
 			<>
 				{showUnread && (
 					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
-						{unreadCount.total}
+						<span aria-hidden>{unreadCount.total}</span>
 					</SidebarItemBadge>
 				)}
 			</>
@@ -48,7 +48,7 @@ export const useItemData = (
 			time,
 			badges,
 			avatar: AvatarTemplate && <AvatarTemplate {...room} />,
-			subtitle: message,
+			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 		}),
 		[AvatarTemplate, badges, highlighted, icon, message, openedRoom, room, time],
 	);

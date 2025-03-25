@@ -1,9 +1,9 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,7 +17,6 @@ import {
 import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { usePresence } from '../../../../hooks/usePresence';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
@@ -32,7 +31,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 
 	const { name: clientName, os, version: rcVersion } = device || {};
 	const { username, name } = _user || {};
-	const userPresence = usePresence(userId);
+	const userPresence = useUserPresence(userId);
 
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 

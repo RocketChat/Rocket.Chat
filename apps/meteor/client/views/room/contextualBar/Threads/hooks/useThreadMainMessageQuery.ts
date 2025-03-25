@@ -1,4 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { FieldExpression, Query } from '@rocket.chat/mongo-adapter';
+import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -6,8 +8,6 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
-import type { FieldExpression, Query } from '../../../../../lib/minimongo';
-import { createFilterFromQuery } from '../../../../../lib/minimongo';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 
@@ -94,31 +94,35 @@ export const useThreadMainMessageQuery = (
 		};
 	}, [tmid]);
 
-	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const mainMessage = await getMessage(tmid);
+	return useQuery({
+		queryKey: ['rooms', room._id, 'threads', tmid, 'main-message'] as const,
 
-		if (!mainMessage) {
-			throw new Error('Invalid main message');
-		}
+		queryFn: async ({ queryKey }) => {
+			const mainMessage = await getMessage(tmid);
 
-		const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
-			queryClient.invalidateQueries(queryKey, { exact: true });
-		});
+			if (!mainMessage) {
+				throw new Error('Invalid main message');
+			}
 
-		unsubscribeRef.current =
-			unsubscribeRef.current ||
-			subscribeToMessage(mainMessage, {
-				onMutate: async (message) => {
-					const msg = await onClientMessageReceived(message);
-					queryClient.setQueryData(queryKey, () => msg);
-					debouncedInvalidate();
-				},
-				onDelete: () => {
-					onDelete?.();
-					queryClient.invalidateQueries(queryKey, { exact: true });
-				},
+			const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
+				queryClient.invalidateQueries({ queryKey, exact: true });
 			});
 
-		return mainMessage;
+			unsubscribeRef.current =
+				unsubscribeRef.current ||
+				subscribeToMessage(mainMessage, {
+					onMutate: async (message) => {
+						const msg = await onClientMessageReceived(message);
+						queryClient.setQueryData(queryKey, () => msg);
+						debouncedInvalidate();
+					},
+					onDelete: () => {
+						onDelete?.();
+						queryClient.invalidateQueries({ queryKey, exact: true });
+					},
+				});
+
+			return mainMessage;
+		},
 	});
 };

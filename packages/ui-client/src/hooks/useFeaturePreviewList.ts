@@ -2,7 +2,6 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export type FeaturesAvailable =
 	| 'quickReactions'
-	| 'navigationBar'
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
@@ -33,14 +32,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		imageUrl: 'images/featurePreview/quick-reactions.png',
 		value: false,
 		enabled: true,
-	},
-	{
-		name: 'navigationBar',
-		i18n: 'Navigation_bar',
-		description: 'Navigation_bar_description',
-		group: 'Navigation',
-		value: false,
-		enabled: false,
 	},
 	{
 		name: 'enable-timestamp-message-parser',
@@ -97,14 +88,20 @@ export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
 	return setting;
 };
 
-export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
+export const useFeaturePreviewList = (featuresList: FeaturePreviewProps[]) => {
 	const unseenFeatures = enabledDefaultFeatures.filter(
 		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
-		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
-		return { ...defaultFeature, ...features };
+		const feature = featuresList?.find((feature) => feature.name === defaultFeature.name);
+		// overwrite enableQuery and disabled with default value to avoid a migration to remove this from the DB
+		// payload on save now only have `name` and `value`
+		if (feature) {
+			feature.enableQuery = defaultFeature.enableQuery;
+			feature.disabled = defaultFeature.disabled;
+		}
+		return { ...defaultFeature, ...feature };
 	});
 
 	return { unseenFeatures, features: mergedFeatures };

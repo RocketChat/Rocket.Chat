@@ -14,8 +14,7 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -23,12 +22,15 @@ import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
-const CloseChatModal = ({
-	department,
-	visitorEmail,
-	onCancel,
-	onConfirm,
-}: {
+type CloseChatModalFormData = {
+	comment: string;
+	tags: string[];
+	transcriptPDF: boolean;
+	transcriptEmail: boolean;
+	subject: string;
+};
+
+type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
@@ -38,7 +40,9 @@ const CloseChatModal = ({
 		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 		requestData?: { email: string; subject: string },
 	) => Promise<void>;
-}): ReactElement => {
+};
+
+const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps) => {
 	const t = useTranslation();
 
 	const {
@@ -49,7 +53,7 @@ const CloseChatModal = ({
 		setFocus,
 		setValue,
 		watch,
-	} = useForm();
+	} = useForm<CloseChatModalFormData>();
 
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
 	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
@@ -76,7 +80,7 @@ const CloseChatModal = ({
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
 				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,

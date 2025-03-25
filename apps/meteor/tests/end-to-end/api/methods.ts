@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -7,6 +7,7 @@ import { after, before, describe, it } from 'mocha';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -2082,6 +2083,32 @@ describe('Meteor.methods', () => {
 				})
 				.end(done);
 		});
+
+		it('should accept message sent by js.SDK', (done) => {
+			void request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ rid, msg: 'test message', bot: { i: 'js.SDK' } }],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					const data = JSON.parse(res.body.message);
+
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('bot').that.is.an('object');
+					expect(data.result.bot).to.have.a.property('i', 'js.SDK');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@updateMessage]', () => {
@@ -2539,6 +2566,216 @@ describe('Meteor.methods', () => {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[@getRoomByTypeAndName]', () => {
+		let testUser: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		let dmId: IRoom['_id'];
+		let room: IRoom;
+
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		before(async () => {
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.channel;
+		});
+
+		before('create direct conversation with user', (done) => {
+			void request
+				.post(methodCall('createDirectMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmId = result.result.rid;
+					done();
+				});
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'c', roomId: room._id }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+			]),
+		);
+
+		it("should throw an error if the user isn't logged in", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.be.equal('You must be logged in to do this.');
+					done();
+				});
+		});
+
+		it("should throw an error if name isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', null],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if type isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: [null, dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if the user doesn't have access to the room", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-no-permission');
+					done();
+				});
+		});
+
+		it("should throw an error if the room doesn't exist", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', 'testId'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it('should return the room object for a Public Channel if anonymous read is enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['c', room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				});
+
+			expect(res.body.success).to.equal(true);
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result.name).to.equal(room.name);
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
+
+		it('should return the room object for a DM', (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body.success).to.equal(true);
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse.result._id).to.equal(dmId);
+					done();
+				});
 		});
 	});
 
@@ -3688,6 +3925,48 @@ describe('Meteor.methods', () => {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					expect(res.body).to.have.a.property('success', true);
+				});
+		});
+	});
+
+	describe('[@joinRoom]', async () => {
+		let room: IOmnichannelRoom;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			const visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+
+			user = await createUser();
+			await createAgent(user.username);
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => Promise.all([deleteUser(user)]));
+
+		it('should not allow an agent to join a closed livechat room', async () => {
+			await request
+				.post(methodCall('joinRoom'))
+				.set(userCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'joinRoom',
+						params: [room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'room-closed');
 				});
 		});
 	});

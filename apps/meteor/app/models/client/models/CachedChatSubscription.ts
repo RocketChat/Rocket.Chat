@@ -3,7 +3,7 @@ import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-ty
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedChatRoom } from './CachedChatRoom';
-import { CachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -12,9 +12,12 @@ declare module '@rocket.chat/core-typings' {
 	}
 }
 
-class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
+class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
-		super({ name: 'subscriptions' });
+		super({
+			name: 'subscriptions',
+			eventType: 'notify-user',
+		});
 	}
 
 	protected handleLoadFromServer(record: ISubscription) {
@@ -123,6 +126,10 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 			federated: room?.federated,
 			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 		};
+	}
+
+	async upsertSubscription(record: ISubscription): Promise<void> {
+		return this.handleRecordEvent('changed', record);
 	}
 
 	protected deserializeFromCache(record: unknown) {

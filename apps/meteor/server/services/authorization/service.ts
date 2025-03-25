@@ -5,6 +5,7 @@ import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/mo
 import mem from 'mem';
 
 import { canAccessRoom } from './canAccessRoom';
+import { canReadRoom } from './canReadRoom';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
@@ -80,6 +81,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
+	async canReadRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
+		return canReadRoom(...args);
+	}
+
 	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(rid, {
 			projection: {
@@ -121,7 +126,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const options = {
+			const users = await Users.findUsersInRoles(roleIds, null, {
 				sort: {
 					username: 1,
 				},
@@ -129,9 +134,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 					username: 1,
 					roles: 1,
 				},
-			};
-
-			const users = await Users.findUsersInRoles(roleIds, null, options).toArray();
+			}).toArray();
 
 			return users.map((user) => ({
 				...user,

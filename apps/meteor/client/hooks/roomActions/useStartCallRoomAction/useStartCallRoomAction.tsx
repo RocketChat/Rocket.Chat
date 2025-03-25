@@ -1,5 +1,5 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import useVideoConfMenuOptions from './useVideoConfMenuOptions';
 import useVoipMenuOptions from './useVoipMenuOptions';
@@ -11,7 +11,7 @@ export const useStartCallRoomAction = () => {
 	const voipCall = useVoipMenuOptions();
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!videoCall.allowed && !voipCall.allowed) {
+		if (!videoCall.allowed && !voipCall?.allowed) {
 			return undefined;
 		}
 
@@ -19,10 +19,10 @@ export const useStartCallRoomAction = () => {
 			id: 'start-call',
 			title: 'Call',
 			icon: 'phone',
-			groups: [...videoCall.groups, ...voipCall.groups],
-			disabled: videoCall.disabled && voipCall.disabled,
+			groups: [...videoCall.groups, ...(voipCall?.groups ?? [])],
+			disabled: videoCall.disabled && (voipCall?.disabled ?? true),
 			full: true,
-			order: Math.max(voipCall.order, videoCall.order),
+			order: Math.max(voipCall?.order ?? Number.NEGATIVE_INFINITY, videoCall.order),
 			featured: true,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
@@ -30,7 +30,7 @@ export const useStartCallRoomAction = () => {
 					key={id}
 					title={title}
 					disabled={disabled}
-					items={[...voipCall.items, ...videoCall.items]}
+					items={[...(voipCall?.allowed ? voipCall.items : []), ...videoCall.items]}
 					className={className}
 					placement='bottom-start'
 					icon={icon}

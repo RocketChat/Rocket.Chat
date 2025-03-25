@@ -3,7 +3,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { loginServices } from '../../lib/loginServices';

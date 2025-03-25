@@ -1,32 +1,24 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '@rocket.chat/ui-client';
-import type { MouseEvent, MutableRefObject } from 'react';
-import React from 'react';
+import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
 import { CUSTOM_CATEGORY } from '../../../../app/emoji/client';
-import type { EmojiByCategory, EmojiCategoryPosition } from '../../../../app/emoji/client';
+import type { EmojiByCategory } from '../../../../app/emoji/client';
+import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 
-type EmojiCategoryRowProps = EmojiByCategory & {
+type EmojiCategoryRowProps = Omit<EmojiByCategory, 'key'> & {
 	categoryKey: EmojiByCategory['key'];
-	categoriesPosition: MutableRefObject<EmojiCategoryPosition[]>;
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (e: MouseEvent<HTMLElement>) => void;
 };
 
-const EmojiCategoryRow = ({
-	categoryKey,
-	categoriesPosition,
-	i18n,
-	emojis,
-	customItemsLimit,
-	handleLoadMore,
-	handleSelectEmoji,
-}: EmojiCategoryRowProps) => {
+const EmojiCategoryRow = ({ categoryKey, i18n, emojis, customItemsLimit, handleLoadMore, handleSelectEmoji }: EmojiCategoryRowProps) => {
 	const { t } = useTranslation();
+	const { categoriesPosition } = useEmojiPickerData();
 
 	const categoryRowStyle = css`
 		button {
@@ -45,8 +37,12 @@ const EmojiCategoryRow = ({
 				fontScale='c1'
 				mbe={12}
 				id={`emoji-list-category-${categoryKey}`}
-				ref={(element) => {
-					categoriesPosition.current.push({ el: element, top: element?.offsetTop });
+				ref={(element: HTMLElement) => {
+					if (categoriesPosition.current.find(({ key }) => key === categoryKey)) {
+						return;
+					}
+
+					categoriesPosition.current.push({ key: categoryKey, top: element?.offsetTop });
 					return element;
 				}}
 			>
@@ -77,4 +73,4 @@ const EmojiCategoryRow = ({
 	);
 };
 
-export default EmojiCategoryRow;
+export default memo(EmojiCategoryRow);

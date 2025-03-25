@@ -40,5 +40,13 @@ export type ValueOfUnion<T, K extends KeyOfEach<T>> = T extends any ? (K extends
 export type ValueOfOptional<T, K extends KeyOfEach<T>> = T extends undefined ? undefined : T extends object ? ValueOfUnion<T, K> : null;
 
 export type DeepPartial<T> = {
-	[P in keyof T]?: T[P] extends (infer U)[] ? DeepPartial<U>[] : T[P] extends object | undefined ? DeepPartial<T[P]> : T[P];
+	[P in keyof T]?: T[P] extends (infer U)[] | undefined
+		? DeepPartial<U>[]
+		: T[P] extends Date | undefined
+			? T[P]
+			: T[P] extends object | undefined
+				? DeepPartial<T[P]>
+				: T[P];
 };
+
+export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;

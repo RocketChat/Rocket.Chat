@@ -5,7 +5,6 @@ import {
 	Upload as uploadService,
 	Message as messageService,
 	Room as roomService,
-	QueueWorker as queueService,
 	Translation as translationService,
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
@@ -17,8 +16,8 @@ import type {
 	IUpload,
 	ILivechatVisitor,
 	ILivechatAgent,
-	IOmnichannelRoom,
 	IOmnichannelSystemMessage,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
@@ -59,14 +58,14 @@ export type MessageData = Pick<
 	| 'slaData'
 	| 'priorityData'
 > & {
-	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
+	files: ({ name?: string; buffer?: Buffer; extension?: string } | undefined)[];
 	quotes: (Quote | undefined)[];
 };
 
 type WorkerData = {
 	siteName: string;
 	visitor: Pick<ILivechatVisitor, '_id' | 'username' | 'name' | 'visitorEmails'> | null;
-	agent: ILivechatAgent | undefined;
+	agent: ILivechatAgent | undefined | null;
 	closedAt?: Date;
 	messages: MessageData[];
 	timezone: string;
@@ -103,7 +102,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.log = new loggerClass('OmnichannelTranscript');
 	}
 
-	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
+	async getTimezone(user?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
 		const reportingTimezone = await settingsService.get('Default_Timezone_For_Reporting');
 
 		switch (reportingTimezone) {
@@ -141,50 +140,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				comment: 1,
 				priorityData: 1,
 				slaData: 1,
+				rid: 1,
 			},
 		}).toArray();
-	}
-
-	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
-		this.log.info(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
-		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'>>(details.rid, {
-			projection: { _id: 1, open: 1, v: 1, pdfTranscriptRequested: 1 },
-		});
-
-		if (!room) {
-			throw new Error('room-not-found');
-		}
-
-		if (room.open) {
-			throw new Error('room-still-open');
-		}
-
-		if (!room.v) {
-			throw new Error('improper-room-state');
-		}
-
-		// Don't request a transcript if there's already one requested :)
-		if (room.pdfTranscriptRequested) {
-			// TODO: use logger
-			this.log.info(`Transcript already requested for room ${details.rid}`);
-			return;
-		}
-
-		await LivechatRooms.setTranscriptRequestedPdfById(details.rid);
-
-		// Make the whole process sync when running on test mode
-		// This will prevent the usage of timeouts on the tests of this functionality :)
-		if (process.env.TEST_MODE) {
-			await this.workOnPdf({ details: { ...details, from: this.name } });
-			return;
-		}
-
-		// Even when processing is done "in-house", we still need to queue the work
-		// to avoid blocking the request
-		this.log.info(`Queuing work for room ${details.rid}`);
-		await queueService.queueWork('work', `${this.name}.workOnPdf`, {
-			details: { ...details, from: this.name },
-		});
 	}
 
 	private getQuotesFromMessage(message: IMessage): Quote[] {
@@ -273,14 +231,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!isFileImageAttachment(attachment)) {
 					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 
 				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
@@ -292,7 +250,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					if (!fileId) {
 						this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 						// ignore attachments without file
-						files.push({ name: attachment.title, buffer: null });
+						files.push({ name: attachment.title });
 						continue;
 					}
 					file = { _id: fileId, name: attachment.title || 'upload' };
@@ -301,7 +259,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!file) {
 					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// ignore attachments without file
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 
@@ -309,7 +267,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!uploadedFile) {
 					this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 					// ignore attachments without file
-					files.push({ name: file.name, buffer: null });
+					files.push({ name: file.name });
 					continue;
 				}
 
@@ -319,7 +277,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				} catch (e: unknown) {
 					this.log.error(`Failed to get file ${file._id}`, e);
 					// Push empty buffer so parser processes this as "unsupported file"
-					files.push({ name: file.name, buffer: null });
+					files.push({ name: file.name });
 
 					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
 					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
@@ -519,7 +477,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					buffer,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
 							data.visitor?.name || data.visitor?.username || 'Visitor'
 						}.pdf`,
 						type: 'application/pdf',

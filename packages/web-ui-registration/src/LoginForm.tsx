@@ -11,13 +11,12 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -77,7 +76,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	});
 
 	const { t } = useTranslation();
-	const formLabelId = useUniqueId();
+	const formLabelId = useId();
 	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrorState>(undefined);
 	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset', true);
 	const login = useLoginWithPassword();
@@ -106,8 +105,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		},
 	});
 
-	const usernameId = useUniqueId();
-	const passwordId = useUniqueId();
+	const usernameId = useId();
+	const passwordId = useId();
 	const loginFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -198,7 +197,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			{showFormLogin && (
 				<>
 					<Form.Container>
-						<FieldGroup disabled={loginMutation.isLoading}>
+						<FieldGroup disabled={loginMutation.isPending}>
 							<Field>
 								<FieldLabel required htmlFor={usernameId}>
 									{t('registration.component.form.emailOrUsername')}
@@ -258,11 +257,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								)}
 							</Field>
 						</FieldGroup>
-						{errorOnSubmit && <FieldGroup disabled={loginMutation.isLoading}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
+						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
 						<ButtonGroup>
-							<Button loading={loginMutation.isLoading} type='submit' primary>
+							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
 							<Button loading={loginMutation.isLoading} onClick={handleLoginWithPasskey}>
@@ -277,7 +276,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</Form.Footer>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isLoading} setError={setErrorOnSubmit} />
+			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />
 		</Form>
 	);
 };

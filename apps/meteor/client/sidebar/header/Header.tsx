@@ -2,7 +2,7 @@ import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SidebarHeaderToolbar from './SidebarHeaderToolbar';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
@@ -14,12 +14,6 @@ import Home from './actions/Home';
 import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
-
-/**
- * @deprecated Feature preview
- * @description Should be removed when the feature became part of the core
- * @memberof navigationBar
- */
 
 const Header = (): ReactElement => {
 	const t = useTranslation();

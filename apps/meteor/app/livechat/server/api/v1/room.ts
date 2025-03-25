@@ -24,7 +24,10 @@ import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivecha
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { closeRoom } from '../../lib/closeRoom';
 import type { CloseRoomParams } from '../../lib/localTypes';
+import { livechatLogger } from '../../lib/logger';
+import { createRoom, saveRoomInfo } from '../../lib/rooms';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -80,7 +83,7 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({
+				const newRoom = await createRoom({
 					visitor: guest,
 					roomInfo,
 					agent,
@@ -179,7 +182,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await LivechatTyped.closeRoom({ visitor, room, comment, options });
+			await closeRoom({ visitor, room, comment, options });
 
 			return API.v1.success({ rid, comment });
 		},
@@ -195,9 +198,22 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail, forceClose } = this.bodyParams;
 
-			await closeLivechatRoom(this.user, rid, { comment, tags, generateTranscriptPdf, transcriptEmail });
+			const allowForceClose = rcSettings.get<boolean>('Omnichannel_allow_force_close_conversations');
+			const isForceClosing = allowForceClose && forceClose;
+
+			if (isForceClosing) {
+				livechatLogger.warn({ msg: 'Force closing a conversation', user: this.userId, room: rid });
+			}
+
+			await closeLivechatRoom(this.user, rid, {
+				comment,
+				tags,
+				generateTranscriptPdf,
+				transcriptEmail,
+				forceClose: isForceClosing,
+			});
 
 			return API.v1.success();
 		},
@@ -386,7 +402,7 @@ API.v1.addRoute(
 				(!room.servedBy || room.servedBy._id !== this.userId) &&
 				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (room.sms) {
@@ -394,7 +410,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

@@ -1,9 +1,9 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"jsx": "react",
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*"],
+	"exclude": ["./src/**/*.spec.ts"]
 }

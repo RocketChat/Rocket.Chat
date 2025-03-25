@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import InviteUsers from './InviteUsers';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -37,34 +37,47 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	const format = useFormatDateAndTime();
 	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 
-	const handleEdit = useMutableCallback(() => setInviteState((prevState) => ({ ...prevState, isEditing: true })));
-	const handleBackToLink = useMutableCallback(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
+	const handleEdit = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: true })));
+	const handleBackToLink = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
 
-	const linkExpirationText = useMutableCallback((data) => {
-		if (!data) {
-			return '';
-		}
-
-		if (data.expires) {
-			const expiration = new Date(data.expires);
-			if (data.maxUses) {
-				const usesLeft = data.maxUses - data.uses;
-				return t('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', {
-					date: format(expiration),
-					usesLeft,
-				});
+	const linkExpirationText = useEffectEvent(
+		(data: {
+			days: number;
+			maxUses: number;
+			rid: string;
+			userId: string;
+			createdAt: string;
+			expires: string | null;
+			uses: number;
+			url: string;
+			_id: string;
+			_updatedAt: string;
+		}) => {
+			if (!data) {
+				return '';
 			}
 
-			return t('Your_invite_link_will_expire_on__date__', { date: format(expiration) });
-		}
+			if (data.expires) {
+				const expiration = new Date(data.expires);
+				if (data.maxUses) {
+					const usesLeft = data.maxUses - data.uses;
+					return t('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', {
+						date: format(expiration),
+						usesLeft,
+					});
+				}
 
-		if (data.maxUses) {
-			const usesLeft = data.maxUses - data.uses;
-			return t('Your_invite_link_will_expire_after__usesLeft__uses', { usesLeft });
-		}
+				return t('Your_invite_link_will_expire_on__date__', { date: format(expiration) });
+			}
 
-		return t('Your_invite_link_will_never_expire');
-	});
+			if (data.maxUses) {
+				const usesLeft = data.maxUses - data.uses;
+				return t('Your_invite_link_will_expire_after__usesLeft__uses', { usesLeft });
+			}
+
+			return t('Your_invite_link_will_never_expire');
+		},
+	);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -78,7 +91,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		})();
 	}, [dispatchToastMessage, t, findOrCreateInvite, linkExpirationText, rid, days, maxUses]);
 
-	const handleGenerateLink = useMutableCallback((daysAndMaxUses) => {
+	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
 	});
 

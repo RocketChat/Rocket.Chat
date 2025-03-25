@@ -232,7 +232,7 @@ export class IMAPInterceptor extends EventEmitter {
 
 		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
 		// Active filter is just in case :)
-		const { value } = await EmailInbox.setDisabledById(this.inboxId);
+		const value = await EmailInbox.setDisabledById(this.inboxId);
 
 		if (value) {
 			void notifyOnEmailInboxChanged(value, 'updated');

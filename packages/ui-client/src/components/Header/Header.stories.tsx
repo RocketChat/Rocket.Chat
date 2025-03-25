@@ -3,6 +3,7 @@ import { Avatar } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
+import { ComponentType } from 'react';
 
 import {
 	Header,
@@ -25,11 +26,11 @@ export default {
 	title: 'Components/Header',
 	component: Header,
 	subcomponents: {
-		HeaderToolbar,
-		HeaderToolbarAction,
-		HeaderAvatar,
-		HeaderContent,
-		HeaderContentRow,
+		HeaderToolbar: HeaderToolbar as ComponentType<any>,
+		HeaderToolbarAction: HeaderToolbarAction as ComponentType<any>,
+		HeaderAvatar: HeaderAvatar as ComponentType<any>,
+		HeaderContent: HeaderContent as ComponentType<any>,
+		HeaderContentRow: HeaderContentRow as ComponentType<any>,
 	},
 	parameters: {
 		layout: 'fullscreen',
@@ -39,7 +40,6 @@ export default {
 			<SettingsContext.Provider
 				value={{
 					hasPrivateAccess: true,
-					isLoading: false,
 					querySetting: (_id) => [
 						() => () => undefined,
 						() => ({

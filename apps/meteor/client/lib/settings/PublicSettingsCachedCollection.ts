@@ -1,13 +1,12 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { CachedCollection } from '../cachedCollections';
+import { PublicCachedCollection } from '../cachedCollections/CachedCollection';
 
-class PublicSettingsCachedCollection extends CachedCollection<ISetting> {
+class PublicSettingsCachedCollection extends PublicCachedCollection<ISetting> {
 	constructor() {
 		super({
 			name: 'public-settings',
 			eventType: 'notify-all',
-			userRelated: false,
 		});
 	}
 }

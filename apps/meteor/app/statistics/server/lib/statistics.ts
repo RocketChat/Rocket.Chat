@@ -30,6 +30,7 @@ import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { getAppsStatistics } from './getAppsStatistics';
+import { getContactVerificationStatistics } from './getContactVerificationStatistics';
 import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -108,14 +109,14 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = await Users.col.countDocuments({});
+		statistics.totalUsers = await Users.estimatedDocumentCount();
 		statistics.activeUsers = await Users.getActiveLocalUserCount();
 		statistics.activeGuests = await Users.getActiveLocalGuestCount();
-		statistics.nonActiveUsers = await Users.col.countDocuments({ active: false });
-		statistics.appUsers = await Users.col.countDocuments({ type: 'app' });
-		statistics.onlineUsers = await Users.col.countDocuments({ status: UserStatus.ONLINE });
-		statistics.awayUsers = await Users.col.countDocuments({ status: UserStatus.AWAY });
-		statistics.busyUsers = await Users.col.countDocuments({ status: UserStatus.BUSY });
+		statistics.nonActiveUsers = await Users.countDocuments({ active: false });
+		statistics.appUsers = await Users.countDocuments({ type: 'app' });
+		statistics.onlineUsers = await Users.countDocuments({ status: UserStatus.ONLINE });
+		statistics.awayUsers = await Users.countDocuments({ status: UserStatus.AWAY });
+		statistics.busyUsers = await Users.countDocuments({ status: UserStatus.BUSY });
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
 		statsPms.push(
@@ -125,7 +126,7 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = await Rooms.col.countDocuments({});
+		statistics.totalRooms = await Rooms.estimatedDocumentCount();
 		statistics.totalChannels = await Rooms.countByType('c');
 		statistics.totalPrivateGroups = await Rooms.countByType('p');
 		statistics.totalDirect = await Rooms.countByType('d');
@@ -189,7 +190,7 @@ export const statistics = {
 		);
 
 		// Number of custom fields
-		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.countDocuments({})));
+		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.estimatedDocumentCount()));
 
 		// Number of public custom fields
 		statsPms.push((statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true })));
@@ -255,7 +256,7 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			Users.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+			Users.countDocuments({ extension: { $exists: true } }).then((count) => {
 				statistics.voipExtensions = count;
 			}),
 		);
@@ -312,25 +313,25 @@ export const statistics = {
 
 		// Message statistics
 		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalChannelDiscussionsMessages = await channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+		const totalChannelDiscussionsMessages = channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalChannelMessages =
-			(await channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
+			channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			}, 0)) - totalChannelDiscussionsMessages;
+			}, 0) - totalChannelDiscussionsMessages;
 
 		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalPrivateGroupsDiscussionsMessages = await privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
+		const totalPrivateGroupsDiscussionsMessages = privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
 			num: number,
 			room: IRoom,
 		) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalPrivateGroupMessages =
-			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
+			privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
-			}, 0)) - totalPrivateGroupsDiscussionsMessages;
+			}, 0) - totalPrivateGroupsDiscussionsMessages;
 
 		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
 
@@ -393,7 +394,7 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 		statsPms.push(
-			Uploads.col.estimatedDocumentCount().then((count) => {
+			Uploads.estimatedDocumentCount().then((count) => {
 				statistics.uploadsTotal = count;
 			}),
 		);
@@ -416,7 +417,7 @@ export const statistics = {
 
 		statistics.migration = await getControl();
 		statsPms.push(
-			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
+			InstanceStatus.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
 				statistics.instanceCount = count;
 			}),
 		);
@@ -477,6 +478,7 @@ export const statistics = {
 		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
 		statistics.videoConf = await VideoConf.getStatistics();
+		statistics.contactVerification = await getContactVerificationStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
 		statsPms.push(

@@ -7,6 +7,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { getInitSettings } from '../../lib/settings';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
@@ -29,23 +30,19 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 
 async function findDepartments(
 	businessUnit?: string,
-): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
+): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
 	// TODO: check this function usage
 	return (
-		await (
-			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-				_id: 1,
-				name: 1,
-				showOnRegistration: 1,
-				showOnOfflineForm: 1,
-			})
-		).toArray()
-	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
-		_id,
-		name,
-		showOnRegistration,
-		showOnOfflineForm,
-	}));
+		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
+			Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+		>(businessUnit, {
+			_id: 1,
+			name: 1,
+			showOnRegistration: 1,
+			showOnOfflineForm: 1,
+			departmentsAllowedToForward: 1,
+		})
+	).toArray();
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -105,7 +102,7 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = await LivechatTyped.getInitSettings();
+	const initSettings = await getInitSettings();
 	const triggers = await findTriggers();
 	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;

@@ -1,8 +1,8 @@
-import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { CheckOption, Option, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
@@ -15,6 +15,7 @@ type AutoCompleteDepartmentMultipleProps = {
 	onlyMyDepartments?: boolean;
 	showArchived?: boolean;
 	enabled?: boolean;
+	withCheckbox?: boolean;
 } & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
 
 const AutoCompleteDepartmentMultiple = ({
@@ -22,6 +23,7 @@ const AutoCompleteDepartmentMultiple = ({
 	onlyMyDepartments = false,
 	showArchived = false,
 	enabled = false,
+	withCheckbox = true,
 	onChange = () => undefined,
 }: AutoCompleteDepartmentMultipleProps) => {
 	const { t } = useTranslation();
@@ -43,6 +45,18 @@ const AutoCompleteDepartmentMultiple = ({
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
+	const renderItem = ({ label, ...props }: ComponentProps<typeof Option>): ReactElement => {
+		if (withCheckbox) {
+			<CheckOption
+				{...props}
+				label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
+				selected={value.some((item) => item.value === props.value)}
+			/>;
+		}
+
+		return <Option {...props} label={label} />;
+	};
+
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
@@ -55,6 +69,7 @@ const AutoCompleteDepartmentMultiple = ({
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
+			renderItem={renderItem}
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING
 					? () => undefined
@@ -65,13 +80,6 @@ const AutoCompleteDepartmentMultiple = ({
 							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
 						}
 			}
-			renderItem={({ label, ...props }) => (
-				<CheckOption
-					{...props}
-					label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-					selected={value.some((item) => item.value === props.value)}
-				/>
-			)}
 		/>
 	);
 };

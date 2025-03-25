@@ -28,15 +28,29 @@ const events = {
 	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
 };
 
+type InquiryEventType = keyof typeof events;
+type InquiryEventArgs = { type: InquiryEventType } & Omit<ILivechatInquiryRecord, 'type'>;
+
+const processInquiryEvent = async (args: unknown): Promise<void> => {
+	if (!args || typeof args !== 'object' || !('type' in args)) {
+		return;
+	}
+
+	const { type, ...inquiry } = args as InquiryEventArgs;
+	if (type in events) {
+		await events[type](inquiry as ILivechatInquiryRecord);
+	}
+};
+
 const invalidateRoomQueries = async (rid: string) => {
-	await queryClient.invalidateQueries(['rooms', { reference: rid, type: 'l' }]);
-	queryClient.removeQueries(['rooms', rid]);
-	queryClient.removeQueries(['/v1/rooms.info', rid]);
+	await queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] });
+	queryClient.removeQueries({ queryKey: ['rooms', rid] });
+	queryClient.removeQueries({ queryKey: ['/v1/rooms.info', rid] });
 };
 
 const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	LivechatInquiry.remove(inquiry._id);
-	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
+	return queryClient.invalidateQueries({ queryKey: ['rooms', { reference: inquiry.rid, type: 'l' }] });
 };
 
 const getInquiriesFromAPI = async () => {
@@ -53,11 +67,7 @@ const removeListenerOfDepartment = (departmentId: ILivechatDepartment['_id']) =>
 const appendListenerToDepartment = (departmentId: ILivechatDepartment['_id']) => {
 	departments.add(departmentId);
 	sdk.stream('livechat-inquiry-queue-observer', [`department/${departmentId}`], async (args) => {
-		if (!('type' in args)) {
-			return;
-		}
-		const { type, ...inquiry } = args;
-		await events[args.type](inquiry);
+		await processInquiryEvent(args);
 	});
 	return () => removeListenerOfDepartment(departmentId);
 };
@@ -78,13 +88,20 @@ const removeGlobalListener = () => sdk.stop('livechat-inquiry-queue-observer', '
 
 const addGlobalListener = () => {
 	sdk.stream('livechat-inquiry-queue-observer', ['public'], async (args) => {
-		if (!('type' in args)) {
-			return;
-		}
-		const { type, ...inquiry } = args;
-		await events[args.type](inquiry);
+		await processInquiryEvent(args);
 	});
 	return removeGlobalListener;
+};
+
+const removeAgentListener = (userId: IOmnichannelAgent['_id']) => {
+	sdk.stop('livechat-inquiry-queue-observer', `agent/${userId}`);
+};
+
+const addAgentListener = (userId: IOmnichannelAgent['_id']) => {
+	sdk.stream('livechat-inquiry-queue-observer', [`agent/${userId}`], async (args) => {
+		await processInquiryEvent(args);
+	});
+	return () => removeAgentListener(userId);
 };
 
 const subscribe = async (userId: IOmnichannelAgent['_id']) => {
@@ -95,7 +112,8 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 
 	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 
-	// Register to all depts + public queue always to match the inquiry list returned by backend
+	// Register to agent-specific queue, all depts + public queue to match the inquiry list returned by backend
+	const cleanAgentListener = addAgentListener(userId);
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
 
@@ -108,6 +126,7 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	return () => {
 		LivechatInquiry.remove({});
 		removeGlobalListener();
+		cleanAgentListener?.();
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
 		departments.clear();

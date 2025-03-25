@@ -6,6 +6,17 @@ import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 import type { MACStats } from './omnichannel';
 
+export interface IVoIPPeriodStats {
+	calls?: number;
+	externalInboundCalls?: number;
+	externalOutboundCalls?: number;
+	internalCalls?: number;
+	externalCalls?: number;
+	successfulCalls?: number;
+	failedCalls?: number;
+	callsDuration?: number;
+}
+
 export interface IStats {
 	_id: string;
 	wizard: {
@@ -169,6 +180,12 @@ export interface IStats {
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;
 		livechatMonitors?: number;
+		voip?: {
+			total?: IVoIPPeriodStats;
+			lastMonth?: IVoIPPeriodStats;
+			lastWeek?: IVoIPPeriodStats;
+			lastDay?: IVoIPPeriodStats;
+		};
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -237,4 +254,20 @@ export interface IStats {
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
 	statsToken?: string;
+	contactVerification: {
+		totalContacts: number;
+		totalUnknownContacts: number;
+		totalMergedContacts: number;
+		totalConflicts: number;
+		totalResolvedConflicts: number;
+		totalBlockedContacts: number;
+		totalPartiallyBlockedContacts: number;
+		totalFullyBlockedContacts: number;
+		totalVerifiedContacts: number;
+		avgChannelsPerContact: number;
+		totalContactsWithoutChannels: number;
+		totalImportedContacts: number;
+		totalUpsellViews: number;
+		totalUpsellClicks: number;
+	};
 }

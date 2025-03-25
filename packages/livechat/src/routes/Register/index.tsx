@@ -1,11 +1,12 @@
 import type { FunctionalComponent } from 'preact';
-import { route } from 'preact-router';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
+import { route } from 'preact-router';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
@@ -19,7 +20,6 @@ import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import type { StoreState } from '../../store';
-import styles from './styles.scss';
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
@@ -93,7 +93,10 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+			await dispatch({
+				user,
+				...(user.contactManager && { agent: user.contactManager }),
+			} as Omit<StoreState['user'], 'ts'>);
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
 			Triggers.callbacks?.emit('chat-visitor-registered');

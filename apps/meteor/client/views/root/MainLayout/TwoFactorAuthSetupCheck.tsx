@@ -1,7 +1,7 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { lazy, useCallback } from 'react';
+import { lazy, useCallback } from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 import LayoutWithSidebarV2 from './LayoutWithSidebarV2';

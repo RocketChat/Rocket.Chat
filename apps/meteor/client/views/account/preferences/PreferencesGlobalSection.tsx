@@ -1,8 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,10 +12,10 @@ const PreferencesGlobalSection = () => {
 	const options: SelectOption[] = userDontAskAgainList.map(({ action, label }) => [action, label]);
 
 	const { control } = useFormContext();
-	const dontAskAgainListId = useUniqueId();
+	const dontAskAgainListId = useId();
 
 	return (
-		<Accordion.Item title={t('Global')}>
+		<AccordionItem title={t('Global')}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel htmlFor={dontAskAgainListId}>{t('Dont_ask_me_again_list')}</FieldLabel>
@@ -31,7 +30,7 @@ const PreferencesGlobalSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

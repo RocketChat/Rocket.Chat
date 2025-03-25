@@ -1,5 +1,7 @@
+import * as mem from 'mem';
+
 import type { AppManager } from './AppManager';
-import type { AppStatus } from '../definition/AppStatus';
+import { AppStatus } from '../definition/AppStatus';
 import { AppsEngineException } from '../definition/exceptions';
 import type { IAppAuthorInfo, IAppInfo } from '../definition/metadata';
 import { AppMethod } from '../definition/metadata';
@@ -21,6 +23,8 @@ export class ProxiedApp {
         private readonly appRuntime: DenoRuntimeSubprocessController,
     ) {
         this.previousStatus = storageItem.status;
+
+        this.appRuntime.on('processExit', () => mem.clear(this.getStatus));
     }
 
     public getRuntime(): AppsEngineRuntime {
@@ -78,13 +82,11 @@ export class ProxiedApp {
         }
     }
 
-    public async getStatus(): Promise<AppStatus> {
-        return this.appRuntime.getStatus();
-    }
+    public getStatus = mem(() => this.appRuntime.getStatus().catch(() => AppStatus.UNKNOWN), { maxAge: 1000 * 60 * 5 });
 
     public async setStatus(status: AppStatus, silent?: boolean): Promise<void> {
         await this.call(AppMethod.SETSTATUS, status);
-
+        mem.clear(this.getStatus);
         if (!silent) {
             await this.manager.getBridges().getAppActivationBridge().doAppStatusChanged(this, status);
         }

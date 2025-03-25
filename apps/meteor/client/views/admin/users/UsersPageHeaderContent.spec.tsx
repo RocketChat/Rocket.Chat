@@ -1,13 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
+
 import '@testing-library/jest-dom';
 
 import UsersPageHeaderContent from './UsersPageHeaderContent';
 
 it('should not show "Assign Extension" button if voip setting is enabled but user dont have required permission', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 	});
 
@@ -16,7 +15,6 @@ it('should not show "Assign Extension" button if voip setting is enabled but use
 
 it('should not show "Assign Extension" button if user has required permission but voip setting is disabled', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 	});
 
@@ -25,7 +23,6 @@ it('should not show "Assign Extension" button if user has required permission bu
 
 it('should show "Assign Extension" button if user has required permission and voip setting is enabled', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
 	});
 
@@ -35,7 +32,6 @@ it('should show "Assign Extension" button if user has required permission and vo
 
 it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled setting is disabled', async () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
 	});
 
@@ -44,7 +40,6 @@ it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled 
 
 it('should show "Invite" button if has build-register-user permission', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withPermission('bulk-register-user').build(),
 	});
 
@@ -53,7 +48,6 @@ it('should show "Invite" button if has build-register-user permission', () => {
 
 it('should hide "Invite" button if user doesnt have build-register-user permission', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
@@ -62,7 +56,6 @@ it('should hide "Invite" button if user doesnt have build-register-user permissi
 
 it('should show "New User" button if has create-user permission', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withPermission('create-user').build(),
 	});
 
@@ -71,7 +64,6 @@ it('should show "New User" button if has create-user permission', () => {
 
 it('should hide "New User" button if user doesnt have create-user permission', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withPermission('create-user').build(),
 	});
 
@@ -80,7 +72,6 @@ it('should hide "New User" button if user doesnt have create-user permission', (
 
 it('should show "Buy more seats" button if seats caps is exceeded', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
@@ -89,7 +80,6 @@ it('should show "Buy more seats" button if seats caps is exceeded', () => {
 
 it('should hide "Buy more seats" button if seats caps is within limits', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
@@ -98,7 +88,6 @@ it('should hide "Buy more seats" button if seats caps is within limits', () => {
 
 it('should show seats available progress bar', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 10 }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
@@ -107,7 +96,6 @@ it('should show seats available progress bar', () => {
 
 it('should hide seats available progress bar if theres no limit', () => {
 	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: Number.POSITIVE_INFINITY }} />, {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 

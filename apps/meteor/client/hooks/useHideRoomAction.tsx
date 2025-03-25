@@ -3,7 +3,6 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDontAskAgain } from './useDontAskAgain';
@@ -86,7 +85,7 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 					label: t('Hide_room'),
 				}}
 			>
-				{t(warnText as TranslationKey, { postProcess: 'sprintf', sprintf: [name] })}
+				{t(warnText as TranslationKey, { roomName: name })}
 			</GenericModalDoNotAskAgain>,
 		);
 	});

@@ -44,12 +44,12 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
-	if ((await LivechatBusinessHours.col.countDocuments({ type: LivechatBusinessHourTypes.DEFAULT })) === 0) {
+	if ((await LivechatBusinessHours.countDocuments({ type: LivechatBusinessHourTypes.DEFAULT })) === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };
 
-export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[] | null = null) {
+export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds?: string[]) {
 	const results = await Users.findAgentsAvailableWithoutBusinessHours(agentIds).toArray();
 
 	const update = await Users.updateLivechatStatusByAgentIds(
@@ -75,7 +75,7 @@ export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[
 	);
 }
 
-export async function makeOnlineAgentsAvailable(agentIds: string[] | null = null) {
+export async function makeOnlineAgentsAvailable(agentIds?: string[]) {
 	const results = await Users.findOnlineButNotAvailableAgents(agentIds).toArray();
 
 	const update = await Users.updateLivechatStatusByAgentIds(

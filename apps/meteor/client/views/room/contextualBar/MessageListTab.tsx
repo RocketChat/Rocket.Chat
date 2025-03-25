@@ -4,7 +4,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -17,7 +17,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 } from '../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -67,43 +67,44 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 							<MessageListErrorBoundary>
 								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
-										<Virtuoso
-											totalCount={queryResult.data.length}
-											overscan={25}
-											data={queryResult.data}
-											components={{ Scroller: VirtuosoScrollbars }}
-											itemContent={(index, message) => {
-												const previous = queryResult.data[index - 1];
+										<VirtualizedScrollbars>
+											<Virtuoso
+												totalCount={queryResult.data.length}
+												overscan={25}
+												data={queryResult.data}
+												itemContent={(index, message) => {
+													const previous = queryResult.data[index - 1];
 
-												const newDay = isMessageNewDay(message, previous);
+													const newDay = isMessageNewDay(message, previous);
 
-												const system = MessageTypes.isSystemMessage(message);
+													const system = MessageTypes.isSystemMessage(message);
 
-												const unread = subscription?.tunread?.includes(message._id) ?? false;
-												const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
-												const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
+													const unread = subscription?.tunread?.includes(message._id) ?? false;
+													const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
+													const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
 
-												return (
-													<>
-														{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
+													return (
+														<>
+															{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-														{system ? (
-															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
-														) : (
-															<RoomMessage
-																message={message}
-																sequential={false}
-																unread={unread}
-																mention={mention}
-																all={all}
-																context={context}
-																showUserAvatar={showUserAvatar}
-															/>
-														)}
-													</>
-												);
-											}}
-										/>
+															{system ? (
+																<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+															) : (
+																<RoomMessage
+																	message={message}
+																	sequential={false}
+																	unread={unread}
+																	mention={mention}
+																	all={all}
+																	context={context}
+																	showUserAvatar={showUserAvatar}
+																/>
+															)}
+														</>
+													);
+												}}
+											/>
+										</VirtualizedScrollbars>
 									</Box>
 								</MessageListProvider>
 							</MessageListErrorBoundary>

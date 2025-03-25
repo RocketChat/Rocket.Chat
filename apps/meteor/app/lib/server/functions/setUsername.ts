@@ -1,8 +1,10 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Invites, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
+import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -16,6 +18,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
 import { callbacks } from '../../../../lib/callbacks';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { notifyOnUserChange } from '../lib/notifyListener';
 
@@ -66,7 +69,13 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
-export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
+export const _setUsername = async function (
+	userId: string,
+	u: string,
+	fullUser: IUser,
+	updater?: Updater<IUser>,
+	session?: ClientSession,
+): Promise<unknown> {
 	const username = u.trim();
 
 	if (!userId || !username) {
@@ -77,7 +86,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		return false;
 	}
 
-	const user = fullUser || (await Users.findOneById(userId));
+	const user = fullUser || (await Users.findOneById(userId, { session }));
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -90,17 +99,20 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 	}
 	// If first time setting username, send Enrollment Email
-	try {
-		if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
-			setImmediate(() => {
-				Accounts.sendEnrollmentEmail(user._id);
-			});
-		}
-	} catch (e: any) {
-		SystemLogger.error(e);
+	if (!previousUsername && user.emails && user.emails.length > 0 && settings.get('Accounts_Enrollment_Email')) {
+		await onceTransactionCommitedSuccessfully(() => {
+			try {
+				setImmediate(() => {
+					Accounts.sendEnrollmentEmail(user._id);
+				});
+			} catch (e: any) {
+				SystemLogger.error(e);
+			}
+		}, session);
 	}
 	// Set new username*
-	await Users.setUsername(user._id, username);
+	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
+	await Users.setUsername(user._id, username, { session });
 	user.username = username;
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
@@ -117,23 +129,25 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 
 		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName);
+			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName, undefined, updater, session);
 		}
 	}
 
-	// If it's the first username and the user has an invite Token, then join the invite room
-	if (!previousUsername && user.inviteToken) {
-		const inviteData = await Invites.findOneById(user.inviteToken);
-		if (inviteData?.rid) {
-			await addUserToRoom(inviteData.rid, user);
+	await onceTransactionCommitedSuccessfully(async () => {
+		// If it's the first username and the user has an invite Token, then join the invite room
+		if (!previousUsername && user.inviteToken) {
+			const inviteData = await Invites.findOneById(user.inviteToken);
+			if (inviteData?.rid) {
+				await addUserToRoom(inviteData.rid, user);
+			}
 		}
-	}
 
-	void api.broadcast('user.nameChanged', {
-		_id: user._id,
-		name: user.name,
-		username: user.username,
-	});
+		void api.broadcast('user.nameChanged', {
+			_id: user._id,
+			name: user.name,
+			username: user.username,
+		});
+	}, session);
 
 	return user;
 };

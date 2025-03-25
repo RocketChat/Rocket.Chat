@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	isDmDeleteProps,
@@ -13,14 +13,17 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { FindOptions } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -135,7 +138,7 @@ API.v1.addRoute(
 			} else {
 				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 				if (!canAccess) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -181,14 +184,14 @@ API.v1.addRoute(
 
 			if (ruserId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = ruserId;
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, user);
 
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
@@ -238,7 +241,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
@@ -277,8 +280,9 @@ API.v1.addRoute(
 
 			const objectParams = {
 				rid: room._id,
+				fromUserId: this.userId,
 				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest && new Date(oldest),
+				oldest: oldest ? new Date(oldest) : undefined,
 				inclusive: inclusive === 'true',
 				offset,
 				count,
@@ -286,10 +290,10 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			};
 
-			const result = await Meteor.callAsync('getChannelHistory', objectParams);
+			const result = await getChannelHistory(objectParams);
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -309,7 +313,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -335,7 +339,7 @@ API.v1.addRoute(
 				room._id,
 			);
 
-			const options = {
+			const options: FindOptions<IUser> = {
 				projection: {
 					_id: 1,
 					username: 1,
@@ -384,7 +388,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -400,7 +404,7 @@ API.v1.addRoute(
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 			};
-			const sortObj = { ts: sort?.ts ?? -1 };
+			const sortObj = sort || { ts: -1 };
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sortObj,
@@ -547,13 +551,13 @@ API.v1.addRoute(
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
 
 			if (!subscription?.open) {
-				await Meteor.callAsync('openRoom', room._id);
+				await openRoom(this.userId, room._id);
 			}
 
 			return API.v1.success();
@@ -574,7 +578,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);

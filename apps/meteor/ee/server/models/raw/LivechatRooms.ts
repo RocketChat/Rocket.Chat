@@ -9,11 +9,11 @@ import type {
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
+import { LivechatRoomsRaw } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor, UpdateOptions } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
-import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatRoomsModel {
@@ -82,19 +82,19 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	countPrioritizedRooms(): Promise<number> {
-		return this.col.countDocuments({ priorityId: { $exists: true } });
+		return this.countDocuments({ priorityId: { $exists: true } });
 	}
 
 	countRoomsWithSla(): Promise<number> {
-		return this.col.countDocuments({ slaId: { $exists: true } });
+		return this.countDocuments({ slaId: { $exists: true } });
 	}
 
 	countRoomsWithPdfTranscriptRequested(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptRequested: true });
+		return this.countDocuments({ pdfTranscriptRequested: true });
 	}
 
 	countRoomsWithTranscriptSent(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptFileId: { $exists: true } });
+		return this.countDocuments({ pdfTranscriptFileId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
@@ -548,7 +548,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			departmentId: {
 				$exists: false,
@@ -626,7 +626,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,
@@ -721,7 +721,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,

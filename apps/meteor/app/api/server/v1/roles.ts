@@ -5,9 +5,11 @@ import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRolePr
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
@@ -80,7 +82,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
+			await addUserToRole(this.userId, role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -221,7 +223,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Roles.removeUserRoles(user._id, [role._id], scope);
+			await removeUserFromRolesAsync(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
 				void api.broadcast('user.roleUpdate', {

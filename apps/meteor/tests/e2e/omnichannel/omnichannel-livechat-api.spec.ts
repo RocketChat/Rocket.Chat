@@ -233,6 +233,7 @@ test.describe('OC - Livechat API', () => {
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
 			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -266,6 +267,7 @@ test.describe('OC - Livechat API', () => {
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
 			await Promise.all([...departments.map((department) => department.delete())]);
 			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
 		});
 
 		// clearBusinessUnit
@@ -563,28 +565,24 @@ test.describe('OC - Livechat API', () => {
 
 				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
 
-				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+				await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
+				await poLiveChat.page.evaluate((registerGuestVisitor) => {
+					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
+					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
+				}, registerGuestVisitor);
 
 				await page.waitForResponse('**/api/v1/livechat/visitor');
+				await page.waitForTimeout(500); // NOTE: timeout is necessary to allow websocket unsubscribes to happen
+
+				await poLiveChat.onlineAgentMessage.fill('this_a_new_test_message_from_visitor');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
-
-				await poLiveChat.page.evaluate(
-					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
-					registerGuestVisitor,
-				);
-
-				await page.waitForResponse('**/api/v1/livechat/visitor');
-
-				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+				await expect(poLiveChat.txtChatMessage('this_a_new_test_message_from_visitor')).toBeVisible();
 			});
 		});
 
@@ -698,6 +696,7 @@ test.describe('OC - Livechat API', () => {
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
 			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -723,8 +722,9 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async () => {
+		test.afterAll(async ({ api }) => {
 			await agent.delete();
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
 		});
 
 		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {
@@ -856,6 +856,7 @@ test.describe('OC - Livechat API', () => {
 			const newVisitor = createFakeVisitor();
 
 			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
+			await poAuxContext.poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
 
 			const watchForTrigger = page.waitForFunction(() => window.onOfflineFormSubmit === true);
 

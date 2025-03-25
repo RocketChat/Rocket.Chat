@@ -5,7 +5,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import juice from 'juice';
 import { Email } from 'meteor/email';
 import { Meteor } from 'meteor/meteor';
-import stripHtml from 'string-strip-html';
+import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
@@ -167,7 +167,7 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	const { value } = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
+	const value = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
 	if (value) {
 		void notifyOnSettingChanged(value);
 	}

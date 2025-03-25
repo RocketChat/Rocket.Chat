@@ -1,6 +1,5 @@
 import { FieldGroup } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import MemoizedSetting from './MemoizedSetting';
 import Setting from './Setting';
@@ -15,13 +14,6 @@ export default {
 			argTypesRegex: '^on.*',
 		},
 	},
-	decorators: [
-		(fn) => (
-			<div>
-				<div className='page-settings'>{fn()}</div>
-			</div>
-		),
-	],
 } satisfies Meta<typeof Setting>;
 
 export const Default: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;

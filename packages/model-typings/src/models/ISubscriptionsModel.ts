@@ -12,7 +12,8 @@ import type {
 	AggregationCursor,
 	DeleteOptions,
 	CountDocumentsOptions,
-	ModifyResult,
+	WithId,
+	ClientSession,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -122,14 +123,14 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys: ISubscription['oldRoomKeys']): Promise<UpdateResult>;
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>>;
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 
 	setGroupE2ESuggestedKeyAndOldRoomKeys(
 		uid: string,
 		rid: string,
 		key: string,
 		suggestedOldRoomKeys: ISubscription['suggestedOldRoomKeys'],
-	): Promise<ModifyResult<ISubscription>>;
+	): Promise<null | WithId<ISubscription>>;
 
 	unsetGroupE2ESuggestedKeyAndOldRoomKeys(_id: string): Promise<UpdateResult | Document>;
 
@@ -238,7 +239,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document>;
+	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document>;
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
@@ -324,6 +325,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
-	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>>;
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
 }

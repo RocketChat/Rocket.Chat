@@ -1,61 +1,49 @@
-import { Palette } from '@rocket.chat/fuselage';
-import type { ScrollValues } from 'rc-scrollbars';
-import { Scrollbars } from 'rc-scrollbars';
-import type { MutableRefObject, CSSProperties, ReactNode } from 'react';
-import React, { memo, forwardRef, useCallback, useMemo } from 'react';
+import { useOverlayScrollbars } from 'overlayscrollbars-react';
+import type { HTMLAttributes, ReactElement } from 'react';
+import { useEffect, useRef, forwardRef, memo } from 'react';
 
-export type CustomScrollbarsProps = {
+import type { OverlayScrollbars } from '.';
+import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
+
+type CustomScrollbarsProps = {
+	children: ReactElement;
 	overflowX?: boolean;
-	style?: CSSProperties;
-	children?: ReactNode;
-	onScroll?: (values: ScrollValues) => void;
-	renderView?: typeof Scrollbars.defaultProps.renderView;
-	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
-	autoHide?: boolean;
-};
+	onScroll?: (args: OverlayScrollbars) => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'>;
 
-const styleDefault: CSSProperties = {
-	flexGrow: 1,
-	overflowY: 'hidden',
-};
-
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars(
-	{ children, style, onScroll, overflowX, renderView, ...props },
-	ref,
-) {
-	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
-
-	const refSetter = useCallback(
-		(scrollbarRef) => {
-			if (ref && scrollbarRef) {
-				if (typeof ref === 'function') {
-					ref(scrollbarRef.view ?? null);
-					return;
-				}
-
-				(ref as MutableRefObject<HTMLElement | undefined>).current = scrollbarRef.view;
-			}
+const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars({ overflowX, onScroll, ...props }, ref) {
+	const rootRef = useRef(null);
+	const scrollbarsOptions = getScrollbarsOptions(overflowX);
+	const [initialize, osInstance] = useOverlayScrollbars({
+		options: scrollbarsOptions,
+		events: {
+			scroll: (args) => onScroll?.(args),
 		},
-		[ref],
-	);
+	});
 
-	return (
-		<Scrollbars
-			{...props}
-			autoHide
-			autoHideTimeout={2000}
-			autoHideDuration={500}
-			style={scrollbarsStyle}
-			onScrollFrame={onScroll}
-			renderView={renderView}
-			renderTrackHorizontal={overflowX ? undefined : (props) => <div {...props} className='track-horizontal' style={{ display: 'none' }} />}
-			renderThumbVertical={({ style, ...props }) => (
-				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
-			)}
-			children={children}
-			ref={refSetter}
-		/>
-	);
+	useEffect(() => {
+		const { current: root } = rootRef;
+
+		if (root) {
+			initialize(root);
+
+			const instance = osInstance();
+			if (!instance || !ref) {
+				return;
+			}
+
+			if (typeof ref === 'function') {
+				ref(instance.elements().viewport || null);
+				return;
+			}
+
+			ref.current = instance.elements().viewport || null;
+		}
+
+		return () => osInstance()?.destroy();
+	}, [initialize, osInstance, ref]);
+
+	return <BaseScrollbars ref={rootRef} {...props} />;
 });
 
 export default memo(CustomScrollbars);

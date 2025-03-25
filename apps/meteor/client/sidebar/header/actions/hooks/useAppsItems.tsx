@@ -1,16 +1,9 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
-import { useUserDropdownAppsActionButtons } from '../../../../hooks/useAppActionButtons';
+import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropdownAppsActionButtons';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
-
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
 
 export const useAppsItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();

@@ -15,7 +15,7 @@ import {
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -29,7 +29,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -115,33 +115,34 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && totalItemCount > 0 && history.length > 0 && (
-						<Virtuoso
-							totalCount={totalItemCount}
-							initialTopMostItemIndex={{ index: 'LAST' }}
-							followOutput
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							endReached={
-								phase === AsyncStatePhase.LOADING
-									? (): void => undefined
-									: (start): void => {
-											loadMoreItems(start, Math.min(50, totalItemCount - start));
-										}
-							}
-							overscan={25}
-							data={messages}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(index, data): ReactElement => {
-								const lastMessage = messages[index - 1];
-								const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
-								const isNewDay = isMessageNewDay(data, lastMessage);
-								return (
-									<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
-								);
-							}}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								totalCount={totalItemCount}
+								initialTopMostItemIndex={{ index: 'LAST' }}
+								followOutput
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								endReached={
+									phase === AsyncStatePhase.LOADING
+										? (): void => undefined
+										: (start): void => {
+												loadMoreItems(start, Math.min(50, totalItemCount - start));
+											}
+								}
+								overscan={25}
+								data={messages}
+								itemContent={(index, data): ReactElement => {
+									const lastMessage = messages[index - 1];
+									const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
+									const isNewDay = isMessageNewDay(data, lastMessage);
+									return (
+										<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+									);
+								}}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

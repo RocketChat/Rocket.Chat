@@ -11,9 +11,10 @@ type UseHourlyChatActivityOptions = {
 export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions) => {
 	const getHourlyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data');
 
-	return useQuery(
-		['admin/engagement-dashboard/users/hourly-chat-activity', { displacement, utc }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/users/hourly-chat-activity', { displacement, utc }],
+
+		queryFn: async () => {
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'days').toDate();
 
 			const response = await getHourlyChatActivity({
@@ -27,9 +28,8 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

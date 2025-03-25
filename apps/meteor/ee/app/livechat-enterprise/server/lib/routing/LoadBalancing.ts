@@ -1,6 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
 
 /* Load Balancing Queuing method:
@@ -28,7 +29,11 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department?: string, ignoreAgentId?: string) {
-		const nextAgent = await Users.getNextLeastBusyAgent(department, ignoreAgentId);
+		const nextAgent = await Users.getNextLeastBusyAgent(
+			department,
+			ignoreAgentId,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		);
 		if (!nextAgent) {
 			return;
 		}

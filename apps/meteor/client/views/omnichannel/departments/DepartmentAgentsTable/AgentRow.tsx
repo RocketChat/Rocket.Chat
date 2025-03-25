@@ -1,17 +1,17 @@
 import { NumberInput } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import type { FormValues, IDepartmentAgent } from '../EditDepartment';
+import type { EditDepartmentFormData, IDepartmentAgent } from '../definitions';
 import AgentAvatar from './AgentAvatar';
 import RemoveAgentButton from './RemoveAgentButton';
 
 type AgentRowProps = {
 	agent: IDepartmentAgent;
 	index: number;
-	register: UseFormRegister<FormValues>;
+	register: UseFormRegister<EditDepartmentFormData>;
 	onRemove: (agentId: string) => void;
 };
 

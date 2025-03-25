@@ -4,6 +4,7 @@ import {
 	TextInput,
 	ToggleSwitch,
 	Accordion,
+	AccordionItem,
 	FieldGroup,
 	InputBox,
 	TextAreaInput,
@@ -12,9 +13,7 @@ import {
 	MultiSelect,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent } from 'react';
-import React from 'react';
+import { useId, type ChangeEvent } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -29,34 +28,34 @@ const AppearanceForm = () => {
 	const { control, watch } = useFormContext();
 	const { Livechat_enable_message_character_limit } = watch();
 
-	const livechatTitleField = useUniqueId();
-	const livechatTitleColorField = useUniqueId();
-	const livechatEnableMessageCharacterLimit = useUniqueId();
-	const livechatMessageCharacterLimit = useUniqueId();
-	const livechatShowAgentInfo = useUniqueId();
-	const livechatShowAgentEmail = useUniqueId();
-	const livechatDisplayOfflineForm = useUniqueId();
-	const livechatOfflineFormUnavailableField = useUniqueId();
-	const livechatOfflineMessageField = useUniqueId();
-	const livechatOfflineTitleField = useUniqueId();
-	const livechatOfflineTitleColorField = useUniqueId();
-	const livechatOfflineEmailField = useUniqueId();
-	const livechatOfflineSuccessMessageField = useUniqueId();
-	const livechatRegistrationForm = useUniqueId();
-	const livechatNameFieldRegistrationForm = useUniqueId();
-	const livechatEmailFieldRegistrationForm = useUniqueId();
-	const livechatRegistrationFormMessageField = useUniqueId();
-	const livechatConversationFinishedMessageField = useUniqueId();
-	const livechatConversationFinishedTextField = useUniqueId();
-	const livechatHideWatermarkField = useUniqueId();
-	const livechatWidgetPositionField = useUniqueId();
-	const livechatBackgroundField = useUniqueId();
-	const livechatHideSystemMessagesField = useUniqueId();
-	const omnichannelVisitorsCanCloseConversationField = useUniqueId();
+	const livechatTitleField = useId();
+	const livechatTitleColorField = useId();
+	const livechatEnableMessageCharacterLimit = useId();
+	const livechatMessageCharacterLimit = useId();
+	const livechatShowAgentInfo = useId();
+	const livechatShowAgentEmail = useId();
+	const livechatDisplayOfflineForm = useId();
+	const livechatOfflineFormUnavailableField = useId();
+	const livechatOfflineMessageField = useId();
+	const livechatOfflineTitleField = useId();
+	const livechatOfflineTitleColorField = useId();
+	const livechatOfflineEmailField = useId();
+	const livechatOfflineSuccessMessageField = useId();
+	const livechatRegistrationForm = useId();
+	const livechatNameFieldRegistrationForm = useId();
+	const livechatEmailFieldRegistrationForm = useId();
+	const livechatRegistrationFormMessageField = useId();
+	const livechatConversationFinishedMessageField = useId();
+	const livechatConversationFinishedTextField = useId();
+	const livechatHideWatermarkField = useId();
+	const livechatWidgetPositionField = useId();
+	const livechatBackgroundField = useId();
+	const livechatHideSystemMessagesField = useId();
+	const omnichannelVisitorsCanCloseConversationField = useId();
 
 	return (
 		<Accordion>
-			<Accordion.Item defaultExpanded title={t('General')}>
+			<AccordionItem defaultExpanded title={t('General')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -155,9 +154,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item defaultExpanded title={t('Livechat_online')}>
+			<AccordionItem defaultExpanded title={t('Livechat_online')}>
 				<FieldGroup>
 					<Field>
 						<AppearanceFieldLabel htmlFor={livechatTitleField}>{t('Title')}</AppearanceFieldLabel>
@@ -232,9 +231,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_offline')}>
+			<AccordionItem title={t('Livechat_offline')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -309,9 +308,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_registration_form')}>
+			<AccordionItem title={t('Livechat_registration_form')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -362,9 +361,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Conversation_finished')}>
+			<AccordionItem title={t('Conversation_finished')}>
 				<FieldGroup>
 					<Field>
 						<AppearanceFieldLabel htmlFor={livechatConversationFinishedMessageField}>
@@ -393,7 +392,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 		</Accordion>
 	);
 };

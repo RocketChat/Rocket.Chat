@@ -1,7 +1,6 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
@@ -25,7 +24,7 @@ const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, rel
 	if (!menuOptions) {
 		return null;
 	}
-	return <GenericMenu title={t('More')} key='menu' data-qa-id='UserUserInfo-menu' sections={menuOptions} placement='bottom-end' />;
+	return <GenericMenu detached title={t('More')} key='menu' data-qa-id='UserUserInfo-menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;

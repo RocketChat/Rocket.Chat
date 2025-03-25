@@ -1,14 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Sidepanel, SidepanelListItem } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import RoomSidepanelLoading from './RoomSidepanelLoading';
 import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 
@@ -39,7 +39,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 		return null;
 	}
 
-	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isLoading)) {
+	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isPending)) {
 		return <RoomSidepanelLoading />;
 	}
 
@@ -50,14 +50,16 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	return (
 		<Sidepanel>
 			<Box pb={8} h='full'>
-				<Virtuoso
-					totalCount={result.data.length}
-					data={result.data}
-					components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper, Scroller: VirtuosoScrollbars }}
-					itemContent={(_, data) => (
-						<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
-					)}
-				/>
+				<VirtualizedScrollbars>
+					<Virtuoso
+						totalCount={result.data.length}
+						data={result.data}
+						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
+						itemContent={(_, data) => (
+							<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
+						)}
+					/>
+				</VirtualizedScrollbars>
 			</Box>
 		</Sidepanel>
 	);

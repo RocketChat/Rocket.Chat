@@ -11,6 +11,7 @@ import { saveCustomFields } from '../../app/lib/server/functions/saveCustomField
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
@@ -107,8 +108,8 @@ async function saveUserProfile(
 		await Users.setNickname(user._id, settings.nickname.trim());
 	}
 
-	if (settings.email) {
-		await Meteor.callAsync('setEmail', settings.email);
+	if (user && settings.email) {
+		await setEmailFunction(settings.email, user);
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
@@ -183,6 +184,31 @@ declare module '@rocket.chat/ddp-client' {
 			...args: unknown[]
 		): boolean;
 	}
+}
+
+export function executeSaveUserProfile(
+	this: Meteor.MethodThisType,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
+	},
+	customFields: Record<string, any> = {},
+	...args: unknown[]
+) {
+	check(settings, Object);
+	check(customFields, Match.Maybe(Object));
+
+	if (settings.email || settings.newPassword) {
+		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+	}
+
+	return saveUserProfile.call(this, settings, customFields, ...args);
 }
 
 Meteor.methods<ServerMethods>({

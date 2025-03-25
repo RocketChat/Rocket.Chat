@@ -156,6 +156,7 @@ describe('#renderSvgLetters', () => {
 		expect(renderSVGLetters('arthur', 16)).to.include('>\nA\n</text>');
 		expect(renderSVGLetters('Bob', 16)).to.include('>\nB\n</text>');
 		expect(renderSVGLetters('yan', 16)).to.include('>\nY\n</text>');
+		expect(renderSVGLetters('山田 太郎', 16)).to.include('>\n山\n</text>');
 	});
 	it('should render question mark with color #000', () => {
 		expect(renderSVGLetters('?', 16)).to.include('>\n?\n</text>').and.to.include('fill="#000"');
@@ -164,6 +165,29 @@ describe('#renderSvgLetters', () => {
 		expect(renderSVGLetters('arthur', 16)).to.include('viewBox="0 0 16 16"');
 		expect(renderSVGLetters('Bob', 32)).to.include('viewBox="0 0 32 32"');
 		expect(renderSVGLetters('yan', 64)).to.include('viewBox="0 0 64 64"');
+	});
+	it('should return a default size of 125 for a single letter', () => {
+		expect(renderSVGLetters('a', 200)).to.include('font-size="125"');
+	});
+	it('should render a single letter when useAllInitials is false', () => {
+		expect(renderSVGLetters('arthur', 16, false)).to.include('>\nA\n');
+	});
+	it('should render a single letter when useAllInitials is true but username has no spaces', () => {
+		expect(renderSVGLetters('arthur', 16, true)).to.include('>\nA\n');
+	});
+	it('should render more than one letter when useAllInitials is true', () => {
+		expect(renderSVGLetters('arthur void', 16, true)).to.include('>\nAV\n');
+		expect(renderSVGLetters('arthur void jackson', 16, true)).to.include('>\nAVJ\n');
+	});
+	it('should cap generated avatar to 3 letters at most', () => {
+		expect(renderSVGLetters('arthur void jackson billie', 16, true)).to.include('>\nAVJ\n');
+		expect(renderSVGLetters('arthur void jackson billie jean', 16, true)).to.include('>\nAVJ\n');
+	});
+	it('should decrease the font size when username has more than 1 word', () => {
+		expect(renderSVGLetters('arthur void', 200, true)).to.include('font-size="100"');
+	});
+	it('should decrease the font size when username has 3 words', () => {
+		expect(renderSVGLetters('this is three_words', 200, true)).to.include('font-size="80"');
 	});
 });
 

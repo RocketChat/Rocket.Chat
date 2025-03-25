@@ -2,7 +2,6 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Butt
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
@@ -15,7 +14,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -69,7 +68,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					<ContextualbarFooter>
 						<Box mbs={8}>
 							<ButtonGroup stretch>
-								<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+								<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 									{t('Login')}
 								</Button>
 							</ButtonGroup>
@@ -100,17 +99,18 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						)}
 						{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
 							<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={total}
-									overscan={25}
-									data={calendarEvents}
-									components={{ Scroller: VirtuosoScrollbars }}
-									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
-								/>
+								<VirtualizedScrollbars>
+									<Virtuoso
+										style={{
+											height: blockSize,
+											width: inlineSize,
+										}}
+										totalCount={total}
+										overscan={25}
+										data={calendarEvents}
+										itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+									/>
+								</VirtualizedScrollbars>
 							</Box>
 						)}
 					</ContextualbarContent>
@@ -126,7 +126,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						{hasOutlookMethods && (
 							<Box mbs={8}>
 								<ButtonGroup stretch>
-									<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+									<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 										{t('Sync')}
 									</Button>
 								</ButtonGroup>

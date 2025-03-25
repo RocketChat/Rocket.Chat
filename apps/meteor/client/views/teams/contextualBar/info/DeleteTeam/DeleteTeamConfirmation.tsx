@@ -1,5 +1,4 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomLinkList from './RoomLinkList';

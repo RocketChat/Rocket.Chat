@@ -1,10 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { ClientSession } from 'mongodb';
 
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
 import {
@@ -23,11 +26,15 @@ export async function saveUserIdentity({
 	name: rawName,
 	username: rawUsername,
 	updateUsernameInBackground = false,
+	updater,
+	session,
 }: {
 	_id: string;
 	name?: string;
 	username?: string;
 	updateUsernameInBackground?: boolean; // TODO: remove this
+	updater?: Updater<IUser>;
+	session?: ClientSession;
 }) {
 	if (!_id) {
 		return false;
@@ -36,7 +43,7 @@ export async function saveUserIdentity({
 	const name = String(rawName).trim();
 	const username = String(rawUsername).trim();
 
-	const user = await Users.findOneById(_id);
+	const user = await Users.findOneById(_id, { session });
 	if (!user) {
 		return false;
 	}
@@ -51,43 +58,46 @@ export async function saveUserIdentity({
 			return false;
 		}
 
-		if (!(await _setUsername(_id, username, user))) {
+		if (!(await _setUsername(_id, username, user, updater, session))) {
 			return false;
 		}
 		user.username = username;
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await _setRealName(_id, name, user))) {
+		if (!(await _setRealName(_id, name, user, updater, session))) {
 			return false;
 		}
 	}
 
-	// if coming from old username, update all references
-	if (previousUsername) {
-		const handleUpdateParams = {
-			username,
-			previousUsername,
-			rawUsername,
-			usernameChanged,
-			user,
-			name,
-			previousName,
-			rawName,
-			nameChanged,
-		};
-		if (updateUsernameInBackground) {
-			setImmediate(async () => {
-				try {
-					await updateUsernameReferences(handleUpdateParams);
-				} catch (err) {
-					SystemLogger.error(err);
-				}
-			});
-		} else {
-			await updateUsernameReferences(handleUpdateParams);
+	const updateReferences = async () => {
+		if (previousUsername) {
+			const handleUpdateParams = {
+				username,
+				previousUsername,
+				rawUsername,
+				usernameChanged,
+				user,
+				name,
+				previousName,
+				rawName,
+				nameChanged,
+			};
+			if (updateUsernameInBackground) {
+				setImmediate(async () => {
+					try {
+						await updateUsernameReferences(handleUpdateParams);
+					} catch (err) {
+						SystemLogger.error(err);
+					}
+				});
+			} else {
+				await updateUsernameReferences(handleUpdateParams);
+			}
 		}
-	}
+	};
+
+	await onceTransactionCommitedSuccessfully(updateReferences, session);
 
 	return true;
 }

@@ -55,6 +55,11 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+	if (!removedUser) {
+		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+			method: 'removeUserFromRoom',
+		});
+	}
 
 	await Room.beforeUserRemoved(room);
 

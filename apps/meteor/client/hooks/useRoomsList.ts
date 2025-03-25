@@ -33,7 +33,7 @@ export const useRoomsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { items: rooms, total } = await getRooms({
 				selector: JSON.stringify({ name: options.text || '' }),
 				offset: start,

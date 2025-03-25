@@ -1,5 +1,4 @@
 import '../../app/authorization/server';
-import './apps';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
@@ -12,9 +11,9 @@ import { isRunningMs } from '../../../server/lib/isRunningMs';
 export const registerEEBroker = async (): Promise<void> => {
 	// only starts network broker if running in micro services mode
 	if (isRunningMs()) {
-		const { broker } = await import('@rocket.chat/network-broker');
+		const { startBroker } = await import('@rocket.chat/network-broker');
 
-		api.setBroker(broker);
+		api.setBroker(startBroker());
 		void api.start();
 	} else {
 		require('./presence');

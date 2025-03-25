@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -18,7 +18,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {
@@ -65,7 +65,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {
@@ -111,15 +111,17 @@ const TeamsChannels = ({
 							</Box>
 						</Box>
 						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
-							<Virtuoso
-								totalCount={total}
-								data={channels}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-								itemContent={(index, data) => (
-									<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<Virtuoso
+									totalCount={total}
+									data={channels}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+									itemContent={(index, data) => (
+										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}

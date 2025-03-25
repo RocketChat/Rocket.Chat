@@ -1,5 +1,411 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.17
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#35181](https://github.com/RocketChat/Rocket.Chat/pull/35181)) Bump meteor to 3.1.2 and Node version to 20.13.1
+
+- <details><summary>Updated dependencies [eba8e364e4bef7ed71ebb527738515e8f7914ec7, d5175eeb5be81bab061e5ff8c6991c589bfeb0f4, 0df16c4ca50a6ad8613cfdc11a8ef6cb216fb6a4, 89964144e042c8d9282b51efd89e1e684077fdd7, f80ac66b006080313f4aa5a04706ff9c8790622b, dee90e0791de41997e6df6149c4fe07d3a12c003, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/rest-typings@7.4.0
+  - @rocket.chat/models@1.3.0
+  - @rocket.chat/model-typings@1.4.0
+  - @rocket.chat/network-broker@0.1.9
+  - @rocket.chat/core-typings@7.4.0
+  - @rocket.chat/core-services@0.7.9
+  - @rocket.chat/instance-status@0.1.17
+  </details>
+
+## 0.3.17-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.5
+  - @rocket.chat/rest-typings@7.4.0-rc.5
+  - @rocket.chat/core-services@0.7.9-rc.5
+  - @rocket.chat/model-typings@1.4.0-rc.5
+  - @rocket.chat/models@1.3.0-rc.5
+  - @rocket.chat/network-broker@0.1.9-rc.5
+  - @rocket.chat/instance-status@0.1.17-rc.5
+  </details>
+
+## 0.3.17-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.4
+  - @rocket.chat/rest-typings@7.4.0-rc.4
+  - @rocket.chat/core-services@0.7.9-rc.4
+  - @rocket.chat/model-typings@1.4.0-rc.4
+  - @rocket.chat/models@1.3.0-rc.4
+  - @rocket.chat/network-broker@0.1.9-rc.4
+  - @rocket.chat/instance-status@0.1.17-rc.4
+  </details>
+
+## 0.3.16-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.4.0-rc.3
+  - @rocket.chat/rest-typings@7.4.0-rc.3
+  - @rocket.chat/core-services@0.7.8-rc.3
+  - @rocket.chat/model-typings@1.4.0-rc.3
+  - @rocket.chat/models@1.3.0-rc.3
+  - @rocket.chat/network-broker@0.1.8-rc.3
+  - @rocket.chat/instance-status@0.1.16-rc.3
+  </details>
+
+## 0.3.16-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.2
+  - @rocket.chat/rest-typings@7.4.0-rc.2
+  - @rocket.chat/core-services@0.7.8-rc.2
+  - @rocket.chat/model-typings@1.4.0-rc.2
+  - @rocket.chat/models@1.3.0-rc.2
+  - @rocket.chat/network-broker@0.1.8-rc.2
+  - @rocket.chat/instance-status@0.1.16-rc.2
+  </details>
+
+## 0.3.16-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.1
+  - @rocket.chat/rest-typings@7.4.0-rc.1
+  - @rocket.chat/core-services@0.7.8-rc.1
+  - @rocket.chat/model-typings@1.4.0-rc.1
+  - @rocket.chat/models@1.3.0-rc.1
+  - @rocket.chat/network-broker@0.1.8-rc.1
+  - @rocket.chat/instance-status@0.1.16-rc.1
+  </details>
+
+## 0.3.16-rc.0
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#35181](https://github.com/RocketChat/Rocket.Chat/pull/35181)) Bump meteor to 3.1.2 and Node version to 20.13.1
+
+- <details><summary>Updated dependencies [eba8e364e4bef7ed71ebb527738515e8f7914ec7, d5175eeb5be81bab061e5ff8c6991c589bfeb0f4, 0df16c4ca50a6ad8613cfdc11a8ef6cb216fb6a4, 89964144e042c8d9282b51efd89e1e684077fdd7, f80ac66b006080313f4aa5a04706ff9c8790622b, dee90e0791de41997e6df6149c4fe07d3a12c003, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/rest-typings@7.4.0-rc.0
+  - @rocket.chat/models@1.3.0-rc.0
+  - @rocket.chat/model-typings@1.4.0-rc.0
+  - @rocket.chat/network-broker@0.1.6-rc.0
+  - @rocket.chat/core-typings@7.4.0-rc.0
+  - @rocket.chat/core-services@0.7.6-rc.0
+  - @rocket.chat/instance-status@0.1.14-rc.0
+  </details>
+
+## 0.3.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.3.3
+  - @rocket.chat/rest-typings@7.3.3
+  - @rocket.chat/core-services@0.7.8
+  - @rocket.chat/model-typings@1.3.3
+  - @rocket.chat/models@1.2.3
+  - @rocket.chat/network-broker@0.1.8
+  - @rocket.chat/instance-status@0.1.16
+  </details>
+
+## 0.3.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.2
+  - @rocket.chat/rest-typings@7.3.2
+  - @rocket.chat/core-services@0.7.7
+  - @rocket.chat/model-typings@1.3.2
+  - @rocket.chat/models@1.2.2
+  - @rocket.chat/network-broker@0.1.7
+  - @rocket.chat/instance-status@0.1.15
+  </details>
+
+## 0.3.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7905dfebe48d27d0d774fb23cc579ea9dfd01f4]:</summary>
+
+  - @rocket.chat/model-typings@1.3.1
+  - @rocket.chat/models@1.2.1
+  - @rocket.chat/core-services@0.7.6
+  - @rocket.chat/instance-status@0.1.14
+  - @rocket.chat/network-broker@0.1.6
+  - @rocket.chat/core-typings@7.3.1
+  - @rocket.chat/rest-typings@7.3.1
+  </details>
+
+## 0.3.13
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [79cba772bd8ae0a1e084687b47e05f312e85078a, 5506c406f4a22145ece065ad2b797225e94423ca, c75d771c410579d3d7eaabb379871456ded1b111, 8942b0032af976738a7c602fa389803dda30c0dc, 1f54b733eaa91e602baaff74f113c7ef16ddaa89, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, c0fa1c884cccab47f4e68dd81457c424cf176f11, b4ce5797b7fc52e851aa4afc54c4617fc12cbf72, c8e8518011b8b7d318a2bb2f26b897b196421d76]:</summary>
+
+  - @rocket.chat/model-typings@1.3.0
+  - @rocket.chat/models@1.2.0
+  - @rocket.chat/rest-typings@7.3.0
+  - @rocket.chat/core-typings@7.3.0
+  - @rocket.chat/core-services@0.7.5
+  - @rocket.chat/instance-status@0.1.13
+  - @rocket.chat/network-broker@0.1.5
+  </details>
+
+## 0.3.13-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.5
+  - @rocket.chat/rest-typings@7.3.0-rc.5
+  - @rocket.chat/core-services@0.7.5-rc.5
+  - @rocket.chat/model-typings@1.3.0-rc.5
+  - @rocket.chat/models@1.2.0-rc.5
+  - @rocket.chat/network-broker@0.1.5-rc.5
+  - @rocket.chat/instance-status@0.1.13-rc.5
+  </details>
+
+## 0.3.13-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.4
+  - @rocket.chat/rest-typings@7.3.0-rc.4
+  - @rocket.chat/core-services@0.7.5-rc.4
+  - @rocket.chat/model-typings@1.3.0-rc.4
+  - @rocket.chat/models@1.2.0-rc.4
+  - @rocket.chat/network-broker@0.1.5-rc.4
+  - @rocket.chat/instance-status@0.1.13-rc.4
+  </details>
+
+## 0.3.13-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.3
+  - @rocket.chat/rest-typings@7.3.0-rc.3
+  - @rocket.chat/core-services@0.7.5-rc.3
+  - @rocket.chat/model-typings@1.3.0-rc.3
+  - @rocket.chat/models@1.2.0-rc.3
+  - @rocket.chat/network-broker@0.1.5-rc.3
+  - @rocket.chat/instance-status@0.1.13-rc.3
+  </details>
+
+## 0.3.13-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.2
+  - @rocket.chat/rest-typings@7.3.0-rc.2
+  - @rocket.chat/core-services@0.7.5-rc.2
+  - @rocket.chat/model-typings@1.3.0-rc.2
+  - @rocket.chat/models@1.2.0-rc.2
+  - @rocket.chat/network-broker@0.1.5-rc.2
+  - @rocket.chat/instance-status@0.1.13-rc.2
+  </details>
+
+## 0.3.13-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.1
+  - @rocket.chat/rest-typings@7.3.0-rc.1
+  - @rocket.chat/core-services@0.7.5-rc.1
+  - @rocket.chat/model-typings@1.3.0-rc.1
+  - @rocket.chat/models@1.2.0-rc.1
+  - @rocket.chat/network-broker@0.1.5-rc.1
+  - @rocket.chat/instance-status@0.1.13-rc.1
+  </details>
+
+## 0.3.13-rc.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [79cba772bd8ae0a1e084687b47e05f312e85078a, 5506c406f4a22145ece065ad2b797225e94423ca, c75d771c410579d3d7eaabb379871456ded1b111, 8942b0032af976738a7c602fa389803dda30c0dc, 1f54b733eaa91e602baaff74f113c7ef16ddaa89, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944, b4ce5797b7fc52e851aa4afc54c4617fc12cbf72, c8e8518011b8b7d318a2bb2f26b897b196421d76]:</summary>
+
+  - @rocket.chat/model-typings@1.3.0-rc.0
+  - @rocket.chat/models@1.2.0-rc.0
+  - @rocket.chat/rest-typings@7.3.0-rc.0
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  - @rocket.chat/core-services@0.7.5-rc.0
+  - @rocket.chat/instance-status@0.1.13-rc.0
+  - @rocket.chat/network-broker@0.1.5-rc.0
+  </details>
+
+## 0.3.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.1
+  - @rocket.chat/rest-typings@7.2.1
+  - @rocket.chat/core-services@0.7.4
+  - @rocket.chat/model-typings@1.2.1
+  - @rocket.chat/network-broker@0.1.4
+  - @rocket.chat/models@1.1.1
+  - @rocket.chat/instance-status@0.1.12
+  </details>
+
+## 0.3.11
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f11efb4011db4efcdbf978d4b76671028daeed6e, c43220dcd8c1df86a6143d6553964ad2173903b3, 47f24c2fb795eee33cb021d56508298b8a548eec, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0
+  - @rocket.chat/instance-status@0.1.11
+  - @rocket.chat/model-typings@1.2.0
+  - @rocket.chat/core-typings@7.2.0
+  - @rocket.chat/models@1.1.0
+  - @rocket.chat/core-services@0.7.3
+  - @rocket.chat/network-broker@0.1.3
+  </details>
+
+## 0.3.11-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.3
+  - @rocket.chat/rest-typings@7.2.0-rc.3
+  - @rocket.chat/core-services@0.7.3-rc.3
+  - @rocket.chat/model-typings@1.2.0-rc.3
+  - @rocket.chat/network-broker@0.1.3-rc.3
+  - @rocket.chat/models@1.1.0-rc.3
+  - @rocket.chat/instance-status@0.1.11-rc.3
+  </details>
+
+## 0.3.11-rc.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
+
+  - @rocket.chat/models@1.1.0-rc.2
+  - @rocket.chat/core-services@0.7.3-rc.2
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/rest-typings@7.2.0-rc.2
+  - @rocket.chat/instance-status@0.1.11-rc.2
+  - @rocket.chat/network-broker@0.1.3-rc.2
+  - @rocket.chat/model-typings@1.2.0-rc.2
+  </details>
+
+## 0.3.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.1
+  - @rocket.chat/rest-typings@7.2.0-rc.1
+  - @rocket.chat/core-services@0.7.3-rc.1
+  - @rocket.chat/model-typings@1.2.0-rc.1
+  - @rocket.chat/network-broker@0.1.3-rc.1
+  - @rocket.chat/models@1.1.0-rc.1
+  - @rocket.chat/instance-status@0.1.11-rc.1
+  </details>
+
+## 0.3.11-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f11efb4011db4efcdbf978d4b76671028daeed6e, 47f24c2fb795eee33cb021d56508298b8a548eec, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0-rc.0
+  - @rocket.chat/instance-status@0.1.11-rc.0
+  - @rocket.chat/model-typings@1.2.0-rc.0
+  - @rocket.chat/core-typings@7.2.0-rc.0
+  - @rocket.chat/models@1.1.0-rc.0
+  - @rocket.chat/core-services@0.7.3-rc.0
+  - @rocket.chat/network-broker@0.1.3-rc.0
+  </details>
+
+## 0.3.10
+
+### Patch Changes
+
+- ([#33596](https://github.com/RocketChat/Rocket.Chat/pull/33596)) Bump meteor to 3.0.4 and Node version to 20.18.0
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, 63ccadc012499e004445ad6bc6cd2ff777aecbd1]:</summary>
+
+  - @rocket.chat/model-typings@1.1.0
+  - @rocket.chat/core-typings@7.1.0
+  - @rocket.chat/rest-typings@7.1.0
+  - @rocket.chat/core-services@0.7.2
+  - @rocket.chat/models@1.0.1
+  - @rocket.chat/network-broker@0.1.2
+  - @rocket.chat/instance-status@0.1.10
+  </details>
+
+## 0.3.10-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.3
+  - @rocket.chat/rest-typings@7.1.0-rc.3
+  - @rocket.chat/core-services@0.7.2-rc.3
+  - @rocket.chat/model-typings@1.1.0-rc.3
+  - @rocket.chat/network-broker@0.1.2-rc.3
+  - @rocket.chat/models@1.0.1-rc.3
+  - @rocket.chat/instance-status@0.1.10-rc.3
+  </details>
+
+## 0.3.10-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.2
+  - @rocket.chat/rest-typings@7.1.0-rc.2
+  - @rocket.chat/core-services@0.7.2-rc.2
+  - @rocket.chat/model-typings@1.1.0-rc.2
+  - @rocket.chat/network-broker@0.1.2-rc.2
+  - @rocket.chat/models@1.0.1-rc.2
+  - @rocket.chat/instance-status@0.1.10-rc.2
+  </details>
+
 ## 0.3.10-rc.1
 
 ### Patch Changes

@@ -1,7 +1,7 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -44,77 +44,69 @@ function CodeMirror({
 	...props
 }: CodeMirrorProps): ReactElement {
 	const [value, setValue] = useState(valueProp || defaultValue);
+	const handleChange = useEffectEvent(onChange);
 
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const editorRef = useRef<EditorFromTextArea | null>(null);
-	const handleChange = useMutableCallback(onChange);
+	const textAreaRef = useCallback(
+		async (node: HTMLTextAreaElement | null) => {
+			if (!node) return;
 
-	useEffect(() => {
-		if (editorRef.current) {
-			return;
-		}
+			try {
+				const { default: CodeMirror } = await import('codemirror');
+				await Promise.all([
+					import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+					import('codemirror/addon/edit/matchbrackets'),
+					import('codemirror/addon/edit/closebrackets'),
+					import('codemirror/addon/edit/matchtags'),
+					import('codemirror/addon/edit/trailingspace'),
+					import('codemirror/addon/search/match-highlighter'),
+					import('codemirror/lib/codemirror.css'),
+				]);
 
-		const setupCodeMirror = async (): Promise<void> => {
-			const { default: CodeMirror } = await import('codemirror');
-			await Promise.all([
-				import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
-				import('codemirror/addon/edit/matchbrackets'),
-				import('codemirror/addon/edit/closebrackets'),
-				import('codemirror/addon/edit/matchtags'),
-				import('codemirror/addon/edit/trailingspace'),
-				import('codemirror/addon/search/match-highlighter'),
-				import('codemirror/lib/codemirror.css'),
-			]);
+				editorRef.current = CodeMirror.fromTextArea(node, {
+					lineNumbers,
+					lineWrapping,
+					mode,
+					gutters,
+					foldGutter,
+					matchBrackets,
+					autoCloseBrackets,
+					matchTags,
+					showTrailingSpace,
+					highlightSelectionMatches,
+					readOnly,
+				});
 
-			if (!textAreaRef.current) {
-				return;
+				editorRef.current.on('change', (doc: Editor) => {
+					const newValue = doc.getValue();
+					setValue(newValue);
+					handleChange(newValue);
+				});
+
+				return () => {
+					if (node.parentNode) {
+						editorRef.current?.toTextArea();
+					}
+				};
+			} catch (error) {
+				console.error('CodeMirror initialization failed:', error);
 			}
-
-			editorRef.current = CodeMirror.fromTextArea(textAreaRef.current, {
-				lineNumbers,
-				lineWrapping,
-				mode,
-				gutters,
-				foldGutter,
-				matchBrackets,
-				autoCloseBrackets,
-				matchTags,
-				showTrailingSpace,
-				highlightSelectionMatches,
-				readOnly,
-			});
-
-			editorRef.current.on('change', (doc: Editor) => {
-				const value = doc.getValue();
-				setValue(value);
-				handleChange(value);
-			});
-		};
-
-		setupCodeMirror();
-
-		return (): void => {
-			if (!editorRef.current) {
-				return;
-			}
-
-			editorRef.current.toTextArea();
-		};
-	}, [
-		autoCloseBrackets,
-		foldGutter,
-		gutters,
-		highlightSelectionMatches,
-		lineNumbers,
-		lineWrapping,
-		matchBrackets,
-		matchTags,
-		mode,
-		handleChange,
-		readOnly,
-		textAreaRef,
-		showTrailingSpace,
-	]);
+		},
+		[
+			autoCloseBrackets,
+			foldGutter,
+			gutters,
+			highlightSelectionMatches,
+			lineNumbers,
+			lineWrapping,
+			matchBrackets,
+			matchTags,
+			mode,
+			handleChange,
+			readOnly,
+			showTrailingSpace,
+		],
+	);
 
 	useEffect(() => {
 		setValue(valueProp);
