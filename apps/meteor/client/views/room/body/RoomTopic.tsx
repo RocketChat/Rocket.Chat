@@ -1,11 +1,10 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isTeamRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
-import { useUserId, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useUserId, useTranslation, useRouter, useUserPresence } from '@rocket.chat/ui-contexts';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { usePresence } from '../../../hooks/usePresence';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
@@ -18,13 +17,14 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	const canEdit = useCanEditRoom(room);
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
-	const directUserData = usePresence(directUserId);
+	const directUserData = useUserPresence(directUserId);
 	const router = useRouter();
 
 	const currentRoute = router.getLocationPathname();
 	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
 
-	const topic = room.t === 'd' && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
+	const topic = isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
+	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
 	if (!topic && !canEdit) {
 		return null;
@@ -33,7 +33,7 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	return (
 		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
 			<RoomBannerContent>
-				{!topic && canEdit ? (
+				{!topic && canEditTopic ? (
 					<Box is='a' href={href}>
 						{t('Add_topic')}
 					</Box>

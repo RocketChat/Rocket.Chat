@@ -57,6 +57,10 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	get sidebarHomeAction(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Home' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();

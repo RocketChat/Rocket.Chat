@@ -46,6 +46,7 @@
 		"test": "yarn testunit && yarn testapi",
 		"translation-diff": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-diff.ts",
 		"translation-check": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-check.ts",
+		"translation-replace-sprintf-params": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/replaceTranslationSprintfParams.ts",
 		"translation-fix-order": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node .scripts/translation-fix-order.ts",
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
@@ -266,6 +267,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/mongo-adapter": "workspace:^",
 		"@rocket.chat/mp3-encoder": "^0.31.26",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
@@ -443,7 +445,8 @@
 		"xml-encryption": "~3.1.0",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1",
-		"zod": "^3.24.1"
+		"zod": "^3.24.1",
+		"zustand": "~5.0.3"
 	},
 	"meteor": {
 		"mainModule": {
