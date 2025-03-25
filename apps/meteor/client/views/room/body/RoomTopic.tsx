@@ -27,7 +27,7 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	const topic = isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
 	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
-	if (!topic && !canEdit) {
+	if (!topic && !canEditTopic) {
 		return null;
 	}
 

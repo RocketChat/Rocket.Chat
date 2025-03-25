@@ -84,6 +84,13 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
 		});
 
+		test('should not display room topic in direct message', async ({ page }) => {
+			await page.goto('/direct/user2');
+
+			// Not creating a PO because this will be removed very soon
+			await expect(page.locator('main').getByRole('note')).not.toBeVisible();
+		});
+
 		test('should expand/collapse sidebar groups', async ({ page }) => {
 			await page.goto('/home');
 			const collapser = poHomeChannel.sidebar.firstCollapser;
