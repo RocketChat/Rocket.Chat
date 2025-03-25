@@ -114,6 +114,8 @@ describe('miscellaneous', () => {
 				expect(res.body.data).to.have.property('userId');
 				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
+				expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
+				expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
 			})
 			.end(done);
 	});
@@ -133,6 +135,8 @@ describe('miscellaneous', () => {
 				expect(res.body.data).to.have.property('userId');
 				expect(res.body.data).to.have.property('authToken');
 				expect(res.body.data).to.have.property('me');
+				expect(res.body.data.me.services).to.not.have.nested.property('password.bcrypt');
+				expect(res.body.data.me.services).to.have.nested.property('password.exists', true);
 			})
 			.end(done);
 	});
@@ -200,7 +204,9 @@ describe('miscellaneous', () => {
 				expect(res.body).to.have.nested.property('emails[0].address', user.emails[0].address);
 				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
 				expect(res.body.settings.preferences).to.have.all.keys(allUserPreferencesKeys);
+				expect(res.body).to.have.property('isOAuthUser', false);
 				expect(res.body.services).to.not.have.nested.property('password.bcrypt');
+				expect(res.body.services).to.have.nested.property('password.exists', true);
 			});
 
 		await deleteUser(user);

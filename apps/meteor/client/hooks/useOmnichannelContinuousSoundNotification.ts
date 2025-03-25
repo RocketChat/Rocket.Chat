@@ -47,7 +47,7 @@ export const useOmnichannelContinuousSoundNotification = <T>(queue: T[]) => {
 		}
 
 		CustomSounds.play(continuousCustomSoundId, {
-			volume: notificationsSoundVolume,
+			volume: notificationsSoundVolume / 100,
 			loop: true,
 		});
 	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, notificationsSoundVolume, hasUnreadRoom]);

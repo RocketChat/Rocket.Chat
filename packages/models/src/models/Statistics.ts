@@ -28,7 +28,9 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 
 	async findLastStatsToken(): Promise<IStats['statsToken']> {
 		const records = await this.find(
-			{},
+			{
+				statsToken: { $exists: true },
+			},
 			{
 				sort: {
 					createdAt: -1,
@@ -61,5 +63,28 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 				},
 			},
 		);
+	}
+
+	async findInstallationDates() {
+		return this.col
+			.aggregate<Pick<IStats, 'version' | 'installedAt'>>([
+				{
+					$group: {
+						_id: '$version',
+						installedAt: { $min: '$installedAt' },
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						version: '$_id',
+						installedAt: 1,
+					},
+				},
+				{
+					$sort: { installedAt: 1 },
+				},
+			])
+			.toArray();
 	}
 }

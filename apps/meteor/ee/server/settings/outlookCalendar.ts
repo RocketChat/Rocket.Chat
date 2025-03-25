@@ -35,6 +35,12 @@ export function addSettings(): void {
 						invalidValue: '',
 					},
 				);
+
+				await this.add('Calendar_BusyStatus_Enabled', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+				});
 			},
 		);
 	});
