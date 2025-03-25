@@ -174,7 +174,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async setupNextStatusChange(): Promise<void> {
-		console.log('setupNextStatusChange');
 		return this.doSetupNextStatusChange();
 	}
 
