@@ -8,7 +8,7 @@ import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext'
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { getRoomGroup } from '../../lib/getRoomGroup';
 
-const RoomToolboxE2EESetup = () => {
+const RoomToolboxE2EESetup = ({ className }: { className?: string }) => {
 	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
 	const room = useRoom();
@@ -29,6 +29,7 @@ const RoomToolboxE2EESetup = () => {
 			{actions.map(({ id, icon, title, action, disabled, tooltip }, index) => (
 				<HeaderToolbarAction
 					key={id}
+					className={className}
 					index={index}
 					id={id}
 					icon={icon}
