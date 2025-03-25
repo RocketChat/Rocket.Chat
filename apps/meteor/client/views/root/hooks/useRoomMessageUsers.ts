@@ -59,7 +59,6 @@ export const useRoomMessageUsers = () => {
 					username,
 					name,
 					ts,
-					suggestion: true,
 				});
 			}
 		});

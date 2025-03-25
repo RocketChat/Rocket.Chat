@@ -75,7 +75,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
 						})
 						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
-						.slice(0, suggestionsCount ?? 5);
+						.slice(0, suggestionsCount ?? 5)
+						.map((u) => ({
+							...u,
+							suggestion: true,
+						}));
 
 					if (!filterRegex || filterRegex.test('all')) {
 						items.push({
