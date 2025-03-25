@@ -33,7 +33,13 @@ export async function setupAppointmentStatusChange(
 		await cronJobs.remove(cronJobId);
 	}
 
-	await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () =>
-		applyStatusChange({ eventId, uid, startTime, endTime, status, shouldScheduleRemoval }),
-	);
+	await cronJobs.addAtTimestamp(cronJobId, scheduledTime, async () => {
+		await applyStatusChange({ eventId, uid, startTime, endTime, status, shouldScheduleRemoval });
+
+		if (!shouldScheduleRemoval) {
+			if (await cronJobs.has('calendar-next-status-change')) {
+				await cronJobs.remove('calendar-next-status-change');
+			}
+		}
+	});
 }

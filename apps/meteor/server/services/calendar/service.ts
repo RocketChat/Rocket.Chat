@@ -5,12 +5,13 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CalendarEvent } from '@rocket.chat/models';
+import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
+import { applyStatusChange } from './statusEvents/applyStatusChange';
 import { cancelUpcomingStatusChanges } from './statusEvents/cancelUpcomingStatusChanges';
+import { generateCronJobId } from './statusEvents/generateCronJobId';
 import { removeCronJobs } from './statusEvents/removeCronJobs';
-import { setupAppointmentStatusChange } from './statusEvents/setupAppointmentStatusChange';
 import { getShiftedTime } from './utils/getShiftedTime';
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
@@ -21,6 +22,11 @@ const defaultMinutesForNotifications = 5;
 
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
+
+	constructor() {
+		super();
+		void this.setupNextStatusChange();
+	}
 
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl, busy } = data;
@@ -43,7 +49,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
 		if (busy !== false) {
-			await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+			await this.setupNextStatusChange();
 		}
 
 		return insertResult.insertedId;
@@ -82,8 +88,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 			await this.setupNextNotification();
 			if (busy !== false) {
-				await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+				await this.setupNextStatusChange();
 			}
+
 			return insertResult.insertedId;
 		}
 
@@ -91,7 +98,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		if (updateResult.modifiedCount > 0) {
 			await this.setupNextNotification();
 			if (busy !== false) {
-				await setupAppointmentStatusChange(event._id, uid, startTime, endTime, UserStatus.BUSY, true);
+				await this.setupNextStatusChange();
 			}
 		}
 
@@ -135,16 +142,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 			if (startTime || endTime) {
 				await removeCronJobs(eventId, event.uid);
-
 				const isBusy = busy !== undefined ? busy : event.busy !== false;
 				if (isBusy) {
-					const effectiveStartTime = startTime || event.startTime;
-					const effectiveEndTime = endTime || event.endTime;
-
-					// Only proceed if we have both valid start and end times
-					if (effectiveStartTime && effectiveEndTime) {
-						await setupAppointmentStatusChange(eventId, event.uid, effectiveStartTime, effectiveEndTime, UserStatus.BUSY, true);
-					}
+					await this.setupNextStatusChange();
 				}
 			}
 		}
@@ -158,13 +158,24 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await removeCronJobs(eventId, event.uid);
 		}
 
-		return CalendarEvent.deleteOne({
+		const result = await CalendarEvent.deleteOne({
 			_id: eventId,
 		});
+
+		if (result.deletedCount > 0) {
+			await this.setupNextStatusChange();
+		}
+
+		return result;
 	}
 
 	public async setupNextNotification(): Promise<void> {
 		return this.doSetupNextNotification(false);
+	}
+
+	public async setupNextStatusChange(): Promise<void> {
+		console.log('setupNextStatusChange');
+		return this.doSetupNextStatusChange();
 	}
 
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
@@ -198,6 +209,133 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
+	}
+
+	private async doSetupNextStatusChange(): Promise<void> {
+		// This method is called in the following moments:
+		// 1. When a new busy event is created or imported
+		// 2. When a busy event is updated (time/busy status changes)
+		// 3. When a busy event is deleted
+		// 4. When a status change job executes and completes
+		// 5. When an event ends and the status is restored
+		// 6. From Outlook Calendar integration (ee/server/configuration/outlookCalendar.ts)
+
+		const busyStatusEnabled = settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		if (!busyStatusEnabled) {
+			const chainJobId = 'calendar-next-status-change';
+			if (await cronJobs.has(chainJobId)) {
+				await cronJobs.remove(chainJobId);
+			}
+			return;
+		}
+
+		const now = new Date();
+		const startOfNextMinute = new Date(now);
+		startOfNextMinute.setSeconds(0, 0);
+		startOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
+
+		const endOfNextMinute = new Date(startOfNextMinute);
+		endOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
+
+		const eventsToScheduleNow = await CalendarEvent.findEventsToScheduleNow(now, endOfNextMinute).toArray();
+		const nextFutureEvent = await CalendarEvent.findNextFutureEvent(endOfNextMinute);
+
+		// PART 1: SCHEDULE ALL EVENTS STARTING SOON (NOW THROUGH NEXT MINUTE)
+		// Schedule all events that need to be scheduled now
+		for await (const event of eventsToScheduleNow) {
+			if (!event.endTime) {
+				continue;
+			}
+
+			const startCronJobId = generateCronJobId(event._id, event.uid, 'status');
+			if (await cronJobs.has(startCronJobId)) {
+				continue;
+			}
+
+			await cronJobs.addAtTimestamp(startCronJobId, event.startTime, async () => {
+				const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+				if (!user) {
+					return;
+				}
+
+				const previousStatus = user.status;
+				await applyStatusChange({
+					eventId: event._id,
+					uid: event.uid,
+					startTime: event.startTime,
+					endTime: event.endTime,
+					status: UserStatus.BUSY,
+					shouldScheduleRemoval: true,
+				});
+
+				const endCronJobId = generateCronJobId(event._id, event.uid, 'status');
+
+				if (await cronJobs.has(endCronJobId)) {
+					await cronJobs.remove(endCronJobId);
+				}
+
+				if (!event.endTime) {
+					return;
+				}
+
+				await cronJobs.addAtTimestamp(endCronJobId, event.endTime, async () => {
+					await applyStatusChange({
+						eventId: event._id,
+						uid: event.uid,
+						startTime: event.startTime,
+						endTime: event.endTime,
+						status: previousStatus,
+						shouldScheduleRemoval: false,
+					});
+					await this.doSetupNextStatusChange();
+				});
+			});
+		}
+
+		// PART 2: ENSURE IN-PROGRESS EVENTS HAVE SCHEDULED END TIMES
+		// This handles cases like:
+		// - Service restarts during an event
+		// - Events imported while in progress
+		// - Any missed end-time schedules
+		const inProgressEvents = await CalendarEvent.findInProgressEvents(now).toArray();
+		for await (const event of inProgressEvents) {
+			if (!event.endTime) {
+				continue;
+			}
+
+			const endCronJobId = generateCronJobId(event._id, event.uid, 'status');
+			if (!(await cronJobs.has(endCronJobId))) {
+				const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+				if (!user) {
+					continue;
+				}
+
+				await cronJobs.addAtTimestamp(endCronJobId, event.endTime, async () => {
+					await applyStatusChange({
+						eventId: event._id,
+						uid: event.uid,
+						startTime: event.startTime,
+						endTime: event.endTime,
+						status: user.status === UserStatus.BUSY ? UserStatus.ONLINE : user.status,
+						shouldScheduleRemoval: false,
+					});
+					await this.doSetupNextStatusChange();
+				});
+			}
+		}
+
+		// PART 3: SCHEDULE THE NEXT CHECK
+		// Set up the chain to the next check
+		const chainJobId = 'calendar-next-status-change';
+
+		if (await cronJobs.has(chainJobId)) {
+			await cronJobs.remove(chainJobId);
+		}
+
+		const nextCheckTime = nextFutureEvent?.startTime || endOfNextMinute;
+		await cronJobs.addAtTimestamp(chainJobId, nextCheckTime, async () => {
+			await this.doSetupNextStatusChange();
+		});
 	}
 
 	private async sendCurrentNotifications(date: Date): Promise<void> {

@@ -149,4 +149,57 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			endTime: { $exists: true, $gte: endTime },
 		});
 	}
+
+	public findEventsToScheduleNow(now: Date, endTime: Date): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				startTime: { $gt: now, $lt: endTime },
+				busy: { $ne: false },
+				endTime: { $exists: true },
+			},
+			{
+				sort: { startTime: 1 },
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+				},
+			},
+		);
+	}
+
+	public async findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null> {
+		return this.findOne(
+			{
+				startTime: { $gte: startTime },
+				busy: { $ne: false },
+				endTime: { $exists: true },
+			},
+			{
+				sort: { startTime: 1 },
+				projection: {
+					startTime: 1,
+				},
+			},
+		);
+	}
+
+	public findInProgressEvents(now: Date): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				startTime: { $lt: now },
+				endTime: { $gt: now },
+				busy: { $ne: false },
+			},
+			{
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+				},
+			},
+		);
+	}
 }
