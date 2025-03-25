@@ -23,7 +23,7 @@ export const loggerMiddleware =
 			length: c.req.header('content-length'),
 			host: c.req.header('host'),
 			referer: c.req.header('referer'),
-			// remoteIP: c.req.ip,
+			remoteIP: c.get('remoteAddress'),
 			...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && getRestPayload(payload)),
 		});
 
