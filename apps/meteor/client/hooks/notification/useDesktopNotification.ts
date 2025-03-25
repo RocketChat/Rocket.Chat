@@ -2,13 +2,15 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+import { useNotification } from './useNotification';
 import { e2e } from '../../../app/e2e/client';
-import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 import { RoomManager } from '../../lib/RoomManager';
 import { getAvatarAsPng } from '../../lib/utils/getAvatarAsPng';
 
 export const useDesktopNotification = () => {
 	const user = useUser();
+	const notify = useNotification();
+
 	const notifyDesktop = useCallback(
 		async (notification: INotificationDesktop) => {
 			if (
@@ -30,10 +32,10 @@ export const useDesktopNotification = () => {
 
 			return getAvatarAsPng(notification.payload.sender?.username, (avatarAsPng) => {
 				notification.icon = avatarAsPng;
-				return KonchatNotification.notify(notification);
+				return notify(notification);
 			});
 		},
-		[user?.status],
+		[notify, user?.status],
 	);
 
 	return notifyDesktop;
