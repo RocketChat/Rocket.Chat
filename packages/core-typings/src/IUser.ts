@@ -199,6 +199,7 @@ export interface IUser extends IRocketChatRecord {
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
+	// @deprecated
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
@@ -252,6 +253,10 @@ export type IUserDataEvent = {
 export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
+>;
+
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
 >;
 
 export type AvatarUrlObj = {

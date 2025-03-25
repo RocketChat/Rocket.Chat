@@ -24,6 +24,7 @@ import {
 	UserContext,
 	ActionManagerContext,
 	ModalContext,
+	UserPresenceContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -117,6 +118,10 @@ export class MockedAppRootBuilder {
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
+	};
+
+	private userPresence: ContextType<typeof UserPresenceContext> = {
+		queryUserData: (_uid) => ({ subscribe: () => () => undefined, get: () => undefined }),
 	};
 
 	private videoConf: ContextType<typeof VideoConfContext> = {
@@ -339,6 +344,14 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withUsers(users: IUser[]): this {
+		users.forEach((user) => {
+			this.userPresence.queryUserData = (_uid) => ({ subscribe: () => () => undefined, get: () => user });
+		});
+
+		return this;
+	}
+
 	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
 		this.subscriptions = subscriptions;
 
@@ -520,6 +533,7 @@ export class MockedAppRootBuilder {
 			router,
 			settings,
 			user,
+			userPresence,
 			videoConf,
 			i18n,
 			authorization,
@@ -609,36 +623,38 @@ export class MockedAppRootBuilder {
 														<AuthorizationContext.Provider value={authorization}>
 															{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
-																		<UserPresenceProvider>*/}
-															<ActionManagerContext.Provider
-																value={{
-																	generateTriggerId: () => '',
-																	emitInteraction: () => Promise.reject(new Error('not implemented')),
-																	getInteractionPayloadByViewId: () => undefined,
-																	handleServerInteraction: () => undefined,
-																	off: () => undefined,
-																	on: () => undefined,
-																	openView: () => undefined,
-																	disposeView: () => undefined,
-																	notifyBusy: () => undefined,
-																	notifyIdle: () => undefined,
-																}}
-															>
-																<VideoConfContext.Provider value={videoConf}>
-																	{/* <CallProvider>
+																	*/}
+															<UserPresenceContext.Provider value={userPresence}>
+																<ActionManagerContext.Provider
+																	value={{
+																		generateTriggerId: () => '',
+																		emitInteraction: () => Promise.reject(new Error('not implemented')),
+																		getInteractionPayloadByViewId: () => undefined,
+																		handleServerInteraction: () => undefined,
+																		off: () => undefined,
+																		on: () => undefined,
+																		openView: () => undefined,
+																		disposeView: () => undefined,
+																		notifyBusy: () => undefined,
+																		notifyIdle: () => undefined,
+																	}}
+																>
+																	<VideoConfContext.Provider value={videoConf}>
+																		{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																	{wrappers.reduce<ReactNode>(
-																		(children, wrapper) => wrapper(children),
-																		<>
-																			{children}
-																			{modal.currentModal.component}
-																		</>,
-																	)}
-																	{/* </OmnichannelProvider>
+																		{wrappers.reduce<ReactNode>(
+																			(children, wrapper) => wrapper(children),
+																			<>
+																				{children}
+																				{modal.currentModal.component}
+																			</>,
+																		)}
+																		{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																</VideoConfContext.Provider>
-															</ActionManagerContext.Provider>
-															{/* 		</UserPresenceProvider>
+																	</VideoConfContext.Provider>
+																</ActionManagerContext.Provider>
+															</UserPresenceContext.Provider>
+															{/* 		
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
 														</AuthorizationContext.Provider>
