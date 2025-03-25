@@ -291,6 +291,10 @@ export class LDAPEEManager extends LDAPManager {
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+		if (!user) {
+			logger.error(`Unable to find user '${roomOwner}' to be the owner of the channel '${channel}'.`);
+			return;
+		}
 
 		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },

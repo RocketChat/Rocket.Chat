@@ -1,5 +1,7 @@
 import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
 
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -9,6 +11,7 @@ export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
+export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';

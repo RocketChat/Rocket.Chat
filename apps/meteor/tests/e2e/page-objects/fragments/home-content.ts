@@ -276,6 +276,10 @@ export class HomeContent {
 		return this.page.getByRole('dialog', { name: 'Emoji picker' });
 	}
 
+	get scrollerEmojiPicker(): Locator {
+		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
+	}
+
 	getEmojiPickerTabByName(name: string) {
 		return this.dialogEmojiPicker.locator(`role=tablist >> role=tab[name="${name}"]`);
 	}
@@ -385,16 +389,12 @@ export class HomeContent {
 		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
 	}
 
-	getIncomingCallByName(name: string): Locator {
+	getVideoConfPopupByName(name: string): Locator {
 		return this.page.getByRole('dialog', { name });
 	}
 
 	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
-	}
-
-	videoConfRingCallText(text: string): Locator {
-		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
 	}
 
 	get videoConfMessageBlock(): Locator {
@@ -468,5 +468,9 @@ export class HomeContent {
 
 	get btnSendThreadComposer() {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true });
+	}
+
+	get btnJoinChannel() {
+		return this.page.getByRole('button', { name: 'Join channel' });
 	}
 }
