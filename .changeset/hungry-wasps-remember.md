@@ -4,4 +4,4 @@
 ---
 
 Removes the avatar in the room header 
-> This change is under feature preview, in order to check it you need to enabled it
+> This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
