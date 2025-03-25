@@ -30,7 +30,6 @@ import './business-hour';
 import { createDefaultPriorities } from './priorities';
 
 await License.onLicense('livechat-enterprise', async () => {
-	require('./api');
 	require('./hooks');
 	await import('./startup');
 	const { createPermissions } = await import('./permissions');
