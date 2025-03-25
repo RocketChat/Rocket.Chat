@@ -39,6 +39,7 @@ import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
+import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import type { Route } from './router';
 import { Router } from './router';
@@ -101,36 +102,6 @@ const rateLimiterDictionary: Record<
 		options: RateLimiterOptions;
 	}
 > = {};
-
-const getRequestIP = (req: Request): string | null => {
-	const forwardedFor = req.headers.get('x-forwarded-for');
-	const remoteAddress = req.headers.get('x-real-ip');
-	return remoteAddress || forwardedFor || null;
-
-	// const socket = req.socket || req.connection?.socket;
-	// const remoteAddress =
-	// 	req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null));
-
-	// if (!socket) {
-	// 	return remoteAddress || forwardedFor || null;
-	// }
-
-	// const httpForwardedCount = parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0;
-	// if (httpForwardedCount <= 0) {
-	// 	return remoteAddress;
-	// }
-
-	// if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
-	// 	return remoteAddress;
-	// }
-
-	// forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
-	// if (httpForwardedCount > forwardedFor.length) {
-	// 	return remoteAddress;
-	// }
-
-	// return forwardedFor[forwardedFor.length - httpForwardedCount];
-};
 
 const generateConnection = (
 	ipAddress: string,
@@ -774,8 +745,6 @@ export class APIClass<
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.requestIp = getRequestIP(this.request)!;
-
 						if (options.authRequired || options.authOrAnonRequired) {
 							const user = await api.authenticatedRoute.call(this, this.request);
 							this.user = user!;
@@ -1031,7 +1000,7 @@ export class APIClass<
 					const args = loginCompatibility(this.bodyParams, request);
 
 					const invocation = new DDPCommon.MethodInvocation({
-						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
+						connection: generateConnection(this.requestIp || '', this.request.headers),
 					});
 
 					try {
@@ -1228,6 +1197,7 @@ export const startRestAPI = () => {
 		API.api
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
+			.use(remoteAddressMiddleware)
 			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
 			.use(tracerSpanMiddleware)
 			.use(API.v1.router)
