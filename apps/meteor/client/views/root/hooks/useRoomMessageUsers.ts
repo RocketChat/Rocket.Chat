@@ -67,11 +67,9 @@ export const useRoomMessageUsers = () => {
 		return Array.from(uniqueUsers.values());
 	}, [queryParams.rid, queryParams.username, rid]);
 
-	const { data: roomMessageUsers = [] } = useQuery<RoomMessageUser[]>({
+	return useQuery<RoomMessageUser[]>({
 		queryKey: roomMessageUsersQueryKeys.all(rid, uid),
 		queryFn: fetchRoomMessageUsers,
 		enabled: Boolean(rid && uid),
 	});
-
-	return roomMessageUsers;
 };

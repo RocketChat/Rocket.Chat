@@ -70,11 +70,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const roomMessageUsers = queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid)) ?? [];
 
 					roomMessageUsers
-						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
 						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
 						.slice(0, suggestionsCount ?? 5);
 
 					if (!filterRegex || filterRegex.test('all')) {
@@ -103,11 +103,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const roomMessageUsers = queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid)) ?? [];
 					const usernames = roomMessageUsers
-						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
 						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
 						.slice(0, suggestionsCount ?? 5)
 						.map((u) => u.username);
 
