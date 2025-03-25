@@ -2,9 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
-import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import ParentRoomButton from './ParentRoomButton';
+import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type APIErrorResult = { success: boolean; error: string };
 
@@ -13,7 +14,9 @@ type ParentTeamProps = {
 };
 
 const ParentTeam = ({ room }: ParentTeamProps) => {
+	const { t } = useTranslation();
 	const { teamId } = room;
+
 	const userId = useUserId();
 
 	if (!teamId) {
@@ -59,24 +62,16 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 		goToRoomById(rid);
 	};
 
-	if (teamInfoLoading || userTeamsLoading) {
-		return <HeaderTagSkeleton />;
-	}
-
 	if (teamInfoError) {
 		return null;
 	}
 
 	return (
-		<HeaderTag
-			role='button'
-			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom()}
+		<ParentRoomButton
+			loading={teamInfoLoading || userTeamsLoading}
 			onClick={redirectToMainRoom}
-		>
-			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamInfoData?.teamInfo.name}
-		</HeaderTag>
+			title={t('Back_to__roomName__team', { roomName: teamInfoData?.teamInfo.name })}
+		/>
 	);
 };
 
