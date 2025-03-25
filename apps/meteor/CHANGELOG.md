@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.5.0-rc.2
+
+### Minor Changes
+
+- ([#35474](https://github.com/RocketChat/Rocket.Chat/pull/35474)) Adds automatic presence sync based on calendar events, updating the user’s status to “busy” when a meeting starts and reverting it afterward.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies [cc4111cf0b1458dd97369baf8969734f337650dc]:</summary>
+
+  - @rocket.chat/core-services@0.8.0-rc.2
+  - @rocket.chat/rest-typings@7.5.0-rc.2
+  - @rocket.chat/models@1.4.0-rc.2
+  - @rocket.chat/network-broker@0.1.11-rc.2
+  - @rocket.chat/omnichannel-services@0.3.16-rc.2
+  - @rocket.chat/presence@0.2.19-rc.2
+  - @rocket.chat/api-client@0.2.19-rc.2
+  - @rocket.chat/ui-contexts@17.0.0-rc.2
+  - @rocket.chat/cron@0.1.19-rc.2
+  - @rocket.chat/instance-status@0.1.19-rc.2
+  - @rocket.chat/ui-theming@0.4.3-rc.0
+  - @rocket.chat/fuselage-ui-kit@17.0.0-rc.2
+  - @rocket.chat/gazzodown@17.0.0-rc.2
+  - @rocket.chat/ui-avatar@13.0.0-rc.2
+  - @rocket.chat/ui-client@17.0.0-rc.2
+  - @rocket.chat/ui-video-conf@17.0.0-rc.2
+  - @rocket.chat/ui-voip@7.0.0-rc.2
+  - @rocket.chat/web-ui-registration@17.0.0-rc.2
+  - @rocket.chat/core-typings@7.5.0-rc.2
+  - @rocket.chat/license@1.0.10-rc.2
+  - @rocket.chat/pdf-worker@0.2.16-rc.2
+  - @rocket.chat/apps@0.4.0-rc.2
+  - @rocket.chat/freeswitch@1.2.6-rc.2
+  - @rocket.chat/model-typings@1.5.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.5.0-rc.1
 
 ### Patch Changes
