@@ -1,4 +1,4 @@
-import { MeteorError, Team, api } from '@rocket.chat/core-services';
+import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
@@ -19,7 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
+import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -1344,6 +1344,8 @@ API.v1.addRoute(
 						user: { status, _id, username, statusText, roles, name },
 						previousStatus: user.status,
 					});
+
+					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',

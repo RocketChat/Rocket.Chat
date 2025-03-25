@@ -11,6 +11,7 @@ export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
+export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';

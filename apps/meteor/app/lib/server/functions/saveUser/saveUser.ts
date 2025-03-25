@@ -162,8 +162,14 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.verified === 'boolean' && !userData.email) {
-			updater.set('emails.0.verified', userData.verified);
+		if (typeof userData.verified === 'boolean') {
+			if (oldUserData && 'emails' in oldUserData && oldUserData.emails?.some(({ address }) => address === userData.email)) {
+				const index = oldUserData.emails.findIndex(({ address }) => address === userData.email);
+				updater.set(`emails.${index}.verified`, userData.verified);
+			}
+			if (!userData.email) {
+				updater.set(`emails.0.verified`, userData.verified);
+			}
 		}
 
 		if (userData.customFields) {

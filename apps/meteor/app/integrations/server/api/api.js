@@ -319,19 +319,21 @@ Api.router.use((req, res, next) => {
 		return next();
 	}
 
-	const payloadKeys = Object.keys(req.body);
-	if (payloadKeys.length !== 1) {
+	// make sure body has only one key and it is 'payload'
+	if (!req.body || typeof req.body !== 'object' || !('payload' in req.body) || Object.keys(req.body).length !== 1) {
 		return next();
 	}
 
 	try {
-		// need to compose the full payload in this weird way because body-parser thought it was a form
-		req.bodyParams = JSON.parse(payloadKeys[0] + req.body[payloadKeys[0]]);
+		req.bodyParams = JSON.parse(req.body.payload);
+
 		return next();
 	} catch (e) {
 		res.writeHead(400);
 		res.end(JSON.stringify({ success: false, error: e.message }));
 	}
+
+	return next();
 });
 
 Api.addRoute(
