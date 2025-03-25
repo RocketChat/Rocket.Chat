@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -17,4 +17,8 @@ export const subscriptionsQueryKeys = {
 
 export const cannedResponsesQueryKeys = {
 	all: ['canned-responses'] as const,
+};
+
+export const roomMessageUsersQueryKeys = {
+	all: (rid: IRoom['_id'], uid: IUser['_id'] | null) => ['room-message-users', rid, uid] as const,
 };
