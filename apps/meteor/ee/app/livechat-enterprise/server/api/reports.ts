@@ -2,8 +2,6 @@ import { isGETDashboardConversationsByType } from '@rocket.chat/rest-typings';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
-import { API } from '../../../../../app/api/server';
-import { restrictQuery } from '../hooks/applyRoomRestrictions';
 import {
 	findAllConversationsBySourceCached,
 	findAllConversationsByStatusCached,
@@ -11,6 +9,8 @@ import {
 	findAllConversationsByTagsCached,
 	findAllConversationsByAgentsCached,
 } from './lib/dashboards';
+import { API } from '../../../../../app/api/server';
+import { restrictQuery } from '../lib/restrictQuery';
 
 const checkDates = (start: Moment, end: Moment) => {
 	if (!start.isValid()) {
