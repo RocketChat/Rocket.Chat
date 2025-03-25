@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -900,11 +901,12 @@ export class APIClass<
 					} as InnerAction<any, any, any>;
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
-				this.router
-					.use(license(_options as TypedOptions))
-					[
-						method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'
-					](`/${route}`.replaceAll('//', '/'), _options as TypedOptions, (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any);
+				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
+					`/${route}`.replaceAll('//', '/'),
+					_options as TypedOptions,
+					license(_options as TypedOptions, License),
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
+				);
 				this._routes.push({
 					path: route,
 					options: _options,
