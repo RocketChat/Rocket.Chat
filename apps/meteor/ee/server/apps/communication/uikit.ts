@@ -1,6 +1,7 @@
 import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';
 import express from 'express';
@@ -33,7 +34,7 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-WebApp.connectHandlers.use(apiServer);
+WebApp.rawConnectHandlers.use(apiServer);
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -89,7 +90,7 @@ const corsOptions: cors.CorsOptions = {
 	},
 };
 
-apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router); // didn't have the rateLimiter option
+apiServer.use('/api/apps/ui.interaction/', bodyParser.json(), cors(corsOptions), router); // didn't have the rateLimiter option
 
 type UiKitUserInteractionRequest = Request<
 	UrlParams<'/apps/ui.interaction/:id'>,
