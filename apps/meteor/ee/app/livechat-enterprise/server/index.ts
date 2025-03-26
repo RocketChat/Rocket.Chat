@@ -27,6 +27,7 @@ import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
 import './business-hour';
+import './api';
 import { createDefaultPriorities } from './priorities';
 
 await License.onLicense('livechat-enterprise', async () => {
