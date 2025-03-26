@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +12,7 @@ import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
+import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 
 export type RoomHeaderProps = {
 	room: IRoom;
@@ -38,9 +37,6 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 	return (
 		<Header>
 			{slots?.start}
-			<HeaderAvatar>
-				<RoomAvatar room={room} size='x28' />
-			</HeaderAvatar>
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
