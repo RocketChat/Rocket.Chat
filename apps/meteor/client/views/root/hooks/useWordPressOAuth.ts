@@ -63,10 +63,6 @@ export const useWordPressOAuth = (): void => {
 	const scope = useSetting('Accounts_OAuth_Wordpress_scope') as string;
 
 	useEffect(() => {
-		if (!wordpressURL) {
-			return;
-		}
-
 		WordPress.configure({
 			...configDefault,
 			...configureServerType(serverType, identityPath, identityTokenSentVia, tokenPath, authorizePath, scope),
