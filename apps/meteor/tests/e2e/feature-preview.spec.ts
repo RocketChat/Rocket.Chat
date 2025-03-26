@@ -171,6 +171,13 @@ test.describe.serial('feature preview', () => {
 			await page.goto(embeddedLayoutURL);
 			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
 		});
+
+		test('should not display avatar in room header', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetChannel);
+			await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+		});
 	});
 
 	test.describe('Sidepanel', () => {

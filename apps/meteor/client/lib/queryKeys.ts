@@ -8,6 +8,7 @@ export const roomsQueryKeys = {
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
 	message: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.messages(rid), mid] as const,
 	threads: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'threads'] as const,
+	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 };
 
 export const subscriptionsQueryKeys = {
@@ -19,6 +20,9 @@ export const cannedResponsesQueryKeys = {
 	all: ['canned-responses'] as const,
 };
 
+export const rolesQueryKeys = {
+	all: ['roles'] as const,
+	userRoles: () => [...rolesQueryKeys.all, 'user-roles'] as const,
+
 export const roomMessageUsersQueryKeys = {
 	all: (rid: IRoom['_id'], uid: IUser['_id'] | null) => ['room-message-users', rid, uid] as const,
-};
