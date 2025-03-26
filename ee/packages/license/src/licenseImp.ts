@@ -1,4 +1,4 @@
-import type { LicenseLimitKind, LicenseInfo, LimitContext } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind, LimitContext } from '@rocket.chat/core-typings';
 
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
@@ -27,40 +27,7 @@ import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './valida
 import { validateFormat } from './validation/validateFormat';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-interface License {
-	validateFormat: typeof validateFormat;
-	hasModule: typeof hasModule;
-	getModules: typeof getModules;
-	getModuleDefinition: typeof getModuleDefinition;
-	getExternalModules: typeof getExternalModules;
-	getTags: typeof getTags;
-	overwriteClassOnLicense: typeof overwriteClassOnLicense;
-	setLicenseLimitCounter: typeof setLicenseLimitCounter;
-	getCurrentValueForLicenseLimit: typeof getCurrentValueForLicenseLimit;
-	isLimitReached: <T extends LicenseLimitKind>(action: T, context?: Partial<LimitContext<T>>) => Promise<boolean>;
-	onValidFeature: typeof onValidFeature;
-	onInvalidFeature: typeof onInvalidFeature;
-	onToggledFeature: typeof onToggledFeature;
-	onModule: typeof onModule;
-	onValidateLicense: typeof onValidateLicense;
-	onInvalidateLicense: typeof onInvalidateLicense;
-	onLimitReached: typeof onLimitReached;
-	onBehaviorTriggered: typeof onBehaviorTriggered;
-	revalidateLicense: () => Promise<void>;
-
-	getInfo: (info: { limits: boolean; currentValues: boolean; license: boolean }) => Promise<LicenseInfo>;
-
-	// Deprecated:
-	onLicense: typeof onLicense;
-	// Deprecated:
-	getMaxActiveUsers: typeof getMaxActiveUsers;
-	// Deprecated:
-	getAppsConfig: typeof getAppsConfig;
-	// Deprecated:
-	getUnmodifiedLicenseAndModules: typeof getUnmodifiedLicenseAndModules;
-}
-
-export class LicenseImp extends LicenseManager implements License {
+export class LicenseImp extends LicenseManager {
 	constructor() {
 		super();
 		this.onValidateLicense(() => showLicense.call(this, this.getLicense(), this.hasValidLicense()));
