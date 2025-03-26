@@ -22,7 +22,10 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'chat.getMessageReadReceipts',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		// license: ['message-read-receipt']
+	},
 	{
 		async get() {
 			if (!License.hasModule('message-read-receipt')) {
