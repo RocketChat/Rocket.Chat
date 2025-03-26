@@ -27,7 +27,11 @@ export const license =
 		};
 
 		if (!license) {
-			return res.status(failure.statusCode).json(failure.body);
+			// Explicitly set the content type to application/json to avoid the following issue:
+			// https://github.com/expressjs/express/issues/2238
+			res.writeHead(failure.statusCode, { 'Content-Type': 'application/json' });
+			res.write(JSON.stringify(failure.body));
+			return res.end();
 		}
 
 		return next();
