@@ -80,4 +80,8 @@ declare global {
 			maxHeight: number;
 		};
 	}
+
+	interface NotificationEventMap {
+		reply: { response: string };
+	}
 }

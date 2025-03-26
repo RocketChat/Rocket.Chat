@@ -3,6 +3,7 @@ import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+import { useNotificationAllowed } from './useNotificationAllowed';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { stripTags } from '../../../lib/utils/stringUtils';
@@ -11,10 +12,11 @@ import { onClientMessageReceived } from '../../lib/onClientMessageReceived';
 export const useNotification = () => {
 	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
 	const router = useRouter();
+	const notificationAllowed = useNotificationAllowed();
 
 	const notify = useCallback(
 		async (notification: INotificationDesktop) => {
-			if (typeof window.Notification === 'undefined' || Notification.permission !== 'granted') {
+			if (!notificationAllowed) {
 				return;
 			}
 			if (!notification.payload) {
@@ -116,7 +118,7 @@ export const useNotification = () => {
 				}
 			};
 		},
-		[requireInteraction, router],
+		[notificationAllowed, requireInteraction, router],
 	);
 	return notify;
 };
