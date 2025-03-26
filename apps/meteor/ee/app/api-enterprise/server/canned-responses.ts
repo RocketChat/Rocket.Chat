@@ -44,7 +44,7 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'canned-responses.get',
-	{ authRequired: true, permissionsRequired: ['view-canned-responses'] },
+	{ authRequired: true, permissionsRequired: ['view-canned-responses'], license: ['canned-responses'] },
 	{
 		async get() {
 			return API.v1.success({
@@ -60,6 +60,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: { GET: ['view-canned-responses'], POST: ['save-canned-responses'], DELETE: ['remove-canned-responses'] },
 		validateParams: { POST: isPOSTCannedResponsesProps, DELETE: isDELETECannedResponsesProps, GET: isCannedResponsesProps },
+		license: ['canned-responses'],
 	},
 	{
 		async get() {
@@ -113,7 +114,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'canned-responses/:_id',
-	{ authRequired: true, permissionsRequired: ['view-canned-responses'] },
+	{ authRequired: true, permissionsRequired: ['view-canned-responses'], license: ['canned-responses'] },
 	{
 		async get() {
 			const { _id } = this.urlParams;
