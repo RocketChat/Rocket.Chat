@@ -31,7 +31,6 @@ const UsersMock = {
 };
 
 const statusEventManagerMock = {
-	setupAppointmentStatusChange: sinon.stub().resolves(),
 	removeCronJobs: sinon.stub().resolves(),
 	cancelUpcomingStatusChanges: sinon.stub().resolves(),
 	applyStatusChange: sinon.stub().resolves(),
@@ -42,7 +41,6 @@ const getUserPreferenceMock = sinon.stub();
 const serviceMocks = {
 	'./statusEvents/cancelUpcomingStatusChanges': { cancelUpcomingStatusChanges: statusEventManagerMock.cancelUpcomingStatusChanges },
 	'./statusEvents/removeCronJobs': { removeCronJobs: statusEventManagerMock.removeCronJobs },
-	'./statusEvents/setupAppointmentStatusChange': { setupAppointmentStatusChange: statusEventManagerMock.setupAppointmentStatusChange },
 	'./statusEvents/applyStatusChange': { applyStatusChange: statusEventManagerMock.applyStatusChange },
 	'../../../app/settings/server': { settings: settingsMock },
 	'@rocket.chat/core-services': { api, ServiceClassInternal: class {} },
@@ -344,7 +342,7 @@ describe('CalendarService', () => {
 			});
 		});
 
-		it('should schedule jobs when busy status setting is enabled', async () => {
+		it('should schedule a single chain job to handle all events when busy status setting is enabled', async () => {
 			await testPrivateMethod(service, 'doSetupNextStatusChange', async (method) => {
 				settingsMock.set('Calendar_BusyStatus_Enabled', true);
 
@@ -355,36 +353,111 @@ describe('CalendarService', () => {
 				const endOfNextMinute = new Date(startOfNextMinute);
 				endOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
 
+				const eventStartingSoon = {
+					_id: 'soon123',
+					uid: fakeUserId,
+					startTime: startOfNextMinute,
+					endTime: new Date(startOfNextMinute.getTime() + 3600000), // 1 hour later
+				};
+
 				const futureEvent = {
 					_id: 'future123',
 					uid: fakeUserId,
 					startTime: endOfNextMinute,
-					endTime: new Date(endOfNextMinute.getTime() + 3600000),
+					endTime: new Date(endOfNextMinute.getTime() + 3600000), // 1 hour later
 				};
-
+				
 				CalendarEventMock.findEventsToScheduleNow.returns({
-					toArray: sinon.stub().resolves([]),
+					toArray: sinon.stub().resolves([eventStartingSoon]),
 				});
 				CalendarEventMock.findNextFutureEvent.resolves(futureEvent);
-
+				
 				const originalHas = cronJobsMock.has;
 				const originalRemove = cronJobsMock.remove;
 				const originalAddAtTimestamp = cronJobsMock.addAtTimestamp;
-
+				
 				const hasStub = sinon.stub().resolves(false);
 				const removeStub = sinon.stub().resolves();
 				const addAtTimestampStub = sinon.stub().resolves();
-
+				
 				cronJobsMock.has = hasStub;
 				cronJobsMock.remove = removeStub;
 				cronJobsMock.addAtTimestamp = addAtTimestampStub;
-
+				
 				try {
 					await method();
 
 					sinon.assert.calledWith(hasStub, 'calendar-next-status-change');
 					sinon.assert.notCalled(removeStub);
-					sinon.assert.calledWith(addAtTimestampStub, 'calendar-next-status-change', futureEvent.startTime, sinon.match.func);
+					
+					sinon.assert.calledOnce(addAtTimestampStub);
+					
+					sinon.assert.calledWith(
+						addAtTimestampStub,
+						'calendar-next-status-change',
+						futureEvent.startTime,
+						sinon.match.func
+					);
+					
+					sinon.assert.neverCalledWith(
+						addAtTimestampStub,
+						sinon.match(/^calendar-status-/),
+						sinon.match.any,
+						sinon.match.any
+					);
+				} finally {
+					cronJobsMock.has = originalHas;
+					cronJobsMock.remove = originalRemove;
+					cronJobsMock.addAtTimestamp = originalAddAtTimestamp;
+				}
+			});
+		});
+
+		it('should fetch events at execution time rather than scheduling them individually', async () => {
+			await testPrivateMethod(service, 'doSetupNextStatusChange', async (method) => {
+				settingsMock.set('Calendar_BusyStatus_Enabled', true);
+
+				const now = new Date();
+				const startOfNextMinute = new Date(now);
+				startOfNextMinute.setSeconds(0, 0);
+				startOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
+				
+				const endOfNextMinute = new Date(startOfNextMinute);
+				endOfNextMinute.setMinutes(startOfNextMinute.getMinutes() + 1);
+				
+				CalendarEventMock.findEventsToScheduleNow.returns({
+					toArray: sinon.stub().resolves([])
+				});
+				CalendarEventMock.findNextFutureEvent.resolves(null);
+				
+				const originalHas = cronJobsMock.has;
+				const originalRemove = cronJobsMock.remove;
+				const originalAddAtTimestamp = cronJobsMock.addAtTimestamp;
+				
+				const hasStub = sinon.stub().resolves(false);
+				const removeStub = sinon.stub().resolves();
+				const addAtTimestampStub = sinon.stub().resolves();
+				
+				cronJobsMock.has = hasStub;
+				cronJobsMock.remove = removeStub;
+				cronJobsMock.addAtTimestamp = addAtTimestampStub;
+				
+				try {
+					await method();
+					
+					sinon.assert.calledWith(
+						addAtTimestampStub,
+						'calendar-next-status-change',
+						endOfNextMinute,
+						sinon.match.func
+					);
+					
+					const callback = addAtTimestampStub.firstCall.args[2];
+					const doSetupNextStatusChangeStub = sinon.stub(service, 'doSetupNextStatusChange').resolves();
+					await callback();
+					
+					sinon.assert.calledOnce(doSetupNextStatusChangeStub);
+					doSetupNextStatusChangeStub.restore();
 				} finally {
 					cronJobsMock.has = originalHas;
 					cronJobsMock.remove = originalRemove;

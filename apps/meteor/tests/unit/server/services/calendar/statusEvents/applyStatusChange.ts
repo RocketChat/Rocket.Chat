@@ -11,10 +11,7 @@ const UsersMock = {
 	updateStatusAndStatusDefault: sinon.stub().resolves(),
 };
 
-const setupAppointmentStatusChange = sinon.stub().resolves();
-
 const { applyStatusChange } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/applyStatusChange', {
-	'./setupAppointmentStatusChange': { setupAppointmentStatusChange },
 	'@rocket.chat/core-services': { api },
 	'@rocket.chat/models': {
 		Users: UsersMock,
@@ -52,8 +49,6 @@ describe('Calendar.StatusEvents', () => {
 
 	function setupOtherMocks() {
 		sandbox.stub(api, 'broadcast').resolves();
-
-		setupAppointmentStatusChange.resetHistory();
 	}
 
 	afterEach(() => {

@@ -50,7 +50,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime }: Partial<ICalendarEvent>,
+		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime, previousStatus }: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -62,6 +62,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
+					...(previousStatus ? { previousStatus } : {}),
 				},
 			},
 		);
@@ -153,7 +154,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 	public findEventsToScheduleNow(now: Date, endTime: Date): FindCursor<ICalendarEvent> {
 		return this.find(
 			{
-				startTime: { $gt: now, $lt: endTime },
+				startTime: { $gte: now, $lt: endTime },
 				busy: { $ne: false },
 				endTime: { $exists: true },
 			},
@@ -183,6 +184,41 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 				},
 			},
 		);
+	}
+
+	public findEventsStartingNow(now: Date): FindCursor<ICalendarEvent> {
+		return this.find({
+			startTime: {
+				$gte: new Date(now.getTime() - 1000),
+				$lt: new Date(now.getTime() + 1000),
+			},
+			busy: { $ne: false },
+		}, {
+			projection: {
+				_id: 1,
+				uid: 1,
+				startTime: 1,
+				endTime: 1,
+			},
+		});
+	}
+
+	public findEventsEndingNow(now: Date): FindCursor<ICalendarEvent> {
+		return this.find({
+			endTime: {
+				$gte: new Date(now.getTime() - 1000),
+				$lt: new Date(now.getTime() + 1000),
+			},
+			busy: { $ne: false },
+		}, {
+			projection: {
+				_id: 1,
+				uid: 1,
+				startTime: 1,
+				endTime: 1,
+				previousStatus: 1,
+			},
+		});
 	}
 
 	public findInProgressEvents(now: Date): FindCursor<ICalendarEvent> {

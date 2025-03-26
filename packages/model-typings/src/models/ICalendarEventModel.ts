@@ -18,4 +18,6 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	findEventsToScheduleNow(now: Date, endTime: Date): FindCursor<ICalendarEvent>;
 	findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null>;
 	findInProgressEvents(now: Date): FindCursor<ICalendarEvent>;
+	findEventsStartingNow(now: Date): FindCursor<ICalendarEvent>;
+	findEventsEndingNow(now: Date): FindCursor<ICalendarEvent>;
 }
