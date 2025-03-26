@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
 import { Logger } from '@rocket.chat/logger';
+import { Users } from '@rocket.chat/models';
 
 const logger = new Logger('Calendar');
 
@@ -21,7 +21,7 @@ export async function applyStatusChange({
 	shouldScheduleRemoval?: boolean;
 }): Promise<void> {
 	logger.debug(`Applying status change for event ${eventId} at ${startTime} ${endTime ? `to ${endTime}` : ''} to ${status}`);
-	
+
 	const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1 } });
 	if (!user || user.status === UserStatus.OFFLINE) {
 		return;
