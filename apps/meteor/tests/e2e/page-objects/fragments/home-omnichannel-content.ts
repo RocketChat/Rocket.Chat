@@ -55,10 +55,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.getByRole('dialog').locator('p[data-type="email"]');
 	}
 
-	get infoContactName(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-name"]');
-	}
-
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
@@ -69,10 +65,6 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get modalOnHold(): Locator {
 		return this.page.locator('[data-qa-id="on-hold-modal"]');
-	}
-
-	get btnEditRoomInfo(): Locator {
-		return this.page.locator('button[data-qa-id="room-info-edit"]');
 	}
 
 	get btnOnHoldConfirm(): Locator {

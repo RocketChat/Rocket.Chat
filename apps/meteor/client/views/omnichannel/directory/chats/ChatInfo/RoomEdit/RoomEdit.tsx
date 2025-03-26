@@ -3,7 +3,7 @@ import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@ro
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
@@ -117,6 +117,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		[dispatchToastMessage, isFormValid, onClose, queryClient, reload, reloadInfo, room._id, saveRoom, t, visitor._id],
 	);
 
+	const topicField = useId();
+
 	// TODO: this loading should be checked in the `RoomEditWithData`
 	// This component should not have logical data
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
@@ -135,9 +137,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				)}
 
 				<Field>
-					<FieldLabel>{t('Topic')}</FieldLabel>
+					<FieldLabel htmlFor={topicField}>{t('Topic')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('topic')} flexGrow={1} />
+						<TextInput {...register('topic')} id={topicField} flexGrow={1} />
 					</FieldRow>
 				</Field>
 
