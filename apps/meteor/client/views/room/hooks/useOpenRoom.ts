@@ -1,4 +1,4 @@
-import { type IRoom, type RoomType } from '@rocket.chat/core-typings';
+import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -90,7 +90,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			const sub = Subscriptions.findOne({ rid: room._id });
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
-			if (user && !sub && !hasPreviewPermission && room.t === 'c') {
+			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 
