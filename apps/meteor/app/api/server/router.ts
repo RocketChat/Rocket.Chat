@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
 import express from 'express';
+import type { MiddlewareHandler } from 'hono';
+import { Hono } from 'hono';
 
 import type { TypedAction, TypedOptions } from './definition';
-
-type MiddlewareHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => void;
+import { honoAdapter } from './middlewares/honoAdapter';
 
 type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TSubPathPattern extends string> = [
 	...MiddlewareHandler[],
@@ -49,6 +51,17 @@ export type Route = {
 	}[];
 	tags?: string[];
 };
+declare module 'hono' {
+	interface ContextVariableMap {
+		route: string;
+	}
+}
+
+declare global {
+	interface Request {
+		route: string;
+	}
+}
 
 export class Router<
 	TBasePath extends string,
@@ -56,7 +69,7 @@ export class Router<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > {
-	private middleware: (router: express.Router) => void = () => void 0;
+	private middleware: (router: Hono) => void = () => void 0;
 
 	constructor(readonly base: TBasePath) {}
 
@@ -132,9 +145,11 @@ export class Router<
 		const [middlewares, action] = splitArray(actions);
 
 		const prev = this.middleware;
-		this.middleware = (router: express.Router) => {
+		this.middleware = (router: Hono) => {
 			prev(router);
-			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (req, res) => {
+			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+				const { req, res } = c;
+				req.raw.route = `${c.var.route ?? ''}${subpath}`;
 				if (options.query) {
 					const validatorFn = options.query;
 					if (typeof options.query === 'function' && !validatorFn(req.query)) {
@@ -163,13 +178,13 @@ export class Router<
 					headers = {},
 				} = await action.apply(
 					{
-						urlParams: req.params,
-						queryParams: req.query,
-						bodyParams: (req as any).bodyParams || req.body,
-						request: req,
+						urlParams: req.param(),
+						queryParams: req.query(),
+						bodyParams: await (req.header('content-type')?.includes('application/json') ? c.req.json() : req.text()),
+						request: req.raw,
 						response: res,
 					} as any,
-					[req],
+					[req.raw],
 				);
 				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
 					const responseValidatorFn = options?.response?.[statusCode];
@@ -185,7 +200,7 @@ export class Router<
 
 				const responseHeaders = Object.fromEntries(
 					Object.entries({
-						...res.header,
+						...res.headers,
 						'Content-Type': 'application/json',
 						'Cache-Control': 'no-store',
 						'Pragma': 'no-cache',
@@ -193,15 +208,13 @@ export class Router<
 					}).map(([key, value]) => [key.toLowerCase(), value]),
 				);
 
-				res.writeHead(statusCode, responseHeaders);
+				const contentType = (responseHeaders['content-type'] || 'application/json') as string;
 
-				if (responseHeaders['content-type']?.match(/json|javascript/) !== null) {
-					body !== undefined && res.write(JSON.stringify(body));
-				} else {
-					body !== undefined && res.write(body);
-				}
-
-				res.end();
+				return c.body(
+					(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any,
+					statusCode,
+					responseHeaders as Record<string, string>,
+				);
 			});
 		};
 		this.registerTypedRoutes(method, subpath, options);
@@ -268,13 +281,13 @@ export class Router<
 		return this.method('DELETE', subpath, options, ...action);
 	}
 
-	use<FN extends (req: express.Request, res: express.Response, next: express.NextFunction) => void>(fn: FN): Router<TBasePath, TOperations>;
+	use<FN extends MiddlewareHandler>(fn: FN): Router<TBasePath, TOperations>;
 
 	use<IRouter extends Router<any, any>>(
 		innerRouter: IRouter,
 	): IRouter extends Router<any, infer IOperations> ? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>> : never;
 
-	use(innerRouter: any): any {
+	use(innerRouter: unknown): any {
 		if (innerRouter instanceof Router) {
 			this.typedRoutes = {
 				...this.typedRoutes,
@@ -282,28 +295,48 @@ export class Router<
 			};
 
 			const prev = this.middleware;
-			this.middleware = (router: express.Router) => {
+			this.middleware = (router: Hono) => {
 				prev(router);
-				router.use(innerRouter.router);
+
+				router
+					.use(`${innerRouter.base}/*`, (c, next) => {
+						c.set('route', `${c.var.route || ''}${innerRouter.base}`);
+						return next();
+					})
+					.route(innerRouter.base, innerRouter.honoRouter);
 			};
 		}
 		if (typeof innerRouter === 'function') {
 			const prev = this.middleware;
-			this.middleware = (router: express.Router) => {
+			this.middleware = (router: Hono) => {
 				prev(router);
-				router.use(innerRouter);
+				router.use(innerRouter as any);
 			};
 		}
 		return this as any;
 	}
 
+	get honoRouter(): Hono {
+		const router = new Hono();
+		this.middleware(router);
+		return router;
+	}
+
 	get router(): express.Router {
 		// eslint-disable-next-line new-cap
 		const router = express.Router();
-		// eslint-disable-next-line new-cap
-		const innerRouter = express.Router();
-		this.middleware(innerRouter);
-		router.use(this.base, innerRouter);
+		const hono = new Hono();
+		router.use(
+			this.base,
+			honoAdapter(
+				hono
+					.use(`${this.base}/*`, (c, next) => {
+						c.set('route', `${c.var.route || ''}${this.base}`);
+						return next();
+					})
+					.route(this.base, this.honoRouter),
+			),
+		);
 		return router;
 	}
 }

@@ -1,13 +1,11 @@
 import type { LicenseManager } from '@rocket.chat/license';
-import type { Request, Response, NextFunction } from 'express';
+import type { MiddlewareHandler } from 'hono';
 
 import type { FailureResult, TypedOptions } from '../../../../../app/api/server/definition';
 
-type ExpressMiddleware = (req: Request, res: Response, next: NextFunction) => void;
-
 export const license =
-	(options: TypedOptions, licenseManager: LicenseManager): ExpressMiddleware =>
-	async (_req, res, next) => {
+	(options: TypedOptions, licenseManager: LicenseManager): MiddlewareHandler =>
+	async (c, next) => {
 		if (!options.license) {
 			return next();
 		}
@@ -27,11 +25,7 @@ export const license =
 		};
 
 		if (!license) {
-			// Explicitly set the content type to application/json to avoid the following issue:
-			// https://github.com/expressjs/express/issues/2238
-			res.writeHead(failure.statusCode, { 'Content-Type': 'application/json' });
-			res.write(JSON.stringify(failure.body));
-			return res.end();
+			return c.json(failure.body, failure.statusCode);
 		}
 
 		return next();
