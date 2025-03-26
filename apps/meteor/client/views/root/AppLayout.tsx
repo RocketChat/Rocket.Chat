@@ -19,6 +19,7 @@ import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
+import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
 import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
@@ -43,6 +44,7 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotifyUser();
+	useNotificationPermission();
 	useEmojiOne();
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
