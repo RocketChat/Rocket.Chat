@@ -213,14 +213,14 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		// 5. When an event ends and the status is restored
 		// 6. From Outlook Calendar integration (ee/server/configuration/outlookCalendar.ts)
 
-		// const busyStatusEnabled = settings.get<boolean>('Calendar_BusyStatus_Enabled');
-		// if (!busyStatusEnabled) {
-		// 	const schedulerJobId = 'calendar-status-scheduler';
-		// 	if (await cronJobs.has(schedulerJobId)) {
-		// 		await cronJobs.remove(schedulerJobId);
-		// 	}
-		// 	return;
-		// }
+		const busyStatusEnabled = settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		if (!busyStatusEnabled) {
+			const schedulerJobId = 'calendar-status-scheduler';
+			if (await cronJobs.has(schedulerJobId)) {
+				await cronJobs.remove(schedulerJobId);
+			}
+			return;
+		}
 
 		const schedulerJobId = 'calendar-status-scheduler';
 		if (await cronJobs.has(schedulerJobId)) {

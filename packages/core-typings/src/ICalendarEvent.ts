@@ -1,6 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import { UserStatus } from './UserStatus';
+import type { UserStatus } from './UserStatus';
 
 export interface ICalendarEvent extends IRocketChatRecord {
 	startTime: Date;
