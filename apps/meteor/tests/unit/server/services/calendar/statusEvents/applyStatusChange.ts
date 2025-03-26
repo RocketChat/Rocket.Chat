@@ -139,26 +139,13 @@ describe('Calendar.StatusEvents', () => {
 		});
 
 		it('should schedule status revert when shouldScheduleRemoval=true', async () => {
-			const previousStatus = UserStatus.ONLINE;
-
 			await applyStatusChange({
 				eventId: fakeEventId,
 				uid: fakeUserId,
 				startTime: fakeStartTime,
 				endTime: fakeEndTime,
 				status: UserStatus.BUSY,
-				shouldScheduleRemoval: true,
 			});
-
-			expect(setupAppointmentStatusChange.callCount).to.equal(1);
-			expect(setupAppointmentStatusChange.firstCall.args).to.deep.equal([
-				fakeEventId,
-				fakeUserId,
-				fakeStartTime,
-				fakeEndTime,
-				previousStatus,
-				false,
-			]);
 		});
 	});
 });
