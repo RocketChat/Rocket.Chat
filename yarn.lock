@@ -9031,6 +9031,7 @@ __metadata:
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
     hljs9: "npm:highlight.js@^9.18.5"
+    hono: "npm:^4.6.19"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -22969,6 +22970,13 @@ __metadata:
   dependencies:
     react-is: "npm:^16.7.0"
   checksum: 10/1acbe85f33e5a39f90c822ad4d28b24daeb60f71c545279431dc98c312cd28a54f8d64788e477fe21dc502b0e3cf58589ebe5c1ad22af27245370391c2d24ea6
+  languageName: node
+  linkType: hard
+
+"hono@npm:^4.6.19":
+  version: 4.6.19
+  resolution: "hono@npm:4.6.19"
+  checksum: 10/b3e317bdaf868359b68271d5aa395b1561ceedf3ac97f2d76cc5b9e00e01a794f862bdb5d5574b96b284f5456e2be4d42e6f9511a479d1afdf8c09dff75150e7
   languageName: node
   linkType: hard
 
