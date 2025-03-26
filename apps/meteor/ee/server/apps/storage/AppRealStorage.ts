@@ -58,8 +58,7 @@ export class AppRealStorage extends AppMetadataStorage {
 			updateQuery.$unset = { permissionsGranted: 1 };
 		}
 
-		await this.db.updateOne({ id: item.id, _id: item._id }, updateQuery);
-		return this.retrieveOne(item.id);
+		return this.db.findOneAndUpdate({ id: item.id, _id: item._id }, updateQuery);
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
