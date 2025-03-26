@@ -2,7 +2,6 @@ import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
-import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -12,7 +11,7 @@ export type RedirectStatusCodes = Exclude<Range<308>, Range<300>>;
 
 export type AuthorizationStatusCodes = Exclude<Range<451>, Range<400>>;
 
-export type ErrorStatusCodes = Exclude<Range<511>, Range<500>>;
+export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;

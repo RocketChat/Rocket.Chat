@@ -3,7 +3,6 @@ import type { Readable } from 'stream';
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
-import type { Request } from 'express';
 
 import { getMimeType } from '../../../utils/lib/mimeTypes';
 
@@ -71,7 +70,7 @@ export async function getUploadFormData<
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
-	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
+	const bb = busboy({ headers: Object.fromEntries(request.headers.entries()), defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
 	let uploadedFile: UploadResultWithOptionalFile<K> | undefined = {

@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Method } from '@rocket.chat/rest-typings';
 import type { AnySchema } from 'ajv';
 import express from 'express';
+import type { MiddlewareHandler } from 'hono';
+import { Hono } from 'hono';
 
 import type { TypedAction, TypedOptions } from './definition';
-
-type MiddlewareHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => void;
+import { honoAdapter } from './middlewares/honoAdapter';
 
 type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TSubPathPattern extends string> = [
 	...MiddlewareHandler[],
@@ -49,6 +51,17 @@ export type Route = {
 	}[];
 	tags?: string[];
 };
+declare module 'hono' {
+	interface ContextVariableMap {
+		route: string;
+	}
+}
+
+declare global {
+	interface Request {
+		route: string;
+	}
+}
 
 export class Router<
 	TBasePath extends string,
@@ -56,17 +69,9 @@ export class Router<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > {
-	public router;
-
-	private innerRouter: express.Router;
-
-	constructor(readonly base: TBasePath) {
-		// eslint-disable-next-line new-cap
-		this.router = express.Router();
-		// eslint-disable-next-line new-cap
-		this.innerRouter = express.Router();
-		this.router.use(this.base, this.innerRouter);
-	}
+	private middleware: (router: Hono) => void = () => void 0;
+	// eslint-disable-next-line lines-between-class-members
+	constructor(readonly base: TBasePath) {}
 
 	public typedRoutes: Record<string, Record<string, Route>> = {};
 
@@ -139,75 +144,87 @@ export class Router<
 	> {
 		const [middlewares, action] = splitArray(actions);
 
-		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (req, res) => {
-			if (options.query) {
-				const validatorFn = options.query;
-				if (typeof options.query === 'function' && !validatorFn(req.query)) {
-					return res.status(400).json({
-						success: false,
-						errorType: 'error-invalid-params',
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-					});
+		const prev = this.middleware;
+		this.middleware = (router: Hono) => {
+			prev(router);
+			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+				const { req, res } = c;
+				req.raw.route = `${c.var.route ?? ''}${subpath}`;
+				if (options.query) {
+					const validatorFn = options.query;
+					if (typeof options.query === 'function' && !validatorFn(req.query)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
 				}
-			}
 
-			if (options.body) {
-				const validatorFn = options.body;
-				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || req.body)) {
-					return res.status(400).json({
-						success: false,
-						errorType: 'error-invalid-params',
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-					});
+				if (options.body) {
+					const validatorFn = options.body;
+					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || req.body)) {
+						return res.status(400).json({
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						});
+					}
 				}
-			}
 
-			const {
-				body,
-				statusCode = 200,
-				headers = {},
-			} = await action.apply(
-				{
-					urlParams: req.params,
-					queryParams: req.query,
-					bodyParams: (req as any).bodyParams || req.body,
-					request: req,
-					response: res,
-				} as any,
-				[req],
-			);
-			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
-				const responseValidatorFn = options?.response?.[statusCode];
-				if (!responseValidatorFn && options.typed) {
-					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+				const {
+					body,
+					statusCode = 200,
+					headers = {},
+				} = await action.apply(
+					{
+						urlParams: req.param(),
+						queryParams: req.query(),
+						bodyParams: await (req.header('content-type')?.includes('application/json') ? c.req.json() : req.text()),
+						request: req.raw,
+						response: res,
+					} as any,
+					[req.raw],
+				);
+				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
+					const responseValidatorFn = options?.response?.[statusCode];
+					if (!responseValidatorFn && options.typed) {
+						throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+					}
+					if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
+						throw new Error(
+							`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+						);
+					}
 				}
-				if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
-					throw new Error(
-						`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
-					);
+
+				const responseHeaders = Object.fromEntries(
+					Object.entries({
+						...res.headers,
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store',
+						'Pragma': 'no-cache',
+						...headers,
+					}).map(([key, value]) => [key.toLowerCase(), value]),
+				);
+
+				const contentType = (responseHeaders['content-type'] || 'application/json') as string;
+
+				const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => {
+					return [101, 204, 205, 304].includes(statusCode);
+				};
+
+				if (isContentLess(statusCode)) {
+					return c.status(statusCode);
 				}
-			}
 
-			const responseHeaders = Object.fromEntries(
-				Object.entries({
-					...res.header,
-					'Content-Type': 'application/json',
-					'Cache-Control': 'no-store',
-					'Pragma': 'no-cache',
-					...headers,
-				}).map(([key, value]) => [key.toLowerCase(), value]),
-			);
-
-			res.writeHead(statusCode, responseHeaders);
-
-			if (responseHeaders['content-type']?.match(/json|javascript/) !== null) {
-				body !== undefined && res.write(JSON.stringify(body));
-			} else {
-				body !== undefined && res.write(body);
-			}
-
-			res.end();
-		});
+				return c.body(
+					(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any,
+					statusCode,
+					responseHeaders as Record<string, string>,
+				);
+			});
+		};
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -272,25 +289,66 @@ export class Router<
 		return this.method('DELETE', subpath, options, ...action);
 	}
 
-	use<FN extends (req: express.Request, res: express.Response, next: express.NextFunction) => void>(fn: FN): Router<TBasePath, TOperations>;
+	use<FN extends MiddlewareHandler>(fn: FN): Router<TBasePath, TOperations>;
 
 	use<IRouter extends Router<any, any>>(
 		innerRouter: IRouter,
 	): IRouter extends Router<any, infer IOperations> ? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>> : never;
 
-	use(innerRouter: any): any {
+	use(innerRouter: unknown): any {
 		if (innerRouter instanceof Router) {
 			this.typedRoutes = {
 				...this.typedRoutes,
 				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
 			};
 
-			this.innerRouter.use(innerRouter.router);
+			const prev = this.middleware;
+			this.middleware = (router: Hono) => {
+				prev(router);
+
+				router
+					.use(`${innerRouter.base}/*`, (c, next) => {
+						c.set('route', `${c.var.route || ''}${innerRouter.base}`);
+						return next();
+					})
+					.route(innerRouter.base, innerRouter.honoRouter);
+			};
 		}
 		if (typeof innerRouter === 'function') {
-			this.innerRouter.use(innerRouter);
+			const prev = this.middleware;
+			this.middleware = (router: Hono) => {
+				prev(router);
+				router.use(innerRouter as any);
+			};
 		}
 		return this as any;
+	}
+
+	get honoRouter(): Hono {
+		const router = new Hono();
+		this.middleware(router);
+		return router;
+	}
+
+	get router(): express.Router {
+		// eslint-disable-next-line new-cap
+		const router = express.Router();
+		const hono = new Hono();
+		router.use(
+			this.base,
+			honoAdapter(
+				hono
+					.use(`${this.base}/*`, (c, next) => {
+						c.set('route', `${c.var.route || ''}${this.base}`);
+						return next();
+					})
+					.route(this.base, this.honoRouter)
+					.options('*', (c) => {
+						return c.body('OK');
+					}),
+			),
+		);
+		return router;
 	}
 }
 

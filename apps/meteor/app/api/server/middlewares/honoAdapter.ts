@@ -1,8 +1,14 @@
+import { Readable } from 'stream';
+
 import type { Request, Response } from 'express';
 import type { Hono } from 'hono';
 
 export const honoAdapter = (hono: Hono) => async (expressReq: Request, res: Response) => {
 	(expressReq as unknown as any).duplex = 'half';
+
+	if (Readable.isDisturbed(expressReq)) {
+		return;
+	}
 
 	const { body, ...req } = expressReq;
 

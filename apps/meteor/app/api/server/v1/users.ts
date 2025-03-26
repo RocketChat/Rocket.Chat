@@ -118,7 +118,7 @@ API.v1.addRoute(
 			const auditStore = new UserChangedAuditStore({
 				_id: this.user._id,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 				username: this.user.username || '',
 			});
 
@@ -892,7 +892,7 @@ API.v1.addRoute(
 			await Users.enableEmail2FAByUserId(this.userId);
 
 			// When 2FA is enable we logout all other clients
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 			if (!xAuthToken) {
 				return API.v1.success();
 			}
@@ -1070,7 +1070,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
 				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
