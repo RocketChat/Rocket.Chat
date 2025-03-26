@@ -35,8 +35,8 @@ export const useEmojiOne = () => {
 					}
 				}
 			}
+			emoji.dispatchUpdate();
 		});
-		emoji.dispatchUpdate();
 	}, []);
 
 	useEffect(() => {

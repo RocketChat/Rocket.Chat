@@ -11,15 +11,17 @@ export const createEmojiListByCategorySubscription = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
+	let emojis: ReturnType<typeof createPickerEmojis> = [];
 	updateRecent(recentEmojis);
 
-	let emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+	const sub = (cb: () => void) => {
+		emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 
-	const sub = (cb: () => void) =>
-		emojiEmitter.on('updated', () => {
+		return emojiEmitter.on('updated', () => {
 			emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 			cb();
 		});
+	};
 
 	return [sub, () => emojis];
 };
