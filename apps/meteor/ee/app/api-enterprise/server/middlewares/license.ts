@@ -1,13 +1,12 @@
-import type { License } from '@rocket.chat/license';
+import type { LicenseManager } from '@rocket.chat/license';
 import type { Request, Response, NextFunction } from 'express';
 
 import type { FailureResult, TypedOptions } from '../../../../../app/api/server/definition';
 
 type ExpressMiddleware = (req: Request, res: Response, next: NextFunction) => void;
 
-// TODO: use interface instead of `typeof License`
 export const license =
-	(options: TypedOptions, licenseManager: typeof License): ExpressMiddleware =>
+	(options: TypedOptions, licenseManager: LicenseManager): ExpressMiddleware =>
 	async (_req, res, next) => {
 		if (!options.license) {
 			return next();
