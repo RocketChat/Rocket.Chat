@@ -223,12 +223,10 @@ export class MessageBuilder implements IMessageBuilder {
     }
 
     public setBlocks(blocks: BlockBuilder | Array<IBlock | LayoutBlock>) {
-        if (blocks instanceof BlockBuilder) {
-            this.msg.blocks = blocks.getBlocks();
-        } else {
-            this.msg.blocks = blocks;
-            this.changes.blocks = blocks;
-        }
+        const blockArray: Array<IBlock | LayoutBlock> = blocks instanceof BlockBuilder ? blocks.getBlocks() : blocks;
+
+        this.msg.blocks = blockArray;
+        this.changes.blocks = blockArray;
 
         return this as IMessageBuilder;
     }
