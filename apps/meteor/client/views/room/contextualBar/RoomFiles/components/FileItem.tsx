@@ -2,6 +2,7 @@ import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 
+import { getURL } from '../../../../../../app/utils/client';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
@@ -24,12 +25,19 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
-	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
+	/**
+	 * Always use getURL to ensure we're using the current server URL
+	 * This ensures that when the server address changes (e.g. from 10.0.3.171 to 10.0.3.200),
+	 * file paths in the Files menu will use the current address rather than the one stored in the database
+	 * at the time the file was uploaded.
+	 */
+	const fileUrl = path?.includes('/file-decrypt/') ? path : getURL(path || '');
+	const encryptedAnchorProps = useDownloadFromServiceWorker(fileUrl, name);
 
 	return (
 		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={fileUrl} name={name} username={user?.username} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'
@@ -41,7 +49,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					display='flex'
 					flexGrow={1}
 					flexShrink={1}
-					href={path}
+					href={fileUrl}
 					textDecorationLine='none'
 					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
@@ -61,7 +69,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					</Box>
 				</Box>
 			)}
-			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
+			<FileItemMenu fileData={{...fileData, path: fileUrl }} onClickDelete={onClickDelete} />
 		</Box>
 	);
 };
