@@ -6,7 +6,6 @@ import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
@@ -16,16 +15,7 @@ import { getUserPreference } from '../../../utils/client';
 
 const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
 
-export async function upsertMessage(
-	{
-		msg,
-		subscription,
-	}: {
-		msg: IMessage & { ignored?: boolean };
-		subscription?: ISubscription;
-	},
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
+export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
 	const userId = msg.u?._id;
 
 	if (subscription?.ignored?.includes(userId)) {
@@ -39,25 +29,15 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
-	return collection.upsert({ _id }, msg);
+	return Messages.upsert({ _id }, msg);
 }
 
-export async function upsertMessageBulk(
-	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
-	const { queries } = collection;
-	collection.queries = [];
-	const lastMessage = msgs.pop();
-
-	for await (const msg of msgs) {
-		await upsertMessage({ msg, subscription }, collection);
-	}
-
-	if (lastMessage) {
-		collection.queries = queries;
-		await upsertMessage({ msg: lastMessage, subscription }, collection);
-	}
+export async function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }) {
+	await Messages.bulkMutate(async () => {
+		for await (const msg of msgs) {
+			await upsertMessage({ msg, subscription });
+		}
+	});
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
