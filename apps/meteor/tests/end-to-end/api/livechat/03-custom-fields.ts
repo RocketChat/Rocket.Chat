@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -6,7 +7,6 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { faker } from '@faker-js/faker';
 
 describe('LIVECHAT - custom fields', () => {
 	before((done) => getCredentials(done));
