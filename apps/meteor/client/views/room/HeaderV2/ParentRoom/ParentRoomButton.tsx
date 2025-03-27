@@ -5,10 +5,10 @@ type ParentRoomButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'> & {
 
 const ParentRoomButton = ({ loading, ...props }: ParentRoomButtonProps) => {
 	if (loading) {
-		return <Skeleton mie={4} variant='rect' size={28} />;
+		return <Skeleton variant='rect' size={28} />;
 	}
 
-	return <IconButton mie={4} small icon='arrow-back' {...props} />;
+	return <IconButton small icon='arrow-back-up' {...props} />;
 };
 
 export default ParentRoomButton;
