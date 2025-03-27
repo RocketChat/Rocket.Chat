@@ -15,6 +15,15 @@ export const Meteor = {
 
 export const Mongo = {
 	Collection: class Collection {
+		_collection = {
+			_docs: {},
+		};
+
+		find = jest.fn(() => ({
+			fetch: jest.fn(() => []),
+			observe: jest.fn(),
+		}));
+
 		findOne = jest.fn();
 
 		update = jest.fn();
