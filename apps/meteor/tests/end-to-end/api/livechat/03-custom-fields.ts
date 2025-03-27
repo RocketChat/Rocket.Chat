@@ -6,6 +6,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { faker } from '@faker-js/faker';
 
 describe('LIVECHAT - custom fields', () => {
 	before((done) => getCredentials(done));
@@ -175,5 +176,83 @@ describe('LIVECHAT - custom fields', () => {
 			expect(body.fields).to.have.lengthOf(1);
 			expect(body.fields[0]).to.have.property('value', 'test_address');
 		});
+
+		it('should save the custom field on Contact when available', async () => {
+			// Setup visitor and contact info
+			await updatePermission('view-livechat-contact', ['admin']);
+			const contact = {
+				name: faker.person.fullName(),
+				emails: faker.internet.email(),
+				phones: faker.phone.number(),
+			};
+
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+
+			const visitor = await createVisitor(undefined, contact.name, contact.emails, contact.phones);
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			const customFieldValue = 'contact-field-value';
+
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+
+			// Save the custom field on Contact
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token: visitor.token, key: customFieldName, value: customFieldValue, overwrite: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			// Fetch the visitor to validate custom fields are properly set.
+			await request
+				.get(api(`livechat/visitor/${visitor._id}`))
+				.set(credentials)
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.visitor).to.have.property('livechatData');
+					expect(res.body.visitor.livechatData).to.have.property('customFields');
+					expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+				});
+
+			// Fetch the visitor's contact to validate custom fields are properly set.
+			await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ contactId: body.contactId })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body.contacts).to.have.lengthOf(1);
+					expect(res.body.visitor.livechatData).to.have.property('customFields');
+					expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+				});
+		});
+
+		// it('should add the custom field as conflict on Contact when overwrite is false', async () => {
+		// 	const visitor = await createVisitor();
+		// 	const customFieldName = `conflicting_custom_field_${Date.now()}`;
+		// 	const originalCustomFieldValue = 'original-value';
+		// 	const conflictingCustomFieldValue = 'conflict-value';
+		//
+		// 	// Save the original custom field on Contact
+		// 	await request
+		// 		.post(api('livechat/custom.field'))
+		// 		.send({ token: visitor.token, key: customFieldName, value: originalCustomFieldValue, overwrite: true })
+		// 		.expect(200)
+		// 		.expect((res: Response) => {
+		// 			expect(res.body).to.have.property('success', true);
+		// 		});
+		// });
 	});
 });
