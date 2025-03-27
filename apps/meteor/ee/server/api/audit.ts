@@ -44,7 +44,12 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'audit/rooms.members',
-	{ authRequired: true, permissionsRequired: ['view-members-list-all-rooms'], validateParams: isAuditRoomMembersProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-members-list-all-rooms'],
+		validateParams: isAuditRoomMembersProps,
+		license: ['auditing'],
+	},
 	{
 		async get() {
 			const { roomId, filter } = this.queryParams;
