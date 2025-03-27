@@ -6,7 +6,6 @@ import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
@@ -14,16 +13,7 @@ import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 
-export async function upsertMessage(
-	{
-		msg,
-		subscription,
-	}: {
-		msg: IMessage & { ignored?: boolean };
-		subscription?: ISubscription;
-	},
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
+export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
 	const userId = msg.u?._id;
 
 	if (subscription?.ignored?.includes(userId)) {
@@ -37,20 +27,14 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
-	return collection.upsert({ _id }, msg);
+	return Messages.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk(
-	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
-	const { queries } = collection;
-	collection.queries = [];
-	msgs.forEach((msg, index) => {
-		if (index === msgs.length - 1) {
-			collection.queries = queries;
+export async function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }) {
+	await Messages.bulkMutate(async () => {
+		for await (const msg of msgs) {
+			await upsertMessage({ msg, subscription });
 		}
-		void upsertMessage({ msg, subscription }, collection);
 	});
 }
 
@@ -173,7 +157,7 @@ class RoomHistoryManagerClass extends Emitter {
 			scroll = wrapper.scrollTop;
 		}
 
-		upsertMessageBulk({
+		await upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
 			subscription,
 		});
@@ -221,7 +205,7 @@ class RoomHistoryManagerClass extends Emitter {
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
 			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
-			upsertMessageBulk({
+			await upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
@@ -294,7 +278,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		Tracker.afterFlush(async () => {
 			this.emit('loaded-messages');

@@ -1,7 +1,6 @@
 import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
@@ -12,6 +11,7 @@ import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL'
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
+import type { MinimongoSelector } from '../../cachedCollections/MinimongoCollection';
 import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -146,7 +146,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<ISubscription> = {
+			const query: MinimongoSelector<ISubscription> = {
 				t: 'd',
 				$or: [{ name: identifier }, { rid: identifier }],
 			};
