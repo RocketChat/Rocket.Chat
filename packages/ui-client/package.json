@@ -28,6 +28,7 @@
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
+		"@storybook/addon-a11y": "^8.6.4",
 		"@storybook/addon-actions": "^8.6.4",
 		"@storybook/addon-docs": "^8.6.4",
 		"@storybook/addon-essentials": "^8.6.4",
@@ -53,6 +54,7 @@
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"storybook": "^8.6.4",
+		"storybook-dark-mode": "^4.0.2",
 		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
