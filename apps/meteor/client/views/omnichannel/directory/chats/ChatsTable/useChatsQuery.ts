@@ -1,5 +1,5 @@
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
+import { parse, endOfDay, startOfDay } from 'date-fns';
 import { useCallback } from 'react';
 
 import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';
@@ -47,10 +47,10 @@ export const useChatsQuery = () => {
 			if (from || to) {
 				query.createdAt = JSON.stringify({
 					...(from && {
-						start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).toISOString(),
+						start: startOfDay(parse(from, 'yyyy-MM-dd', new Date())).toISOString(),
 					}),
 					...(to && {
-						end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).toISOString(),
+						end: endOfDay(parse(to, 'yyyy-MM-dd', new Date())).toISOString(),
 					}),
 				});
 			}

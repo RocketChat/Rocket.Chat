@@ -14,7 +14,12 @@ import {
 
 API.v1.addRoute(
 	'livechat/analytics/agents/average-service-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -47,7 +52,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/agents/total-service-time',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -84,6 +94,7 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatAnalyticsAgentsAvailableForServiceHistoryProps,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
