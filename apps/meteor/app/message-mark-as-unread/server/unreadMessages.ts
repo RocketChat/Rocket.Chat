@@ -9,11 +9,11 @@ import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/l
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		unreadMessages(firstUnreadMessage?: IMessage, room?: IRoom['_id']): void;
+		unreadMessages(firstUnreadMessage?: Pick<IMessage, '_id'>, room?: IRoom['_id']): void;
 	}
 }
 
-export const unreadMessages = async (userId: string, firstUnreadMessage?: IMessage, room?: IRoom['_id']): Promise<void> => {
+export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<IMessage, '_id'>, room?: IRoom['_id']): Promise<void> => {
 	if (room && typeof room === 'string') {
 		const lastMessage = (
 			await Messages.findVisibleByRoomId(room, {
@@ -65,7 +65,7 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: IMessa
 		});
 	}
 
-	if (firstUnreadMessage.ts >= lastSeen) {
+	if (originalMessage.ts >= lastSeen) {
 		return logger.debug('Provided message is already marked as unread');
 	}
 
