@@ -1,15 +1,16 @@
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import type { MinimongoCollection } from '../../definitions/MinimongoCollection';
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedCollectionManager } from './CachedCollectionManager';
+import type { MinimongoSelector } from './MinimongoCollection';
+import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -36,10 +37,10 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export abstract class CachedCollection<T extends { _id: string }, U = T> {
+export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
-	public collection: MinimongoCollection<T>;
+	public collection = new MinimongoCollection<T>();
 
 	public ready = new ReactiveVar(false);
 
@@ -56,8 +57,6 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	private timer: ReturnType<typeof setTimeout>;
 
 	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
-		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
-
 		this.name = name;
 		this.eventType = eventType;
 
@@ -111,13 +110,9 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection._collection._docs._map = new Map(
-			deserializedRecords.filter(hasId).map((record) => [this.collection._collection._docs._idStringify(record._id), record]),
-		);
+		this.collection.replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
-
-		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
 
 		return true;
 	}
@@ -160,7 +155,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 			}
 
 			const { _id } = newRecord;
-			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+			this.collection.upsert({ _id } as MinimongoSelector<T>, newRecord);
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
 				this.updatedAt = newRecord._updatedAt;
@@ -270,7 +265,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+						this.collection.upsert({ _id } as MinimongoSelector<T>, newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -294,7 +289,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.remove({ _id } as Mongo.Selector<T>);
+						this.collection.remove({ _id } as MinimongoSelector<T>);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -344,7 +339,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	private reconnectionComputation: Tracker.Computation | undefined;
 }
 
-export class PublicCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected getToken() {
 		return undefined;
 	}
@@ -354,7 +349,7 @@ export class PublicCachedCollection<T extends { _id: string }, U = T> extends Ca
 	}
 }
 
-export class PrivateCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected getToken() {
 		return Accounts._storedLoginToken();
 	}
