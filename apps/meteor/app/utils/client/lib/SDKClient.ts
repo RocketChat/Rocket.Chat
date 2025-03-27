@@ -159,6 +159,8 @@ const createStreamManager = () => {
 
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
+
+		console.log(rawMsg);
 		if (!isChangedCollectionPayload(msg)) {
 			return;
 		}
