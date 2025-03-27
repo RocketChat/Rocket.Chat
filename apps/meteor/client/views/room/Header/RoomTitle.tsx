@@ -41,6 +41,7 @@ const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 			onClick={() => handleOpenRoomInfo()}
 			tabIndex={0}
 			role='button'
+			mie={4}
 		>
 			<HeaderIconWithRoom room={room} />
 			<HeaderTitle is='h1'>{room.name}</HeaderTitle>

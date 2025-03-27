@@ -2,8 +2,6 @@ import { isGETDashboardConversationsByType } from '@rocket.chat/rest-typings';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
-import { API } from '../../../../../app/api/server';
-import { restrictQuery } from '../hooks/applyRoomRestrictions';
 import {
 	findAllConversationsBySourceCached,
 	findAllConversationsByStatusCached,
@@ -11,6 +9,8 @@ import {
 	findAllConversationsByTagsCached,
 	findAllConversationsByAgentsCached,
 } from './lib/dashboards';
+import { API } from '../../../../../app/api/server';
+import { restrictQuery } from '../lib/restrictQuery';
 
 const checkDates = (start: Moment, end: Moment) => {
 	if (!start.isValid()) {
@@ -32,7 +32,12 @@ const checkDates = (start: Moment, end: Moment) => {
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-source',
-	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-reports'],
+		validateParams: isGETDashboardConversationsByType,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -52,7 +57,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-status',
-	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-reports'],
+		validateParams: isGETDashboardConversationsByType,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -71,7 +81,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-department',
-	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-reports'],
+		validateParams: isGETDashboardConversationsByType,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -91,7 +106,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-tags',
-	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-reports'],
+		validateParams: isGETDashboardConversationsByType,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { start, end } = this.queryParams;
@@ -111,7 +131,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversations-by-agent',
-	{ authRequired: true, permissionsRequired: ['view-livechat-reports'], validateParams: isGETDashboardConversationsByType },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-livechat-reports'],
+		validateParams: isGETDashboardConversationsByType,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { start, end } = this.queryParams;
