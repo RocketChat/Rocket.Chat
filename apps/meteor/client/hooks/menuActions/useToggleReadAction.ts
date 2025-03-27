@@ -1,9 +1,10 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useMethod, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
+import { useMarkAsUnreadMutation } from '../../components/message/hooks/useMarkAsUnreadMutation';
 
 type ToggleReadActionProps = {
 	rid: string;
@@ -17,7 +18,8 @@ export const useToggleReadAction = ({ rid, isUnread, subscription }: ToggleReadA
 	const router = useRouter();
 
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
-	const unreadMessages = useMethod('unreadMessages');
+
+	const unreadMessages = useMarkAsUnreadMutation();
 
 	const handleToggleRead = useEffectEvent(async () => {
 		try {
@@ -38,7 +40,7 @@ export const useToggleReadAction = ({ rid, isUnread, subscription }: ToggleReadA
 
 			router.navigate('/home');
 
-			await unreadMessages(undefined, rid);
+			await unreadMessages.mutateAsync({ roomId: rid, subscription });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
