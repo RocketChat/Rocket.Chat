@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById } from './utils';
+import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById, createTargetDiscussion } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -12,12 +12,14 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 	let targetChannel: string;
+	let targetDiscussion: string;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		targetDiscussion = await createTargetDiscussion(api);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -172,11 +174,22 @@ test.describe.serial('feature preview', () => {
 			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
 		});
 
-		test('should not display avatar in room header', async ({ page }) => {
+		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
+			await poHomeChannel.sidebar.openChat(targetDiscussion);
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
-			await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			await test.step('should not display avatar in room header', async () => {
+				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			});
+
+			await test.step('should display the back button in the room header when accessing a room with parent', async () => {
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).toBeVisible();
+			});
 		});
 	});
 
