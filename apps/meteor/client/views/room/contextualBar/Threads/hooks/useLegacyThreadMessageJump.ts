@@ -1,5 +1,6 @@
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useRef, useEffect } from 'react';
+import { useRef, useCallback } from 'react';
 
 import { waitForElement } from '../../../../../lib/utils/waitForElement';
 import { clearHighlightMessage, setHighlightMessage } from '../../../MessageList/providers/messageHighlightSubscription';
@@ -27,47 +28,49 @@ export const useLegacyThreadMessageJump = ({ enabled = true }: { enabled?: boole
 		);
 	};
 
-	const parentRef = useRef<HTMLElement>(null);
+	const ref = useRef<HTMLElement | null>(null);
+
 	const clearQueryStringParameterRef = useRef(clearQueryStringParameter);
 	clearQueryStringParameterRef.current = clearQueryStringParameter;
 
-	useEffect(() => {
-		const parent = parentRef.current;
-
-		if (!enabled || !mid || !parent) {
-			return;
-		}
-
-		const abortController = new AbortController();
-
-		waitForElement<HTMLElement>(`[data-id='${mid}']`, { parent, signal: abortController.signal }).then((messageElement) => {
-			if (abortController.signal.aborted) {
+	const refCallback = useCallback(
+		(parent: HTMLElement | null) => {
+			if (!enabled || !mid || !parent) {
 				return;
 			}
 
-			setHighlightMessage(mid);
-			clearQueryStringParameterRef.current?.();
+			const abortController = new AbortController();
 
-			setTimeout(() => {
-				clearHighlightMessage();
-			}, 1000);
-
-			setTimeout(() => {
+			waitForElement<HTMLElement>(`[data-id='${mid}']`, { parent, signal: abortController.signal }).then((messageElement) => {
 				if (abortController.signal.aborted) {
 					return;
 				}
 
-				messageElement.scrollIntoView({
-					behavior: 'smooth',
-					block: 'nearest',
-				});
-			}, 300);
-		});
+				setHighlightMessage(mid);
+				clearQueryStringParameterRef.current?.();
 
-		return () => {
-			abortController.abort();
-		};
-	}, [enabled, mid]);
+				setTimeout(() => {
+					clearHighlightMessage();
+				}, 1000);
 
-	return { parentRef };
+				setTimeout(() => {
+					if (abortController.signal.aborted) {
+						return;
+					}
+
+					messageElement.scrollIntoView({
+						behavior: 'smooth',
+						block: 'nearest',
+					});
+				}, 300);
+			});
+
+			return () => {
+				abortController.abort();
+			};
+		},
+		[enabled, mid],
+	);
+
+	return useMergedRefs<HTMLElement>(ref, refCallback);
 };
