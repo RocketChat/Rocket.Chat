@@ -1,7 +1,6 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useUserId, useTranslation, useRouter, useUserPresence } from '@rocket.chat/ui-contexts';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -9,10 +8,9 @@ import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
 	room: IRoom;
-	user: IUser | null;
 };
 
-export const RoomTopic = ({ room }: RoomTopicProps) => {
+const RoomTopic = ({ room }: RoomTopicProps) => {
 	const t = useTranslation();
 	const canEdit = useCanEditRoom(room);
 	const userId = useUserId();
@@ -26,21 +24,19 @@ export const RoomTopic = ({ room }: RoomTopicProps) => {
 	const topic = isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3 ? directUserData?.statusText : room.topic;
 	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
-	if (!topic && !canEdit) {
+	if (!topic && !canEditTopic) {
 		return null;
 	}
 
-	return (
-		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
-			<RoomBannerContent>
-				{!topic && canEditTopic ? (
-					<Box is='a' href={href}>
-						{t('Add_topic')}
-					</Box>
-				) : (
-					<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-				)}
-			</RoomBannerContent>
-		</RoomBanner>
-	);
+	if (!topic && canEditTopic) {
+		return (
+			<Box is='a' href={href}>
+				{t('Add_topic')}
+			</Box>
+		);
+	}
+
+	return <MarkdownText color='default' parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />;
 };
+
+export default RoomTopic;
