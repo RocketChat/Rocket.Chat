@@ -251,11 +251,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			nextProcessTime = nextEndTime!;
 		}
 
-		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime(nextProcessTime));
+		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime());
 	}
 
-	private async processStatusChangesAtTime(time: Date): Promise<void> {
-		const eventsStartingNow = await CalendarEvent.findEventsStartingNow(time).toArray();
+	private async processStatusChangesAtTime(): Promise<void> {
+		const processTime = new Date();
+
+		const eventsStartingNow = await CalendarEvent.findEventsStartingNow(processTime, 5000).toArray();
 		for await (const event of eventsStartingNow) {
 			if (event.busy === false) {
 				continue;
@@ -263,7 +265,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await this.processEventStart(event);
 		}
 
-		const eventsEndingNow = await CalendarEvent.findEventsEndingNow(time).toArray();
+		const eventsEndingNow = await CalendarEvent.findEventsEndingNow(processTime, 5000).toArray();
 		for await (const event of eventsEndingNow) {
 			if (event.busy === false) {
 				continue;

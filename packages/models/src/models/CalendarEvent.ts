@@ -186,12 +186,12 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findEventsStartingNow(now: Date): FindCursor<ICalendarEvent> {
+	public findEventsStartingNow(now: Date, offset = 1000): FindCursor<ICalendarEvent> {
 		return this.find(
 			{
 				startTime: {
-					$gte: new Date(now.getTime() - 1000),
-					$lt: new Date(now.getTime() + 1000),
+					$gte: new Date(now.getTime() - offset),
+					$lt: new Date(now.getTime() + offset),
 				},
 				busy: { $ne: false },
 			},
@@ -206,12 +206,12 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findEventsEndingNow(now: Date): FindCursor<ICalendarEvent> {
+	public findEventsEndingNow(now: Date, offset = 1000): FindCursor<ICalendarEvent> {
 		return this.find(
 			{
 				endTime: {
-					$gte: new Date(now.getTime() - 1000),
-					$lt: new Date(now.getTime() + 1000),
+					$gte: new Date(now.getTime() - offset),
+					$lt: new Date(now.getTime() + offset),
 				},
 				busy: { $ne: false },
 			},
