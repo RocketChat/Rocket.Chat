@@ -1,6 +1,6 @@
 import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ReactElement, ContextType } from 'react';
-import { useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
@@ -20,7 +20,6 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
 	const [currentCategory, setCurrentCategory] = useState('recent');
-	const categoriesPosition = useRef([]);
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
@@ -32,7 +31,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis]);
 
-	const emojiListByCategory = useSyncExternalStore(sub, getSnapshot);
+	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
 	useUpdateCustomEmoji();
 
@@ -97,7 +96,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			actualTone,
 			currentCategory,
 			setCurrentCategory,
-			categoriesPosition,
+			categoriesIndexes,
 			customItemsLimit,
 			setCustomItemsLimit,
 			setActualTone,
@@ -109,6 +108,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			emojiToPreview,
 			addRecentEmoji,
 			emojiListByCategory,
+			categoriesIndexes,
 			recentEmojis,
 			setRecentEmojis,
 			actualTone,

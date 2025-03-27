@@ -1,9 +1,20 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
+
+type RowItem = Array<EmojiItem & { category: string }>;
+type RowDivider = { category: string; i18n: TranslationKey };
+type LoadMoreItem = { loadMore: true };
+export type EmojiPickerItem = RowItem | RowDivider | LoadMoreItem;
+
+export type CategoriesIndexes = { key: string; index: number }[];
+
+export const isRowDivider = (item: EmojiPickerItem): item is RowDivider => 'i18n' in item;
+export const isLoadMore = (item: EmojiPickerItem): item is LoadMoreItem => 'loadMore' in item;
 
 export const createEmojiListByCategorySubscription = (
 	customItemsLimit: number,
@@ -11,19 +22,19 @@ export const createEmojiListByCategorySubscription = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
-	let emojis: ReturnType<typeof createPickerEmojis> = [];
+	let result: ReturnType<typeof createPickerEmojis> = [[], []];
 	updateRecent(recentEmojis);
 
 	const sub = (cb: () => void) => {
-		emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 
 		return emojiEmitter.on('updated', () => {
-			emojis = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
 			cb();
 		});
 	};
 
-	return [sub, () => emojis];
+	return [sub, () => result];
 };
 
 export const createPickerEmojis = (
@@ -31,28 +42,28 @@ export const createPickerEmojis = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-) => {
+): [EmojiPickerItem[], CategoriesIndexes] => {
 	const categories = getCategoriesList();
+	const categoriesIndexes: CategoriesIndexes = [];
 
-	const mappedCategories = categories.map((category) => ({
-		key: category.key,
-		i18n: category.i18n,
-		emojis: {
-			list: createEmojiList(category.key, actualTone, recentEmojis, setRecentEmojis),
-			limit: category.key === CUSTOM_CATEGORY ? customItemsLimit : null,
-		},
-	}));
+	const mappedCategories = categories.reduce<EmojiPickerItem[]>((acc, category) => {
+		categoriesIndexes.push({ key: category.key, index: acc.length });
+		acc.push({ category: category.key, i18n: category.i18n });
+		acc.push(...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis));
+		return acc;
+	}, []);
 
-	return mappedCategories;
+	return [mappedCategories, categoriesIndexes];
 };
 
 export const createEmojiList = (
+	customItemsLimit: number,
 	category: string,
 	actualTone: number | null,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-) => {
-	const emojiList: EmojiItem[] = [];
+): (RowItem | LoadMoreItem)[] => {
+	const items: RowItem = [];
 	const emojiPackages = Object.values(emoji.packages);
 
 	emojiPackages.forEach((emojiPackage) => {
@@ -78,11 +89,23 @@ export const createEmojiList = (
 			if (!image) {
 				continue;
 			}
-			emojiList.push({ emoji: current, image });
+			items.push({ emoji: current, image, category });
 		}
 	});
 
-	return emojiList;
+	const rowCount = 9;
+	const rowList: Array<RowItem | LoadMoreItem> = Array.from({ length: Math.ceil(items.length / rowCount) }).map(() => []);
+
+	for (let i = 0; i < rowList.length; i++) {
+		const row = items.slice(i * rowCount, i * rowCount + rowCount);
+		rowList[i] = row;
+	}
+
+	if (category === CUSTOM_CATEGORY && customItemsLimit < items.length) {
+		rowList.push({ loadMore: true });
+	}
+
+	return rowList;
 };
 
 export const getCategoriesList = () => {
