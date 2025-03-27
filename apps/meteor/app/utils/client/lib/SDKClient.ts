@@ -19,6 +19,13 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+const send = Meteor.connection._send;
+
+Meteor.connection._send = function (data: any): void {
+	console.log(data);
+	return send.call(this, data);
+};
+
 const isChangedCollectionPayload = (
 	msg: any,
 ): msg is { msg: 'changed'; collection: string; fields: { eventName: string; args: unknown[] } } => {
