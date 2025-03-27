@@ -1,9 +1,9 @@
 import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import mem from 'mem';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { CachedChatSubscription } from './CachedChatSubscription';
+import { Users } from './Users';
 import { isTruthy } from '../../../../lib/isTruthy';
 
 /** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
@@ -49,7 +49,7 @@ export const Subscriptions = Object.assign(CachedChatSubscription.collection, {
 				})
 				.filter(isTruthy);
 
-			return Meteor.users.find({ _id: { $in: uids } }, options);
+			return Users.find({ _id: { $in: uids } }, options);
 		},
 		{ maxAge: 1000, cacheKey: JSON.stringify },
 	),

@@ -1,10 +1,10 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { Mongo } from 'meteor/mongo';
 import { useEffect, useMemo } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
 import { useSortQueryOptions } from '../../../../hooks/useSortQueryOptions';
+import type { MinimongoSelector } from '../../../../lib/cachedCollections/MinimongoCollection';
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
@@ -14,7 +14,7 @@ export const useTeamsListChildrenUpdate = (
 	const options = useSortQueryOptions();
 
 	const query = useMemo(() => {
-		const query: Mongo.Selector<ISubscription> = {
+		const query: MinimongoSelector<ISubscription> = {
 			$or: [
 				{
 					_id: parentRid,

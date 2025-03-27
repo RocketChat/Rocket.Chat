@@ -1,17 +1,19 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
+import { Users } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
 export const useMessageComposerIsReadOnly = (rid: string): boolean => {
+	const uid = useUserId();
+
 	const isReadOnly = useReactiveValue(
 		useCallback(
-			() => roomCoordinator.readOnly(rid, Meteor.users.findOne(Meteor.userId() as string, { fields: { username: 1 } }) as IUser),
-			[rid],
+			() => Boolean(roomCoordinator.readOnly(rid, (uid ? Users.findOne(uid, { fields: { username: 1 } }) : undefined)!)),
+			[uid, rid],
 		),
 	);
 
-	return Boolean(isReadOnly);
+	return isReadOnly;
 };
