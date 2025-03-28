@@ -82,7 +82,7 @@ describe('LIVECHAT - rooms', () => {
 		if (IS_EE) {
 			// install the app
 			await request
-				.post(apps('/'))
+				.post(apps())
 				.set(credentials)
 				.send({ url: APP_URL })
 				.expect('Content-Type', 'application/json')

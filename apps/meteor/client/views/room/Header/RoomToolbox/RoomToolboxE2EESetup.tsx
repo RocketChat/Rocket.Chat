@@ -1,4 +1,6 @@
+import type { Box } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction } from '../../../../components/Header';
@@ -8,7 +10,11 @@ import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext'
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { getRoomGroup } from '../../lib/getRoomGroup';
 
-const RoomToolboxE2EESetup = () => {
+type RoomToolboxE2EESetupProps = {
+	className?: ComponentProps<typeof Box>['className'];
+};
+
+const RoomToolboxE2EESetup = ({ className }: RoomToolboxE2EESetupProps) => {
 	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
 	const room = useRoom();
@@ -29,6 +35,7 @@ const RoomToolboxE2EESetup = () => {
 			{actions.map(({ id, icon, title, action, disabled, tooltip }, index) => (
 				<HeaderToolbarAction
 					key={id}
+					className={className}
 					index={index}
 					id={id}
 					icon={icon}
