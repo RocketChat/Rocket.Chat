@@ -22,4 +22,18 @@ export class SettingUpdater implements ISettingUpdater {
             value,
         });
     }
+
+    public async updateValues(id: ISetting['id'], values: ISetting['values']) {
+        if (!this.app.getStorageItem().settings[id]) {
+            return;
+        }
+
+        const setting = this.manager.getAppSetting(this.app.getID(), id);
+
+        this.manager.updateAppSetting(this.app.getID(), {
+            ...setting,
+            updatedAt: new Date(),
+            values,
+        });
+    }
 }
