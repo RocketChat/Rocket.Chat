@@ -236,10 +236,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		let nextEndTime: Date | null = null;
-		if (eventsWithEndTime.length > 0) {
+		if (eventsWithEndTime.length > 0 && eventsWithEndTime[0].endTime) {
 			nextEndTime = eventsWithEndTime.reduce((earliest, event) => {
-				return event.endTime!.getTime() < earliest.getTime() ? event.endTime! : earliest;
-			}, eventsWithEndTime[0].endTime!);
+				if (!event.endTime) return earliest;
+				return event.endTime.getTime() < earliest.getTime() ? event.endTime : earliest;
+			}, eventsWithEndTime[0].endTime);
 		}
 
 		let nextProcessTime: Date;
@@ -247,8 +248,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			nextProcessTime = nextStartEvent.startTime.getTime() < nextEndTime.getTime() ? nextStartEvent.startTime : nextEndTime;
 		} else if (nextStartEvent) {
 			nextProcessTime = nextStartEvent.startTime;
+		} else if (nextEndTime) {
+			nextProcessTime = nextEndTime;
 		} else {
-			nextProcessTime = nextEndTime!;
+			// This should never happen due to the earlier check, but just in case
+			return;
 		}
 
 		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime());
@@ -257,7 +261,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	private async processStatusChangesAtTime(): Promise<void> {
 		const processTime = new Date();
 
-		const eventsStartingNow = await CalendarEvent.findEventsStartingNow(processTime, 5000).toArray();
+		const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 		for await (const event of eventsStartingNow) {
 			if (event.busy === false) {
 				continue;
@@ -265,7 +269,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await this.processEventStart(event);
 		}
 
-		const eventsEndingNow = await CalendarEvent.findEventsEndingNow(processTime, 5000).toArray();
+		const eventsEndingNow = await CalendarEvent.findEventsEndingNow({ now: processTime, offset: 5000 }).toArray();
 		for await (const event of eventsEndingNow) {
 			if (event.busy === false) {
 				continue;

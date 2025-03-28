@@ -186,7 +186,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findEventsStartingNow(now: Date, offset = 1000): FindCursor<ICalendarEvent> {
+	public findEventsStartingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
 		return this.find(
 			{
 				startTime: {
@@ -206,7 +206,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findEventsEndingNow(now: Date, offset = 1000): FindCursor<ICalendarEvent> {
+	public findEventsEndingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
 		return this.find(
 			{
 				endTime: {
