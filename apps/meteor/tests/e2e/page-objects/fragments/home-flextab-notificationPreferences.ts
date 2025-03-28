@@ -11,20 +11,24 @@ export class HomeFlextabNotificationPreferences {
 		return this.page.locator('role=button[name="Save"]');
 	}
 
+	get dialogNotificationPreferences(): Locator {
+		return this.page.getByRole('dialog', { name: 'Notifications Preferences' });
+	}
+
 	getPreferenceByDevice(device: string): Locator {
 		return this.page.locator(`//div[@id="${device}Alert"]`);
 	}
 
 	async selectDropdownById(text: string): Promise<void> {
-		await this.page.locator(`//div[@id="${text}"]`).click();
+		await this.dialogNotificationPreferences.locator(`//div[@id="${text}"]`).click();
 	}
 
 	async selectOptionByLabel(text: string): Promise<void> {
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.page.getByRole('listbox').getByRole('option', { name: text }).click();
 	}
 
 	async selectDevice(text: string): Promise<void> {
-		await this.page.locator(`[data-qa-id="${text}-notifications"]`).click();
+		await this.dialogNotificationPreferences.getByRole('button', { name: text }).click();
 	}
 
 	async updateDevicePreference(device: string): Promise<void> {
