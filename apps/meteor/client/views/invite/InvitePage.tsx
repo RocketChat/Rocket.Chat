@@ -21,7 +21,7 @@ const InvitePage = (): ReactElement => {
 	const getInviteRoomMutation = useInviteTokenMutation();
 
 	useEffect(() => {
-		if (userId && token && !getInviteRoomMutation.isPending) {
+		if (userId && token && !getInviteRoomMutation.submittedAt) {
 			setToken(token || null);
 			getInviteRoomMutation.mutate(token);
 		}
