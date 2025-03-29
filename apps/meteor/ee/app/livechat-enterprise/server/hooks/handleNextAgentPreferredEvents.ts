@@ -25,8 +25,19 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 	}
 
 	if (id) {
-		return normalizeDefaultAgent(await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } }));
+		const agent = await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } });
+		if (agent) {
+			return normalizeDefaultAgent(agent);
+		}
+
+		const offlineAgent = await Users.findOneAgentById(id, { projection: { _id: 1, username: 1 } });
+		if (offlineAgent && settings.get('Livechat_accept_chats_with_no_agents')) {
+			return normalizeDefaultAgent(offlineAgent);
+		}
+
+		return undefined;
 	}
+
 	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
 };
 
@@ -93,7 +104,7 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
 	async (defaultAgent, { visitorId, source } = {}) => {
-		if (defaultAgent || !visitorId || !source) {
+		if (!visitorId || !source) {
 			return defaultAgent;
 		}
 
@@ -102,6 +113,11 @@ callbacks.add(
 		});
 		if (!guest) {
 			return undefined;
+		}
+
+		const hasDivergentContactManager = defaultAgent?.agentId !== guest?.contactManager;
+		if (!hasDivergentContactManager && defaultAgent) {
+			return defaultAgent;
 		}
 
 		const contactId = await migrateVisitorIfMissingContact(visitorId, source);

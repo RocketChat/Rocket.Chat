@@ -25,7 +25,6 @@ import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
-import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useBannerSection } from './hooks/useBannerSection';
@@ -87,7 +86,7 @@ const RoomBody = (): ReactElement => {
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const {
-		wrapperRef: unreadBarWrapperRef,
+		wrapperRef,
 		innerRef: unreadBarInnerRef,
 		handleUnreadBarJumpToButtonClick,
 		handleMarkAsReadButtonClick,
@@ -109,7 +108,7 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -133,8 +132,6 @@ const RoomBody = (): ReactElement => {
 		selectAndScrollRef,
 		messageListRef,
 	);
-
-	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -195,7 +192,6 @@ const RoomBody = (): ReactElement => {
 		<>
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
-					<RoomTopic room={room} user={user} />
 					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>
@@ -208,7 +204,7 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
 								{uploads.length > 0 && (

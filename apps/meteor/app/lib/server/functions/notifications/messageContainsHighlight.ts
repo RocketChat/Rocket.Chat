@@ -14,9 +14,18 @@ export function messageContainsHighlight(message: Pick<IMessage, 'msg'>, highlig
 		return false;
 	}
 
+	const leftBoundary = '(?<=^|[^\\p{L}\\p{N}_])';
+	const rightBoundary = '(?=$|[^\\p{L}\\p{N}_])';
+
 	return highlights.some((highlight: string) => {
-		const hl = escapeRegExp(highlight);
-		const regexp = new RegExp(`(?<!:)\\b${hl}\\b:|:\\b${hl}(?!:)\\b|\\b(?<!:)${hl}(?!:)\\b`, 'i');
+		// Due to unnecessary escaping in escapeRegExp, we need to remove the escape character for the following characters: - = ! :
+		// This is necessary because it was crashing the client due to Invalid regular expression error.
+		const hl = escapeRegExp(highlight).replace(/\\([-=!:])/g, '$1');
+		const pattern =
+			`(?<!:)${leftBoundary}${hl}${rightBoundary}:` +
+			`|:${leftBoundary}${hl}${rightBoundary}(?!:)` +
+			`|${leftBoundary}(?<!:)${hl}(?!:)${rightBoundary}`;
+		const regexp = new RegExp(pattern, 'iu');
 		return regexp.test(message.msg);
 	});
 }

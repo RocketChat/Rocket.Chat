@@ -7,6 +7,7 @@ export enum AppInterface {
     IPreMessageSentExtend = 'IPreMessageSentExtend',
     IPreMessageSentModify = 'IPreMessageSentModify',
     IPostMessageSent = 'IPostMessageSent',
+    IPostSystemMessageSent = 'IPostSystemMessageSent',
     IPreMessageDeletePrevent = 'IPreMessageDeletePrevent',
     IPostMessageDeleted = 'IPostMessageDeleted',
     IPreMessageUpdatedPrevent = 'IPreMessageUpdatedPrevent',
@@ -42,11 +43,14 @@ export enum AppInterface {
      * @deprecated please use the AppMethod.EXECUTE_POST_LIVECHAT_ROOM_CLOSED method
      */
     ILivechatRoomClosedHandler = 'ILivechatRoomClosedHandler',
+    IPreLivechatRoomCreatePrevent = "IPreLivechatRoomCreatePrevent",
     IPostLivechatAgentAssigned = 'IPostLivechatAgentAssigned',
     IPostLivechatAgentUnassigned = 'IPostLivechatAgentUnassigned',
     IPostLivechatRoomTransferred = 'IPostLivechatRoomTransferred',
     IPostLivechatGuestSaved = 'IPostLivechatGuestSaved',
     IPostLivechatRoomSaved = 'IPostLivechatRoomSaved',
+    IPostLivechatDepartmentRemoved = 'IPostLivechatDepartmentRemoved',
+    IPostLivechatDepartmentDisabled = 'IPostLivechatDepartmentDisabled',
     // FileUpload
     IPreFileUpload = 'IPreFileUpload',
     // Email

@@ -424,7 +424,7 @@ export const bigConversationData = {
 			},
 			files: [
 				{
-					name: 'Transcript_Another test_4/24/2024_Alayna.pdf',
+					name: 'Transcript_Another test_4-24-2024_Alayna.pdf',
 					buffer: null,
 				},
 			],
@@ -454,7 +454,7 @@ export const bigConversationData = {
 			},
 			files: [
 				{
-					name: 'Transcript_Another test_4/24/2024_Alayna.pdf',
+					name: 'Transcript_Another test_4-24-2024_Alayna.pdf',
 					buffer: null,
 				},
 			],

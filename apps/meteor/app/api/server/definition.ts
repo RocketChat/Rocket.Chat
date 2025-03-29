@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -108,6 +108,9 @@ export type Options = (
 			queryFields?: string[];
 	  }
 ) & {
+	/**
+	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
+	 */
 	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
@@ -164,6 +167,14 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		 */
 		query: Record<string, unknown>;
 	}>;
+
+	readonly connection: {
+		token: string;
+		id: string;
+		close: () => void;
+		clientAddress: string;
+		httpHeaders: Record<string, any>;
+	};
 } & (TOptions extends { authRequired: true }
 	? {
 			user: IUser;
@@ -238,6 +249,8 @@ export type TypedOptions = {
 	query?: ValidateFunction;
 	body?: ValidateFunction;
 	tags?: string[];
+	typed?: boolean;
+	license?: LicenseModule[];
 } & Options;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {

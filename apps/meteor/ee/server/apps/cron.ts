@@ -22,14 +22,14 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 
 	const id = 'someAppInInvalidState';
 	const title = 'Warning';
-	const text = 'There is one or more apps in an invalid state. Click here to review.';
-	const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
-	const link = '/admin/apps';
+	const link = '/marketplace/installed';
 
 	await sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
-			msg: `*${i18n.t(title, { lng: adminUser.language || 'en' })}*\n${i18n.t(rocketCatMessage, {
+			msg: `*${i18n.t(title, { lng: adminUser.language || 'en' })}*\n${i18n.t('Invalid_apps_admin_message', {
 				lng: adminUser.language || 'en',
+				marketplace: i18n.t('Marketplace', { lng: adminUser.language || 'en' }),
+				installed: i18n.t('Installed', { lng: adminUser.language || 'en' }),
 			})}`,
 		}),
 		banners: async ({ adminUser }) => {
@@ -40,7 +40,7 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 					id,
 					priority: 10,
 					title,
-					text,
+					text: i18n.t('Invalid_apps_banner_text', { lng: adminUser.language || 'en' }),
 					modifiers: ['danger'],
 					link,
 				},
@@ -64,10 +64,14 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 		return;
 	}
 
-	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
-
 	await sendMessagesToAdmins({
-		msgs: async ({ adminUser }) => ({ msg: `${i18n.t(rocketCatMessage, { lng: adminUser.language || 'en' })}` }),
+		msgs: async ({ adminUser }) => ({
+			msg: i18n.t('Disabled_apps_admin_message', {
+				lng: adminUser.language || 'en',
+				marketplace: i18n.t('Marketplace', { lng: adminUser.language || 'en' }),
+				installed: i18n.t('Installed', { lng: adminUser.language || 'en' }),
+			}),
+		}),
 	});
 };
 

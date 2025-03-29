@@ -33,7 +33,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={masterVolumeId}
+									aria-label={t('Master_volume')}
 									aria-describedby={`${masterVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -55,7 +55,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={notificationsSoundVolumeId}
+									aria-label={t('Notification_volume')}
 									aria-describedby={`${notificationsSoundVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -81,7 +81,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={voipRingerVolumeId}
+									aria-label={t('Call_ringer_volume')}
 									aria-describedby={`${voipRingerVolumeId}-hint`}
 									value={value}
 									minValue={0}

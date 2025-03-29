@@ -1,8 +1,8 @@
+import OAuthServer, { OAuthError, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
-import OAuthServer, { OAuthError, UnauthorizedRequestError } from 'oauth2-server';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';

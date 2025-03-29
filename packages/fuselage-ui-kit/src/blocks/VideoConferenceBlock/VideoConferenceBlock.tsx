@@ -1,4 +1,7 @@
-import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import {
+  getUserDisplayName,
+  VideoConferenceStatus,
+} from '@rocket.chat/core-typings';
 import {
   useGoToRoom,
   useSetting,
@@ -42,7 +45,7 @@ const VideoConferenceBlock = ({
   const userId = useUserId();
   const goToRoom = useGoToRoom();
   const displayAvatars = useUserPreference<boolean>('displayAvatars');
-  const showRealName = useSetting('UI_Use_Real_Name');
+  const showRealName = useSetting('UI_Use_Real_Name', false);
 
   const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
@@ -127,7 +130,9 @@ const VideoConferenceBlock = ({
 
   const joinedNamesOrUsernames = [...data.users]
     .splice(0, MAX_USERS)
-    .map(({ name, username }) => (showRealName ? name || username : username))
+    .map(({ name, username }) =>
+      getUserDisplayName(name, username, showRealName),
+    )
     .join(', ');
 
   const title =

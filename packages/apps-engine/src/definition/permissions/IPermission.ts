@@ -10,3 +10,7 @@ export interface INetworkingPermission extends IPermission {
 export interface IWorkspaceTokenPermission extends IPermission {
     scopes: Array<string>;
 }
+
+export interface IReadSettingPermission extends IPermission {
+    hiddenSettings: Array<string>;
+}

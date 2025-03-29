@@ -19,8 +19,10 @@ export const createPushSettings = () =>
 			alert: 'Push_Setting_Requires_Restart_Alert',
 		});
 
+		// TODO: Push_UseLegacy should be removed in 8.0.0, as well as Push_gcm_project_number and Push_gcm_api_key
 		await this.add('Push_UseLegacy', false, {
 			type: 'boolean',
+			hidden: true,
 			alert: 'Push_Setting_Legacy_Warning',
 		});
 
@@ -109,6 +111,7 @@ export const createPushSettings = () =>
 			});
 			await this.add('Push_gcm_api_key', '', {
 				type: 'string',
+				hidden: true,
 				enableQuery: [
 					{
 						_id: 'Push_UseLegacy',
@@ -132,7 +135,7 @@ export const createPushSettings = () =>
 
 			return this.add('Push_gcm_project_number', '', {
 				type: 'string',
-				public: true,
+				hidden: true,
 				enableQuery: [
 					{
 						_id: 'Push_UseLegacy',

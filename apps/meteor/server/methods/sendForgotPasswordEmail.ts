@@ -14,29 +14,33 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const sendForgotPasswordEmail = async (to: string): Promise<boolean | undefined> => {
+	const email = to.trim().toLowerCase();
+
+	const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1, services: 1 } });
+
+	if (!user) {
+		return true;
+	}
+
+	if (user.services && !user.services.password) {
+		if (!settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
+			return false;
+		}
+	}
+
+	try {
+		Accounts.sendResetPasswordEmail(user._id, email);
+		return true;
+	} catch (error) {
+		SystemLogger.error(error);
+	}
+};
+
 Meteor.methods<ServerMethods>({
 	async sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		const email = to.trim().toLowerCase();
-
-		const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1, services: 1 } });
-
-		if (!user) {
-			return true;
-		}
-
-		if (user.services && !user.services.password) {
-			if (!settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
-				return false;
-			}
-		}
-
-		try {
-			Accounts.sendResetPasswordEmail(user._id, email);
-			return true;
-		} catch (error) {
-			SystemLogger.error(error);
-		}
+		return sendForgotPasswordEmail(to);
 	},
 });

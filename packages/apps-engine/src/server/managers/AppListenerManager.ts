@@ -3,6 +3,7 @@ import type { IEmailDescriptor, IPreEmailSentContext } from '../../definition/em
 import { EssentialAppDisabledException } from '../../definition/exceptions';
 import type { IExternalComponent } from '../../definition/externalComponent';
 import type { ILivechatEventContext, ILivechatRoom, ILivechatTransferEventContext, IVisitor } from '../../definition/livechat';
+import type { ILivechatDepartmentEventContext } from '../../definition/livechat/ILivechatEventContext';
 import type {
     IMessage,
     IMessageDeleteContext,
@@ -43,6 +44,10 @@ interface IListenerExecutor {
     [AppInterface.IPreMessageSentModify]: {
         args: [IMessage];
         result: IMessage;
+    };
+    [AppInterface.IPostSystemMessageSent]: {
+        args: [IMessage];
+        result: void;
     };
     [AppInterface.IPostMessageSent]: {
         args: [IMessage];
@@ -162,6 +167,10 @@ interface IListenerExecutor {
         args: [ILivechatRoom];
         result: void;
     };
+    [AppInterface.IPreLivechatRoomCreatePrevent]: {
+        args: [ILivechatRoom];
+        result: void;
+    };
     [AppInterface.IPostLivechatRoomClosed]: {
         args: [ILivechatRoom];
         result: void;
@@ -184,6 +193,14 @@ interface IListenerExecutor {
     };
     [AppInterface.IPostLivechatGuestSaved]: {
         args: [IVisitor];
+        result: void;
+    };
+    [AppInterface.IPostLivechatDepartmentRemoved]: {
+        args: [ILivechatDepartmentEventContext];
+        result: void;
+    };
+    [AppInterface.IPostLivechatDepartmentDisabled]: {
+        args: [ILivechatDepartmentEventContext];
         result: void;
     };
     // FileUpload
@@ -322,6 +339,7 @@ export class AppListenerManager {
         return !!(lockedEventList && lockedEventList.size);
     }
 
+    /* eslint-disable-next-line complexity */
     public async executeListener<I extends keyof IListenerExecutor>(int: I, data: IListenerExecutor[I]['args'][0]): Promise<IListenerExecutor[I]['result']> {
         if (this.isEventBlocked(int)) {
             throw new EssentialAppDisabledException('There is one or more apps that are essential to this event but are disabled');
@@ -337,6 +355,9 @@ export class AppListenerManager {
                 return this.executePreMessageSentModify(data as IMessage);
             case AppInterface.IPostMessageSent:
                 this.executePostMessageSent(data as IMessage);
+                return;
+            case AppInterface.IPostSystemMessageSent:
+                this.executePostSystemMessageSent(data as IMessage);
                 return;
             case AppInterface.IPreMessageDeletePrevent:
                 return this.executePreMessageDeletePrevent(data as IMessage);
@@ -404,6 +425,8 @@ export class AppListenerManager {
              */
             case AppInterface.ILivechatRoomClosedHandler:
                 return this.executeLivechatRoomClosedHandler(data as ILivechatRoom);
+            case AppInterface.IPreLivechatRoomCreatePrevent:
+                return this.executePreLivechatRoomCreatePrevent(data as ILivechatRoom);
             case AppInterface.IPostLivechatRoomClosed:
                 return this.executePostLivechatRoomClosed(data as ILivechatRoom);
             case AppInterface.IPostLivechatRoomSaved:
@@ -414,6 +437,10 @@ export class AppListenerManager {
                 return this.executePostLivechatAgentUnassigned(data as ILivechatEventContext);
             case AppInterface.IPostLivechatRoomTransferred:
                 return this.executePostLivechatRoomTransferred(data as ILivechatTransferEventContext);
+            case AppInterface.IPostLivechatDepartmentRemoved:
+                return this.executePostLivechatDepartmentRemoved(data as ILivechatDepartmentEventContext);
+            case AppInterface.IPostLivechatDepartmentDisabled:
+                return this.executePostLivechatDepartmentDisabled(data as ILivechatDepartmentEventContext);
             case AppInterface.IPostLivechatGuestSaved:
                 return this.executePostLivechatGuestSaved(data as IVisitor);
             // FileUpload
@@ -557,6 +584,13 @@ export class AppListenerManager {
             if (continueOn) {
                 await app.call(AppMethod.EXECUTEPOSTMESSAGESENT, data);
             }
+        }
+    }
+
+    private async executePostSystemMessageSent(data: IMessage): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostSystemMessageSent)) {
+            const app = this.manager.getOneById(appId);
+            await app.call(AppMethod.EXECUTEPOSTSYSTEMMESSAGESENT, data);
         }
     }
 
@@ -780,7 +814,7 @@ export class AppListenerManager {
             }
         }
 
-        return data;
+        return room;
     }
 
     private async executePostRoomCreate(data: IRoom): Promise<void> {
@@ -1044,6 +1078,14 @@ export class AppListenerManager {
     }
 
     // Livechat
+    private async executePreLivechatRoomCreatePrevent(data: ILivechatRoom): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPreLivechatRoomCreatePrevent)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data);
+        }
+    }
+
     private async executePostLivechatRoomStarted(data: ILivechatRoom): Promise<void> {
         for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomStarted)) {
             const app = this.manager.getOneById(appId);
@@ -1105,6 +1147,22 @@ export class AppListenerManager {
             const app = this.manager.getOneById(appId);
 
             await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_SAVED, data);
+        }
+    }
+
+    private async executePostLivechatDepartmentRemoved(data: ILivechatDepartmentEventContext): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentRemoved)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_REMOVED, data);
+        }
+    }
+
+    private async executePostLivechatDepartmentDisabled(data: ILivechatDepartmentEventContext): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentDisabled)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_DISABLED, data);
         }
     }
 

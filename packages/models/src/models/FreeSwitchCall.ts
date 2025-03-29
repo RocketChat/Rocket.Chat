@@ -37,7 +37,7 @@ export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFree
 	}
 
 	public countCallsByDirection(direction: IFreeSwitchCall['direction'], minDate?: Date, options?: CountDocumentsOptions): Promise<number> {
-		return this.col.countDocuments(
+		return this.countDocuments(
 			{
 				direction,
 				...(minDate && { startedAt: { $gte: minDate } }),
@@ -65,7 +65,7 @@ export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFree
 	}
 
 	public countCallsBySuccessState(success: boolean, minDate?: Date, options?: CountDocumentsOptions): Promise<number> {
-		return this.col.countDocuments(
+		return this.countDocuments(
 			{
 				...(success ? { duration: { $gte: 5 } } : { $or: [{ duration: { $exists: false } }, { duration: { $lt: 5 } }] }),
 				...(minDate && { startedAt: { $gte: minDate } }),

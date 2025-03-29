@@ -240,24 +240,6 @@ function integrationInfoRest() {
 
 class WebHookAPI extends APIClass {
 	async authenticatedRoute(request) {
-		const payloadKeys = Object.keys(request.body);
-		const payloadIsWrapped = request.body && request.body.payload && payloadKeys.length === 1;
-		if (payloadIsWrapped && request.headers['content-type'] === 'application/x-www-form-urlencoded') {
-			try {
-				request.body = JSON.parse(request.body.payload);
-			} catch ({ message }) {
-				return {
-					error: {
-						statusCode: 400,
-						body: {
-							success: false,
-							error: message,
-						},
-					},
-				};
-			}
-		}
-
 		request.integration = await Integrations.findOne({
 			_id: request.params.integrationId,
 			token: decodeURIComponent(request.params.token),
@@ -329,52 +311,29 @@ class WebHookAPI extends APIClass {
 const Api = new WebHookAPI({
 	enableCors: true,
 	apiPath: 'hooks/',
-	auth: {
-		async user() {
-			const payloadKeys = Object.keys(this.bodyParams);
-			const payloadIsWrapped = this.bodyParams && this.bodyParams.payload && payloadKeys.length === 1;
-			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
-				try {
-					this.bodyParams = JSON.parse(this.bodyParams.payload);
-				} catch ({ message }) {
-					return {
-						error: {
-							statusCode: 400,
-							body: {
-								success: false,
-								error: message,
-							},
-						},
-					};
-				}
-			}
+});
 
-			this.request.integration = await Integrations.findOne({
-				_id: this.request.params.integrationId,
-				token: decodeURIComponent(this.request.params.token),
-			});
+// middleware for special requests that are urlencoded but have a json payload (like GitHub webhooks)
+Api.router.use((req, res, next) => {
+	if (req.headers['content-type'] !== 'application/x-www-form-urlencoded') {
+		return next();
+	}
 
-			if (!this.request.integration) {
-				incomingLogger.info(`Invalid integration id ${this.request.params.integrationId} or token ${this.request.params.token}`);
+	// make sure body has only one key and it is 'payload'
+	if (!req.body || typeof req.body !== 'object' || !('payload' in req.body) || Object.keys(req.body).length !== 1) {
+		return next();
+	}
 
-				return {
-					error: {
-						statusCode: 404,
-						body: {
-							success: false,
-							error: 'Invalid integration id or token provided.',
-						},
-					},
-				};
-			}
+	try {
+		req.bodyParams = JSON.parse(req.body.payload);
 
-			const user = await Users.findOne({
-				_id: this.request.integration.userId,
-			});
+		return next();
+	} catch (e) {
+		res.writeHead(400);
+		res.end(JSON.stringify({ success: false, error: e.message }));
+	}
 
-			return { user };
-		},
-	},
+	return next();
 });
 
 Api.addRoute(
