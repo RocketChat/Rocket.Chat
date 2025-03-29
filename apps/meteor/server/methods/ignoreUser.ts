@@ -12,6 +12,36 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const ignoreUser = async (
+	fromUserId: string,
+	{ rid, userId: ignoredUser, ignore }: { rid: string; userId: string; ignore?: boolean },
+): Promise<boolean> => {
+	const [subscription, subscriptionIgnoredUser] = await Promise.all([
+		Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId),
+		Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser),
+	]);
+
+	if (!subscription) {
+		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+			method: 'ignoreUser',
+		});
+	}
+
+	if (!subscriptionIgnoredUser) {
+		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+			method: 'ignoreUser',
+		});
+	}
+
+	const result = await Subscriptions.ignoreUser({ _id: subscription._id, ignoredUser, ignore });
+
+	if (result.modifiedCount) {
+		void notifyOnSubscriptionChangedById(subscription._id);
+	}
+
+	return !!result;
+};
+
 Meteor.methods<ServerMethods>({
 	async ignoreUser({ rid, userId: ignoredUser, ignore = true }) {
 		check(ignoredUser, String);
@@ -25,29 +55,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const [subscription, subscriptionIgnoredUser] = await Promise.all([
-			Subscriptions.findOneByRoomIdAndUserId(rid, userId),
-			Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser),
-		]);
-
-		if (!subscription) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
-				method: 'ignoreUser',
-			});
-		}
-
-		if (!subscriptionIgnoredUser) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
-				method: 'ignoreUser',
-			});
-		}
-
-		const result = await Subscriptions.ignoreUser({ _id: subscription._id, ignoredUser, ignore });
-
-		if (result.modifiedCount) {
-			void notifyOnSubscriptionChangedById(subscription._id);
-		}
-
-		return !!result;
+		return ignoreUser(userId, { rid, userId: ignoredUser, ignore });
 	},
 });

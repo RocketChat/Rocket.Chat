@@ -30,7 +30,7 @@ export const useAnalytics = (): void => {
 			window._paq = window._paq || [];
 			window._paq.push(['setUserId', uid]);
 		}
-	});
+	}, [uid]);
 
 	useEffect(() => {
 		if (!googleId) {

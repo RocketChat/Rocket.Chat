@@ -28,7 +28,7 @@ import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceFor
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
-import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
+import { MarketplaceConnectionError, MarketplaceAppsError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
@@ -122,7 +122,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -151,7 +151,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -229,7 +229,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 							}
 
-							if (e instanceof MarketplaceAppsError) {
+							if (e instanceof MarketplaceAppsError || e instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: e.message });
 							}
 
@@ -253,7 +253,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
 
-							if (err instanceof MarketplaceAppsError) {
+							if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: err.message });
 							}
 
@@ -817,7 +817,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
@@ -1261,11 +1261,11 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+						return API.v1.success({ status: await prl.getStatus() });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},

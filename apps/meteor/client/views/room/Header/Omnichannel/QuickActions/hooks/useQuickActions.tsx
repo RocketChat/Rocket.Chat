@@ -16,7 +16,6 @@ import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
 import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -27,6 +26,7 @@ import TranscriptModal from '../../../../../../components/Omnichannel/modals/Tra
 import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
+import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
@@ -177,6 +177,8 @@ export const useQuickActions = (): {
 
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
+	const discardForRoom = useLivechatInquiryStore((state) => state.discardForRoom);
+
 	const handleClose = useCallback(
 		async (
 			comment?: string,
@@ -199,14 +201,14 @@ export const useQuickActions = (): {
 							}
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
-				LivechatInquiry.remove({ rid });
+				discardForRoom(rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, rid, t, discardForRoom],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({

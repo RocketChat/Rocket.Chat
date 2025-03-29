@@ -117,9 +117,7 @@ Autoupdate._retrySubscription = () => {
 							doc.versionNonRefreshable,
 							`Page will reload in ${reloadDelayInSeconds} seconds`,
 						);
-						setTimeout(() => {
-							Package.reload.Reload._reload();
-						}, reloadDelayInSeconds * 1000);
+						document.dispatchEvent(new Event('client_changed'));
 					}
 					return;
 				}

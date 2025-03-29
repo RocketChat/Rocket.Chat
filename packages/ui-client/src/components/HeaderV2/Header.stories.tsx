@@ -41,7 +41,6 @@ export default {
 			<SettingsContext.Provider
 				value={{
 					hasPrivateAccess: true,
-					isLoading: false,
 					querySetting: (_id) => [
 						() => () => undefined,
 						() => ({

@@ -70,6 +70,10 @@ export class FederatedUser {
 		});
 	}
 
+	public getInternalReferenceCopy(): IUser {
+		return structuredClone(this.internalReference);
+	}
+
 	public getStorageRepresentation(): Readonly<IUser> {
 		return {
 			_id: this.internalId,
