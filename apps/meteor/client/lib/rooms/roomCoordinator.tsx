@@ -218,7 +218,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 					id: name,
 					element: appLayout.wrap(
 						<MainLayout>
-							<RoomRoute extractOpenRoomParams={extractOpenRoomParams} />
+							<RoomRoute key={name} extractOpenRoomParams={extractOpenRoomParams} />
 						</MainLayout>,
 					),
 				},

@@ -1,4 +1,4 @@
-import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
@@ -20,6 +20,7 @@ import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
+import { mapSubscriptionFromApi } from '../../lib/utils/mapSubscriptionFromApi';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
@@ -43,7 +44,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	const subscribeToNotifyUser = useStream('notify-user');
 
 	const rid = data?.rid;
-	const { data: subscription, refetch } = useQuery({
+	const { data: subscriptionData, refetch } = useQuery({
 		queryKey: ['subscriptions', rid] as const,
 		queryFn: () => {
 			if (!rid) {
@@ -55,13 +56,14 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	});
 
 	useEffect(() => {
-		if (!subscription) {
+		if (!subscriptionData?.subscription) {
 			return;
 		}
 
-		CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+		CachedChatSubscription.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
+
 		LegacyRoomManager.computation.invalidate();
-	}, [subscription]);
+	}, [subscriptionData]);
 
 	useEffect(() => {
 		if (!uid) {

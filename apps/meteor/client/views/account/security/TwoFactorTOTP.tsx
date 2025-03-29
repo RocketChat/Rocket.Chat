@@ -92,12 +92,13 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
 
+				setRegisteringTotp(false);
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn],
+		[closeModal, dispatchToastMessage, setModal, t, verifyCodeFn, setRegisteringTotp],
 	);
 
 	const handleRegenerateCodes = useCallback(() => {
@@ -114,8 +115,8 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 			}
 		};
 
-		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
-	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
+		setModal(<TwoFactorTotpModal onDismiss={() => undefined} onConfirm={onRegenerate} onClose={closeModal} />);
+	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>

@@ -141,9 +141,31 @@ const useAutoLanguage = () => {
 	return language || suggestedLanguage;
 };
 
+const getNorthernSamiDisplayName = (lng: string) => {
+	/*
+	 ** Intl.DisplayName not returning Northern Sami
+	 ** for `se` language code in Chrome Version 134.0.6998.89
+	 ** which is the proper name based on the Unicode Common Locale Data Repository (CLDR)
+	 */
+	const languageDisplayNames: { [key: string]: string } = {
+		se: 'davvisámegiella',
+		sv: 'nordsamiska',
+		ru: 'северносаамский',
+		no: 'nordsamisk',
+		fi: 'pohjoissaame',
+	};
+
+	return languageDisplayNames[lng] || 'Northern Sami';
+};
+
 const getLanguageName = (code: string, lng: string): string => {
 	try {
 		const lang = new Intl.DisplayNames([lng], { type: 'language' });
+
+		if (code === 'se' && lang.of(code) === 'se') {
+			return getNorthernSamiDisplayName(lng);
+		}
+
 		return lang.of(code) ?? code;
 	} catch (e) {
 		return code;

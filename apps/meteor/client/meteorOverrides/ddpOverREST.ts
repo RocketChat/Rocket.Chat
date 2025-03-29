@@ -49,7 +49,8 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				msg: 'updated',
 				methods: [message.id],
 			});
-			this.onMessage(_message);
+
+			this._streamHandlers.onMessage(_message);
 		};
 
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));

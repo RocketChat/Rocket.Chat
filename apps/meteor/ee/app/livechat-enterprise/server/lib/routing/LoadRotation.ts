@@ -2,6 +2,7 @@ import type { IOmnichannelCustomAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
 
 /* Load Rotation Queuing method:
@@ -27,8 +28,12 @@ class LoadRotation {
 	}
 
 	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
-		const nextAgent = await Users.getLastAvailableAgentRouted(department, ignoreAgentId);
-		if (!nextAgent) {
+		const nextAgent = await Users.getLastAvailableAgentRouted(
+			department,
+			ignoreAgentId,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		);
+		if (!nextAgent?.username) {
 			return;
 		}
 

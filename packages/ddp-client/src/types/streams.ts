@@ -450,6 +450,14 @@ export interface StreamerEvents {
 			];
 		},
 		{
+			key: `agent/${string}`;
+			args: [
+				{
+					type: 'added' | 'removed' | 'changed';
+				} & ILivechatInquiryRecord,
+			];
+		},
+		{
 			key: `${string}`;
 			args: [
 				{

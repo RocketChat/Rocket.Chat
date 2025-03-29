@@ -1,4 +1,4 @@
-import type { INetworkingPermission, IPermission, IWorkspaceTokenPermission } from '../../definition/permissions/IPermission';
+import type { INetworkingPermission, IPermission, IReadSettingPermission, IWorkspaceTokenPermission } from '../../definition/permissions/IPermission';
 
 /**
  * @description
@@ -33,7 +33,7 @@ export const AppPermissions = {
         registerButtons: { name: 'ui.registerButtons' },
     },
     setting: {
-        read: { name: 'server-setting.read' },
+        read: { name: 'server-setting.read', hiddenSettings: [] } as IReadSettingPermission,
         write: { name: 'server-setting.write' },
     },
     room: {

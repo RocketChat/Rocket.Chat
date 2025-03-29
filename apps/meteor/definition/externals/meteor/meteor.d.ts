@@ -85,7 +85,11 @@ declare module 'meteor/meteor' {
 
 			_outstandingMethodBlocks: unknown[];
 
-			onMessage(message: string): void;
+			// Updated: onMessage is now inside _streamHandlers
+			_streamHandlers: {
+				onMessage(message: string): void;
+				onReset(): void;
+			};
 
 			status(): {
 				connected: boolean;
@@ -94,6 +98,7 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+
 			subscribe(
 				id: string,
 				name: string,

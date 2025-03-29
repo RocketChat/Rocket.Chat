@@ -8,8 +8,8 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type AgentsListOptions = {
 	text: string;
-	haveAll: boolean;
-	haveNoAgentsSelectedOption: boolean;
+	haveAll?: boolean;
+	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;

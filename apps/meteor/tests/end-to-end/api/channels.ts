@@ -1827,10 +1827,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
-						outsiderUser.username as string,
-					]),
-					createTeam(insideCredentials, `rooms.membersOrderedByRole.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -1912,31 +1910,30 @@ describe('[Channels]', () => {
 
 			it('should not fetch private room members by user not part of room', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannel._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
 
-			it('should fetch private room members by user who is part of the room', async () => {
+			it('should not fetch private room members by user who is part of the room', async () => {
 				const response = await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannel._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200);
+					.expect(400);
 
-				expect(response.body.success).to.be.true;
-				expect(response.body.members).to.be.an('array');
+				expect(response.body.success).to.be.false;
 			});
 
 			it('should fetch public room members by user who is part of the room', async () => {
 				const response = await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: publicChannel._id })
 					.expect('Content-Type', 'application/json')
@@ -1949,7 +1946,7 @@ describe('[Channels]', () => {
 			it('should fetch public room members by user not part of room - because public', async () => {
 				await updatePermission('view-c-room', ['admin', 'user', 'guest']);
 				const response = await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: publicChannel._id })
 					.expect('Content-Type', 'application/json')
@@ -1959,26 +1956,25 @@ describe('[Channels]', () => {
 				expect(response.body.members).to.be.an('array');
 			});
 
-			it('should fetch a private channel members inside a public team by someone part of the room ', async () => {
+			it('should not fetch a private channel members inside a public team by someone part of the room ', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.members).to.be.an('array');
+						expect(res.body).to.have.property('success', false);
 					});
 			});
 
 			it('should not fetch a private channel members inside a public team by someone not part of the room, but part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -1986,11 +1982,11 @@ describe('[Channels]', () => {
 
 			it('should not fetch a private channel members inside a public team by someone not part of the team ', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(nonTeamCredentials)
 					.query({ roomId: privateChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -1998,7 +1994,7 @@ describe('[Channels]', () => {
 
 			it('should fetch a public channel members inside a public team by someone part of the room ', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: publicChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
@@ -2011,7 +2007,7 @@ describe('[Channels]', () => {
 
 			it('should fetch a public channel members inside a public team by someone not part of the room, but part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: publicChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
@@ -2024,7 +2020,7 @@ describe('[Channels]', () => {
 
 			it('should fetch a public channel members inside a public team by someone not part of the team ', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPublicTeam._id })
 					.expect('Content-Type', 'application/json')
@@ -2037,7 +2033,7 @@ describe('[Channels]', () => {
 
 			it('should fetch a public channel members inside a private team by someone part of the room', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
@@ -2050,7 +2046,7 @@ describe('[Channels]', () => {
 
 			it('should fetch a public channel members inside a private team by someone not part of the room, but part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
@@ -2063,36 +2059,35 @@ describe('[Channels]', () => {
 
 			it('should not fetch a public channel members inside a private team by someone not part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(nonTeamCredentials)
 					.query({ roomId: publicChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
 
-			it('should fetch a private channel members inside a private team by someone part of the room', async () => {
+			it('should not fetch a private channel members inside a private team by someone part of the room', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(insideCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.members).to.be.an('array');
+						expect(res.body).to.have.property('success', false);
 					});
 			});
 
 			it('should not fetch a private channel members inside a private team by someone not part of the room, but part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(outsiderCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
@@ -2100,11 +2095,11 @@ describe('[Channels]', () => {
 
 			it('should not fetch a private channel members inside a private team by someone not part of team', async () => {
 				await request
-					.get(api('rooms.membersOrderedByRole'))
+					.get(api('channels.members'))
 					.set(nonTeamCredentials)
 					.query({ roomId: privateChannelInPrivateTeam._id })
 					.expect('Content-Type', 'application/json')
-					.expect(404)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});

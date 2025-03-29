@@ -3,6 +3,7 @@ import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from '../src/utils';
 
 test.each([
   [':smile: asd', [paragraph([emoji('smile'), plain(' asd')])]],
+  [':smile:asd', [paragraph([plain(':smile:asd')])]],
   ['text:inner:outer', [paragraph([plain('text:inner:outer')])]],
   ['10:20:30', [paragraph([plain('10:20:30')])]],
   ['10:20:30:', [paragraph([plain('10:20:30:')])]],
@@ -49,6 +50,7 @@ test.each([
     [bigEmoji([emoji('smile'), emoji('smile'), emoji('smile')])],
   ],
   [':smile::smile:', [bigEmoji([emoji('smile'), emoji('smile')])]],
+  [':smile:a:smile:', [paragraph([plain(':smile:a:smile:')])]],
   [':smile:', [bigEmoji([emoji('smile')])]],
   ['Hi :+1:', [paragraph([plain('Hi '), emoji('+1')])]],
   ['Hi :+1_tone4:', [paragraph([plain('Hi '), emoji('+1_tone4')])]],

@@ -11,6 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
 import VideoConfPopup from './VideoConfPopup';
+import { useUserSoundPreferences } from '../../../../../hooks/useUserSoundPreferences';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
@@ -18,6 +19,7 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
+	const { voipRingerVolume } = useUserSoundPreferences();
 
 	const popups = useMemo(
 		() =>
@@ -29,18 +31,18 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true });
+			customSound.play('ringtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true });
+			customSound.play('dialtone', { loop: true, volume: voipRingerVolume / 100 });
 		}
 
 		return (): void => {
 			customSound.stop('ringtone');
 			customSound.stop('dialtone');
 		};
-	}, [customSound, isRinging, isCalling]);
+	}, [customSound, isRinging, isCalling, voipRingerVolume]);
 
 	return (
 		<>
