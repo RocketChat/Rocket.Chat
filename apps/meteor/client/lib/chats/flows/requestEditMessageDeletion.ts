@@ -6,20 +6,20 @@ import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
-export const requestEditMessageDeletion = async (chat: ChatAPI, message: IMessage): Promise<void> => {
+export const requestEditMessageDeletion = async (chat: ChatAPI, message: IMessage): Promise<boolean> => {
 	if (!(await chat.data.canDeleteMessage(message))) {
 		dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
-		return;
+		return Promise.reject(new Error(t('Message_deleting_blocked')));
 	}
 
 	const room = message.drid ? await chat.data.getDiscussionByID(message.drid) : undefined;
 
-	await new Promise<void>((resolve, reject) => {
+	return await new Promise<boolean>((resolve, reject) => {
 		const onConfirm = async (): Promise<void> => {
 			try {
 				if (!(await chat.data.canDeleteMessage(message))) {
 					dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
-					return;
+					reject(new Error(t('Message_deleting_blocked')))
 				}
 				await chat.data.deleteMessage(message);
 
@@ -31,7 +31,7 @@ export const requestEditMessageDeletion = async (chat: ChatAPI, message: IMessag
 				chat.composer?.focus();
 
 				dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
-				resolve();
+				resolve(true);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 				reject(error);
@@ -43,7 +43,7 @@ export const requestEditMessageDeletion = async (chat: ChatAPI, message: IMessag
 
 			chat.composer?.focus();
 
-			resolve();
+			resolve(false);
 		};
 
 		imperativeModal.open({
