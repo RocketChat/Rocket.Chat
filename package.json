@@ -69,6 +69,9 @@
 		"cross-spawn": "7.0.6"
 	},
 	"dependencies": {
+		"@simplewebauthn/browser": "^13.1.0",
+		"@simplewebauthn/server": "^13.1.1",
+		"@simplewebauthn/typescript-types": "^8.3.4",
 		"@types/stream-buffers": "^3.0.7",
 		"node-gyp": "^10.2.0"
 	}

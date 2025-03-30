@@ -126,6 +126,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				key: { active: 1, lastLogin: 1 },
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
+			{
+                key: { 'services.passkeys': 1 },
+                sparse: true,
+            },
+            {
+                key: { 'services.passkeyChallenge': 1 },
+                sparse: true,
+            },
+			{
+                key: { 'services.passkeyAuthenticationChallenge': 1 },
+                sparse: true,
+            },
 		];
 	}
 

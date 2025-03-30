@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
+import type { AuthenticatorTransportFuture } from '@simplewebauthn/typescript-types';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -104,6 +105,18 @@ export interface IUserServices extends IOAuthUserServices {
 		changedAt: Date;
 	};
 	emailCode?: IUserEmailCode;
+	passkeys?: Array<{ 
+        credentialId: string;
+        publicKey: string;
+        counter: number;
+        transports: AuthenticatorTransportFuture[];
+        name: string;
+        createdAt: Date;
+		id: string;
+		algorithm?: string;
+    }>;
+    passkeyChallenge?: string;
+	passkeyAuthenticationChallenge?: string;
 }
 
 type IUserService = keyof IUserServices;
