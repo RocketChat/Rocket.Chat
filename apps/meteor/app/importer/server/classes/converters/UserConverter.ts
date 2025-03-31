@@ -259,6 +259,10 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			return;
 		}
 
+		if (userData.federated !== existingUser.federated) {
+			throw new Error("Local and Federated users can't be converted to each other.");
+		}
+
 		userData._id = _id;
 
 		if (!userData.roles && !existingUser.roles) {
@@ -276,7 +280,6 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
-				...(userData.federated !== undefined && { federated: userData.federated }),
 			}),
 		});
 
@@ -296,7 +299,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			await Users.setUtcOffset(_id, userData.utcOffset);
 		}
 
-		if (userData.name || userData.username) {
+		if (userData.name || (userData.username && !userData.federated)) {
 			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
