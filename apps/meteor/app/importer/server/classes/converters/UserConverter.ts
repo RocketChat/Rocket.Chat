@@ -276,6 +276,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(userData.federated !== undefined && { federated: userData.federated }),
 			}),
 		});
 
@@ -347,6 +348,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
 			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
+			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}
 
