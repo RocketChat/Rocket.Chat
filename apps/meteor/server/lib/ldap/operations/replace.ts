@@ -8,11 +8,12 @@ export type LDAPVariableReplace = {
 };
 
 export function executeReplace(input: string, operation: LDAPVariableReplace): string {
-	if (!operation.pattern || operation.replacement !== 'string') {
+	if (!operation.pattern || typeof operation.replacement !== 'string') {
 		throw new Error('Invalid REPLACE operation.');
 	}
 
-	const pattern = operation.regex ? new RegExp(operation.pattern, operation.flags) : operation.pattern;
+	const flags = operation.regex && operation.all ? `${operation.flags || ''}${operation.flags?.includes('g') ? '' : 'g'}` : operation.flags;
+	const pattern = operation.regex ? new RegExp(operation.pattern, flags) : operation.pattern;
 
 	if (operation.all) {
 		return input.replaceAll(pattern, operation.replacement);
