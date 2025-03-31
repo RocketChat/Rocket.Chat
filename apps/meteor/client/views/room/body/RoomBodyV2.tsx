@@ -25,7 +25,6 @@ import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
-import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useBannerSection } from './hooks/useBannerSection';
@@ -193,7 +192,6 @@ const RoomBody = (): ReactElement => {
 		<>
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
-					<RoomTopic room={room} user={user} />
 					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>
