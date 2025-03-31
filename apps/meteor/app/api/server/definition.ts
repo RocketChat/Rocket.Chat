@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -250,6 +250,7 @@ export type TypedOptions = {
 	body?: ValidateFunction;
 	tags?: string[];
 	typed?: boolean;
+	license?: LicenseModule[];
 } & Options;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {

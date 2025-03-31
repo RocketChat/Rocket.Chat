@@ -28,6 +28,7 @@ import type { Filter } from 'mongodb';
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -114,8 +115,14 @@ API.v1.addRoute(
 			if (userData.name && !validateNameChars(userData.name)) {
 				return API.v1.failure('Name contains invalid characters');
 			}
+			const auditStore = new UserChangedAuditStore({
+				_id: this.user._id,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+				username: this.user.username || '',
+			});
 
-			await saveUser(this.userId, userData);
+			await saveUser(this.userId, userData, { auditStore });
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
@@ -123,9 +130,9 @@ API.v1.addRoute(
 					data: { active },
 					confirmRelinquish,
 				} = this.bodyParams;
-
 				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
 			}
+
 			const { fields } = await this.parseJsonQuery();
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });

@@ -15,6 +15,14 @@ export async function createTargetChannel(api: BaseTest['api'], options?: Omit<C
 	return name;
 }
 
+export async function createTargetChannelAndReturnFullRoom(
+	api: BaseTest['api'],
+	options?: Omit<ChannelsCreateProps, 'name'>,
+): Promise<{ channel: IRoom }> {
+	const name = faker.string.uuid();
+	return (await api.post('/channels.create', { name, ...options })).json();
+}
+
 export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: string, options?: Partial<IMessage>) {
 	const response = await api.get(`/channels.info?roomName=${roomName}`);
 
