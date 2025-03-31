@@ -1,10 +1,9 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload, Subscribable } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { Upload } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import type { Subscribable } from '../../definitions/Subscribable';
 
 export type ComposerAPI = {
 	release(): void;
@@ -108,15 +107,15 @@ export type UploadsAPI = {
 	send(
 		file: File,
 		{ description, msg, t, e2e, tshow }: {
-		description?: string;
-		msg?: string;
-		t?: IMessage['t'];
-		e2e?: IMessage['e2e'];
-		/**
-		 * Controls whether thread messages appear in the main channel
-		 */
-		tshow?: boolean
-	},
+			description?: string;
+			msg?: string;
+			t?: IMessage['t'];
+			e2e?: IMessage['e2e'];
+			/**
+			 * Controls whether thread messages appear in the main channel
+			 */
+			tshow?: boolean
+		},
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	): Promise<void>;
