@@ -10,7 +10,12 @@ import { i18n } from '../../../../../server/lib/i18n';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
-	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'], validateParams: isLivechatRoomOnHoldProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['on-hold-livechat-room'],
+		validateParams: isLivechatRoomOnHoldProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
@@ -43,7 +48,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.resumeOnHold',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatRoomResumeOnHoldProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		validateParams: isLivechatRoomResumeOnHoldProps,
+		license: ['livechat-enterprise'],
+	},
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
@@ -87,6 +97,7 @@ API.v1.addRoute(
 			POST: { permissions: ['view-l-room'], operation: 'hasAny' },
 			DELETE: { permissions: ['view-l-room'], operation: 'hasAny' },
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {

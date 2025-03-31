@@ -14,6 +14,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isFederationSearchPublicRoomsProps,
+		license: ['federation'],
 	},
 	{
 		async get() {
@@ -31,6 +32,7 @@ API.v1.addRoute(
 	'federation/listServersByUser',
 	{
 		authRequired: true,
+		license: ['federation'],
 	},
 	{
 		async get() {
@@ -48,6 +50,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isFederationAddServerProps,
+		license: ['federation'],
 	},
 	{
 		async post() {
@@ -65,6 +68,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isFederationRemoveServerProps,
+		license: ['federation'],
 	},
 	{
 		async post() {
@@ -82,6 +86,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isFederationJoinExternalPublicRoomProps,
+		license: ['federation'],
 	},
 	{
 		async post() {

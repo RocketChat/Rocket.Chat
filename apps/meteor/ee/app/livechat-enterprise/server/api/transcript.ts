@@ -6,7 +6,7 @@ import { requestPdfTranscript } from '../lib/requestPdfTranscript';
 
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',
-	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'] },
+	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'], license: ['livechat-enterprise'] },
 	{
 		async post() {
 			const room = await LivechatRooms.findOneById(this.urlParams.rid);
