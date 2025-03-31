@@ -31,18 +31,25 @@ test.describe('video conference ringing', () => {
 		await auxContext.page.close();
 	});
 
-	test('should show call is ringing in direct', async () => {
+	test('should display call ringing in direct message', async () => {
 		await poHomeChannel.sidenav.openChat('user2');
 
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.menuItemVideoCall.click();
-		await poHomeChannel.content.btnStartVideoCall.click();
+		await test.step('should user1 calls user2', async () => {
+			await poHomeChannel.content.btnCall.click();
+			await poHomeChannel.content.menuItemVideoCall.click();
+			await poHomeChannel.content.btnStartVideoCall.click();
 
-		await expect(poHomeChannel.content.videoConfRingCallText('Calling')).toBeVisible();
-		await expect(auxContext.poHomeChannel.content.videoConfRingCallText('Incoming call from')).toBeVisible();
+			await expect(poHomeChannel.content.getVideoConfPopupByName('Calling user2')).toBeVisible();
+			await expect(auxContext.poHomeChannel.content.getVideoConfPopupByName('Incoming call from user1')).toBeVisible();
 
-		await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
+			await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
+		});
+
+		await test.step('should user1 be able to call user2 again ', async () => {
+			await poHomeChannel.content.videoConfMessageBlock.last().getByRole('button', { name: 'Call again' }).click();
+			await expect(poHomeChannel.content.getVideoConfPopupByName('Start a call with user2')).toBeVisible();
+		});
 	});
 
 	const changeCallRingerVolumeFromHome = async (poHomeChannel: HomeChannel, poAccountProfile: AccountProfile, volume: string) => {
@@ -67,7 +74,7 @@ test.describe('video conference ringing', () => {
 		await poHomeChannel.content.menuItemVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 
-		await expect(auxContext.poHomeChannel.content.getIncomingCallByName('user1')).toBeVisible();
+		await expect(auxContext.poHomeChannel.content.getVideoConfPopupByName('Incoming call from user1')).toBeVisible();
 
 		const dialToneVolume = await poHomeChannel.audioVideoConfDialtone.evaluate((el: HTMLAudioElement) => el.volume);
 		const ringToneVolume = await auxContext.poHomeChannel.audioVideoConfRingtone.evaluate((el: HTMLAudioElement) => el.volume);

@@ -1,4 +1,4 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Icon, PasswordInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -62,7 +62,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={passwordId}
 									error={errors.password?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange}
 									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
 									aria-invalid={errors.password ? 'true' : 'false'}
@@ -94,7 +93,6 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									id={confirmPasswordId}
 									error={errors.confirmationPassword?.message}
 									flexGrow={1}
-									addon={<Icon name='key' size='x20' />}
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
