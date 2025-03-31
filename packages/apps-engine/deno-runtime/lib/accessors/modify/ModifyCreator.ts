@@ -60,7 +60,7 @@ export class ModifyCreator implements IModifyCreator {
                         })
                             .then((response) => response.result)
                             .catch((err) => {
-                                throw new Error(err.error.message);
+                                throw err;
                             });
                 },
             },
