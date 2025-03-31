@@ -20,26 +20,7 @@ type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
 const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const user = useUser();
-	const setModal = useSetModal();
-
-	const enableTotpFn = useMethod('2fa:enable');
-	const disableTotpFn = useMethod('2fa:disable');
-	const verifyCodeFn = useMethod('2fa:validateTempToken');
-	const checkCodesRemainingFn = useMethod('2fa:checkCodesRemaining');
-	const regenerateCodesFn = useMethod('2fa:regenerateCodes');
-
-	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
-	const [qrCode, setQrCode] = useSafely(useState<string>());
-	const [totpSecret, setTotpSecret] = useSafely(useState<string>());
-	const [codesRemaining, setCodesRemaining] = useSafely(useState(0));
-
-	const { register, handleSubmit } = useForm<TwoFactorTOTPFormData>({ defaultValues: { authCode: '' } });
-
-	const totpEnabled = user?.services?.totp?.enabled;
-
-	const closeModal = useCallback(() => setModal(null), [setModal]);
-
+k
 	useEffect(() => {
 		const updateCodesRemaining = async (): Promise<void | boolean> => {
 			if (!totpEnabled) {

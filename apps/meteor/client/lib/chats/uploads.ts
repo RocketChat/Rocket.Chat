@@ -37,12 +37,14 @@ const send = async (
 		rid,
 		tmid,
 		t,
+		tshow,
 	}: {
 		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
 		t?: IMessage['t'];
+		tshow?: boolean; // Controls whether thread messages appear in the main channel
 	},
 	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
@@ -126,6 +128,7 @@ const send = async (
 						tmid,
 						description,
 						t,
+						tshow, // Include tshow parameter to control visibility in the main channel
 						content,
 					});
 				}
@@ -170,8 +173,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	send: (
 		file: File,
-		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
+		{ description, msg, t, tshow }: { description?: string; msg?: string; t?: IMessage['t']; tshow?: boolean /* Controls thread message visibility in channel */ },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
-	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
+	): Promise<void> => send(file, { description, msg, rid, tmid, t, tshow }, getContent, fileContent),
 });

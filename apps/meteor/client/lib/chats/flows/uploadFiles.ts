@@ -29,6 +29,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	const msg = await prependReplies('', replies);
 
 	const room = await chat.data.getRoom();
+	// Get tshow value from the composer context to properly handle "Also send to channel" option
+	const tshow = chat.composer?.tshow;
 
 	const queue = [...files];
 
@@ -43,6 +45,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 			{
 				msg,
 				...extraData,
+				// Pass tshow parameter if it exists to ensure thread messages appear in the channel when requested
+				...(tshow !== undefined && { tshow }),
 			},
 			getContent,
 			fileContent,

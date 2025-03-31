@@ -58,6 +58,11 @@ export type ComposerAPI = {
 	readonly isMicrophoneDenied: Subscribable<boolean>;
 
 	readonly formatters: Subscribable<FormattingButton[]>;
+
+	/**
+	 * Controls whether thread messages appear in the main channel when using "Also send to channel" option
+	 */
+	readonly tshow?: boolean;
 };
 
 export type DataAPI = {
@@ -102,7 +107,16 @@ export type UploadsAPI = {
 	cancel(id: Upload['id']): void;
 	send(
 		file: File,
-		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		{ description, msg, t, e2e, tshow }: {
+		description?: string;
+		msg?: string;
+		t?: IMessage['t'];
+		e2e?: IMessage['e2e'];
+		/**
+		 * Controls whether thread messages appear in the main channel
+		 */
+		tshow?: boolean
+	},
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	): Promise<void>;
