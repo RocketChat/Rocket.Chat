@@ -195,8 +195,8 @@ describe('LIVECHAT - custom fields', () => {
 			let contact: Partial<ILivechatContact>;
 			let contactId: string;
 
-			let customFieldName: string;
-			let customFieldValue: string;
+			const customFieldName = `custom_field_${Date.now()}`;
+			const customFieldValue = 'custom-field-value';
 
 			before(async () => {
 				await updatePermission('view-livechat-contact', ['admin']);
@@ -217,8 +217,6 @@ describe('LIVECHAT - custom fields', () => {
 					.send({ ...contact });
 
 				contactId = body.contactId;
-				customFieldName = `custom_field_${Date.now()}`;
-				customFieldValue = 'custom-field-value';
 
 				await createCustomField({
 					searchable: true,
@@ -268,7 +266,47 @@ describe('LIVECHAT - custom fields', () => {
 					});
 			});
 
-			// it('should add the custom field as conflict on Contact when overwrite is false', async () => {});
+			it('should add the custom field as conflict on Contact when overwrite is false', async () => {
+				const conflictingFieldValue = 'conflicting-custom-field-value';
+
+				// Save the custom field on Contact
+				await request
+					.post(api('livechat/custom.field'))
+					.send({ token: visitor.token, key: customFieldName, value: customFieldValue, overwrite: false })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				// Fetch the visitor to validate custom fields are properly set.
+				await request
+					.get(api(`livechat/visitor/${visitor._id}`))
+					.set(credentials)
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.visitor).to.have.property('livechatData');
+						expect(res.body.visitor.livechatData).to.have.property('customFields');
+						expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+					});
+
+				// Fetch the visitor's contact to validate custom fields are properly set.
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.contacts).to.have.lengthOf(1);
+						expect(res.body.contacts[0]).to.have.property('customFields');
+						// Validate custom fields contain both entries, indicating conflict criteria
+						expect(res.body.contacts[0].customFields).to.have.property(customFieldName);
+						expect(res.body.contacts[0].customFields[customFieldName]).to.be.an('array'); // Conflict results in an array
+						expect(res.body.contacts[0].customFields[customFieldName]).to.include(customFieldValue);
+						expect(res.body.contacts[0].customFields[customFieldName]).to.include(conflictingFieldValue);
+					});
+			});
 		});
 	});
 });
