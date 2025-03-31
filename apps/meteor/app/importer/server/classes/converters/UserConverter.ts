@@ -259,7 +259,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			return;
 		}
 
-		if (userData.federated !== existingUser.federated) {
+		if (Boolean(userData.federated) !== Boolean(existingUser.federated)) {
 			throw new Error("Local and Federated users can't be converted to each other.");
 		}
 
