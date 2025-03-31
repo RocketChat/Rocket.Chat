@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import type { ILivechatContact, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
@@ -200,15 +199,10 @@ describe('LIVECHAT - custom fields', () => {
 
 			before(async () => {
 				await updatePermission('view-livechat-contact', ['admin']);
-				const name: string = faker.person.fullName();
-				const email: string = faker.internet.email();
-				const phone: string = faker.phone.number();
 
-				visitor = await createVisitor(undefined, name, email, phone);
+				visitor = await createVisitor();
 				contact = {
-					name,
-					emails: [{ address: email }],
-					phones: [{ phoneNumber: phone }],
+					name: visitor.name,
 				};
 
 				const { body } = await request
