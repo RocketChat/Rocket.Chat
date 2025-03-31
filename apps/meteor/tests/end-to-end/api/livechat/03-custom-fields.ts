@@ -198,7 +198,7 @@ describe('LIVECHAT - custom fields', () => {
 			let customFieldName: string;
 			let customFieldValue: string;
 
-			beforeAll(async () => {
+			before(async () => {
 				await updatePermission('view-livechat-contact', ['admin']);
 				const name: string = faker.person.fullName();
 				const email: string = faker.internet.email();
@@ -260,9 +260,11 @@ describe('LIVECHAT - custom fields', () => {
 					.query({ contactId })
 					.expect(200)
 					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
 						expect(res.body.contacts).to.have.lengthOf(1);
-						expect(res.body.visitor.livechatData).to.have.property('customFields');
-						expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+						expect(res.body.contacts[0]).to.have.property('livechatData');
+						expect(res.body.contacts[0]).to.have.property('customFields');
+						expect(res.body.contacts[0].customFields).to.have.property(customFieldName, customFieldValue);
 					});
 			});
 
