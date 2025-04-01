@@ -2,9 +2,11 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { Box } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import GenericError from '../../../../components/GenericError';
 import GenericModal from '../../../../components/GenericModal';
 import type { CannedResponseEditFormData } from '../../CannedResponseEdit';
 import CannedResponseForm from '../../components/CannedResponseForm';
@@ -69,9 +71,11 @@ const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedLi
 			title={cannedResponseData?._id ? t('Edit_Canned_Response') : t('Create_canned_response')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
-			<FormProvider {...methods}>
-				<CannedResponseForm />
-			</FormProvider>
+			<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
+				<FormProvider {...methods}>
+					<CannedResponseForm />
+				</FormProvider>
+			</ErrorBoundary>
 		</GenericModal>
 	);
 };
