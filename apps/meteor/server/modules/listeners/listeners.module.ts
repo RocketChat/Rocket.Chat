@@ -223,49 +223,49 @@ export class ListenersModule {
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
-			if (clientAction === 'removed') {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
-					_id: inquiry._id,
-					clientAction,
-				});
 
-				if (inquiry.department) {
-					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
+			const isOnlyQueueMetadataUpdate = (diff: Record<string, unknown> | undefined): boolean => {
+				if (!diff) {
+					return false;
 				}
 
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
-					type,
-					...inquiry,
-				});
-			}
+				const queueMetadataKeys = ['lockedAt', 'locked', '_updatedAt'];
+				return Object.keys(diff).length === queueMetadataKeys.length && queueMetadataKeys.every((key) => diff.hasOwnProperty(key));
+			};
 
-			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
-			if (
-				clientAction === 'updated' &&
-				diff?.hasOwnProperty('lockedAt') &&
-				diff?.hasOwnProperty('locked') &&
-				diff?.hasOwnProperty('_updatedAt') &&
-				Object.keys(diff).length === 3
-			) {
-				return;
-			}
-
+			// Always notify the specific inquiry channel
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
-				...inquiry,
+				_id: inquiry._id,
+				...(clientAction !== 'removed' && { ...inquiry }),
 				clientAction,
 			});
 
-			if (!inquiry.department) {
-				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+			// Skip further notifications if it's just a queue metadata update
+			if (clientAction === 'updated' && isOnlyQueueMetadataUpdate(diff)) {
+				return;
+			}
+
+			// Notify the defaultAgent if exists
+			if (inquiry.defaultAgent?.agentId) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(`agent/${inquiry.defaultAgent.agentId}`, {
 					type,
 					...inquiry,
 				});
 			}
 
-			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
+			// Prioritize department-specific channel over public
+			if (inquiry.department) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, {
+					type,
+					...inquiry,
+				});
+			}
 
-			if (clientAction === 'updated' && !diff?.department) {
-				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
+			if (!inquiry.department && !inquiry.defaultAgent?.agentId) {
+				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
+					type,
+					...inquiry,
+				});
 			}
 		});
 

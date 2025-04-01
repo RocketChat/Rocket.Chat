@@ -127,7 +127,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		return newIds;
 	}
 
-	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
+	async findExistingUser(data: IImportUser): Promise<IUser | null | undefined> {
 		if (data.emails.length) {
 			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -138,7 +138,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		// If we couldn't find one by their email address, try to find an existing user by their username
 		if (data.username) {
-			return Users.findOneByUsernameIgnoringCase(data.username, {});
+			return Users.findOneByUsernameIgnoringCase<IUser>(data.username, {});
 		}
 	}
 
@@ -221,7 +221,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		subset(userData.customFields, 'customFields');
 	}
 
-	async insertOrUpdateUser(existingUser: IUser | undefined, data: IImportUser): Promise<void> {
+	async insertOrUpdateUser(existingUser: IUser | null | undefined, data: IImportUser): Promise<void> {
 		if (!data.username && !existingUser?.username) {
 			const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
 			data.username = await generateUsernameSuggestion({

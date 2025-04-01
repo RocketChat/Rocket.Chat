@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
-import type { Filter, RootFilterOperators } from 'mongodb';
+import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -21,7 +21,7 @@ export async function findUsersToAutocomplete({
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
-	const options = {
+	const options: FindOptions<IUser> & { limit: number } = {
 		projection: {
 			name: 1,
 			username: 1,
