@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -12,11 +11,13 @@ import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import RoomAnnouncement from '../RoomAnnouncement';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
+import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
+import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
@@ -27,14 +28,11 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
-import { useBannerSection } from './hooks/useBannerSection';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
-import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
-import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
@@ -99,8 +97,6 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
-	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useBannerSection();
-
 	const {
 		uploads,
 		handleUploadFiles,
@@ -126,7 +122,6 @@ const RoomBody = (): ReactElement => {
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
-		sectionScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
 		selectAndScrollRef,
@@ -177,25 +172,9 @@ const RoomBody = (): ReactElement => {
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
-	const wrapperStyle = css`
-		position: absolute;
-		width: 100%;
-		z-index: 5;
-		top: 0px;
-
-		&.animated-hidden {
-			top: -88px;
-		}
-	`;
-
 	return (
 		<>
-			<Box position='relative' w='full'>
-				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
-					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
-				</Box>
-			</Box>
-
+			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
