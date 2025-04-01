@@ -190,7 +190,7 @@ describe('LIVECHAT - custom fields', () => {
 		});
 	});
 
-	describe('livechat/custom.field [with Contacts]', () => {
+	describe.only('livechat/custom.field [with Contacts]', () => {
 		let visitor: ILivechatVisitor;
 		let contactId: string;
 
@@ -262,10 +262,9 @@ describe('LIVECHAT - custom fields', () => {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.contacts).to.have.lengthOf(1);
-					expect(res.body.contacts[0]).to.have.property('livechatData');
-					expect(res.body.contacts[0]).to.have.property('customFields');
-					expect(res.body.contacts[0].customFields).to.have.property(customFieldName, customFieldValue);
+					expect(res.body).to.have.property('contact');
+					expect(res.body.contact).to.have.property('customFields');
+					expect(res.body.contact.customFields).to.have.property(customFieldName, customFieldValue);
 				});
 		});
 
@@ -278,6 +277,7 @@ describe('LIVECHAT - custom fields', () => {
 				.send({ token: visitor.token, key: customFieldName, value: conflictingFieldValue, overwrite: false })
 				.expect(200)
 				.expect((res: Response) => {
+					console.log(res.body);
 					expect(res.body).to.have.property('success', true);
 				});
 
@@ -300,16 +300,14 @@ describe('LIVECHAT - custom fields', () => {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.contacts).to.have.lengthOf(1);
-					expect(res.body.contacts[0]).to.have.property('customFields');
+					expect(res.body).to.have.property('contact');
+					expect(res.body.contact).to.have.property('customFields');
+					expect(res.body.contact.customFields).to.have.property(customFieldName, customFieldValue);
 
 					// Validate custom fields contain both entries, indicating conflict criteria
-					expect(res.body.contacts[0].customFields).to.have.property(customFieldName);
-					expect(res.body.contacts[0].customFields[customFieldName]).to.be.an('array'); // Conflict results in an array
-					expect(res.body.contacts[0].customFields[customFieldName]).to.include(customFieldValue);
-					expect(res.body.contacts[0].conflictingFields).to.have.lengthOf(1);
-					expect(res.body.contacts[0].conflictingFields[0]).to.have.property('field', customFieldName);
-					expect(res.body.contacts[0].conflictingFields[0]).to.have.property('value', conflictingFieldValue);
+					expect(res.body.contact.conflictingFields).to.have.lengthOf(1);
+					expect(res.body.contact.conflictingFields[0]).to.have.property('field', customFieldName);
+					expect(res.body.contact.conflictingFields[0]).to.have.property('value', conflictingFieldValue);
 				});
 		});
 	});

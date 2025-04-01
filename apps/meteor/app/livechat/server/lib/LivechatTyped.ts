@@ -12,7 +12,7 @@ import type {
 	UserStatus,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -514,7 +514,7 @@ class LivechatClass {
 				throw new Error(`Visitor with token "${token}" not found.`);
 			}
 
-			const contact = await LivechatContacts.findOneByVisitor({ visitorId: visitor._id, source: { type: OmnichannelSourceType.WIDGET } });
+			const contact = await LivechatContacts.findContactMatchingVisitor(visitor);
 			if (contact) {
 				await this.updateContactsCustomFields(contact, key, value, overwrite);
 			}
