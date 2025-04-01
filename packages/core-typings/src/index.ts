@@ -1,5 +1,7 @@
 import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
 
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';

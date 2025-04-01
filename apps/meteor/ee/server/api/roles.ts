@@ -93,7 +93,7 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'roles.create',
-	{ authRequired: true },
+	{ authRequired: true, license: ['custom-roles'] },
 	{
 		async post() {
 			if (!License.hasModule('custom-roles')) {
@@ -137,7 +137,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.update',
-	{ authRequired: true },
+	{ authRequired: true, license: ['custom-roles'] },
 	{
 		async post() {
 			if (!isRoleUpdateProps(this.bodyParams)) {
