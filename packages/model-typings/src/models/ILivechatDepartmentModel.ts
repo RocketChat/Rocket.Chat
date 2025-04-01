@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -31,21 +31,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
 	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult>;
-	createOrUpdateDepartment(
-		_id: string | null,
-		data: {
-			enabled: boolean;
-			name: string;
-			description?: string;
-			showOnRegistration: boolean;
-			email: string;
-			showOnOfflineForm: boolean;
-			requestTagBeforeClosingChat?: boolean;
-			chatClosingTags?: string[];
-			fallbackForwardDepartment?: string;
-			departmentsAllowedToForward?: string[];
-		},
-	): Promise<ILivechatDepartment>;
+	createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO & { type?: string }): Promise<ILivechatDepartment>;
 
 	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 	removeDepartmentFromForwardListById(_departmentId: string): Promise<void>;

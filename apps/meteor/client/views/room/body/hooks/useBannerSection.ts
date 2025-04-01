@@ -19,14 +19,14 @@ export const useBannerSection = () => {
 		node.addEventListener(
 			'scroll',
 			withThrottling({ wait: 100 })((event) => {
-				const roomLeader = wrapperBoxRef.current?.querySelector('.rcx-header-section');
+				const bannerSection = wrapperBoxRef.current?.querySelector('.rcx-header-section');
 
-				if (roomLeader) {
+				if (bannerSection) {
 					if (isAtBottom(node, 0)) {
 						setHideSection(false);
 					} else if (event.target.scrollTop < lastScrollTopRef) {
 						setHideSection(true);
-					} else if (!isAtBottom(node, 100) && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
+					} else if (!isAtBottom(node, 100) && event.target.scrollTop > parseFloat(getComputedStyle(bannerSection).height)) {
 						setHideSection(true);
 					}
 				}

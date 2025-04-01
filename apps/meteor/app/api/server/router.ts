@@ -4,6 +4,19 @@ import express from 'express';
 
 import type { TypedAction, TypedOptions } from './definition';
 
+type MiddlewareHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => void;
+
+type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TSubPathPattern extends string> = [
+	...MiddlewareHandler[],
+	TypedAction<TOptions, TSubPathPattern>,
+];
+
+function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
+	const last = arr[arr.length - 1];
+	const rest = arr.slice(0, -1) as T[];
+	return [rest, last as U];
+}
+
 export type Route = {
 	responses: Record<
 		number,
@@ -107,7 +120,7 @@ export class Router<
 		method: Method,
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions, TSubPathPattern>,
+		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
 	): Router<
 		TBasePath,
 		| TOperations
@@ -116,10 +129,12 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
+		const [middlewares, action] = splitArray(actions);
+
 		const prev = this.middleware;
 		this.middleware = (router: express.Router) => {
 			prev(router);
-			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
+			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (req, res) => {
 				if (options.query) {
 					const validatorFn = options.query;
 					if (typeof options.query === 'function' && !validatorFn(req.query)) {
@@ -196,7 +211,7 @@ export class Router<
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions, TSubPathPattern>,
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
 	): Router<
 		TBasePath,
 		| TOperations
@@ -205,13 +220,13 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		return this.method('GET', subpath, options, action);
+		return this.method('GET', subpath, options, ...action);
 	}
 
 	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions, TSubPathPattern>,
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
 	): Router<
 		TBasePath,
 		| TOperations
@@ -220,13 +235,13 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		return this.method('POST', subpath, options, action);
+		return this.method('POST', subpath, options, ...action);
 	}
 
 	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions, TSubPathPattern>,
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
 	): Router<
 		TBasePath,
 		| TOperations
@@ -235,13 +250,13 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		return this.method('PUT', subpath, options, action);
+		return this.method('PUT', subpath, options, ...action);
 	}
 
 	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions, TSubPathPattern>,
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
 	): Router<
 		TBasePath,
 		| TOperations
@@ -250,7 +265,7 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		return this.method('DELETE', subpath, options, action);
+		return this.method('DELETE', subpath, options, ...action);
 	}
 
 	use<FN extends (req: express.Request, res: express.Response, next: express.NextFunction) => void>(fn: FN): Router<TBasePath, TOperations>;
