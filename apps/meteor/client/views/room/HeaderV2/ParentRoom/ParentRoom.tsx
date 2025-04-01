@@ -4,7 +4,7 @@ import ParentDiscussion from './ParentDiscussion';
 import ParentTeam from './ParentTeam';
 
 const ParentRoom = ({ room }: { room: IRoom }) => {
-	const parentRoomId = room.prid || (room.teamId && !room.teamMain);
+	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	if (!parentRoomId) {
 		return null;

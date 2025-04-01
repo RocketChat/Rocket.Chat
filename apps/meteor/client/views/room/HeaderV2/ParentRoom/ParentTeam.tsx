@@ -46,8 +46,9 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 		queryFn: async () => userTeamsListEndpoint({ userId }),
 	});
 
-	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
-	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const userBelongsToTeam = Boolean(userTeams?.teams?.find((team) => team._id === teamId)) || false;
+	const isPublicTeam = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const shouldDisplayTeam = isPublicTeam || userBelongsToTeam;
 
 	const redirectToMainRoom = (): void => {
 		const rid = teamInfoData?.teamInfo.roomId;
@@ -55,14 +56,10 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 			return;
 		}
 
-		if (!(isTeamPublic || userBelongsToTeam)) {
-			return;
-		}
-
 		goToRoomById(rid);
 	};
 
-	if (teamInfoError) {
+	if (teamInfoError || !shouldDisplayTeam) {
 		return null;
 	}
 
