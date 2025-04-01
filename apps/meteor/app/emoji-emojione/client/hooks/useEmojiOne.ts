@@ -35,8 +35,10 @@ export const useEmojiOne = () => {
 					}
 				}
 			}
+			emoji.dispatchUpdate();
 		});
 	}, []);
+
 	useEffect(() => {
 		if (emoji.packages.emojione) {
 			// Additional settings -- ascii emojis
@@ -51,6 +53,7 @@ export const useEmojiOne = () => {
 			};
 
 			void ascii();
+			emoji.dispatchUpdate();
 		}
 	}, [convertAsciiToEmoji]);
 };

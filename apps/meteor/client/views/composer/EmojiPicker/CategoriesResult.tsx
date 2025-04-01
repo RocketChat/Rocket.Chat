@@ -1,24 +1,24 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { MouseEvent, UIEventHandler } from 'react';
+import type { MouseEvent } from 'react';
 import { forwardRef, memo, useRef } from 'react';
-import type { VirtuosoHandle } from 'react-virtuoso';
+import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import EmojiCategoryRow from './EmojiCategoryRow';
-import type { EmojiByCategory } from '../../../../app/emoji/client';
+import type { EmojiPickerItem } from '../../../../app/emoji/client';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 
 type CategoriesResultProps = {
-	emojiListByCategory: EmojiByCategory[];
+	items: EmojiPickerItem[];
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
-	handleScroll: UIEventHandler<HTMLDivElement>;
+	handleScroll: (range: ListRange) => void;
 };
 
 const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(function CategoriesResult(
-	{ emojiListByCategory, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
+	{ items, customItemsLimit, handleLoadMore, handleSelectEmoji, handleScroll },
 	ref,
 ) {
 	const wrapper = useRef<HTMLDivElement>(null);
@@ -36,9 +36,9 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			<VirtualizedScrollbars>
 				<Virtuoso
 					ref={ref}
-					totalCount={emojiListByCategory.length}
-					data={emojiListByCategory}
-					onScroll={handleScroll}
+					totalCount={items.length}
+					data={items}
+					rangeChanged={handleScroll}
 					isScrolling={(isScrolling: boolean) => {
 						if (!wrapper.current) {
 							return;
@@ -50,13 +50,12 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 							wrapper.current.classList.remove('pointer-none');
 						}
 					}}
-					itemContent={(_, { key, ...data }) => (
+					itemContent={(_, item) => (
 						<EmojiCategoryRow
-							categoryKey={key}
+							item={item}
 							customItemsLimit={customItemsLimit}
 							handleLoadMore={handleLoadMore}
 							handleSelectEmoji={handleSelectEmoji}
-							{...data}
 						/>
 					)}
 				/>
