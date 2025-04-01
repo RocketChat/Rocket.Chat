@@ -60,7 +60,10 @@ export class ModifyCreator implements IModifyCreator {
                         })
                             .then((response) => response.result)
                             .catch((err) => {
-                                throw err;
+                                if (err instanceof Error) {
+                                    throw err;
+                                }
+                                throw new Error(err.error.message);
                             });
                 },
             },
@@ -82,7 +85,10 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw err;
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        throw new Error(err.error.message);
                                     }),
             },
         ) as IUploadCreator;
@@ -102,7 +108,10 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw err;
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        throw new Error(err.error.message);
                                     }),
             }
         )
@@ -122,7 +131,10 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw err;
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        throw new Error(err.error.message);
                                     }),
             }
         )
