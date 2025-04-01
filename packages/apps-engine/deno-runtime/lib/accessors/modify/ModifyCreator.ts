@@ -82,7 +82,7 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw new Error(err.error);
+                                        throw err;
                                     }),
             },
         ) as IUploadCreator;
@@ -102,7 +102,7 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw new Error(err.error);
+                                        throw err;
                                     }),
             }
         )
@@ -122,7 +122,7 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
-                                        throw new Error(err.error);
+                                        throw err;
                                     }),
             }
         )

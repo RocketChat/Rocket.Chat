@@ -103,4 +103,78 @@ describe('ModifyCreator', () => {
         assertNotInstanceOf(result, Promise);
         assert(typeof result === 'string', `Expected "${result}" to be of type "string", but got "${typeof result}"`);
     });
+
+    it('throws an error when a proxy method of getLivechatCreator fails', async () => {
+        const failingSenderFn = () => Promise.reject(new Error('Test error'));
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const livechatCreator = modifyCreator.getLivechatCreator();
+
+        let error: Error | null = null;
+        try {
+            await livechatCreator.createVisitor({
+                token: 'visitor-token',
+                username: 'visitor-username',
+                name: 'Visitor Name',
+            });
+        } catch (err) {
+            error = err as Error;
+        }
+
+        assert(error instanceof Error, 'Expected an error to be thrown');
+        assertEquals(error?.message, 'Test error');
+    });
+
+    it('throws an error when a proxy method of getUploadCreator fails', async () => {
+        const failingSenderFn = () => Promise.reject(new Error('Upload error'));
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const uploadCreator = modifyCreator.getUploadCreator();
+
+        let error: Error | null = null;
+        try {
+            await uploadCreator.uploadBuffer(new Uint8Array([9, 10, 11, 12]), 'image/png');
+        } catch (err) {
+            error = err as Error;
+        }
+
+        assert(error instanceof Error, 'Expected an error to be thrown');
+        assertEquals(error?.message, 'Upload error');
+    });
+
+    it('throws an error when a proxy method of getEmailCreator fails', async () => {
+        const failingSenderFn = () => Promise.reject(new Error('Email error'));
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const emailCreator = modifyCreator.getEmailCreator();
+
+        let error: Error | null = null;
+        try {
+            await emailCreator.send({
+                to: 'test@example.com',
+                from: 'sender@example.com',
+                subject: 'Test Email',
+                text: 'This is a test email.',
+            });
+        } catch (err) {
+            error = err as Error;
+        }
+
+        assert(error instanceof Error, 'Expected an error to be thrown');
+        assertEquals(error?.message, 'Email error');
+    });
+
+    it('throws an error when a proxy method of getContactCreator fails', async () => {
+        const failingSenderFn = () => Promise.reject(new Error('Contact creation error'));
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const contactCreator = modifyCreator.getContactCreator();
+
+        let error: Error | null = null;
+        try {
+            await contactCreator.addContactEmail('test-contact-id', 'test@example.com')
+        } catch (err) {
+            error = err as Error;
+        }
+
+        assert(error instanceof Error, 'Expected an error to be thrown');
+        assertEquals(error?.message, 'Contact creation error');
+    });
+
 });
