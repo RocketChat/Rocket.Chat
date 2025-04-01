@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { AnnouncementButton } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AnnouncementComponent from './AnnouncementComponent';
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
 
@@ -38,9 +38,9 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 	};
 
 	return announcement ? (
-		<AnnouncementComponent onClickOpen={handleClick}>
+		<AnnouncementButton onClick={handleClick}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
-		</AnnouncementComponent>
+		</AnnouncementButton>
 	) : null;
 };
 
