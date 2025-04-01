@@ -9,6 +9,7 @@ import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
+import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
@@ -47,6 +48,7 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
+					<RoomTopic room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
 			</HeaderContent>
