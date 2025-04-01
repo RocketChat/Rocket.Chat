@@ -245,14 +245,13 @@ describe('LIVECHAT - custom fields', () => {
 
 			// Fetch the visitor to validate custom fields are properly set.
 			await request
-				.get(api(`livechat/visitor/${visitor._id}`))
+				.get(api(`livechat/visitor/${visitor.token}`))
 				.set(credentials)
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor).to.have.property('livechatData');
-					expect(res.body.visitor.livechatData).to.have.property('customFields');
-					expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+					expect(res.body.visitor.livechatData).to.have.property(customFieldName, customFieldValue);
 				});
 
 			// Fetch the visitor's contact to validate custom fields are properly set.
@@ -284,14 +283,13 @@ describe('LIVECHAT - custom fields', () => {
 
 			// Fetch the visitor to validate custom fields are properly set.
 			await request
-				.get(api(`livechat/visitor/${visitor._id}`))
+				.get(api(`livechat/visitor/${visitor.token}`))
 				.set(credentials)
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.visitor).to.have.property('livechatData');
-					expect(res.body.visitor.livechatData).to.have.property('customFields');
-					expect(res.body.visitor.livechatData.customFields).to.have.property(customFieldName, customFieldValue);
+					expect(res.body.visitor.livechatData).to.have.property(customFieldName, customFieldValue);
 				});
 
 			// Fetch the visitor's contact to validate custom fields are properly set.
