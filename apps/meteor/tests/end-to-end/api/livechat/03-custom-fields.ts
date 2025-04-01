@@ -205,9 +205,21 @@ describe('LIVECHAT - custom fields', () => {
 			visitor = await createVisitor();
 
 			// Create a Contact and store id on var
-			const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send({ name: visitor.name });
+			await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: visitor.name,
+					emails: [visitor.visitorEmails?.[0].address],
+					phones: [visitor.phone?.[0].phoneNumber],
+				})
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('contactId');
 
-			contactId = body.contactId;
+					contactId = res.body.contactId;
+				});
 
 			// Create Custom Field
 			await createCustomField({
