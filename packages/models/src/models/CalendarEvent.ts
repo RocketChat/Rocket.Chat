@@ -50,7 +50,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime }: Partial<ICalendarEvent>,
+		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime, previousStatus }: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -62,6 +62,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
+					...(previousStatus ? { previousStatus } : {}),
 				},
 			},
 		);
@@ -148,5 +149,99 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			startTime: { $exists: true, $lte: endTime },
 			endTime: { $exists: true, $gte: endTime },
 		});
+	}
+
+	public findEventsToScheduleNow(now: Date, endTime: Date): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				startTime: { $gte: now, $lt: endTime },
+				busy: { $ne: false },
+				endTime: { $exists: true },
+			},
+			{
+				sort: { startTime: 1 },
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+				},
+			},
+		);
+	}
+
+	public async findNextFutureEvent(startTime: Date): Promise<ICalendarEvent | null> {
+		return this.findOne(
+			{
+				startTime: { $gte: startTime },
+				busy: { $ne: false },
+				endTime: { $exists: true },
+			},
+			{
+				sort: { startTime: 1 },
+				projection: {
+					startTime: 1,
+				},
+			},
+		);
+	}
+
+	public findEventsStartingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				startTime: {
+					$gte: new Date(now.getTime() - offset),
+					$lt: new Date(now.getTime() + offset),
+				},
+				busy: { $ne: false },
+			},
+			{
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+				},
+			},
+		);
+	}
+
+	public findEventsEndingNow({ now, offset = 1000 }: { now: Date; offset?: number }): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				endTime: {
+					$gte: new Date(now.getTime() - offset),
+					$lt: new Date(now.getTime() + offset),
+				},
+				busy: { $ne: false },
+			},
+			{
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+					previousStatus: 1,
+				},
+			},
+		);
+	}
+
+	public findInProgressEvents(now: Date): FindCursor<ICalendarEvent> {
+		return this.find(
+			{
+				startTime: { $lt: now },
+				endTime: { $gt: now },
+				busy: { $ne: false },
+			},
+			{
+				projection: {
+					_id: 1,
+					uid: 1,
+					startTime: 1,
+					endTime: 1,
+				},
+			},
+		);
 	}
 }
