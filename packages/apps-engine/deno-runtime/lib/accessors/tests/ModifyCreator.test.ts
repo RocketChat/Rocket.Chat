@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { assertSpyCall, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
-import { assert, assertEquals, assertNotInstanceOf, assertRejects, assertThrows } from 'https://deno.land/std@0.203.0/assert/mod.ts';
+import { assert, assertEquals, assertNotInstanceOf, assertRejects } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { ModifyCreator } from '../modify/ModifyCreator.ts';
@@ -122,6 +122,24 @@ describe('ModifyCreator', () => {
         );
     });
 
+    it('throws an instance of Error when getLivechatCreator fails with a specific error object', async () => {
+        const failingSenderFn = () => Promise.reject({ error: { message: 'Livechat method error' } });
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const livechatCreator = modifyCreator.getLivechatCreator();
+
+        await assertRejects(
+            async () => {
+                await livechatCreator.createVisitor({
+                    token: 'visitor-token',
+                    username: 'visitor-username',
+                    name: 'Visitor Name',
+                });
+            },
+            Error,
+            'Livechat method error',
+        );
+    });
+
     it('throws an error when a proxy method of getUploadCreator fails', async () => {
         const failingSenderFn = () => Promise.reject(new Error('Upload error'));
         const modifyCreator = new ModifyCreator(failingSenderFn);
@@ -133,6 +151,20 @@ describe('ModifyCreator', () => {
             },
             Error,
             'Upload error',
+        );
+    });
+
+    it('throws an instance of Error when getUploadCreator fails with a specific error object', async () => {
+        const failingSenderFn = () => Promise.reject({ error: { message: 'Upload method error' } });
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const uploadCreator = modifyCreator.getUploadCreator();
+
+        await assertRejects(
+            async () => {
+                await uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png');
+            },
+            Error,
+            'Upload method error',
         );
     });
 
@@ -155,6 +187,25 @@ describe('ModifyCreator', () => {
         );
     });
 
+    it('throws an instance of Error when getEmailCreator fails with a specific error object', async () => {
+        const failingSenderFn = () => Promise.reject({ error: { message: 'Email method error' } });
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const emailCreator = modifyCreator.getEmailCreator();
+
+        await assertRejects(
+            async () => {
+                await emailCreator.send({
+                    to: 'test@example.com',
+                    from: 'sender@example.com',
+                    subject: 'Test Email',
+                    text: 'This is a test email.',
+                });
+            },
+            Error,
+            'Email method error',
+        );
+    });
+
     it('throws an error when a proxy method of getContactCreator fails', async () => {
         const failingSenderFn = () => Promise.reject(new Error('Contact creation error'));
         const modifyCreator = new ModifyCreator(failingSenderFn);
@@ -169,4 +220,17 @@ describe('ModifyCreator', () => {
         );
     });
 
+    it('throws an instance of Error when getContactCreator fails with a specific error object', async () => {
+        const failingSenderFn = () => Promise.reject({ error: { message: 'Contact creation error' } });
+        const modifyCreator = new ModifyCreator(failingSenderFn);
+        const contactCreator = modifyCreator.getContactCreator();
+
+        await assertRejects(
+            async () => {
+                await contactCreator.addContactEmail('test-contact-id', 'test@example.com');
+            },
+            Error,
+            'Contact creation error',
+        );
+    });
 });
