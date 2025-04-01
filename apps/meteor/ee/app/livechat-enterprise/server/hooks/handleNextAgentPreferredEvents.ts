@@ -25,8 +25,19 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 	}
 
 	if (id) {
-		return normalizeDefaultAgent(await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } }));
+		const agent = await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } });
+		if (agent) {
+			return normalizeDefaultAgent(agent);
+		}
+
+		const offlineAgent = await Users.findOneAgentById(id, { projection: { _id: 1, username: 1 } });
+		if (offlineAgent && settings.get('Livechat_accept_chats_with_no_agents')) {
+			return normalizeDefaultAgent(offlineAgent);
+		}
+
+		return undefined;
 	}
+
 	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
 };
 
