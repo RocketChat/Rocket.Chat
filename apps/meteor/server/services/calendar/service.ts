@@ -317,7 +317,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		// 1. The current status is BUSY (meaning it was set by our system, not manually changed by user)
 		// 2. We have a previousStatus stored from before the event started
 
-		if (event.previousStatus && event.previousStatus === user.status) {
+		if (event.previousStatus && event.previousStatus !== user.status) {
 			await applyStatusChange({
 				eventId: event._id,
 				uid: event.uid,
