@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { assertSpyCall, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
-import { assert, assertEquals, assertNotInstanceOf } from 'https://deno.land/std@0.203.0/assert/mod.ts';
+import { assert, assertEquals, assertNotInstanceOf, assertRejects, assertThrows } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { ModifyCreator } from '../modify/ModifyCreator.ts';
@@ -109,19 +109,17 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const livechatCreator = modifyCreator.getLivechatCreator();
 
-        let error: Error | null = null;
-        try {
-            await livechatCreator.createVisitor({
-                token: 'visitor-token',
-                username: 'visitor-username',
-                name: 'Visitor Name',
-            });
-        } catch (err) {
-            error = err as Error;
-        }
-
-        assert(error instanceof Error, 'Expected an error to be thrown');
-        assertEquals(error?.message, 'Test error');
+        await assertRejects(
+            async () => {
+                await livechatCreator.createAndReturnVisitor({
+                    token: 'visitor-token',
+                    username: 'visitor-username',
+                    name: 'Visitor Name',
+                });
+            },
+            Error,
+            'Test error',
+        );
     });
 
     it('throws an error when a proxy method of getUploadCreator fails', async () => {
@@ -129,15 +127,13 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const uploadCreator = modifyCreator.getUploadCreator();
 
-        let error: Error | null = null;
-        try {
-            await uploadCreator.uploadBuffer(new Uint8Array([9, 10, 11, 12]), 'image/png');
-        } catch (err) {
-            error = err as Error;
-        }
-
-        assert(error instanceof Error, 'Expected an error to be thrown');
-        assertEquals(error?.message, 'Upload error');
+        await assertRejects(
+            async () => {
+                await uploadCreator.uploadBuffer(new Uint8Array([9, 10, 11, 12]), 'image/png');
+            },
+            Error,
+            'Upload error',
+        );
     });
 
     it('throws an error when a proxy method of getEmailCreator fails', async () => {
@@ -145,20 +141,18 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const emailCreator = modifyCreator.getEmailCreator();
 
-        let error: Error | null = null;
-        try {
-            await emailCreator.send({
-                to: 'test@example.com',
-                from: 'sender@example.com',
-                subject: 'Test Email',
-                text: 'This is a test email.',
-            });
-        } catch (err) {
-            error = err as Error;
-        }
-
-        assert(error instanceof Error, 'Expected an error to be thrown');
-        assertEquals(error?.message, 'Email error');
+        await assertRejects(
+            async () => {
+                await emailCreator.send({
+                    to: 'test@example.com',
+                    from: 'sender@example.com',
+                    subject: 'Test Email',
+                    text: 'This is a test email.',
+                });
+            },
+            Error,
+            'Email error',
+        );
     });
 
     it('throws an error when a proxy method of getContactCreator fails', async () => {
@@ -166,15 +160,13 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const contactCreator = modifyCreator.getContactCreator();
 
-        let error: Error | null = null;
-        try {
-            await contactCreator.addContactEmail('test-contact-id', 'test@example.com')
-        } catch (err) {
-            error = err as Error;
-        }
-
-        assert(error instanceof Error, 'Expected an error to be thrown');
-        assertEquals(error?.message, 'Contact creation error');
+        await assertRejects(
+            async () => {
+                await contactCreator.addContactEmail('test-contact-id', 'test@example.com');
+            },
+            Error,
+            'Contact creation error',
+        );
     });
 
 });
