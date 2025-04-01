@@ -33,6 +33,7 @@
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/logo": "^0.32.0",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "^8.6.4",
 		"@storybook/addon-styling-webpack": "~1.0.1",

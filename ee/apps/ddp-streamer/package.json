@@ -47,6 +47,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
 		"@types/node": "~20.17.8",

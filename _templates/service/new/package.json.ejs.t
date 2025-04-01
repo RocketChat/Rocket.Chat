@@ -26,30 +26,31 @@ to: ee/apps/<%= name %>/package.json
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
-		"@types/node": "^14.18.51",
+		"@types/node": "^20.17.8",
 		"ejson": "^2.2.3",
-		"eventemitter3": "^4.0.7",
+		"eventemitter3": "^5.0.1",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.29",
-		"mongodb": "^4.12.1",
-		"nats": "^2.4.0",
-		"pino": "^8.15.0",
+		"moleculer": "^0.14.35",
+		"mongodb": "^6.10.0",
+		"nats": "^2.28.2",
+		"pino": "^8.21.0",
 		"polka": "^0.5.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/eslint": "~8.44.0",
-		"@types/polka": "^0.5.4",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/eslint": "~8.44.9",
+		"@types/polka": "^0.5.7",
 		"eslint": "~8.45.0",
-		"ts-node": "^10.9.1",
-		"typescript": "~5.1.6"
+		"ts-node": "^10.9.2",
+		"typescript": "~5.7.2"
 	},
 	"main": "./dist/ee/apps/<%= name %>/src/service.js",
 	"files": [
 		"/dist"
 	],
 	"volta": {
-		"node": "14.19.3"
+		"node": "22.13.1"
 	}
 }
 
