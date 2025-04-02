@@ -107,6 +107,10 @@ export const createEmojiList = (
 		rowList[i] = row;
 	}
 
+	if (rowList.length === 0) {
+		rowList.push([]);
+	}
+
 	if (limited) {
 		rowList.push({ loadMore: true });
 	}
