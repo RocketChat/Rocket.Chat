@@ -268,7 +268,7 @@ describe('LIVECHAT - custom fields', () => {
 				});
 		});
 
-		it.skip('should add the custom field as conflict on Contact when overwrite is false', async () => {
+		it('should add the custom field as conflict on Contact when overwrite is false', async () => {
 			const conflictingFieldValue = 'conflicting-custom-field-value';
 
 			// Save the custom field on Contact
@@ -277,7 +277,6 @@ describe('LIVECHAT - custom fields', () => {
 				.send({ token: visitor.token, key: customFieldName, value: conflictingFieldValue, overwrite: false })
 				.expect(200)
 				.expect((res: Response) => {
-					console.log(res.body);
 					expect(res.body).to.have.property('success', true);
 				});
 
@@ -306,7 +305,7 @@ describe('LIVECHAT - custom fields', () => {
 
 					// Validate custom fields contain both entries, indicating conflict criteria
 					expect(res.body.contact.conflictingFields).to.have.lengthOf(1);
-					expect(res.body.contact.conflictingFields[0]).to.have.property('field', customFieldName);
+					expect(res.body.contact.conflictingFields[0]).to.have.property('field', `customFields.${customFieldName}`);
 					expect(res.body.contact.conflictingFields[0]).to.have.property('value', conflictingFieldValue);
 				});
 		});

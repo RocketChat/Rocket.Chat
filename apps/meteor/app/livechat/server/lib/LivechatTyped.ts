@@ -490,7 +490,17 @@ class LivechatClass {
 		return ret;
 	}
 
-	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
+	async setCustomFields({
+		token,
+		key,
+		value,
+		overwrite,
+	}: {
+		key: string;
+		value: string;
+		overwrite: boolean;
+		token: string;
+	}): Promise<void> {
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
 		const customField = await LivechatCustomField.findOneById(key);
@@ -505,9 +515,8 @@ class LivechatClass {
 			}
 		}
 
-		let result;
 		if (customField.scope === 'room') {
-			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
+			await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		} else {
 			const visitor = await LivechatVisitors.getVisitorByToken(token);
 			if (!visitor) {
@@ -519,15 +528,8 @@ class LivechatClass {
 				await this.updateContactsCustomFields(contact, key, value, overwrite);
 			}
 
-			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+			await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 		}
-
-		if (typeof result === 'boolean') {
-			// Note: this only happens when !overwrite is passed, in this case we don't do any db update
-			return 0;
-		}
-
-		return result.modifiedCount;
 	}
 
 	async updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
