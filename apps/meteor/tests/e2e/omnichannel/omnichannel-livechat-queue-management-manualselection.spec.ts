@@ -243,7 +243,11 @@ test.describe('OC - Contact Manager Routing', () => {
 test.describe('OC - Bot Agent Routing', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
+	// User1 will be the online bot agent
 	let poHomeOmnichannel: HomeOmnichannel;
+
+	// User2 will be the contact manager
+	let poHomeOmnichannelUser2: HomeOmnichannel;
 	let poLiveChat: OmnichannelLiveChat;
 
 	test.beforeEach(async ({ browser, api }) => {
@@ -251,20 +255,45 @@ test.describe('OC - Bot Agent Routing', () => {
 		const page = await context.newPage();
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
+		await poLiveChat.page.goto('/livechat');
 	});
 
 	test.beforeAll(async ({ api, browser }) => {
-		await api.post('/livechat/users/agent', { username: 'userBot', roles: 'bot' });
-		await api.post('/livechat/users/agent', { username: 'userBotOffline', roles: 'bot' });
+		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/livechat/users/agent', { username: 'user2' });
+		await api.post('/users.update', {
+			userId: 'user1',
+			data: {
+				roles: ['user', 'bot'],
+			},
+		});
 		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
 		await api.post('/settings/Livechat_assign_new_conversation_to_bot', { value: true });
+
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
+
+		const { page: omniPageUser2 } = await createAuxContext(browser, Users.user2, '/', true);
+		poHomeOmnichannelUser2 = new HomeOmnichannel(omniPageUser2);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_assign_new_conversation_to_bot', { value: false });
-		await api.delete('/livechat/users/agent/user3');
+		await Promise.all([
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+			api.post('/settings/Livechat_assign_new_conversation_to_bot', { value: false }),
+			api.delete('/livechat/users/agent/user1'),
+			api.delete('/livechat/users/agent/user2'),
+			api.post('/users.update', {
+				userId: 'user1',
+				data: {
+					roles: ['user'],
+				},
+			}),
+		]);
+
+		await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+		await poHomeOmnichannel.page.close();
+		await poHomeOmnichannelUser2.page.close();
 	});
 
 	test.afterEach(async () => {
@@ -272,12 +301,12 @@ test.describe('OC - Bot Agent Routing', () => {
 		await poLiveChat.page.close();
 	});
 
-	test('should route inquiry only to the bot agent', async () => {
+	test('should prioritize bot agent over human agents when setting is enabled', async () => {
 		const visitor = createFakeVisitor();
 		await test.step('visitor starts a chat', async () => {
 			await poLiveChat.openAnyLiveChatAndSendMessage({
 				liveChatUser: visitor,
-				message: 'Hello bot',
+				message: 'Hello, I should be assigned to a bot agent',
 				isOffline: false,
 			});
 		});
@@ -286,22 +315,45 @@ test.describe('OC - Bot Agent Routing', () => {
 			await expect(botQueuedChat).toBeVisible();
 		});
 		await test.step('verify non-bot agent does not see the inquiry', async () => {
-			const nonBotQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitor.name);
+			const nonBotQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitor.name);
 			await expect(nonBotQueuedChat).toHaveCount(0);
+		});
+
+		await test.step('bot agent can take the chat', async () => {
+			await poHomeOmnichannel.sidenav.getQueuedChat(visitor.name).click();
+			await expect(poHomeOmnichannel.content.btnTakeChat).toBeVisible();
+			await poHomeOmnichannel.content.btnTakeChat.click();
+			await expect(poHomeOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
 		});
 	});
 	test('should route to human agent if bot is offline', async () => {
 		const visitor = createFakeVisitor();
+
+		await test.step('make the bot offline', async () => {
+			await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
+		});
+
 		await test.step('visitor starts a chat', async () => {
 			await poLiveChat.openAnyLiveChatAndSendMessage({
 				liveChatUser: visitor,
-				message: 'Hello bot',
+				message: 'Hello, I should be assigned to a human agent',
 				isOffline: false,
 			});
 		});
+
 		await test.step('verify chat is assigned to human agent', async () => {
+			const nonBotQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitor.name);
+			await expect(nonBotQueuedChat).toBeVisible();
+		});
+		await test.step('verify chat is not assigned to offline bot', async () => {
 			const botQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitor.name);
-			await expect(botQueuedChat).toBeVisible();
+			await expect(botQueuedChat).toHaveCount(0);
+		});
+		await test.step('human agent can take the chat', async () => {
+			await poHomeOmnichannelUser2.sidenav.getQueuedChat(visitor.name).click();
+			await expect(poHomeOmnichannelUser2.content.btnTakeChat).toBeVisible();
+			await poHomeOmnichannelUser2.content.btnTakeChat.click();
+			await expect(poHomeOmnichannelUser2.content.lastSystemMessageBody).toHaveText('joined the channel');
 		});
 	});
 });
