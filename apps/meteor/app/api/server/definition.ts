@@ -278,33 +278,18 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
-
 type StatusResultMap<TResponse extends TypedOptions['response']> = {
-  200: TResponse[200] extends undefined
-    ? SuccessResult<unknown>
-    : SuccessResult<InferResult<TResponse[200]>>;
-  400: TResponse[400] extends undefined
-    ? FailureResult<unknown>
-    : FailureResult<InferResult<TResponse[400]>>;
-  401: TResponse[401] extends undefined
-    ? UnauthorizedResult<unknown>
-    : UnauthorizedResult<InferResult<TResponse[401]>>;
-  403: TResponse[403] extends undefined
-    ? ForbiddenResult<unknown>
-    : ForbiddenResult<InferResult<TResponse[403]>>;
-  404: TResponse[404] extends undefined
-    ? NotFoundResult<unknown>
-    : NotFoundResult<InferResult<TResponse[404]>>;
-  500: TResponse[500] extends undefined
-    ? InternalError<unknown>
-    : InternalError<InferResult<TResponse[500]>>;
+	200: TResponse[200] extends undefined ? SuccessResult<unknown> : SuccessResult<InferResult<TResponse[200]>>;
+	400: TResponse[400] extends undefined ? FailureResult<unknown> : FailureResult<InferResult<TResponse[400]>>;
+	401: TResponse[401] extends undefined ? UnauthorizedResult<unknown> : UnauthorizedResult<InferResult<TResponse[401]>>;
+	403: TResponse[403] extends undefined ? ForbiddenResult<unknown> : ForbiddenResult<InferResult<TResponse[403]>>;
+	404: TResponse[404] extends undefined ? NotFoundResult<unknown> : NotFoundResult<InferResult<TResponse[404]>>;
+	500: TResponse[500] extends undefined ? InternalError<unknown> : InternalError<InferResult<TResponse[500]>>;
 };
 
-type Results<TResponse extends TypedOptions['response']> =
-  StatusResultMap<TResponse>[keyof TResponse] & {
-    headers?: Record<string, string>;
-  };
-
+type Results<TResponse extends TypedOptions['response']> = StatusResultMap<TResponse>[keyof TResponse] & {
+	headers?: Record<string, string>;
+};
 
 export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
 	this: TypedThis<TOptions, TPath>,
