@@ -446,8 +446,8 @@ const MessageBox = ({
 									icon='send'
 									disabled={!canSend || !typing}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing}
+									info={typing}
 								/>
 							</>
 						)}
