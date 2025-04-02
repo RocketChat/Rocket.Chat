@@ -62,11 +62,11 @@ export class ModifyCreator implements IModifyCreator {
                             .catch((err) => {
                                 if (err instanceof Error) {
                                     throw err;
-                                } else if (err.error && err.error.message) {
-                                    throw new Error(err.error.message);
-                                } else {
-                                    throw new Error(err.error);
                                 }
+                                if (err?.error?.message) {
+                                    throw new Error(err.error.message);
+                                }
+                                throw new Error(err.error);
                             });
                 },
             },
@@ -90,11 +90,11 @@ export class ModifyCreator implements IModifyCreator {
                                     .catch((err) => {
                                         if (err instanceof Error) {
                                             throw err;
-                                        } else if (err.error && err.error.message) {
-                                            throw new Error(err.error.message);
-                                        } else {
-                                            throw new Error(err.error);
                                         }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
+                                        throw new Error(err.error);
                                     }),
             },
         ) as IUploadCreator;
@@ -116,11 +116,11 @@ export class ModifyCreator implements IModifyCreator {
                                     .catch((err) => {
                                         if (err instanceof Error) {
                                             throw err;
-                                        } else if (err.error && err.error.message) {
-                                            throw new Error(err.error.message);
-                                        } else {
-                                            throw new Error(err.error);
                                         }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
+                                        throw new Error(err.error);
                                     }),
             }
         )
@@ -142,11 +142,11 @@ export class ModifyCreator implements IModifyCreator {
                                     .catch((err) => {
                                         if (err instanceof Error) {
                                             throw err;
-                                        } else if (err.error && err.error.message) {
-                                            throw new Error(err.error.message);
-                                        } else {
-                                            throw new Error(err.error);
                                         }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
+                                        throw new Error(err.error);
                                     }),
             }
         )

@@ -110,13 +110,12 @@ describe('ModifyCreator', () => {
         const livechatCreator = modifyCreator.getLivechatCreator();
 
         await assertRejects(
-            async () => {
-                await livechatCreator.createAndReturnVisitor({
+            () =>
+                livechatCreator.createAndReturnVisitor({
                     token: 'visitor-token',
                     username: 'visitor-username',
                     name: 'Visitor Name',
-                });
-            },
+                }),
             Error,
             'Test error',
         );
@@ -128,31 +127,29 @@ describe('ModifyCreator', () => {
         const livechatCreator = modifyCreator.getLivechatCreator();
 
         await assertRejects(
-            async () => {
-                await livechatCreator.createVisitor({
+            () =>
+                livechatCreator.createVisitor({
                     token: 'visitor-token',
                     username: 'visitor-username',
                     name: 'Visitor Name',
-                });
-            },
+                }),
             Error,
             'Livechat method error',
         );
     });
 
     it('throws a default Error when getLivechatCreator fails with an unknown error object', async () => {
-        const failingSenderFn = () => Promise.reject({ error: { } });
+        const failingSenderFn = () => Promise.reject({ error: {} });
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const livechatCreator = modifyCreator.getLivechatCreator();
 
         await assertRejects(
-            async () => {
-                await livechatCreator.createVisitor({
+            () =>
+                livechatCreator.createVisitor({
                     token: 'visitor-token',
                     username: 'visitor-username',
                     name: 'Visitor Name',
-                });
-            },
+                }),
             Error,
             '[object Object]',
         );
@@ -163,13 +160,7 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const uploadCreator = modifyCreator.getUploadCreator();
 
-        await assertRejects(
-            async () => {
-                await uploadCreator.uploadBuffer(new Uint8Array([9, 10, 11, 12]), 'image/png');
-            },
-            Error,
-            'Upload error',
-        );
+        await assertRejects(() => uploadCreator.uploadBuffer(new Uint8Array([9, 10, 11, 12]), 'image/png'), Error, 'Upload error');
     });
 
     it('throws an instance of Error when getUploadCreator fails with a specific error object', async () => {
@@ -177,27 +168,15 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const uploadCreator = modifyCreator.getUploadCreator();
 
-        await assertRejects(
-            async () => {
-                await uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png');
-            },
-            Error,
-            'Upload method error',
-        );
+        await assertRejects(() => uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png'), Error, 'Upload method error');
     });
 
     it('throws a default Error when getUploadCreator fails with an unknown error object', async () => {
-        const failingSenderFn = () => Promise.reject({ error: { } });
+        const failingSenderFn = () => Promise.reject({ error: {} });
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const uploadCreator = modifyCreator.getUploadCreator();
 
-        await assertRejects(
-            async () => {
-                await uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png');
-            },
-            Error,
-            '[object Object]',
-        );
+        await assertRejects(() => uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png'), Error, '[object Object]');
     });
 
     it('throws an error when a proxy method of getEmailCreator fails', async () => {
@@ -206,14 +185,13 @@ describe('ModifyCreator', () => {
         const emailCreator = modifyCreator.getEmailCreator();
 
         await assertRejects(
-            async () => {
-                await emailCreator.send({
+            () =>
+                emailCreator.send({
                     to: 'test@example.com',
                     from: 'sender@example.com',
                     subject: 'Test Email',
                     text: 'This is a test email.',
-                });
-            },
+                }),
             Error,
             'Email error',
         );
@@ -225,33 +203,31 @@ describe('ModifyCreator', () => {
         const emailCreator = modifyCreator.getEmailCreator();
 
         await assertRejects(
-            async () => {
-                await emailCreator.send({
+            () =>
+                emailCreator.send({
                     to: 'test@example.com',
                     from: 'sender@example.com',
                     subject: 'Test Email',
                     text: 'This is a test email.',
-                });
-            },
+                }),
             Error,
             'Email method error',
         );
     });
 
     it('throws a default Error when getEmailCreator fails with an unknown error object', async () => {
-        const failingSenderFn = () => Promise.reject({ error: { } });
+        const failingSenderFn = () => Promise.reject({ error: {} });
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const emailCreator = modifyCreator.getEmailCreator();
 
         await assertRejects(
-            async () => {
-                await emailCreator.send({
+            () =>
+                emailCreator.send({
                     to: 'test@example.com',
                     from: 'sender@example.com',
                     subject: 'Test Email',
                     text: 'This is a test email.',
-                });
-            },
+                }),
             Error,
             '[object Object]',
         );
@@ -262,13 +238,7 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const contactCreator = modifyCreator.getContactCreator();
 
-        await assertRejects(
-            async () => {
-                await contactCreator.addContactEmail('test-contact-id', 'test@example.com');
-            },
-            Error,
-            'Contact creation error',
-        );
+        await assertRejects(() => contactCreator.addContactEmail('test-contact-id', 'test@example.com'), Error, 'Contact creation error');
     });
 
     it('throws an instance of Error when getContactCreator fails with a specific error object', async () => {
@@ -276,26 +246,14 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const contactCreator = modifyCreator.getContactCreator();
 
-        await assertRejects(
-            async () => {
-                await contactCreator.addContactEmail('test-contact-id', 'test@example.com');
-            },
-            Error,
-            'Contact creation error',
-        );
+        await assertRejects(() => contactCreator.addContactEmail('test-contact-id', 'test@example.com'), Error, 'Contact creation error');
     });
 
     it('throws a default Error when getContactCreator fails with an unknown error object', async () => {
-        const failingSenderFn = () => Promise.reject({ error: { } });
+        const failingSenderFn = () => Promise.reject({ error: {} });
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const contactCreator = modifyCreator.getContactCreator();
 
-        await assertRejects(
-            async () => {
-                await contactCreator.addContactEmail('test-contact-id', 'test@example.com');
-            },
-            Error,
-            '[object Object]',
-        );
+        await assertRejects(() => contactCreator.addContactEmail('test-contact-id', 'test@example.com'), Error, '[object Object]');
     });
 });
