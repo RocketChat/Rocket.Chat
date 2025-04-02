@@ -1,5 +1,13 @@
 # @rocket.chat/apps-engine
 
+## 1.50.0-rc.1
+
+### Patch Changes
+
+-   ([#35667](https://github.com/RocketChat/Rocket.Chat/pull/35667)) Fixes an issue with error handling where errors were not properly propagated to integrated apps.
+
+-   ([#35603](https://github.com/RocketChat/Rocket.Chat/pull/35603)) Fixes an issue where apps where not able to update messages using the BlockBuilder.
+
 ## 1.50.0-rc.0
 
 ### Minor Changes

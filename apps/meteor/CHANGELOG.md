@@ -1,5 +1,47 @@
 # @rocket.chat/meteor
 
+## 7.5.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35667](https://github.com/RocketChat/Rocket.Chat/pull/35667)) Fixes an issue with error handling where errors were not properly propagated to integrated apps.
+
+- ([#35605](https://github.com/RocketChat/Rocket.Chat/pull/35605)) Improves the performance of the Emoji Picker.
+
+- ([#35603](https://github.com/RocketChat/Rocket.Chat/pull/35603)) Fixes an issue where apps where not able to update messages using the BlockBuilder.
+
+- <details><summary>Updated dependencies [c618263e8e5fa9459f48d262e5dd9e20c59c1410, d7ea246e0f7837cd3cc93f99316683b75a2faa43]:</summary>
+
+  - @rocket.chat/apps-engine@1.50.0-rc.1
+  - @rocket.chat/presence@0.2.19-rc.4
+  - @rocket.chat/apps@0.4.0-rc.4
+  - @rocket.chat/core-services@0.8.0-rc.4
+  - @rocket.chat/core-typings@7.5.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@17.0.0-rc.4
+  - @rocket.chat/rest-typings@7.5.0-rc.4
+  - @rocket.chat/license@1.0.10-rc.4
+  - @rocket.chat/omnichannel-services@0.3.16-rc.4
+  - @rocket.chat/pdf-worker@0.2.16-rc.4
+  - @rocket.chat/api-client@0.2.19-rc.4
+  - @rocket.chat/cron@0.1.19-rc.4
+  - @rocket.chat/freeswitch@1.2.6-rc.4
+  - @rocket.chat/gazzodown@17.0.0-rc.4
+  - @rocket.chat/model-typings@1.5.0-rc.4
+  - @rocket.chat/ui-contexts@17.0.0-rc.4
+  - @rocket.chat/models@1.4.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.11-rc.4
+  - @rocket.chat/ui-theming@0.4.3-rc.0
+  - @rocket.chat/ui-avatar@13.0.0-rc.4
+  - @rocket.chat/ui-client@17.0.0-rc.4
+  - @rocket.chat/ui-video-conf@17.0.0-rc.4
+  - @rocket.chat/ui-voip@7.0.0-rc.4
+  - @rocket.chat/web-ui-registration@17.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.19-rc.4
+  </details>
+
 ## 7.5.0-rc.3
 
 ### Patch Changes
