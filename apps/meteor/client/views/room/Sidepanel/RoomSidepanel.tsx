@@ -8,7 +8,7 @@ import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import RoomSidepanelLoading from './RoomSidepanelLoading';
 import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 
@@ -50,7 +50,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	return (
 		<Sidepanel>
 			<Box pb={8} h='full'>
-				<CustomScrollbars>
+				<VirtualizedScrollbars>
 					<Virtuoso
 						totalCount={result.data.length}
 						data={result.data}
@@ -59,7 +59,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 							<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
 						)}
 					/>
-				</CustomScrollbars>
+				</VirtualizedScrollbars>
 			</Box>
 		</Sidepanel>
 	);

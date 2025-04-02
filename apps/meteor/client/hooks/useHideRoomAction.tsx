@@ -85,7 +85,7 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 					label: t('Hide_room'),
 				}}
 			>
-				{t(warnText as TranslationKey, { postProcess: 'sprintf', sprintf: [name] })}
+				{t(warnText as TranslationKey, { roomName: name })}
 			</GenericModalDoNotAskAgain>,
 		);
 	});
