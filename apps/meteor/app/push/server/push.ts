@@ -337,15 +337,21 @@ class PushClass {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
-			if ('apn' in app.token && app.token.apn) {
-				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...gatewayNotification });
-			}
-
-			if ('gcm' in app.token && app.token.gcm) {
-				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification);
-			}
+			if ('apn' in app.token && app.token.apn) { 
+				countApn.push(app._id); 
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { 
+					topic: app.appName, 
+					...gatewayNotification 
+				}); 
+			} 
+			
+			if ('gcm' in app.token && app.token.gcm) { 
+				countGcm.push(app._id); 
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, { 
+					appName: app.appName,  // Add appName field
+					...gatewayNotification 
+				}); 
+			} 
 		}
 	}
 
