@@ -3,6 +3,7 @@ import { createElement, lazy, useEffect } from 'react';
 import { appLayout } from '../lib/appLayout';
 import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
+import { PublicRoute } from '../components/PublicRoute';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
 const MeetRoute = lazy(() => import('../views/meet/MeetRoute'));
@@ -24,6 +25,7 @@ const ResetPasswordPage = lazy(() =>
 const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
 const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const QrLoginRoute = lazy(() => import('../views/account/qrLogin/QrLoginModal'));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
@@ -106,6 +108,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'saml': {
 			pathname: `/saml/${string}`;
 			pattern: '/saml/:token';
+		};
+		'qr-login': {
+			pathname: '/qr-login';
+			pattern: '/qr-login';
 		};
 	}
 }
@@ -238,4 +244,13 @@ router.defineRoutes([
 		id: 'not-found',
 		element: <NotFoundPage />,
 	},
+	{
+		path: '/qr-login',
+		id: 'qr-login',
+		element: (
+		  <PublicRoute>
+			{createElement(lazy(() => import('../views/account/qrLogin/QrLoginModal')))}
+		  </PublicRoute>
+		),
+	  }
 ]);

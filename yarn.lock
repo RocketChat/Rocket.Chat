@@ -8934,6 +8934,7 @@ __metadata:
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
+    "@types/qrcode.react": "npm:^3.0.0"
     "@types/react": "npm:~18.3.17"
     "@types/react-dom": "npm:~18.3.5"
     "@types/sanitize-html": "npm:^2.13.0"
@@ -9103,6 +9104,7 @@ __metadata:
     proxy-from-env: "npm:^1.1.0"
     proxyquire: "npm:^2.1.3"
     psl: "npm:^1.10.0"
+    qrcode.react: "npm:^4.2.0"
     query-string: "npm:^7.1.3"
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
@@ -12888,6 +12890,15 @@ __metadata:
   version: 1.1.3
   resolution: "@types/psl@npm:1.1.3"
   checksum: 10/adc24b5f0a2569563367437cbdcbb63c780e798360a4c21470043acda2adad56e510c9f357be36f297974d68534821febc38652709e5d712ac2cdd62f9a6777a
+  languageName: node
+  linkType: hard
+
+"@types/qrcode.react@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/qrcode.react@npm:3.0.0"
+  dependencies:
+    qrcode.react: "npm:*"
+  checksum: 10/8ce11d0455fca9a898f6e9d499529526671c5e398f44cf2bc507ad84e1e4982ff0f384261e52b16b933bdd1d6db6bef27b437f90bb804a039ddfe21112d19da5
   languageName: node
   linkType: hard
 
@@ -31171,6 +31182,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qrcode.react@npm:*, qrcode.react@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "qrcode.react@npm:4.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/665036d88b160e6d5de4e24d101bc63bd2b76712802e874bbffe56c6b6e5fe50c63f02c3cba2975b2e2b555c1f1e112cbb42987f8cb3a626ce2d17023cfde6ac
+  languageName: node
+  linkType: hard
+
 "qs@npm:6.11.0":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
@@ -32685,8 +32705,10 @@ __metadata:
     "@changesets/cli": "npm:^2.27.11"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
+    "@types/qrcode.react": "npm:^3.0.0"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
+    qrcode.react: "npm:^4.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.3.4"
   languageName: unknown

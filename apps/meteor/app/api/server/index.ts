@@ -49,6 +49,7 @@ import './v1/voip';
 import './v1/federation';
 import './v1/moderation';
 import './v1/server-events';
+import './v1/qrLogin';
 
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';

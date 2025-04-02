@@ -9,7 +9,8 @@ export type LoginRoutes =
 	| 'secret-register'
 	| 'invite-register'
 	| 'guest'
-	| 'anonymous';
+	| 'anonymous'
+	| 'qr-login';
 
 export const useLoginRouter = (route: LoginRoutes): [LoginRoutes, DispatchLoginRouter] => useState<LoginRoutes>(route);
 
