@@ -221,6 +221,8 @@ describe('LIVECHAT - custom fields', () => {
 					contactId = res.body.contactId;
 				});
 
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
 			// Create Custom Field
 			await createCustomField({
 				searchable: true,

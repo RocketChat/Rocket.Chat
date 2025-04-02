@@ -523,9 +523,9 @@ class LivechatClass {
 				throw new Error(`Visitor with token "${token}" not found.`);
 			}
 
-			const contact = await LivechatContacts.findContactMatchingVisitor(visitor);
-			if (contact) {
-				await this.updateContactsCustomFields(contact, key, value, overwrite);
+			const result = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+			if (result) {
+				await Promise.all(result.map((contact: ILivechatContact) => this.updateContactsCustomFields(contact, key, value, overwrite)));
 			}
 
 			await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
@@ -542,7 +542,9 @@ class LivechatClass {
 			contact.conflictingFields.push({ field: `customFields.${key}`, value });
 		}
 
-		await LivechatContacts.updateContact(contact._id, contact);
+		await LivechatContacts.updateById(contact._id, {
+			$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
+		});
 		Livechat.logger.debug(`Contact "${contact._id}" successfully updated.`);
 	}
 
