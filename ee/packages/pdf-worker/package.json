@@ -29,10 +29,10 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@storybook/addon-essentials": "^8.5.3",
+		"@storybook/addon-essentials": "^8.6.4",
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.5",
-		"@storybook/react": "^8.5.3",
-		"@storybook/react-webpack5": "^8.5.3",
+		"@storybook/react": "^8.6.4",
+		"@storybook/react-webpack5": "^8.6.4",
 		"@testing-library/react": "~16.0.1",
 		"@types/emojione": "^2.2.9",
 		"@types/jest": "~29.5.14",
@@ -42,7 +42,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"react-dom": "~18.3.1",
-		"storybook": "^8.5.3",
+		"storybook": "^8.6.4",
 		"typescript": "~5.7.2"
 	},
 	"volta": {

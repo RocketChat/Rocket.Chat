@@ -22,5 +22,3 @@ import './slashCommands';
 import './startup';
 import './streamMessage';
 import './unread';
-import './userRoles';
-import './userStatusManuallySet';
