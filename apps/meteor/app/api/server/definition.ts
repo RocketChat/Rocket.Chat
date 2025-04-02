@@ -278,6 +278,10 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+/**
+ * Maps HTTP status codes to their corresponding response types with proper type inference.
+ * Handles undefined cases by falling back to unknown type.
+ */
 type StatusResultMap<TResponse extends TypedOptions['response']> = {
 	200: TResponse[200] extends undefined ? SuccessResult<unknown> : SuccessResult<InferResult<TResponse[200]>>;
 	400: TResponse[400] extends undefined ? FailureResult<unknown> : FailureResult<InferResult<TResponse[400]>>;
