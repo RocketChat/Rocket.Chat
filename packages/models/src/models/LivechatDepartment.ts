@@ -236,7 +236,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		const record = {
 			...data,
 			...(typeof data.maxNumberSimultaneousChat !== 'undefined'
-				? { maxNumberSimultaneousChat: parseInt(data.maxNumberSimultaneousChat, 10) }
+				? { maxNumberSimultaneousChat: parseInt(data.maxNumberSimultaneousChat as unknown as string, 10) }
 				: {}),
 		} as ILivechatDepartment;
 
