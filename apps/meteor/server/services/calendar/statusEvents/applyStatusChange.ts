@@ -1,9 +1,10 @@
 import { api } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { setupAppointmentStatusChange } from './setupAppointmentStatusChange';
+const logger = new Logger('Calendar');
 
 export async function applyStatusChange({
 	eventId,
@@ -11,7 +12,6 @@ export async function applyStatusChange({
 	startTime,
 	endTime,
 	status,
-	shouldScheduleRemoval,
 }: {
 	eventId: ICalendarEvent['_id'];
 	uid: IUser['_id'];
@@ -20,6 +20,8 @@ export async function applyStatusChange({
 	status?: UserStatus;
 	shouldScheduleRemoval?: boolean;
 }): Promise<void> {
+	logger.debug(`Applying status change for event ${eventId} at ${startTime} ${endTime ? `to ${endTime}` : ''} to ${status}`);
+
 	const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1 } });
 	if (!user || user.status === UserStatus.OFFLINE) {
 		return;
@@ -40,8 +42,4 @@ export async function applyStatusChange({
 		},
 		previousStatus,
 	});
-
-	if (shouldScheduleRemoval && endTime) {
-		await setupAppointmentStatusChange(eventId, uid, startTime, endTime, previousStatus, false);
-	}
 }

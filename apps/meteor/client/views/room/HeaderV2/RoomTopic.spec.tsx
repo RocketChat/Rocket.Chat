@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 
-import { RoomTopic } from './RoomTopic';
+import RoomTopic from './RoomTopic';
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../tests/mocks/data';
 
@@ -36,7 +36,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -56,7 +56,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -75,7 +75,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -96,7 +96,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -115,7 +115,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -137,7 +137,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -159,7 +159,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()
@@ -179,7 +179,7 @@ describe('RoomTopic', () => {
 
 		render(
 			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} user={user} />
+				<RoomTopic room={room} />
 			</FakeRoomProvider>,
 			{
 				wrapper: mockAppRoot()

@@ -5,7 +5,9 @@ import type { StorybookConfig } from '@storybook/react-webpack5';
 const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 	addons: [
+		getAbsolutePath('@storybook/addon-a11y'),
 		getAbsolutePath('@storybook/addon-essentials'),
+		getAbsolutePath('storybook-dark-mode'),
 		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 	],

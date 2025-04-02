@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 
 import { notificationManager } from '../../lib/notificationManager';
 
 export const useNotificationPermission = () => {
-	const requestPermission = useCallback(async () => {
+	const requestPermission = useEffectEvent(async () => {
 		const response = await Notification.requestPermission();
 		notificationManager.allowed = response === 'granted';
 		notificationManager.emit('change');
@@ -13,7 +13,7 @@ export const useNotificationPermission = () => {
 			notificationManager.allowed = notifications.state === 'granted';
 			notificationManager.emit('change');
 		};
-	}, []);
+	});
 
 	if ('Notification' in window) {
 		requestPermission();
