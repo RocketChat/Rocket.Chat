@@ -82,3 +82,15 @@ export async function createTargetDiscussion(api: BaseTest['api']): Promise<stri
 
 	return discussionName;
 }
+
+export async function createChannelWithTeam(api: BaseTest['api']): Promise<Record<string, string>> {
+	const channelName = faker.string.uuid();
+	const teamName = faker.string.uuid();
+
+	const teamResponse = await api.post('/teams.create', { name: teamName, type: 1, members: ['user2'] });
+	const { team } = await teamResponse.json();
+
+	await api.post('/channels.create', { name: channelName, members: ['user1'], extraData: { teamId: team._id } });
+
+	return { channelName, teamName };
+}

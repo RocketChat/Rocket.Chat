@@ -1,8 +1,17 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById, createTargetDiscussion } from './utils';
+import {
+	createTargetChannel,
+	createTargetTeam,
+	deleteChannel,
+	deleteTeam,
+	setSettingValueById,
+	createTargetDiscussion,
+	createChannelWithTeam,
+} from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -40,26 +49,25 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.describe('Enhanced navigation', () => {
-		test.beforeAll(async ({ api }) => {
-			await setUserPreferences(api, {
-				featuresPreview: [
-					{
-						name: 'newNavigation',
-						value: true,
-					},
-				],
-			});
+		let targetTeam: string;
+		let targetChannelWithTeam: string;
+		let user1Page: Page;
+
+		test.beforeAll(async ({ api, browser }) => {
+			await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
+
+			const { channelName, teamName } = await createChannelWithTeam(api);
+			targetTeam = teamName;
+			targetChannelWithTeam = channelName;
+			user1Page = await browser.newPage({ storageState: Users.user1.state });
 		});
 
 		test.afterAll(async ({ api }) => {
-			await setUserPreferences(api, {
-				featuresPreview: [
-					{
-						name: 'newNavigation',
-						value: false,
-					},
-				],
-			});
+			await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
+
+			await deleteChannel(api, targetChannel);
+			await deleteTeam(api, targetTeam);
+			await user1Page.close();
 		});
 
 		// After moving `Enhanced navigation` out of feature preview, move these tests to sidebar.spec.ts
@@ -190,6 +198,17 @@ test.describe.serial('feature preview', () => {
 						.getByRole('button', { name: /Back to/ }),
 				).toBeVisible();
 			});
+		});
+
+		test('should not display back to team button in the room header when the user its not part of the team', async ({ page }) => {
+			await user1Page.goto(`/channel/${targetChannelWithTeam}`);
+
+			await expect(
+				page
+					.locator('main')
+					.locator('header')
+					.getByRole('button', { name: /Back to/ }),
+			).not.toBeVisible();
 		});
 	});
 
