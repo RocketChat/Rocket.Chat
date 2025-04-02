@@ -69,7 +69,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(subject !== undefined ? { subject } : {}),
 					...(description !== undefined ? { description } : {}),
 					...(startTime ? { startTime } : {}),
-					...(endTime ? { endTime } : {}),
+					...(endTime && { endTime }),
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
