@@ -31,7 +31,7 @@ callbacks.add(
 		const agentFilter = {
 			$and: [
 				{ 'livechat.maxNumberSimultaneousChat': { $gt: 0 } },
-				{ $expr: { $gte: ['queueInfo.chats', 'livechat.maxNumberSimultaneousChat'] } },
+				{ $expr: { $gte: ['$queueInfo.chats', '$livechat.maxNumberSimultaneousChat'] } },
 			],
 		};
 

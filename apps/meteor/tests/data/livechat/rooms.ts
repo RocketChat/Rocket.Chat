@@ -444,3 +444,23 @@ export const moveBackToQueue = async (roomId: string, overrideCredentials?: Cred
 		.expect('Content-Type', 'application/json')
 		.expect(200);
 };
+
+export const updateLivechatSettingsForUser = async (
+	agentId: string,
+	livechatSettings: Record<string, any>,
+	agentDepartments: string[] = [],
+): Promise<void> => {
+	await request
+		.post(methodCall('livechat:saveAgentInfo'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:saveAgentInfo',
+				params: [agentId, livechatSettings, agentDepartments],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+};

@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -8,10 +9,23 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent, deleteDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
-import { createVisitor, createLivechatRoom, closeOmnichannelRoom, deleteVisitor } from '../../../data/livechat/rooms';
+import {
+	createVisitor,
+	createLivechatRoom,
+	closeOmnichannelRoom,
+	deleteVisitor,
+	createAgent,
+	createDepartment,
+	makeAgentAvailable,
+	updateLivechatSettingsForUser,
+	getLivechatRoomInfo,
+	updateDepartment,
+} from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
+import { sleep } from '../../../data/livechat/utils';
 import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { deleteUser } from '../../../data/users.helper';
+import { password } from '../../../data/user';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 const cleanupRooms = async () => {
@@ -370,5 +384,118 @@ describe('LIVECHAT - Queue', () => {
 					expect(queue3).to.have.nested.property('department._id', deptd1._id);
 				});
 		});
+	});
+});
+
+(IS_EE ? describe : describe.skip)('Livechat - Chat limits', () => {
+	let testUser: { user: IUser; credentials: Credentials };
+	let testDepartment: ILivechatDepartment;
+
+	before((done) => getCredentials(done));
+
+	before(async () =>
+		Promise.all([
+			updateSetting('Livechat_enabled', true),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
+			updateSetting('Omnichannel_enable_department_removal', true),
+			updateEESetting('Livechat_maximum_chats_per_agent', 3),
+			updateEESetting('Livechat_waiting_queue', true),
+		]),
+	);
+
+	before(async () => {
+		const user = await createUser();
+		await createAgent(user.username);
+		const credentials3 = await login(user.username, password);
+		await makeAgentAvailable(credentials3);
+
+		testUser = {
+			user,
+			credentials: credentials3,
+		};
+	});
+
+	before(async () => {
+		testDepartment = await createDepartment([{ agentId: testUser.user._id }], `${new Date().toISOString()}-department`, true, {
+			maxNumberSimultaneousChat: 2,
+		});
+		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment._id]);
+	});
+
+	after(async () =>
+		Promise.all([
+			// deleteUser(testUser.user),
+			updateSetting('Omnichannel_enable_department_removal', false),
+			updateEESetting('Livechat_maximum_chats_per_agent', 0),
+		]),
+	);
+
+	let prevRoomId: string;
+	it('should assign the conversation to the agent as its within limits (0 chats)', async () => {
+		const visitor = await createVisitor(testDepartment._id);
+		const room = await createLivechatRoom(visitor.token);
+
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(room._id);
+
+		expect(roomInfo.servedBy).to.be.an('object');
+		expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+	});
+
+	it('should not assign the conversation to the agent as its out of limits (agent limit is 1 chat)', async () => {
+		const visitor = await createVisitor(testDepartment._id);
+		const room = await createLivechatRoom(visitor.token);
+
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(room._id);
+
+		prevRoomId = room._id;
+		expect(roomInfo.servedBy).to.be.undefined;
+	});
+
+	it('should accept the conversation after removing the agent limit (department limit is 2 chats)', async () => {
+		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 0 }, [testDepartment._id]);
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(prevRoomId);
+
+		expect(roomInfo.servedBy).to.be.an('object');
+		expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+	});
+
+	it('should not accept the conversation as agent is over the limit', async () => {
+		const visitor = await createVisitor(testDepartment._id);
+		const room = await createLivechatRoom(visitor.token);
+
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(room._id);
+
+		prevRoomId = room._id;
+		expect(roomInfo.servedBy).to.be.undefined;
+	});
+
+	it('should accept the conversation after removing the department limit (global limit is 3 chats)', async () => {
+		await updateDepartment({ departmentId: testDepartment._id, opts: { maxNumberSimultaneousChat: 0 }, userCredentials: credentials });
+
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(prevRoomId);
+
+		expect(roomInfo.servedBy).to.be.an('object');
+		expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+	});
+
+	it('should not accept the conversation as agent is over the limit', async () => {
+		const visitor = await createVisitor(testDepartment._id);
+		const room = await createLivechatRoom(visitor.token);
+
+		await sleep(5000);
+
+		const roomInfo = await getLivechatRoomInfo(room._id);
+
+		expect(roomInfo.servedBy).to.be.undefined;
 	});
 });
