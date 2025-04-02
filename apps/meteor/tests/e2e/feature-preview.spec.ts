@@ -11,6 +11,7 @@ import {
 	setSettingValueById,
 	createTargetDiscussion,
 	createChannelWithTeam,
+	deleteRoom,
 } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
@@ -21,7 +22,7 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 	let targetChannel: string;
-	let targetDiscussion: string;
+	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
@@ -34,6 +35,7 @@ test.describe.serial('feature preview', () => {
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
+		await deleteRoom(api, targetDiscussion._id);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -49,25 +51,26 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.describe('Enhanced navigation', () => {
-		let targetTeam: string;
-		let targetChannelWithTeam: string;
-		let user1Page: Page;
-
-		test.beforeAll(async ({ api, browser }) => {
-			await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
-
-			const { channelName, teamName } = await createChannelWithTeam(api);
-			targetTeam = teamName;
-			targetChannelWithTeam = channelName;
-			user1Page = await browser.newPage({ storageState: Users.user1.state });
+		test.beforeAll(async ({ api }) => {
+			await setUserPreferences(api, {
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: true,
+					},
+				],
+			});
 		});
 
 		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
-
-			await deleteChannel(api, targetChannel);
-			await deleteTeam(api, targetTeam);
-			await user1Page.close();
+			await setUserPreferences(api, {
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: false,
+					},
+				],
+			});
 		});
 
 		// After moving `Enhanced navigation` out of feature preview, move these tests to sidebar.spec.ts
@@ -184,7 +187,7 @@ test.describe.serial('feature preview', () => {
 
 		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidebar.openChat(targetDiscussion);
+			await poHomeChannel.sidebar.openChat(targetDiscussion.fname);
 
 			await test.step('should not display avatar in room header', async () => {
 				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
@@ -200,15 +203,38 @@ test.describe.serial('feature preview', () => {
 			});
 		});
 
-		test('should not display back to team button in the room header when the user its not part of the team', async ({ page }) => {
-			await user1Page.goto(`/channel/${targetChannelWithTeam}`);
+		test.describe('user is not part of the team', () => {
+			let targetTeam: string;
+			let targetChannelWithTeam: string;
+			let user1Page: Page;
 
-			await expect(
-				page
-					.locator('main')
-					.locator('header')
-					.getByRole('button', { name: /Back to/ }),
-			).not.toBeVisible();
+			test.beforeAll(async ({ api, browser }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
+
+				const { channelName, teamName } = await createChannelWithTeam(api);
+				targetTeam = teamName;
+				targetChannelWithTeam = channelName;
+				user1Page = await browser.newPage({ storageState: Users.user1.state });
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
+
+				await deleteChannel(api, targetChannelWithTeam);
+				await deleteTeam(api, targetTeam);
+				await user1Page.close();
+			});
+
+			test('should not display back to team button in the room header', async ({ page }) => {
+				await user1Page.goto(`/channel/${targetChannelWithTeam}`);
+
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).not.toBeVisible();
+			});
 		});
 	});
 
