@@ -278,23 +278,21 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
-type Results<TResponse extends TypedOptions['response']> = {
-	[K in keyof TResponse]: K extends 200
-		? SuccessResult<InferResult<TResponse[200]>>
-		: K extends 400
-			? FailureResult<InferResult<TResponse[400]>>
-			: K extends 401
-				? UnauthorizedResult<InferResult<TResponse[401]>>
-				: K extends 403
-					? ForbiddenResult<InferResult<TResponse[403]>>
-					: K extends 404
-						? NotFoundResult<InferResult<TResponse[404]>>
-						: K extends 500
-							? InternalError<InferResult<TResponse[500]>>
-							: never;
-}[keyof TResponse] & {
-	headers?: Record<string, string>;
+
+type StatusResultMap = {
+  200: SuccessResult<any>;
+  400: FailureResult<any>;
+  401: UnauthorizedResult<any>;
+  403: ForbiddenResult<any>;
+  404: NotFoundResult<any>;
+  500: InternalError<any>;
 };
+
+type Results<TResponse extends TypedOptions['response']> =
+  StatusResultMap[keyof TResponse] & {
+    headers?: Record<string, string>;
+  };
+
 
 export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
 	this: TypedThis<TOptions, TPath>,
