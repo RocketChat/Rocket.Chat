@@ -280,12 +280,12 @@ type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TRes
 
 
 type StatusResultMap = {
-  200: SuccessResult<any>;
-  400: FailureResult<any>;
-  401: UnauthorizedResult<any>;
-  403: ForbiddenResult<any>;
-  404: NotFoundResult<any>;
-  500: InternalError<any>;
+  200: SuccessResult<unknown>;
+  400: FailureResult<unknown>;
+  401: UnauthorizedResult<unknown>;
+  403: ForbiddenResult<unknown>;
+  404: NotFoundResult<unknown>;
+  500: InternalError<unknown>;
 };
 
 type Results<TResponse extends TypedOptions['response']> =
