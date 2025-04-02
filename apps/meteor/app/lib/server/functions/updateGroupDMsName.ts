@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { isNotUndefined } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
@@ -13,8 +14,8 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 		return;
 	}
 
-	const userIds = new Set();
-	const users = new Map();
+	const userIds = new Set<string>();
+	const users = new Map<string, IUser>();
 
 	const rooms = Rooms.findGroupDMsByUids([user._id], { projection: { uids: 1 } });
 	await rooms.forEach((room) => {
@@ -25,9 +26,7 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid));
 	});
 
-	(await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).toArray()).forEach((user: IUser) =>
-		users.set(user._id, user),
-	);
+	(await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).toArray()).forEach((user) => users.set(user._id, user));
 
 	return users;
 }
@@ -59,7 +58,7 @@ export const updateGroupDMsName = async (
 	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 }, session });
 
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(Boolean);
+	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(isNotUndefined);
 
 	// loop rooms to update the subscriptions from them all
 	for await (const room of rooms) {

@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +9,11 @@ import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
+import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
+import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 
 export type RoomHeaderProps = {
 	room: IRoom;
@@ -38,9 +38,6 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 	return (
 		<Header>
 			{slots?.start}
-			<HeaderAvatar>
-				<RoomAvatar room={room} size='x28' />
-			</HeaderAvatar>
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
@@ -51,6 +48,7 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
+					<RoomTopic room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
 			</HeaderContent>

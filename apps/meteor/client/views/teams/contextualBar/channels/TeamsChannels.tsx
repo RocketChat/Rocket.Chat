@@ -18,7 +18,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import { CustomScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {
@@ -111,7 +111,7 @@ const TeamsChannels = ({
 							</Box>
 						</Box>
 						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
-							<CustomScrollbars>
+							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}
 									data={channels}
@@ -121,7 +121,7 @@ const TeamsChannels = ({
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
 									)}
 								/>
-							</CustomScrollbars>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}
