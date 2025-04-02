@@ -35,6 +35,7 @@ callbacks.add(
 
 		const { queueInfo: { chats = 0 } = {} } = userSubs;
 		if (maxNumberSimultaneousChat <= chats) {
+			// Note: we don't need to call the `onMaxNumberSimultaneousChatsReached` hook here because it should only run on autoselection algos
 			throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
 		}
 

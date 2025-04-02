@@ -229,11 +229,15 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { parentId: null, ancestors: null } });
 	}
 
+	// TODO: optimize this function
 	async createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO & { type?: string }): Promise<ILivechatDepartment> {
 		const current = _id ? await this.findOneById(_id) : null;
 
 		const record = {
 			...data,
+			...(typeof data.maxNumberSimultaneousChat !== 'undefined'
+				? { maxNumberSimultaneousChat: parseInt(data.maxNumberSimultaneousChat, 10) }
+				: {}),
 		} as ILivechatDepartment;
 
 		if (_id) {

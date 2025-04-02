@@ -38,4 +38,5 @@ export type LivechatDepartmentDTO = {
 	offlineMessageChannelName?: string | undefined;
 	abandonedRoomsCloseCustomMessage?: string | undefined;
 	waitingQueueMessage?: string | undefined;
+	maxNumberSimultaneousChat?: string | undefined;
 };

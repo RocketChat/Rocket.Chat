@@ -22,6 +22,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		// TODO: projection and find by agent directly
 		const user = await Users.findOneById(_id);
 		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {

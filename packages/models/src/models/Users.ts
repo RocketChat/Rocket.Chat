@@ -2010,9 +2010,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			_id: userId,
 		};
 
+		// Convert the number to an actual number since UI sends it as a string
 		const update = {
 			$set: {
-				livechat: data,
+				livechat: {
+					...data,
+					...(typeof data.maxNumberSimultaneousChat !== 'undefined'
+						? { maxNumberSimultaneousChat: parseInt(data.maxNumberSimultaneousChat as string, 10) }
+						: {}),
+				},
 			},
 		};
 

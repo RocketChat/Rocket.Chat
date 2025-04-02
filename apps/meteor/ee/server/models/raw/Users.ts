@@ -32,13 +32,13 @@ export class UsersEE extends UsersRaw {
 					{
 						$lookup: {
 							from: 'rocketchat_livechat_department_agents',
-							let: { departmentId: '$departmentId', agentId: '$agentId' },
+							let: { userId: '$_id' },
 							pipeline: [
 								{
-									$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+									$match: { $expr: { $eq: ['$$userId', '$agentId'] } },
 								},
 								{
-									$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+									$match: { $expr: { $eq: ['$departmentId', departmentId] } },
 								},
 							],
 							as: 'department',

@@ -33,18 +33,20 @@ type QueueInfo = {
 	numberMostRecentChats: number;
 };
 
+// Changed to prioritize agent's maxNumberSimultaneousChat setting
 export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
-	if (departmentId) {
-		const department = await LivechatDepartmentRaw.findOneById(departmentId);
-		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
+	if (agentId) {
+		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
+		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return Number(maxNumberSimultaneousChat);
 		}
 	}
 
-	if (agentId) {
-		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
-		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
+	if (departmentId) {
+		// TODO: add projection to call
+		const department = await LivechatDepartmentRaw.findOneById(departmentId);
+		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
 		if (maxNumberSimultaneousChat > 0) {
 			return Number(maxNumberSimultaneousChat);
 		}
