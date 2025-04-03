@@ -1,4 +1,5 @@
 import { Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,8 @@ const ComposerOmnichannelCallout = () => {
 		contactId,
 	} = room;
 
+	const [dismissed, setDismissed] = useLocalStorage(`contact-unknown-callout-${contactId}`, false);
+
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const { data } = useQuery({ queryKey: ['getContactById', contactId], queryFn: () => getContactById({ contactId }) });
 
@@ -27,7 +30,7 @@ const ComposerOmnichannelCallout = () => {
 
 	const handleBlock = useBlockChannel({ blocked: currentChannel?.blocked || false, association });
 
-	if (!data?.contact?.unknown) {
+	if (dismissed || !data?.contact?.unknown) {
 		return null;
 	}
 
@@ -42,6 +45,7 @@ const ComposerOmnichannelCallout = () => {
 					<Button danger secondary small onClick={handleBlock}>
 						{currentChannel?.blocked ? t('Unblock') : t('Block')}
 					</Button>
+					<IconButton icon='cross' secondary small title={t('Close')} onClick={() => setDismissed(true)} />
 				</ButtonGroup>
 			}
 		>
