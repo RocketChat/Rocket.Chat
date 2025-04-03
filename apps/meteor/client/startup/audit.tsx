@@ -67,7 +67,7 @@ onToggledFeature('auditing', {
 				id: 'security-logs',
 				element: appLayout.wrap(
 					<MainLayout>
-						<PermissionGuard permission='can-audit-log'>
+						<PermissionGuard permission='can-audit'>
 							<SecurityLogsPage />
 						</PermissionGuard>
 					</MainLayout>,
