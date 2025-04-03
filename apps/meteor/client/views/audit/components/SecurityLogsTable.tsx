@@ -164,7 +164,7 @@ const SecurityLogsTable = (): ReactElement => {
 								tabIndex={0}
 								onClick={() =>
 									handleItemClick({
-										actor: item.actor.type === 'user' ? item.actor.username : item.actor.type,
+										actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
 										timestamp: new Date(item.ts).toDateString(),
 										setting: item.data[0].value,
 										changedFrom: String(item.data[1].value),
@@ -184,7 +184,7 @@ const SecurityLogsTable = (): ReactElement => {
 										</Box>
 									</Box>
 								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{item.ts}</GenericTableCell>
+								<GenericTableCell withTruncatedText>{new Date(item.ts).toDateString()}</GenericTableCell>
 								<GenericTableCell withTruncatedText title={t(String(item.data[0].value))}>
 									{String(item.data[0].value)}
 								</GenericTableCell>
