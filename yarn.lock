@@ -27615,12 +27615,12 @@ __metadata:
 
 "mongo-message-queue@patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch":
   version: 1.1.0
-  resolution: "mongo-message-queue@patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch::version=1.1.0&hash=5da1f4"
+  resolution: "mongo-message-queue@patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch::version=1.1.0&hash=cc9a72"
   dependencies:
     lodash: "npm:>=3.8.0"
   peerDependencies:
     mongodb: ">= 4.0.0 < 7"
-  checksum: 10/fccf52a25cd153933ba3be8b82168e313852aacbaf90838a64712facdf8e65ddacf0ca777e8604d2437ee9fcba3ef8b45f2f3f8f8ce873d7fc7c8e527d54e9b3
+  checksum: 10/563bae3ef7000f2ba544896a4ff57507be12bfd61ce5c5fa9bd8bd310bd0cb5f9843b5f08df7e5f4db2896232edab504e3bfefffb16094be76438cb6a60f90d6
   languageName: node
   linkType: hard
 
