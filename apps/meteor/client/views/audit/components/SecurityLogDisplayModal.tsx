@@ -27,12 +27,8 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 
 			<Box display='flex' alignItems='center' mbe={16}>
 				<UserAvatar size='x24' username={actor} />
-				<Box display='flex' withTruncatedText mi={8}>
-					<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-						<Box fontScale='p2m' withTruncatedText color='default'>
-							{actor}
-						</Box>
-					</Box>
+				<Box mi={8} fontScale='p2m' display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+					{actor}
 				</Box>
 			</Box>
 
