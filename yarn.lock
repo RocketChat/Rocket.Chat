@@ -8862,7 +8862,7 @@ __metadata:
     i18next-http-backend: "npm:^1.4.5"
     i18next-sprintf-postprocessor: "npm:^0.2.2"
     iconv-lite: "npm:^0.6.3"
-    image-size: "npm:^1.1.1"
+    image-size: "npm:^1.2.1"
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
     is-svg: "npm:^5.1.0"
@@ -23275,14 +23275,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "image-size@npm:1.1.1"
+"image-size@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "image-size@npm:1.2.1"
   dependencies:
     queue: "npm:6.0.2"
   bin:
     image-size: bin/image-size.js
-  checksum: 10/f28966dd3f6d4feccc4028400bb7e8047c28b073ab0aa90c7c53039288139dd416c6bc254a976d4bf61113d4bc84871786804113099701cbfe9ccf377effdb54
+  checksum: 10/b290c6cc5635565b1da51991472eb6522808430dbe3415823649723dc5f5fd8263f0f98f9bdec46184274ea24fe4f3f7a297c84b647b412e14d2208703dd8a19
   languageName: node
   linkType: hard
 
