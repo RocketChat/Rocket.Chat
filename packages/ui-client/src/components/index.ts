@@ -11,6 +11,6 @@ export * from './Header';
 export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview';
-export { default as AnnouncementButton } from './AnnouncementButton';
+export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as UserAutoComplete } from './UserAutoComplete';
 export * from './GenericMenu';

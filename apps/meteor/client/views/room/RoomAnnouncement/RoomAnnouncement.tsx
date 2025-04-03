@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { AnnouncementButton } from '@rocket.chat/ui-client';
+import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { MouseEvent } from 'react';
+import { type MouseEvent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -16,8 +15,26 @@ type RoomAnnouncementParams = {
 const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncementParams) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal(null));
-	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
+
+	const handleOpenAnnouncement = useCallback(() => {
+		announcementDetails
+			? announcementDetails()
+			: setModal(
+					<GenericModal
+						icon={null}
+						title={t('Announcement')}
+						confirmText={t('Close')}
+						onConfirm={() => setModal(null)}
+						onClose={() => setModal(null)}
+					>
+						<Box>
+							<MarkdownText content={announcement} parseEmoji />
+						</Box>
+					</GenericModal>,
+				);
+	}, [announcement, announcementDetails, setModal, t]);
+
+	const handleClick = (e: MouseEvent) => {
 		if ((e.target as HTMLAnchorElement).href) {
 			return;
 		}
@@ -26,21 +43,13 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 			return;
 		}
 
-		announcementDetails
-			? announcementDetails()
-			: setModal(
-					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
-						<Box>
-							<MarkdownText content={announcement} parseEmoji />
-						</Box>
-					</GenericModal>,
-				);
+		handleOpenAnnouncement();
 	};
 
 	return announcement ? (
-		<AnnouncementButton onClick={handleClick}>
+		<AnnouncementBanner onClick={handleClick} onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleOpenAnnouncement()}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
-		</AnnouncementButton>
+		</AnnouncementBanner>
 	) : null;
 };
 

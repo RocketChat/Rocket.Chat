@@ -1,13 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes, MouseEvent, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactNode, MouseEvent } from 'react';
 
-type AnnouncementButtonProps = {
+type AnnouncementBannerProps = {
 	children: ReactNode;
-	onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
+	onClick?: (e: MouseEvent) => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const AnnouncementButton = ({ children, onClick, ...props }: AnnouncementButtonProps) => {
+const AnnouncementBanner = ({ children, className, onClick, ...props }: AnnouncementBannerProps) => {
 	const announcementBar = css`
 		background-color: ${Palette.status['status-background-info'].theme('announcement-background')};
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};
@@ -20,22 +20,23 @@ const AnnouncementButton = ({ children, onClick, ...props }: AnnouncementButtonP
 		> * {
 			flex: auto;
 		}
-		&:hover,
-		&:focus {
+		&:hover {
 			text-decoration: underline;
 		}
 	`;
 
 	return (
 		<Box
-			tabIndex={onClick ? 0 : -1}
+			focusable
 			height='x40'
 			pi={24}
 			alignItems='center'
 			display='flex'
 			fontScale='p2m'
 			textAlign='center'
-			className={announcementBar}
+			borderRadius={0}
+			className={[announcementBar, className]}
+			tabIndex={onClick ? 0 : -1}
 			role={onClick ? 'button' : 'banner'}
 			onClick={onClick}
 			{...props}
@@ -47,4 +48,4 @@ const AnnouncementButton = ({ children, onClick, ...props }: AnnouncementButtonP
 	);
 };
 
-export default AnnouncementButton;
+export default AnnouncementBanner;
