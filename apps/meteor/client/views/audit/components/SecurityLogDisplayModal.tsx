@@ -9,13 +9,14 @@ import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 type SecurityLogDisplayProps = {
 	timestamp: string;
 	actor: string;
+	actorId: string;
 	setting: string;
 	changedFrom: string;
 	changedTo: string;
 	onCancel: () => void;
 };
 
-const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
+const SecurityLogDisplayModal = ({ timestamp, actor, actorId, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -26,7 +27,7 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 			<InfoPanelLabel>{t('Actor')}</InfoPanelLabel>
 
 			<Box display='flex' alignItems='center' mbe={16}>
-				<UserAvatar size='x24' username={actor} />
+				<UserAvatar size='x24' username={actorId} />
 				<Box mi={8} fontScale='p2m' display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 					{actor}
 				</Box>

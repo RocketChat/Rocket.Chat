@@ -64,12 +64,14 @@ const SecurityLogsTable = (): ReactElement => {
 
 	const handleItemClick = ({
 		actor,
+		actorId,
 		timestamp,
 		setting,
 		changedFrom,
 		changedTo,
 	}: {
 		actor: string;
+		actorId: string;
 		timestamp: string;
 		setting: unknown;
 		changedFrom: string;
@@ -79,6 +81,7 @@ const SecurityLogsTable = (): ReactElement => {
 			<SecurityLogDisplayModal
 				timestamp={timestamp}
 				actor={actor}
+				actorId={actorId}
 				setting={String(setting)}
 				changedFrom={changedFrom}
 				changedTo={changedTo}
@@ -165,6 +168,7 @@ const SecurityLogsTable = (): ReactElement => {
 								onClick={() =>
 									handleItemClick({
 										actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
+										actorId: item.actor.type === 'user' ? item.actor._id : item.actor.type,
 										timestamp: new Date(item.ts).toDateString(),
 										setting: item.data[0].value,
 										changedFrom: String(item.data[1].value),
@@ -176,7 +180,7 @@ const SecurityLogsTable = (): ReactElement => {
 									<Box display='flex' alignItems='center'>
 										{item.actor.type === 'user' && (
 											<Box mie={4}>
-												<UserAvatar size='x24' username={item.actor.username} />
+												<UserAvatar size='x24' userId={item.actor._id} />
 											</Box>
 										)}
 										<Box fontScale='p2m' withTruncatedText color='default'>
