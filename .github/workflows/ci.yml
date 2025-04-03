@@ -311,7 +311,7 @@ jobs:
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: '1.70'
+          toolchain: '1.75'
           target: x86_64-unknown-linux-musl
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
