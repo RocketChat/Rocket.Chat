@@ -1,7 +1,17 @@
 import { faker } from '@faker-js/faker';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
-import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
-import type { LicenseInfo, App, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
+import { AppSubscriptionStatus, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import type {
+	LicenseInfo,
+	App,
+	IMessage,
+	IRoom,
+	ISubscription,
+	IUser,
+	ILivechatContactChannel,
+	Serialized,
+} from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
@@ -284,4 +294,39 @@ export function createFakeVisitor() {
 		name: pullNextVisitorName(),
 		email: faker.internet.email(),
 	} as const;
+}
+
+export function createFakeContactChannel(overrides?: Partial<Serialized<ILivechatContactChannel>>): Serialized<ILivechatContactChannel> {
+	return {
+		name: 'widget',
+		blocked: false,
+		verified: false,
+		...overrides,
+		visitor: {
+			visitorId: faker.string.uuid(),
+			source: {
+				type: OmnichannelSourceType.WIDGET,
+			},
+			...overrides?.visitor,
+		},
+		details: {
+			type: OmnichannelSourceType.WIDGET,
+			destination: '',
+			...overrides?.details,
+		},
+	};
+}
+
+export function createFakeContact(overrides?: Partial<Serialized<ILivechatContact>>): Serialized<ILivechatContact> {
+	return {
+		_id: faker.string.uuid(),
+		_updatedAt: new Date().toISOString(),
+		name: pullNextVisitorName(),
+		phones: [{ phoneNumber: faker.phone.number() }],
+		emails: [{ address: faker.internet.email() }],
+		unknown: true,
+		channels: [createFakeContactChannel()],
+		createdAt: new Date().toISOString(),
+		...overrides,
+	};
 }
