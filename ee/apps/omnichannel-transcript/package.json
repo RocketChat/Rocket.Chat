@@ -36,7 +36,7 @@
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
 		"moment-timezone": "^0.5.46",
-		"mongo-message-queue": "^1.1.0",
+		"mongo-message-queue": "patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch",
 		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
