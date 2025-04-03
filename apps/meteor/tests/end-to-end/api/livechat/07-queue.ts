@@ -427,6 +427,7 @@ describe('LIVECHAT - Queue', () => {
 			// deleteUser(testUser.user),
 			updateSetting('Omnichannel_enable_department_removal', false),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
+			updateEESetting('Livechat_waiting_queue', false),
 		]),
 	);
 
