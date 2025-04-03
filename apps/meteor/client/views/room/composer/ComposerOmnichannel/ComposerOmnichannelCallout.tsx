@@ -1,26 +1,16 @@
-import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useBlockChannel } from '../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockChannel';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 const ComposerOmnichannelCallout = () => {
 	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
-	const { navigate, buildRoutePath } = useRouter();
-	const hasLicense = useHasLicenseModule('contact-id-verification');
-	const securityPrivacyRoute = buildRoutePath('/omnichannel/security-privacy');
-	const shouldShowSecurityRoute = useSetting('Livechat_Require_Contact_Verification') !== 'never' || !hasLicense;
-
-	const canViewSecurityPrivacy = useAtLeastOnePermission([
-		'view-privileged-setting',
-		'edit-privileged-setting',
-		'manage-selected-settings',
-	]);
+	const { navigate } = useRouter();
 
 	const {
 		_id,
@@ -44,7 +34,6 @@ const ComposerOmnichannelCallout = () => {
 	return (
 		<Callout
 			mbe={16}
-			title={t('Contact_unknown')}
 			actions={
 				<ButtonGroup>
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
@@ -56,17 +45,7 @@ const ComposerOmnichannelCallout = () => {
 				</ButtonGroup>
 			}
 		>
-			{shouldShowSecurityRoute ? (
-				<Trans i18nKey='Add_to_contact_and_enable_verification_description'>
-					Add to contact list manually and
-					<Box is={canViewSecurityPrivacy ? 'a' : 'span'} href={securityPrivacyRoute}>
-						enable verification
-					</Box>
-					using multi-factor authentication.
-				</Trans>
-			) : (
-				t('Add_to_contact_list_manually')
-			)}
+			{t('Unknown_contact_callout_description')}
 		</Callout>
 	);
 };
