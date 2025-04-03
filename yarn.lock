@@ -9288,6 +9288,7 @@ __metadata:
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": "npm:^0.31.25"
     "@rocket.chat/tracing": "workspace:^"
+    "@simplewebauthn/server": "npm:^13.1.1"
     "@types/jest": "npm:~29.5.14"
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~8.45.0"

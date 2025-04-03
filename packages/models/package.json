@@ -17,6 +17,7 @@
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "^0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
+		"@simplewebauthn/server": "^13.1.1",
 		"moment": "^2.30.1",
 		"node-rsa": "^1.1.1"
 	},

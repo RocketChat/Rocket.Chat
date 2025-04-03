@@ -3,11 +3,13 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { loginServices } from '../../lib/loginServices';
 import { startAuthentication } from '@simplewebauthn/browser';
+import { PathPattern } from '@rocket.chat/rest-typings';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -16,6 +18,8 @@ type AuthenticationProviderProps = {
 };
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
+	const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
+
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
@@ -72,33 +76,25 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						});
 					});
 			},
-			// loginWithPasskey: (token: string): Promise<void> => {
-			// 	const generateRegistrationOptionsFn = useMethod('passkey:generateRegistrationOptions');
-			// 	const verifyRegistrationResponseFn = useMethod('passkey:verifyRegistrationResponse');
-			// 	new Promise((resolve, reject) => {
-			// 			try {
-			// 				const { id, options } = await generateAuthenticationOptionsFn();
-			//
-			// 				const AuthenticationResponse = await startAuthentication({
-			// 					optionsJSON: options,
-			// 					useBrowserAutofill: true,
-			// 				});
-			//
-			// 				await verifyAuthenticationResponseFn(id, AuthenticationResponse);
-			//
-			// 				dispatchToastMessage({ type: 'success', message: t('Registered_successfully') as string });
-			// 			} catch (error) {
-			// 				dispatchToastMessage({ type: 'error', message: error });
-			// 			}
-			// 			Meteor.loginWithToken(token, (err) => {
-			// 				if (err) {
-			// 					return reject(err);
-			// 				}
-			// 				resolve(undefined);
-			// 			}),
-			// 		}
-			// 	),
-			// },
+			loginWithPasskey: (): Promise<void> => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						const { id, options } = await generateAuthenticationOptionsAction();
+
+						const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
+
+						Meteor.loginWithPasskey(id, authenticationResponse, (error: any): void => { // TODO fzh075 ts
+							if (!error) {
+								reject(error);
+								return;
+							}
+							resolve();
+						});
+					} catch (error) {
+						reject(error);
+					}
+				});
+			},
 
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),

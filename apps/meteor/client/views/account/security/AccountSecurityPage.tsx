@@ -57,9 +57,9 @@ const AccountSecurityPage = (): ReactElement => {
 					)}
 					<Accordion>
 						{passkeyEnabled && (
-							<Accordion.Item title={t('Passkey')}>
+							<AccordionItem title={t('Passkey')}>
 								<Passkey />
-							</Accordion.Item>
+							</AccordionItem>
 						)}
 					</Accordion>
 					<Accordion>

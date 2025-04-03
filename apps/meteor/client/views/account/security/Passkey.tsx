@@ -25,7 +25,7 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 
 			const registrationResponse = await startRegistration({ optionsJSON: options});
 
-			await verifyRegistrationResponseAction(id, registrationResponse)
+			await verifyRegistrationResponseAction({ id, registrationResponse })
 
 			dispatchToastMessage({ type: 'success', message: t('Registered_successfully') });
 		} catch (error) {

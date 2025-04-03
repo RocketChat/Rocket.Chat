@@ -13,10 +13,10 @@ import {
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useLoginWithPassword, useLoginWithPasskey, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -24,9 +24,6 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { startAuthentication } from '@simplewebauthn/browser';
-import { useEndpointAction } from './hooks/useEndpointAction';
-import { PathPattern } from '@rocket.chat/rest-typings';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -144,43 +141,61 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	}
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	// const user = useUser();
+	const loginWithPasskey = useLoginWithPasskey();
+	const loginWithPasskeyMutation = useMutation({
+		mutationFn: () => {
+			return loginWithPasskey();
+		},
+		onError: (error) => {
+			if (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return
+			}
+			dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
+		},
+	});
 
-	// const isEnabled = user?.services?.email2fa?.enabled;
-
-	// const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
-	const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
-
-	const handleLoginWithPasskey = useCallback(async () => {
-		try {
-			// @ts-ignore
-			const { id, options } = await generateAuthenticationOptions();
-
-			const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
-
-			// await verifyAuthenticationResponseFn(id, authenticationResponse)
-
-			Accounts.callLoginMethod({
-				methodArguments: [{
-					'id': id,
-					'authenticationResponse': authenticationResponse,
-				}],
-				userCallback(error) {
-					if (error) {
-						dispatchToastMessage({ type: 'error', message: error });
-						return
-					}
-					dispatchToastMessage({ type: 'success', message: t('Login_successfully') as string });
-				},
-			});
-		} catch (error) {
-			console.log(error);
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [generateAuthenticationOptionsAction]);
-
+	// // const user = useUser();
+	//
+	// // const isEnabled = user?.services?.email2fa?.enabled;
+	//
+	// // const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
+	// const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
+	//
+	// const handleLoginWithPasskey = useCallback(async () => {
+	// 	try {
+	// 		// @ts-ignore
+	// 		const { id, options } = await generateAuthenticationOptionsAction();
+	//
+	// 		const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
+	//
+	// 		// await verifyAuthenticationResponseFn(id, authenticationResponse)
+	//
+	// 		console.log(authenticationResponse);
+	//
+	// 		Accounts.callLoginMethod({
+	// 			methodArguments: [{
+	// 				'id': id,
+	// 				'authenticationResponse': authenticationResponse,
+	// 			}],
+	// 			userCallback(error) {
+	// 				if (error) {
+	// 					console.log(error);
+	// 					dispatchToastMessage({ type: 'error', message: error });
+	// 					return
+	// 				}
+	// 				dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
+	// 			},
+	// 		});
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 		dispatchToastMessage({ type: 'error', message: error });
+	// 	}
+	// }, [generateAuthenticationOptionsAction]);
+	//
 	useEffect(() => {
-		handleLoginWithPasskey().then()
+		// handleLoginWithPasskey().then()
+		loginWithPasskeyMutation.mutate()
 	}, []);
 
 	return (
@@ -264,7 +279,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
-							<Button loading={loginMutation.isLoading} onClick={handleLoginWithPasskey}>
+							<Button loading={loginMutation.isPending} onClick={() => loginWithPasskeyMutation.mutate()}>
 								{t('registration.component.loginWithPasskey')}
 							</Button>
 						</ButtonGroup>

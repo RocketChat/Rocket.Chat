@@ -17,27 +17,38 @@ import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
 import { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { settings } from '/app/settings/server';
 
-class Passkey {
+// console.log(111111111111111111111111111)
+// console.log(process.env.TEST_MODE);
+// console.log(process.env.NODE_ENV);
+
+const siteName: string = settings.get('Site_Name')
+const siteUrl: string = settings.get('Site_Url') // TODO fzh075 Whether there is a problem that cannot be updated in time？
+class Passkey { // TODO fzh075 Optimize by document
 	private idAndChallenge = {};
+	private rpName = siteName
+	private rpID = process.env.TEST_MODE === 'true' ? 'localhost': siteUrl.replace(/^https?:\/\//, "");
+	private expectedRPID = this.rpID;
+	private expectedOrigin = process.env.TEST_MODE === 'true' ? 'http://localhost:3000': siteUrl;
 
 	public async generateRegistrationOptions(user: IUser): Promise<{ id: string, options: PublicKeyCredentialCreationOptionsJSON }> {
 		const options = await generateRegistrationOptions({
-			rpName: 'WebAuthn Demo',
-			rpID: 'localhost',
-			userID: user.id,
+			rpName: this.rpName,
+			rpID: this.rpID,
 			userName: user.username,
 			attestationType: 'none',
-			excludeCredentials: user.credentials?.map((cred) => ({
+			excludeCredentials: user.passkeys?.map((cred) => ({
 				id: cred.id,
-				type: 'public-key',
+				// type: 'public-key',
 				transports: cred.transports,
 			})),
 			authenticatorSelection: {
-				residentKey: 'discouraged',
-				userVerification: 'preferred',
+				residentKey: 'preferred',
+				userVerification: 'preferred'
+
 			},
-			supportedAlgorithmIDs: [-7, -257],
+			// supportedAlgorithmIDs: [-7, -257],
 		});
 
 		let id;
@@ -49,7 +60,7 @@ class Passkey {
 		return { id, options };
 	}
 
-	public async verifyRegistrationResponse(id: string, registrationResponse: RegistrationResponseJSON) {
+	public async verifyRegistrationResponse(user: IUser, id: string, registrationResponse: RegistrationResponseJSON) {
 			const expectedChallenge = this.idAndChallenge[id];
 			delete this.idAndChallenge[id]
 
@@ -58,9 +69,9 @@ class Passkey {
 				verification = await verifyRegistrationResponse({
 					response: registrationResponse,
 					expectedChallenge: expectedChallenge,
-					expectedOrigin: 'http://localhost:3000',
-					expectedRPID: 'localhost',
-					requireUserVerification: false,
+					expectedOrigin: this.expectedOrigin,
+					expectedRPID: this.expectedRPID,
+					// requireUserVerification: false,
 				});
 			} catch (error) {
 				throw new Meteor.Error("verification error", error.message);
@@ -70,24 +81,18 @@ class Passkey {
 				throw new Meteor.Error("verification failed");
 			}
 
-			let credentials
-			const user = await Users.findOneById(this.userId)
-			if (user.credentials !== undefined)
-				credentials = user.credentials
+			let passkeys
+			// const user = await Users.findOneById(user._id)
+			if (user.passkeys !== undefined)
+				passkeys = user.passkeys
 			else
-				credentials = []
-			const credential = verification.registrationInfo!.credential;
-			const existingCredential = credentials.find((cred) => cred.id === credential.id);
+				passkeys = []
+			const passkey = verification.registrationInfo!.credential;
+			const existingCredential = passkeys.find((key) => key.id === passkey.id);
 
-			if (!existingCredential) { // TODO unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
-				credentials.push(credential);
-				await Users.updateOne({ _id: this.userId },
-					{
-						$set: {
-							'credentials': credentials,
-						},
-					},
-				)
+			if (!existingCredential) { // TODO fzh075 unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
+				passkeys.push(passkey);
+				await Users.setPasskeys(user._id, passkeys);
 			}
 
 			return;
@@ -95,14 +100,14 @@ class Passkey {
 
 	public async generateAuthenticationOptions(): Promise<{ id: string, options: PublicKeyCredentialRequestOptionsJSON }> {
 			const options = await generateAuthenticationOptions({
+				rpID: this.rpID,
 				timeout: 60000,
 				// allowCredentials: user.credentials.map((cred) => ({
 				// 	id: cred.credentialId,
-				// 	type: 'public-key',
+				// 	// type: 'public-key',
 				// 	transports: cred.transports,
 				// })),
-				userVerification: 'preferred',
-				rpID: 'localhost',
+				// userVerification: 'preferred',
 			});
 
 			let id;
@@ -117,20 +122,20 @@ class Passkey {
 	public async verifyAuthenticationResponse(id: string, authenticationResponse: AuthenticationResponseJSON): Promise<string> {
 			const expectedChallenge = this.idAndChallenge[id];
 			delete this.idAndChallenge[id]
-			const user = await Users.findOne({ credentials: { $elemMatch: { id: authenticationResponse.id } } })
+			const user = await Users.findOne({ passkeys: { $elemMatch: { id: authenticationResponse.id } } })
 			if (!user)
 				throw new Meteor.Error('Authenticator is not registered with this site');
-			const credential = user.credentials.find(cred => cred.id = authenticationResponse.id)
-			credential.publicKey = credential.publicKey.buffer
+			const passkey = user.passkeys.find(key => key.id = authenticationResponse.id)
+			passkey.publicKey = passkey.publicKey.buffer
 
 			let verification: VerifiedAuthenticationResponse
 			try {
 				verification = await verifyAuthenticationResponse({
 					response: authenticationResponse,
 					expectedChallenge: expectedChallenge,
-					expectedOrigin: 'http://localhost:3000',
-					expectedRPID: 'localhost',
-					credential,
+					expectedOrigin: this.expectedOrigin,
+					expectedRPID: this.expectedRPID,
+					credential: passkey,
 					requireUserVerification: false,
 				});
 			} catch (error) {
@@ -141,14 +146,7 @@ class Passkey {
 				throw new Meteor.Error("verification failed");
 			}
 
-			await Users.updateOne(
-				{ _id: user._id, credentials: { $elemMatch: { id: authenticationResponse.id } } },
-				{
-					$set: {
-						'credentials.$.count': verification.authenticationInfo.newCounter,
-					},
-				},
-			)
+			await Users.updatePasskeyCounter(user._id, authenticationResponse.id, verification.authenticationInfo.newCounter)
 			return user._id;
 		}
 }

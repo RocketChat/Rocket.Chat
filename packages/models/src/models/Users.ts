@@ -30,6 +30,7 @@ import type {
 
 import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { WebAuthnCredential } from '@simplewebauthn/server';
 
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
 	statusLivechat: 'available',
@@ -3388,5 +3389,32 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				},
 			},
 		);
+	}
+
+	setPasskeys(userId: IUser['_id'], passkeys: WebAuthnCredential) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				passkeys: passkeys,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updatePasskeyCounter(userId: IUser['_id'], passkeyId: string, newCounter: number) {
+		const query =
+				{ _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
+
+			const update = {
+			$set: {
+				'passkeys.$.count': newCounter,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

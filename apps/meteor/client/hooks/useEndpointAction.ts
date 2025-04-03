@@ -1,4 +1,4 @@
-import type { Method, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type { Method, PathPattern, UrlParams } from '@rocket.chat/rest-typings'; // TODO fzh075 duplicate
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';

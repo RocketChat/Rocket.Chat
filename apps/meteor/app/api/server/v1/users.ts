@@ -969,7 +969,7 @@ API.v1.addRoute(
 			// 	)
 			// }
 
-			await passkey.verifyRegistrationResponse(this.bodyParams.id, this.bodyParams.registrationResponse)
+			await passkey.verifyRegistrationResponse(this.user, this.bodyParams.id, this.bodyParams.registrationResponse)
 			return API.v1.success();
 		},
 	},
@@ -979,7 +979,7 @@ API.v1.addRoute(
 	'users.generateAuthenticationOptions',
 	{ authRequired: false },
 	{
-		async post() {
+		async get() {
 			// const options = await generateAuthenticationOptions({
 			// 	timeout: 60000,
 			// 	// allowCredentials: user.credentials.map((cred) => ({
