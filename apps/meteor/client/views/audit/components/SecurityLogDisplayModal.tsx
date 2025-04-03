@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import moment from 'moment';
+import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -21,7 +21,7 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 	return (
 		<GenericModal icon={null} onClose={onCancel} title={t('Setting_change')}>
 			<InfoPanelLabel>{t('Timestamp')}</InfoPanelLabel>
-			<InfoPanelText>{moment(timestamp).format('MMMM Do YYYY, h:mm:ss a')}</InfoPanelText>
+			<InfoPanelText>{format(new Date(timestamp), 'MMMM d yyyy, h:mm:ss a')}</InfoPanelText>
 
 			<InfoPanelLabel>{t('Actor')}</InfoPanelLabel>
 
