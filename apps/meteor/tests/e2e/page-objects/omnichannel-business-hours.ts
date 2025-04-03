@@ -51,6 +51,10 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 		return this.confirmDeleteModal.locator('role=button[name="Delete"]');
 	}
 
+	get btnToggleSwitch(): Locator {
+		return this.page.locator('role=checkbox[name="Enabled"]');
+	}
+
 	private selectOption(name: string): Locator {
 		return this.page.locator(`[role=option][value="${name}"]`);
 	}

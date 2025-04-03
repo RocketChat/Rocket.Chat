@@ -136,4 +136,49 @@ test.describe('OC - Business Hours', () => {
 			await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
 		});
 	});
+
+	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+		const BHName = faker.string.uuid();
+
+		await test.step('expect to create new businessHours', async () => {
+			const createBH = await createBusinessHour(api, {
+				id: '33',
+				name: BHName,
+				departments: [department.data._id],
+			});
+
+			expect(createBH.status()).toBe(200);
+		});
+
+		await page.goto('/omnichannel');
+		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
+		await test.step('expect to disable business hours', async () => {
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+
+			await poOmnichannelBusinessHours.btnToggleSwitch.click();
+			await expect(poOmnichannelBusinessHours.btnToggleSwitch).toBeChecked({ checked: false });
+
+			await poOmnichannelBusinessHours.btnSave.click();
+
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			expect(await poOmnichannelBusinessHours.btnToggleSwitch.isChecked()).toBe(false);
+		});
+
+		await test.step('expect to enable business hours', async () => {
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+
+			await poOmnichannelBusinessHours.btnToggleSwitch.click();
+			await expect(poOmnichannelBusinessHours.btnToggleSwitch).toBeChecked({ checked: true });
+
+			await poOmnichannelBusinessHours.btnSave.click();
+
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+			expect(await poOmnichannelBusinessHours.btnToggleSwitch.isChecked()).toBe(true);
+		});
+	});
 });
