@@ -10,7 +10,16 @@ const Header = (props: HeaderProps) => {
 	const { isMobile } = useLayout();
 
 	return (
-		<Box rcx-room-header is='header' display='flex' justifyContent='center' flexDirection='column' overflow='hidden' flexShrink={0}>
+		<Box
+			rcx-room-header
+			is='header'
+			color='default'
+			display='flex'
+			justifyContent='center'
+			flexDirection='column'
+			overflow='hidden'
+			flexShrink={0}
+		>
 			<Box
 				pi={isMobile ? 'x12' : 'x16'}
 				height='x44'

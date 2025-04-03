@@ -46,7 +46,7 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 			mie={4}
 		>
 			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
+			<HeaderTitle>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
 	);
 };
