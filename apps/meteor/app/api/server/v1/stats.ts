@@ -43,8 +43,7 @@ const telemetryRequestSchema = ajv.compile({
 				properties: {
 					eventName: { type: 'string' },
 				},
-				required: ['eventName'],
-				additionalProperties: false,
+				required: ['eventName']
 			},
 		},
 	},
