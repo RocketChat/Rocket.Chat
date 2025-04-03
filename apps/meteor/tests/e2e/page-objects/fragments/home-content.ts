@@ -463,4 +463,12 @@ export class HomeContent {
 	get btnJoinChannel() {
 		return this.page.getByRole('button', { name: 'Join channel' });
 	}
+
+	get contactUnknownCallout() {
+		return this.page.locator('[data-qa-id="contact-unknown-callout"]');
+	}
+
+	get btnCloseContactUnknownCallout() {
+		return this.contactUnknownCallout.getByRole('button', { name: 'Close' });
+	}
 }
