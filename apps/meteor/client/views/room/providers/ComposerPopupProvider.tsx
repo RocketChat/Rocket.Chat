@@ -69,7 +69,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 
 					const roomMessageUsers = queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid)) ?? [];
 
-					roomMessageUsers
+					const filteredRoomMessageUsers = roomMessageUsers
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
@@ -101,7 +101,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						});
 					}
 
-					return [...roomMessageUsers, ...items];
+					return [...filteredRoomMessageUsers, ...items];
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
