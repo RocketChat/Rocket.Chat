@@ -4,10 +4,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { RecordList } from '../../../lib/lists/RecordList';
 
+type SettingSelectOption = {
+	label: string;
+	value: string;
+	_id: string;
+};
+
 export const useSettingSelectOptions = (filter = '') => {
 	const settings = useSettings();
 
-	const [itemsList, setItemsList] = useState(() => new RecordList());
+	const [itemsList, setItemsList] = useState(() => new RecordList<SettingSelectOption>());
 	const reload = useCallback(() => setItemsList(new RecordList()), []);
 
 	useEffect(() => {
