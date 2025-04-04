@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { type MouseEvent, useCallback } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -9,30 +10,27 @@ import MarkdownText from '../../../components/MarkdownText';
 
 type RoomAnnouncementParams = {
 	announcement: string;
-	announcementDetails?: () => void;
 };
 
-const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncementParams) => {
+const RoomAnnouncement = ({ announcement }: RoomAnnouncementParams) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const handleOpenAnnouncement = useCallback(() => {
-		announcementDetails
-			? announcementDetails()
-			: setModal(
-					<GenericModal
-						icon={null}
-						title={t('Announcement')}
-						confirmText={t('Close')}
-						onConfirm={() => setModal(null)}
-						onClose={() => setModal(null)}
-					>
-						<Box>
-							<MarkdownText content={announcement} parseEmoji />
-						</Box>
-					</GenericModal>,
-				);
-	}, [announcement, announcementDetails, setModal, t]);
+	const handleOpenAnnouncement = useEffectEvent(() => {
+		setModal(
+			<GenericModal
+				icon={null}
+				title={t('Announcement')}
+				confirmText={t('Close')}
+				onConfirm={() => setModal(null)}
+				onClose={() => setModal(null)}
+			>
+				<Box>
+					<MarkdownText content={announcement} parseEmoji />
+				</Box>
+			</GenericModal>,
+		);
+	});
 
 	const handleClick = (e: MouseEvent) => {
 		if ((e.target as HTMLAnchorElement).href) {
@@ -46,8 +44,19 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 		handleOpenAnnouncement();
 	};
 
+	const handleKeyDown = (e: KeyboardEvent) => {
+		if ((e.target as HTMLAnchorElement).href) {
+			return;
+		}
+
+		if (e.code === 'Enter' || e.code === 'Space') {
+			e.preventDefault();
+			handleOpenAnnouncement();
+		}
+	};
+
 	return announcement ? (
-		<AnnouncementBanner onClick={handleClick} onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && handleOpenAnnouncement()}>
+		<AnnouncementBanner onClick={handleClick} onKeyDown={handleKeyDown}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementBanner>
 	) : null;

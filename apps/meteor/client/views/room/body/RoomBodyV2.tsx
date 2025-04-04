@@ -174,7 +174,7 @@ const RoomBody = (): ReactElement => {
 
 	return (
 		<>
-			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
+			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
