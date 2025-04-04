@@ -142,7 +142,7 @@ test.describe('OC - Business Hours', () => {
 
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: '33',
+				id: '34',
 				name: BHName,
 				departments: [department.data._id],
 			});
@@ -157,28 +157,28 @@ test.describe('OC - Business Hours', () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
 
-			await poOmnichannelBusinessHours.btnToggleSwitch.click();
-			await expect(poOmnichannelBusinessHours.btnToggleSwitch).toBeChecked({ checked: false });
+			await poOmnichannelBusinessHours.btnEnable.click();
+			await expect(poOmnichannelBusinessHours.btnEnable).toBeChecked({ checked: false });
 
 			await poOmnichannelBusinessHours.btnSave.click();
 
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			expect(await poOmnichannelBusinessHours.btnToggleSwitch.isChecked()).toBe(false);
+			expect(await poOmnichannelBusinessHours.btnEnable.isChecked()).toBe(false);
 		});
 
 		await test.step('expect to enable business hours', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
 
-			await poOmnichannelBusinessHours.btnToggleSwitch.click();
-			await expect(poOmnichannelBusinessHours.btnToggleSwitch).toBeChecked({ checked: true });
+			await poOmnichannelBusinessHours.btnEnable.click();
+			await expect(poOmnichannelBusinessHours.btnEnable).toBeChecked({ checked: true });
 
 			await poOmnichannelBusinessHours.btnSave.click();
 
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			expect(await poOmnichannelBusinessHours.btnToggleSwitch.isChecked()).toBe(true);
+			expect(await poOmnichannelBusinessHours.btnEnable.isChecked()).toBe(true);
 		});
 	});
 });
