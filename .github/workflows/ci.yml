@@ -306,13 +306,13 @@ jobs:
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20.18.0'
+          node-version: '22.13.1'
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: stable
-          targets: x86_64-unknown-linux-musl
+          toolchain: '1.76'
+          target: x86_64-unknown-linux-musl
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         name: Install ziglang
