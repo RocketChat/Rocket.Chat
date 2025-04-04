@@ -329,6 +329,39 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 		});
 	});
 
+	test.describe('OC - Bot Agent Routing Disabled', () => {
+		test('should not route directly to bot when setting is disabled', async ({ api }) => {
+			await test.step('disable bot routing setting', async () => {
+				await api.post('/settings/Livechat_assign_new_conversation_to_bot', { value: false });
+			});
+
+			await test.step('visitor starts a chat', async () => {
+				await poLiveChat.openAnyLiveChatAndSendMessage({
+					liveChatUser: visitorBot,
+					message: 'Hello, I should be in the queue',
+					isOffline: false,
+				});
+			});
+
+			await test.step('verify chat is in queue and not directly assigned to bot', async () => {
+				const botQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitorBot.name);
+				await expect(botQueuedChat).toBeVisible();
+			});
+
+			await test.step('verify human agent also sees the chat in queue', async () => {
+				const humanQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorBot.name);
+				await expect(humanQueuedChat).toBeVisible();
+			});
+
+			await test.step('human agent can take the chat', async () => {
+				await poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorBot.name).click();
+				await expect(poHomeOmnichannelUser2.content.btnTakeChat).toBeVisible();
+				await poHomeOmnichannelUser2.content.btnTakeChat.click();
+				await expect(poHomeOmnichannelUser2.content.lastSystemMessageBody).toHaveText('joined the channel');
+			});
+		});
+	});
+
 	// Chat is not being assigned to any agent when "Assign New Conversations to Bot Agent" is enabled and bot is not available
 	test.fixme('should route to bot agent even when bot is offline', async () => {
 		await test.step('make the bot offline', async () => {
