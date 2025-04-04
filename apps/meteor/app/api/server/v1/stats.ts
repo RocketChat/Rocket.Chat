@@ -5,6 +5,21 @@ import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
+// Define expected types for query parameters and body
+
+interface IQUERYPARAMS {
+	refresh?: string;
+}
+
+interface IPAGINATIONQUERYPARAMS {
+	offset?: string | number | null;
+	count?: string | number | null;
+}
+
+interface ITELEMETRYREQUEST {
+	params: Array<{ eventName: string }>;
+}
+
 API.v1
 	.get(
 		'statistics',
@@ -34,7 +49,7 @@ API.v1
 			},
 		},
 		async function () {
-			const { refresh = 'false' } = this.queryParams;
+			const { refresh = 'false' }: IQUERYPARAMS = this.queryParams;
 			const statistics = await getLastStatistics({
 				userId: this.userId,
 				refresh: refresh === 'true',
@@ -70,12 +85,16 @@ API.v1
 			},
 		},
 		async function () {
-			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { offset, count }: IPAGINATIONQUERYPARAMS = this.queryParams;
 			const { sort, fields, query } = await this.parseJsonQuery();
+			const { offset: paginationOffset, count: paginationCount } = await getPaginationItems({
+				offset,
+				count,
+			});
 			const statistics = await getStatistics({
 				userId: this.userId,
 				query,
-				pagination: { offset, count, sort, fields },
+				pagination: { offset: paginationOffset, count: paginationCount, sort, fields },
 			});
 			return API.v1.success({ statistics, success: true });
 		},
@@ -114,11 +133,13 @@ API.v1
 			},
 		},
 		async function () {
-			const events = this.bodyParams;
-			events?.params?.forEach((event) => {
-				const { eventName, ...params } = event;
-				void telemetryEvent.call(eventName, params);
-			});
+			const events: ITELEMETRYREQUEST = this.bodyParams;
+			if (events?.params) {
+				events.params.forEach((event) => {
+					const { eventName, ...params } = event;
+					void telemetryEvent.call(eventName, params);
+				});
+			}
 			return API.v1.success();
 		},
 	);
