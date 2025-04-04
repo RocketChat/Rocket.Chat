@@ -10,6 +10,7 @@ import { AsyncStatePhase } from '../../lib/asyncState';
 import type { RecordList } from '../../lib/lists/RecordList';
 
 type AutoCompleteUnitProps = {
+	id?: string;
 	disabled?: boolean;
 	value: string | undefined;
 	error?: string;
@@ -20,6 +21,7 @@ type AutoCompleteUnitProps = {
 };
 
 const AutoCompleteUnit = ({
+	id,
 	value,
 	disabled = false,
 	error,
@@ -46,6 +48,7 @@ const AutoCompleteUnit = ({
 
 	return (
 		<PaginatedSelectFiltered
+			id={id}
 			data-qa='autocomplete-unit'
 			error={error}
 			filter={unitsFilter}

@@ -1,5 +1,15 @@
 # @rocket.chat/i18n
 
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+### Patch Changes
+
+- ([#35545](https://github.com/RocketChat/Rocket.Chat/pull/35545)) Fixes an issue where video conference popup not displaying properly when trying to call again in direct messages
+
 ## 1.4.0
 
 ### Minor Changes
