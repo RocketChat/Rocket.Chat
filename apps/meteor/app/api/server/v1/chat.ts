@@ -375,7 +375,7 @@ API.v1.addRoute(
 						_id: msg._id,
 						msg: msgFromBody,
 						rid: msg.rid,
-						customFields: this.bodyParams.customFields as Record<string, any> | undefined,
+						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
 					},
 					this.bodyParams.previewUrls,
 				),
