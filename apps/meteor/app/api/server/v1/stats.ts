@@ -6,7 +6,6 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 // Define expected types for query parameters and body
-
 interface IQUERYPARAMS {
 	refresh?: string;
 }
