@@ -24,11 +24,6 @@ export const SettingSelect = ({
 
 	const { items } = useRecordList(itemsList);
 
-	type PaginatedOptionType = {
-		value: string | number;
-		label: string;
-	};
-
 	return (
 		<PaginatedSelectFiltered
 			withTitle={withTitle}
@@ -37,10 +32,8 @@ export const SettingSelect = ({
 			onChange={(val) => onChange(val)}
 			placeholder={t('All_settings')}
 			filter={filter}
-			// TODO: Fix the types on PaginatedSelectFiltered
 			setFilter={setFilter as (value: string | number | undefined) => void}
-			// TODO: Fix the types on PaginatedSelectFiltered
-			options={items as unknown as PaginatedOptionType[]}
+			options={items}
 			endReached={loadMoreItems}
 			renderItem={({ label, ...props }) => (
 				<Option {...props} title={t(label)}>
