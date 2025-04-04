@@ -1,3 +1,4 @@
+import type { TelemetryMap } from '@rocket.chat/core-services';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
@@ -5,26 +6,18 @@ import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-// Define expected types for query parameters and body
-interface IQUERYPARAMS {
-	refresh?: string;
-}
-
-interface IPAGINATIONQUERYPARAMS {
-	offset?: string | number | null;
-	count?: string | number | null;
-}
-
-interface ITELEMETRYREQUEST {
-	params: Array<{ eventName: string }>;
-}
+type ConvertedTelemetryMap<T extends keyof TelemetryMap = keyof TelemetryMap> = {
+	eventName: T;
+} & TelemetryMap[T];
 
 API.v1
 	.get(
 		'statistics',
 		{
 			authRequired: true,
-			query: ajv.compile({
+			query: ajv.compile<{
+				refresh: 'true' | 'false';
+			}>({
 				type: 'object',
 				properties: {
 					refresh: {
@@ -48,7 +41,7 @@ API.v1
 			},
 		},
 		async function () {
-			const { refresh = 'false' }: IQUERYPARAMS = this.queryParams;
+			const { refresh = 'false' } = this.queryParams;
 			const statistics = await getLastStatistics({
 				userId: this.userId,
 				refresh: refresh === 'true',
@@ -60,7 +53,13 @@ API.v1
 		'statistics.list',
 		{
 			authRequired: true,
-			query: ajv.compile({
+			query: ajv.compile<{
+				offset: number;
+				count: number;
+				sort: Record<string, unknown>;
+				fields: Record<string, unknown>;
+				query: Record<string, unknown>;
+			}>({
 				type: 'object',
 				properties: {
 					offset: { type: 'integer', minimum: 0, default: 0 },
@@ -84,7 +83,7 @@ API.v1
 			},
 		},
 		async function () {
-			const { offset, count }: IPAGINATIONQUERYPARAMS = this.queryParams;
+			const { offset, count } = this.queryParams;
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const { offset: paginationOffset, count: paginationCount } = await getPaginationItems({
 				offset,
@@ -102,23 +101,38 @@ API.v1
 		'statistics.telemetry',
 		{
 			authRequired: true,
-			body: ajv.compile({
-				type: 'object',
-				properties: {
-					params: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								eventName: { type: 'string' },
-							},
-							required: ['eventName'],
-							additionalProperties: false,
+			body: ajv.compile<{
+				params: ConvertedTelemetryMap[];
+			}>({
+				oneOf: [
+					{
+						type: 'object',
+						properties: {
+							eventName: { const: 'otrStats' },
+							rid: { type: 'string' },
 						},
+						required: ['eventName', 'rid'],
+						additionalProperties: false,
 					},
-				},
-				required: ['params'],
-				additionalProperties: false,
+					{
+						type: 'object',
+						properties: {
+							eventName: { const: 'slashCommandsStats' },
+							command: { type: 'string' },
+						},
+						required: ['eventName', 'command'],
+						additionalProperties: false,
+					},
+					{
+						type: 'object',
+						properties: {
+							eventName: { const: 'updateCounter' },
+							settingsId: { type: 'string' },
+						},
+						required: ['eventName', 'settingsId'],
+						additionalProperties: false,
+					},
+				],
 			}),
 			response: {
 				200: ajv.compile({
@@ -132,7 +146,7 @@ API.v1
 			},
 		},
 		async function () {
-			const events: ITELEMETRYREQUEST = this.bodyParams;
+			const events = this.bodyParams;
 			if (events?.params) {
 				events.params.forEach((event) => {
 					const { eventName, ...params } = event;
