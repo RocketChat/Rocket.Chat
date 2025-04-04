@@ -37,7 +37,7 @@ const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
 		<NavBarItem
 			{...props}
 			title={title}
-			icon='phone'
+			icon='dialpad'
 			onClick={handleToggleDialer}
 			pressed={isDialerOpen}
 			disabled={!isReady || !isRegistered}
