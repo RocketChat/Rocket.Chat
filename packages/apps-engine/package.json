@@ -93,6 +93,7 @@
     },
     "dependencies": {
         "@msgpack/msgpack": "3.0.0-beta2",
+        "@rocket.chat/tools": "workspace:^",
         "adm-zip": "^0.5.16",
         "debug": "^4.3.7",
         "esbuild": "^0.25.0",
