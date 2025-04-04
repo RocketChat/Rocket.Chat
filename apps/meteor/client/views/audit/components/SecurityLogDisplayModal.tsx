@@ -21,6 +21,8 @@ type SecurityLogDisplayProps = {
 const SecurityLogDisplayModal = ({ timestamp, actor, actorId, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
 	const { t } = useTranslation();
 
+	const isSystemActor = actorId === t('system') || actorId === t('app');
+
 	return (
 		<GenericModal maxHeight={550} icon={null} onClose={onCancel} title={t('Setting_change')}>
 			<AuditModalField>
@@ -31,8 +33,8 @@ const SecurityLogDisplayModal = ({ timestamp, actor, actorId, setting, changedFr
 			<AuditModalField>
 				<AuditModalLabel>{t('Actor')}</AuditModalLabel>
 				<Box display='flex' alignItems='center'>
-					<UserAvatar size='x24' username={actorId} />
-					<Box mi={8} fontScale='p2m' display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
+					{!isSystemActor && <UserAvatar size='x24' userId={actorId} />}
+					<Box mi={isSystemActor ? 0 : 8} fontScale='p2m' display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 						{actor}
 					</Box>
 				</Box>
