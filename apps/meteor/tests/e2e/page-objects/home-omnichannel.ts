@@ -7,6 +7,7 @@ import { OmnichannelContacts } from './omnichannel-contacts-list';
 import { OmnichannelCurrentChats } from './omnichannel-current-chats';
 import { OmnichannelManager } from './omnichannel-manager';
 import { OmnichannelMonitors } from './omnichannel-monitors';
+import { OmnichannelRoomInfo } from './omnichannel-room-info';
 import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
 
@@ -37,6 +38,8 @@ export class HomeOmnichannel {
 
 	readonly contacts: OmnichannelContacts;
 
+	readonly roomInfo: OmnichannelRoomInfo;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
@@ -51,6 +54,7 @@ export class HomeOmnichannel {
 		this.managers = new OmnichannelManager(page);
 		this.monitors = new OmnichannelMonitors(page);
 		this.contacts = new OmnichannelContacts(page);
+		this.roomInfo = new OmnichannelRoomInfo(page);
 	}
 
 	get toastSuccess(): Locator {

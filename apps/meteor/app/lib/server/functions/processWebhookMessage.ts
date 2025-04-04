@@ -1,4 +1,5 @@
 import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.chat/core-typings';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -135,7 +136,7 @@ export const processWebhookMessage = async function (
 
 		await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 
-		const messageReturn = await sendMessage(user, message, room);
+		const messageReturn = await sendMessage(user, removeEmpty(message), room);
 		sentData.push({ channel, message: messageReturn });
 	}
 

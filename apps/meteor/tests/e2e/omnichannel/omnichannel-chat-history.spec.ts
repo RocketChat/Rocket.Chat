@@ -48,6 +48,14 @@ test.describe('Omnichannel chat history', () => {
 			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
 		});
 
+		await test.step('expect to be able to edit room info', async () => {
+			await agent.poHomeOmnichannel.roomInfo.btnEditRoomInfo.click();
+			await agent.poHomeOmnichannel.roomInfo.inputTopic.fill('any_topic');
+			await agent.poHomeOmnichannel.roomInfo.btnSaveEditRoom.click();
+
+			await expect(agent.poHomeOmnichannel.roomInfo.dialogRoomInfo).toContainText('any_topic');
+		});
+
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
 			await agent.poHomeOmnichannel.content.btnCloseChat.click();
 			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');

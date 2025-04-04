@@ -5,8 +5,7 @@ import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
-import ParentRoomWithData from './ParentRoomWithData';
-import ParentTeam from './ParentTeam';
+import ParentRoom from './ParentRoom';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import RoomTopic from './RoomTopic';
@@ -38,13 +37,12 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 	return (
 		<Header>
 			{slots?.start}
+			<ParentRoom room={room} />
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					{room.prid && <ParentRoomWithData room={room} />}
-					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
