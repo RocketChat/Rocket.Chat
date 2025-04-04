@@ -215,7 +215,9 @@ export class ConverterCache {
 		}
 
 		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
-		this.addUsernameToId(username, user?._id);
+		if (user) {
+			this.addUsernameToId(username, user._id);
+		}
 
 		return user?._id;
 	}

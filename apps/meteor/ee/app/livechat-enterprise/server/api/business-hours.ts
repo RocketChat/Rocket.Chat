@@ -21,7 +21,7 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'livechat/business-hours',
-	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'] },
+	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'], license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
