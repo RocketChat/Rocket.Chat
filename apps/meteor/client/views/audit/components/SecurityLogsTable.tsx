@@ -159,43 +159,48 @@ const SecurityLogsTable = (): ReactElement => {
 						<GenericTableHeaderCell>{t('Changed_to')}</GenericTableHeaderCell>
 					</GenericTableHeader>
 					<GenericTableBody>
-						{data.events.map((item) => (
-							<GenericTableRow
-								key={item.ts}
-								role='link'
-								action
-								tabIndex={0}
-								onClick={() =>
-									handleItemClick({
-										actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
-										actorId: item.actor.type === 'user' ? item.actor._id : item.actor.type,
-										timestamp: new Date(item.ts).toDateString(),
-										setting: item.data[0].value,
-										changedFrom: String(item.data[1].value),
-										changedTo: String(item.data[2].value),
-									})
-								}
-							>
-								<GenericTableCell withTruncatedText>
-									<Box display='flex' alignItems='center'>
-										{item.actor.type === 'user' && (
-											<Box mie={4}>
-												<UserAvatar size='x24' userId={item.actor._id} />
+						{data.events.map((item) => {
+							const setting = item.data.find((item) => item.key === 'id');
+							const previous = item.data.find((item) => item.key === 'previous');
+							const current = item.data.find((item) => item.key === 'current');
+							return (
+								<GenericTableRow
+									key={item.ts}
+									role='link'
+									action
+									tabIndex={0}
+									onClick={() =>
+										handleItemClick({
+											actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
+											actorId: item.actor.type === 'user' ? item.actor._id : item.actor.type,
+											timestamp: new Date(item.ts).toDateString(),
+											setting: setting?.value,
+											changedFrom: String(previous?.value),
+											changedTo: String(current?.value),
+										})
+									}
+								>
+									<GenericTableCell withTruncatedText>
+										<Box display='flex' alignItems='center'>
+											{item.actor.type === 'user' && (
+												<Box mie={4}>
+													<UserAvatar size='x24' userId={item.actor._id} />
+												</Box>
+											)}
+											<Box fontScale='p2m' withTruncatedText color='default'>
+												{item.actor.type === 'user' ? item.actor.username : item.actor.type}
 											</Box>
-										)}
-										<Box fontScale='p2m' withTruncatedText color='default'>
-											{item.actor.type === 'user' ? item.actor.username : item.actor.type}
 										</Box>
-									</Box>
-								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{new Date(item.ts).toDateString()}</GenericTableCell>
-								<GenericTableCell withTruncatedText title={t(String(item.data[0].value))}>
-									{String(item.data[0].value)}
-								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{String(item.data[1].value)}</GenericTableCell>
-								<GenericTableCell withTruncatedText>{String(item.data[2].value)}</GenericTableCell>
-							</GenericTableRow>
-						))}
+									</GenericTableCell>
+									<GenericTableCell withTruncatedText>{new Date(item.ts).toDateString()}</GenericTableCell>
+									<GenericTableCell withTruncatedText title={setting && t(String(setting.value))}>
+										{setting && t(String(setting.value))}
+									</GenericTableCell>
+									<GenericTableCell withTruncatedText>{String(previous?.value)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{String(current?.value)}</GenericTableCell>
+								</GenericTableRow>
+							);
+						})}
 					</GenericTableBody>
 				</GenericTable>
 			)}
