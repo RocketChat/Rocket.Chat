@@ -20,7 +20,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import type { DateRange } from '../utils/dateRange';
-import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 
 const SecurityLogsTable = (): ReactElement => {
 	const { t } = useTranslation();
@@ -29,8 +28,8 @@ const SecurityLogsTable = (): ReactElement => {
 	const setModal = useSetModal();
 
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
-		start: createStartOfToday(),
-		end: createEndOfToday(),
+		start: undefined,
+		end: undefined,
 	}));
 
 	const [query, setQuery] = useState({
@@ -43,7 +42,7 @@ const SecurityLogsTable = (): ReactElement => {
 
 	const handleClearFilters = () => {
 		setSetting('');
-		setDateRange({ start: createStartOfToday(), end: createEndOfToday() });
+		setDateRange({ start: undefined, end: undefined });
 		setQuery({
 			start: new Date(0).toISOString(),
 			end: new Date().toISOString(),
