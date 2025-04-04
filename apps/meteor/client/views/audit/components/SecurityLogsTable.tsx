@@ -188,7 +188,7 @@ const SecurityLogsTable = (): ReactElement => {
 												</Box>
 											)}
 											<Box fontScale='p2m' withTruncatedText color='default'>
-												{item.actor.type === 'user' ? item.actor.username : item.actor.type}
+												{item.actor.type === 'user' ? item.actor.username : t(item.actor.type)}
 											</Box>
 										</Box>
 									</GenericTableCell>
