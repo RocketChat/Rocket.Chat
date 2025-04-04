@@ -848,7 +848,6 @@ export const dataWith2ReallyBigMessages = {
 			files: [],
 			quotes: [],
 		},
-
 		{
 			_id: 'vM2j9MFa4aXQukWJG',
 			rid: 'Zyutf8db4pSn3qbW4',
@@ -874,7 +873,6 @@ export const dataWith2ReallyBigMessages = {
 			files: [],
 			quotes: [],
 		},
-
 		{
 			_id: 'T8nHTGt6TnuoSJqCj',
 			rid: 'Zyutf8db4pSn3qbW4',
@@ -899,7 +897,6 @@ export const dataWith2ReallyBigMessages = {
 			files: [],
 			quotes: [],
 		},
-
 		{
 			_id: 'YCXWJ32cFSPdxwuX8',
 			rid: 'Zyutf8db4pSn3qbW4',
@@ -924,7 +921,6 @@ export const dataWith2ReallyBigMessages = {
 			files: [],
 			quotes: [],
 		},
-
 		{
 			_id: 'QvoAfRg4AAXCCgFuE',
 			rid: 'Zyutf8db4pSn3qbW4',
@@ -965,13 +961,22 @@ export const dataWith2ReallyBigMessages = {
 				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Media Player:' }] },
 				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '  - Some OS versions do not include the default media player.' }] },
 				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
 				{
 					type: 'PARAGRAPH',
 					value: [{ type: 'PLAIN_TEXT', value: '  - Spreadsheet and document software must be installed to use export features.' }],
 				},
 			],
 		},
-
 		{
 			_id: 'b8mMFBNoDe6umGP6e',
 			rid: 'Zyutf8db4pSn3qbW4',

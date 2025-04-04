@@ -80,7 +80,7 @@ it('should generate a pdf transcript for a single system message', async () => {
 	expect(buffer).toBeTruthy();
 });
 
-it('should generate a pdf transcript for mixed content but big content', async () => {
+it('should generate a pdf transcript for rooms with messages consisting of tons of markdown elements', async () => {
 	const stream = await pdfWorker.renderToStream({ data: dataWith2ReallyBigMessages });
 	const buffer = await streamToBuffer(stream);
 
