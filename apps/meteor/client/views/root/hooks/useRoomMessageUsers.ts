@@ -1,9 +1,8 @@
-import { useUser, useUserId } from '@rocket.chat/ui-contexts';
+import { useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { Messages } from '../../../../app/models/client';
 import { roomMessageUsersQueryKeys } from '../../../lib/queryKeys';
-import { useRoom } from '../../room/contexts/RoomContext';
 
 export type RoomMessageUser = {
 	_id: string;
@@ -13,22 +12,19 @@ export type RoomMessageUser = {
 	suggestion?: boolean;
 };
 
-export const useRoomMessageUsers = () => {
-	const uid = useUserId();
+export const useRoomMessageUsers = (uid: string, rid: string) => {
 	const user = useUser();
-	const rid = useRoom()._id;
+
+	const username = user?.username;
 
 	return useQuery<RoomMessageUser[]>({
 		queryKey: roomMessageUsersQueryKeys.all(rid, uid),
+		staleTime: 0,
 		queryFn: async () => {
-			if (!rid || !user?.username) {
-				return [];
-			}
-
 			const messages = Messages.find(
 				{
 					rid,
-					'u.username': { $ne: user?.username },
+					'u.username': { $ne: username },
 					't': { $exists: false },
 					'ts': { $exists: true },
 				},
@@ -58,6 +54,6 @@ export const useRoomMessageUsers = () => {
 
 			return Array.from(uniqueUsers.values());
 		},
-		enabled: Boolean(rid && uid),
+		enabled: Boolean(rid && uid && username),
 	});
 };

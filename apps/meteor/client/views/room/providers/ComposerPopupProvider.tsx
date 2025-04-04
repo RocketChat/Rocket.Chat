@@ -41,7 +41,6 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	// TODO: this is awful because we are just triggering the query to get the data
 	// and we are not using the data itself, we should find a better way to do this
 	useCannedResponsesQuery(room);
-	useRoomMessageUsers();
 
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting('Number_of_users_autocomplete_suggestions', 5);
@@ -58,6 +57,8 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
 
+	useRoomMessageUsers(uid!, rid);
+
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -67,9 +68,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const roomMessageUsers = queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid)) ?? [];
-
-					const filteredRoomMessageUsers = roomMessageUsers
+					const roomMessageUsers = (queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid!)) ?? [])
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
@@ -101,12 +100,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						});
 					}
 
-					return [...filteredRoomMessageUsers, ...items];
+					return [...roomMessageUsers, ...items];
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const roomMessageUsers = queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid)) ?? [];
-					const usernames = roomMessageUsers
+					const usernames = (queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid!)) ?? [])
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));

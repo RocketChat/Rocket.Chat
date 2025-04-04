@@ -26,5 +26,5 @@ export const rolesQueryKeys = {
 };
 
 export const roomMessageUsersQueryKeys = {
-	all: (rid: IRoom['_id'], uid: IUser['_id'] | null) => ['room-message-users', rid, uid] as const,
+	all: (rid: IRoom['_id'], uid: IUser['_id']) => ['room-message-users', rid, uid] as const,
 };
