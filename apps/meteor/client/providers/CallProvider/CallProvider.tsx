@@ -22,13 +22,13 @@ import {
 	useSetInputMediaDevice,
 	useSetModal,
 	useTranslation,
+	useCustomSound,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -73,7 +73,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 	const { openDialModal } = useDialModal();
 
-	const voipSounds = useVoipSounds();
+	const { voipSounds } = useCustomSound();
 
 	const closeRoom = useCallback(
 		async (
@@ -336,7 +336,9 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
+
 			voipSounds.stopAll();
+
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -377,15 +379,15 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 		};
 
 		const onRinging = (): void => {
-			voipSounds.play('outbound-call-ringing');
+			voipSounds.playDialer();
 		};
 
 		const onIncomingCallRinging = (): void => {
-			voipSounds.play('telephone');
+			voipSounds.playRinger();
 		};
 
 		const onCallTerminated = (): void => {
-			voipSounds.play('call-ended', false);
+			voipSounds.playCallEnded();
 			voipSounds.stopAll();
 		};
 

@@ -1,7 +1,6 @@
 import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
-import '../app/custom-sounds/client';
 import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/emoji-custom/client';
