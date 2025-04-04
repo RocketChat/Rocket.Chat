@@ -11,7 +11,14 @@ import {
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
 } from './NavBarOmnichannelToolbar';
-import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
+import {
+	NavBarItemMarketPlaceMenu,
+	NavBarItemAuditMenu,
+	NavBarItemDirectoryPage,
+	NavBarItemHomePage,
+	NavBarItemCreateNew,
+	NavBarItemSort,
+} from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
 import { NavBarItemVoipDialer } from './NavBarVoipToolbar';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
@@ -52,10 +59,21 @@ const NavBar = () => {
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 					{hasAuditLicense && <NavBarItemAuditMenu />}
+					<NavBarItemCreateNew />
+					<NavBarItemSort />
 				</NavBarGroup>
+			</NavBarSection>
+			<NavBarSection>
+				{showVoip && (
+					<>
+						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
+							<NavBarItemVoipDialer primary={isCallEnabled} />
+						</NavBarGroup>
+						<NavBarDivider />
+					</>
+				)}
 				{showOmnichannel && (
 					<>
-						<NavBarDivider />
 						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
 							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
@@ -63,18 +81,9 @@ const NavBar = () => {
 							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 							<NavBarItemOmnichannelLivechatToggle />
 						</NavBarGroup>
-					</>
-				)}
-				{showVoip && (
-					<>
 						<NavBarDivider />
-						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
-							<NavBarItemVoipDialer primary={isCallEnabled} />
-						</NavBarGroup>
 					</>
 				)}
-			</NavBarSection>
-			<NavBarSection>
 				<NavBarGroup aria-label={t('Workspace_and_user_settings')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}

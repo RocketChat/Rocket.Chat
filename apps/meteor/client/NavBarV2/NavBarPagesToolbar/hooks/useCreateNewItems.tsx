@@ -1,18 +1,18 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
-import CreateDiscussion from '../../../../components/CreateDiscussion';
-import CreateChannelModal from '../../CreateChannelModal';
-import CreateDirectMessage from '../../CreateDirectMessage';
-import CreateTeamModal from '../../CreateTeamModal';
-import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
+import { useCreateRoomModal } from './useCreateRoomModal';
+import CreateDiscussion from '../../../components/CreateDiscussion';
+import CreateChannelModal from '../actions/CreateChannelModal';
+import CreateDirectMessage from '../actions/CreateDirectMessage';
+import CreateTeamModal from '../actions/CreateTeamModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-export const useCreateRoomItems = (): GenericMenuItemProps[] => {
+export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const discussionEnabled = useSetting('Discussion_enabled');
 

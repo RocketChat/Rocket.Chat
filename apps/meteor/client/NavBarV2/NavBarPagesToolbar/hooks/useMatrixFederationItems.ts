@@ -1,8 +1,8 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import MatrixFederationSearch from '../../MatrixFederationSearch';
-import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
+import { useCreateRoomModal } from './useCreateRoomModal';
+import MatrixFederationSearch from '../../../sidebarv2/header/MatrixFederationSearch';
 
 export const useMatrixFederationItems = ({
 	isMatrixEnabled,

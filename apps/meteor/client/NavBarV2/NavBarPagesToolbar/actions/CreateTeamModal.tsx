@@ -30,9 +30,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
-import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
 	name: string;
