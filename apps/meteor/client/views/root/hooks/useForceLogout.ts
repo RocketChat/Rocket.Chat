@@ -1,22 +1,22 @@
-import { useUserId, useStream } from '@rocket.chat/ui-contexts';
-import { Session } from 'meteor/session';
+import { useUserId, useStream, useSessionDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 export const useForceLogout = () => {
 	const userId = useUserId();
 	const getNotifyUserStream = useStream('notify-user');
+	const setForceLogout = useSessionDispatch('forceLogout');
 
 	useEffect(() => {
 		if (!userId) {
 			return;
 		}
 
-		Session.set('force_logout', false);
+		setForceLogout(false);
 
 		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, () => {
-			Session.set('force_logout', true);
+			setForceLogout(true);
 		});
 
 		return unsubscribe;
-	}, [userId, getNotifyUserStream]);
+	}, [getNotifyUserStream, setForceLogout, userId]);
 };
