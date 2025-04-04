@@ -150,7 +150,7 @@ const SecurityLogsTable = (): ReactElement => {
 				/>
 			)}
 			{isSuccess && data.total > 0 && (
-				<GenericTable>
+				<GenericTable striped>
 					<GenericTableHeader>
 						<GenericTableHeaderCell>{t('Actor')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell>{t('Timestamp')}</GenericTableHeaderCell>
