@@ -8224,7 +8224,7 @@ __metadata:
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.7.2"
   peerDependencies:
-    "@rocket.chat/apps-engine": 1.49.0
+    "@rocket.chat/apps-engine": 1.50.0-rc.1
     "@rocket.chat/eslint-config": 0.7.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -8320,7 +8320,7 @@ __metadata:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
-    "@rocket.chat/message-parser": 0.31.31
+    "@rocket.chat/message-parser": 0.31.32-rc.0
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
