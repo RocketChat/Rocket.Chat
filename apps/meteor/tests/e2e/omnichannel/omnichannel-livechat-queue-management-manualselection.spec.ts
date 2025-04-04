@@ -283,6 +283,8 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+
 		await Promise.all([
 			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
 			api.post('/settings/Livechat_assign_new_conversation_to_bot', { value: false }),
@@ -296,7 +298,6 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 			}),
 		]);
 
-		await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
 		await poHomeOmnichannel.page.close();
 		await poHomeOmnichannelUser2.page.close();
 	});
