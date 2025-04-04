@@ -1,12 +1,16 @@
-import { Box } from '@rocket.chat/fuselage';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { NavBarItem } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMutation } from '@tanstack/react-query';
+import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undefined => {
+type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+	primary?: boolean;
+};
+
+const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -47,27 +51,37 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 		return '';
 	}, [clientError, isReady, toggleVoip.isPending, t]);
 
-	return useMemo(() => {
-		if (!isEnabled) {
-			return;
-		}
+	// return useMemo(() => {
+	// 	if (!isEnabled) {
+	// 		return;
+	// 	}
 
-		return {
-			items: [
-				{
-					id: 'toggle-voip',
-					icon: isRegistered ? 'phone-disabled' : 'phone',
-					disabled: !isReady || toggleVoip.isPending,
-					onClick: () => toggleVoip.mutate(),
-					content: (
-						<Box is='span' title={tooltip}>
-							{isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
-						</Box>
-					),
-				},
-			],
-		};
-	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
+	// 	return {
+	// 		items: [
+	// 			{
+	// 				id: 'toggle-voip',
+	// 				icon: isRegistered ? 'phone-disabled' : 'phone',
+	// 				disabled: !isReady || toggleVoip.isPending,
+	// 				onClick: () => toggleVoip.mutate(),
+	// 				content: (
+	// 					<Box is='span' title={tooltip}>
+	// 						{isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
+	// 					</Box>
+	// 				),
+	// 			},
+	// 		],
+	// 	};
+	// }, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
+
+	return isEnabled ? (
+		<NavBarItem
+			{...props}
+			title={isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
+			icon={isRegistered ? 'phone-disabled' : 'phone'}
+			disabled={!isReady || toggleVoip.isPending}
+			onClick={() => toggleVoip.mutate()}
+		/>
+	) : null;
 };
 
-export default useVoipItemsSection;
+export default NavBarItemVoipToggler;

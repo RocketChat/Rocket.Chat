@@ -20,7 +20,7 @@ import {
 	NavBarItemSort,
 } from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
-import { NavBarItemVoipDialer } from './NavBarVoipToolbar';
+import { NavBarItemVoipDialer, NavBarItemVoipToggler } from './NavBarVoipToolbar';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
@@ -68,6 +68,7 @@ const NavBar = () => {
 					<>
 						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
 							<NavBarItemVoipDialer primary={isCallEnabled} />
+							<NavBarItemVoipToggler />
 						</NavBarGroup>
 						<NavBarDivider />
 					</>
