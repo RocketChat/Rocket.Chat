@@ -169,6 +169,7 @@ const SecurityLogsTable = (): ReactElement => {
 									role='link'
 									action
 									tabIndex={0}
+									height={44}
 									onClick={() =>
 										handleItemClick({
 											actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
