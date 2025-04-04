@@ -37,13 +37,13 @@ export class SettingUpdater implements ISettingUpdater {
     }
 
     /**
-     * Merges new values with existing values for a multi-value setting
+     * Updates the values for a multi-value setting by overwriting them
      * @param id The setting ID to update
-     * @param values The values to merge with existing values
+     * @param values The new values to set
      * @returns Promise that resolves when the update is complete
      * @throws Error if the setting doesn't exist
      */
-    public async updateValues(id: ISetting['id'], values: ISetting['values']): Promise<void> {
+    public async updateSelectOptions(id: ISetting['id'], values: ISetting['values']): Promise<void> {
         const appId = this.app.getID();
         const storageItem = this.app.getStorageItem();
 
@@ -52,45 +52,11 @@ export class SettingUpdater implements ISettingUpdater {
         }
 
         const setting = this.manager.getAppSetting(appId, id);
-        const currentValues = setting.values;
 
         this.manager.updateAppSetting(appId, {
             ...setting,
             updatedAt: new Date(),
-            values: [...currentValues, ...values],
-        });
-    }
-
-    /**
-     * Removes specific keys from a multi-value setting
-     * @param id The setting ID to update
-     * @param keysToRemove Array of keys to remove from the values
-     * @returns Promise that resolves when the update is complete
-     * @throws Error if the setting doesn't exist
-     */
-    public async removeValues(id: ISetting['id'], keysToRemove: string[]): Promise<void> {
-        const appId = this.app.getID();
-        const storageItem = this.app.getStorageItem();
-
-        if (!storageItem.settings?.[id]) {
-            throw new Error(`Setting "${id}" not found for app ${appId}`);
-        }
-
-        // Exit early if there's nothing to remove
-        if (!keysToRemove.length) {
-            return;
-        }
-
-        const setting = this.manager.getAppSetting(appId, id);
-
-        const keysSet = new Set(keysToRemove);
-        const currentValues = setting.values || [];
-        const updatedValues = Array.isArray(currentValues) ? currentValues.filter((value) => !keysSet.has(value.key)) : currentValues;
-
-        this.manager.updateAppSetting(appId, {
-            ...setting,
-            updatedAt: new Date(),
-            values: updatedValues,
+            values, // Overwrite the values instead of merging
         });
     }
 }
