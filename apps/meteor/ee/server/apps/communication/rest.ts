@@ -407,7 +407,12 @@ export class AppsRestApi {
 						?.get('users')
 						?.convertToApp(await Meteor.userAsync());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
+					const aff = await manager.add(buff, {
+						...(marketplaceInfo && { marketplaceInfo }),
+						permissionsGranted,
+						enable: false,
+						user,
+					});
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {

@@ -1,8 +1,18 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById } from './utils';
+import {
+	createTargetChannel,
+	createTargetTeam,
+	deleteChannel,
+	deleteTeam,
+	setSettingValueById,
+	createTargetDiscussion,
+	createChannelWithTeam,
+	deleteRoom,
+} from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -12,17 +22,20 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 	let targetChannel: string;
+	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		targetDiscussion = await createTargetDiscussion(api);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
+		await deleteRoom(api, targetDiscussion._id);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -172,11 +185,56 @@ test.describe.serial('feature preview', () => {
 			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
 		});
 
-		test('should not display avatar in room header', async ({ page }) => {
+		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
+			await poHomeChannel.sidebar.openChat(targetDiscussion.fname);
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
-			await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			await test.step('should not display avatar in room header', async () => {
+				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			});
+
+			await test.step('should display the back button in the room header when accessing a room with parent', async () => {
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).toBeVisible();
+			});
+		});
+
+		test.describe('user is not part of the team', () => {
+			let targetTeam: string;
+			let targetChannelWithTeam: string;
+			let user1Page: Page;
+
+			test.beforeAll(async ({ api, browser }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
+
+				const { channelName, teamName } = await createChannelWithTeam(api);
+				targetTeam = teamName;
+				targetChannelWithTeam = channelName;
+				user1Page = await browser.newPage({ storageState: Users.user1.state });
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
+
+				await deleteChannel(api, targetChannelWithTeam);
+				await deleteTeam(api, targetTeam);
+				await user1Page.close();
+			});
+
+			test('should not display back to team button in the room header', async ({ page }) => {
+				await user1Page.goto(`/channel/${targetChannelWithTeam}`);
+
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).not.toBeVisible();
+			});
 		});
 	});
 

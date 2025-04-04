@@ -45,6 +45,10 @@ export async function deleteChannel(api: BaseTest['api'], roomName: string): Pro
 	await api.post('/channels.delete', { roomName });
 }
 
+export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<void> {
+	await api.post('/rooms.delete', { roomId });
+}
+
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
 	const name = faker.string.uuid();
 	await api.post('/groups.create', { name, ...options });
@@ -72,13 +76,30 @@ export async function createDirectMessage(api: BaseTest['api']): Promise<void> {
 	});
 }
 
-export async function createTargetDiscussion(api: BaseTest['api']): Promise<string> {
+export async function createTargetDiscussion(api: BaseTest['api']): Promise<Record<string, string>> {
 	const channelName = faker.string.uuid();
 	const discussionName = faker.string.uuid();
 
-	const response = await api.post('/channels.create', { name: channelName });
-	const { channel } = await response.json();
-	await api.post('/rooms.createDiscussion', { t_name: discussionName, prid: channel._id });
+	const channelResponse = await api.post('/channels.create', { name: channelName });
+	const { channel } = await channelResponse.json();
+	const discussionResponse = await api.post('/rooms.createDiscussion', { t_name: discussionName, prid: channel._id });
+	const { discussion } = await discussionResponse.json();
 
-	return discussionName;
+	if (!discussion) {
+		throw new Error('Discussion not created');
+	}
+
+	return discussion;
+}
+
+export async function createChannelWithTeam(api: BaseTest['api']): Promise<Record<string, string>> {
+	const channelName = faker.string.uuid();
+	const teamName = faker.string.uuid();
+
+	const teamResponse = await api.post('/teams.create', { name: teamName, type: 1, members: ['user2'] });
+	const { team } = await teamResponse.json();
+
+	await api.post('/channels.create', { name: channelName, members: ['user1'], extraData: { teamId: team._id } });
+
+	return { channelName, teamName };
 }

@@ -3059,7 +3059,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const settingsObject = Object.assign(
 			{},
 			...Object.keys(preferences).map((key) => ({
-				[`settings.preferences.${key}`]: preferences[key],
+				...(preferences[key] !== undefined && { [`settings.preferences.${key}`]: preferences[key] }),
 			})),
 		);
 

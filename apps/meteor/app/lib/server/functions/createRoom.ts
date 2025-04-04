@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
@@ -203,7 +202,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
-		sidepanel,
+		...(sidepanel && { sidepanel }),
 	};
 
 	if (teamId) {
