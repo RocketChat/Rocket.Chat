@@ -12,6 +12,6 @@ type HeaderStateProps =
 	  });
 
 const HeaderState: FC<HeaderStateProps> = (props) =>
-	props.onClick ? <IconButton mini mie={4} {...props} /> : <Icon size='x16' mie={4} name={props.icon} {...props} />;
+	props.onClick ? <IconButton tiny mie={4} {...props} /> : <Icon size='x16' mie={8} name={props.icon} {...props} />;
 
 export default HeaderState;
