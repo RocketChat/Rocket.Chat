@@ -14,12 +14,12 @@ export const requestEditMessageDeletion = async (chat: ChatAPI, message: IMessag
 
 	const room = message.drid ? await chat.data.getDiscussionByID(message.drid) : undefined;
 
-	return await new Promise<boolean>((resolve, reject) => {
+	return new Promise<boolean>((resolve, reject) => {
 		const onConfirm = async (): Promise<void> => {
 			try {
 				if (!(await chat.data.canDeleteMessage(message))) {
 					dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
-					reject(new Error(t('Message_deleting_blocked')))
+					reject(new Error(t('Message_deleting_blocked')));
 				}
 				await chat.data.deleteMessage(message);
 
