@@ -1,7 +1,7 @@
-import { Box, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Margins, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUser } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import { useCallback } from 'react';
+import type { ComponentProps, FormEvent } from 'react';
+import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -9,6 +9,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const { t } = useTranslation();
 	const user = useUser();
+	const emailId = useId();
 
 	const isEnabled = user?.services?.email2fa?.enabled;
 
@@ -19,30 +20,26 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 		successMessage: t('Two-factor_authentication_disabled'),
 	});
 
-	const handleEnable = useCallback(async () => {
-		await enable2faAction();
-	}, [enable2faAction]);
-	const handleDisable = useCallback(async () => {
-		await disable2faAction();
-	}, [disable2faAction]);
+	const handleEnable = useCallback(
+		async (e: FormEvent<HTMLInputElement>) => {
+			if (e.currentTarget.checked) {
+				await enable2faAction();
+			} else {
+				await disable2faAction();
+			}
+		},
+		[disable2faAction, enable2faAction],
+	);
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
 			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('Two-factor_authentication_email')}</Box>
-				{isEnabled && (
-					<Button danger onClick={handleDisable}>
-						{t('Disable_two-factor_authentication_email')}
-					</Button>
-				)}
-				{!isEnabled && (
-					<>
-						<Box>{t('Two-factor_authentication_email_is_currently_disabled')}</Box>
-						<Button primary onClick={handleEnable}>
-							{t('Enable_two-factor_authentication_email')}
-						</Button>
-					</>
-				)}
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={emailId}>{t('Two-factor_authentication_email')}</FieldLabel>
+						<ToggleSwitch id={emailId} checked={isEnabled} onChange={handleEnable} />
+					</FieldRow>
+				</Field>
 			</Margins>
 		</Box>
 	);
