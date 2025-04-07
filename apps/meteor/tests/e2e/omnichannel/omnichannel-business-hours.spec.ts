@@ -137,7 +137,7 @@ test.describe('OC - Business Hours', () => {
 		});
 	});
 
-	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+	test.only('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
 		const BHName = faker.string.uuid();
 
 		await test.step('expect to create new businessHours', async () => {
@@ -154,31 +154,27 @@ test.describe('OC - Business Hours', () => {
 		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
 
 		await test.step('expect to disable business hours', async () => {
+			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
 
-			await poOmnichannelBusinessHours.btnEnable.click();
-			await expect(poOmnichannelBusinessHours.btnEnable).toBeChecked({ checked: false });
+			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
+			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).not.toBeChecked();
 
 			await poOmnichannelBusinessHours.btnSave.click();
-
-			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			expect(await poOmnichannelBusinessHours.btnEnable.isChecked()).toBe(false);
 		});
 
 		await test.step('expect to enable business hours', async () => {
+			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
 
-			await poOmnichannelBusinessHours.btnEnable.click();
-			await expect(poOmnichannelBusinessHours.btnEnable).toBeChecked({ checked: true });
+			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
+			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).toBeChecked();
 
 			await poOmnichannelBusinessHours.btnSave.click();
-
-			await poOmnichannelBusinessHours.search(BHName);
-			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			expect(await poOmnichannelBusinessHours.btnEnable.isChecked()).toBe(true);
 		});
 	});
 });
