@@ -97,7 +97,7 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 	});
 
 	// Chat is not being assigned to any agent when "Assign New Conversations to Bot Agent" is enabled and bot is not available
-	test.fixme('should route to bot agent even when bot is offline', async () => {
+	test.fail('should route to bot agent even when bot is offline', async () => {
 		await test.step('make the bot offline', async () => {
 			await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
 		});
