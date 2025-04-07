@@ -12,18 +12,15 @@ export class OmnichannelCannedResponses extends OmnichannelAdministration {
 	}
 
 	get radioPublic() {
-		// NOTE: Playwright struggles to click the 1x1 px radio button, so we select the label instead
-		return this.page.locator('label', { hasText: /^Public$/ });
+		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Public' }) });
 	}
 
 	get radioDepartment() {
-		// NOTE: Playwright struggles to click the 1x1 px radio button, so we select the label instead
-		return this.page.locator('label', { hasText: /^Department$/ });
+		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Department' }) });
 	}
 
 	get radioPrivate() {
-		// NOTE: Playwright struggles to click the 1x1 px radio button, so we select the label instead
-		return this.page.locator('label', { hasText: /^Private$/ });
+		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Private' }) });
 	}
 
 	get inputTags() {
