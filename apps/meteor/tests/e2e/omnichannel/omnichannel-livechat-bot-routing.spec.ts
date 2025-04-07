@@ -16,8 +16,8 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 
 	let poLiveChat: OmnichannelLiveChat;
 
-	const visitorBot = createFakeVisitor();
-	const visitorHuman = createFakeVisitor();
+	let visitorBot: { name: string; email: string };
+	let visitorHuman: { name: string; email: string };
 
 	test.beforeEach(async ({ browser, api }) => {
 		const context = await browser.newContext();
@@ -28,6 +28,9 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 	});
 
 	test.beforeAll(async ({ api, browser }) => {
+		visitorBot = createFakeVisitor();
+		visitorHuman = createFakeVisitor();
+
 		await api.post('/users.update', {
 			userId: 'user1',
 			data: {
@@ -59,10 +62,9 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 					roles: ['user'],
 				},
 			}),
+			poHomeOmnichannel.page.close(),
+			poHomeOmnichannelUser2.page.close(),
 		]);
-
-		await poHomeOmnichannel.page.close();
-		await poHomeOmnichannelUser2.page.close();
 	});
 
 	test.afterEach(async () => {
