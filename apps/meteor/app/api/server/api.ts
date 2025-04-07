@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -33,6 +34,8 @@ import type {
 	TypedAction,
 	TypedOptions,
 	UnauthorizedResult,
+	RedirectStatusCodes,
+	RedirectResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -42,6 +45,7 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import type { Route } from './router';
 import { Router } from './router';
+import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { shouldBreakInVersion } from '../../../server/lib/shouldBreakInVersion';
@@ -271,6 +275,13 @@ export class APIClass<
 		} as SuccessResult<T>;
 
 		return finalResult as SuccessResult<T>;
+	}
+
+	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
+		return {
+			statusCode: code,
+			body: result,
+		};
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
@@ -618,7 +629,7 @@ export class APIClass<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		this.addRoute([subpath], { ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -750,6 +761,7 @@ export class APIClass<
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(operations).forEach((method) => {
 				const _options = { ...options };
+				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
 					(operations as Record<string, any>)[method as string] = {
@@ -897,12 +909,12 @@ export class APIClass<
 
 						return result;
 					} as InnerAction<any, any, any>;
-
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
-					_options as TypedOptions,
+					{ ..._options, tags } as TypedOptions,
+					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({
