@@ -34,7 +34,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const resultFromLocal = useRoomQuery(rid);
 
-	const subscritionFromLocal = Subscriptions.use(({ records }) => records.find((record) => record.rid === rid));
+	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
 
