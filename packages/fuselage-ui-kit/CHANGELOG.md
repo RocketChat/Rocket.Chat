@@ -1,5 +1,116 @@
 # Change Log
 
+## 17.0.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 4e9d3155db516718fdd28be30a53d0051c9144d3, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 38f1c508c9f95cd34744066019927add53470446, c618263e8e5fa9459f48d262e5dd9e20c59c1410, c44331e0d9b0e4e04d1ec64bea74b439a1125aa0, 0d96d633a653f52d07bc9ebeead16dcb90c75e2c, d7ea246e0f7837cd3cc93f99316683b75a2faa43]:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0
+  - @rocket.chat/ui-avatar@13.0.0
+  - @rocket.chat/ui-contexts@17.0.0
+  - @rocket.chat/ui-video-conf@17.0.0
+  - @rocket.chat/apps-engine@1.50.0
+  - @rocket.chat/core-typings@7.5.0
+  </details>
+
+## 17.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.5
+  - @rocket.chat/gazzodown@17.0.0-rc.5
+  - @rocket.chat/ui-contexts@17.0.0-rc.5
+  - @rocket.chat/ui-avatar@13.0.0-rc.5
+  - @rocket.chat/ui-video-conf@17.0.0-rc.5
+  </details>
+
+## 17.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c618263e8e5fa9459f48d262e5dd9e20c59c1410, d7ea246e0f7837cd3cc93f99316683b75a2faa43]:</summary>
+
+  - @rocket.chat/apps-engine@1.50.0-rc.1
+  - @rocket.chat/core-typings@7.5.0-rc.4
+  - @rocket.chat/gazzodown@17.0.0-rc.4
+  - @rocket.chat/ui-contexts@17.0.0-rc.4
+  - @rocket.chat/ui-avatar@13.0.0-rc.4
+  - @rocket.chat/ui-video-conf@17.0.0-rc.4
+  </details>
+
+## 17.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.3
+  - @rocket.chat/gazzodown@17.0.0-rc.3
+  - @rocket.chat/ui-contexts@17.0.0-rc.3
+  - @rocket.chat/ui-avatar@13.0.0-rc.3
+  - @rocket.chat/ui-video-conf@17.0.0-rc.3
+  </details>
+
+## 17.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@17.0.0-rc.2
+  - @rocket.chat/gazzodown@17.0.0-rc.2
+  - @rocket.chat/ui-avatar@13.0.0-rc.2
+  - @rocket.chat/ui-video-conf@17.0.0-rc.2
+  - @rocket.chat/core-typings@7.5.0-rc.2
+  </details>
+
+## 17.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.1
+  - @rocket.chat/gazzodown@17.0.0-rc.1
+  - @rocket.chat/ui-contexts@17.0.0-rc.1
+  - @rocket.chat/ui-avatar@13.0.0-rc.1
+  - @rocket.chat/ui-video-conf@17.0.0-rc.1
+  </details>
+
+## 17.0.0-rc.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 4e9d3155db516718fdd28be30a53d0051c9144d3, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 38f1c508c9f95cd34744066019927add53470446, c44331e0d9b0e4e04d1ec64bea74b439a1125aa0, 0d96d633a653f52d07bc9ebeead16dcb90c75e2c]:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.0
+  - @rocket.chat/ui-avatar@13.0.0-rc.0
+  - @rocket.chat/ui-contexts@17.0.0-rc.0
+  - @rocket.chat/ui-video-conf@17.0.0-rc.0
+  - @rocket.chat/apps-engine@1.50.0-rc.0
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  </details>
+
+## 16.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.1
+  - @rocket.chat/gazzodown@16.0.1
+  - @rocket.chat/ui-contexts@16.0.1
+  - @rocket.chat/ui-avatar@12.0.1
+  - @rocket.chat/ui-video-conf@16.0.1
+  </details>
+
 ## 16.0.0
 
 ### Patch Changes
