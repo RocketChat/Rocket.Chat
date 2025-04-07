@@ -13,7 +13,6 @@ export const useRoomInfoEndpoint = (rid: IRoom['_id']) => {
 		queryKey: roomsQueryKeys.info(rid),
 		queryFn: () => getRoomInfo({ roomId: rid }),
 		gcTime: minutesToMilliseconds(15),
-		staleTime: minutesToMilliseconds(5),
 
 		retry: (count, error: Meteor.Error) => {
 			if (count > 2 || error.error === 'not-allowed') {
