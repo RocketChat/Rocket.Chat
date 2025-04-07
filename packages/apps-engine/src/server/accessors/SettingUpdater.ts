@@ -53,6 +53,10 @@ export class SettingUpdater implements ISettingUpdater {
 
         const setting = this.manager.getAppSetting(appId, id);
 
+        // TODO: This operation completely overwrites existing values
+        // which could lead to loss of selected values. Consider:
+        // Adding warning logs when selected value will be removed
+
         this.manager.updateAppSetting(appId, {
             ...setting,
             updatedAt: new Date(),
