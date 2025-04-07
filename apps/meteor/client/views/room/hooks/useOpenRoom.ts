@@ -10,6 +10,7 @@ import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -119,7 +120,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
 				Rooms.remove(reference);
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
-				queryClient.removeQueries({ queryKey: ['/v1/rooms.info', reference] });
+				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });
 			}
 		}
 	}, [error, queryClient, reference, type]);

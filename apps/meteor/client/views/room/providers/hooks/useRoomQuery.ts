@@ -5,16 +5,14 @@ import { useEffect } from 'react';
 
 import { Rooms } from '../../../../../app/models/client';
 import { RoomNotFoundError } from '../../../../lib/errors/RoomNotFoundError';
-import { queueMicrotask } from '../../../../lib/utils/queueMicrotask';
+import { roomsQueryKeys } from '../../../../lib/queryKeys';
 
 export function useRoomQuery(
 	rid: IRoom['_id'],
 	options?: UseQueryOptions<IRoom, Error, IRoom, readonly ['rooms', IRoom['_id']]>,
 ): UseQueryResult<IRoom, Error> {
-	const queryKey = ['rooms', rid] as const;
-
 	const queryResult = useQuery({
-		queryKey,
+		queryKey: roomsQueryKeys.room(rid),
 		queryFn: async () => {
 			const room = Rooms.findOne({ _id: rid }, { reactive: false });
 
@@ -32,9 +30,9 @@ export function useRoomQuery(
 
 	useEffect(() => {
 		const liveQueryHandle = Rooms.find({ _id: rid }).observe({
-			added: () => queueMicrotask(() => refetch()),
-			changed: () => queueMicrotask(() => refetch()),
-			removed: () => queueMicrotask(() => refetch()),
+			added: () => refetch(),
+			changed: () => refetch(),
+			removed: () => refetch(),
 		});
 
 		return () => {
