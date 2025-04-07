@@ -391,7 +391,7 @@ class PushClass {
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
 			if (!countApn.length && !countGcm.length) {
-				if ((await AppsTokens.col.estimatedDocumentCount()) === 0) {
+				if ((await AppsTokens.estimatedDocumentCount()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" is empty - No clients have registered on the server yet...');
 				}
 			} else if (!countApn.length) {

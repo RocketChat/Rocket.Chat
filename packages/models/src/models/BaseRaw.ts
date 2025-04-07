@@ -26,6 +26,7 @@ import type {
 	DeleteOptions,
 	FindOneAndDeleteOptions,
 	CountDocumentsOptions,
+	ClientSession,
 } from 'mongodb';
 
 import { getCollectionName, UpdaterImpl } from '..';
@@ -285,8 +286,8 @@ export abstract class BaseRaw<
 		return this.col.insertOne(doc as unknown as OptionalUnlessRequiredId<T>, options || {});
 	}
 
-	removeById(_id: T['_id']): Promise<DeleteResult> {
-		return this.deleteOne({ _id } as Filter<T>);
+	removeById(_id: T['_id'], options?: { session?: ClientSession }): Promise<DeleteResult> {
+		return this.deleteOne({ _id } as Filter<T>, { session: options?.session });
 	}
 
 	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {

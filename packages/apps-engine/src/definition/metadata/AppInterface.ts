@@ -43,6 +43,7 @@ export enum AppInterface {
      * @deprecated please use the AppMethod.EXECUTE_POST_LIVECHAT_ROOM_CLOSED method
      */
     ILivechatRoomClosedHandler = 'ILivechatRoomClosedHandler',
+    IPreLivechatRoomCreatePrevent = "IPreLivechatRoomCreatePrevent",
     IPostLivechatAgentAssigned = 'IPostLivechatAgentAssigned',
     IPostLivechatAgentUnassigned = 'IPostLivechatAgentUnassigned',
     IPostLivechatRoomTransferred = 'IPostLivechatRoomTransferred',

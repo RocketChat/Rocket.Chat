@@ -57,7 +57,7 @@ export type MessageData = Pick<
 	| 'slaData'
 	| 'priorityData'
 > & {
-	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
+	files: ({ name?: string; buffer?: Buffer; extension?: string } | undefined)[];
 	quotes: (Quote | undefined)[];
 };
 
@@ -230,14 +230,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!isFileImageAttachment(attachment)) {
 					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 
 				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 				let file = message.files?.map((v) => ({ _id: v._id, name: v.name })).find((file) => file.name === attachment.title);
@@ -249,7 +249,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					if (!fileId) {
 						this.log.error(`File ${attachment.title} not found in room ${message.rid}!`);
 						// ignore attachments without file
-						files.push({ name: attachment.title, buffer: null });
+						files.push({ name: attachment.title });
 						continue;
 					}
 					file = { _id: fileId, name: attachment.title || 'upload' };
@@ -258,7 +258,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!file) {
 					this.log.warn(`File ${attachment.title} not found in room ${message.rid}!`);
 					// ignore attachments without file
-					files.push({ name: attachment.title, buffer: null });
+					files.push({ name: attachment.title });
 					continue;
 				}
 
@@ -266,7 +266,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				if (!uploadedFile) {
 					this.log.error(`Uploaded file ${file._id} not found in room ${message.rid}!`);
 					// ignore attachments without file
-					files.push({ name: file.name, buffer: null });
+					files.push({ name: file.name });
 					continue;
 				}
 
@@ -276,7 +276,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				} catch (e: unknown) {
 					this.log.error(`Failed to get file ${file._id}`, e);
 					// Push empty buffer so parser processes this as "unsupported file"
-					files.push({ name: file.name, buffer: null });
+					files.push({ name: file.name });
 
 					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
 					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {

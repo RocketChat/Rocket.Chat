@@ -875,10 +875,39 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(pipeline).toArray();
 	}
 
-	updateStatusText(_id, statusText) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} statusText
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	updateStatusText(_id, statusText, options) {
 		const update = {
 			$set: {
 				statusText,
+			},
+		};
+
+		return this.updateOne({ _id }, update, { session: options?.session });
+	}
+
+	updateStatus(_id, status) {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	updateStatusAndStatusDefault(_id, status, statusDefault) {
+		const update = {
+			$set: {
+				status,
+				statusDefault,
 			},
 		};
 
@@ -1095,7 +1124,7 @@ export class UsersRaw extends BaseRaw {
 				},
 			],
 		};
-		return (await this.col.countDocuments(query)) > 0;
+		return (await this.countDocuments(query)) > 0;
 	}
 
 	removeBusinessHoursFromAllUsers() {
@@ -1316,7 +1345,7 @@ export class UsersRaw extends BaseRaw {
 			'active': true,
 			'services.totp.enabled': true,
 		};
-		return this.col.countDocuments(query, options);
+		return this.countDocuments(query, options);
 	}
 
 	findActiveUsersEmail2faEnable(options) {
@@ -1332,7 +1361,7 @@ export class UsersRaw extends BaseRaw {
 			'active': true,
 			'services.email2fa.enabled': true,
 		};
-		return this.col.countDocuments(query, options);
+		return this.countDocuments(query, options);
 	}
 
 	setAsFederated(uid) {
@@ -1430,7 +1459,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	countFederatedExternalUsers() {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			federated: true,
 		});
 	}
@@ -1725,7 +1754,7 @@ export class UsersRaw extends BaseRaw {
 			roles: 'livechat-agent',
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	// 2
@@ -2123,7 +2152,7 @@ export class UsersRaw extends BaseRaw {
 			active: true,
 		};
 
-		return this.col.countDocuments(query, options);
+		return this.countDocuments(query, options);
 	}
 
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
@@ -2352,7 +2381,7 @@ export class UsersRaw extends BaseRaw {
 			query._id = { $nin: idExceptions };
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	// 4
@@ -2468,7 +2497,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	countRemote(options = {}) {
-		return this.col.countDocuments({ isRemote: true }, options);
+		return this.countDocuments({ isRemote: true }, options);
 	}
 
 	findActiveRemote(options = {}) {
@@ -2511,7 +2540,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
 		});
 	}
@@ -2617,13 +2646,30 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setUsername(_id, username) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} username
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setUsername(_id, username, options) {
 		const update = { $set: { username } };
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	setEmail(_id, email, verified = false) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} email
+	 * @param {boolean} verified
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setEmail(_id, email, verified = false, options) {
 		const update = {
 			$set: {
 				emails: [
@@ -2635,7 +2681,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	// 5
@@ -2659,24 +2705,39 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setName(_id, name) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} name
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setName(_id, name, options) {
 		const update = {
 			$set: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	unsetName(_id) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	unsetName(_id, options) {
 		const update = {
 			$unset: {
 				name,
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	setCustomFields(_id, fields) {
@@ -2690,7 +2751,16 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setAvatarData(_id, origin, etag) {
+	/**
+	 *
+	 * @param {string} _id
+	 * @param {string} origin
+	 * @param {string} etag
+	 * @param {Object} options
+	 * @param {ClientSession} options.session
+	 * @returns {Promise<UpdateResult>}
+	 */
+	setAvatarData(_id, origin, etag, options) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
@@ -2698,7 +2768,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
 	unsetAvatarData(_id) {
@@ -2972,7 +3042,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return (await this.col.countDocuments(query)) !== 0;
+		return (await this.countDocuments(query)) !== 0;
 	}
 
 	setBannerReadById(_id, bannerId) {
@@ -3115,19 +3185,19 @@ export class UsersRaw extends BaseRaw {
 			[`services.${serviceName}`]: { $exists: true },
 		};
 
-		return this.col.countDocuments(query, options);
+		return this.countDocuments(query, options);
 	}
 
 	// here
 	getActiveLocalUserCount() {
 		return Promise.all([
 			// Count all active users (fast based on index)
-			this.col.countDocuments({
+			this.countDocuments({
 				active: true,
 			}),
 			// Count all active that are guests, apps, bots or federated
 			// Fast based on indexes, usually based on guest index as is usually small
-			this.col.countDocuments({
+			this.countDocuments({
 				active: true,
 				$or: [{ roles: ['guest'] }, { type: { $in: ['app', 'bot'] } }, { federated: true }, { isRemote: true }],
 			}),
@@ -3192,7 +3262,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	countRoomMembers(roomId) {
-		return this.col.countDocuments({ __rooms: roomId, active: true });
+		return this.countDocuments({ __rooms: roomId, active: true });
 	}
 
 	removeAgent(_id) {
@@ -3212,7 +3282,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	countByRole(role) {
-		return this.col.countDocuments({ roles: role });
+		return this.countDocuments({ roles: role });
 	}
 
 	updateLivechatStatusByAgentIds(userIds, status) {

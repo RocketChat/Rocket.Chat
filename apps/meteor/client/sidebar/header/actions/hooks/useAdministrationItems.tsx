@@ -29,12 +29,6 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
-
 export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const router = useRouter();

@@ -17,6 +17,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Rooms.col.countDocuments({ t: 'c' });
+		return Rooms.countDocuments({ t: 'c' });
 	},
 });

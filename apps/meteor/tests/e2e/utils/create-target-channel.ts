@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
@@ -13,6 +13,24 @@ export async function createTargetChannel(api: BaseTest['api'], options?: Omit<C
 	await api.post('/channels.create', { name, ...options });
 
 	return name;
+}
+
+export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: string, options?: Partial<IMessage>) {
+	const response = await api.get(`/channels.info?roomName=${roomName}`);
+
+	const {
+		channel: { _id: rid },
+	}: { channel: IRoom } = await response.json();
+
+	await api.post('/chat.sendMessage', {
+		message: {
+			rid,
+			msg: options?.msg || 'simple message',
+			...options,
+		},
+	});
+
+	return options?.msg || 'simple message';
 }
 
 export async function deleteChannel(api: BaseTest['api'], roomName: string): Promise<void> {

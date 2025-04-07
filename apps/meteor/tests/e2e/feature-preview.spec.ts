@@ -84,6 +84,13 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
 		});
 
+		test('should not display room topic in direct message', async ({ page }) => {
+			await page.goto('/direct/user2');
+
+			// Not creating a PO because this will be removed very soon
+			await expect(page.locator('main').getByRole('note')).not.toBeVisible();
+		});
+
 		test('should expand/collapse sidebar groups', async ({ page }) => {
 			await page.goto('/home');
 			const collapser = poHomeChannel.sidebar.firstCollapser;
@@ -160,6 +167,16 @@ test.describe.serial('feature preview', () => {
 			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
 			await collapser.click();
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
+		});
+
+		test('should not show NavBar in embedded layout', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetChannel);
+			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+			await page.goto(embeddedLayoutURL);
+			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
 		});
 	});
 

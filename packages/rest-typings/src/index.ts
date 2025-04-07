@@ -40,6 +40,7 @@ import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
+import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
@@ -101,6 +102,7 @@ export interface Endpoints
 		AuthEndpoints,
 		ImportEndpoints,
 		VoipFreeSwitchEndpoints,
+		ServerEventsEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -253,6 +255,7 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
+export * from './v1/server-events';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
@@ -274,3 +277,4 @@ export * from './v1/chat';
 export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
+export * from './default';
