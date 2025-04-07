@@ -117,7 +117,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 	getAgentAndAmountOngoingChats(
 		userId: IUser['_id'],
-	): Promise<{ agentId: string; username?: string; lastAssignTime?: Date; lastRoutingTime?: Date; queueInfo: { chats: number } }>;
+		departmentId?: string,
+	): Promise<{
+		agentId: string;
+		username?: string;
+		lastAssignTime?: Date;
+		lastRoutingTime?: Date;
+		queueInfo: { chats: number; chatsForDepartment?: number };
+	}>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 

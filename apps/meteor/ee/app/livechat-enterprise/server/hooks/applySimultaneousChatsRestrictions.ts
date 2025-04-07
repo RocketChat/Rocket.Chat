@@ -7,6 +7,8 @@ import { callbacks } from '../../../../../lib/callbacks';
 callbacks.add(
 	'livechat.applySimultaneousChatRestrictions',
 	async (_: any, { departmentId }: { departmentId?: string } = {}) => {
+		const limitFilter: any = [];
+
 		if (departmentId) {
 			const departmentLimit =
 				(
@@ -15,39 +17,38 @@ callbacks.add(
 					})
 				)?.maxNumberSimultaneousChat || 0;
 			if (departmentLimit > 0) {
-				return { $match: { 'queueInfo.chats': { $gte: Number(departmentLimit) } } };
+				limitFilter.push({ 'queueInfo.chatsForDepartment': { $gte: Number(departmentLimit) } });
 			}
 		}
 
-		const maxChatsPerSetting = settings.get('Livechat_maximum_chats_per_agent') as number;
-		const agentFilter = {
+		limitFilter.push({
 			$and: [
-				{ 'livechat.maxNumberSimultaneousChat': { $gt: 0 } },
+				{ $expr: { $gt: [{ $convert: { input: '$livechat.maxNumberSimultaneousChat', to: 'double', onError: 0, onNull: 0 } }, 50] } },
+				// { 'livechat.maxNumberSimultaneousChat': { $gt: 0 } },
 				{ $expr: { $gte: ['queueInfo.chats', 'livechat.maxNumberSimultaneousChat'] } },
 			],
-		};
-		// apply filter only if agent setting is 0 or is disabled
-		const globalFilter =
-			maxChatsPerSetting > 0
-				? {
-						$and: [
-							{
-								$or: [
-									{
-										'livechat.maxNumberSimultaneousChat': { $exists: false },
-									},
-									{ 'livechat.maxNumberSimultaneousChat': 0 },
-									{ 'livechat.maxNumberSimultaneousChat': '' },
-									{ 'livechat.maxNumberSimultaneousChat': null },
-								],
-							},
-							{ 'queueInfo.chats': { $gte: maxChatsPerSetting } },
-						],
-					}
-				: // dummy filter meaning: don't match anything
-					{ _id: '' };
+		});
 
-		return { $match: { $or: [agentFilter, globalFilter] } };
+		const maxChatsPerSetting = settings.get<number>('Livechat_maximum_chats_per_agent');
+		if (maxChatsPerSetting > 0) {
+			limitFilter.push({
+				$and: [
+					{
+						$or: [
+							{
+								'livechat.maxNumberSimultaneousChat': { $exists: false },
+							},
+							{ 'livechat.maxNumberSimultaneousChat': 0 },
+							{ 'livechat.maxNumberSimultaneousChat': '' },
+							{ 'livechat.maxNumberSimultaneousChat': null },
+						],
+					},
+					{ 'queueInfo.chats': { $gte: maxChatsPerSetting } },
+				],
+			});
+		}
+
+		return { $match: { $or: limitFilter } };
 	},
 	callbacks.priority.HIGH,
 	'livechat-apply-simultaneous-restrictions',

@@ -24,7 +24,6 @@ export class UsersEE extends UsersRaw {
 		super(db, trash);
 	}
 
-	// @ts-expect-error - typings are good, but JS is not helping
 	getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
@@ -32,13 +31,13 @@ export class UsersEE extends UsersRaw {
 					{
 						$lookup: {
 							from: 'rocketchat_livechat_department_agents',
-							let: { departmentId: '$departmentId', agentId: '$agentId' },
+							let: { userId: '$_id' },
 							pipeline: [
 								{
-									$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+									$match: { $expr: { $eq: ['$$userId', '$agentId'] } },
 								},
 								{
-									$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+									$match: { $expr: { $eq: ['$departmentId', departmentId] } },
 								},
 							],
 							as: 'department',
@@ -76,6 +75,26 @@ export class UsersEE extends UsersRaw {
 							'username': 1,
 							'lastAssignTime': 1,
 							'lastRoutingTime': 1,
+							...(departmentId
+								? {
+										'queueInfo.chatsForDepartment': {
+											$size: {
+												$filter: {
+													input: '$subs',
+													as: 'sub',
+													cond: {
+														$and: [
+															{ $eq: ['$$sub.t', 'l'] },
+															{ $eq: ['$$sub.open', true] },
+															{ $ne: ['$$sub.onHold', true] },
+															{ $eq: ['$$sub.department', departmentId] },
+														],
+													},
+												},
+											},
+										},
+									}
+								: {}),
 							'queueInfo.chats': {
 								$size: {
 									$filter: {
