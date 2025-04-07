@@ -10,9 +10,9 @@ import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
-import { Subscriptions } from '../../../../app/models/client';
+import { Messages, Subscriptions } from '../../../../app/models/client';
 import { slashCommands } from '../../../../app/utils/client';
-import { cannedResponsesQueryKeys, roomMessageUsersQueryKeys } from '../../../lib/queryKeys';
+import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -25,8 +25,6 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import type { RoomMessageUser } from '../../root/hooks/useRoomMessageUsers';
-import { useRoomMessageUsers } from '../../root/hooks/useRoomMessageUsers';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
@@ -35,6 +33,46 @@ type ComposerPopupProviderProps = {
 	room: IRoom;
 };
 
+const getLastRecentUsers = (rid: string, uid: string) => {
+	const uniqueUsers = new Map<
+		string,
+		{
+			_id: string;
+			username: string;
+			name?: string;
+			ts: Date;
+			suggestion?: boolean;
+		}
+	>();
+	Messages.find(
+		{
+			rid,
+			'u._id': { $ne: uid },
+			't': { $exists: false },
+			'ts': { $exists: true },
+		},
+		{
+			fields: {
+				'u.username': 1,
+				'u.name': 1,
+				'u._id': 1,
+				'ts': 1,
+			},
+			sort: { ts: -1 },
+		},
+	).forEach(({ u: { username, name, _id }, ts }) => {
+		if (!uniqueUsers.has(username)) {
+			uniqueUsers.set(username, {
+				_id,
+				username,
+				name,
+				ts,
+			});
+		}
+	});
+
+	return Array.from(uniqueUsers.values());
+};
 const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
 
@@ -57,8 +95,6 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
 
-	useRoomMessageUsers(uid!, rid);
-
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -68,7 +104,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const roomMessageUsers = (queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid!)) ?? [])
+					const roomMessageUsers = getLastRecentUsers(rid, uid!)
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
@@ -104,7 +140,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = (queryClient.getQueryData<RoomMessageUser[]>(roomMessageUsersQueryKeys.all(rid, uid!)) ?? [])
+					const usernames = getLastRecentUsers(rid, uid!)
 						.filter((u) => {
 							if (!filterRegex) return true;
 							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
