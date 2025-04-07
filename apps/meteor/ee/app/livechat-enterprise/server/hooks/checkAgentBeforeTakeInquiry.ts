@@ -4,7 +4,7 @@ import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Help
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getMaxNumberSimultaneousChat, isAgentWithinChatLimits } from '../lib/Helper';
+import { isAgentWithinChatLimits } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 
 const validateMaxChats = async ({

@@ -24,6 +24,7 @@ export class UsersEE extends UsersRaw {
 		super(db, trash);
 	}
 
+	// @ts-expect-error - typings are good
 	getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
@@ -34,10 +35,11 @@ export class UsersEE extends UsersRaw {
 							let: { userId: '$_id' },
 							pipeline: [
 								{
-									$match: { $expr: { $eq: ['$$userId', '$agentId'] } },
-								},
-								{
-									$match: { $expr: { $eq: ['$departmentId', departmentId] } },
+									$match: {
+										$expr: {
+											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', departmentId] }],
+										},
+									},
 								},
 							],
 							as: 'department',
@@ -65,16 +67,15 @@ export class UsersEE extends UsersRaw {
 							from: 'rocketchat_subscription',
 							localField: '_id',
 							foreignField: 'u._id',
+							pipeline: [{ $match: { $and: [{ t: 'l' }, { open: true }, { onHold: { $ne: true } }] } }],
 							as: 'subs',
 						},
 					},
 					{
 						$project: {
 							'agentId': '$_id',
-							'livechat.maxNumberSimultaneousChat': 1,
+							'maxChatsForAgent': { $convert: { input: '$livechat.maxNumberSimultaneousChat', to: 'double', onError: 0, onNull: 0 } },
 							'username': 1,
-							'lastAssignTime': 1,
-							'lastRoutingTime': 1,
 							...(departmentId
 								? {
 										'queueInfo.chatsForDepartment': {
@@ -83,12 +84,7 @@ export class UsersEE extends UsersRaw {
 													input: '$subs',
 													as: 'sub',
 													cond: {
-														$and: [
-															{ $eq: ['$$sub.t', 'l'] },
-															{ $eq: ['$$sub.open', true] },
-															{ $ne: ['$$sub.onHold', true] },
-															{ $eq: ['$$sub.department', departmentId] },
-														],
+														$and: [{ $eq: ['$$sub.department', departmentId] }],
 													},
 												},
 											},
@@ -96,27 +92,12 @@ export class UsersEE extends UsersRaw {
 									}
 								: {}),
 							'queueInfo.chats': {
-								$size: {
-									$filter: {
-										input: '$subs',
-										as: 'sub',
-										cond: {
-											$and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }],
-										},
-									},
-								},
+								$size: '$subs',
 							},
 						},
 					},
 					...(customFilter ? [customFilter] : []),
-					{
-						$sort: {
-							'queueInfo.chats': 1,
-							'lastAssignTime': 1,
-							'lastRoutingTime': 1,
-							'username': 1,
-						},
-					},
+					{ $project: { username: 1 } },
 				],
 				{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 			)
