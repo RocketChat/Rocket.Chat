@@ -2,6 +2,7 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
@@ -9,6 +10,7 @@ import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
+import { useUserSync } from './hooks/useUserSync';
 import { useWebRTC } from './hooks/useWebRTC';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
@@ -65,6 +67,8 @@ const AppLayout = () => {
 	useWebRTC();
 	useStoreCookiesOnLogin();
 	useAutoupdate();
+	useUserSync();
+	useCodeHighlight();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
