@@ -7,6 +7,8 @@ export type MinimongoOptions<T> = Mongo.Options<T>;
 interface IDocumentMapStore<T extends { _id: string }> {
 	records: T[];
 	get(_id: T['_id']): T | undefined;
+	find<U extends T>(predicate: (record: T) => record is U): U | undefined;
+	find(predicate: (record: T) => boolean): T | undefined;
 }
 
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
@@ -22,6 +24,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	readonly use = create<IDocumentMapStore<T>>()((_set, get) => ({
 		records: [],
 		get: (id: T['_id']) => get().records.find((record) => record._id === id),
+		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
 	}));
 
 	constructor() {
