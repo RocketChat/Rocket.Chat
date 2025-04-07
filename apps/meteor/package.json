@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.5.0-develop",
+	"version": "7.6.0-develop",
 	"private": true,
 	"type": "commonjs",
 	"author": {
@@ -129,7 +129,7 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/node": "~20.17.8",
+		"@types/node": "~22.14.0",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.16",
 		"@types/oauth2-server": "^3.0.18",
@@ -247,7 +247,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",
-		"@rocket.chat/fuselage": "~0.61.0",
+		"@rocket.chat/fuselage": "~0.62.0",
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-toastbar": "^0.35.0",
@@ -255,7 +255,7 @@
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/i18n": "workspace:^",
-		"@rocket.chat/icons": "^0.40.0",
+		"@rocket.chat/icons": "^0.42.0",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/layout": "~0.32.0",
@@ -271,7 +271,7 @@
 		"@rocket.chat/mp3-encoder": "^0.31.26",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
-		"@rocket.chat/onboarding-ui": "~0.35.0",
+		"@rocket.chat/onboarding-ui": "^0.35.1",
 		"@rocket.chat/password-policies": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
@@ -357,7 +357,7 @@
 		"i18next-http-backend": "^1.4.5",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"iconv-lite": "^0.6.3",
-		"image-size": "^1.1.1",
+		"image-size": "^1.2.1",
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.0",
 		"is-svg": "^5.1.0",
@@ -445,7 +445,8 @@
 		"xml-encryption": "~3.1.0",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1",
-		"zod": "^3.24.1"
+		"zod": "^3.24.1",
+		"zustand": "~5.0.3"
 	},
 	"meteor": {
 		"mainModule": {

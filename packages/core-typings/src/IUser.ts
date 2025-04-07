@@ -255,6 +255,10 @@ export type IUserInRole = Pick<
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
 
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+>;
+
 export type AvatarUrlObj = {
 	avatarUrl: string;
 };

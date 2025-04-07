@@ -14,6 +14,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
@@ -90,6 +91,7 @@ export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabl
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
+export { useUserPresence } from './hooks/useUserPresence';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
