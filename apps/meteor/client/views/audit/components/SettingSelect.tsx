@@ -3,7 +3,6 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useSettingSelectOptions } from '../hooks/useSettingSelectOptions';
 
 export const SettingSelect = ({
@@ -20,9 +19,8 @@ export const SettingSelect = ({
 
 	const debouncedFilter = useDebouncedValue(filter, 500);
 
-	const { itemsList, loadMoreItems } = useSettingSelectOptions(debouncedFilter);
-
-	const { items } = useRecordList(itemsList);
+	const { data, fetchNextPage, isFetchingNextPage } = useSettingSelectOptions(debouncedFilter);
+	const flattenedData = data?.pages.flatMap((page) => page) || [];
 
 	return (
 		<PaginatedSelectFiltered
@@ -33,8 +31,8 @@ export const SettingSelect = ({
 			placeholder={t('All_settings')}
 			filter={filter}
 			setFilter={setFilter as (value: string | number | undefined) => void}
-			options={items}
-			endReached={loadMoreItems}
+			options={flattenedData}
+			endReached={() => !isFetchingNextPage && fetchNextPage({ cancelRefetch: true })}
 			renderItem={({ label, ...props }) => (
 				<Option {...props} title={t(label)}>
 					{label}
