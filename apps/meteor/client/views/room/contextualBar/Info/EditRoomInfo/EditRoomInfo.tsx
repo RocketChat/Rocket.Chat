@@ -48,6 +48,7 @@ import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
@@ -197,9 +198,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
-				await query.invalidateQueries({
-					queryKey: ['/v1/rooms.info', room._id],
-				});
+				await query.invalidateQueries({ queryKey: roomsQueryKeys.info(room._id) });
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {
