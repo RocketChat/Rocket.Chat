@@ -238,6 +238,7 @@ export class Router<
 						queryParams: this.parseQueryParams(req),
 						bodyParams,
 						request: req.raw.clone(),
+						path: req.path,
 						response: res,
 					} as any,
 					[req.raw.clone()],

@@ -136,6 +136,7 @@ export type PartialThis = {
 	readonly response: Response;
 	readonly userId: string;
 	readonly bodyParams: Record<string, unknown>;
+	readonly path: string;
 	readonly queryParams: Record<string, string>;
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
