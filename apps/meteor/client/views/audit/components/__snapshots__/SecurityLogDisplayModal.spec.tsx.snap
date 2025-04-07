@@ -6,7 +6,7 @@ exports[`renders Default without crashing 1`] = `
     <dialog
       aria-labelledby=":r0:-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
@@ -37,78 +37,78 @@ exports[`renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
-              Timestamp
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
-            >
-              March 20th 2025, 5:17:46 pm
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-f0ql1y"
-            >
-              Actor
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-f04nzc"
-            >
-              <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
-              >
-                <img
-                  alt=""
-                  aria-hidden="true"
-                  class="rcx-avatar__element rcx-avatar__element--x24"
-                  data-username="John Doe"
-                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                  title="John Doe"
-                />
-              </figure>
               <div
-                class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Timestamp
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                March 20 2025, 5:17:46 PM
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Actor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-127j9mz"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-19jm8yv"
+                  class="rcx-box rcx-box--full rcx-css-2f8n8y"
                 >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1bu7eoe"
-                  >
-                    John Doe
-                  </div>
+                  John Doe
                 </div>
               </div>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
-              Setting
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Setting
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                Show_message_in_email_notification
+              </div>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
-              Show_message_in_email_notification
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_from
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                false
+              </div>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-f0ql1y"
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
             >
-              Changed_from
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
-            >
-              false
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-f0ql1y"
-            >
-              Changed_to
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-11phrl6"
-            >
-              true
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_to
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                true
+              </div>
             </div>
           </div>
         </div>
