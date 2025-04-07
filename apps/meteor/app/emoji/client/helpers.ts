@@ -65,14 +65,15 @@ export const createEmojiList = (
 ): (RowItem | LoadMoreItem)[] => {
 	const items: RowItem = [];
 	const emojiPackages = Object.values(emoji.packages);
+	let count = 0;
+	let limited = false;
 
 	emojiPackages.forEach((emojiPackage) => {
 		if (!emojiPackage.emojisByCategory?.[category]) {
 			return;
 		}
-
-		const total = emojiPackage.emojisByCategory[category].length;
-
+		const _total = emojiPackage.emojisByCategory[category].length;
+		const total = category === CUSTOM_CATEGORY ? customItemsLimit - count : _total;
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
@@ -90,6 +91,11 @@ export const createEmojiList = (
 				continue;
 			}
 			items.push({ emoji: current, image, category });
+			count++;
+		}
+
+		if (_total > total) {
+			limited = true;
 		}
 	});
 
@@ -101,7 +107,11 @@ export const createEmojiList = (
 		rowList[i] = row;
 	}
 
-	if (category === CUSTOM_CATEGORY && customItemsLimit < items.length) {
+	if (rowList.length === 0) {
+		rowList.push([]);
+	}
+
+	if (limited) {
 		rowList.push({ loadMore: true });
 	}
 

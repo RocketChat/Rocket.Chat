@@ -12,7 +12,7 @@ export const saveTags = (departments: string[] = []): Promise<ILivechatTag> => {
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveTag',
-					params: [undefined, { name: faker.person.firstName(), description: faker.lorem.sentence() }, departments],
+					params: [undefined, { name: faker.string.uuid(), description: faker.lorem.sentence() }, departments],
 					id: '101',
 					msg: 'method',
 				}),
