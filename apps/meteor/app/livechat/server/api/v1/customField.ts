@@ -17,11 +17,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			try {
-				await Livechat.setCustomFields({ token, key, value, overwrite });
-			} catch {
-				return API.v1.failure();
-			}
+			await Livechat.setCustomFields({ token, key, value, overwrite });
 
 			return API.v1.success({ field: { key, value, overwrite } });
 		},

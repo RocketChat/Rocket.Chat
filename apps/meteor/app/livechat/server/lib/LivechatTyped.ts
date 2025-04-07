@@ -518,7 +518,7 @@ class LivechatClass {
 		if (customField.scope === 'room') {
 			await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		} else {
-			const visitor = await LivechatVisitors.getVisitorByToken(token);
+			const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 			if (!visitor) {
 				throw new Error(`Visitor with token "${token}" not found.`);
 			}
@@ -545,7 +545,7 @@ class LivechatClass {
 		await LivechatContacts.updateById(contact._id, {
 			$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
 		});
-		Livechat.logger.debug(`Contact "${contact._id}" successfully updated.`);
+		Livechat.logger.debug({ msg: 'Contact updated', contactId: contact._id });
 	}
 
 	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
