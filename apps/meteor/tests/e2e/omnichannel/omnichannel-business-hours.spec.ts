@@ -137,7 +137,7 @@ test.describe('OC - Business Hours', () => {
 		});
 	});
 
-	test.only('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
 		const BHName = faker.string.uuid();
 
 		await test.step('expect to create new businessHours', async () => {
