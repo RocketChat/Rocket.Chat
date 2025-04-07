@@ -230,6 +230,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
 
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
+
 	findSearchedServerNamesByUserId(userId: IUser['_id']): Promise<string[]>;
 
 	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;

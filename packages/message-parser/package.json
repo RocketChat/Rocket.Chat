@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
-  "version": "0.31.31",
+  "version": "0.31.32",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
