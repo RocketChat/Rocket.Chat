@@ -44,6 +44,10 @@ export class FederationHomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
 	}
 
+	get btnVideoCall(): Locator {
+		return this.page.locator('[data-qa-id="ToolBoxAction-video"]');
+	}
+
 	get btnDiscussion(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-discussion"]');
 	}
