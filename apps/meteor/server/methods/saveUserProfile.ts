@@ -186,6 +186,31 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export function executeSaveUserProfile(
+	this: Meteor.MethodThisType,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
+	},
+	customFields: Record<string, any> = {},
+	...args: unknown[]
+) {
+	check(settings, Object);
+	check(customFields, Match.Maybe(Object));
+
+	if (settings.email || settings.newPassword) {
+		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+	}
+
+	return saveUserProfile.call(this, settings, customFields, ...args);
+}
+
 Meteor.methods<ServerMethods>({
 	async saveUserProfile(settings, customFields, ...args) {
 		check(settings, Object);

@@ -1,11 +1,15 @@
 import dns from 'dns';
 import * as util from 'util';
 
-import type { ILivechatVisitor, AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
 
+import type { ILivechatMessage } from './localTypes';
+import { getRoom } from './rooms';
+import { showConnecting } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
 import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
+import { sendMessage as sendMessageFunc } from '../../../lib/server/functions/sendMessage';
 import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -129,4 +133,25 @@ export async function deleteMessage({ guest, message }: { guest: ILivechatVisito
 	await deleteMessageFunc(message, guest as unknown as IUser);
 
 	return true;
+}
+
+export async function sendMessage({
+	guest,
+	message,
+	roomInfo,
+	agent,
+}: {
+	guest: ILivechatVisitor;
+	message: ILivechatMessage;
+	roomInfo: IOmnichannelRoomInfo;
+	agent?: SelectedAgent;
+}) {
+	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
+	if (guest.name) {
+		message.alias = guest.name;
+	}
+	return Object.assign(await sendMessageFunc(guest, { ...message, token: guest.token }, room), {
+		newRoom,
+		showConnecting: showConnecting(),
+	});
 }
