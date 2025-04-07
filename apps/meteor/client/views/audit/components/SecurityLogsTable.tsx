@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Field, FieldLabel, Margins, Pagination } from
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -192,7 +193,7 @@ const SecurityLogsTable = (): ReactElement => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{new Date(item.ts).toDateString()}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
 									<GenericTableCell withTruncatedText title={setting && t(String(setting.value))}>
 										{setting && t(String(setting.value))}
 									</GenericTableCell>
