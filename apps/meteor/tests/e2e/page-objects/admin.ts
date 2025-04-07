@@ -291,6 +291,10 @@ export class Admin {
 		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
 	}
 
+	get btnExitFullScreen(): Locator {
+		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
+	}
+
 	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
 		return this.page.locator(`div[role="button"]:has-text("${text}")`);
 	}

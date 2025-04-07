@@ -18,7 +18,7 @@ import { loadMessageHistory } from '../../../../lib/server/functions/loadMessage
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { updateMessage, deleteMessage } from '../../lib/messages';
+import { updateMessage, deleteMessage, sendMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -51,7 +51,7 @@ API.v1.addRoute(
 
 			const _id = this.bodyParams._id || Random.id();
 
-			const sendMessage = {
+			const messageToSend = {
 				guest,
 				message: {
 					_id,
@@ -67,7 +67,7 @@ API.v1.addRoute(
 				},
 			};
 
-			const result = await LivechatTyped.sendMessage(sendMessage);
+			const result = await sendMessage(messageToSend);
 			if (result) {
 				const message = await Messages.findOneById(_id);
 				if (!message) {
@@ -282,7 +282,7 @@ API.v1.addRoute(
 
 			const sentMessages = await Promise.all(
 				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
-					const sendMessage = {
+					const messageToSend = {
 						guest,
 						message: {
 							_id: Random.id(),
@@ -297,7 +297,7 @@ API.v1.addRoute(
 						},
 					};
 
-					const sentMessage = await LivechatTyped.sendMessage(sendMessage);
+					const sentMessage = await sendMessage(messageToSend);
 					return {
 						username: sentMessage.u.username,
 						msg: sentMessage.msg,

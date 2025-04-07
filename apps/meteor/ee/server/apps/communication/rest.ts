@@ -407,7 +407,12 @@ export class AppsRestApi {
 						?.get('users')
 						?.convertToApp(await Meteor.userAsync());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
+					const aff = await manager.add(buff, {
+						...(marketplaceInfo && { marketplaceInfo }),
+						permissionsGranted,
+						enable: false,
+						user,
+					});
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -817,7 +822,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
@@ -1261,11 +1266,11 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+						return API.v1.success({ status: await prl.getStatus() });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
