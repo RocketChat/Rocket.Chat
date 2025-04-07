@@ -49,7 +49,7 @@ module.exports = function parseMessage(line) {
 	let trailing;
 
 	// Parse parameters
-	if (line.search(/^:|\s+:/) !== -1) {
+	if (line.search(/^:(?<!\s)\s+:/) !== -1) {
 		match = line.match(/(.*?)(?:^:|\s+:)(.*)/);
 		middle = match[1].trimRight();
 		trailing = match[2];
