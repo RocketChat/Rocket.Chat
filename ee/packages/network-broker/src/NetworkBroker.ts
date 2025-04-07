@@ -1,5 +1,5 @@
 import { asyncLocalStorage } from '@rocket.chat/core-services';
-import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
@@ -53,6 +53,34 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data, {
 			meta: {
 				optl: injectCurrentContext(),
+			},
+		});
+	}
+
+	async callWithOptions(method: string, data: any, options: CallingOptions): Promise<any> {
+		if (!(await this.started)) {
+			return;
+		}
+
+		const context = asyncLocalStorage.getStore();
+
+		if (context?.ctx?.call) {
+			return context.ctx.call(method, data, options);
+		}
+
+		const services: { name: string }[] = await this.broker.call('$node.services', {
+			onlyAvailable: true,
+		});
+
+		if (!services.find((service) => service.name === method.split('.')[0])) {
+			return new Error('method-not-available');
+		}
+
+		return this.broker.call(method, data, {
+			...options,
+			meta: {
+				optl: injectCurrentContext(),
+				...options.meta,
 			},
 		});
 	}
