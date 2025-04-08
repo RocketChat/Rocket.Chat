@@ -55,8 +55,8 @@ test.describe('OC - Contact Unknown Callout', () => {
 			await expect(agent.poHomeChannel.content.contactUnknownCallout).toBeVisible();
 		});
 
-		await test.step('expect to hide callout when close is clicked', async () => {
-			await agent.poHomeChannel.content.btnCloseContactUnknownCallout.click();
+		await test.step('expect to hide callout when dismiss is clicked', async () => {
+			await agent.poHomeChannel.content.btnDismissContactUnknownCallout.click();
 			await expect(agent.poHomeChannel.content.contactUnknownCallout).not.toBeVisible();
 		});
 

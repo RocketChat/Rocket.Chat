@@ -468,7 +468,7 @@ export class HomeContent {
 		return this.page.getByRole('status', { name: 'Unknown contact. This contact is not on the contact list.' });
 	}
 
-	get btnCloseContactUnknownCallout() {
-		return this.contactUnknownCallout.getByRole('button', { name: 'Close' });
+	get btnDismissContactUnknownCallout() {
+		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
 	}
 }

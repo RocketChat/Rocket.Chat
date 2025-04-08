@@ -36,7 +36,7 @@ it('should be displayed if contact is unknown', async () => {
 	expect(screen.getByText('Unknown_contact_callout_description')).toBeVisible();
 	expect(screen.getByRole('button', { name: 'Add_contact' })).toBeVisible();
 	expect(screen.getByRole('button', { name: 'Block' })).toBeVisible();
-	expect(screen.getByRole('button', { name: 'Close' })).toBeVisible();
+	expect(screen.getByRole('button', { name: 'Dismiss' })).toBeVisible();
 });
 
 it('should not be displayed if contact is known', async () => {
@@ -68,8 +68,8 @@ it('should hide callout on dismiss', async () => {
 	await waitFor(() => expect(getContactMockFn).toHaveBeenCalled());
 	expect(screen.getByText('Unknown_contact_callout_description')).toBeVisible();
 
-	const btnClose = screen.getByRole('button', { name: 'Close' });
-	await userEvent.click(btnClose);
+	const btnDismiss = screen.getByRole('button', { name: 'Dismiss' });
+	await userEvent.click(btnDismiss);
 
 	expect(screen.queryByText('Unknown_contact_callout_description')).not.toBeInTheDocument();
 });
