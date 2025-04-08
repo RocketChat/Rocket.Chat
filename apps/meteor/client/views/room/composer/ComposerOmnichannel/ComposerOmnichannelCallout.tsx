@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage'
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
@@ -20,6 +21,7 @@ const ComposerOmnichannelCallout = () => {
 		contactId,
 	} = room;
 
+	const calloutDescriptionId = useId();
 	const [dismissed, setDismissed] = useLocalStorage(`contact-unknown-callout-${contactId}`, false);
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
@@ -36,7 +38,8 @@ const ComposerOmnichannelCallout = () => {
 
 	return (
 		<Callout
-			data-qa-id='contact-unknown-callout'
+			role='status'
+			aria-labelledby={calloutDescriptionId}
 			mbe={16}
 			actions={
 				<ButtonGroup>
@@ -50,7 +53,7 @@ const ComposerOmnichannelCallout = () => {
 				</ButtonGroup>
 			}
 		>
-			{t('Unknown_contact_callout_description')}
+			<p id={calloutDescriptionId}>{t('Unknown_contact_callout_description')}</p>
 		</Callout>
 	);
 };
