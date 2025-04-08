@@ -39,7 +39,7 @@ const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 		},
 	});
 
-	const tooltip = useMemo(() => {
+	const title = useMemo(() => {
 		if (clientError) {
 			return t(clientError.message);
 		}
@@ -48,35 +48,13 @@ const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 			return t('Loading');
 		}
 
-		return '';
-	}, [clientError, isReady, toggleVoip.isPending, t]);
-
-	// return useMemo(() => {
-	// 	if (!isEnabled) {
-	// 		return;
-	// 	}
-
-	// 	return {
-	// 		items: [
-	// 			{
-	// 				id: 'toggle-voip',
-	// 				icon: isRegistered ? 'phone-disabled' : 'phone',
-	// 				disabled: !isReady || toggleVoip.isPending,
-	// 				onClick: () => toggleVoip.mutate(),
-	// 				content: (
-	// 					<Box is='span' title={tooltip}>
-	// 						{isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
-	// 					</Box>
-	// 				),
-	// 			},
-	// 		],
-	// 	};
-	// }, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
+		return isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling');
+	}, [clientError, isRegistered, isReady, toggleVoip.isPending, t]);
 
 	return isEnabled ? (
 		<NavBarItem
 			{...props}
-			title={isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
+			title={title}
 			icon={isRegistered ? 'phone-disabled' : 'phone'}
 			disabled={!isReady || toggleVoip.isPending}
 			onClick={() => toggleVoip.mutate()}
