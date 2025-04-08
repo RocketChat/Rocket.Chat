@@ -90,7 +90,7 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		this.router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
+		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
 			const {
 				body,
 				statusCode = 200,
