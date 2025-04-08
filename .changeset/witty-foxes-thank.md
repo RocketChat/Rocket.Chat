@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": patch
 ---
 
-Fixes a typo whenever an app setting was updated.
+Fixes a typo in the app update success toast
