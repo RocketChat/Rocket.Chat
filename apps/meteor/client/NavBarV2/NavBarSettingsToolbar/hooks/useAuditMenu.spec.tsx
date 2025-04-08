@@ -18,7 +18,7 @@ it('should return an empty array of items if doesn`t have license', async () => 
 			.build(),
 	});
 
-	await waitFor(() => expect(result.current).toEqual([]));
+	await waitFor(() => expect(result.current.items).toEqual([]));
 });
 
 it('should return an empty array of items if have license and not have permissions', async () => {
@@ -39,7 +39,7 @@ it('should return an empty array of items if have license and not have permissio
 			.build(),
 	});
 
-	await waitFor(() => expect(result.current).toEqual([]));
+	await waitFor(() => expect(result.current.items).toEqual([]));
 });
 
 it('should return auditItems if have license and permissions', async () => {
@@ -62,14 +62,14 @@ it('should return auditItems if have license and permissions', async () => {
 	});
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[0]).toEqual(
+		expect(result.current.items[0]).toEqual(
 			expect.objectContaining({
 				id: 'messages',
 			}),
 		),
 	);
 
-	expect(result.current[0].items[1]).toEqual(
+	expect(result.current.items[1]).toEqual(
 		expect.objectContaining({
 			id: 'auditLog',
 		}),
@@ -95,7 +95,7 @@ it('should return auditMessages item if have license and can-audit permission', 
 	});
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[0]).toEqual(
+		expect(result.current.items[0]).toEqual(
 			expect.objectContaining({
 				id: 'messages',
 			}),
@@ -122,7 +122,7 @@ it('should return audiLogs item if have license and can-audit-log permission', a
 	});
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[0]).toEqual(
+		expect(result.current.items[0]).toEqual(
 			expect.objectContaining({
 				id: 'auditLog',
 			}),
