@@ -9,6 +9,8 @@ interface IDocumentMapStore<T extends { _id: string }> {
 	get(_id: T['_id']): T | undefined;
 	find<U extends T>(predicate: (record: T) => record is U): U | undefined;
 	find(predicate: (record: T) => boolean): T | undefined;
+	filter<U extends T>(predicate: (record: T) => record is U): U[];
+	filter(predicate: (record: T) => boolean): T[];
 }
 
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
@@ -25,6 +27,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		records: [],
 		get: (id: T['_id']) => get().records.find((record) => record._id === id),
 		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
+		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
 	}));
 
 	constructor() {
@@ -63,6 +66,10 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 			}
 			this._collection._docs._map = new Map(state.records.map((record) => [this._collection._docs._idStringify(record._id), record]));
 		});
+	}
+
+	get state() {
+		return this.use.getState();
 	}
 
 	recomputeQueries() {
