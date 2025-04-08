@@ -56,8 +56,6 @@ export class Router<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > {
-	// private middleware: (router: express.Router) => void = () => void 0;
-
 	public router;
 
 	private innerRouter: express.Router;
