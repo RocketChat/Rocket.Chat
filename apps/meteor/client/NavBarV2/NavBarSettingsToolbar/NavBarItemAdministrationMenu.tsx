@@ -5,6 +5,7 @@ import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAdministrationMenu } from './hooks/useAdministrationMenu';
+import { useAuditMenu } from './hooks/useAuditMenu';
 
 type NavBarItemAdministrationMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -12,11 +13,15 @@ const NavBarItemAdministrationMenu = (props: NavBarItemAdministrationMenuProps) 
 	const { t } = useTranslation();
 	const currentRoute = useCurrentRoutePath();
 
-	const sections = useAdministrationMenu();
+	const adminSection = useAdministrationMenu();
+	const auditSection = useAuditMenu();
 
-	if (!sections[0].items.length) {
+	const sections = [adminSection, auditSection].filter((section) => section.items.length > 0);
+
+	if (sections.every((section) => section.items.length === 0)) {
 		return null;
 	}
+
 	return (
 		<GenericMenu
 			sections={sections}

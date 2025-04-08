@@ -13,7 +13,6 @@ import {
 } from './NavBarOmnichannelToolbar';
 import {
 	NavBarItemMarketPlaceMenu,
-	NavBarItemAuditMenu,
 	NavBarItemDirectoryPage,
 	NavBarItemHomePage,
 	NavBarItemCreateNew,
@@ -24,13 +23,10 @@ import { NavBarItemVoipDialer, NavBarItemVoipToggler } from './NavBarVoipToolbar
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 
 const NavBar = () => {
 	const t = useTranslation();
 	const user = useUser();
-
-	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const hasManageAppsPermission = usePermission('manage-apps');
@@ -58,7 +54,6 @@ const NavBar = () => {
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
-					{hasAuditLicense && <NavBarItemAuditMenu />}
 					<NavBarItemCreateNew />
 					<NavBarItemSort />
 				</NavBarGroup>
