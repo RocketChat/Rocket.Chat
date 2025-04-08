@@ -154,9 +154,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
 			projection: { businessHourId: 1 },
 		});
-		if (!department || !agentsId.length) {
+		if (!department?.businessHourId || !agentsId.length) {
 			return options;
 		}
+
 		return this.handleRemoveAgentsFromDepartments(department, agentsId, options);
 	}
 
