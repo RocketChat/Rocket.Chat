@@ -376,7 +376,7 @@ export class HomeContent {
 	}
 
 	get btnVideoCall(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-video"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
 	get btnStartVideoCall(): Locator {
