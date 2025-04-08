@@ -465,7 +465,7 @@ export class HomeContent {
 	}
 
 	get contactUnknownCallout() {
-		return this.page.locator('[data-qa-id="contact-unknown-callout"]');
+		return this.page.getByRole('status', { name: 'Unknown contact. This contact is not on the contact list.' });
 	}
 
 	get btnCloseContactUnknownCallout() {
