@@ -1,3 +1,4 @@
+import type { IAuditServerUserActor, IAuditServerSystemActor, IAuditServerAppActor } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { format } from 'date-fns';
@@ -10,18 +11,15 @@ import GenericModal from '../../../components/GenericModal';
 
 type SecurityLogDisplayProps = {
 	timestamp: string;
-	actor: string;
-	actorId: string;
+	actor: IAuditServerUserActor | IAuditServerSystemActor | IAuditServerAppActor;
 	setting: string;
 	changedFrom: string;
 	changedTo: string;
 	onCancel: () => void;
 };
 
-const SecurityLogDisplayModal = ({ timestamp, actor, actorId, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
+const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, changedTo, onCancel }: SecurityLogDisplayProps) => {
 	const { t } = useTranslation();
-
-	const isSystemActor = actorId === t('system') || actorId === t('app');
 
 	return (
 		<GenericModal maxHeight={550} icon={null} onClose={onCancel} title={t('Setting_change')}>
@@ -30,15 +28,52 @@ const SecurityLogDisplayModal = ({ timestamp, actor, actorId, setting, changedFr
 				<AuditModalText>{format(new Date(timestamp), 'MMMM d yyyy, h:mm:ss a')}</AuditModalText>
 			</AuditModalField>
 
-			<AuditModalField>
-				<AuditModalLabel>{t('Actor')}</AuditModalLabel>
-				<Box display='flex' alignItems='center'>
-					{!isSystemActor && <UserAvatar size='x24' userId={actorId} />}
-					<Box mi={isSystemActor ? 0 : 8} fontScale='p2m' display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-						{actor}
+			{actor.type === 'user' && (
+				<AuditModalField>
+					<AuditModalLabel>{t('Actor')}</AuditModalLabel>
+					<Box display='flex' alignItems='center'>
+						{actor.type === 'user' && <UserAvatar size='x24' userId={actor._id} />}
+						<Box
+							mi={actor.type === 'user' ? 8 : 0}
+							fontScale='p2m'
+							display='flex'
+							flexDirection='column'
+							alignSelf='center'
+							withTruncatedText
+						>
+							{actor.username}
+						</Box>
 					</Box>
-				</Box>
-			</AuditModalField>
+				</AuditModalField>
+			)}
+
+			{actor.type === 'app' && (
+				<>
+					<AuditModalField>
+						<AuditModalLabel>{t('Actor')}</AuditModalLabel>
+						<AuditModalText>{t('App')}</AuditModalText>
+					</AuditModalField>
+
+					<AuditModalField>
+						<AuditModalLabel>{t('App_id')}</AuditModalLabel>
+						<AuditModalText>{actor._id}</AuditModalText>
+					</AuditModalField>
+				</>
+			)}
+
+			{actor.type === 'system' && (
+				<>
+					<AuditModalField>
+						<AuditModalLabel>{t('Actor')}</AuditModalLabel>
+						<AuditModalText>{t('System')}</AuditModalText>
+					</AuditModalField>
+
+					<AuditModalField>
+						<AuditModalLabel>{t('Reason')}</AuditModalLabel>
+						<AuditModalText>{actor.reason}</AuditModalText>
+					</AuditModalField>
+				</>
+			)}
 
 			<AuditModalField>
 				<AuditModalLabel>{t('Setting')}</AuditModalLabel>

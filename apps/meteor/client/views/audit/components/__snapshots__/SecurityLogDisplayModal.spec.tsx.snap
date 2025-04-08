@@ -56,24 +56,6 @@ exports[`renders Default without crashing 1`] = `
               <div
                 class="rcx-box rcx-box--full rcx-css-pwio3x"
               >
-                Actor
-              </div>
-              <div
-                class="rcx-box rcx-box--full rcx-css-127j9mz"
-              >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-2f8n8y"
-                >
-                  John Doe
-                </div>
-              </div>
-            </div>
-            <div
-              class="rcx-box rcx-box--full rcx-css-op9h3g"
-            >
-              <div
-                class="rcx-box rcx-box--full rcx-css-pwio3x"
-              >
                 Setting
               </div>
               <div

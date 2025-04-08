@@ -1,3 +1,4 @@
+import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Field, FieldLabel, Margins, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
@@ -64,14 +65,12 @@ const SecurityLogsTable = (): ReactElement => {
 
 	const handleItemClick = ({
 		actor,
-		actorId,
 		timestamp,
 		setting,
 		changedFrom,
 		changedTo,
 	}: {
-		actor: string;
-		actorId: string;
+		actor: IAuditServerUserActor | IAuditServerSystemActor | IAuditServerAppActor;
 		timestamp: string;
 		setting: unknown;
 		changedFrom: string;
@@ -81,7 +80,6 @@ const SecurityLogsTable = (): ReactElement => {
 			<SecurityLogDisplayModal
 				timestamp={timestamp}
 				actor={actor}
-				actorId={actorId}
 				setting={String(setting)}
 				changedFrom={changedFrom}
 				changedTo={changedTo}
@@ -172,8 +170,7 @@ const SecurityLogsTable = (): ReactElement => {
 									height={44}
 									onClick={() =>
 										handleItemClick({
-											actor: item.actor.type === 'user' ? item.actor.username : t(item.actor.type),
-											actorId: item.actor.type === 'user' ? item.actor._id : item.actor.type,
+											actor: item.actor,
 											timestamp: new Date(item.ts).toDateString(),
 											setting: setting?.value,
 											changedFrom: String(previous?.value),
