@@ -16,6 +16,18 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+type GETAppsLogsFilter = {
+	logLevel?: '0' | '1' | '2';
+	method?: string;
+	startDate?: string;
+	endDate?: string;
+};
+
+// export const isAppsLogsFilter;
+
 export type AppsEndpoints = {
 	'/apps/count': {
 		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
@@ -97,9 +109,9 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/logs': {
-		GET: () => {
+		GET: (params: PaginatedRequest<GETAppsLogsFilter>) => PaginatedResult<{
 			logs: ILogItem[];
-		};
+		}>;
 	};
 
 	'/apps/:id/apis': {
