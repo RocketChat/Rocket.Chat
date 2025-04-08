@@ -330,7 +330,7 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 			const message = 'hello world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.setDisplayMode('Extended');
 			await poHomeChannel.sidebar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
@@ -341,7 +341,7 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.setDisplayMode('Extended');
 			await poHomeChannel.sidebar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 

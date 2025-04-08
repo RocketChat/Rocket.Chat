@@ -18,4 +18,10 @@ export class Navbar {
 	get homeButton(): Locator {
 		return this.pagesToolbar.getByRole('button', { name: 'Home' });
 	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.pagesToolbar.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.pagesToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.pagesToolbar.click();
+	}
 }

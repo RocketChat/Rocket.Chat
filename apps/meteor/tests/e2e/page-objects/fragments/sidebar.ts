@@ -42,12 +42,6 @@ export class Sidebar {
 		return this.sidebarSearchSection.getByRole('searchbox');
 	}
 
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarSearchSection.click();
-	}
-
 	async escSearch(): Promise<void> {
 		await this.page.keyboard.press('Escape');
 	}
