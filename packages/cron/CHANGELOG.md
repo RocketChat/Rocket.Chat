@@ -1,5 +1,15 @@
 # @rocket.chat/cron
 
+## 0.1.20
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.1
+  - @rocket.chat/models@1.4.1
+  </details>
+
 ## 0.1.19
 
 ### Patch Changes
