@@ -299,9 +299,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			await Users.setUtcOffset(_id, userData.utcOffset);
 		}
 
-		if (userData.name || (userData.username && !userData.federated)) {
-			const { username } = userData.federated ? {} : userData;
-			await saveUserIdentity({ _id, name: userData.name, username } as Parameters<typeof saveUserIdentity>[0]);
+		const localUsername = userData.federated ? undefined : userData.username;
+		if (userData.name || localUsername) {
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
