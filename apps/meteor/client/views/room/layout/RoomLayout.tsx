@@ -41,7 +41,12 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
-	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
+	// const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
+	
+	// / On small screens (e.g. mobile), using 100% width for the contextual bar hides the close (X) button.
+	// To fix this, we reduce width slightly to 95%, allowing space for the close button to appear.
+	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '95%';
+
 
 	const layout = useLayout();
 
@@ -81,10 +86,22 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{aside && (
+					{/* {aside && (
 						<ContextualbarDialog position={contextualbarPosition}>
 							<Suspense fallback={null}>{aside}</Suspense>
 						</ContextualbarDialog>
+					)} */}
+
+
+			// Wrap the `aside` content in a Box to ensure padding and overflow are handled properly on smaller screens.
+			// This prevents UI elements like the close (X) button from being cut off or hidden.
+
+					{aside && (
+					<ContextualbarDialog position={contextualbarPosition}>
+						<Box style={{ padding: '0.5rem', overflow: 'auto', height: '100%' }}>
+						<Suspense fallback={null}>{aside}</Suspense>
+						</Box>
+					</ContextualbarDialog>
 					)}
 				</Box>
 			</Box>
