@@ -12,7 +12,6 @@ import './loadMissedMessages';
 import './loginViaQuery';
 import './messageObserve';
 import './messageTypes';
-import './notifications';
 import './reloadRoomAfterLogin';
 import './roles';
 import './rootUrlChange';

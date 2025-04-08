@@ -23,6 +23,7 @@ import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/us
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
+import { useNotificationUserCalendar } from '../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
@@ -67,6 +68,7 @@ const AppLayout = () => {
 	useStoreCookiesOnLogin();
 	useAutoupdate();
 	useForceLogout();
+	useNotificationUserCalendar();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
