@@ -72,8 +72,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		if (!this.isEnabled(user)) {
 			return false;
 		}
-
-		if (!user.services?.emailCode) {
+if (!user.services?.emailCode) {
 			return false;
 		}
 
@@ -104,6 +103,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
+		
 
 		await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
