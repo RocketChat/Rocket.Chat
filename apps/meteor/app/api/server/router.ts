@@ -71,16 +71,15 @@ export class Router<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > {
-	private middleware: (
-		router: Hono<{
-			Variables: {
-				remoteAddress: string;
-			};
-		}>,
-	) => void = () => void 0;
+	protected innerRouter: Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}>;
 
-	// eslint-disable-next-line lines-between-class-members
-	constructor(readonly base: TBasePath) {}
+	constructor(readonly base: TBasePath) {
+		this.innerRouter = new Hono();
+	}
 
 	public typedRoutes: Record<string, Record<string, Route>> = {};
 
@@ -185,103 +184,93 @@ export class Router<
 	> {
 		const [middlewares, action] = splitArray(actions);
 
-		const prev = this.middleware;
-		this.middleware = (
-			router: Hono<{
-				Variables: {
-					remoteAddress: string;
-				};
-			}>,
-		) => {
-			prev(router);
-			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
-				const { req, res } = c;
-				req.raw.route = `${c.var.route ?? ''}${subpath}`;
-				if (options.query) {
-					const validatorFn = options.query;
-					if (typeof options.query === 'function' && !validatorFn(req.query())) {
-						return c.json(
-							{
-								success: false,
-								errorType: 'error-invalid-params',
-								error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-							},
-							400,
-						);
-					}
+		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+			const { req, res } = c;
+			req.raw.route = `${c.var.route ?? ''}${subpath}`;
+			if (options.query) {
+				const validatorFn = options.query;
+				if (typeof options.query === 'function' && !validatorFn(req.query())) {
+					return c.json(
+						{
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						},
+						400,
+					);
 				}
+			}
 
-				const bodyParams = await this.parseBodyParams(req, c.var['bodyParams-override']);
+			const bodyParams = await this.parseBodyParams(req, c.var['bodyParams-override']);
 
-				if (options.body) {
-					const validatorFn = options.body;
-					if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
-						return c.json(
-							{
-								success: false,
-								errorType: 'error-invalid-params',
-								error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-							},
-							400,
-						);
-					}
+			if (options.body) {
+				const validatorFn = options.body;
+				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+					return c.json(
+						{
+							success: false,
+							errorType: 'error-invalid-params',
+							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						},
+						400,
+					);
 				}
+			}
 
-				const {
-					body,
-					statusCode = 200,
-					headers = {},
-				} = await action.apply(
-					{
-						requestIp: c.get('remoteAddress'),
-						urlParams: req.param(),
-						queryParams: this.parseQueryParams(req),
-						bodyParams,
-						request: req.raw.clone(),
-						path: req.path,
-						response: res,
-					} as any,
-					[req.raw.clone()],
-				);
-				if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
-					const responseValidatorFn = options?.response?.[statusCode];
-					if (!responseValidatorFn && options.typed) {
-						throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
-					}
-					if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
-						throw new Error(
-							`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
-						);
-					}
+			const {
+				body,
+				statusCode = 200,
+				headers = {},
+			} = await action.apply(
+				{
+					requestIp: c.get('remoteAddress'),
+					urlParams: req.param(),
+					queryParams: this.parseQueryParams(req),
+					bodyParams,
+					request: req.raw.clone(),
+					path: req.path,
+					response: res,
+				} as any,
+				[req.raw.clone()],
+			);
+			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
+				const responseValidatorFn = options?.response?.[statusCode];
+				if (!responseValidatorFn && options.typed) {
+					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-
-				const responseHeaders = Object.fromEntries(
-					Object.entries({
-						...res.headers,
-						'Content-Type': 'application/json',
-						'Cache-Control': 'no-store',
-						'Pragma': 'no-cache',
-						...headers,
-					}).map(([key, value]) => [key.toLowerCase(), value]),
-				);
-
-				const contentType = (responseHeaders['content-type'] || 'application/json') as string;
-
-				const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => {
-					return [101, 204, 205, 304].includes(statusCode);
-				};
-
-				if (isContentLess(statusCode)) {
-					return c.status(statusCode);
+				if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
+					throw new Error(
+						`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+					);
 				}
+			}
 
-				return c.body(
-					(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any,
-					statusCode,
-					responseHeaders as Record<string, string>,
-				);
-			});
-		};
+			const responseHeaders = Object.fromEntries(
+				Object.entries({
+					...res.headers,
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-store',
+					'Pragma': 'no-cache',
+					...headers,
+				}).map(([key, value]) => [key.toLowerCase(), value]),
+			);
+
+			const contentType = (responseHeaders['content-type'] || 'application/json') as string;
+
+			const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => {
+				return [101, 204, 205, 304].includes(statusCode);
+			};
+
+			if (isContentLess(statusCode)) {
+				return c.status(statusCode);
+			}
+
+			return c.body(
+				(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any,
+				statusCode,
+				responseHeaders as Record<string, string>,
+			);
+		});
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -359,52 +348,12 @@ export class Router<
 				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
 			};
 
-			const prev = this.middleware;
-			this.middleware = (
-				router: Hono<{
-					Variables: {
-						remoteAddress: string;
-					};
-				}>,
-			) => {
-				prev(router);
-
-				router
-					.use(`${innerRouter.base}/*`, (c, next) => {
-						c.set('route', `${c.var.route || ''}${innerRouter.base}`);
-						return next();
-					})
-					.route(innerRouter.base, innerRouter.honoRouter);
-			};
+			this.innerRouter.route(innerRouter.base, innerRouter.innerRouter);
 		}
 		if (typeof innerRouter === 'function') {
-			const prev = this.middleware;
-			this.middleware = (
-				router: Hono<{
-					Variables: {
-						remoteAddress: string;
-					};
-				}>,
-			) => {
-				prev(router);
-				router.use(innerRouter as any);
-			};
+			this.innerRouter.use(innerRouter as any);
 		}
 		return this as any;
-	}
-
-	get honoRouter(): Hono<{
-		Variables: {
-			remoteAddress: string;
-		};
-	}> {
-		const router = new Hono<{
-			Variables: {
-				remoteAddress: string;
-			};
-		}>();
-		this.middleware(router);
-		return router;
 	}
 
 	get router(): express.Router {
@@ -419,7 +368,7 @@ export class Router<
 						c.set('route', `${c.var.route || ''}${this.base}`);
 						return next();
 					})
-					.route(this.base, this.honoRouter)
+					.route(this.base, this.innerRouter)
 					.options('*', (c) => {
 						return c.body('OK');
 					}),
