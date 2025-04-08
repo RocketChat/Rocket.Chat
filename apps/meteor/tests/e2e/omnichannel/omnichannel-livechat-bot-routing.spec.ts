@@ -97,35 +97,42 @@ test.describe('OC - Bot Agent Routing Enabled', () => {
 	});
 
 	// Chat is not being assigned to any agent when "Assign New Conversations to Bot Agent" is enabled and bot is not available
-	test.fail('should route to bot agent even when bot is offline', async () => {
-		await test.step('make the bot offline', async () => {
-			await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
-		});
-
-		await test.step('visitor starts a chat', async () => {
-			await poLiveChat.openAnyLiveChatAndSendMessage({
-				liveChatUser: visitorHuman,
-				message: 'Hello, I should be assigned to the bot agent even though it is offline',
-				isOffline: false,
+	test.describe('bot agent routing when offline', async () => {
+		test.beforeAll(async () => {
+			await test.step('make the bot offline', async () => {
+				await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
 			});
 		});
 
-		await test.step('verify chat is assigned to bot agent even when offline', async () => {
-			const botQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitorHuman.name);
-			await expect(botQueuedChat).toBeVisible();
+		test.afterAll(async () => {
+			await test.step('make the bot online', async () => {
+				await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+			});
 		});
 
-		await test.step('verify non-bot agent does not see the inquiry', async () => {
-			const nonBotQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorHuman.name);
-			await expect(nonBotQueuedChat).toHaveCount(0);
-		});
+		test.fail('should route to bot agent even when bot is offline', async () => {
+			await test.step('visitor starts a chat', async () => {
+				await poLiveChat.openAnyLiveChatAndSendMessage({
+					liveChatUser: visitorHuman,
+					message: 'Hello, I should be assigned to the bot agent even though it is offline',
+					isOffline: false,
+				});
+			});
 
-		await test.step('bot agent should take the chat even when offline', async () => {
-			await poHomeOmnichannel.sidenav.getQueuedChat(visitorHuman.name).click();
-			await expect(poHomeOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
-		});
-		await test.step('make the bot online', async () => {
-			await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+			await test.step('verify chat is assigned to bot agent even when offline', async () => {
+				const botQueuedChat = poHomeOmnichannel.sidenav.getQueuedChat(visitorHuman.name);
+				await expect(botQueuedChat).toBeVisible();
+			});
+
+			await test.step('verify non-bot agent does not see the inquiry', async () => {
+				const nonBotQueuedChat = poHomeOmnichannelUser2.sidenav.getQueuedChat(visitorHuman.name);
+				await expect(nonBotQueuedChat).toHaveCount(0);
+			});
+
+			await test.step('bot agent should take the chat even when offline', async () => {
+				await poHomeOmnichannel.sidenav.getQueuedChat(visitorHuman.name).click();
+				await expect(poHomeOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
+			});
 		});
 	});
 
