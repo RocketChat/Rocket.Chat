@@ -66,6 +66,9 @@ class VoipClient extends Emitter<VoipEvents> {
 			peerConnectionConfiguration: { iceServers },
 		};
 
+		const searchParams = new URLSearchParams(window.location.search);
+		const debug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
+
 		this.userAgent = new UserAgent({
 			authorizationPassword: authPassword,
 			authorizationUsername: authUserName,
@@ -73,7 +76,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
 			logConfiguration: false,
-			logLevel: 'error',
+			logLevel: debug ? 'debug' : 'error',
 			delegate: {
 				onInvite: this.onIncomingCall,
 				onRefer: this.onTransferedCall,

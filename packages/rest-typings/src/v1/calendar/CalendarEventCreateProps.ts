@@ -5,11 +5,13 @@ const ajv = new Ajv();
 
 export type CalendarEventCreateProps = {
 	startTime: string;
+	endTime?: string;
 	externalId?: string;
 	subject: string;
 	description: string;
 	meetingUrl?: string;
 	reminderMinutesBeforeStart?: number;
+	busy?: boolean;
 };
 
 const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> = {
@@ -18,6 +20,10 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 		startTime: {
 			type: 'string',
 			nullable: false,
+		},
+		endTime: {
+			type: 'string',
+			nullable: true,
 		},
 		externalId: {
 			type: 'string',
@@ -37,6 +43,10 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 		},
 		reminderMinutesBeforeStart: {
 			type: 'number',
+			nullable: true,
+		},
+		busy: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},

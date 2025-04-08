@@ -47,22 +47,30 @@ export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 
-	const { token } = guest;
-	token && (await store.setState({ token }));
-
 	const {
+		user,
 		iframe: { defaultDepartment },
 	} = store.state;
+
+	if (guest.token) {
+		store.setState({ token: guest.token });
+	}
+
 	if (defaultDepartment && !guest.department) {
 		guest.department = defaultDepartment;
 	}
 
-	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
+	if (user && guest.token !== user.token) {
+		await Livechat.unsubscribeAll();
+	}
 
-	if (!user) {
+	const { visitor: newUser } = await Livechat.grantVisitor({ visitor: { ...guest } });
+
+	if (!newUser) {
 		return;
 	}
-	store.setState({ user } as Omit<StoreState['user'], 'ts'>);
+
+	store.setState({ user: newUser } as Omit<StoreState['user'], 'ts'>);
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 
@@ -150,6 +158,7 @@ const api = {
 		}
 
 		updateIframeData({ defaultDepartment: department });
+		updateIframeGuestData({ department });
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
@@ -224,26 +233,17 @@ const api = {
 		updateIframeGuestData({ email });
 	},
 
-	registerGuest: async (data: StoreState['guest']) => {
-		if (typeof data !== 'object') {
+	registerGuest: async (newGuest: StoreState['guest']) => {
+		if (typeof newGuest !== 'object') {
 			return;
 		}
 
 		await evaluateChangesAndLoadConfigByFields(async () => {
-			if (!data.token) {
-				data.token = createToken();
-			}
-			const {
-				iframe: { defaultDepartment },
-			} = store.state;
-
-			if (defaultDepartment && !data.department) {
-				data.department = defaultDepartment;
+			if (!newGuest.token) {
+				newGuest.token = createToken();
 			}
 
-			Livechat.unsubscribeAll();
-
-			await createOrUpdateGuest(data);
+			await createOrUpdateGuest(newGuest);
 		});
 	},
 

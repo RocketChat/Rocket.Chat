@@ -8,6 +8,7 @@ export interface Updater<T extends { _id: string }> {
 	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: ArrayElementType<AddToSetProps<T>[K]>): Updater<T>;
 	hasChanges(): boolean;
 	getUpdateFilter(): UpdateFilter<T>;
+	getRawUpdateFilter(): UpdateFilter<T>;
 }
 
 type ArrayElementType<T> = T extends (infer E)[] ? E : T;

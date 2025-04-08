@@ -46,6 +46,7 @@ export const deleteEmojiCustom = (emojiData: IEmoji) => {
 	}
 
 	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
+	emoji.dispatchUpdate();
 };
 
 export const updateEmojiCustom = (emojiData: IEmoji) => {
@@ -93,6 +94,8 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 	if (previousExists) {
 		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
 	}
+
+	emoji.dispatchUpdate();
 };
 
 const customRender = (html: string) => {
@@ -103,6 +106,7 @@ const customRender = (html: string) => {
 			`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojisMatchGroup})`,
 			'gi',
 		);
+		emoji.dispatchUpdate();
 	}
 
 	html = html.replace(emoji.packages.emojiCustom._regexp!, (shortname) => {
@@ -160,6 +164,7 @@ Meteor.startup(() => {
 					};
 				}
 			}
+			emoji.dispatchUpdate();
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}

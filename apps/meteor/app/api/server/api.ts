@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -15,7 +16,6 @@ import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
-import semver from 'semver';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
@@ -34,6 +34,8 @@ import type {
 	TypedAction,
 	TypedOptions,
 	UnauthorizedResult,
+	RedirectStatusCodes,
+	RedirectResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -43,14 +45,15 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import type { Route } from './router';
 import { Router } from './router';
+import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
+import { shouldBreakInVersion } from '../../../server/lib/shouldBreakInVersion';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
-import { Info } from '../../utils/rocketchat.info';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
@@ -58,7 +61,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
+const applyBreakingChanges = shouldBreakInVersion('8.0.0');
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;
@@ -272,6 +275,13 @@ export class APIClass<
 		} as SuccessResult<T>;
 
 		return finalResult as SuccessResult<T>;
+	}
+
+	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
+		return {
+			statusCode: code,
+			body: result,
+		};
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
@@ -619,7 +629,7 @@ export class APIClass<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		this.addRoute([subpath], { ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -684,28 +694,43 @@ export class APIClass<
 		return this.method('DELETE', subpath, options, action);
 	}
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string>(
 		subpath: TSubPathPattern,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>>(
 		subpaths: TSubPathPattern[],
 		operations: Operations<TPathPattern>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TOptions extends Options>(
 		subpath: TSubPathPattern,
 		options: TOptions,
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	addRoute<TSubPathPattern extends string, TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>, TOptions extends Options>(
 		subpaths: TSubPathPattern[],
 		options: TOptions,
 		operations: Operations<TPathPattern, TOptions>,
 	): void;
 
+	/**
+	 * @deprecated The addRoute method is deprecated. Please use the new route registration methods (get, post, put OR delete).
+	 */
 	public addRoute<
 		TSubPathPattern extends string,
 		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
@@ -736,6 +761,7 @@ export class APIClass<
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(operations).forEach((method) => {
 				const _options = { ...options };
+				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
 					(operations as Record<string, any>)[method as string] = {
@@ -786,6 +812,7 @@ export class APIClass<
 						let result;
 
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						this.connection = connection;
 
 						try {
 							if (options.deprecation) {
@@ -882,12 +909,12 @@ export class APIClass<
 
 						return result;
 					} as InnerAction<any, any, any>;
-
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
-					_options as TypedOptions,
+					{ ..._options, tags } as TypedOptions,
+					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({

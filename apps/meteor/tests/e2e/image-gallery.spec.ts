@@ -120,7 +120,7 @@ test.describe.serial('Image Gallery', async () => {
 	});
 
 	test.describe('When sending an image as a link', () => {
-		const imageLink = 'https://i0.wp.com/merithu.com.br/wp-content/uploads/2019/11/rocket-chat.png';
+		const imageLink = 'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png';
 
 		test.beforeAll(async () => {
 			await poHomeChannel.content.sendMessage(imageLink);

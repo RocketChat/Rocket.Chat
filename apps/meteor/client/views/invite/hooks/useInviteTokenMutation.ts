@@ -10,7 +10,7 @@ export const useInviteTokenMutation = () => {
 
 	const getInviteRoom = useEndpoint('POST', '/v1/useInviteToken');
 
-	const { mutate } = useMutation({
+	return useMutation({
 		mutationFn: (token: string) => getInviteRoom({ token }),
 		onSuccess: (result) => {
 			if (!result.room.name) {
@@ -31,6 +31,4 @@ export const useInviteTokenMutation = () => {
 			router.navigate('/home');
 		},
 	});
-
-	return mutate;
 };
