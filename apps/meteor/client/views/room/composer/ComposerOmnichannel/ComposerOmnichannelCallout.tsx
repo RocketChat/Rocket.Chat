@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -22,7 +22,7 @@ const ComposerOmnichannelCallout = () => {
 	} = room;
 
 	const calloutDescriptionId = useId();
-	const [dismissed, setDismissed] = useLocalStorage(`contact-unknown-callout-${contactId}`, false);
+	const [dismissed, setDismissed] = useSessionStorage(`contact-unknown-callout-${contactId}`, false);
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const { data } = useQuery({ queryKey: ['getContactById', contactId], queryFn: () => getContactById({ contactId }) });
