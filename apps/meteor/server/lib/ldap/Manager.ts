@@ -521,7 +521,7 @@ export class LDAPManager {
 		}
 
 		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
-		const homeServer = getLdapDynamicValue(ldapUser, homeServerField);
+		const homeServer = this.getLdapDynamicValue(ldapUser, homeServerField);
 
 		if (!homeServer) {
 			return;
