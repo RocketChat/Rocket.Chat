@@ -425,16 +425,16 @@ describe('LIVECHAT - Queue', () => {
 		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 1 }, [testDepartment._id, testDepartment2._id]);
 	});
 
-	after(async () =>
-		Promise.all([
+	after(async () => {
+		await Promise.all([
 			deleteUser(testUser.user),
-			updateSetting('Omnichannel_enable_department_removal', false),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', false),
 			deleteDepartment(testDepartment._id),
 			deleteDepartment(testDepartment2._id),
-		]),
-	);
+		]);
+		await updateSetting('Omnichannel_enable_department_removal', false);
+	});
 
 	it('should allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 0 chats)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
