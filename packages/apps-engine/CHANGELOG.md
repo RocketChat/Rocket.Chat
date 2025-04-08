@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.49.1
+
+### Patch Changes
+
+-   ([#35719](https://github.com/RocketChat/Rocket.Chat/pull/35719) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where apps where not able to update messages using the BlockBuilder.
+
 ## 1.49.0
 
 ### Minor Changes

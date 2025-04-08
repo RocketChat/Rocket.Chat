@@ -1,5 +1,16 @@
 # @rocket.chat/livechat Change Log
 
+## 1.22.6
+
+### Patch Changes
+
+- ([#35658](https://github.com/RocketChat/Rocket.Chat/pull/35658) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Livechat's setDepartment api method not updating the visitor's department as expected
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.2
+  </details>
+
 ## 1.22.5
 
 ### Patch Changes

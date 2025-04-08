@@ -1,5 +1,51 @@
 # @rocket.chat/meteor
 
+## 7.4.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35731](https://github.com/RocketChat/Rocket.Chat/pull/35731) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with dynamic API routes requiring a server restart to be operable.
+
+- ([#35658](https://github.com/RocketChat/Rocket.Chat/pull/35658) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Livechat's setDepartment api method not updating the visitor's department as expected
+
+- ([#35719](https://github.com/RocketChat/Rocket.Chat/pull/35719) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where apps where not able to update messages using the BlockBuilder.
+
+- ([#35659](https://github.com/RocketChat/Rocket.Chat/pull/35659) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Omnichannel Contact Center's chats filter not working when "From" and "To" fields have the same date
+
+- <details><summary>Updated dependencies [f33b146ec4f4704efe3dc3415d57624e7f5124cf]:</summary>
+
+  - @rocket.chat/apps-engine@1.49.1
+  - @rocket.chat/presence@0.2.19
+  - @rocket.chat/apps@0.3.2
+  - @rocket.chat/core-services@0.7.11
+  - @rocket.chat/core-typings@7.4.2
+  - @rocket.chat/fuselage-ui-kit@16.0.2
+  - @rocket.chat/rest-typings@7.4.2
+  - @rocket.chat/license@1.0.10
+  - @rocket.chat/omnichannel-services@0.3.16
+  - @rocket.chat/pdf-worker@0.2.16
+  - @rocket.chat/api-client@0.2.19
+  - @rocket.chat/cron@0.1.19
+  - @rocket.chat/freeswitch@1.2.6
+  - @rocket.chat/gazzodown@16.0.2
+  - @rocket.chat/model-typings@1.4.2
+  - @rocket.chat/ui-contexts@16.0.2
+  - @rocket.chat/models@1.3.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.11
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@12.0.2
+  - @rocket.chat/ui-client@16.0.2
+  - @rocket.chat/ui-video-conf@16.0.2
+  - @rocket.chat/ui-voip@6.0.2
+  - @rocket.chat/web-ui-registration@16.0.2
+  - @rocket.chat/instance-status@0.1.19
+  </details>
+
 ## 7.4.1
 
 ### Patch Changes
