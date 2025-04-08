@@ -2,6 +2,7 @@ import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactElement, ReactNode } from 'react';
 
+import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 
@@ -20,7 +21,11 @@ const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?:
 	const forceLogin = useSession('forceLogin');
 
 	if (uid) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+		return (
+			<LoggedInArea>
+				<UsernameCheck>{children}</UsernameCheck>
+			</LoggedInArea>
+		);
 	}
 
 	if (!forceLogin && guest) {
