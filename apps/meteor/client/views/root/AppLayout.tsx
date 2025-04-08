@@ -3,6 +3,7 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useForceLogout } from './hooks/useForceLogout';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useOTRMessaging } from './hooks/useOTRMessaging';
@@ -22,6 +23,7 @@ import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/us
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
+import { useNotificationUserCalendar } from '../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
@@ -65,6 +67,8 @@ const AppLayout = () => {
 	useWebRTC();
 	useStoreCookiesOnLogin();
 	useAutoupdate();
+	useForceLogout();
+	useNotificationUserCalendar();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

@@ -26,6 +26,7 @@ import {
 	Rooms,
 	LivechatCustomField,
 } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -203,7 +204,7 @@ class LivechatClass {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
 		}
 
-		await Users.setLivechatData(_id, agentData);
+		await Users.setLivechatData(_id, removeEmpty(agentData));
 
 		const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
 
