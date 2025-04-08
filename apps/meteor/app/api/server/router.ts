@@ -9,9 +9,17 @@ export class Router<
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
 > {
-	private middleware: (router: express.Router) => void = () => void 0;
+	public router;
 
-	constructor(readonly base: TBasePath) {}
+	private innerRouter: express.Router;
+
+	constructor(readonly base: TBasePath) {
+		// eslint-disable-next-line new-cap
+		this.router = express.Router();
+		// eslint-disable-next-line new-cap
+		this.innerRouter = express.Router();
+		this.router.use(this.base, this.innerRouter);
+	}
 
 	public typedRoutes: Record<string, Record<string, unknown>> = {};
 
@@ -82,46 +90,42 @@ export class Router<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		const prev = this.middleware;
-		this.middleware = (router: express.Router) => {
-			prev(router);
-			router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
-				const {
-					body,
-					statusCode = 200,
-					headers = {},
-				} = await action.apply(
-					{
-						urlParams: req.params,
-						queryParams: req.query,
-						bodyParams: (req as any).bodyParams || req.body,
-						request: req,
-						response: res,
-					} as any,
-					[req],
-				);
+		this.router[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), async (req, res) => {
+			const {
+				body,
+				statusCode = 200,
+				headers = {},
+			} = await action.apply(
+				{
+					urlParams: req.params,
+					queryParams: req.query,
+					bodyParams: (req as any).bodyParams || req.body,
+					request: req,
+					response: res,
+				} as any,
+				[req],
+			);
 
-				const responseHeaders = Object.fromEntries(
-					Object.entries({
-						...res.header,
-						'Content-Type': 'application/json',
-						'Cache-Control': 'no-store',
-						'Pragma': 'no-cache',
-						...headers,
-					}).map(([key, value]) => [key.toLowerCase(), value]),
-				);
+			const responseHeaders = Object.fromEntries(
+				Object.entries({
+					...res.header,
+					'Content-Type': 'application/json',
+					'Cache-Control': 'no-store',
+					'Pragma': 'no-cache',
+					...headers,
+				}).map(([key, value]) => [key.toLowerCase(), value]),
+			);
 
-				res.writeHead(statusCode, responseHeaders);
+			res.writeHead(statusCode, responseHeaders);
 
-				if (responseHeaders['content-type']?.match(/json|javascript/) !== null) {
-					body !== undefined && res.write(JSON.stringify(body));
-				} else {
-					body !== undefined && res.write(body);
-				}
+			if (responseHeaders['content-type']?.match(/json|javascript/) !== null) {
+				body !== undefined && res.write(JSON.stringify(body));
+			} else {
+				body !== undefined && res.write(body);
+			}
 
-				res.end();
-			});
-		};
+			res.end();
+		});
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -199,30 +203,12 @@ export class Router<
 				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
 			};
 
-			const prev = this.middleware;
-			this.middleware = (router: express.Router) => {
-				prev(router);
-				router.use(innerRouter.router);
-			};
+			this.innerRouter.use(innerRouter.router);
 		}
 		if (typeof innerRouter === 'function') {
-			const prev = this.middleware;
-			this.middleware = (router: express.Router) => {
-				prev(router);
-				router.use(innerRouter);
-			};
+			this.innerRouter.use(innerRouter);
 		}
 		return this as any;
-	}
-
-	get router(): express.Router {
-		// eslint-disable-next-line new-cap
-		const router = express.Router();
-		// eslint-disable-next-line new-cap
-		const innerRouter = express.Router();
-		this.middleware(innerRouter);
-		router.use(this.base, innerRouter);
-		return router;
 	}
 }
 
