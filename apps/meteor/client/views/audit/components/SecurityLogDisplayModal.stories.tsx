@@ -7,7 +7,13 @@ export default {
 	component: SecurityLogDisplayModal,
 	args: {
 		timestamp: 'Thursday, 20-Mar-25 17:17:46',
-		actor: 'John Doe',
+		actor: {
+			type: 'user',
+			_id: 'user-id',
+			username: 'username',
+			useragent: 'useragent',
+			ip: '127.0.0.1',
+		},
 		setting: 'Show_message_in_email_notification',
 		changedFrom: 'false',
 		changedTo: 'true',

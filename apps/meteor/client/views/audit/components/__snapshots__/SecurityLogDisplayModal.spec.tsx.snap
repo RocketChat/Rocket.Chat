@@ -56,6 +56,34 @@ exports[`renders Default without crashing 1`] = `
               <div
                 class="rcx-box rcx-box--full rcx-css-pwio3x"
               >
+                Actor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-127j9mz"
+              >
+                <figure
+                  class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+                >
+                  <img
+                    alt=""
+                    aria-hidden="true"
+                    class="rcx-avatar__element rcx-avatar__element--x24"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  />
+                </figure>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-2f8n8y"
+                >
+                  username
+                </div>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
                 Setting
               </div>
               <div

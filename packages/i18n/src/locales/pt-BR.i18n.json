@@ -3536,7 +3536,7 @@
   "Settings": "Configurações",
   "Setting": "Configuração",
   "Settings_updated": "Configurações atualizadas",
-  "Setting_changed": "Configuração alterada",
+  "Setting_change": "Configuração alterada",
   "Setup_Wizard": "Assistente de configuração",
   "Setup_Wizard_Description": "Informações básicas do seu workspace como organização, nome e país.",
   "Setup_Wizard_Info": "Vamos apoiar na configuração do seu primeiro usuário administrador, na configuração da sua organização e no registro do servidor, para que possa  receber notificações push gratuitas e muito mais.",
