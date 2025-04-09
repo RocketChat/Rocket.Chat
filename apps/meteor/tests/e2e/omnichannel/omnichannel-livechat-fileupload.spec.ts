@@ -2,20 +2,21 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { updateSetting, updateSettings } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
 const visitor = createFakeVisitor();
 
 // Endpoint defaults are reset after each test, so if not in matrix assume is true
-const endpointMatrix = [
-	[{ url: '/settings/FileUpload_Enabled', value: false }],
-	[{ url: '/settings/Livechat_fileupload_enabled', value: false }],
+const settingsMatrix = [
+	[{ name: 'FileUpload_Enabled', value: false }],
+	[{ name: 'Livechat_fileupload_enabled', value: false }],
 	[
-		{ url: '/settings/FileUpload_Enabled', value: false },
-		{ url: '/settings/Livechat_fileupload_enabled', value: false },
+		{ name: 'FileUpload_Enabled', value: false },
+		{ name: 'Livechat_fileupload_enabled', value: false },
 	],
-];
+] as const;
 
 const beforeTest = async (poLiveChat: OmnichannelLiveChat) => {
 	await poLiveChat.page.goto('/livechat');
@@ -45,8 +46,10 @@ test.describe('OC - Livechat - OC - File Upload', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/FileUpload_Enabled', { value: true });
-		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
+		await updateSettings(api, {
+			FileUpload_Enabled: true,
+			Livechat_fileupload_enabled: true,
+		});
 
 		await poHomeOmnichannel.page.close();
 		await agent.delete();
@@ -85,24 +88,22 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/FileUpload_Enabled', { value: true });
-		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
+		await updateSettings(api, {
+			FileUpload_Enabled: true,
+			Livechat_fileupload_enabled: true,
+		});
 
 		await poHomeOmnichannel.page?.close();
 		await agent.delete();
 	});
 
-	endpointMatrix.forEach((endpoints) => {
-		const testName = endpoints.map((endpoint) => endpoint.url.split('/').pop()?.concat(`=${endpoint.value}`)).join(' ');
+	settingsMatrix.forEach((settings) => {
+		const testName = settings.map(({ name, value }) => `${name}=${value}`).join(' ');
 
 		test(`OC - Livechat - txt Drag & Drop - ${testName}`, async ({ page, api }) => {
 			poLiveChat = new OmnichannelLiveChat(page, api);
 
-			await Promise.all(
-				endpoints.map(async (endpoint: { url: string; value: boolean }) => {
-					await api.post(endpoint.url, { value: endpoint.value });
-				}),
-			);
+			await Promise.all(settings.map(({ name, value }) => updateSetting(api, name, value)));
 
 			await poLiveChat.page.goto('/livechat');
 

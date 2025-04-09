@@ -2,9 +2,8 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetDiscussion, deleteRoom } from './utils';
+import { createTargetDiscussion, deleteRoom, updateSetting } from './utils';
 import { getSettingValueById } from './utils/getSettingValueById';
-import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -25,7 +24,7 @@ test.describe.serial('search-discussion', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'UI_Allow_room_names_with_special_chars', settingDefaultValue);
+		await updateSetting(api, 'UI_Allow_room_names_with_special_chars', settingDefaultValue);
 		await deleteRoom(api, discussion._id);
 	});
 
@@ -37,12 +36,12 @@ test.describe.serial('search-discussion', () => {
 	};
 
 	test('expect search discussion to show fname when UI_Allow_room_names_with_special_chars=true', async ({ page, api }) => {
-		await setSettingValueById(api, 'UI_Allow_room_names_with_special_chars', true);
+		await updateSetting(api, 'UI_Allow_room_names_with_special_chars', true);
 		await testDiscussionSearch(page);
 	});
 
 	test('expect search discussion to show fname when UI_Allow_room_names_with_special_chars=false', async ({ page, api }) => {
-		await setSettingValueById(api, 'UI_Allow_room_names_with_special_chars', false);
+		await updateSetting(api, 'UI_Allow_room_names_with_special_chars', false);
 		await testDiscussionSearch(page);
 	});
 });

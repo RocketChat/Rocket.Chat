@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetTeam, createTargetPrivateChannel, getSettingValueById, setSettingValueById } from './utils';
+import { createTargetTeam, createTargetPrivateChannel, getSettingValueById, updateSetting, updateSettings } from './utils';
 import { test, expect } from './utils/test';
 import { timeUnitToMs, TIMEUNIT } from '../../client/lib/convertTimeUnit';
 
@@ -33,7 +33,7 @@ test.describe.serial('retention-policy', () => {
 
 	test.describe('retention policy disabled', () => {
 		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'RetentionPolicy_Enabled', false);
+			await updateSetting(api, 'RetentionPolicy_Enabled', false);
 		});
 
 		test('should not show prune banner in channel', async () => {
@@ -59,14 +59,17 @@ test.describe.serial('retention-policy', () => {
 
 	test.describe('retention policy enabled', () => {
 		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'RetentionPolicy_Enabled', true);
+			await updateSetting(api, 'RetentionPolicy_Enabled', true);
 		});
+
 		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'RetentionPolicy_Enabled', false);
-			await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', false);
-			await setSettingValueById(api, 'RetentionPolicy_AppliesToGroups', false);
-			await setSettingValueById(api, 'RetentionPolicy_AppliesToDMs', false);
-			await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 30));
+			await updateSettings(api, {
+				RetentionPolicy_Enabled: false,
+				RetentionPolicy_AppliesToChannels: false,
+				RetentionPolicy_AppliesToGroups: false,
+				RetentionPolicy_AppliesToDMs: false,
+				RetentionPolicy_TTL_Channels: timeUnitToMs(TIMEUNIT.days, 30),
+			});
 		});
 
 		test('should not show prune banner even with retention policy setting enabled in any type of room', async () => {
@@ -118,9 +121,11 @@ test.describe.serial('retention-policy', () => {
 
 		test.describe('retention policy applies enabled by default', () => {
 			test.beforeAll(async ({ api }) => {
-				await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', true);
-				await setSettingValueById(api, 'RetentionPolicy_AppliesToGroups', true);
-				await setSettingValueById(api, 'RetentionPolicy_AppliesToDMs', true);
+				await updateSettings(api, {
+					RetentionPolicy_AppliesToChannels: true,
+					RetentionPolicy_AppliesToGroups: true,
+					RetentionPolicy_AppliesToDMs: true,
+				});
 			});
 
 			test('should prune old messages checkbox enabled by default in channel and show retention policy banner', async () => {
@@ -164,7 +169,7 @@ test.describe.serial('retention-policy', () => {
 
 			test.beforeAll(async ({ api }) => {
 				ignoreThreadsSetting = (await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads')) as boolean;
-				expect((await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15))).status()).toBe(200);
+				await updateSetting(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15));
 			});
 
 			test.beforeEach(async () => {

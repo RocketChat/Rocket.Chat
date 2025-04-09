@@ -1,5 +1,5 @@
 import { Users } from './fixtures/userStates';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { updateSettings } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -8,13 +8,18 @@ test.use({ storageState: Users.admin.state });
 test.describe('Translations', () => {
 	test.beforeAll(async ({ api }) => {
 		expect((await setUserPreferences(api, { language: '' })).status()).toBe(200);
-		expect((await setSettingValueById(api, 'Language', 'en')).status()).toBe(200);
-		expect((await setSettingValueById(api, 'Site_Name', 'Rocket.Chat')).status()).toBe(200);
+		await updateSettings(api, {
+			Language: 'en',
+			Site_Name: 'Rocket.Chat',
+		});
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await setUserPreferences(api, { language: '' })).status()).toBe(200);
-		expect((await setSettingValueById(api, 'Language', 'en')).status()).toBe(200);
+		await setUserPreferences(api, { language: '' });
+		await updateSettings(api, {
+			Language: 'en',
+			Site_Name: 'Rocket.Chat',
+		});
 	});
 
 	test("expect to display text in the user's preference language", async ({ page, api }) => {

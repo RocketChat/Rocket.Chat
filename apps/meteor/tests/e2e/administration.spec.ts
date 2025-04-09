@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin, Utils } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { createTargetChannel, updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -283,7 +283,7 @@ test.describe.parallel('administration', () => {
 		const incomingIntegrationName = faker.string.uuid();
 
 		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Code_highlight', '');
+			await updateSetting(api, 'Message_Code_highlight', '');
 		});
 
 		test.beforeEach(async ({ page }) => {
@@ -291,7 +291,7 @@ test.describe.parallel('administration', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Code_highlight', messageCodeHighlightDefault);
+			await updateSetting(api, 'Message_Code_highlight', messageCodeHighlightDefault);
 		});
 
 		test('should display the example payload correctly', async () => {

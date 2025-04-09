@@ -4,7 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { createTargetChannel, updateSettings } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -36,13 +36,17 @@ test.describe.serial('read-receipts', () => {
 
 	test.describe('read receipts enabled', async () => {
 		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
-			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
+			await updateSettings(api, {
+				Message_Read_Receipt_Enabled: true,
+				Message_Read_Receipt_Store_Users: true,
+			});
 		});
 
 		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
-			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+			await updateSettings(api, {
+				Message_Read_Receipt_Enabled: false,
+				Message_Read_Receipt_Store_Users: false,
+			});
 		});
 
 		let auxContext: { page: Page; poHomeChannel: HomeChannel } | undefined;

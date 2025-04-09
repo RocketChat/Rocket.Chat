@@ -4,6 +4,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { updateSettings } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
@@ -21,9 +22,8 @@ test.describe('omnichannel-takeChat', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			updateSettings(api, { Livechat_Routing_Method: 'Manual_Selection', Livechat_enabled_when_agent_idle: false }),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -36,9 +36,8 @@ test.describe('omnichannel-takeChat', () => {
 
 		await agent.page.close();
 		await Promise.all([
-			await api.delete('/livechat/users/agent/user1'),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }),
+			api.delete('/livechat/users/agent/user1'),
+			updateSettings(api, { Livechat_Routing_Method: 'Auto_Selection', Livechat_enabled_when_agent_idle: true }),
 		]);
 	});
 

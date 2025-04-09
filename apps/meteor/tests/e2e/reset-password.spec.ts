@@ -1,5 +1,5 @@
 import { Registration } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Reset Password', () => {
@@ -7,13 +7,13 @@ test.describe.parallel('Reset Password', () => {
 
 	test.beforeEach(async ({ api, page }) => {
 		poRegistration = new Registration(page);
-		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', true);
+		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', true);
 
 		await page.goto('/reset-password/someToken');
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', true);
+		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', true);
 	});
 
 	test('should confirm password be invalid', async () => {
@@ -24,7 +24,7 @@ test.describe.parallel('Reset Password', () => {
 	});
 
 	test('should confirm password not be visible', async ({ api }) => {
-		await setSettingValueById(api, 'Accounts_RequirePasswordConfirmation', false);
+		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', false);
 		await expect(poRegistration.inputPasswordConfirm).not.toBeVisible();
 	});
 

@@ -1,20 +1,24 @@
 import { faker } from '@faker-js/faker';
 
 import { HomeChannel, Registration } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { updateSettings } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('anonymous-user', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', true)).status()).toBe(200);
-		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', true)).status()).toBe(200);
+		await updateSettings(api, {
+			Accounts_AllowAnonymousRead: true,
+			Accounts_AllowAnonymousWrite: true,
+		});
 	});
 
 	test.afterAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false)).status()).toBe(200);
-		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', false)).status()).toBe(200);
+		await updateSettings(api, {
+			Accounts_AllowAnonymousRead: false,
+			Accounts_AllowAnonymousWrite: false,
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Utils, Registration } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Login', () => {
@@ -17,7 +17,7 @@ test.describe.parallel('Login', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Language', 'en');
+		await updateSetting(api, 'Language', 'en');
 	});
 
 	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
@@ -57,7 +57,7 @@ test.describe.parallel('Login', () => {
 	});
 
 	test('Should correctly display switch language button', async ({ page, api }) => {
-		expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
+		expect((await updateSetting(api, 'Language', 'pt-BR')).status()).toBe(200);
 
 		const button = page.getByRole('button', { name: 'Change to português (Brasil)' });
 		await button.click();

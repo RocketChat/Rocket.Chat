@@ -1,7 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { createTargetChannel, updateSetting } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -11,7 +10,7 @@ test.describe.serial('file-upload', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		await updateSetting(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
@@ -23,7 +22,7 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		await updateSetting(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -69,7 +68,7 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('expect not to send drawio file (unknown media type) when the default media type is blocked', async ({ api, page }) => {
-		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
+		await updateSetting(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
 
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
