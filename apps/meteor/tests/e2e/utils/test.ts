@@ -5,8 +5,10 @@ import * as path from 'path';
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
 import { test as baseTest, request as baseRequest } from '@playwright/test';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { v4 as uuid } from 'uuid';
 
+import { updateSetting, updateSettings } from './updateSetting';
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 
@@ -24,6 +26,8 @@ export type BaseTest = {
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
 	makeAxeBuilder: () => AxeBuilder;
+
+	updateSetting: (settingId: string, value: ISetting['value'], defaultValue?: ISetting['value']) => Promise<APIResponse>;
 };
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -119,6 +123,7 @@ export const test = baseTest.extend<BaseTest>({
 			},
 		});
 	},
+
 	makeAxeBuilder: async ({ page }, use) => {
 		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive'];
 
@@ -128,6 +133,20 @@ export const test = baseTest.extend<BaseTest>({
 				.include('body')
 				.disableRules([...SELECT_KNOW_ISSUES]);
 		await use(makeAxeBuilder);
+	},
+
+	updateSetting: async ({ api }, use) => {
+		const _defaultSettings: Record<ISetting['_id'], ISetting['value']> = {};
+
+		await use((settingId: ISetting['_id'], value: ISetting['value'], defaultValue: ISetting['value']) => {
+			if (defaultValue !== undefined) {
+				_defaultSettings[settingId] = defaultValue;
+			}
+
+			return updateSetting(api, settingId, value);
+		});
+
+		await updateSettings(api, _defaultSettings);
 	},
 });
 
