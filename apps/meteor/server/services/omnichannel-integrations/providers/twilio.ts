@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request } from 'express';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
@@ -245,7 +244,7 @@ export class Twilio implements ISMSProvider {
 		};
 	}
 
-	isRequestFromTwilio(signature: string, request: Request): boolean {
+	async isRequestFromTwilio(signature: string, request: Request): Promise<boolean> {
 		const authToken = settings.get<string>('SMS_Twilio_authToken');
 		let siteUrl = settings.get<string>('Site_Url');
 		if (siteUrl.endsWith('/')) {
@@ -257,17 +256,23 @@ export class Twilio implements ISMSProvider {
 			return false;
 		}
 
-		const twilioUrl = request.originalUrl ? `${siteUrl}${request.originalUrl}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+		const twilioUrl = request.url ? `${siteUrl}${request.url}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
 
-		return twilio.validateRequest(authToken, signature, twilioUrl, request.body);
+		let body = {};
+		try {
+			body = await request.json();
+			// eslint-disable-next-line no-empty
+		} catch {}
+
+		return twilio.validateRequest(authToken, signature, twilioUrl, body);
 	}
 
-	validateRequest(request: Request): boolean {
+	async validateRequest(request: Request): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
 		if (process.env.TEST_MODE === 'true') {
 			return true;
 		}
-		const twilioHeader = request.headers['x-twilio-signature'] || '';
+		const twilioHeader = request.headers.get('x-twilio-signature') || '';
 		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
 		return this.isRequestFromTwilio(twilioSignature, request);
 	}

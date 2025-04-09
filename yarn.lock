@@ -8760,6 +8760,7 @@ __metadata:
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
+    "@types/qs": "npm:^6"
     "@types/react": "npm:~18.3.17"
     "@types/react-dom": "npm:~18.3.5"
     "@types/sanitize-html": "npm:^2.13.0"
@@ -8857,6 +8858,7 @@ __metadata:
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
     hljs9: "npm:highlight.js@^9.18.5"
+    hono: "npm:^4.6.19"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
@@ -8929,6 +8931,7 @@ __metadata:
     proxy-from-env: "npm:^1.1.0"
     proxyquire: "npm:^2.1.3"
     psl: "npm:^1.10.0"
+    qs: "npm:^6.14.0"
     query-string: "npm:^7.1.3"
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
@@ -12721,6 +12724,13 @@ __metadata:
   version: 6.9.7
   resolution: "@types/qs@npm:6.9.7"
   checksum: 10/7fd6f9c25053e9b5bb6bc9f9f76c1d89e6c04f7707a7ba0e44cc01f17ef5284adb82f230f542c2d5557d69407c9a40f0f3515e8319afd14e1e16b5543ac6cdba
+  languageName: node
+  linkType: hard
+
+"@types/qs@npm:^6":
+  version: 6.9.18
+  resolution: "@types/qs@npm:6.9.18"
+  checksum: 10/152fab96efd819cc82ae67c39f089df415da6deddb48f1680edaaaa4e86a2a597de7b2ff0ad391df66d11a07006a08d52c9405e86b8cb8f3d5ba15881fe56cc7
   languageName: node
   linkType: hard
 
@@ -22714,6 +22724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:^4.6.19":
+  version: 4.6.19
+  resolution: "hono@npm:4.6.19"
+  checksum: 10/b3e317bdaf868359b68271d5aa395b1561ceedf3ac97f2d76cc5b9e00e01a794f862bdb5d5574b96b284f5456e2be4d42e6f9511a479d1afdf8c09dff75150e7
+  languageName: node
+  linkType: hard
+
 "hosted-git-info@npm:^2.1.4":
   version: 2.8.9
   resolution: "hosted-git-info@npm:2.8.9"
@@ -30926,6 +30943,15 @@ __metadata:
   dependencies:
     side-channel: "npm:^1.0.6"
   checksum: 10/f548b376e685553d12e461409f0d6e5c59ec7c7d76f308e2a888fd9db3e0c5e89902bedd0754db3a9038eda5f27da2331a6f019c8517dc5e0a16b3c9a6e9cef8
+  languageName: node
+  linkType: hard
+
+"qs@npm:^6.14.0":
+  version: 6.14.0
+  resolution: "qs@npm:6.14.0"
+  dependencies:
+    side-channel: "npm:^1.1.0"
+  checksum: 10/a60e49bbd51c935a8a4759e7505677b122e23bf392d6535b8fc31c1e447acba2c901235ecb192764013cd2781723dc1f61978b5fdd93cc31d7043d31cdc01974
   languageName: node
   linkType: hard
 

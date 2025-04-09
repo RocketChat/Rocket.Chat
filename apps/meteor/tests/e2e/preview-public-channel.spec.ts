@@ -2,7 +2,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel, Utils } from './page-objects';
 import { Directory } from './page-objects/directory';
-import { createTargetChannel, sendTargetChannelMessage } from './utils';
+import { createDirectMessage, createTargetChannel, sendTargetChannelMessage } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -42,6 +42,16 @@ test.describe('Preview public channel', () => {
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
+		});
+
+		test('should let user view direct rooms', async ({ api }) => {
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
+			await createDirectMessage(api);
+
+			await poHomeChannel.sidenav.openChat(Users.user2.data.username);
+
+			await expect(poHomeChannel.content.btnJoinChannel).not.toBeVisible();
+			await expect(poHomeChannel.composer).toBeEnabled();
 		});
 
 		test('should not let user role preview public rooms', async ({ api }) => {

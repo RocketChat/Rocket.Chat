@@ -8,7 +8,7 @@ describe('getModifiedHttpHeaders', () => {
 			'x-auth-token': '12345',
 			'some-other-header': 'value',
 		};
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result['x-auth-token']).to.equal('[redacted]');
 		expect(result['some-other-header']).to.equal('value');
 	});
@@ -17,7 +17,7 @@ describe('getModifiedHttpHeaders', () => {
 		const inputHeaders = {
 			'some-other-header': 'value',
 		};
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result).to.deep.equal(inputHeaders);
 	});
 
@@ -26,7 +26,7 @@ describe('getModifiedHttpHeaders', () => {
 			cookie: 'session_id=abc123; rc_token=98765; other_cookie=value',
 		};
 		const expectedCookies = 'session_id=abc123; rc_token=[redacted]; other_cookie=value';
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result.cookie).to.equal(expectedCookies);
 	});
 
@@ -34,7 +34,7 @@ describe('getModifiedHttpHeaders', () => {
 		const inputHeaders = {
 			cookie: 'session_id=abc123; other_cookie=value',
 		};
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result.cookie).to.equal(inputHeaders.cookie);
 	});
 
@@ -42,7 +42,7 @@ describe('getModifiedHttpHeaders', () => {
 		const inputHeaders = {
 			'some-other-header': 'value',
 		};
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result).to.deep.equal(inputHeaders);
 	});
 
@@ -52,7 +52,7 @@ describe('getModifiedHttpHeaders', () => {
 			'cookie': 'session_id=abc123; rc_token=98765; other_cookie=value',
 		};
 		const expectedCookies = 'session_id=abc123; rc_token=[redacted]; other_cookie=value';
-		const result = getModifiedHttpHeaders(inputHeaders);
+		const result = getModifiedHttpHeaders(new Headers(inputHeaders));
 		expect(result['x-auth-token']).to.equal('[redacted]');
 		expect(result.cookie).to.equal(expectedCookies);
 	});

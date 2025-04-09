@@ -6,9 +6,7 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import type express from 'express';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 import { ZodError } from 'zod';
 
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -55,14 +53,17 @@ export class AppsRestApi {
 
 	async loadAPI() {
 		this.api = new API.ApiClass({
-			version: 'apps',
-			apiPath: '/api',
+			apiPath: '',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
+			version: 'apps',
 		});
+
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
+
+		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
+		API.api.use(this.api.router);
 	}
 
 	addManagementRoutes() {

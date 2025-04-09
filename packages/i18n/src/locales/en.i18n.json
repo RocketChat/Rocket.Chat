@@ -562,6 +562,7 @@
   "api-bypass-rate-limit_description": "Permission to call api without rate limitation",
   "APIs": "APIs",
   "App_Info": "App Info",
+  "App_Settings_Saved_Successfully": "{{appName}} saved successfully",
   "Apps_context_enterprise": "Enterprise",
   "App_has_been_disabled_addon_message_one": "The app {{appNames}} has been disabled because of an invalid add-on. A valid add-on subscription is required to re-enable it",
   "App_has_been_disabled_addon_message_other": "The apps {{appNames}} have been disabled because of invalid add-ons. A valid add-on subscription is required to re-enable them",
