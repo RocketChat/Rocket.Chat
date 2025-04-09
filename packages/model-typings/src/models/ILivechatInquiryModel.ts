@@ -32,7 +32,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
-	queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null>;
+	queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(rid: string, department: string): Promise<void>;

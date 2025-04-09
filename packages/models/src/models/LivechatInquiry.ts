@@ -327,13 +327,17 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
 			{
-				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$set: {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					...(lastMessage && { lastMessage }),
+				},
 				$unset: { takenAt: 1 },
 			},
 			{ returnDocument: 'after' },
