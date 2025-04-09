@@ -157,7 +157,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const user = await Users.findOne({ username: currentIntegration.username });
+		const user = await Users.findOne({ username: integration.username });
 
 		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
@@ -176,6 +176,7 @@ Meteor.methods<ServerMethods>({
 					avatar: integration.avatar,
 					emoji: integration.emoji,
 					alias: integration.alias,
+					username: integration.username,
 					channel: channels,
 					...('username' in integration && { username: integration.username }),
 					...(isFrozen
