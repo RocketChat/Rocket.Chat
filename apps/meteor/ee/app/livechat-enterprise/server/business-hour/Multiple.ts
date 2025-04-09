@@ -154,7 +154,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, {
 			projection: { businessHourId: 1 },
 		});
-		if (!department?.businessHourId || !agentsId.length) {
+		if (!department || !agentsId.length) {
 			return options;
 		}
 
@@ -326,7 +326,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 		const [agentsWithDepartment, [agentsOfDepartment] = []] = await Promise.all([
 			LivechatDepartmentAgents.findByAgentIds(agentsIds, { projection: { agentId: 1 } }).toArray(),
-			LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray(),
+			...[department?.businessHourId ? LivechatDepartment.findAgentsByBusinessHourId(department.businessHourId).toArray() : []],
 		]);
 
 		for (const agentId of agentsIds) {
