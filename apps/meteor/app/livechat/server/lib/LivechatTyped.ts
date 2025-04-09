@@ -5,7 +5,6 @@ import type {
 	ILivechatVisitor,
 	ILivechatAgent,
 	ILivechatDepartment,
-	TransferData,
 	IOmnichannelAgent,
 	UserStatus,
 } from '@rocket.chat/core-typings';
@@ -45,8 +44,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
-import { RoutingManager } from './RoutingManager';
+import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { afterAgentAdded, afterRemoveAgent } from './hooks';
 
 type AKeyOf<T> = {
@@ -270,49 +268,6 @@ class LivechatClass {
 				status,
 			});
 		});
-	}
-
-	async transfer(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData) {
-		this.logger.debug(`Transfering room ${room._id} [Transfered by: ${transferData?.transferredBy?._id}]`);
-		if (room.onHold) {
-			throw new Error('error-room-onHold');
-		}
-
-		if (transferData.departmentId) {
-			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'name' | '_id'>>(transferData.departmentId, {
-				projection: { name: 1 },
-			});
-			if (!department) {
-				throw new Error('error-invalid-department');
-			}
-
-			transferData.department = department;
-			this.logger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
-		}
-
-		return RoutingManager.transferRoom(room, guest, transferData);
-	}
-
-	async forwardOpenChats(userId: string) {
-		this.logger.debug(`Transferring open chats for user ${userId}`);
-		const user = await Users.findOneById(userId);
-		if (!user) {
-			throw new Error('error-invalid-user');
-		}
-
-		const { _id, username, name } = user;
-		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
-			const guest = await LivechatVisitors.findOneEnabledById(room.v._id);
-			if (!guest) {
-				continue;
-			}
-
-			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			await this.transfer(room, guest, {
-				transferredBy,
-				departmentId: guest.department,
-			});
-		}
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {

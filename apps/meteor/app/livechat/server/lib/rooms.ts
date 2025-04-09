@@ -18,10 +18,13 @@ import {
 	Users,
 } from '@rocket.chat/models';
 
+import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
 import { Visitors } from './Visitors';
 import { getRequiredDepartment } from './departmentsLib';
 import { livechatLogger } from './logger';
+import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -32,8 +35,6 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { normalizeTransferredByData } from './Helper';
-import { RoutingManager } from './RoutingManager';
 
 export async function getRoom(
 	guest: ILivechatVisitor,
