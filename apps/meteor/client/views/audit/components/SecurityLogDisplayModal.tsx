@@ -4,6 +4,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
+import { AppInfoField } from './AppInfoField';
 import AuditModalField from './AuditModalField';
 import AuditModalLabel from './AuditModalLabel';
 import AuditModalText from './AuditModalText';
@@ -47,19 +48,7 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 				</AuditModalField>
 			)}
 
-			{actor.type === 'app' && (
-				<>
-					<AuditModalField>
-						<AuditModalLabel>{t('Actor')}</AuditModalLabel>
-						<AuditModalText>{t('App')}</AuditModalText>
-					</AuditModalField>
-
-					<AuditModalField>
-						<AuditModalLabel>{t('App_id')}</AuditModalLabel>
-						<AuditModalText>{actor._id}</AuditModalText>
-					</AuditModalField>
-				</>
-			)}
+			{actor.type === 'app' && <AppInfoField appId={actor._id} />}
 
 			{actor.type === 'system' && (
 				<>

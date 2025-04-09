@@ -6085,6 +6085,7 @@
   "Version_version": "Version {{version}}",
   "App": "App",
   "App_id": "App Id",
+  "App_name": "App name",
   "App_Request_Admin_Message": "Hi {{admin_name}}, {{user_name}} submitted a request to install {{app_name}} app on this workspace.  \n  \n This is the message they included:  \n>{{message}}  \n  \n To learn more and install the {{app_name}} app, [click here]({{learn_more}}).",
   "App_version_incompatible_tooltip": "App incompatible with Rocket.Chat version",
   "App_request_enduser_message": "The app you requested, {{appName}}, has just been installed on this workspace.  \n [Click here]({{learnmore}}) to learn about the app.",
