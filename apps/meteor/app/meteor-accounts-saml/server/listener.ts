@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
-import type { IIncomingMessage } from '@rocket.chat/core-typings';
 import bodyParser from 'body-parser';
+import express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
@@ -38,11 +38,11 @@ const samlUrlToObject = function (url: string | undefined): ISAMLAction | null {
 	return result;
 };
 
-const middleware = async function (req: IIncomingMessage, res: ServerResponse, next: (err?: any) => void): Promise<void> {
+const middleware = async function (req: express.Request, res: ServerResponse, next: (err?: any) => void): Promise<void> {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
-		const samlObject = samlUrlToObject(req.url);
+		const samlObject = samlUrlToObject(req.originalUrl);
 		if (!samlObject?.serviceName) {
 			next();
 			return;
@@ -72,6 +72,12 @@ const middleware = async function (req: IIncomingMessage, res: ServerResponse, n
 };
 
 // Listen to incoming SAML http requests
-WebApp.connectHandlers
-	.use(bodyParser.json())
-	.use(async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => middleware(req as IIncomingMessage, res, next));
+WebApp.connectHandlers.use(
+	/^\/_saml/,
+	bodyParser.json(),
+	express.urlencoded({
+		extended: true,
+		limit: '50mb',
+	}),
+	async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => middleware(req as express.Request, res, next),
+);
