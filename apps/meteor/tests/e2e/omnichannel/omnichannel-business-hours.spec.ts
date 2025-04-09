@@ -43,7 +43,7 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		deleteBusinessHour(api, BHid);
+		void deleteBusinessHour(api, BHid);
 	});
 
 	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
