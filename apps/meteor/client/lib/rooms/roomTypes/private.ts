@@ -1,6 +1,7 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
 import { hasPermission } from '../../../../app/authorization/client';
 import { Rooms } from '../../../../app/models/client';
@@ -10,7 +11,6 @@ import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL'
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
-import type { MinimongoSelector } from '../../cachedCollections/MinimongoCollection';
 import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -110,7 +110,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: MinimongoSelector<IRoom> = {
+			const query: Filter<IRoom> = {
 				t: 'p',
 				name: identifier,
 			};

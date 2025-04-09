@@ -4,7 +4,7 @@ import { Roles } from '../../../app/models/client';
 
 export const useRequire2faSetup = () => {
 	const user = useUser();
-	const tfaEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
+	const tfaEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 
 	return Roles.use((state) => {
 		// User is already using 2fa
