@@ -5,7 +5,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
-import { createBusinessHour } from '../utils/omnichannel/businessHours';
+import { createBusinessHour, deleteBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -18,6 +18,9 @@ test.describe('OC - Business Hours', () => {
 	let department: Awaited<ReturnType<typeof createDepartment>>;
 	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
+
+	const BHid = faker.string.uuid();
+	const BHName = 'TEST Business Hours';
 
 	test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
@@ -39,9 +42,11 @@ test.describe('OC - Business Hours', () => {
 		poOmnichannelBusinessHours = new OmnichannelBusinessHours(page);
 	});
 
-	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
-		const BHName = faker.string.uuid();
+	test.afterEach(async ({ api }) => {
+		deleteBusinessHour(api, BHid);
+	});
 
+	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
 		await page.goto('/omnichannel');
 		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
 
@@ -86,11 +91,9 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test('OC - Business hours - Edit BH departments', async ({ api, page }) => {
-		const BHName = faker.string.uuid();
-
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: '33',
+				id: BHid,
 				name: BHName,
 				departments: [department.data._id],
 			});
@@ -138,11 +141,9 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
-		const BHName = faker.string.uuid();
-
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: '34',
+				id: BHid,
 				name: BHName,
 				departments: [department.data._id],
 			});
