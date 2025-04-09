@@ -1,5 +1,25 @@
 # @rocket.chat/models
 
+## 1.4.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+- ([#35474](https://github.com/RocketChat/Rocket.Chat/pull/35474)) Adds automatic presence sync based on calendar events, updating the user’s status to “busy” when a meeting starts and reverting it afterward.
+
+### Patch Changes
+
+- ([#35374](https://github.com/RocketChat/Rocket.Chat/pull/35374)) Enforces app limitations on license downgrade by disabling premium marketplace apps, limiting marketplace apps to the oldest 5, and disabling private apps unless grandfathered based on historical statistics.
+
+- ([#35456](https://github.com/RocketChat/Rocket.Chat/pull/35456)) Fixes an issue wit airgapped restrictions being incorrectly applied.
+
+- <details><summary>Updated dependencies [4ce00382e9877c4d9241747fdd4f4223d70b58a7, 3b5406172c5575f09e9f5a2cb3ff99122900afde, c904862b1496cab943e97d28b36d3a24deac21c1, 96432420860651a3279069111972af6ec18c3b8a, cc4111cf0b1458dd97369baf8969734f337650dc, bb4ff0db3dcedcc715eb4b69b3f8d5c79ce0cb5f]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0
+  - @rocket.chat/model-typings@1.5.0
+  </details>
+
 ## 1.4.0-rc.5
 
 ### Patch Changes
