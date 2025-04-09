@@ -1301,6 +1301,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	removeNonLoginTokensExcept(userId: IUser['_id'], authToken: string) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						hashedToken: { $ne: authToken },
+					},
+				},
+			},
+		);
+	}
+
 	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']) {
 		return this.updateMany(
 			{
