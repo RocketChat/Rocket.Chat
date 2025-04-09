@@ -1,11 +1,10 @@
-import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
 	IUser,
 	ILivechatVisitor,
 	ILivechatAgent,
 	ILivechatDepartment,
-	AtLeast,
 	TransferData,
 	IOmnichannelAgent,
 	UserStatus,
@@ -26,7 +25,7 @@ import {
 	LivechatCustomField,
 } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 import UAParser from 'ua-parser-js';
@@ -331,81 +330,6 @@ class LivechatClass {
 		return result;
 	}
 
-	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
-		this.logger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
-		if (!room.open) {
-			throw new Meteor.Error('room-closed');
-		}
-
-		if (room.onHold) {
-			throw new Meteor.Error('error-room-onHold');
-		}
-
-		if (!room.servedBy) {
-			return false;
-		}
-
-		const user = await Users.findOneById(room.servedBy._id);
-		if (!user?._id) {
-			throw new Meteor.Error('error-invalid-user');
-		}
-
-		// find inquiry corresponding to room
-		const inquiry = await LivechatInquiry.findOne({ rid: room._id });
-		if (!inquiry) {
-			return false;
-		}
-
-		const transferredBy = normalizeTransferredByData(user, room);
-		this.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
-		try {
-			await this.saveTransferHistory(room, transferData);
-			await RoutingManager.unassignAgent(inquiry, departmentId);
-		} catch (e) {
-			this.logger.error(e);
-			throw new Meteor.Error('error-returning-inquiry');
-		}
-
-		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
-
-		return true;
-	}
-
-	async saveTransferHistory(room: IOmnichannelRoom, transferData: TransferData) {
-		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
-
-		check(
-			transferredBy,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				name: Match.Maybe(String),
-				userType: String,
-			}),
-		);
-
-		const { _id, username } = transferredBy;
-		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
-		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
-
-		const transferMessage = {
-			...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
-			transferData: {
-				transferredBy,
-				ts: new Date(),
-				scope: scopeData,
-				comment,
-				...(previousDepartment && { previousDepartment }),
-				...(nextDepartment && { nextDepartment }),
-				...(transferredTo && { transferredTo }),
-			},
-		};
-
-		await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
-	}
-
 	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
@@ -453,6 +377,7 @@ class LivechatClass {
 	}
 
 	async removeManager(username: string) {
+		// TODO: we already validated user exists at this point, remove this check
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
 
 		if (!user) {
