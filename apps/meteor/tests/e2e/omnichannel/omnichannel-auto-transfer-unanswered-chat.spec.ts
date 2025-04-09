@@ -5,7 +5,6 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
-import { updateSetting } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
@@ -17,12 +16,12 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	let agent1: { page: Page; poHomeChannel: HomeChannel };
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
-			updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection'),
-			updateSetting(api, 'Livechat_auto_transfer_chat_timeout', 5),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_auto_transfer_chat_timeout', 5, 0),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -39,7 +38,6 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
-			updateSetting(api, 'Livechat_auto_transfer_chat_timeout', 0),
 		]);
 	});
 

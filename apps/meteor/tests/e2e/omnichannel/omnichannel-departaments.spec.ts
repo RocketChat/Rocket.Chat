@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createDepartment, deleteDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -21,14 +20,9 @@ test.describe('OC - Manage Departments', () => {
 
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ updateSetting }) => {
 		// turn on department removal
-		await updateSetting(api, 'Omnichannel_enable_department_removal', true);
-	});
-
-	test.afterAll(async ({ api }) => {
-		// turn off department removal
-		await updateSetting(api, 'Omnichannel_enable_department_removal', false);
+		await updateSetting('Omnichannel_enable_department_removal', true, false);
 	});
 
 	test.describe('Create first department', async () => {
@@ -246,7 +240,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 		});
 
-		test('Toggle department removal', async ({ api }) => {
+		test('Toggle department removal', async ({ api, updateSetting }) => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
@@ -259,7 +253,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to disable department removal setting', async () => {
-				await updateSetting(api, 'Omnichannel_enable_department_removal', false);
+				await updateSetting('Omnichannel_enable_department_removal', false, false);
 			});
 
 			await test.step('expect not to be able to delete department', async () => {
@@ -269,7 +263,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to enable department removal setting', async () => {
-				await updateSetting(api, 'Omnichannel_enable_department_removal', true);
+				await updateSetting('Omnichannel_enable_department_removal', true, false);
 			});
 
 			await test.step('expect to delete department', async () => {

@@ -2,7 +2,6 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { updateSetting, updateSettings } from './utils';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -27,11 +26,8 @@ test.describe.serial('homepage', () => {
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 
-		test.afterAll(async ({ api }) => {
-			await updateSettings(api, {
-				Layout_Home_Custom_Block_Visible: false,
-				Layout_Custom_Body_Only: false,
-			});
+		test.afterAll(async ({ updateSetting }) => {
+			await Promise.all([updateSetting('Layout_Home_Custom_Block_Visible', false), updateSetting('Layout_Custom_Body_Only', false)]);
 
 			await adminPage.close();
 		});
@@ -47,8 +43,8 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with empty custom content', async () => {
-			test.beforeAll(async ({ api }) => {
-				await updateSetting(api, 'Layout_Home_Body', '');
+			test.beforeAll(async ({ updateSetting }) => {
+				await updateSetting('Layout_Home_Body', '', '');
 			});
 
 			test('visibility and button functionality in custom body with empty custom content', async () => {
@@ -68,8 +64,8 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with custom content', () => {
-			test.beforeAll(async ({ api }) => {
-				await updateSetting(api, 'Layout_Home_Body', 'Hello admin');
+			test.beforeAll(async ({ updateSetting }) => {
+				await updateSetting('Layout_Home_Body', 'Hello admin', '');
 			});
 
 			test('visibility and button functionality in custom body with custom content', async () => {
@@ -86,12 +82,12 @@ test.describe.serial('homepage', () => {
 			test.describe('enterprise edition', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
-				test.beforeAll(async ({ api }) => {
-					await updateSettings(api, {
-						Layout_Home_Body: 'Hello admin',
-						Layout_Home_Custom_Block_Visible: true,
-						Layout_Custom_Body_Only: true,
-					});
+				test.beforeAll(async ({ updateSetting }) => {
+					await Promise.all([
+						updateSetting('Layout_Home_Body', 'Hello admin'),
+						updateSetting('Layout_Home_Custom_Block_Visible', true),
+						updateSetting('Layout_Custom_Body_Only', true),
+					]);
 				});
 
 				test('display custom content only', async () => {
@@ -115,8 +111,8 @@ test.describe.serial('homepage', () => {
 	test.describe('for regular users', () => {
 		const notVisibleCards = [CardIds.Users, CardIds.Custom];
 
-		test.beforeAll(async ({ api, browser }) => {
-			await updateSetting(api, 'Layout_Home_Body', '');
+		test.beforeAll(async ({ updateSetting, browser }) => {
+			await updateSetting('Layout_Home_Body', '', '');
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
@@ -153,21 +149,14 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom values', () => {
-			test.beforeAll(async ({ api }) => {
-				await updateSettings(api, {
-					Site_Name: 'NewSiteName',
-					Layout_Home_Title: 'NewTitle',
-				});
+			test.beforeAll(async ({ updateSetting }) => {
+				await Promise.all([
+					updateSetting('Site_Name', 'NewSiteName', 'Rocket.Chat'),
+					updateSetting('Layout_Home_Title', 'NewTitle', 'Home'),
+				]);
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
-			});
-
-			test.afterAll(async ({ api }) => {
-				await updateSettings(api, {
-					Site_Name: 'Rocket.Chat',
-					Layout_Home_Title: 'Home',
-				});
 			});
 
 			test('expect welcome text and header text to be correct', async () => {
@@ -182,21 +171,11 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with content', () => {
-			test.beforeAll(async ({ api }) => {
-				await updateSettings(api, {
-					Layout_Home_Body: 'Hello',
-					Layout_Home_Custom_Block_Visible: true,
-				});
+			test.beforeAll(async ({ updateSetting }) => {
+				await Promise.all([updateSetting('Layout_Home_Body', 'Hello', ''), updateSetting('Layout_Home_Custom_Block_Visible', true, false)]);
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
-			});
-
-			test.afterAll(async ({ api }) => {
-				await updateSettings(api, {
-					Layout_Home_Body: '',
-					Layout_Home_Custom_Block_Visible: false,
-				});
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -206,12 +185,8 @@ test.describe.serial('homepage', () => {
 			test.describe('enterprise edition', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
-				test.beforeAll(async ({ api }) => {
-					await updateSetting(api, 'Layout_Custom_Body_Only', true);
-				});
-
-				test.afterAll(async ({ api }) => {
-					await updateSetting(api, 'Layout_Custom_Body_Only', false);
+				test.beforeAll(async ({ updateSetting }) => {
+					await updateSetting('Layout_Custom_Body_Only', true, false);
 				});
 
 				test('expect default layout not be visible and custom body visible', async () => {

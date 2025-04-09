@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelCurrentChats } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
@@ -27,10 +26,10 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 	let tags: Awaited<ReturnType<typeof createTag>>[];
 
 	// Allow manual on hold
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ updateSetting }) => {
 		await Promise.all([
-			updateSetting(api, 'Livechat_allow_manual_on_hold', true),
-			updateSetting(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', false),
+			updateSetting('Livechat_allow_manual_on_hold', true, false),
+			updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', false, true),
 		]);
 	});
 
@@ -113,7 +112,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
@@ -123,9 +122,6 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			...agents.map((agent) => agent.delete()),
 			// Delete tags
 			...tags.map((tag) => tag.delete()),
-			// Reset setting
-			updateSetting(api, 'Livechat_allow_manual_on_hold', false),
-			updateSetting(api, 'Livechat_allow_manual_on_hold_upon_agent_engagement_only', true),
 		]);
 	});
 
@@ -288,8 +284,8 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 	let poCurrentChats: OmnichannelCurrentChats;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'Livechat_Routing_Method', 'Manual_Selection');
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -319,10 +315,6 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 			await poCurrentChats.content.btnTakeChat.click();
 			await expect(poCurrentChats.content.btnTakeChat).not.toBeVisible();
 		});
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection');
 	});
 
 	test.afterAll(async () => {

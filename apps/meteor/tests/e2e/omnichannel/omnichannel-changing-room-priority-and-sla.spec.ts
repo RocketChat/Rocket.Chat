@@ -5,7 +5,6 @@ import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
-import { updateSetting } from '../utils';
 import { getPriorityByi18nLabel } from '../utils/omnichannel/priority';
 import { createSLA } from '../utils/omnichannel/sla';
 import { test, expect } from '../utils/test';
@@ -29,14 +28,14 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		let statusCode = (await api.post('/livechat/users/agent', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
-		await updateSetting(api, 'Livechat_Routing_Method', 'Manual_Selection');
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
@@ -50,7 +49,6 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await Promise.all([
 			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
 			api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`),
-			updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection'),
 		]);
 	});
 

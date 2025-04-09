@@ -4,7 +4,6 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
-import { updateSetting } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.describe('Omnichannel close inquiry', () => {
@@ -13,10 +12,10 @@ test.describe('Omnichannel close inquiry', () => {
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, updateSetting }) => {
 		newVisitor = createFakeVisitor();
 
-		await updateSetting(api, 'Livechat_Routing_Method', 'Manual_Selection');
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 		await api.post('/livechat/users/manager', { username: 'user1' });
 		await api.post('/livechat/users/agent', { username: 'user1' });
 	});
@@ -33,11 +32,7 @@ test.describe('Omnichannel close inquiry', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			await updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection'),
-			await api.delete('/livechat/users/agent/user1'),
-			await api.delete('/livechat/users/manager/user1'),
-		]);
+		await Promise.all([await api.delete('/livechat/users/agent/user1'), await api.delete('/livechat/users/manager/user1')]);
 	});
 
 	test('Receiving a message from visitor', async ({ page }) => {

@@ -3,7 +3,6 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
-import { updateSetting, updateSettings } from '../utils';
 import { test, expect } from '../utils/test';
 
 const firstVisitor = createFakeVisitor();
@@ -22,13 +21,11 @@ test.describe('OC - Livechat - Queue Management', () => {
 	const queuePosition1 = 'Your spot is #1';
 	const queuePosition2 = 'Your spot is #2';
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
-			updateSettings(api, {
-				Livechat_Routing_Method: 'Manual_Selection',
-				Livechat_waiting_queue: true,
-				Livechat_waiting_queue_message: waitingQueueMessage,
-			}),
+			updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_waiting_queue', true, false),
+			updateSetting('Livechat_waiting_queue_message', waitingQueueMessage, ''),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -45,14 +42,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			updateSettings(api, {
-				Livechat_Routing_Method: 'Auto_Selection',
-				Livechat_waiting_queue: false,
-				Livechat_waiting_queue_message: '',
-			}),
-			api.delete('/livechat/users/agent/user1'),
-		]);
+		await api.delete('/livechat/users/agent/user1');
 		await poHomeOmnichannel.page.close();
 	});
 
@@ -136,9 +126,9 @@ test.describe('OC - Contact Manager Routing', () => {
 	const visitorWithManager = createFakeVisitor();
 	const contactId = `contact-${Date.now()}`;
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await api.post('/livechat/users/agent', { username: 'user2' });
-		await updateSetting(api, 'Livechat_Routing_Method', 'Manual_Selection');
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 		await api.post('/omnichannel/contact', {
 			_id: contactId,
 			name: visitorWithManager.name,
@@ -165,7 +155,6 @@ test.describe('OC - Contact Manager Routing', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection'),
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/agent/user2'),
 			api.delete(`/omnichannel/contact/${contactId}`),

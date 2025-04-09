@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 
 import { Utils, Registration } from './page-objects';
-import { updateSetting, updateSettings } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('register', () => {
@@ -46,17 +45,13 @@ test.describe.parallel('register', () => {
 		});
 
 		test.describe('Registration without Account confirmation password set', async () => {
-			test.beforeEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_RequirePasswordConfirmation', false);
+			test.beforeEach(async ({ updateSetting }) => {
+				await updateSetting('Accounts_RequirePasswordConfirmation', false, true);
 			});
 
 			test.beforeEach(async ({ page }) => {
 				await page.goto('/home');
 				await poRegistration.goToRegister.click();
-			});
-
-			test.afterEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_RequirePasswordConfirmation', true);
 			});
 
 			test('expect to register a user without password confirmation', async () => {
@@ -77,8 +72,8 @@ test.describe.parallel('register', () => {
 		});
 
 		test.describe('Registration with manually confirmation enabled', async () => {
-			test.beforeEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_ManuallyApproveNewUsers', true);
+			test.beforeEach(async ({ updateSetting }) => {
+				await updateSetting('Accounts_ManuallyApproveNewUsers', true, false);
 			});
 
 			test.beforeEach(async ({ page }) => {
@@ -86,10 +81,6 @@ test.describe.parallel('register', () => {
 
 				await page.goto('/home');
 				await poRegistration.goToRegister.click();
-			});
-
-			test.afterEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_ManuallyApproveNewUsers', false);
 			});
 
 			test('it should expect to have a textbox asking the reason for the registration', async () => {
@@ -105,12 +96,8 @@ test.describe.parallel('register', () => {
 		});
 
 		test.describe('Registration form Disabled', async () => {
-			test.beforeEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_RegistrationForm', 'Disabled');
-			});
-
-			test.afterEach(async ({ api }) => {
-				await updateSetting(api, 'Accounts_RegistrationForm', 'Public');
+			test.beforeEach(async ({ updateSetting }) => {
+				await updateSetting('Accounts_RegistrationForm', 'Disabled', 'Public');
 			});
 
 			test('It should expect a message warning that registration is disabled', async ({ page }) => {
@@ -131,17 +118,13 @@ test.describe.parallel('register', () => {
 	});
 
 	test.describe('Registration for secret password', async () => {
-		test.beforeEach(async ({ api, page }) => {
+		test.beforeEach(async ({ updateSetting, page }) => {
 			poRegistration = new Registration(page);
 			poUtils = new Utils(page);
-			await updateSettings(api, {
-				Accounts_RegistrationForm: 'Secret URL',
-				Accounts_RegistrationForm_SecretURL: 'secret',
-			});
-		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Accounts_RegistrationForm', 'Public');
+			await Promise.all([
+				updateSetting('Accounts_RegistrationForm', 'Secret URL', 'Public'),
+				updateSetting('Accounts_RegistrationForm_SecretURL', 'secret', faker.string.uuid()),
+			]);
 		});
 
 		test('It should expect a message warning that registration is disabled', async ({ page }) => {
@@ -175,11 +158,11 @@ test.describe.parallel('register', () => {
 	});
 
 	test.describe('Registration by Secret is disabled url should fail', async () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSettings(api, {
-				Accounts_RegistrationForm: 'Public',
-				Accounts_RegistrationForm_SecretURL: 'secret',
-			});
+		test.beforeAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Accounts_RegistrationForm', 'Public', 'Public'),
+				updateSetting('Accounts_RegistrationForm_SecretURL', 'secret', faker.string.uuid()),
+			]);
 		});
 
 		test('It should show an invalid page informing that the url is not valid', async ({ page }) => {

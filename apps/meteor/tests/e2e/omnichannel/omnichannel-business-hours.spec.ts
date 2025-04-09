@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
@@ -20,24 +19,20 @@ test.describe('OC - Business Hours', () => {
 	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, updateSetting }) => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
 		agent = await createAgent(api, 'user2');
 		await Promise.all([
-			updateSetting(api, 'Livechat_enable_business_hours', true),
-			updateSetting(api, 'Livechat_business_hour_type', 'Multiple'),
+			updateSetting('Livechat_enable_business_hours', true, false),
+			updateSetting('Livechat_business_hour_type', 'Multiple', 'Single'),
 		]);
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
-		await Promise.all([
-			updateSetting(api, 'Livechat_enable_business_hours', false),
-			updateSetting(api, 'Livechat_business_hour_type', 'Single'),
-		]);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

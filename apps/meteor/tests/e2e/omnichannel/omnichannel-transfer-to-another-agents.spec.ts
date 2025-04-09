@@ -3,7 +3,6 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createManager } from '../utils/omnichannel/managers';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -23,8 +22,8 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Livechat when agent idle
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'Livechat_enabled_when_agent_idle', false);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_enabled_when_agent_idle', false, true);
 	});
 
 	// Create agent sessions
@@ -36,12 +35,11 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Delete all data
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...agents.map((agent) => agent.delete()),
 			...managers.map((manager) => manager.delete()),
-			updateSetting(api, 'Livechat_enabled_when_agent_idle', true),
 		]);
 	});
 

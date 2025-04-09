@@ -1,5 +1,4 @@
 import { Registration } from './page-objects';
-import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe('OAuth', () => {
@@ -9,9 +8,9 @@ test.describe('OAuth', () => {
 		poRegistration = new Registration(page);
 	});
 
-	test('Login Page', async ({ page, api }) => {
+	test('Login Page', async ({ page, updateSetting }) => {
 		await test.step('expect OAuth button to be visible', async () => {
-			await updateSetting(api, 'Accounts_OAuth_Google', true);
+			await updateSetting('Accounts_OAuth_Google', true);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');
@@ -20,7 +19,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect Custom OAuth button to be visible', async () => {
-			await updateSetting(api, 'Accounts_OAuth_Custom-Test', true);
+			await updateSetting('Accounts_OAuth_Custom-Test', true);
 			await page.waitForTimeout(5000);
 			await page.goto('/home');
 
@@ -33,7 +32,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect OAuth button to not be visible', async () => {
-			await updateSetting(api, 'Accounts_OAuth_Google', false);
+			await updateSetting('Accounts_OAuth_Google', false);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');
@@ -41,7 +40,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect Custom OAuth button to not be visible', async () => {
-			await updateSetting(api, 'Accounts_OAuth_Custom-Test', false);
+			await updateSetting('Accounts_OAuth_Custom-Test', false);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');

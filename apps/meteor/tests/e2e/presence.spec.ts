@@ -1,7 +1,6 @@
 import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
-import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Presence', () => {
@@ -13,12 +12,8 @@ test.describe.serial('Presence', () => {
 		await page.goto('/home');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'API_Use_REST_For_DDP_Calls', true);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'API_Use_REST_For_DDP_Calls', true);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('API_Use_REST_For_DDP_Calls', true, true);
 	});
 
 	test.describe('Login using default settings', () => {
@@ -34,8 +29,8 @@ test.describe.serial('Presence', () => {
 	test.describe('Login using with "Methods by REST" disabled', () => {
 		test.skip(IS_EE, `Micro services don't support turning this setting off`);
 
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'API_Use_REST_For_DDP_Calls', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('API_Use_REST_For_DDP_Calls', false, true);
 		});
 
 		test('expect user to be online after log in', async ({ page }) => {
@@ -53,12 +48,8 @@ test.describe.serial('Presence', () => {
 		test.describe.configure({ timeout: 1000 * 60 * 10 });
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', true);
-		});
-
-		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Calendar_BusyStatus_Enabled', true, false);
 		});
 
 		test('Should change user status to busy when there is an appointment', async ({ page, api }) => {

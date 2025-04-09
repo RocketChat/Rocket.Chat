@@ -1,24 +1,16 @@
 import { faker } from '@faker-js/faker';
 
 import { HomeChannel, Registration } from './page-objects';
-import { updateSettings } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('anonymous-user', () => {
 	let poHomeChannel: HomeChannel;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, {
-			Accounts_AllowAnonymousRead: true,
-			Accounts_AllowAnonymousWrite: true,
-		});
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, {
-			Accounts_AllowAnonymousRead: false,
-			Accounts_AllowAnonymousWrite: false,
-		});
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([
+			updateSetting('Accounts_AllowAnonymousRead', true, false),
+			updateSetting('Accounts_AllowAnonymousWrite', true, false),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {

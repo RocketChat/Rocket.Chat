@@ -4,7 +4,6 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
-import { updateSetting } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -58,7 +57,7 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 		await page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, updateSetting }) => {
 		const ids = (await (await api.get('/livechat/triggers')).json()).triggers.map(
 			(trigger: { _id: string }) => trigger._id,
 		) as unknown as string[];
@@ -68,7 +67,7 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
-			updateSetting(api, 'Livechat_clear_local_storage_when_chat_ended', false),
+			updateSetting('Livechat_clear_local_storage_when_chat_ended', false),
 		]);
 		await agent.page.close();
 	});

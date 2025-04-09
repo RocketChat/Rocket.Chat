@@ -1,6 +1,5 @@
 import { Users } from './fixtures/userStates';
 import { AccountProfile } from './page-objects';
-import { updateSettings } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -8,26 +7,18 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('access-security-page', () => {
 	let poAccountProfile: AccountProfile;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, {
-			Accounts_AllowPasswordChange: false,
-			Accounts_TwoFactorAuthentication_Enabled: false,
-			E2E_Enable: false,
-		});
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([
+			updateSetting('Accounts_AllowPasswordChange', false, true),
+			updateSetting('Accounts_TwoFactorAuthentication_Enabled', false, true),
+			updateSetting('E2E_Enable', false, false),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		await page.goto('/account/security');
 		await page.waitForSelector('.main-content');
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, {
-			Accounts_AllowPasswordChange: true,
-			Accounts_TwoFactorAuthentication_Enabled: true,
-			E2E_Enable: false,
-		});
 	});
 
 	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
@@ -38,12 +29,12 @@ test.describe.serial('access-security-page', () => {
 	});
 
 	test.describe.serial('can access account security sections', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSettings(api, {
-				Accounts_AllowPasswordChange: true,
-				Accounts_TwoFactorAuthentication_Enabled: false,
-				E2E_Enable: false,
-			});
+		test.beforeAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Accounts_AllowPasswordChange', true),
+				updateSetting('Accounts_TwoFactorAuthentication_Enabled', false),
+				updateSetting('E2E_Enable', false),
+			]);
 		});
 
 		test.beforeEach(async () => {
@@ -60,22 +51,22 @@ test.describe.serial('access-security-page', () => {
 			await expect(poAccountProfile.securityPasswordSection).toBeVisible();
 		});
 
-		test('can access 2FA setting when enabled but password change and E2E are disabled', async ({ api }) => {
-			await updateSettings(api, {
-				Accounts_AllowPasswordChange: false,
-				Accounts_TwoFactorAuthentication_Enabled: true,
-				E2E_Enable: false,
-			});
+		test('can access 2FA setting when enabled but password change and E2E are disabled', async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Accounts_AllowPasswordChange', false),
+				updateSetting('Accounts_TwoFactorAuthentication_Enabled', true),
+				updateSetting('E2E_Enable', false),
+			]);
 
 			await expect(poAccountProfile.security2FASection).toBeVisible();
 		});
 
-		test('can access E2E setting when enabled but password change and 2FA are disabled', async ({ api }) => {
-			await updateSettings(api, {
-				Accounts_AllowPasswordChange: false,
-				Accounts_TwoFactorAuthentication_Enabled: false,
-				E2E_Enable: true,
-			});
+		test('can access E2E setting when enabled but password change and 2FA are disabled', async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Accounts_AllowPasswordChange', false),
+				updateSetting('Accounts_TwoFactorAuthentication_Enabled', false),
+				updateSetting('E2E_Enable', true),
+			]);
 
 			await expect(poAccountProfile.securityE2EEncryptionSection).toBeVisible();
 		});

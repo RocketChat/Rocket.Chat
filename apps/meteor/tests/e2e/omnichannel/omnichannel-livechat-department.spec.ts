@@ -3,7 +3,6 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
@@ -54,11 +53,11 @@ test.describe('OC - Livechat - Department Flow', () => {
 		await page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'Omnichannel_enable_department_removal', true);
+	test.afterAll(async ({ updateSetting }) => {
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await Promise.all([...agents.map((agent) => agent.delete())]);
 		await Promise.all([...departments.map((department) => department.delete())]);
-		await updateSetting(api, 'Omnichannel_enable_department_removal', false);
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {

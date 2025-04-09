@@ -1,19 +1,14 @@
 import { Registration } from './page-objects';
-import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Reset Password', () => {
 	let poRegistration: Registration;
 
-	test.beforeEach(async ({ api, page }) => {
+	test.beforeEach(async ({ updateSetting, page }) => {
 		poRegistration = new Registration(page);
-		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', true);
+		await updateSetting('Accounts_RequirePasswordConfirmation', true, true);
 
 		await page.goto('/reset-password/someToken');
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', true);
 	});
 
 	test('should confirm password be invalid', async () => {
@@ -23,8 +18,8 @@ test.describe.parallel('Reset Password', () => {
 		await expect(poRegistration.inputPasswordConfirm).toBeInvalid();
 	});
 
-	test('should confirm password not be visible', async ({ api }) => {
-		await updateSetting(api, 'Accounts_RequirePasswordConfirmation', false);
+	test('should confirm password not be visible', async ({ updateSetting }) => {
+		await updateSetting('Accounts_RequirePasswordConfirmation', false, true);
 		await expect(poRegistration.inputPasswordConfirm).not.toBeVisible();
 	});
 

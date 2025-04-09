@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, updateSetting, updateSettings } from './utils';
+import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.user2.state });
@@ -20,8 +20,8 @@ test.describe.serial('permissions', () => {
 	});
 
 	test.describe.serial('Edit message', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowEditing', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowEditing', false, true);
 		});
 
 		test('expect option(edit) not be visible', async ({ page }) => {
@@ -36,15 +36,11 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowEditing', true);
-		});
 	});
 
 	test.describe.serial('Delete message', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowDeleting', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowDeleting', false, true);
 		});
 
 		test('expect option(delete) not be visible', async ({ page }) => {
@@ -60,17 +56,13 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionDeleteMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowDeleting', true);
-		});
 	});
 
 	test.describe.serial('Pin message', () => {
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowPinning', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowPinning', false, true);
 		});
 
 		test('expect option(pin) not be visible', async ({ page }) => {
@@ -82,17 +74,13 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowPinning', true);
-		});
 	});
 
 	// FIXME: Wrong behavior in Rocket.chat, currently it shows the button
 	// and after a click a "not allowed" alert pops up
 	test.describe.skip('Star message', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowStarring', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowStarring', false, true);
 		});
 
 		test('expect option(star) not be visible', async ({ page }) => {
@@ -107,63 +95,47 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowStarring', true);
-		});
 	});
 
 	test.describe.serial('Upload file', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'FileUpload_Enabled', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('FileUpload_Enabled', false, true);
 		});
 
 		test('expect option (upload file) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnOptionFileUpload).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'FileUpload_Enabled', true);
-		});
 	});
 
 	test.describe.serial('Upload audio', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AudioRecorderEnabled', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AudioRecorderEnabled', false, true);
 		});
 
 		test('expect option (upload audio) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnRecordAudio).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AudioRecorderEnabled', true);
-		});
 	});
 
 	test.describe.serial('Upload video', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'Message_VideoRecorderEnabled', false);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_VideoRecorderEnabled', false, true);
 		});
 
 		test('expect option (upload video) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnVideoMessage).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_VideoRecorderEnabled', true);
-		});
 	});
 
 	test.describe.serial('Filter words', () => {
-		test.beforeAll(async ({ api }) => {
-			await updateSettings(api, {
-				Message_AllowBadWordsFilter: true,
-				Message_BadWordsFilterList: 'badword',
-			});
+		test.beforeAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Message_AllowBadWordsFilter', true, false),
+				updateSetting('Message_BadWordsFilterList', 'badword', ''),
+			]);
 		});
 
 		test('expect badword be censored', async () => {
@@ -171,10 +143,6 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.content.sendMessage('badword');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('*'.repeat(7));
-		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'Message_AllowBadWordsFilter', false);
 		});
 	});
 });

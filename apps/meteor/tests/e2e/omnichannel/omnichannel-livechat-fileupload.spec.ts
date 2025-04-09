@@ -2,7 +2,6 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
-import { updateSetting, updateSettings } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -45,11 +44,8 @@ test.describe('OC - Livechat - OC - File Upload', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, {
-			FileUpload_Enabled: true,
-			Livechat_fileupload_enabled: true,
-		});
+	test.afterAll(async ({ updateSetting }) => {
+		await Promise.all([updateSetting('FileUpload_Enabled', true), updateSetting('Livechat_fileupload_enabled', true)]);
 
 		await poHomeOmnichannel.page.close();
 		await agent.delete();
@@ -87,11 +83,8 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, {
-			FileUpload_Enabled: true,
-			Livechat_fileupload_enabled: true,
-		});
+	test.afterAll(async ({ updateSetting }) => {
+		await Promise.all([updateSetting('FileUpload_Enabled', true), updateSetting('Livechat_fileupload_enabled', true)]);
 
 		await poHomeOmnichannel.page?.close();
 		await agent.delete();
@@ -100,10 +93,10 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 	settingsMatrix.forEach((settings) => {
 		const testName = settings.map(({ name, value }) => `${name}=${value}`).join(' ');
 
-		test(`OC - Livechat - txt Drag & Drop - ${testName}`, async ({ page, api }) => {
+		test(`OC - Livechat - txt Drag & Drop - ${testName}`, async ({ page, api, updateSetting }) => {
 			poLiveChat = new OmnichannelLiveChat(page, api);
 
-			await Promise.all(settings.map(({ name, value }) => updateSetting(api, name, value)));
+			await Promise.all(settings.map(({ name, value }) => updateSetting(name, value)));
 
 			await poLiveChat.page.goto('/livechat');
 

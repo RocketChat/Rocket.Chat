@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { updateSettings } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createMonitor } from '../utils/omnichannel/monitors';
@@ -41,11 +40,11 @@ test.describe('OC - Monitor Role', () => {
 	});
 
 	// Allow manual on hold
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, {
-			Livechat_allow_manual_on_hold: true,
-			Livechat_allow_manual_on_hold_upon_agent_engagement_only: false,
-		});
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([
+			updateSetting('Livechat_allow_manual_on_hold', true, false),
+			updateSetting('Livechat_allow_manual_on_hold_upon_agent_engagement_only', false, true),
+		]);
 	});
 
 	// Create agents
@@ -110,15 +109,13 @@ test.describe('OC - Monitor Role', () => {
 	});
 
 	// Delete all created data
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...conversations.map((conversation) => conversation.delete()),
 			...units.map((unit) => unit.delete()),
 			...monitors.map((monitor) => monitor.delete()),
-			// Reset setting
-			updateSettings(api, { Livechat_allow_manual_on_hold: false, Livechat_allow_manual_on_hold_upon_agent_engagement_only: true }),
 		]);
 	});
 

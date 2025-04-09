@@ -5,7 +5,6 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
-import { updateSettings } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
@@ -16,14 +15,12 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
-			updateSettings(api, {
-				Livechat_Routing_Method: 'Auto_Selection',
-				Livechat_auto_close_on_hold_chats_timeout: 5,
-				Livechat_allow_manual_on_hold: true,
-			}),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_auto_close_on_hold_chats_timeout', 5, 3600),
+			updateSetting('Livechat_allow_manual_on_hold', true, false),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -32,14 +29,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	test.afterAll(async ({ api }) => {
 		await agent.page.close();
 
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			updateSettings(api, {
-				Livechat_Routing_Method: 'Auto_Selection',
-				Livechat_auto_close_on_hold_chats_timeout: 3600,
-				Livechat_allow_manual_on_hold: false,
-			}),
-		]);
+		await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200));
 	});
 
 	test.beforeEach(async ({ page, api }) => {

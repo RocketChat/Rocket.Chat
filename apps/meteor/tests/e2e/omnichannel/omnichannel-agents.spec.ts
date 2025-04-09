@@ -1,7 +1,6 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects';
-import { updateSetting } from '../utils';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -25,11 +24,11 @@ test.describe.serial('OC - Manage Agents', () => {
 	});
 
 	// Ensure that there is no leftover data even if test fails
-	test.afterEach(async ({ api }) => {
+	test.afterEach(async ({ api, updateSetting }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await updateSetting(api, 'Omnichannel_enable_department_removal', true);
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await department.delete();
-		await updateSetting(api, 'Omnichannel_enable_department_removal', false);
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {

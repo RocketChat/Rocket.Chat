@@ -6,7 +6,6 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { updateSetting, updateSettings } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -22,18 +21,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, {
-			E2E_Enable: true,
-			E2E_Allow_Unencrypted_Messages: true,
-		});
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, {
-			E2E_Enable: false,
-			E2E_Allow_Unencrypted_Messages: false,
-		});
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([updateSetting('E2E_Enable', true, false), updateSetting('E2E_Allow_Unencrypted_Messages', true, false)]);
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -257,19 +246,15 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.use({ storageState: Users.userE2EE.state });
 
-	test.beforeEach(async ({ page, api }) => {
-		await updateSetting(api, 'E2E_Enable', true);
+	test.beforeEach(async ({ page, updateSetting }) => {
+		await updateSetting('E2E_Enable', true, false);
 
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'E2E_Allow_Unencrypted_Messages', true);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, { E2E_Enable: false, E2E_Allow_Unencrypted_Messages: false });
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('E2E_Allow_Unencrypted_Messages', true, false);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -521,11 +506,11 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.describe('File Encryption', async () => {
-		test.afterAll(async ({ api }) => {
-			await updateSettings(api, {
-				FileUpload_MediaTypeWhiteList: '',
-				FileUpload_MediaTypeBlackList: 'image/svg+xml',
-			});
+		test.afterAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('FileUpload_MediaTypeWhiteList', ''),
+				updateSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml'),
+			]);
 		});
 
 		test('File and description encryption', async ({ page }) => {
@@ -557,7 +542,7 @@ test.describe.serial('e2e-encryption', () => {
 			});
 		});
 
-		test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
+		test('File encryption with whitelisted and blacklisted media types', async ({ page, updateSetting }) => {
 			await test.step('create an encrypted room', async () => {
 				const channelName = faker.string.uuid();
 
@@ -586,7 +571,7 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			await test.step('set whitelisted media type setting', async () => {
-				await updateSetting(api, 'FileUpload_MediaTypeWhiteList', 'text/plain');
+				await updateSetting('FileUpload_MediaTypeWhiteList', 'text/plain', '');
 			});
 
 			await test.step('send text file again with whitelist setting set', async () => {
@@ -601,7 +586,7 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
-				await updateSetting(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
+				await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream', 'image/svg+xml');
 			});
 
 			await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
@@ -617,18 +602,11 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		test.describe('File encryption setting disabled', async () => {
-			test.beforeAll(async ({ api }) => {
-				await updateSettings(api, {
-					E2E_Enable_Encrypt_Files: false,
-					FileUpload_MediaTypeBlackList: 'application/octet-stream',
-				});
-			});
-
-			test.afterAll(async ({ api }) => {
-				await updateSettings(api, {
-					E2E_Enable_Encrypt_Files: true,
-					FileUpload_MediaTypeBlackList: 'image/svg+xml',
-				});
+			test.beforeAll(async ({ updateSetting }) => {
+				await Promise.all([
+					updateSetting('E2E_Enable_Encrypt_Files', false, true),
+					updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream', 'image/svg+xml'),
+				]);
 			});
 
 			test('Upload file without encryption in e2ee room', async ({ page }) => {
@@ -705,12 +683,8 @@ test.describe.serial('e2e-encryption', () => {
 			poHomeChannel = new HomeChannel(page);
 			await page.goto('/home');
 		});
-		test.beforeAll(async ({ api }) => {
-			await updateSetting(api, 'E2E_Allow_Unencrypted_Messages', false);
-		});
-
-		test.afterAll(async ({ api }) => {
-			await updateSetting(api, 'E2E_Allow_Unencrypted_Messages', true);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('E2E_Allow_Unencrypted_Messages', false, true);
 		});
 
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
@@ -868,12 +842,8 @@ test.describe.serial('e2ee room setup', () => {
 		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, { E2E_Enable: true, E2E_Allow_Unencrypted_Messages: false });
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, { E2E_Enable: false, E2E_Allow_Unencrypted_Messages: false });
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([updateSetting('E2E_Enable', true, false), updateSetting('E2E_Allow_Unencrypted_Messages', false, false)]);
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -1054,12 +1024,8 @@ test.describe('e2ee support legacy formats', () => {
 		poHomeChannel = new HomeChannel(page);
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await updateSettings(api, { E2E_Enable: true, E2E_Allow_Unencrypted_Messages: false });
-	});
-
-	test.afterAll(async ({ api }) => {
-		await updateSettings(api, { E2E_Enable: false, E2E_Allow_Unencrypted_Messages: false });
+	test.beforeAll(async ({ updateSetting }) => {
+		await Promise.all([updateSetting('E2E_Enable', true, false), updateSetting('E2E_Allow_Unencrypted_Messages', false, false)]);
 	});
 
 	//  ->>>>>>>>>>>Not testing upload since it was not implemented in the legacy format

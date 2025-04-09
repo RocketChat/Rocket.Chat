@@ -86,11 +86,11 @@ test.describe('SAML', () => {
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, updateSetting }) => {
 		await resetTestData({ api });
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
-		await updateSetting(api, 'SAML_Custom_Default', true);
+		await updateSetting('SAML_Custom_Default', true);
 
 		// Create a new custom role
 		if (constants.IS_EE) {
@@ -186,9 +186,9 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Allow password change for OAuth users', async ({ api }) => {
+	test('Allow password change for OAuth users', async ({ api, updateSetting }) => {
 		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
-			await updateSetting(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false);
+			await updateSetting('Accounts_AllowPasswordChangeForOAuthUsers', false);
 
 			const response = await api.post('/method.call/sendForgotPasswordEmail', {
 				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
@@ -199,7 +199,7 @@ test.describe('SAML', () => {
 		});
 
 		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
-			await updateSetting(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true);
+			await updateSetting('Accounts_AllowPasswordChangeForOAuthUsers', true);
 
 			const response = await api.post('/method.call/sendForgotPasswordEmail', {
 				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
@@ -239,9 +239,9 @@ test.describe('SAML', () => {
 		});
 	};
 
-	test('Logout - Rocket.Chat only', async ({ page, api }) => {
+	test('Logout - Rocket.Chat only', async ({ page, updateSetting }) => {
 		await test.step('Configure logout to only logout from Rocket.Chat', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_logout_behaviour', 'Local');
+			await updateSetting('SAML_Custom_Default_logout_behaviour', 'Local');
 		});
 
 		await page.goto('/home');
@@ -255,9 +255,9 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Logout - Single Sign Out', async ({ page, api }) => {
+	test('Logout - Single Sign Out', async ({ page, updateSetting }) => {
 		await test.step('Configure logout to terminate SAML session', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_logout_behaviour', 'SAML');
+			await updateSetting('SAML_Custom_Default_logout_behaviour', 'SAML');
 		});
 
 		await page.goto('/home');
@@ -272,9 +272,9 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Merge - By Email', async ({ page, api }) => {
+	test('User Merge - By Email', async ({ page, api, updateSetting }) => {
 		await test.step('Configure SAML to identify users by email', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_immutable_property', 'EMail');
+			await updateSetting('SAML_Custom_Default_immutable_property', 'EMail');
 		});
 
 		await doLoginStep(page, 'samluser2');
@@ -291,10 +291,12 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Merge - By Email with Name Override', async ({ page, api }) => {
+	test('User Merge - By Email with Name Override', async ({ page, api, updateSetting }) => {
 		await test.step('Configure SAML to identify users by email', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_immutable_property', 'EMail');
-			await updateSetting(api, 'SAML_Custom_Default_name_overwrite', true);
+			await Promise.all([
+				updateSetting('SAML_Custom_Default_immutable_property', 'EMail'),
+				updateSetting('SAML_Custom_Default_name_overwrite', true),
+			]);
 		});
 
 		await doLoginStep(page, 'samluser2');
@@ -311,11 +313,13 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Merge - By Username', async ({ page, api }) => {
+	test('User Merge - By Username', async ({ page, api, updateSetting }) => {
 		await test.step('Configure SAML to identify users by username', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_immutable_property', 'Username');
-			await updateSetting(api, 'SAML_Custom_Default_name_overwrite', false);
-			await updateSetting(api, 'SAML_Custom_Default_mail_overwrite', false);
+			await Promise.all([
+				updateSetting('SAML_Custom_Default_immutable_property', 'Username'),
+				updateSetting('SAML_Custom_Default_name_overwrite', false),
+				updateSetting('SAML_Custom_Default_mail_overwrite', false),
+			]);
 		});
 
 		await doLoginStep(page, 'samluser3');
@@ -332,11 +336,13 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Merge - By Username with Email Override', async ({ page, api }) => {
+	test('User Merge - By Username with Email Override', async ({ page, api, updateSetting }) => {
 		await test.step('Configure SAML to identify users by username', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_immutable_property', 'Username');
-			await updateSetting(api, 'SAML_Custom_Default_name_overwrite', false);
-			await updateSetting(api, 'SAML_Custom_Default_mail_overwrite', true);
+			await Promise.all([
+				updateSetting('SAML_Custom_Default_immutable_property', 'Username'),
+				updateSetting('SAML_Custom_Default_name_overwrite', false),
+				updateSetting('SAML_Custom_Default_mail_overwrite', true),
+			]);
 		});
 
 		await doLoginStep(page, 'samluser3');
@@ -353,10 +359,12 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Merge - By Username with Name Override', async ({ page, api }) => {
+	test('User Merge - By Username with Name Override', async ({ page, api, updateSetting }) => {
 		await test.step('Configure SAML to identify users by username', async () => {
-			await updateSetting(api, 'SAML_Custom_Default_immutable_property', 'Username');
-			await updateSetting(api, 'SAML_Custom_Default_name_overwrite', true);
+			await Promise.all([
+				updateSetting('SAML_Custom_Default_immutable_property', 'Username'),
+				updateSetting('SAML_Custom_Default_name_overwrite', true),
+			]);
 		});
 
 		await doLoginStep(page, 'samluser3');

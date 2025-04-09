@@ -26,14 +26,13 @@ test.describe.serial('feature preview', () => {
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'Accounts_AllowFeaturePreview', true);
+	test.beforeAll(async ({ api, updateSetting }) => {
+		await updateSetting('Accounts_AllowFeaturePreview', true, false);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 		targetDiscussion = await createTargetDiscussion(api);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 	});

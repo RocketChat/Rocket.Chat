@@ -3,7 +3,6 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
-import { updateSetting } from '../utils';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
@@ -20,8 +19,8 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeOmnichannel;
 	let poRoomInfo: OmnichannelRoomInfo;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'Livechat_Routing_Method', 'Manual_Selection');
+	test.beforeAll(async ({ api, updateSetting }) => {
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 		(
 			await Promise.all([
 				api.post('/livechat/users/agent', { username: 'user1' }),
@@ -45,7 +44,6 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await updateSetting(api, 'Livechat_Routing_Method', 'Auto_Selection');
 		(await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')])).every((res) =>
 			expect(res.status()).toBe(200),
 		);

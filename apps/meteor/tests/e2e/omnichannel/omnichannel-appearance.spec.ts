@@ -1,7 +1,6 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel-livechat-appearance';
-import { updateSettings } from '../utils';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -17,15 +16,11 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
 	});
 
-	test.afterAll(async ({ api }) => {
-		const res = await updateSettings(api, {
-			Livechat_hide_system_messages: ['uj', 'ul', 'livechat-close'],
-			Livechat_background: '',
-		});
-
-		if (res.some((r) => r.status() !== 200)) {
-			throw new Error('Failed to reset settings');
-		}
+	test.afterAll(async ({ updateSetting }) => {
+		await Promise.all([
+			updateSetting('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close']),
+			updateSetting('Livechat_background', ''),
+		]);
 	});
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {

@@ -4,7 +4,6 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { updateSetting } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -26,8 +25,8 @@ test.describe.serial('System Messages', () => {
 	let user: IUser;
 	let group: IRoom;
 
-	test.beforeAll(async ({ api }) => {
-		await updateSetting(api, 'Hide_System_Messages', []);
+	test.beforeAll(async ({ api, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', [], []);
 
 		const groupResult = await api.post('/groups.create', { name: faker.string.uuid() });
 		await expect(groupResult.status()).toBe(200);
@@ -61,8 +60,8 @@ test.describe.serial('System Messages', () => {
 		await expect(findSysMes(page, 'au')).toBeVisible();
 	});
 
-	test('expect "User added" system message to be hidden', async ({ page, api }) => {
-		await updateSetting(api, 'Hide_System_Messages', ['au']);
+	test('expect "User added" system message to be hidden', async ({ page, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', ['au'], []);
 
 		await expect(findSysMes(page, 'au')).not.toBeVisible();
 	});
@@ -73,8 +72,8 @@ test.describe.serial('System Messages', () => {
 		await expect(findSysMes(page, 'ru')).toBeVisible();
 	});
 
-	test('expect "User removed" system message to be hidden', async ({ page, api }) => {
-		await updateSetting(api, 'Hide_System_Messages', ['ru']);
+	test('expect "User removed" system message to be hidden', async ({ page, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', ['ru'], []);
 
 		await expect(findSysMes(page, 'ru')).not.toBeVisible();
 	});
