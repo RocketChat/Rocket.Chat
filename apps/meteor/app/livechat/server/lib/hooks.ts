@@ -1,4 +1,5 @@
-import { ILivechatAgentStatus, type IUser } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import type { AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { setUserStatusLivechat } from './utils';
@@ -21,4 +22,9 @@ export async function afterAgentAdded(user: IUser) {
 	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
 	return user;
+}
+
+export async function afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
+	await callbacks.run('livechat.afterAgentRemoved', { agent: user });
+	return true;
 }

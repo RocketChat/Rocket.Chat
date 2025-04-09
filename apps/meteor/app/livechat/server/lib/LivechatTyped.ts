@@ -48,7 +48,7 @@ import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';
-import { afterAgentAdded } from './hooks';
+import { afterAgentAdded, afterRemoveAgent } from './hooks';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -436,11 +436,6 @@ class LivechatClass {
 		return result.modifiedCount;
 	}
 
-	async afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>) {
-		await callbacks.run('livechat.afterAgentRemoved', { agent: user });
-		return true;
-	}
-
 	async removeAgent(username: string) {
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
@@ -451,7 +446,7 @@ class LivechatClass {
 		const { _id } = user;
 
 		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			return this.afterRemoveAgent(user);
+			return afterRemoveAgent(user);
 		}
 
 		return false;
