@@ -1,93 +1,81 @@
 import { Mongo } from 'meteor/mongo';
+import type { Filter, Hint, Sort } from 'mongodb';
 import { create } from 'zustand';
 
-export type MinimongoSelector<T> = Mongo.Selector<T>;
-export type MinimongoOptions<T> = Mongo.Options<T>;
+import type { DispatchTransform } from './Cursor';
+import type { IDocumentMapStore } from './IDocumentMapStore';
+import { LocalCollection } from './LocalCollection';
 
-interface IDocumentMapStore<T extends { _id: string }> {
-	records: T[];
-	get(_id: T['_id']): T | undefined;
-	find<U extends T>(predicate: (record: T) => record is U): U | undefined;
-	find(predicate: (record: T) => boolean): T | undefined;
-	filter<U extends T>(predicate: (record: T) => record is U): U[];
-	filter(predicate: (record: T) => boolean): T[];
-}
+export type Transform<T> = ((doc: T) => any) | null | undefined;
+
+export type FieldSpecifier = {
+	[id: string]: number | boolean;
+};
+
+export type Options<T> = {
+	/** Sort order (default: natural order) */
+	sort?: Sort | undefined;
+	/** Number of results to skip at the beginning */
+	skip?: number | undefined;
+	/** Maximum number of results to return */
+	limit?: number | undefined;
+	/**
+	 * Dictionary of fields to return or exclude.
+	 * @deprecated use projection instead
+	 */
+	fields?: FieldSpecifier | undefined;
+	/** Dictionary of fields to return or exclude. */
+	projection?: FieldSpecifier | undefined;
+	/** (Server only) Overrides MongoDB's default index selection and query optimization process. Specify an index to force its use, either by its name or index specification. */
+	hint?: Hint | undefined;
+	/** (Client only) Default `true`; pass `false` to disable reactivity */
+	reactive?: boolean | undefined;
+	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
+	transform?: Transform<T> | undefined;
+};
 
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
-	protected declare _collection: Mongo.Collection<T> & {
-		queries: Record<number, { __brand: 'query' }>;
-		_docs: {
-			_idStringify: (id: string) => string;
-			_map: Map<T['_id'], T>;
-		};
-		_recomputeResults: (query: { __brand: 'query' }) => void;
-	};
-
-	readonly use = create<IDocumentMapStore<T>>()((_set, get) => ({
+	readonly use = create<IDocumentMapStore<T>>()((set, get) => ({
 		records: [],
+		has: (id: T['_id']) => get().records.some((record) => record._id === id),
 		get: (id: T['_id']) => get().records.find((record) => record._id === id),
 		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
 		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
+		replaceAll: (records: T[]) => {
+			set({ records: records.map<T>(Object.freeze) });
+			this._collection.recomputeAllResults();
+		},
 	}));
+
+	protected _collection = new LocalCollection<T>(this.use);
 
 	constructor() {
 		super(null);
-
-		let internal = false;
-
-		this.find({}).observe({
-			added: (record) => {
-				internal = true;
-				this.use.setState((state) => ({ records: [...state.records, record] }));
-			},
-			changed: (record) => {
-				internal = true;
-				this.use.setState((state) => {
-					const records = [...state.records];
-					const index = records.findIndex((r) => r._id === record._id);
-					if (index !== -1) {
-						records[index] = { ...record };
-					}
-					return { records };
-				});
-			},
-			removed: (record) => {
-				internal = true;
-				this.use.setState((state) => ({
-					records: state.records.filter((r) => r._id !== record._id),
-				}));
-			},
-		});
-
-		this.use.subscribe((state) => {
-			if (internal) {
-				internal = false;
-				return;
-			}
-			this._collection._docs._map = new Map(state.records.map((record) => [this._collection._docs._idStringify(record._id), record]));
-		});
 	}
 
 	get state() {
 		return this.use.getState();
 	}
 
-	recomputeQueries() {
-		for (const query of Object.values(this._collection.queries)) {
-			this._collection._recomputeResults(query);
-		}
-	}
-
 	async bulkMutate(fn: () => Promise<void>) {
-		const { queries } = this._collection;
-		this._collection.queries = {};
+		this._collection.pauseObservers();
 		await fn();
-		this._collection.queries = queries;
-		this.recomputeQueries();
+		this._collection.resumeObserversClient();
 	}
 
 	replaceAll(records: T[]) {
-		this.use.setState({ records });
-		this.recomputeQueries();
+		this.state.replaceAll(records);
+	}
+
+	findOne(selector?: Filter<T> | T['_id']): T | undefined;
+
+	findOne<O extends Omit<Options<T>, 'limit'>>(
+		selector?: Filter<T> | T['_id'],
+		options?: O,
+	): DispatchTransform<O['transform'], T, T> | undefined;
+
+	findOne(selector?: Filter<T> | T['_id'], options?: Options<T>) {
+		// There is a type issue from meteor/mongo
+		return super.findOne(selector, options as any);
 	}
 }

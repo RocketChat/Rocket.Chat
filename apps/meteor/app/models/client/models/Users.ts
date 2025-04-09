@@ -1,11 +1,12 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { Filter } from 'mongodb';
 
-import type { MinimongoOptions, MinimongoSelector } from '../../../../client/lib/cachedCollections/MinimongoCollection';
+import type { Options } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 
 class UsersCollection extends MinimongoCollection<IUser> {
-	findOneById<TOptions extends Omit<MinimongoOptions<IUser>, 'limit'>>(uid: IUser['_id'], options?: TOptions) {
-		const query: MinimongoSelector<IUser> = {
+	findOneById<TOptions extends Omit<Options<IUser>, 'limit'>>(uid: IUser['_id'], options?: TOptions) {
+		const query: Filter<IUser> = {
 			_id: uid,
 		};
 
