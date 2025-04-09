@@ -16,6 +16,7 @@ const BaseScrollbars = forwardRef<HTMLElement, ComponentProps<typeof Box>>(funct
 		<Box
 			ref={ref}
 			height='full'
+			width='full'
 			className={css`
 				.os-scrollbar {
 					--os-handle-bg: ${Palette.stroke['stroke-dark']};

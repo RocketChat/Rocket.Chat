@@ -2,11 +2,14 @@ import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
 import { CachedChatSubscription } from './CachedChatSubscription';
-import { CachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
 
-class CachedChatRoom extends CachedCollection<IRoom> {
+class CachedChatRoom extends PrivateCachedCollection<IRoom> {
 	constructor() {
-		super({ name: 'rooms' });
+		super({
+			name: 'rooms',
+			eventType: 'notify-user',
+		});
 	}
 
 	protected handleLoadFromServer(record: IRoom) {

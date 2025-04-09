@@ -27,6 +27,7 @@ import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { closeRoom } from '../../lib/closeRoom';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
+import { createRoom, saveRoomInfo } from '../../lib/rooms';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -77,12 +78,12 @@ API.v1.addRoute(
 				const roomInfo = {
 					source: {
 						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
 							: { type: OmnichannelSourceType.API }),
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({
+				const newRoom = await createRoom({
 					visitor: guest,
 					roomInfo,
 					agent,
@@ -409,7 +410,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {
