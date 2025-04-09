@@ -3,6 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { afterAgentUserActivated } from '../lib/hooks';
 
 type IAfterSaveUserProps = {
 	user: IUser;
@@ -39,7 +40,7 @@ const handleDeactivateUser = async (user: IUser) => {
 
 const handleActivateUser = async (user: IUser) => {
 	if (isAgent(user) && user.username) {
-		await LivechatTyped.afterAgentUserActivated(user);
+		await afterAgentUserActivated(user);
 	}
 };
 
