@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatDepartment,
@@ -143,6 +144,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
+		if (settings.get('Livechat_Routing_Method') === 'Manual_Selection' && agent) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -167,8 +172,12 @@ export class QueueManager {
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
 			await callbacks.run('livechat.afterInquiryQueued', inquiry);
+			await callbacks.run('livechat.chatQueued', room);
 
-			void callbacks.run('livechat.chatQueued', room);
+			if (defaultAgent) {
+				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
+				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			}
 
 			return this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 		}
@@ -328,6 +337,16 @@ export class QueueManager {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
+
+		try {
+			await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
+		} catch (error: any) {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
 
 		// Transactional start of the conversation. This should prevent rooms from being created without inquiries and viceversa.
 		// All the actions that happened inside createLivechatRoom are now outside this transaction

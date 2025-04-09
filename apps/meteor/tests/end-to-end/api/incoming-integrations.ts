@@ -305,6 +305,31 @@ describe('[Incoming Integrations]', () => {
 					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
 				});
 		});
+
+		it('should send a message if the payload is a application/x-www-form-urlencoded JSON', async () => {
+			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.set('Content-Type', 'application/x-www-form-urlencoded')
+				.send(`payload=${JSON.stringify(payload)}`)
+				.expect(200)
+				.expect(async () => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
+						});
+				});
+		});
 	});
 
 	describe('[/integrations.history]', () => {

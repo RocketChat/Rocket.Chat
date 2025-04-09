@@ -31,6 +31,7 @@ import {
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -139,7 +140,6 @@ export const prepareLivechatRoom = async (
 			alias: 'unknown',
 		},
 		queuedAt: newRoomAt,
-		livechatData: undefined,
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,
@@ -148,7 +148,7 @@ export const prepareLivechatRoom = async (
 
 export const createLivechatRoom = async (room: InsertionModel<IOmnichannelRoom>, session: ClientSession) => {
 	const result = await LivechatRooms.findOneAndUpdate(
-		room,
+		removeEmpty(room),
 		{
 			$set: {},
 		},
@@ -212,7 +212,7 @@ export const createLivechatInquiry = async ({
 	});
 
 	const result = await LivechatInquiry.findOneAndUpdate(
-		{
+		removeEmpty({
 			rid,
 			name,
 			ts,
@@ -231,7 +231,7 @@ export const createLivechatInquiry = async ({
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
 			...extraInquiryInfo,
-		},
+		}),
 		{
 			$set: {
 				_id: new ObjectId().toHexString(),

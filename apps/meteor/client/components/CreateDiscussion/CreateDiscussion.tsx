@@ -41,6 +41,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
+// TODO: Replace `Modal` in favor of `GenericModal`
 const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
@@ -90,14 +91,15 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const membersId = useId();
 	const firstMessageId = useId();
 	const topicId = useId();
+	const modalId = useId();
 
 	return (
 		<Modal
-			data-qa='create-discussion-modal'
+			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
 			<Modal.Header>
-				<Modal.Title>{t('Discussion_title')}</Modal.Title>
+				<Modal.Title id={`${modalId}-title`}>{t('Discussion_title')}</Modal.Title>
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>

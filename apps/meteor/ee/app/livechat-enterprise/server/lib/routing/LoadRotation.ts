@@ -33,7 +33,7 @@ class LoadRotation {
 			ignoreAgentId,
 			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 		);
-		if (!nextAgent) {
+		if (!nextAgent?.username) {
 			return;
 		}
 
