@@ -1,6 +1,7 @@
 import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -22,7 +23,7 @@ import {
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
-import { canEnableApp } from '../../app/license/server/canEnableApp';
+import { _canEnableApp } from '../../app/license/server/canEnableApp';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -175,6 +176,10 @@ export class AppServerOrchestrator {
 		if (this.isLoaded()) {
 			return;
 		}
+
+		// Default `canEnableApp` function uses the Apps service, but the service just ends up calling the Orchestrator
+		// By injecting our Orchestrator here, we prevent a dependency on the service being started to load apps
+		const canEnableApp = _canEnableApp.bind(null, { Apps: this, License });
 
 		await this.getManager().load();
 
