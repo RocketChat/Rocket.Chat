@@ -2,12 +2,19 @@ import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
-import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
 
-export type SuccessResult<T> = {
-	statusCode: 200;
+export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
+
+export type RedirectStatusCodes = Exclude<Range<308>, Range<300>>;
+
+export type AuthorizationStatusCodes = Exclude<Range<451>, Range<400>>;
+
+export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
+
+export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
+	statusCode: TStatusCode;
 	body: T extends object ? { success: true } & T : T;
 };
 
@@ -24,6 +31,11 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 				message?: string;
 			} & (undefined extends TErrorType ? object : { errorType: TErrorType }) &
 				(undefined extends TErrorDetails ? object : { details: TErrorDetails extends string ? unknown : TErrorDetails });
+};
+
+export type RedirectResult<T, TStatusCode extends RedirectStatusCodes = 300> = {
+	statusCode: TStatusCode;
+	body: T;
 };
 
 export type UnauthorizedResult<T> = {
@@ -43,8 +55,8 @@ export type ForbiddenResult<T> = {
 	};
 };
 
-export type InternalError<T> = {
-	statusCode: 500;
+export type InternalError<T, StatusCode = 500> = {
+	statusCode: StatusCode;
 	body: {
 		error: T | 'Internal server error';
 		success: false;
@@ -124,6 +136,7 @@ export type PartialThis = {
 	readonly response: Response;
 	readonly userId: string;
 	readonly bodyParams: Record<string, unknown>;
+	readonly path: string;
 	readonly queryParams: Record<string, string>;
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
@@ -236,15 +249,14 @@ export type ActionOperations<TPathPattern extends PathPattern, TOptions extends 
 	[M in MethodOf<TPathPattern> as Lowercase<M>]: ActionOperation<Uppercase<M>, TPathPattern, TOptions>;
 };
 
+type Range<N extends number, Result extends number[] = []> = Result['length'] extends N
+	? Result[number]
+	: Range<N, [...Result, Result['length']]>;
+
+type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
 export type TypedOptions = {
 	response: {
-		200: ValidateFunction;
-		300?: ValidateFunction;
-		400?: ValidateFunction;
-		401?: ValidateFunction;
-		403?: ValidateFunction;
-		404?: ValidateFunction;
-		500?: ValidateFunction;
+		[K in HTTPStatusCodes]?: ValidateFunction;
 	};
 	query?: ValidateFunction;
 	body?: ValidateFunction;
@@ -255,6 +267,7 @@ export type TypedOptions = {
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
+	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
@@ -277,6 +290,7 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
+
 
 /**
  * Maps HTTP status codes to their corresponding response types with proper type inference.
