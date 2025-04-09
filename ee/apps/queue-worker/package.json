@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/queue-worker",
 	"private": true,
-	"version": "0.4.13",
+	"version": "0.4.19",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -24,7 +24,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~20.17.8",
+		"@types/node": "~22.14.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",

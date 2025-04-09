@@ -1223,6 +1223,13 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
+			await this.add('Omnigateway_Url', 'https://omni-gateway.rocket.chat', {
+				type: 'string',
+				hidden: true,
+				secret: true,
+				readonly: true,
+			});
+
 			await this.add('Cloud_Service_Agree_PrivacyTerms', false, {
 				type: 'boolean',
 			});

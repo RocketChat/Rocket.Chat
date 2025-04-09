@@ -14,7 +14,7 @@ import VideoConfPopup from './VideoConfPopup';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
-	const customSound = useCustomSound();
+	const { callSounds } = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
@@ -29,18 +29,18 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true });
+			callSounds.playRinger();
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true });
+			callSounds.playDialer();
 		}
 
 		return (): void => {
-			customSound.stop('ringtone');
-			customSound.stop('dialtone');
+			callSounds.stopRinger();
+			callSounds.stopDialer();
 		};
-	}, [customSound, isRinging, isCalling]);
+	}, [isRinging, isCalling, callSounds]);
 
 	return (
 		<>

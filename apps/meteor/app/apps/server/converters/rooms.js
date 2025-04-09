@@ -20,93 +20,147 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertAppRoom(room) {
+	async __getCreator(user) {
+		if (!user) {
+			return;
+		}
+
+		const creator = await Users.findOneById(user, { projection: { _id: 1, username: 1, name: 1 } });
+		if (!creator) {
+			return;
+		}
+
+		return {
+			_id: creator._id,
+			username: creator.username,
+			name: creator.name,
+		};
+	}
+
+	async __getVisitor({ visitor: roomVisitor, visitorChannelInfo }) {
+		if (!roomVisitor) {
+			return;
+		}
+
+		const visitor = await LivechatVisitors.findOneEnabledById(roomVisitor.id);
+		if (!visitor) {
+			return;
+		}
+
+		const { lastMessageTs, phone } = visitorChannelInfo;
+
+		return {
+			_id: visitor._id,
+			username: visitor.username,
+			token: visitor.token,
+			status: visitor.status || 'online',
+			...(lastMessageTs && { lastMessageTs }),
+			...(phone && { phone }),
+		};
+	}
+
+	async __getUserIdAndUsername(uid) {
+		if (!uid) {
+			return;
+		}
+
+		const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		if (!user) {
+			return;
+		}
+
+		return {
+			_id: user._id,
+			username: user.username,
+		};
+	}
+
+	async __getRoomCloser(room, v) {
+		if (!room.closedBy) {
+			return;
+		}
+
+		if (room.closer === 'user') {
+			const user = await Users.findOneById(room.closedBy.id, { projection: { _id: 1, username: 1 } });
+			if (!user) {
+				return;
+			}
+
+			return {
+				_id: user._id,
+				username: user.username,
+			};
+		}
+
+		if (room.closer === 'visitor' && v) {
+			return {
+				_id: v._id,
+				username: v.username,
+			};
+		}
+	}
+
+	// TODO do we really need this?
+	async __getContactId({ contact }) {
+		if (!contact?._id) {
+			return;
+		}
+		const contactFromDb = await LivechatContacts.findOneById(contact._id, { projection: { _id: 1 } });
+		return contactFromDb?._id;
+	}
+
+	// TODO do we really need this?
+	async __getDepartment({ department }) {
+		if (!department) {
+			return;
+		}
+		const dept = await LivechatDepartment.findOneById(department.id, { projection: { _id: 1 } });
+		return dept?._id;
+	}
+
+	async convertAppRoom(room, isPartial = false) {
 		if (!room) {
 			return undefined;
 		}
 
-		let u;
-		if (room.creator) {
-			const creator = await Users.findOneById(room.creator.id);
-			u = {
-				_id: creator._id,
-				username: creator.username,
-				name: creator.name,
-			};
-		}
+		const u = await this.__getCreator(room.creator?.id);
 
-		let v;
-		if (room.visitor) {
-			const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
+		const v = await this.__getVisitor(room);
 
-			const { lastMessageTs, phone } = room.visitorChannelInfo;
+		const departmentId = await this.__getDepartment(room);
 
-			v = {
-				_id: visitor._id,
-				username: visitor.username,
-				token: visitor.token,
-				status: visitor.status || 'online',
-				...(lastMessageTs && { lastMessageTs }),
-				...(phone && { phone }),
-			};
-		}
+		const servedBy = await this.__getUserIdAndUsername(room.servedBy);
 
-		let departmentId;
-		if (room.department) {
-			const department = await LivechatDepartment.findOneById(room.department.id, { projection: { _id: 1 } });
-			departmentId = department._id;
-		}
+		const closedBy = await this.__getRoomCloser(room, v);
 
-		let servedBy;
-		if (room.servedBy) {
-			const user = await Users.findOneById(room.servedBy.id);
-			servedBy = {
-				_id: user._id,
-				username: user.username,
-			};
-		}
-
-		let closedBy;
-		if (room.closedBy) {
-			const user = await Users.findOneById(room.closedBy.id);
-			closedBy = {
-				_id: user._id,
-				username: user.username,
-			};
-		}
-
-		let contactId;
-		if (room.contact?._id) {
-			const contact = await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } });
-			contactId = contact._id;
-		}
+		const contactId = await this.__getContactId(room);
 
 		const newRoom = {
 			...(room.id && { _id: room.id }),
-			fname: room.displayName,
-			name: room.slugifiedName,
 			t: room.type,
-			u,
-			v,
-			departmentId,
-			servedBy,
-			closedBy,
-			members: room.members,
-			uids: room.userIds,
-			default: typeof room.isDefault === 'undefined' ? false : room.isDefault,
-			ro: typeof room.isReadOnly === 'undefined' ? false : room.isReadOnly,
-			sysMes: typeof room.displaySystemMessages === 'undefined' ? true : room.displaySystemMessages,
-			waitingResponse: typeof room.isWaitingResponse === 'undefined' ? undefined : !!room.isWaitingResponse,
-			open: typeof room.isOpen === 'undefined' ? undefined : !!room.isOpen,
-			msgs: room.messageCount || 0,
 			ts: room.createdAt,
+			msgs: room.messageCount || 0,
 			_updatedAt: room.updatedAt,
-			closedAt: room.closedAt,
-			lm: room.lastModifiedAt,
-			customFields: room.customFields,
-			livechatData: room.livechatData,
-			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
-			contactId,
+			...(room.displayName && { fname: room.displayName }),
+			...(room.type !== 'd' && { name: room.slugifiedName }),
+			...(room.members && { members: room.members }),
+			...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
+			...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
+			...(typeof room.displaySystemMessages !== 'undefined' && { sysMes: room.displaySystemMessages }),
+			...(u && { u }),
+			...(v && { v }),
+			...(departmentId && { departmentId }),
+			...(servedBy && { servedBy }),
+			...(closedBy && { closedBy }),
+			...(room.userIds && { uids: room.userIds }),
+			...(typeof room.isWaitingResponse !== 'undefined' && { waitingResponse: !!room.isWaitingResponse }),
+			...(typeof room.isOpen !== 'undefined' && { open: !!room.isOpen }),
+			...(room.closedAt && { closedAt: room.closedAt }),
+			...(room.lastModifiedAt && { lm: room.lastModifiedAt }),
+			...(room.customFields && { customFields: room.customFields }),
+			...(room.livechatData && { livechatData: room.livechatData }),
+			...(typeof room.parentRoom !== 'undefined' && { prid: room.parentRoom.id }),
+			...(contactId && { contactId }),
 			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
 			...(room.source && {
 				source: {
@@ -115,7 +169,11 @@ export class AppRoomsConverter {
 			}),
 		};
 
-		return Object.assign(newRoom, room._unmappedProperties_);
+		if (!isPartial) {
+			Object.assign(newRoom, room._unmappedProperties_);
+		}
+
+		return newRoom;
 	}
 
 	async convertRoom(originalRoom) {
@@ -238,6 +296,7 @@ export class AppRoomsConverter {
 				if (originalRoom.closer === 'user') {
 					return this.orch.getConverters().get('users').convertById(closedBy._id);
 				}
+
 				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
 			servedBy: async (room) => {

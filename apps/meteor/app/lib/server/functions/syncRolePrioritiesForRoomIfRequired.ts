@@ -1,9 +1,11 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { calculateRoomRolePriorityFromRoles } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 
 const READ_BATCH_SIZE = 1000;
+
+const SYNC_VERSION = 2;
 
 async function assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap: Map<IUser['_id'], IUser['roomRolePriorities']>) {
 	const bulk = Users.col.initializeUnorderedBulkOp();
@@ -35,7 +37,7 @@ async function assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap: M
 export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => {
 	const userIdAndRoomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
 
-	if (await Rooms.hasCreatedRolePrioritiesForRoom(rid)) {
+	if (await Rooms.hasCreatedRolePrioritiesForRoom(rid, SYNC_VERSION)) {
 		return;
 	}
 
@@ -64,5 +66,5 @@ export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => 
 	// Flush any remaining priorities in the map
 	await assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap);
 
-	await Rooms.markRolePrioritesCreatedForRoom(rid);
+	await Rooms.markRolePrioritesCreatedForRoom(rid, SYNC_VERSION);
 };

@@ -94,7 +94,10 @@ export interface IRoom extends IRocketChatRecord {
 		items: [SidepanelItem, SidepanelItem?];
 	};
 
-	rolePrioritiesCreated?: boolean;
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
+	rolePrioritiesCreated?: number | boolean;
 }
 
 export const isSidepanelItem = (item: any): item is SidepanelItem => {
@@ -422,6 +425,7 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 
 export const ROOM_ROLE_PRIORITY_MAP = {
 	owner: 0,
+	leader: 250,
 	moderator: 500,
 	default: 10000,
 };

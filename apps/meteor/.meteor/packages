@@ -45,7 +45,6 @@ shell-server@0.6.1
 dispatch:run-as-user
 ostrio:cookies
 
-kadira:flow-router
 
 meteorhacks:inject-initial
 
@@ -70,3 +69,4 @@ autoupdate@2.0.0
 
 zodern:types
 zodern:standard-minifier-js
+ostrio:flow-router-extra
