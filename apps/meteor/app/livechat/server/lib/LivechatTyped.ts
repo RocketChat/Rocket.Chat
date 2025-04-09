@@ -1,4 +1,3 @@
-import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -33,12 +32,10 @@ import type { Filter } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
@@ -51,9 +48,6 @@ import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';
-import { Visitors, type RegisterGuestType } from './Visitors';
-import { registerGuestData } from './contacts/registerGuestData';
-import { cleanGuestHistory } from './tracking';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -166,16 +160,6 @@ class LivechatClass {
 				throw new Meteor.Error('error-removing-room', 'Error removing room');
 			}
 		}
-	}
-
-	async registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
-		const result = await Visitors.registerGuest(newData);
-
-		if (result) {
-			await registerGuestData(newData, result);
-		}
-
-		return result;
 	}
 
 	private async getBotAgents(department?: string) {
@@ -331,16 +315,6 @@ class LivechatClass {
 		}
 	}
 
-	async removeGuest(_id: string) {
-		const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
-		if (!guest) {
-			throw new Error('error-invalid-guest');
-		}
-
-		await cleanGuestHistory(guest);
-		return LivechatVisitors.disableById(_id);
-	}
-
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
 		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
 
@@ -429,64 +403,6 @@ class LivechatClass {
 		};
 
 		await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
-	}
-
-	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
-		const { _id, name, email, phone, livechatData = {} } = guestData;
-
-		const visitor = await LivechatVisitors.findOneById(_id, { projection: { _id: 1 } });
-		if (!visitor) {
-			throw new Error('error-invalid-visitor');
-		}
-
-		this.logger.debug({ msg: 'Saving guest', guestData });
-		const updateData: {
-			name?: string | undefined;
-			username?: string | undefined;
-			email?: string | undefined;
-			phone?: string | undefined;
-			livechatData: {
-				[k: string]: any;
-			};
-		} = { livechatData: {} };
-
-		if (name) {
-			updateData.name = name;
-		}
-		if (email) {
-			updateData.email = email;
-		}
-		if (phone) {
-			updateData.phone = phone;
-		}
-
-		const customFields: Record<string, any> = {};
-
-		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
-			this.logger.debug({ msg: `Saving custom fields for visitor ${_id}`, livechatData });
-			for await (const field of LivechatCustomField.findByScope('visitor')) {
-				if (!livechatData.hasOwnProperty(field._id)) {
-					continue;
-				}
-				const value = trim(livechatData[field._id]);
-				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-					const regexp = new RegExp(field.regexp);
-					if (!regexp.test(value)) {
-						throw new Error(i18n.t('error-invalid-custom-field-value'));
-					}
-				}
-				customFields[field._id] = value;
-			}
-			updateData.livechatData = customFields;
-			Livechat.logger.debug(`About to update ${Object.keys(customFields).length} custom fields for visitor ${_id}`);
-		}
-		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
-
-		setImmediate(() => {
-			void Apps.self?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
-		});
-
-		return ret;
 	}
 
 	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {

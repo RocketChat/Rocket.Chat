@@ -2,7 +2,7 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { CustomSoundContext, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 
 import { defaultSounds, formatVolume, getCustomSoundURL } from './lib/helpers';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -72,34 +72,43 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 	});
 
-	const callSounds = {
-		playRinger: () => play('ringtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-		playDialer: () => play('dialtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-		stopRinger: () => stop('ringtone'),
-		stopDialer: () => stop('dialtone'),
-	};
-
-	const voipSounds = {
-		playRinger: () => play('telephone', { loop: true, volume: formatVolume(voipRingerVolume) }),
-		playDialer: () => play('outbound-call-ringing', { loop: true, volume: formatVolume(voipRingerVolume) }),
-		playCallEnded: () => play('call-ended', { loop: false, volume: formatVolume(voipRingerVolume) }),
-		stopRinger: () => stop('telephone'),
-		stopDialer: () => stop('outbound-call-ringing'),
-		stopCallEnded: () => stop('call-ended'),
-		stopAll: () => {
-			stop('telephone');
-			stop('outbound-call-ringing');
-			stop('call-ended');
-		},
-	};
-
-	const notificationSounds = {
-		playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-		playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
-		playNewMessageLoop: () => play(newMessageNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
-		stopNewRoom: () => stop(newRoomNotification),
-		stopNewMessage: () => stop(newMessageNotification),
-	};
+	const contextValue = useMemo(() => {
+		const notificationSounds = {
+			playNewRoom: () => play(newRoomNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
+			playNewMessage: () => play(newMessageNotification, { loop: false, volume: formatVolume(notificationsSoundVolume) }),
+			playNewMessageLoop: () => play(newMessageNotification, { loop: true, volume: formatVolume(notificationsSoundVolume) }),
+			stopNewRoom: () => stop(newRoomNotification),
+			stopNewMessage: () => stop(newMessageNotification),
+		};
+		const voipSounds = {
+			playRinger: () => play('telephone', { loop: true, volume: formatVolume(voipRingerVolume) }),
+			playDialer: () => play('outbound-call-ringing', { loop: true, volume: formatVolume(voipRingerVolume) }),
+			playCallEnded: () => play('call-ended', { loop: false, volume: formatVolume(voipRingerVolume) }),
+			stopRinger: () => stop('telephone'),
+			stopDialer: () => stop('outbound-call-ringing'),
+			stopCallEnded: () => stop('call-ended'),
+			stopAll: () => {
+				stop('telephone');
+				stop('outbound-call-ringing');
+				stop('call-ended');
+			},
+		};
+		const callSounds = {
+			playRinger: () => play('ringtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
+			playDialer: () => play('dialtone', { loop: true, volume: formatVolume(voipRingerVolume) }),
+			stopRinger: () => stop('ringtone'),
+			stopDialer: () => stop('dialtone'),
+		};
+		return {
+			list,
+			notificationSounds,
+			callSounds,
+			voipSounds,
+			play,
+			pause,
+			stop,
+		};
+	}, [list, newMessageNotification, newRoomNotification, notificationsSoundVolume, pause, play, stop, voipRingerVolume]);
 
 	useEffect(() => {
 		return streamAll('public-info', ([key]) => {
@@ -115,9 +124,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		});
 	}, [queryClient, streamAll]);
 
-	return (
-		<CustomSoundContext.Provider children={children} value={{ list, notificationSounds, callSounds, voipSounds, play, pause, stop }} />
-	);
+	return <CustomSoundContext.Provider children={children} value={contextValue} />;
 };
 
 export default CustomSoundProvider;

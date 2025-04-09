@@ -12,7 +12,6 @@ import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
 import { useWebRTC } from './hooks/useWebRTC';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
-import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
 import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
@@ -25,6 +24,7 @@ import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPa
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
 import { useNotificationUserCalendar } from '../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
