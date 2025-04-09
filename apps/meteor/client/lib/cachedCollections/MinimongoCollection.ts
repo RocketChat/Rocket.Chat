@@ -1,6 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import { create } from 'zustand';
 
+import { LocalCollection } from './LocalCollection';
+import { MongoID } from './MongoId';
+
 export type MinimongoSelector<T> = Mongo.Selector<T>;
 export type MinimongoOptions<T> = Mongo.Options<T>;
 
@@ -14,14 +17,7 @@ interface IDocumentMapStore<T extends { _id: string }> {
 }
 
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
-	protected declare _collection: Mongo.Collection<T> & {
-		queries: Record<number, { __brand: 'query' }>;
-		_docs: {
-			_idStringify: (id: string) => string;
-			_map: Map<T['_id'], T>;
-		};
-		_recomputeResults: (query: { __brand: 'query' }) => void;
-	};
+	protected _collection = new LocalCollection();
 
 	readonly use = create<IDocumentMapStore<T>>()((_set, get) => ({
 		records: [],
@@ -32,6 +28,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 
 	constructor() {
 		super(null);
+		this._collection = new LocalCollection();
 
 		let internal = false;
 
@@ -64,7 +61,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 				internal = false;
 				return;
 			}
-			this._collection._docs._map = new Map(state.records.map((record) => [this._collection._docs._idStringify(record._id), record]));
+			this._collection._docs._map = new Map(state.records.map((record) => [MongoID.idStringify(record._id), record]));
 		});
 	}
 

@@ -11,6 +11,7 @@ export const Meteor = {
 	},
 	users: {},
 	userId: () => 'uid',
+	_SynchronousQueue: class _SynchronousQueue {},
 };
 
 export const Mongo = {
