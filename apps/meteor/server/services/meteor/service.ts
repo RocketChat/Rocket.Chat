@@ -262,18 +262,25 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
-	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
+	async callMethodWithToken(
+		userId: string,
+		token: string,
+		method: string,
+		args: any[],
+	): Promise<{
+		result: unknown;
+	}> {
 		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, {
 			projection: { _id: 1 },
 		});
 		if (!user) {
 			return {
-				result: Meteor.callAsync(method, ...args),
+				result: await Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
+			result: await Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 
