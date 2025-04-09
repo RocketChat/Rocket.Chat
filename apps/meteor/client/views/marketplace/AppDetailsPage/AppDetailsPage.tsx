@@ -76,7 +76,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 					})),
 				);
 				reset(data);
-				dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
+				dispatchToastMessage({ type: 'success', message: t('App_Settings_Saved_Successfully', { appName: name }) });
 			} catch (e: any) {
 				handleAPIError(e);
 			}
