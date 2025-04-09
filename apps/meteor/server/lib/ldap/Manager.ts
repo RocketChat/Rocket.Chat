@@ -140,12 +140,12 @@ export class LDAPManager {
 	}
 
 	// This method will only find existing users that are already linked to LDAP
-	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined | null> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
 			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
-			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
+			return UsersRaw.findOneByLDAPId<IUser>(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 	}
 
@@ -341,7 +341,7 @@ export class LDAPManager {
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
 		usedUsername?: string | undefined,
-	): Promise<IUser | undefined> {
+	): Promise<IUser | undefined | null> {
 		logger.debug({
 			msg: 'Syncing user data',
 			ldapUser: omit(ldapUser, '_raw'),
@@ -501,14 +501,14 @@ export class LDAPManager {
 	}
 
 	// This method will find existing users by LDAP id or by username.
-	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined | null> {
 		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;
 		}
 
 		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
-		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase(slugifiedUsername);
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase<IUser>(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {

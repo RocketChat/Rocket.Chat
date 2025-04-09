@@ -25,7 +25,7 @@ import type {
 
 import type { Updater } from '../updater';
 
-export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
+export type DefaultFields<Base> = Partial<Record<keyof Base, 1>> | Partial<Record<keyof Base, 0>> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
