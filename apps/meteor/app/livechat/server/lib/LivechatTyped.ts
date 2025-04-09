@@ -48,6 +48,7 @@ import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';
+import { afterAgentAdded } from './hooks';
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -545,34 +546,6 @@ class LivechatClass {
 		}
 	}
 
-	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
-		const user = await Users.setLivechatStatus(userId, status);
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-
-		if (user.modifiedCount > 0) {
-			void notifyOnUserChange({
-				id: userId,
-				clientAction: 'updated',
-				diff: {
-					statusLivechat: status,
-					livechatStatusSystemModified: false,
-				},
-			});
-		}
-
-		return user;
-	}
-
-	async afterAgentAdded(user: IUser) {
-		await Promise.all([
-			Users.setOperator(user._id, true),
-			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE),
-		]);
-		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
-
-		return user;
-	}
-
 	async addAgent(username: string) {
 		check(username, String);
 
@@ -583,7 +556,7 @@ class LivechatClass {
 		}
 
 		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
-			return this.afterAgentAdded(user);
+			return afterAgentAdded(user);
 		}
 
 		return false;

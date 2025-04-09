@@ -1,6 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import { setUserStatusLivechat } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
 
 export async function afterAgentUserActivated(user: IUser) {
@@ -10,4 +11,14 @@ export async function afterAgentUserActivated(user: IUser) {
 	// TODO: deprecate this `operator` property
 	await Users.setOperator(user._id, true);
 	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+}
+
+export async function afterAgentAdded(user: IUser) {
+	await Promise.all([
+		Users.setOperator(user._id, true),
+		setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE),
+	]);
+	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
+
+	return user;
 }
