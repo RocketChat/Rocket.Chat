@@ -7,6 +7,7 @@ import { Divider } from './Divider';
 import { Files } from './Files';
 import { MessageHeader } from './MessageHeader';
 import { Quotes } from './Quotes';
+import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
 
 const styles = StyleSheet.create({
 	wrapper: {
@@ -23,28 +24,10 @@ const styles = StyleSheet.create({
 	},
 });
 
-const MAX_MD_ELEMENTS_PER_VIEW = 10;
-const MAX_MSG_SIZE = 1200;
-
-const messageLongerThanPage = (message: string | undefined) => (message?.length ?? 0) > MAX_MSG_SIZE;
-
-// When a markup list is greater than 10 (magic number, but a reasonable small/big number) we're gonna split the markdown into multiple <View> element
-// So react-pdf can split them evenly across pages
-const markupEntriesGreaterThan10 = (messageMd: any[]) => messageMd.length > MAX_MD_ELEMENTS_PER_VIEW;
-const splitByTens = (array: any[] = []): any[][] => {
-	const result = [];
-	for (let i = 0; i < array.length; i += 10) {
-		result.push(array.slice(i, i + 10));
-	}
-	return result;
-};
-
-const isSystemMessage = (message: PDFMessage) => !!message.t;
-
 const processMd = (message: PDFMessage) =>
 	splitByTens(message.md).map((chunk, index) => (
 		<View style={{ ...styles.message, ...(isSystemMessage(message) && styles.systemMessage) }} key={index}>
-			<Markup tokens={chunk} />
+			<Markup tokens={chunk as NonNullable<PDFMessage['md']>} />
 		</View>
 	));
 
