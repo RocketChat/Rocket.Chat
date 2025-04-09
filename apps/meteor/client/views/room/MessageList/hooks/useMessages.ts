@@ -1,11 +1,11 @@
 import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { Filter } from 'mongodb';
 import { useCallback, useMemo } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import type { MinimongoSelector } from '../../../../lib/cachedCollections/MinimongoCollection';
 import { useRoom } from '../../contexts/RoomContext';
 
 const mergeHideSysMessages = (
@@ -23,7 +23,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 
 	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
-	const query: MinimongoSelector<IMessage> = useMemo(
+	const query: Filter<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },

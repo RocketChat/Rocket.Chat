@@ -5,11 +5,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import type { Filter } from 'mongodb';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedCollectionManager } from './CachedCollectionManager';
-import type { MinimongoSelector } from './MinimongoCollection';
 import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -155,7 +155,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 
 			const { _id } = newRecord;
-			this.collection.upsert({ _id } as MinimongoSelector<T>, newRecord);
+			this.collection.upsert({ _id } as Filter<T>, newRecord);
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
 				this.updatedAt = newRecord._updatedAt;
@@ -265,7 +265,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.upsert({ _id } as MinimongoSelector<T>, newRecord);
+						this.collection.upsert({ _id } as Filter<T>, newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -289,7 +289,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.remove({ _id } as MinimongoSelector<T>);
+						this.collection.remove({ _id } as Filter<T>);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
