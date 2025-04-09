@@ -3,7 +3,7 @@ import type { ISetting } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from './test';
 
-export const setSettingValueById = async (api: BaseTest['api'], settingId: string, value: unknown, strict = true): Promise<APIResponse> => {
+export const updateSetting = async (api: BaseTest['api'], settingId: string, value: unknown, strict = true): Promise<APIResponse> => {
 	const response = await api.post(`/settings/${settingId}`, { value });
 
 	if (strict && !response.ok()) {
@@ -21,5 +21,5 @@ export const updateSettings = async (
 	strict = true,
 ): Promise<APIResponse[]> => {
 	const entries = Object.entries(settings);
-	return Promise.all(entries.map(([name, value]) => setSettingValueById(api, name, value, strict)));
+	return Promise.all(entries.map(([name, value]) => updateSetting(api, name, value, strict)));
 };
