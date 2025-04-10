@@ -191,8 +191,8 @@ const SecurityLogsTable = (): ReactElement => {
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
-									<GenericTableCell withTruncatedText title={setting && t(String(setting.value))}>
-										{setting && t(String(setting.value))}
+									<GenericTableCell withTruncatedText title={setting && String(setting.value)}>
+										{setting && String(setting.value)}
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{String(previous?.value)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{String(current?.value)}</GenericTableCell>
