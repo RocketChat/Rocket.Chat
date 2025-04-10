@@ -170,4 +170,20 @@ export class OmnichannelDepartments {
 		await this.inputUnit.click();
 		await this.findOption(unitName).click();
 	}
+
+	get fieldGroupAgents() {
+		return this.page.getByLabel('Agents', { exact: true });
+	}
+
+	get inputAgents() {
+		return this.fieldGroupAgents.getByRole('textbox');
+	}
+
+	get btnAddAgent() {
+		return this.fieldGroupAgents.getByRole('button', { name: 'Add', exact: true });
+	}
+
+	findAgentRow(name: string) {
+		return this.page.locator('tr', { has: this.page.getByText(name, { exact: true }) });
+	}
 }
