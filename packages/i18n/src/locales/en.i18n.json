@@ -6633,6 +6633,7 @@
   "App_will_lose_grandfathered_status": "**This app will lose its app limit policy exemption.**  \n  \nWorkspaces on Community can have up to {{limit}} apps enabled. Uninstalling this app will cause it to lose its exemption policy.",
   "App_will_lose_grandfathered_status_private": "**This app will lose its app limit policy exemption.**  \n  \nBecause Community workspaces cannot enable private apps, this workspace will require a premium plan in order to enable this app again in future.",
   "All_rooms": "All rooms",
+  "All_Settings": "All Settings",
   "All_visible": "All visible",
   "all": "all",
   "Filter_by_room": "Filter by room type",
