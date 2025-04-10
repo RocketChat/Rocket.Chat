@@ -43,26 +43,6 @@ type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
 };
 
-type ICRMData = {
-	_id: string;
-	label?: string;
-	topic?: string;
-	createdAt: Date;
-	lastMessageAt?: Date;
-	tags?: string[];
-	customFields?: IOmnichannelRoom['livechatData'];
-	visitor: Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'username' | 'department' | 'phone' | 'ip'> & {
-		email?: ILivechatVisitor['visitorEmails'];
-		os?: string;
-		browser?: string;
-		customFields: ILivechatVisitor['livechatData'];
-	};
-	agent?: Pick<IOmnichannelAgent, '_id' | 'username' | 'name' | 'customFields'> & {
-		email?: NonNullable<IOmnichannelAgent['emails']>[number]['address'];
-	};
-	crmData?: IOmnichannelRoom['crmData'];
-};
-
 class LivechatClass {
 	logger: Logger;
 
@@ -298,67 +278,6 @@ class LivechatClass {
 		}
 
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
-	}
-
-	async getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
-		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
-		if (!visitor) {
-			throw new Error('error-invalid-visitor');
-		}
-
-		const agent = room.servedBy?._id ? await Users.findOneById(room.servedBy?._id) : null;
-
-		const ua = new UAParser();
-		ua.setUA(visitor.userAgent || '');
-
-		const postData: ICRMData = {
-			_id: room._id,
-			label: room.fname || room.label, // using same field for compatibility
-			topic: room.topic,
-			createdAt: room.ts,
-			lastMessageAt: room.lm,
-			tags: room.tags,
-			customFields: room.livechatData,
-			visitor: {
-				_id: visitor._id,
-				token: visitor.token,
-				name: visitor.name,
-				username: visitor.username,
-				department: visitor.department,
-				ip: visitor.ip,
-				os: ua.getOS().name && `${ua.getOS().name} ${ua.getOS().version}`,
-				browser: ua.getBrowser().name && `${ua.getBrowser().name} ${ua.getBrowser().version}`,
-				customFields: visitor.livechatData,
-			},
-		};
-
-		if (agent) {
-			const customFields = parseAgentCustomFields(agent.customFields);
-
-			postData.agent = {
-				_id: agent._id,
-				username: agent.username,
-				name: agent.name,
-				...(customFields && { customFields }),
-			};
-
-			if (agent.emails && agent.emails.length > 0) {
-				postData.agent.email = agent.emails[0].address;
-			}
-		}
-
-		if (room.crmData) {
-			postData.crmData = room.crmData;
-		}
-
-		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-			postData.visitor.email = visitor.visitorEmails;
-		}
-		if (visitor.phone && visitor.phone.length > 0) {
-			postData.visitor.phone = visitor.phone;
-		}
-
-		return postData;
 	}
 
 	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {
