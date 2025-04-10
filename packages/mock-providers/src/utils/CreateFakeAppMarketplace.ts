@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import type { AppStatus } from '@rocket.chat/apps';
-import { type App, type AppSubscriptionInfo, AppSubscriptionStatus } from '@rocket.chat/core-typings';
+import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
+import type { App, AppSubscriptionInfo } from '@rocket.chat/core-typings';
 
-import { createFakeApp } from '../data';
+import { createFakeApp } from './createFakeApp';
 
 // Zero-value of the subscriptionInfo field on marketplace-api
 // returned by the API when the app has no value assigned to the field

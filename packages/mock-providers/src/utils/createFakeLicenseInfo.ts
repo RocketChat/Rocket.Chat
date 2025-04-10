@@ -1,0 +1,50 @@
+import { faker } from '@faker-js/faker';
+import type { LicenseInfo } from '@rocket.chat/core-typings';
+
+export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'license'>> = {}): Omit<LicenseInfo, 'license'> => ({
+	activeModules: faker.helpers.arrayElements([
+		'auditing',
+		'canned-responses',
+		'ldap-enterprise',
+		'livechat-enterprise',
+		'voip-enterprise',
+		'omnichannel-mobile-enterprise',
+		'engagement-dashboard',
+		'push-privacy',
+		'scalability',
+		'teams-mention',
+		'saml-enterprise',
+		'oauth-enterprise',
+		'device-management',
+		'federation',
+		'videoconference-enterprise',
+		'message-read-receipt',
+		'outlook-calendar',
+		'hide-watermark',
+		'custom-roles',
+		'accessibility-certification',
+	]),
+	externalModules: [],
+	preventedActions: {
+		activeUsers: faker.datatype.boolean(),
+		guestUsers: faker.datatype.boolean(),
+		roomsPerGuest: faker.datatype.boolean(),
+		privateApps: faker.datatype.boolean(),
+		marketplaceApps: faker.datatype.boolean(),
+		monthlyActiveContacts: faker.datatype.boolean(),
+	},
+	limits: {
+		activeUsers: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+		guestUsers: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+		roomsPerGuest: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+		privateApps: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+		marketplaceApps: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+		monthlyActiveContacts: { value: faker.number.int({ min: 0 }), max: faker.number.int({ min: 0 }) },
+	},
+	tags: faker.helpers.multiple(() => ({
+		name: faker.commerce.productAdjective(),
+		color: faker.internet.color(),
+	})),
+	trial: faker.datatype.boolean(),
+	...partial,
+});

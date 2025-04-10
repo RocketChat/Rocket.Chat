@@ -1,9 +1,8 @@
+import { createFakeMessage, createFakeUser } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
-
-import { createFakeMessage, createFakeUser } from '../../../../mocks/data';
 
 const models = {
 	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },

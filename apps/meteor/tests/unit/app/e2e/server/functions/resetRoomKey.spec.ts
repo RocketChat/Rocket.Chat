@@ -1,9 +1,8 @@
+import { generateMultipleSubs } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-import { generateMultipleSubs } from '../../../../../mocks/data/subscriptions';
 
 function addSecondsToDate(seconds: number, date = new Date()) {
 	return new Date(date.getTime() + seconds * 1000);
@@ -160,11 +159,11 @@ describe('resetRoomKey', () => {
 
 			expect(op.updateOne.update.$unset).to.be.deep.equal({ E2EKey: 1, E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 });
 
-			if (sub?.E2EKey && sub?.oldRoomKeys?.length < 10) {
+			if (sub?.E2EKey && sub.oldRoomKeys && sub?.oldRoomKeys?.length < 10) {
 				expect(op.updateOne.update.$set.oldRoomKeys).to.have.length(sub.oldRoomKeys.length + 1);
 				expect(
 					op.updateOne.update.$set.oldRoomKeys.every((key: any) =>
-						[...sub.oldRoomKeys.map((k: any) => k.E2EKey), sub.E2EKey].includes(key.E2EKey),
+						[...(sub.oldRoomKeys?.map((k: any) => k.E2EKey) || []), sub.E2EKey].includes(key.E2EKey),
 					),
 				).to.be.true;
 			}

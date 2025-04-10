@@ -1,9 +1,9 @@
+import type { MessageWithMdEnforced } from '@rocket.chat/core-typings';
 import { MessageBody, Skeleton } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
 import type { ComponentProps } from 'react';
 import { Suspense } from 'react';
 
-import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import GazzodownText from '../GazzodownText';
 
 type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {

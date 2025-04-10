@@ -1,4 +1,5 @@
-import { createFakeVisitor } from '../../mocks/data';
+import { createFakeVisitor } from '@rocket.chat/mock-providers';
+
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';

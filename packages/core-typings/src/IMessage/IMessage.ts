@@ -416,3 +416,10 @@ export interface IMessageFromVisitor extends IMessage {
 }
 
 export const isMessageFromVisitor = (message: IMessage): message is IMessageFromVisitor => 'token' in message;
+
+type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
+	[Property in Key]-?: Type[Property];
+};
+
+export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
+	WithRequiredProperty<TMessage, 'md'>;

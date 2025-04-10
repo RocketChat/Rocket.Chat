@@ -1,8 +1,7 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { mockAppRoot, createFakeRoom } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import VideoConfPopups from './VideoConfPopups';
-import { createFakeRoom } from '../../../../../../tests/mocks/data';
 import { createFakeVideoConfCall, createFakeIncomingCall } from '../../../../../../tests/mocks/utils/video-conference';
 
 const fakeRoom = createFakeRoom({ t: 'd' });

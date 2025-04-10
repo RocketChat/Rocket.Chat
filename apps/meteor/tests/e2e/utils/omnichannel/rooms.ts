@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
+import { createFakeVisitor } from '@rocket.chat/mock-providers';
 
-import { createFakeVisitor } from '../../../mocks/data';
 import type { BaseTest } from '../test';
 
 type UpdateRoomParams = { roomId: string; visitorId: string; tags: string[] };

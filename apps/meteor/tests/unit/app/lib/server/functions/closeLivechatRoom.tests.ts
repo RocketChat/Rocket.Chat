@@ -1,9 +1,8 @@
+import { createFakeRoom, createFakeSubscription, createFakeUser } from '@rocket.chat/mock-providers';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../../mocks/data';
 
 const subscriptionsStub = {
 	findOneByRoomIdAndUserId: sinon.stub(),

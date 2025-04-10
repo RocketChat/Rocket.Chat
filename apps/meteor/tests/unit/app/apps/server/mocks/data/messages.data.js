@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
-
-import { createFakeMessage, createFakeMessageWithAttachment } from '../../../../../../mocks/data';
+import { createFakeMessage, createFakeMessageWithAttachment } from '@rocket.chat/mock-providers';
 
 export const appMessageMock = {
 	id: 'appMessageMock',

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
+import { createFakeVisitor } from '@rocket.chat/mock-providers';
 
-import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';

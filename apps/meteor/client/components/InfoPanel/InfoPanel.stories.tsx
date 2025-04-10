@@ -1,3 +1,4 @@
+import { createFakeRoom } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
 
@@ -13,7 +14,6 @@ import {
 	InfoPanelTitle,
 } from '.';
 import RetentionPolicyCallout from './RetentionPolicyCallout';
-import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
 	title: 'Info Panel/InfoPanel',
