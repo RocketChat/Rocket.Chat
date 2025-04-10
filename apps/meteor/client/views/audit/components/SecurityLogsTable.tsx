@@ -22,6 +22,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import type { DateRange } from '../utils/dateRange';
+import { getTypeTranslation } from '../utils/getAppTypeTranslation';
 
 const SecurityLogsTable = (): ReactElement => {
 	const { t } = useTranslation();
@@ -186,7 +187,7 @@ const SecurityLogsTable = (): ReactElement => {
 												</Box>
 											)}
 											<Box fontScale='p2m' withTruncatedText color='default'>
-												{item.actor.type === 'user' ? item.actor.username : t(item.actor.type)}
+												{item.actor.type === 'user' ? item.actor.username : t(getTypeTranslation(item.actor.type))}
 											</Box>
 										</Box>
 									</GenericTableCell>
