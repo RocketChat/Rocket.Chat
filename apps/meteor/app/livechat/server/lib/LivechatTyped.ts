@@ -1,13 +1,5 @@
 import { VideoConf, api } from '@rocket.chat/core-services';
-import type {
-	IOmnichannelRoom,
-	IUser,
-	ILivechatVisitor,
-	ILivechatAgent,
-	ILivechatDepartment,
-	IOmnichannelAgent,
-	UserStatus,
-} from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import {
@@ -23,8 +15,6 @@ import {
 import { removeEmpty } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
-import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
@@ -33,15 +23,11 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { notifyOnLivechatInquiryChangedByToken, notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedByToken } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { updateDepartmentAgents } from './Helper';
 import { afterAgentAdded, afterRemoveAgent } from './hooks';
-
-type AKeyOf<T> = {
-	[K in keyof T]?: T[K];
-};
 
 class LivechatClass {
 	logger: Logger;
@@ -206,21 +192,6 @@ class LivechatClass {
 				status,
 			});
 		});
-	}
-
-	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
-		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
-
-		if (result.modifiedCount > 0) {
-			void notifyOnUserChange({
-				id: userId,
-				clientAction: 'updated',
-				diff: { ...fields, statusLivechat: status },
-			});
-		}
-
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return result;
 	}
 
 	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {

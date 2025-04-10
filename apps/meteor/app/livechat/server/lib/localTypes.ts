@@ -82,3 +82,7 @@ export type ICRMData = {
 	};
 	crmData?: IOmnichannelRoom['crmData'];
 };
+
+export type AKeyOf<T> = {
+	[K in keyof T]?: T[K];
+};
