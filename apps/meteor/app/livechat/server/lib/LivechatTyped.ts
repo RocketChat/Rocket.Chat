@@ -1,5 +1,5 @@
 import { VideoConf, api } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom, IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
@@ -10,7 +10,6 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { notifyOnLivechatInquiryChangedByToken } from '../../../lib/server/lib/notifyListener';
@@ -140,30 +139,6 @@ class LivechatClass {
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
 		}
-	}
-
-	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
-		void api.broadcast('omnichannel.room', roomId, {
-			type: 'visitorData',
-			visitor,
-		});
-	}
-
-	async changeRoomVisitor(userId: string, room: IOmnichannelRoom, visitor: ILivechatVisitor) {
-		const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
-		if (!(await canAccessRoomAsync(room, user))) {
-			throw new Error('error-not-allowed');
-		}
-
-		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-		this.notifyRoomVisitorChange(room._id, visitor);
-
-		return LivechatRooms.findOneById(room._id);
 	}
 
 	async notifyAgentStatusChanged(userId: string, status?: UserStatus) {
