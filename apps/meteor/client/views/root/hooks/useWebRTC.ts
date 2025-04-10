@@ -6,7 +6,6 @@ import { WebRTC } from '../../../../app/webrtc/client/WebRTCClass';
 import { WEB_RTC_EVENTS } from '../../../../app/webrtc/lib/constants';
 
 export const useWebRTC = (uid: string) => {
-	// const uid = useUserId();
 	const notifyUser = useStream('notify-user');
 
 	useEffect(() => {
