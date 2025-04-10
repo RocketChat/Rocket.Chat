@@ -5,8 +5,6 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import { register } from '../../app/markdown/lib/hljs';
-import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
 import 'hljs9/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -61,13 +59,5 @@ Meteor.startup(() => {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
-	});
-});
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const code = settings.get('Message_Code_highlight') as string | undefined;
-		code?.split(',').forEach((language: string) => {
-			language.trim() && register(language.trim());
-		});
 	});
 });
