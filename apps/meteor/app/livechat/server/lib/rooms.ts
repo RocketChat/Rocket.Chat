@@ -1,11 +1,30 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo, SelectedAgent, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
-import { LivechatRooms, LivechatContacts, Messages, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type {
+	ILivechatVisitor,
+	IMessage,
+	IOmnichannelRoomInfo,
+	SelectedAgent,
+	IOmnichannelRoomExtraData,
+	IOmnichannelRoom,
+} from '@rocket.chat/core-typings';
+import {
+	LivechatRooms,
+	LivechatContacts,
+	Messages,
+	LivechatCustomField,
+	LivechatInquiry,
+	Rooms,
+	Subscriptions,
+	Users,
+} from '@rocket.chat/models';
 
+import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
 import { Visitors } from './Visitors';
 import { getRequiredDepartment } from './departmentsLib';
 import { livechatLogger } from './logger';
+import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -179,6 +198,52 @@ export async function saveRoomInfo(
 	}
 
 	void notifyOnRoomChangedById(roomData._id);
+
+	return true;
+}
+
+export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
+	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
+	if (!room.open) {
+		throw new Meteor.Error('room-closed');
+	}
+
+	if (room.onHold) {
+		throw new Meteor.Error('error-room-onHold');
+	}
+
+	if (!room.servedBy) {
+		return false;
+	}
+
+	const user = await Users.findOneById(room.servedBy._id);
+	if (!user?._id) {
+		throw new Meteor.Error('error-invalid-user');
+	}
+
+	const inquiry = await LivechatInquiry.findOne({ rid: room._id });
+	if (!inquiry) {
+		return false;
+	}
+
+	// update inquiry's last message with room's last message to correctly display in the queue
+	// because we stop updating the inquiry when it's been taken
+	if (room.lastMessage) {
+		await LivechatInquiry.setLastMessageById(inquiry._id, room.lastMessage);
+	}
+
+	const transferredBy = normalizeTransferredByData(user, room);
+	livechatLogger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
+	const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
+	try {
+		await saveTransferHistory(room, transferData);
+		await RoutingManager.unassignAgent(inquiry, departmentId);
+	} catch (e) {
+		livechatLogger.error(e);
+		throw new Meteor.Error('error-returning-inquiry');
+	}
+
+	callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 	return true;
 }
