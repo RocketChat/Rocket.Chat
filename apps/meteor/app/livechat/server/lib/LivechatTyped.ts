@@ -14,12 +14,9 @@ import {
 	LivechatDepartment,
 	LivechatInquiry,
 	LivechatRooms,
-	Subscriptions,
 	LivechatVisitors,
-	Messages,
 	Users,
 	LivechatDepartmentAgents,
-	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
 } from '@rocket.chat/models';
@@ -36,12 +33,7 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import {
-	notifyOnLivechatInquiryChanged,
-	notifyOnLivechatInquiryChangedByToken,
-	notifyOnUserChange,
-	notifyOnSubscriptionChanged,
-} from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedByToken, notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
@@ -124,40 +116,6 @@ class LivechatClass {
 		}
 
 		return Users.checkOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
-	}
-
-	async removeRoom(rid: string) {
-		Livechat.logger.debug(`Deleting room ${rid}`);
-		check(rid, String);
-		const room = await LivechatRooms.findOneById(rid);
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
-
-		const result = await Promise.allSettled([
-			Messages.removeByRoomId(rid),
-			ReadReceipts.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid, {
-				async onTrash(doc) {
-					void notifyOnSubscriptionChanged(doc, 'removed');
-				},
-			}),
-			LivechatInquiry.removeByRoomId(rid),
-			LivechatRooms.removeById(rid),
-		]);
-
-		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
-			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
-		}
-
-		for (const r of result) {
-			if (r.status === 'rejected') {
-				this.logger.error(`Error removing room ${rid}: ${r.reason}`);
-				throw new Meteor.Error('error-removing-room', 'Error removing room');
-			}
-		}
 	}
 
 	private async getBotAgents(department?: string) {
