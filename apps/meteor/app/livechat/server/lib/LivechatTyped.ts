@@ -2,22 +2,12 @@ import { VideoConf, api } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom, IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import {
-	LivechatDepartment,
-	LivechatInquiry,
-	LivechatRooms,
-	LivechatVisitors,
-	Users,
-	LivechatDepartmentAgents,
-	Rooms,
-	LivechatCustomField,
-} from '@rocket.chat/models';
+import { LivechatDepartment, LivechatInquiry, LivechatRooms, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -192,36 +182,6 @@ class LivechatClass {
 				status,
 			});
 		});
-	}
-
-	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
-		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
-
-		const customField = await LivechatCustomField.findOneById(key);
-		if (!customField) {
-			throw new Error('invalid-custom-field');
-		}
-
-		if (customField.regexp !== undefined && customField.regexp !== '') {
-			const regexp = new RegExp(customField.regexp);
-			if (!regexp.test(value)) {
-				throw new Error(i18n.t('error-invalid-custom-field-value', { field: key }));
-			}
-		}
-
-		let result;
-		if (customField.scope === 'room') {
-			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
-		} else {
-			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
-		}
-
-		if (typeof result === 'boolean') {
-			// Note: this only happens when !overwrite is passed, in this case we don't do any db update
-			return 0;
-		}
-
-		return result.modifiedCount;
 	}
 
 	async removeAgent(username: string) {

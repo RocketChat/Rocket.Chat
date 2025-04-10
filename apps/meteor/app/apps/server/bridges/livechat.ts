@@ -12,6 +12,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
+import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import { registerGuest } from '../../../livechat/server/lib/guests';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
@@ -369,6 +370,6 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is setting livechat visitor's custom fields.`);
 
-		return LivechatTyped.setCustomFields(data);
+		return setCustomFields(data);
 	}
 }
