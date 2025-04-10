@@ -44,6 +44,11 @@ export class LDAPManager {
 				return this.fallbackToDefaultLogin(username, password);
 			}
 
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
+				return this.fallbackToDefaultLogin(username, password);
+			}
+
 			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
 			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
@@ -78,6 +83,11 @@ export class LDAPManager {
 			}
 
 			if (ldapUser === undefined) {
+				return;
+			}
+
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
 				return;
 			}
 
@@ -168,6 +178,7 @@ export class LDAPManager {
 
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
+		const homeServer = this.getFederationHomeServer(ldapUser);
 		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
 		const voipExtension = this.getLdapExtension(ldapUser);
@@ -185,6 +196,10 @@ export class LDAPManager {
 					id,
 				},
 			},
+			...(homeServer && {
+				username: `${username}:${homeServer}`,
+				federated: true,
+			}),
 		};
 
 		this.onMapUserData(ldapUser, userData);
@@ -467,6 +482,39 @@ export class LDAPManager {
 	protected static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
 		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
 		return getLdapDynamicValue(ldapUser, usernameField);
+	}
+
+	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
+		if (!settings.get<boolean>('Federation_Matrix_enabled')) {
+			return;
+		}
+
+		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
+		const homeServer = getLdapDynamicValue(ldapUser, homeServerField);
+
+		if (!homeServer) {
+			return;
+		}
+
+		logger.debug({ msg: 'User has a federation home server', homeServer });
+
+		const localServer = settings.get<string>('Federation_Matrix_homeserver_domain');
+		if (localServer === homeServer) {
+			return;
+		}
+
+		return homeServer;
+	}
+
+	protected static getFederatedUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
+		const username = this.slugifyUsername(ldapUser, requestUsername);
+		const homeServer = this.getFederationHomeServer(ldapUser);
+
+		if (homeServer) {
+			return `${username}:${homeServer}`;
+		}
+
+		return username;
 	}
 
 	// This method will find existing users by LDAP id or by username.

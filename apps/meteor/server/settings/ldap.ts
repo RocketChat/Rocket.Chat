@@ -215,6 +215,11 @@ export const createLdapSettings = () =>
 					enableQuery,
 				});
 
+				await this.add('LDAP_FederationHomeServer_Field', '', {
+					type: 'string',
+					enableQuery,
+				});
+
 				await this.add('LDAP_DataSync_UseVariables', false, {
 					type: 'boolean',
 					enableQuery,
