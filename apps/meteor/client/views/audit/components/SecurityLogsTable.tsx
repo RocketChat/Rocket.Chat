@@ -164,7 +164,7 @@ const SecurityLogsTable = (): ReactElement => {
 							const current = item.data.find((item) => item.key === 'current')?.value || t('Empty');
 							return (
 								<GenericTableRow
-									key={item.ts}
+									key={item._id}
 									role='link'
 									action
 									tabIndex={0}
