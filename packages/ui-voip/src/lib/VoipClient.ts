@@ -46,6 +46,8 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
+	private autoRegister = false;
+
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
@@ -765,6 +767,11 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.networkEmitter.emit('connected');
 		this.emit('stateChanged');
 
+		if (!this.isReady() || !this.autoRegister) {
+			return;
+		}
+
+		this.autoRegister = false;
 		this.register().catch((error?: any) => {
 			console.error('VoIP failed to register after user agent connection.');
 			if (error) {
@@ -779,12 +786,17 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.networkEmitter.emit('disconnected');
 		this.emit('stateChanged');
 
-		this.unregister().catch((error?: any) => {
-			console.error('VoIP failed to unregister after user agent disconnection.');
-			if (error) {
-				console.error(error);
-			}
-		});
+		if (this.isRegistered()) {
+			this.autoRegister = true;
+			this.unregister().catch((error?: any) => {
+				console.error('VoIP failed to unregister after user agent disconnection.');
+				if (error) {
+					console.error(error);
+				}
+			});
+		} else {
+			this.autoRegister = false;
+		}
 
 		if (error) {
 			this.networkEmitter.emit('connectionerror', error);
