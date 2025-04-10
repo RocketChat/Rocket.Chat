@@ -1,4 +1,4 @@
-import { VideoConf, api } from '@rocket.chat/core-services';
+import { VideoConf } from '@rocket.chat/core-services';
 import type { IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -7,7 +7,6 @@ import { removeEmpty } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
@@ -139,24 +138,6 @@ class LivechatClass {
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
 		}
-	}
-
-	async notifyAgentStatusChanged(userId: string, status?: UserStatus) {
-		if (!status) {
-			return;
-		}
-
-		void callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
-		if (!settings.get('Livechat_show_agent_info')) {
-			return;
-		}
-
-		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			void api.broadcast('omnichannel.room', room._id, {
-				type: 'agentStatus',
-				status,
-			});
-		});
 	}
 
 	async removeAgent(username: string) {

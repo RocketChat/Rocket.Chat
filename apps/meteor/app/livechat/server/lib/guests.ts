@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { api } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
@@ -22,11 +23,10 @@ import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
-import { api } from '@rocket.chat/core-services';
-import { canAccessRoomAsync } from '../../../authorization/server';
 
 export async function saveGuest(
 	guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string },
