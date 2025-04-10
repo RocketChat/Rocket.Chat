@@ -400,6 +400,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		}
 
 		if (connectionRetryCount !== -1 && reconnectionAttempt > connectionRetryCount) {
+			console.error('VoIP reconnection limit reached.');
 			return;
 		}
 
@@ -760,13 +761,30 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	private onUserAgentConnected = (): void => {
+		console.log('VoIP user agent connected.');
 		this.networkEmitter.emit('connected');
 		this.emit('stateChanged');
+
+		this.register().catch((error?: any) => {
+			console.error('VoIP failed to register after user agent connection.');
+			if (error) {
+				console.error(error);
+			}
+		});
 	};
 
 	private onUserAgentDisconnected = (error: any): void => {
+		console.log('VoIP user agent disconnected.');
+
 		this.networkEmitter.emit('disconnected');
 		this.emit('stateChanged');
+
+		this.unregister().catch((error?: any) => {
+			console.error('VoIP failed to unregister after user agent disconnection.');
+			if (error) {
+				console.error(error);
+			}
+		});
 
 		if (error) {
 			this.networkEmitter.emit('connectionerror', error);
