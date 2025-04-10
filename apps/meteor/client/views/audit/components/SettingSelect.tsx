@@ -5,15 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSettingSelectOptions } from '../hooks/useSettingSelectOptions';
 
-export const SettingSelect = ({
-	value,
-	onChange,
-	withTitle,
-}: {
-	value: string;
-	withTitle?: boolean;
-	onChange: (value: string) => void;
-}) => {
+export const SettingSelect = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState<string>('');
 
@@ -24,11 +16,10 @@ export const SettingSelect = ({
 
 	return (
 		<PaginatedSelectFiltered
-			withTitle={withTitle}
 			flexShrink={1}
 			value={value}
 			onChange={(val) => onChange(val)}
-			placeholder={t('All_settings')}
+			placeholder={t('All_Settings')}
 			filter={filter}
 			setFilter={setFilter as (value: string | number | undefined) => void}
 			options={flattenedData}
