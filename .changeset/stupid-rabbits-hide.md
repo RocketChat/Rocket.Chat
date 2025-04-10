@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-adds a new setting to allow syncing federated users data through LDAP
+Adds a new setting to allow syncing federated users data through LDAP
