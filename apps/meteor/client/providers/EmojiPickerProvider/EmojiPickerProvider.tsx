@@ -1,4 +1,4 @@
-import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ReactElement, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
@@ -23,13 +23,14 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
-	const [quickReactions, setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
+	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
 
+	const setQuickReactions = useEffectEvent(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
 	const [sub, getSnapshot] = useMemo(() => {
-		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
-	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis]);
+		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
@@ -46,7 +47,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
 			setFrequentEmojis(sortedFrequent);
-			setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
+			_setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
 		},
 		[frequentEmojis, setFrequentEmojis],
 	);

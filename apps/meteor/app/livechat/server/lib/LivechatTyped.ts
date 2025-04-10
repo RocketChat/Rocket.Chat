@@ -1,75 +1,21 @@
-import { VideoConf, api } from '@rocket.chat/core-services';
-import type {
-	IOmnichannelRoom,
-	IUser,
-	ILivechatVisitor,
-	ILivechatAgent,
-	ILivechatDepartment,
-	IOmnichannelAgent,
-	UserStatus,
-} from '@rocket.chat/core-typings';
+import { VideoConf } from '@rocket.chat/core-services';
+import type { IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import {
-	LivechatDepartment,
-	LivechatInquiry,
-	LivechatRooms,
-	Subscriptions,
-	LivechatVisitors,
-	Messages,
-	Users,
-	LivechatDepartmentAgents,
-	ReadReceipts,
-	Rooms,
-	LivechatCustomField,
-} from '@rocket.chat/models';
+import { LivechatDepartment, LivechatInquiry, LivechatRooms, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
-import UAParser from 'ua-parser-js';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import {
-	notifyOnLivechatInquiryChanged,
-	notifyOnLivechatInquiryChangedByToken,
-	notifyOnUserChange,
-	notifyOnSubscriptionChanged,
-} from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedByToken } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { updateDepartmentAgents } from './Helper';
 import { afterAgentAdded, afterRemoveAgent } from './hooks';
-
-type AKeyOf<T> = {
-	[K in keyof T]?: T[K];
-};
-
-type ICRMData = {
-	_id: string;
-	label?: string;
-	topic?: string;
-	createdAt: Date;
-	lastMessageAt?: Date;
-	tags?: string[];
-	customFields?: IOmnichannelRoom['livechatData'];
-	visitor: Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'username' | 'department' | 'phone' | 'ip'> & {
-		email?: ILivechatVisitor['visitorEmails'];
-		os?: string;
-		browser?: string;
-		customFields: ILivechatVisitor['livechatData'];
-	};
-	agent?: Pick<IOmnichannelAgent, '_id' | 'username' | 'name' | 'customFields'> & {
-		email?: NonNullable<IOmnichannelAgent['emails']>[number]['address'];
-	};
-	crmData?: IOmnichannelRoom['crmData'];
-};
 
 class LivechatClass {
 	logger: Logger;
@@ -124,40 +70,6 @@ class LivechatClass {
 		}
 
 		return Users.checkOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
-	}
-
-	async removeRoom(rid: string) {
-		Livechat.logger.debug(`Deleting room ${rid}`);
-		check(rid, String);
-		const room = await LivechatRooms.findOneById(rid);
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
-
-		const result = await Promise.allSettled([
-			Messages.removeByRoomId(rid),
-			ReadReceipts.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid, {
-				async onTrash(doc) {
-					void notifyOnSubscriptionChanged(doc, 'removed');
-				},
-			}),
-			LivechatInquiry.removeByRoomId(rid),
-			LivechatRooms.removeById(rid),
-		]);
-
-		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
-			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
-		}
-
-		for (const r of result) {
-			if (r.status === 'rejected') {
-				this.logger.error(`Error removing room ${rid}: ${r.reason}`);
-				throw new Meteor.Error('error-removing-room', 'Error removing room');
-			}
-		}
 	}
 
 	private async getBotAgents(department?: string) {
@@ -228,93 +140,6 @@ class LivechatClass {
 		}
 	}
 
-	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
-		void api.broadcast('omnichannel.room', roomId, {
-			type: 'visitorData',
-			visitor,
-		});
-	}
-
-	async changeRoomVisitor(userId: string, room: IOmnichannelRoom, visitor: ILivechatVisitor) {
-		const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('error-user-not-found');
-		}
-
-		if (!(await canAccessRoomAsync(room, user))) {
-			throw new Error('error-not-allowed');
-		}
-
-		await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-		this.notifyRoomVisitorChange(room._id, visitor);
-
-		return LivechatRooms.findOneById(room._id);
-	}
-
-	async notifyAgentStatusChanged(userId: string, status?: UserStatus) {
-		if (!status) {
-			return;
-		}
-
-		void callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
-		if (!settings.get('Livechat_show_agent_info')) {
-			return;
-		}
-
-		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			void api.broadcast('omnichannel.room', room._id, {
-				type: 'agentStatus',
-				status,
-			});
-		});
-	}
-
-	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
-		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
-
-		if (result.modifiedCount > 0) {
-			void notifyOnUserChange({
-				id: userId,
-				clientAction: 'updated',
-				diff: { ...fields, statusLivechat: status },
-			});
-		}
-
-		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return result;
-	}
-
-	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
-		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
-
-		const customField = await LivechatCustomField.findOneById(key);
-		if (!customField) {
-			throw new Error('invalid-custom-field');
-		}
-
-		if (customField.regexp !== undefined && customField.regexp !== '') {
-			const regexp = new RegExp(customField.regexp);
-			if (!regexp.test(value)) {
-				throw new Error(i18n.t('error-invalid-custom-field-value', { field: key }));
-			}
-		}
-
-		let result;
-		if (customField.scope === 'room') {
-			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
-		} else {
-			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
-		}
-
-		if (typeof result === 'boolean') {
-			// Note: this only happens when !overwrite is passed, in this case we don't do any db update
-			return 0;
-		}
-
-		return result.modifiedCount;
-	}
-
 	async removeAgent(username: string) {
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
@@ -340,67 +165,6 @@ class LivechatClass {
 		}
 
 		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
-	}
-
-	async getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
-		const visitor = await LivechatVisitors.findOneEnabledById(room.v._id);
-		if (!visitor) {
-			throw new Error('error-invalid-visitor');
-		}
-
-		const agent = room.servedBy?._id ? await Users.findOneById(room.servedBy?._id) : null;
-
-		const ua = new UAParser();
-		ua.setUA(visitor.userAgent || '');
-
-		const postData: ICRMData = {
-			_id: room._id,
-			label: room.fname || room.label, // using same field for compatibility
-			topic: room.topic,
-			createdAt: room.ts,
-			lastMessageAt: room.lm,
-			tags: room.tags,
-			customFields: room.livechatData,
-			visitor: {
-				_id: visitor._id,
-				token: visitor.token,
-				name: visitor.name,
-				username: visitor.username,
-				department: visitor.department,
-				ip: visitor.ip,
-				os: ua.getOS().name && `${ua.getOS().name} ${ua.getOS().version}`,
-				browser: ua.getBrowser().name && `${ua.getBrowser().name} ${ua.getBrowser().version}`,
-				customFields: visitor.livechatData,
-			},
-		};
-
-		if (agent) {
-			const customFields = parseAgentCustomFields(agent.customFields);
-
-			postData.agent = {
-				_id: agent._id,
-				username: agent.username,
-				name: agent.name,
-				...(customFields && { customFields }),
-			};
-
-			if (agent.emails && agent.emails.length > 0) {
-				postData.agent.email = agent.emails[0].address;
-			}
-		}
-
-		if (room.crmData) {
-			postData.crmData = room.crmData;
-		}
-
-		if (visitor.visitorEmails && visitor.visitorEmails.length > 0) {
-			postData.visitor.email = visitor.visitorEmails;
-		}
-		if (visitor.phone && visitor.phone.length > 0) {
-			postData.visitor.phone = visitor.phone;
-		}
-
-		return postData;
 	}
 
 	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {

@@ -7,9 +7,9 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { validateRequiredCustomFields } from '../../lib/custom-fields';
 import { registerGuest, removeGuest } from '../../lib/guests';
 import { saveRoomInfo } from '../../lib/rooms';
-import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
