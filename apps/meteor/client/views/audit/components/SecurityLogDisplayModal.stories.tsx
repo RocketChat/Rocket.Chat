@@ -21,3 +21,11 @@ export default {
 } satisfies Meta<typeof SecurityLogDisplayModal>;
 
 export const Default: StoryFn<typeof SecurityLogDisplayModal> = (args) => <SecurityLogDisplayModal {...args} />;
+
+export const system: StoryFn<typeof SecurityLogDisplayModal> = (args) => (
+	<SecurityLogDisplayModal {...args} actor={{ type: 'system', reason: 'update' }} />
+);
+
+export const app: StoryFn<typeof SecurityLogDisplayModal> = (args) => (
+	<SecurityLogDisplayModal {...args} actor={{ type: 'app', _id: 'app-id' }} />
+);
