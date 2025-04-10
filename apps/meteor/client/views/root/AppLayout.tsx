@@ -4,11 +4,9 @@ import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
-import { useForceLogout } from './hooks/useForceLogout';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
@@ -57,9 +55,7 @@ const AppLayout = () => {
 	useWordPressOAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
-	useStoreCookiesOnLogin();
 	useAutoupdate();
-	useForceLogout();
 	useCodeHighlight();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);

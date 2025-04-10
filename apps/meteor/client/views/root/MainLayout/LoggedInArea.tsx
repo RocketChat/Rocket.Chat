@@ -3,7 +3,9 @@ import type { ReactNode } from 'react';
 
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
+import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
+import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from '../hooks/useUpdateVideoConfUser';
 import { useWebRTC } from '../hooks/useWebRTC';
 
@@ -19,6 +21,8 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useWebRTC(user._id);
 	useOTRMessaging(user._id);
 	useNotificationUserCalendar(user);
+	useForceLogout(user._id);
+	useStoreCookiesOnLogin(user._id);
 
 	return children;
 };
