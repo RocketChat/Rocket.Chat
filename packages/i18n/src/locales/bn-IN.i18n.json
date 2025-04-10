@@ -24,6 +24,7 @@
   "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "একজন নতুন মালিককে সেই <span style=\"font-weight: bold;\">{{count}}</span> কক্ষে স্বয়ংক্রিয়ভাবে নিয়োগ দেওয়া হবে: <br/>{{rooms}}।",
   "Accounts": "অ্যাকাউন্ট",
   "Accounts_AllowDeleteOwnAccount": "ব্যবহারকারীদের নিজস্ব অ্যাকাউন্ট মুছতে অনুমতি দিন",
+  "Accept_Call": "কল গ্রহণ করুন",
   "Accept_new_livechats_when_agent_is_idle": "এজেন্ট যখন নিষ্ক্রিয় থাকে তখন নতুন ওমনিচ্যানেল অনুরোধগুলি গ্রহণ করুন",
   "Accounts_AllowEmailChange": "ইমেল পরিবর্তনের অনুমতি দিন",
   "Accounts_AllowPasswordChange": "পাসওয়ার্ড পরিবর্তনের অনুমতি দিন",

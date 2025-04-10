@@ -83,6 +83,7 @@
   "Discussion_name": "Eztabaidaren izena",
   "Discussion_start": "Eztabaida bat hasi",
   "Discussions": "Eztabaidak",
+  "Device_Management_Device_Unknown": "Ezezaguna",
   "Discussion": "Eztabaida",
   "Enabled": "Gaituta",
   "Edit_Status": "Editatu egoera",
@@ -117,5 +118,7 @@
   "User_left": "Erabiltzailea irten da",
   "Users": "Erabiltzaileak",
   "We_are_offline_Sorry_for_the_inconvenience": "Lineaz kanpo gaude. Barkatu eragozpenak.",
-  "Yes": "Bai"
+  "Yes": "Bai",
+  "VoIP_TeamCollab_Enabled": "Gaituta",
+  "onboarding.component.form.action.back": "Atzera"
 }
