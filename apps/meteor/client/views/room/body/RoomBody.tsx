@@ -6,17 +6,21 @@ import { memo, useCallback, useMemo, useRef } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
+import LoadingMessagesIndicator from './LoadingMessagesIndicator';
+import RetentionPolicyWarning from './RetentionPolicyWarning';
+import RoomForeword from './RoomForeword/RoomForeword';
+import UnreadMessagesIndicator from './UnreadMessagesIndicator';
+import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
+import { MessageList } from '../MessageList';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
-import { MessageList } from '../MessageList';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
-import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
+import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
@@ -24,17 +28,13 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import RoomForeword from './RoomForeword/RoomForeword';
-import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
-import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
-import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -176,7 +176,7 @@ const RoomBody = (): ReactElement => {
 
 	return (
 		<>
-			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
