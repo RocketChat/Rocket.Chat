@@ -1,13 +1,11 @@
 import type { AtLeast, INotificationDesktop, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useEmbeddedLayout } from '../useEmbeddedLayout';
 import { useDesktopNotification } from './useDesktopNotification';
 import { useNewMessageNotification } from './useNewMessageNotification';
-import { useNewRoomNotification } from './useNewRoomNotification';
-import { CachedChatSubscription } from '../../../app/models/client';
 import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 
@@ -17,7 +15,7 @@ export const useNotifyUser = () => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
-	const newRoomNotification = useNewRoomNotification();
+	const { notificationSounds } = useCustomSound();
 	const newMessageNotification = useNewMessageNotification();
 	const showDesktopNotification = useDesktopNotification();
 
@@ -27,7 +25,7 @@ export const useNotifyUser = () => {
 		}
 
 		if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
-			newRoomNotification();
+			notificationSounds.playNewRoom();
 		}
 	});
 
@@ -73,16 +71,11 @@ export const useNotifyUser = () => {
 			void notifyNewRoom(sub);
 		});
 
-		const handle = CachedChatSubscription.collection.find().observe({
-			added: (sub) => {
-				void notifyNewRoom(sub);
-			},
-		});
-
 		return () => {
 			unsubNotification();
 			unsubSubs();
-			handle.stop();
 		};
-	}, [isLayoutEmbedded, notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
+	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
+
+	useEffect(() => () => notificationSounds.stopNewRoom(), [notificationSounds]);
 };

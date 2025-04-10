@@ -77,7 +77,7 @@ API.default.addRoute(
 		get() {
 			const { withUndocumented = false } = this.queryParams;
 
-			return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.v1.typedRoutes, { withUndocumented })));
+			return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
 		},
 	},
 );
@@ -85,6 +85,10 @@ API.default.addRoute(
 app.use(
 	'/api-docs',
 	swaggerUi.serve,
-	swaggerUi.setup(makeOpenAPIResponse(getTypedRoutes(API.v1.typedRoutes, { withUndocumented: false }))),
+	swaggerUi.setup(null, {
+		swaggerOptions: {
+			url: `${settings.get('Site_Url')}/api/docs/json`,
+		},
+	}),
 );
 WebApp.connectHandlers.use(app);
