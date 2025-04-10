@@ -1,5 +1,4 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
@@ -23,7 +22,6 @@ import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
-import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
@@ -225,32 +223,4 @@ export async function getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
 	}
 
 	return postData;
-}
-
-function notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
-	void api.broadcast('omnichannel.room', roomId, {
-		type: 'visitorData',
-		visitor,
-	});
-}
-
-// TODO: Remove this function in next major
-/**
- * @deprecated Apparently not being used anywhere
- */
-export async function changeRoomVisitor(userId: string, room: IOmnichannelRoom, visitor: ILivechatVisitor) {
-	const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-	if (!user) {
-		throw new Error('error-user-not-found');
-	}
-
-	if (!(await canAccessRoomAsync(room, user))) {
-		throw new Error('error-not-allowed');
-	}
-
-	await LivechatRooms.changeVisitorByRoomId(room._id, visitor);
-
-	notifyRoomVisitorChange(room._id, visitor);
-
-	return LivechatRooms.findOneById(room._id);
 }
