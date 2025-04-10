@@ -7,6 +7,7 @@ import { LicenseService } from '../../app/license/server/license.internalService
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
 import { FederationServiceEE } from '../local-services/federation/service';
+import '../api/federation';
 import { InstanceService } from '../local-services/instance/service';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { MessageReadsService } from '../local-services/message-reads/service';
