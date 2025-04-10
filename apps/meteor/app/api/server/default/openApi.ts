@@ -1,7 +1,11 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import Ajv from 'ajv';
+import type { ValidateFunction } from 'ajv';
+
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';
-import Ajv, { ValidateFunction } from 'ajv';
+
 
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
@@ -11,13 +15,13 @@ import type { Route } from '../router';
 const app = express();
 
 // Enable CORS for JSON and UI endpoints
-app.use('/api/v1/docs/json', (req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  next();
+app.use('/api/v1/docs/json', (_req: Request, _res: Response, _next: NextFunction)=> {
+  _res.setHeader('Access-Control-Allow-Origin', '*');
+  _next();
 });
-app.use('/api-docs', (req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  next();
+app.use('/api-docs',(_req: Request, _res: Response, _next: NextFunction)=> {
+  _res.setHeader('Access-Control-Allow-Origin', '*');
+  _next();
 });
 
 // Initialize AJV
@@ -110,17 +114,34 @@ API.v1.get(
             name: 'X-Auth-Token',
           },
         },
-        schemas: {},
+        schemas: {
+          BasicSuccessResponse: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+            },
+            required: ['success'],
+          },
+          ErrorResponse: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' },
+            },
+            required: ['success', 'error'],
+          },
+        },
       },
-      paths: typedRoutes,
-    };
 
     // Validate the generated spec
     const valid = validateResponse[200](spec);
     if (!valid) {
-      console.error('[OpenAPI] Response validation errors:', validateResponse[200].errors);
-      throw new Error('Invalid OpenAPI spec');
+      const errors = JSON.stringify(validateResponse[200].errors, null, 2);
+      console.error('[OpenAPI] Response validation errors:\n', errors);
+      throw new Error(`Invalid OpenAPI spec: ${errors}`);
     }
+    
 
     return API.v1.success(spec);
   },
