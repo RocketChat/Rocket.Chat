@@ -159,9 +159,9 @@ const SecurityLogsTable = (): ReactElement => {
 					</GenericTableHeader>
 					<GenericTableBody>
 						{data.events.map((item) => {
-							const setting = item.data.find((item) => item.key === 'id');
-							const previous = item.data.find((item) => item.key === 'previous');
-							const current = item.data.find((item) => item.key === 'current');
+							const setting = item.data.find((item) => item.key === 'id')?.value;
+							const previous = item.data.find((item) => item.key === 'previous')?.value || t('Empty');
+							const current = item.data.find((item) => item.key === 'current')?.value || t('Empty');
 							return (
 								<GenericTableRow
 									key={item.ts}
@@ -173,9 +173,9 @@ const SecurityLogsTable = (): ReactElement => {
 										handleItemClick({
 											actor: item.actor,
 											timestamp: new Date(item.ts).toDateString(),
-											setting: setting?.value,
-											changedFrom: String(previous?.value),
-											changedTo: String(current?.value),
+											setting,
+											changedFrom: String(previous),
+											changedTo: String(current),
 										})
 									}
 								>
@@ -192,11 +192,11 @@ const SecurityLogsTable = (): ReactElement => {
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
-									<GenericTableCell withTruncatedText title={setting && String(setting.value)}>
-										{setting && String(setting.value)}
+									<GenericTableCell withTruncatedText title={setting && String(setting)}>
+										{setting && String(setting)}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(previous?.value)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(current?.value)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{String(previous)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{String(current)}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}
