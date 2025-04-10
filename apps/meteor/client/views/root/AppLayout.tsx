@@ -8,6 +8,7 @@ import { useForceLogout } from './hooks/useForceLogout';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useOTRMessaging } from './hooks/useOTRMessaging';
+import { useReloadRoomAfterLogin } from './hooks/useReloadRoomAfterLogin';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
@@ -71,6 +72,7 @@ const AppLayout = () => {
 	useForceLogout();
 	useCodeHighlight();
 	useNotificationUserCalendar();
+	useReloadRoomAfterLogin();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
