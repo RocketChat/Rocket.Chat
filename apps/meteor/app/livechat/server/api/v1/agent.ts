@@ -8,6 +8,7 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { RoutingManager } from '../../lib/RoutingManager';
 import { getRequiredDepartment } from '../../lib/departmentsLib';
+import { setUserStatusLivechat } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -107,7 +108,7 @@ API.v1.addRoute(
 				// Next version we'll update this to return an error
 				// And update the FE accordingly
 				if (canChangeStatus) {
-					await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
+					await setUserStatusLivechat(agentId, newStatus);
 					return API.v1.success({ status: newStatus });
 				}
 
@@ -118,7 +119,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 
-			await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
+			await setUserStatusLivechat(agentId, newStatus);
 
 			return API.v1.success({ status: newStatus });
 		},

@@ -60,6 +60,12 @@ export class ModifyCreator implements IModifyCreator {
                         })
                             .then((response) => response.result)
                             .catch((err) => {
+                                if (err instanceof Error) {
+                                    throw err;
+                                }
+                                if (err?.error?.message) {
+                                    throw new Error(err.error.message);
+                                }
                                 throw new Error(err.error);
                             });
                 },
@@ -82,6 +88,12 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
                                         throw new Error(err.error);
                                     }),
             },
@@ -92,7 +104,7 @@ export class ModifyCreator implements IModifyCreator {
         return new Proxy(
             { __kind: 'getEmailCreator' },
             {
-                get: (_target: unknown, prop: string) => 
+                get: (_target: unknown, prop: string) =>
                         (...params: unknown[]) =>
                             prop === 'toJSON'
                                 ? {}
@@ -102,6 +114,12 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
                                         throw new Error(err.error);
                                     }),
             }
@@ -112,7 +130,7 @@ export class ModifyCreator implements IModifyCreator {
         return new Proxy(
             { __kind: 'getContactCreator' },
             {
-                get: (_target: unknown, prop: string) => 
+                get: (_target: unknown, prop: string) =>
                         (...params: unknown[]) =>
                             prop === 'toJSON'
                                 ? {}
@@ -122,6 +140,12 @@ export class ModifyCreator implements IModifyCreator {
                                 })
                                     .then((response) => response.result)
                                     .catch((err) => {
+                                        if (err instanceof Error) {
+                                            throw err;
+                                        }
+                                        if (err?.error?.message) {
+                                            throw new Error(err.error.message);
+                                        }
                                         throw new Error(err.error);
                                     }),
             }
