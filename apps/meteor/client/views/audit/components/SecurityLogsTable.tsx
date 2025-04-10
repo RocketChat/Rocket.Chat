@@ -101,8 +101,8 @@ const SecurityLogsTable = (): ReactElement => {
 
 	return (
 		<>
-			<Box mb={16} display='flex' flexWrap='nowrap' alignItems='flex-end'>
-				<Field flexShrink={1}>
+			<Box mb={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
+				<Field width='unset' flexShrink={1} flexGrow={1}>
 					<Margins inline={6}>
 						<FieldLabel>{t('Date')}</FieldLabel>
 						<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
@@ -115,7 +115,7 @@ const SecurityLogsTable = (): ReactElement => {
 					</Margins>
 				</Field>
 				<ButtonGroup>
-					<Margins inline={6}>
+					<Margins blockStart={12} inline={6}>
 						<Button secondary onClick={handleClearFilters}>
 							{t('Clear_filters')}
 						</Button>
