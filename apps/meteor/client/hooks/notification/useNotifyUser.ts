@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 import { useEmbeddedLayout } from '../useEmbeddedLayout';
 import { useDesktopNotification } from './useDesktopNotification';
 import { useNewMessageNotification } from './useNewMessageNotification';
-import { CachedChatSubscription } from '../../../app/models/client';
 import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 
@@ -72,17 +71,11 @@ export const useNotifyUser = () => {
 			void notifyNewRoom(sub);
 		});
 
-		const handle = CachedChatSubscription.collection.find().observe({
-			added: (sub) => {
-				void notifyNewRoom(sub);
-			},
-		});
-
 		return () => {
 			unsubNotification();
 			unsubSubs();
-			handle.stop();
-			notificationSounds.stopNewRoom();
 		};
-	}, [isLayoutEmbedded, notificationSounds, notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
+	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
+
+	useEffect(() => () => notificationSounds.stopNewRoom(), [notificationSounds]);
 };

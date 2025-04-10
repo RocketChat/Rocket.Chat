@@ -1,8 +1,5 @@
-import { Meteor } from 'meteor/meteor';
+import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-
-import { useReactiveValue } from '../../../client/hooks/useReactiveValue';
-import { settings } from '../../settings/client';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,10 +17,19 @@ declare global {
 }
 
 export const useAnalytics = (): void => {
-	const uid = useReactiveValue(() => Meteor.userId());
+	const uid = useUserId();
 
-	const googleId = useReactiveValue(() => settings.get('GoogleAnalytics_enabled') && settings.get('GoogleAnalytics_ID'));
-	const piwikUrl = useReactiveValue(() => settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'));
+	const googleAnalyticsEnabled = useSetting('GoogleAnalytics_enabled', false);
+	const googleId = useSetting('GoogleAnalytics_ID', '');
+
+	const piwiEnabled = useSetting('PiwikAnalytics_enabled', false);
+	const piwikUrl = useSetting('PiwikAnalytics_url', '');
+
+	const piwikSiteId = useSetting('PiwikAnalytics_siteId', '');
+	const piwikPrependDomain = useSetting('PiwikAnalytics_prependDomain', '');
+	const piwikCookieDomain = useSetting('PiwikAnalytics_cookieDomain', '');
+	const piwikDomains = useSetting('PiwikAnalytics_domains', '');
+	const piwikAdditionalTracker = useSetting('PiwikAdditionalTrackers', '');
 
 	useEffect(() => {
 		if (uid) {
@@ -33,7 +39,7 @@ export const useAnalytics = (): void => {
 	}, [uid]);
 
 	useEffect(() => {
-		if (!googleId) {
+		if (!googleAnalyticsEnabled || !googleId) {
 			return;
 		}
 		if (googleId.startsWith('G-')) {
@@ -73,20 +79,15 @@ export const useAnalytics = (): void => {
 			window.ga?.('create', googleId, 'auto');
 			window.ga?.('send', 'pageview');
 		}
-	}, [googleId, uid]);
+	}, [googleAnalyticsEnabled, googleId, uid]);
 
 	useEffect(() => {
-		if (!piwikUrl) {
+		if (!piwiEnabled || !piwikUrl) {
 			document.getElementById('piwik-analytics')?.remove();
 			window._paq = [];
 			return;
 		}
 
-		const piwikSiteId = piwikUrl && settings.get('PiwikAnalytics_siteId');
-		const piwikPrependDomain = piwikUrl && settings.get('PiwikAnalytics_prependDomain');
-		const piwikCookieDomain = piwikUrl && settings.get('PiwikAnalytics_cookieDomain');
-		const piwikDomains = piwikUrl && settings.get('PiwikAnalytics_domains');
-		const piwikAdditionalTracker = piwikUrl && settings.get('PiwikAdditionalTrackers');
 		window._paq = window._paq || [];
 
 		window._paq.push(['trackPageView']);
@@ -136,5 +137,5 @@ export const useAnalytics = (): void => {
 			g.src = `${piwikUrl}js/`;
 			s.parentNode?.insertBefore(g, s);
 		})();
-	}, [piwikUrl]);
+	}, [piwiEnabled, piwikAdditionalTracker, piwikCookieDomain, piwikDomains, piwikPrependDomain, piwikSiteId, piwikUrl]);
 };
