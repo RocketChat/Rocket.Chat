@@ -5,6 +5,7 @@ import { hasAllPermission } from '../../app/authorization/client';
 import { appLayout } from '../lib/appLayout';
 import { onToggledFeature } from '../lib/onToggledFeature';
 import { router } from '../providers/RouterProvider';
+import SettingsProvider from '../providers/SettingsProvider';
 import NotAuthorizedPage from '../views/notAuthorized/NotAuthorizedPage';
 import MainLayout from '../views/root/MainLayout';
 
@@ -67,9 +68,11 @@ onToggledFeature('auditing', {
 				id: 'security-logs',
 				element: appLayout.wrap(
 					<MainLayout>
-						<PermissionGuard permission='can-audit'>
-							<SecurityLogsPage />
-						</PermissionGuard>
+						<SettingsProvider>
+							<PermissionGuard permission='can-audit'>
+								<SecurityLogsPage />
+							</PermissionGuard>
+						</SettingsProvider>
 					</MainLayout>,
 				),
 			},
