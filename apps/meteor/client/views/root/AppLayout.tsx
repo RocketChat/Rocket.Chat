@@ -2,6 +2,7 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useForceLogout } from './hooks/useForceLogout';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
@@ -68,6 +69,7 @@ const AppLayout = () => {
 	useStoreCookiesOnLogin();
 	useAutoupdate();
 	useForceLogout();
+	useCodeHighlight();
 	useNotificationUserCalendar();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
