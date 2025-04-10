@@ -28,7 +28,14 @@ export type BaseTest = {
 	makeAxeBuilder: () => AxeBuilder;
 
 	updateSetting: (settingId: string, value: ISetting['value'], defaultValue?: ISetting['value']) => Promise<APIResponse>;
+
+	restoreSettings: () => Promise<APIResponse[]>;
 };
+
+type WorkerFixtures = {
+	_updatedSettingsDefaults: Record<ISetting['_id'], ISetting['value']>;
+};
+
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
@@ -41,7 +48,7 @@ let apiContext: APIRequestContext;
 
 const cacheFromCredentials = new Map<string, string>();
 
-export const test = baseTest.extend<BaseTest>({
+export const test = baseTest.extend<BaseTest, WorkerFixtures>({
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
 			await use(context);
@@ -135,18 +142,20 @@ export const test = baseTest.extend<BaseTest>({
 		await use(makeAxeBuilder);
 	},
 
-	updateSetting: async ({ api }, use) => {
-		const _defaultSettings: Record<ISetting['_id'], ISetting['value']> = {};
+	_updatedSettingsDefaults: [{}, { option: true, scope: 'worker' }],
 
+	updateSetting: async ({ api, _updatedSettingsDefaults }, use) => {
 		await use((settingId: ISetting['_id'], value: ISetting['value'], defaultValue: ISetting['value']) => {
 			if (defaultValue !== undefined) {
-				_defaultSettings[settingId] = defaultValue;
+				_updatedSettingsDefaults[settingId] = defaultValue;
 			}
 
 			return updateSetting(api, settingId, value);
 		});
+	},
 
-		await updateSettings(api, _defaultSettings);
+	restoreSettings: async ({ api, _updatedSettingsDefaults }, use) => {
+		await use(() => updateSettings(api, _updatedSettingsDefaults));
 	},
 });
 
