@@ -42,8 +42,8 @@ test.describe('OC - Manual Selection', () => {
 		await agentB.page.close();
 	});
 	// Delete all data
-	test.afterAll(async () => {
-		await Promise.all(agents.map((agent) => agent.delete()));
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all(agents.map((agent) => agent.delete(), restoreSettings()));
 	});
 
 	test('OC - Manual Selection - Queue', async ({ page, api }) => {

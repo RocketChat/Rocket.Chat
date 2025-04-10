@@ -41,8 +41,9 @@ test.describe('OC - Livechat - Message list background', async () => {
 		await page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await agent.delete();
+		await restoreSettings();
 	});
 
 	test('OC - Livechat - Change message list background', async ({ page, updateSetting }) => {

@@ -41,9 +41,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poHomeOmnichannel.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([api.delete('/livechat/users/agent/user1'), restoreSettings(), poHomeOmnichannel.page.close()]);
 	});
 
 	test.afterEach(async () => {
@@ -153,15 +152,15 @@ test.describe('OC - Contact Manager Routing', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await Promise.all([
+			restoreSettings(),
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/agent/user2'),
 			api.delete(`/omnichannel/contact/${contactId}`),
+			poHomeOmnichannel.page.close(),
+			poHomeOmnichannelUser2.page.close(),
 		]);
-
-		await poHomeOmnichannel.page.close();
-		await poHomeOmnichannelUser2.page.close();
 	});
 
 	test.afterEach(async () => {

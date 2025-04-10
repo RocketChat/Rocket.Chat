@@ -13,6 +13,10 @@ test.describe('anonymous-user', () => {
 		]);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 

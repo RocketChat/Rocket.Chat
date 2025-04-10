@@ -16,6 +16,10 @@ test.describe.serial('Presence', () => {
 		await updateSetting('API_Use_REST_For_DDP_Calls', true, true);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test.describe('Login using default settings', () => {
 		test('expect user to be online after log in', async ({ page }) => {
 			await poRegistration.username.type('user1');
@@ -50,6 +54,10 @@ test.describe.serial('Presence', () => {
 
 		test.beforeAll(async ({ updateSetting }) => {
 			await updateSetting('Calendar_BusyStatus_Enabled', true, false);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('Should change user status to busy when there is an appointment', async ({ page, api }) => {

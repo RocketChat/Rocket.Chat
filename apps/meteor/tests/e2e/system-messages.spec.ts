@@ -54,6 +54,10 @@ test.describe.serial('System Messages', () => {
 		await expect((await api.post('/groups.delete', { roomId: group._id })).status()).toBe(200);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('expect "User added" system message to be visible', async ({ page, api }) => {
 		await expect((await api.post('/groups.invite', { roomId: group._id, userId: user._id })).status()).toBe(200);
 

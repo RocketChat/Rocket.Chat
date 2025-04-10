@@ -21,6 +21,10 @@ test.describe.serial('access-security-page', () => {
 		await page.waitForSelector('.main-content');
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
 		const securityTab = poAccountProfile.sidenav.linkSecurity;
 		await expect(securityTab).not.toBeVisible();

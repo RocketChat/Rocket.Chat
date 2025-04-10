@@ -26,10 +26,11 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await agent.page.close();
 
 		await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200));
+		await restoreSettings();
 	});
 
 	test.beforeEach(async ({ page, api }) => {

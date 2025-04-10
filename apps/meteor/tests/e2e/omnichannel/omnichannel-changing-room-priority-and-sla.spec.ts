@@ -43,12 +43,13 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await agent.page.close();
 
 		await Promise.all([
 			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
 			api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`),
+			restoreSettings(),
 		]);
 	});
 

@@ -127,9 +127,8 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([api.delete('/livechat/users/agent/user1'), restoreSettings(), poLiveChat.page.close()]);
 	});
 
 	test('OC - Livechat - Close Chat disabled', async () => {
@@ -177,10 +176,13 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 		await poLiveChat.sendMessageAndCloseChat(firstVisitor);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page.close();
-		await poHomeOmnichannel.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([
+			restoreSettings(),
+			api.delete('/livechat/users/agent/user1'),
+			poLiveChat.page.close(),
+			poHomeOmnichannel.page.close(),
+		]);
 	});
 
 	test('OC - Livechat - Resub after close room', async () => {
@@ -328,6 +330,10 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await poLiveChat.page.goto('/livechat');
+	});
+
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
 	});
 
 	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {

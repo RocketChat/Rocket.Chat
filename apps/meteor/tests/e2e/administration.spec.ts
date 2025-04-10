@@ -290,6 +290,10 @@ test.describe.parallel('administration', () => {
 			await page.goto('/admin/integrations');
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('should display the example payload correctly', async () => {
 			await poAdmin.btnNew.click();
 			await poAdmin.btnInstructions.click();

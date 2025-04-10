@@ -11,6 +11,10 @@ test.describe.parallel('Reset Password', () => {
 		await page.goto('/reset-password/someToken');
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('should confirm password be invalid', async () => {
 		await poRegistration.inputPassword.fill('123456');
 		await poRegistration.inputPasswordConfirm.fill('123455');

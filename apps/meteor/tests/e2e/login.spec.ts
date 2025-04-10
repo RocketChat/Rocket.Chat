@@ -15,6 +15,10 @@ test.describe.parallel('Login', () => {
 		await page.goto('/home');
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 		const results = await makeAxeBuilder().analyze();
 		expect(results.violations).toEqual([]);

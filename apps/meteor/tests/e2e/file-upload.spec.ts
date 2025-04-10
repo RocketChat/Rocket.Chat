@@ -21,7 +21,8 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await restoreSettings();
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 

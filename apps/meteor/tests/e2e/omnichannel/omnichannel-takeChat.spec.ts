@@ -30,12 +30,11 @@ test.describe('omnichannel-takeChat', () => {
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		await agent.page.close();
-		await api.delete('/livechat/users/agent/user1');
+		await Promise.all([agent.page.close(), api.delete('/livechat/users/agent/user1'), restoreSettings()]);
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {

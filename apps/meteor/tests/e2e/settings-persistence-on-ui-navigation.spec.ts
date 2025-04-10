@@ -22,6 +22,10 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 		});
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('expect settings to persist in ui when navigating back and forth', async ({ page }) => {
 		const settingInput = await page.locator('[data-qa-setting-id="Hide_System_Messages"] input');
 		await settingInput.pressSequentially('User joined');

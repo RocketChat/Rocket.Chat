@@ -35,11 +35,12 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Delete all data
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...agents.map((agent) => agent.delete()),
 			...managers.map((manager) => manager.delete()),
+			restoreSettings(),
 		]);
 	});
 

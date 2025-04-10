@@ -36,6 +36,10 @@ test.describe.serial('Forget session on window close setting', () => {
 			await updateSetting('Accounts_ForgetUserSessionOnWindowClose', true);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('Login using credentials and reload to get logged out', async ({ page, context }) => {
 			await poRegistration.username.type('user1');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);

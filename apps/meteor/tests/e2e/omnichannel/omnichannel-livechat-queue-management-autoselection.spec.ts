@@ -43,9 +43,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await poHomeOmnichannel.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([api.delete('/livechat/users/agent/user1'), restoreSettings(), poHomeOmnichannel.page.close()]);
 	});
 
 	test.describe('OC - Queue Management - Auto Selection', () => {

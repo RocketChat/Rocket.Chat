@@ -45,8 +45,8 @@ test.describe('OC - Contact Center - Chats', () => {
 		await page.close();
 	});
 
-	test.afterAll(async () => {
-		await Promise.all([...conversations.map((conversation) => conversation.delete()), agent.delete()]);
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all([...conversations.map((conversation) => conversation.delete()), agent.delete(), restoreSettings()]);
 	});
 
 	test(`OC - Contact Center - Chats - Filter from and to same date`, async ({ page }) => {

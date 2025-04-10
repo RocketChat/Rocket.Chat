@@ -17,7 +17,8 @@ test.describe.serial('search-discussion', () => {
 		await page.goto('/home');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await restoreSettings();
 		await deleteRoom(api, discussion._id);
 	});
 

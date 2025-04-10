@@ -24,6 +24,10 @@ test.describe.serial('permissions', () => {
 			await updateSetting('Message_AllowEditing', false, true);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('expect option(edit) not be visible', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
@@ -41,6 +45,10 @@ test.describe.serial('permissions', () => {
 	test.describe.serial('Delete message', () => {
 		test.beforeAll(async ({ updateSetting }) => {
 			await updateSetting('Message_AllowDeleting', false, true);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(delete) not be visible', async ({ page }) => {
@@ -65,6 +73,10 @@ test.describe.serial('permissions', () => {
 			await updateSetting('Message_AllowPinning', false, true);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('expect option(pin) not be visible', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('expect option(pin) not be visible');
@@ -81,6 +93,10 @@ test.describe.serial('permissions', () => {
 	test.describe.skip('Star message', () => {
 		test.beforeAll(async ({ updateSetting }) => {
 			await updateSetting('Message_AllowStarring', false, true);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(star) not be visible', async ({ page }) => {
@@ -102,6 +118,10 @@ test.describe.serial('permissions', () => {
 			await updateSetting('FileUpload_Enabled', false, true);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('expect option (upload file) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnOptionFileUpload).toBeDisabled();
@@ -113,6 +133,10 @@ test.describe.serial('permissions', () => {
 			await updateSetting('Message_AudioRecorderEnabled', false, true);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test('expect option (upload audio) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnRecordAudio).toBeDisabled();
@@ -122,6 +146,10 @@ test.describe.serial('permissions', () => {
 	test.describe.serial('Upload video', () => {
 		test.beforeAll(async ({ updateSetting }) => {
 			await updateSetting('Message_VideoRecorderEnabled', false, true);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option (upload video) not be visible', async () => {
@@ -136,6 +164,10 @@ test.describe.serial('permissions', () => {
 				updateSetting('Message_AllowBadWordsFilter', true, false),
 				updateSetting('Message_BadWordsFilterList', 'badword', ''),
 			]);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect badword be censored', async () => {

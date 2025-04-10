@@ -29,10 +29,11 @@ test.describe('OC - Business Hours', () => {
 		]);
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
+		await restoreSettings();
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

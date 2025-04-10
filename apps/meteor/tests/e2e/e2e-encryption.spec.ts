@@ -25,6 +25,10 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await Promise.all([updateSetting('E2E_Enable', true, false), updateSetting('E2E_Allow_Unencrypted_Messages', true, false)]);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test.afterEach(async ({ api }) => {
 		await api.recreateContext();
 	});
@@ -255,6 +259,10 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.beforeAll(async ({ updateSetting }) => {
 		await updateSetting('E2E_Allow_Unencrypted_Messages', true, false);
+	});
+
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {

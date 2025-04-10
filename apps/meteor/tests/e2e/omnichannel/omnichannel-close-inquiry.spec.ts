@@ -31,8 +31,12 @@ test.describe('Omnichannel close inquiry', () => {
 		await agent.page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await Promise.all([await api.delete('/livechat/users/agent/user1'), await api.delete('/livechat/users/manager/user1')]);
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([
+			await api.delete('/livechat/users/agent/user1'),
+			await api.delete('/livechat/users/manager/user1'),
+			restoreSettings(),
+		]);
 	});
 
 	test('Receiving a message from visitor', async ({ page }) => {

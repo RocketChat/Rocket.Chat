@@ -42,6 +42,10 @@ test.describe.serial('read-receipts', () => {
 			]);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		let auxContext: { page: Page; poHomeChannel: HomeChannel } | undefined;
 
 		test.afterEach(async () => {

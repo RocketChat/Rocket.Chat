@@ -112,7 +112,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
@@ -122,6 +122,8 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			...agents.map((agent) => agent.delete()),
 			// Delete tags
 			...tags.map((tag) => tag.delete()),
+
+			restoreSettings(),
 		]);
 	});
 
@@ -286,6 +288,10 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 
 	test.beforeAll(async ({ updateSetting }) => {
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
+	});
+
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
 	});
 
 	test.beforeAll(async ({ api }) => {

@@ -10,8 +10,9 @@ test.describe('Translations', () => {
 		await Promise.all([updateSetting('Language', 'en', 'en'), updateSetting('Site_Name', 'Rocket.Chat', 'Rocket.Chat')]);
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await setUserPreferences(api, { language: '' });
+		await restoreSettings();
 	});
 
 	test("expect to display text in the user's preference language", async ({ page, api }) => {

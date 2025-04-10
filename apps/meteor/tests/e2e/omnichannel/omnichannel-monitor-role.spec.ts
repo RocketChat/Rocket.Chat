@@ -109,13 +109,14 @@ test.describe('OC - Monitor Role', () => {
 	});
 
 	// Delete all created data
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await Promise.all([
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...conversations.map((conversation) => conversation.delete()),
 			...units.map((unit) => unit.delete()),
 			...monitors.map((monitor) => monitor.delete()),
+			restoreSettings(),
 		]);
 	});
 

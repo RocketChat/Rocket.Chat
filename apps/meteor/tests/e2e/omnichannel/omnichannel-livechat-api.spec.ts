@@ -262,13 +262,14 @@ test.describe('OC - Livechat API', () => {
 			await pageContext?.close();
 		});
 
-		test.afterAll(async ({ updateSetting }) => {
+		test.afterAll(async ({ updateSetting, restoreSettings }) => {
 			await agent.delete();
 			await agent2.delete();
 
 			await updateSetting('Omnichannel_enable_department_removal', true);
 			await Promise.all([...departments.map((department) => department.delete())]);
 			await updateSetting('Omnichannel_enable_department_removal', false);
+			await restoreSettings();
 		});
 
 		// clearBusinessUnit
@@ -725,8 +726,9 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async () => {
+		test.afterAll(async ({ restoreSettings }) => {
 			await agent.delete();
+			await restoreSettings();
 		});
 
 		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {

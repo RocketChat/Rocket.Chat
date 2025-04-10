@@ -54,6 +54,10 @@ test.describe.parallel('register', () => {
 				await poRegistration.goToRegister.click();
 			});
 
+			test.afterEach(async ({ restoreSettings }) => {
+				await restoreSettings();
+			});
+
 			test('expect to register a user without password confirmation', async () => {
 				await test.step('expect to not have password confirmation field', async () => {
 					await expect(poRegistration.inputPasswordConfirm).toBeHidden();
@@ -81,6 +85,10 @@ test.describe.parallel('register', () => {
 
 				await page.goto('/home');
 				await poRegistration.goToRegister.click();
+			});
+
+			test.afterEach(async ({ restoreSettings }) => {
+				await restoreSettings();
 			});
 
 			test('it should expect to have a textbox asking the reason for the registration', async () => {
@@ -125,6 +133,10 @@ test.describe.parallel('register', () => {
 				updateSetting('Accounts_RegistrationForm', 'Secret URL', 'Public'),
 				updateSetting('Accounts_RegistrationForm_SecretURL', 'secret', faker.string.uuid()),
 			]);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('It should expect a message warning that registration is disabled', async ({ page }) => {

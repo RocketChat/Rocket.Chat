@@ -68,6 +68,10 @@ test.describe.serial('homepage', () => {
 				await updateSetting('Layout_Home_Body', 'Hello admin', '');
 			});
 
+			test.afterAll(async ({ restoreSettings }) => {
+				await restoreSettings();
+			});
+
 			test('visibility and button functionality in custom body with custom content', async () => {
 				await test.step('expect custom body to be visible', async () => {
 					await expect(adminPage.locator('div >> text="Hello admin"')).toBeVisible();
@@ -88,6 +92,10 @@ test.describe.serial('homepage', () => {
 						updateSetting('Layout_Home_Custom_Block_Visible', true),
 						updateSetting('Layout_Custom_Body_Only', true),
 					]);
+				});
+
+				test.afterAll(async ({ restoreSettings }) => {
+					await restoreSettings();
 				});
 
 				test('display custom content only', async () => {
@@ -118,7 +126,8 @@ test.describe.serial('homepage', () => {
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 
-		test.afterAll(async () => {
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 			await regularUserPage.close();
 		});
 
@@ -155,6 +164,10 @@ test.describe.serial('homepage', () => {
 					updateSetting('Layout_Home_Title', 'NewTitle', 'Home'),
 				]);
 
+				test.afterAll(async ({ restoreSettings }) => {
+					await restoreSettings();
+				});
+
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
@@ -176,6 +189,10 @@ test.describe.serial('homepage', () => {
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+			});
+
+			test.afterAll(async ({ restoreSettings }) => {
+				await restoreSettings();
 			});
 
 			test('expect custom body to be visible', async () => {

@@ -43,7 +43,8 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 		await createConversation(api, { visitorName: visitor.name });
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await restoreSettings();
 		(await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')])).every((res) =>
 			expect(res.status()).toBe(200),
 		);

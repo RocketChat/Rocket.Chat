@@ -32,7 +32,8 @@ test.describe.serial('feature preview', () => {
 		targetDiscussion = await createTargetDiscussion(api);
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await restoreSettings();
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 	});

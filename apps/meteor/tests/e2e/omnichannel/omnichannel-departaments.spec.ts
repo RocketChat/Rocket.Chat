@@ -25,6 +25,10 @@ test.describe('OC - Manage Departments', () => {
 		await updateSetting('Omnichannel_enable_department_removal', true, false);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test.describe('Create first department', async () => {
 		test.beforeEach(async ({ page }: { page: Page }) => {
 			poOmnichannelDepartments = new OmnichannelDepartments(page);
@@ -110,6 +114,10 @@ test.describe('OC - Manage Departments', () => {
 
 		test.afterEach(async ({ api }) => {
 			await deleteDepartment(api, { id: department._id });
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('Edit department', async () => {

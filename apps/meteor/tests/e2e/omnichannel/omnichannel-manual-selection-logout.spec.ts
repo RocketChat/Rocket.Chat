@@ -40,9 +40,8 @@ test.describe('OC - Manual Selection After Relogin', () => {
 	});
 
 	// Delete all data
-	test.afterAll(async () => {
-		await agent.delete();
-		await injectInitialData();
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all([agent.delete(), restoreSettings(), injectInitialData()]);
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {

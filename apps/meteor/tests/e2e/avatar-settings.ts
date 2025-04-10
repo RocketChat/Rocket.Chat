@@ -40,6 +40,10 @@ test.describe('avatar-settings', () => {
 			]);
 		});
 
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
+		});
+
 		test.describe('public channels', () => {
 			let channelName = '';
 			let avatarUrl = '';

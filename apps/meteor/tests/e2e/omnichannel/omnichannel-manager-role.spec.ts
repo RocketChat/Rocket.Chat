@@ -80,12 +80,13 @@ test.describe('OC - Manager Role', () => {
 	});
 
 	// Delete all created data
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await Promise.all([
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...conversations.map((conversation) => conversation.delete()),
 			manager.delete(),
+			restoreSettings(),
 		]);
 	});
 
