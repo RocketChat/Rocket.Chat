@@ -5,6 +5,7 @@ import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
+import { useCustomEmoji } from '../../hooks/customEmoji/useCustomEmoji';
 import EmojiPicker from '../../views/composer/EmojiPicker/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
@@ -34,6 +35,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
+	useCustomEmoji();
 	useUpdateCustomEmoji();
 
 	const addFrequentEmojis = useCallback(
