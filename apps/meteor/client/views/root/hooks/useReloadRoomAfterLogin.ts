@@ -23,7 +23,8 @@ export const useReloadRoomAfterLogin = (): void => {
 
 			const roomType = roomCoordinator.getRouteNameIdentifier(routeName);
 			if (roomType) {
-				router.navigate(router.getLocationPathname() || '/', { replace: true });
+				const searchParams = router.getSearchParameters();
+				router.navigate({ pathname: router.getLocationPathname() || '/', search: searchParams }, { replace: true });
 			}
 		}
 	}, [user, router]);
