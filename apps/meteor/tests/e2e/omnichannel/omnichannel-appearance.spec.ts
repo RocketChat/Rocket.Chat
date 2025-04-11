@@ -16,15 +16,11 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
 	});
 
-	test.afterAll(async ({ api }) => {
-		const res = await Promise.all([
-			api.post('/settings/Livechat_hide_system_messages', { value: ['uj', 'ul', 'livechat-close'] }),
-			api.post('/settings/Livechat_background', { value: '' }),
+	test.afterAll(async ({ updateSetting }) => {
+		await Promise.all([
+			updateSetting('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close']),
+			updateSetting('Livechat_background', ''),
 		]);
-
-		if (res.some((r) => r.status() !== 200)) {
-			throw new Error('Failed to reset settings');
-		}
 	});
 
 	test('OC - Livechat Appearance - Hide system messages', async ({ page }) => {

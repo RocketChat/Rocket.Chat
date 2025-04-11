@@ -82,17 +82,17 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 		await page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, updateSetting }) => {
 		const ids = (await (await api.get('/livechat/triggers')).json()).triggers.map(
 			(trigger: { _id: string }) => trigger._id,
 		) as unknown as string[];
 
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
-		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await Promise.all([...agents.map((agent) => agent.delete())]);
 		await Promise.all([...departments.map((department) => department.delete())]);
-		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
-		await api.post('/settings/Livechat_registration_form', { value: true });
+		await updateSetting('Omnichannel_enable_department_removal', false);
+		await updateSetting('Livechat_registration_form', true);
 	});
 
 	test('OC - Livechat Triggers - setDepartment should affect agent.next call', async () => {
@@ -109,8 +109,8 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 		await expect(poLiveChat.headerTitle).toContainText(agent2.username);
 	});
 
-	test('OC - Livechat Triggers - setDepartment should affect agent.next call - Register Form Disabled', async ({ api }) => {
-		await api.post('/settings/Livechat_registration_form', { value: false });
+	test('OC - Livechat Triggers - setDepartment should affect agent.next call - Register Form Disabled', async ({ updateSetting }) => {
+		await updateSetting('Livechat_registration_form', false);
 
 		await poLiveChat.page.goto('/packages/rocketchat_livechat/assets/demo.html');
 

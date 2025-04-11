@@ -21,11 +21,11 @@ test.describe('OC - Livechat - Queue Management', () => {
 	const queuePosition1 = 'Your spot is #1';
 	const queuePosition2 = 'Your spot is #2';
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
-			api.post('/settings/Livechat_waiting_queue', { value: true }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
+			updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_waiting_queue', true, false),
+			updateSetting('Livechat_waiting_queue_message', waitingQueueMessage, ''),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -41,14 +41,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			api.post('/settings/Livechat_waiting_queue', { value: false }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
-			api.delete('/livechat/users/agent/user1'),
-		]);
-		await poHomeOmnichannel.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([api.delete('/livechat/users/agent/user1'), restoreSettings(), poHomeOmnichannel.page.close()]);
 	});
 
 	test.afterEach(async () => {
@@ -131,9 +125,9 @@ test.describe('OC - Contact Manager Routing', () => {
 	const visitorWithManager = createFakeVisitor();
 	const contactId = `contact-${Date.now()}`;
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await api.post('/livechat/users/agent', { username: 'user2' });
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 		await api.post('/omnichannel/contact', {
 			_id: contactId,
 			name: visitorWithManager.name,
@@ -158,16 +152,15 @@ test.describe('OC - Contact Manager Routing', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+			restoreSettings(),
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/agent/user2'),
 			api.delete(`/omnichannel/contact/${contactId}`),
+			poHomeOmnichannel.page.close(),
+			poHomeOmnichannelUser2.page.close(),
 		]);
-
-		await poHomeOmnichannel.page.close();
-		await poHomeOmnichannelUser2.page.close();
 	});
 
 	test.afterEach(async () => {

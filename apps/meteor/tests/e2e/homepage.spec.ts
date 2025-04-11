@@ -26,9 +26,9 @@ test.describe.serial('homepage', () => {
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 
-		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
-			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+		test.afterAll(async ({ updateSetting }) => {
+			await Promise.all([updateSetting('Layout_Home_Custom_Block_Visible', false), updateSetting('Layout_Custom_Body_Only', false)]);
+
 			await adminPage.close();
 		});
 
@@ -43,8 +43,8 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with empty custom content', async () => {
-			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+			test.beforeAll(async ({ updateSetting }) => {
+				await updateSetting('Layout_Home_Body', '', '');
 			});
 
 			test('visibility and button functionality in custom body with empty custom content', async () => {
@@ -64,8 +64,12 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with custom content', () => {
-			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+			test.beforeAll(async ({ updateSetting }) => {
+				await updateSetting('Layout_Home_Body', 'Hello admin', '');
+			});
+
+			test.afterAll(async ({ restoreSettings }) => {
+				await restoreSettings();
 			});
 
 			test('visibility and button functionality in custom body with custom content', async () => {
@@ -82,10 +86,16 @@ test.describe.serial('homepage', () => {
 			test.describe('enterprise edition', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
-				test.beforeAll(async ({ api }) => {
-					await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
-					await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
-					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+				test.beforeAll(async ({ updateSetting }) => {
+					await Promise.all([
+						updateSetting('Layout_Home_Body', 'Hello admin'),
+						updateSetting('Layout_Home_Custom_Block_Visible', true),
+						updateSetting('Layout_Custom_Body_Only', true),
+					]);
+				});
+
+				test.afterAll(async ({ restoreSettings }) => {
+					await restoreSettings();
 				});
 
 				test('display custom content only', async () => {
@@ -109,14 +119,15 @@ test.describe.serial('homepage', () => {
 	test.describe('for regular users', () => {
 		const notVisibleCards = [CardIds.Users, CardIds.Custom];
 
-		test.beforeAll(async ({ api, browser }) => {
-			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+		test.beforeAll(async ({ updateSetting, browser }) => {
+			await updateSetting('Layout_Home_Body', '', '');
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 		});
 
-		test.afterAll(async () => {
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 			await regularUserPage.close();
 		});
 
@@ -147,17 +158,18 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom values', () => {
-			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+			test.beforeAll(async ({ updateSetting }) => {
+				await Promise.all([
+					updateSetting('Site_Name', 'NewSiteName', 'Rocket.Chat'),
+					updateSetting('Layout_Home_Title', 'NewTitle', 'Home'),
+				]);
+
+				test.afterAll(async ({ restoreSettings }) => {
+					await restoreSettings();
+				});
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
-			});
-
-			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
 			});
 
 			test('expect welcome text and header text to be correct', async () => {
@@ -172,17 +184,15 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.describe('custom body with content', () => {
-			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+			test.beforeAll(async ({ updateSetting }) => {
+				await Promise.all([updateSetting('Layout_Home_Body', 'Hello', ''), updateSetting('Layout_Home_Custom_Block_Visible', true, false)]);
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
 
-			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+			test.afterAll(async ({ restoreSettings }) => {
+				await restoreSettings();
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -192,12 +202,8 @@ test.describe.serial('homepage', () => {
 			test.describe('enterprise edition', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
-				test.beforeAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
-				});
-
-				test.afterAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+				test.beforeAll(async ({ updateSetting }) => {
+					await updateSetting('Layout_Custom_Body_Only', true, false);
 				});
 
 				test('expect default layout not be visible and custom body visible', async () => {

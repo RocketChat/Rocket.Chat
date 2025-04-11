@@ -41,11 +41,12 @@ test.describe('OC - Livechat - Message list background', async () => {
 		await page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await agent.delete();
+		await restoreSettings();
 	});
 
-	test('OC - Livechat - Change message list background', async ({ api, page }) => {
+	test('OC - Livechat - Change message list background', async ({ page, updateSetting }) => {
 		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
@@ -61,8 +62,7 @@ test.describe('OC - Livechat - Message list background', async () => {
 		});
 
 		await test.step('expect to change message list background', async () => {
-			const res = await api.post('/settings/Livechat_background', { value: 'rgb(186, 1, 85)' });
-			await expect(res.status()).toBe(200);
+			await updateSetting('Livechat_background', 'rgb(186, 1, 85)', '');
 
 			await page.reload();
 			await poLiveChat.openLiveChat();
@@ -81,8 +81,7 @@ test.describe('OC - Livechat - Message list background', async () => {
 		});
 
 		await test.step('expect to reset message list background to default', async () => {
-			const res = await api.post('/settings/Livechat_background', { value: '' });
-			await expect(res.status()).toBe(200);
+			await updateSetting('Livechat_background', '');
 
 			await page.reload();
 			await poLiveChat.openLiveChat();

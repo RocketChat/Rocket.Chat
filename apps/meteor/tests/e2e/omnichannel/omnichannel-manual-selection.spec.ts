@@ -15,9 +15,8 @@ test.describe('OC - Manual Selection', () => {
 	let agentB: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	// Change routing method to manual selection
-	test.beforeAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
-		expect(res.status()).toBe(200);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 	});
 
 	// Create agent and make it available
@@ -43,11 +42,8 @@ test.describe('OC - Manual Selection', () => {
 		await agentB.page.close();
 	});
 	// Delete all data
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			...agents.map((agent) => agent.delete()),
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-		]);
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all(agents.map((agent) => agent.delete(), restoreSettings()));
 	});
 
 	test('OC - Manual Selection - Queue', async ({ page, api }) => {

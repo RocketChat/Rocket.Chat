@@ -19,12 +19,12 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	const waitingQueueMessage = 'This is a message from Waiting Queue';
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
-			api.post('/settings/Livechat_waiting_queue', { value: true }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_accept_chats_with_no_agents', true, false),
+			updateSetting('Livechat_waiting_queue', true, false),
+			updateSetting('Livechat_waiting_queue_message', waitingQueueMessage, ''),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -43,14 +43,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
-			api.post('/settings/Livechat_waiting_queue', { value: false }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
-			api.delete('/livechat/users/agent/user1'),
-		]);
-		await poHomeOmnichannel.page.close();
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await Promise.all([api.delete('/livechat/users/agent/user1'), restoreSettings(), poHomeOmnichannel.page.close()]);
 	});
 
 	test.describe('OC - Queue Management - Auto Selection', () => {

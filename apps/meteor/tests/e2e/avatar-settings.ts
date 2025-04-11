@@ -1,7 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetPrivateChannel, createDirectMessage } from './utils';
-import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -34,14 +33,15 @@ test.describe('avatar-settings', () => {
 	test.describe('external avatar provider', () => {
 		const providerUrlPrefix = 'https://example.com/avatar/';
 
-		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Accounts_RoomAvatarExternalUrl', `${providerUrlPrefix}{username}`);
-			await setSettingValueById(api, 'Accounts_AvatarExternalUrl', `${providerUrlPrefix}{username}`);
+		test.beforeAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Accounts_RoomAvatarExternalUrl', `${providerUrlPrefix}{username}`, ''),
+				updateSetting('Accounts_AvatarExternalUrl', `${providerUrlPrefix}{username}`, ''),
+			]);
 		});
 
-		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Accounts_RoomAvatarExternalUrl', '');
-			await setSettingValueById(api, 'Accounts_AvatarExternalUrl', '');
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test.describe('public channels', () => {

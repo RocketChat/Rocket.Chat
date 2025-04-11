@@ -14,14 +14,14 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	let newVisitor: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		newVisitor = createFakeVisitor();
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message';
 		const requests = await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true }),
+			updateSetting('Livechat_clear_local_storage_when_chat_ended', true, false),
 		]);
 		requests.every((e) => expect(e.status()).toBe(200));
 
@@ -41,11 +41,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
 
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
-		]);
+		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
 		await agent.page.close();
 	});
 

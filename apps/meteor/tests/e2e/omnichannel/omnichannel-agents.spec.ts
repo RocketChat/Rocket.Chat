@@ -24,11 +24,11 @@ test.describe.serial('OC - Manage Agents', () => {
 	});
 
 	// Ensure that there is no leftover data even if test fails
-	test.afterEach(async ({ api }) => {
+	test.afterEach(async ({ api, updateSetting }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await department.delete();
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {

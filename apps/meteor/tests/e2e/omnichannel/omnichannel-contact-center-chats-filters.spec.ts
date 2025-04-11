@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker/locale/af_ZA';
 
 import { Users } from '../fixtures/userStates';
 import { OmnichannelChats } from '../page-objects/omnichannel-contact-center-chats';
-import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
@@ -19,8 +18,8 @@ test.describe('OC - Contact Center - Chats', () => {
 	const visitorA = `visitorA_${uuid}`;
 	const visitorB = `visitorB_${uuid}`;
 
-	test.beforeAll(async ({ api }) => {
-		expect((await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).status()).toBe(200);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_Routing_Method', 'Auto_Selection', 'Auto_Selection');
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -46,9 +45,8 @@ test.describe('OC - Contact Center - Chats', () => {
 		await page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await Promise.all([...conversations.map((conversation) => conversation.delete()), agent.delete()]);
-		expect((await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).status()).toBe(200);
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all([...conversations.map((conversation) => conversation.delete()), agent.delete(), restoreSettings()]);
 	});
 
 	test(`OC - Contact Center - Chats - Filter from and to same date`, async ({ page }) => {

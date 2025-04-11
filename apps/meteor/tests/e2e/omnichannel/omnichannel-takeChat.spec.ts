@@ -19,27 +19,22 @@ test.describe('omnichannel-takeChat', () => {
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	};
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		await Promise.all([
-			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection'),
+			updateSetting('Livechat_enabled_when_agent_idle', false, true),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeOmnichannel(page) };
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		await agent.page.close();
-		await Promise.all([
-			await api.delete('/livechat/users/agent/user1'),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }),
-		]);
+		await Promise.all([agent.page.close(), api.delete('/livechat/users/agent/user1'), restoreSettings()]);
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {

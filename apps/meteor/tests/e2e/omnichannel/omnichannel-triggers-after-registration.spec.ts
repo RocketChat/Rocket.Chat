@@ -65,8 +65,8 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		await agent.page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+	test.afterAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_clear_local_storage_when_chat_ended', false);
 	});
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
@@ -113,8 +113,12 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	});
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration, clear Local storage', async () => {
-		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Livechat_clear_local_storage_when_chat_ended', true, false);
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect trigger message after registration not be visible after local storage clear', async () => {

@@ -53,11 +53,11 @@ test.describe('OC - Livechat - Department Flow', () => {
 		await page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
-		await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+	test.afterAll(async ({ updateSetting }) => {
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		await Promise.all([...agents.map((agent) => agent.delete())]);
 		await Promise.all([...departments.map((department) => department.delete())]);
-		await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {

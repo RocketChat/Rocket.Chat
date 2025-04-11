@@ -20,14 +20,13 @@ test.describe('OC - Manage Departments', () => {
 
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ updateSetting }) => {
 		// turn on department removal
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true });
+		await updateSetting('Omnichannel_enable_department_removal', true, false);
 	});
 
-	test.afterAll(async ({ api }) => {
-		// turn off department removal
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false });
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
 	});
 
 	test.describe('Create first department', async () => {
@@ -115,6 +114,10 @@ test.describe('OC - Manage Departments', () => {
 
 		test.afterEach(async ({ api }) => {
 			await deleteDepartment(api, { id: department._id });
+		});
+
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('Edit department', async () => {
@@ -245,7 +248,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 		});
 
-		test('Toggle department removal', async ({ api }) => {
+		test('Toggle department removal', async ({ api, updateSetting }) => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
@@ -258,8 +261,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to disable department removal setting', async () => {
-				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status();
-				expect(statusCode).toBe(200);
+				await updateSetting('Omnichannel_enable_department_removal', false, false);
 			});
 
 			await test.step('expect not to be able to delete department', async () => {
@@ -269,8 +271,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to enable department removal setting', async () => {
-				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
-				expect(statusCode).toBe(200);
+				await updateSetting('Omnichannel_enable_department_removal', true, false);
 			});
 
 			await test.step('expect to delete department', async () => {
