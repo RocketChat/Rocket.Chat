@@ -1,14 +1,13 @@
 import type { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
-import injectInitialData from '../fixtures/inject-initial-data';
-import { Users } from '../fixtures/userStates';
+import { restoreState, Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
-test.use({ storageState: Users.user1.state });
+test.use({ storageState: Users.user3.state });
 
 test.describe('OC - Manual Selection After Relogin', () => {
 	let poOmnichannel: HomeOmnichannel;
@@ -22,7 +21,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 
 	// Create agent and make it available
 	test.beforeAll(async ({ api }) => {
-		agent = await createAgent(api, 'user1');
+		agent = await createAgent(api, 'user3');
 		await makeAgentAvailable(api, agent.data._id);
 	});
 
@@ -33,18 +32,21 @@ test.describe('OC - Manual Selection After Relogin', () => {
 
 		await poOmnichannel.sidenav.logout();
 		await poOmnichannel.page.locator('role=textbox[name=/username/i]').waitFor({ state: 'visible' });
-		await poOmnichannel.page.locator('role=textbox[name=/username/i]').fill('user1');
+		await poOmnichannel.page.locator('role=textbox[name=/username/i]').fill('user3');
 		await poOmnichannel.page.locator('[name=password]').fill(DEFAULT_USER_CREDENTIALS.password);
 		await poOmnichannel.page.locator('role=button[name="Login"]').click();
 
 		await poOmnichannel.page.locator('.main-content').waitFor();
 	});
 
+	test.afterEach(async ({ page }) => {
+		await restoreState(page, Users.user3);
+	});
+
 	// Delete all data
 	test.afterAll(async ({ api }) => {
 		await agent.delete();
 		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
-		await injectInitialData();
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {
