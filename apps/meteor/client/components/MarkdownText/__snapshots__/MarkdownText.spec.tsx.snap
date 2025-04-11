@@ -1,0 +1,197 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Document without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+    >
+      <h1>
+        Title
+      </h1>
+      
+
+      <p>
+        Paragraph text.
+      </p>
+      
+
+      <h2>
+        Subtitle
+      </h2>
+      
+
+      <ul>
+        
+
+        <li>
+          List item 1
+        </li>
+        <li>
+          List item 2
+        </li>
+        <li>
+          List item 3
+        </li>
+      </ul>
+      
+
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Example without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+    >
+      <h1>
+        h1 Heading
+      </h1>
+      
+
+      <h2>
+        h2 Heading
+      </h2>
+      
+
+      <h3>
+        h3 Heading
+      </h3>
+      
+
+      <h4>
+        h4 Heading
+      </h4>
+      
+
+      <h5>
+        h5 Heading
+      </h5>
+      
+
+      <h6>
+        h6 Heading
+      </h6>
+      
+
+      <hr />
+      
+
+      <p>
+        <strong>
+          This is bold text
+        </strong>
+      </p>
+      
+
+      <p>
+        <em>
+          This is italic text
+        </em>
+      </p>
+      
+
+      <p>
+        <del>
+          Strikethrough
+        </del>
+      </p>
+      
+
+      <ul>
+        
+
+        <li>
+          Lorem ipsum dolor sit amet
+        </li>
+        <li>
+          Consectetur adipiscing elit
+        </li>
+        <li>
+          Integer molestie lorem at massa
+        </li>
+      </ul>
+      
+
+      <ol>
+        
+
+        <li>
+          Lorem ipsum dolor sit amet
+        </li>
+        <li>
+          Consectetur adipiscing elit
+        </li>
+        <li>
+          Integer molestie lorem at massa
+        </li>
+      </ol>
+      
+
+      <p>
+        <code>
+          rocket.chat();
+        </code>
+      </p>
+      
+
+      <p>
+        <a
+          href="https://rocket.chat"
+          rel="nofollow noopener noreferrer"
+          target="_blank"
+          title="https://rocket.chat"
+        >
+          https://rocket.chat
+        </a>
+         
+      </p>
+      
+
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Inline without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+    >
+      # Title
+
+Paragraph text.
+
+## Subtitle
+
+- List item 1
+- List item 2
+- List item 3
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders InlineWithoutBreaks without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-box--with-inline-elements"
+    >
+      # Title
+
+Paragraph text.
+
+## Subtitle
+
+- List item 1
+- List item 2
+- List item 3
+    </div>
+  </div>
+</body>
+`;

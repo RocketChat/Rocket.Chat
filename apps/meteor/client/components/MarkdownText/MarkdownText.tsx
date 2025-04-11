@@ -6,7 +6,7 @@ import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
+import { renderMessageEmoji } from '../../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
 	content: string;
