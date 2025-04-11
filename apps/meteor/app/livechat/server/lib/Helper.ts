@@ -37,12 +37,11 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { getOnlineAgents } from './getOnlineAgents';
+import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
@@ -630,7 +629,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	if (
 		!RoutingManager.getConfig()?.autoAssignAgent ||
 		!(await Omnichannel.isWithinMACLimit(room)) ||
-		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+		(department?.allowReceiveForwardOffline && !(await checkOnlineAgents(departmentId)))
 	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
 		await saveTransferHistory(room, transferData);
