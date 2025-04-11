@@ -370,6 +370,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is setting livechat visitor's custom fields.`);
 
-		return setCustomFields(data);
+		await setCustomFields(data);
+		// Return a placeholder number as the base method expects a number.
+		// TODO: Refactor this logic to stop using number and handle void or errors thrown by .setCustomFields().
+		return 1;
 	}
 }

@@ -1,5 +1,5 @@
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import { LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import type { ILivechatContact, ILivechatCustomField } from '@rocket.chat/core-typings';
+import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
 import { i18n } from '../../../utils/lib/i18n';
@@ -19,7 +19,33 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
+async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+	if (overwrite) {
+		contact.customFields ??= {};
+		contact.customFields[key] = value;
+	} else {
+		contact.conflictingFields ??= [];
+		contact.conflictingFields.push({ field: `customFields.${key}`, value });
+	}
+
+	await LivechatContacts.updateById(contact._id, {
+		$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
+	});
+
+	livechatLogger.debug({ msg: 'Contact updated', contactId: contact._id });
+}
+
+export async function setCustomFields({
+	token,
+	key,
+	value,
+	overwrite,
+}: {
+	key: string;
+	value: string;
+	overwrite: boolean;
+	token: string;
+}): Promise<void> {
 	livechatLogger.debug(`Setting custom fields data for visitor with token ${token}`);
 
 	const customField = await LivechatCustomField.findOneById(key);
@@ -34,17 +60,19 @@ export async function setCustomFields({ token, key, value, overwrite }: { key: s
 		}
 	}
 
-	let result;
 	if (customField.scope === 'room') {
-		result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
+		await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 	} else {
-		result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
-	}
+		await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 
-	if (typeof result === 'boolean') {
-		// Note: this only happens when !overwrite is passed, in this case we don't do any db update
-		return 0;
-	}
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		if (!visitor) {
+			throw new Error(`Visitor with token "${token}" not found.`);
+		}
 
-	return result.modifiedCount;
+		const result = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+		if (result) {
+			await Promise.all(result.map((contact: ILivechatContact) => updateContactsCustomFields(contact, key, value, overwrite)));
+		}
+	}
 }

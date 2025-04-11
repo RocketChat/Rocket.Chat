@@ -43,9 +43,7 @@ API.v1.addRoute(
 						overwrite: boolean;
 					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
 						const data = Object.assign({ token }, customField);
-						if (!(await setCustomFields(data))) {
-							throw new Error('error-setting-custom-field');
-						}
+						await setCustomFields(data);
 
 						return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
 					},
