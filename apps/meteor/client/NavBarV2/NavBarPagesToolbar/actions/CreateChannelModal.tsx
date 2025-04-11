@@ -28,10 +28,10 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
-import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
+import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateChannelModalProps = {
 	teamId?: string;

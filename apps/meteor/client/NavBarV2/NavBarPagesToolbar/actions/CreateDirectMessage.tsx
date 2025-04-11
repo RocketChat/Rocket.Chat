@@ -5,8 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { goToRoomById } from '../../lib/utils/goToRoomById';
+import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateDirectMessageProps = { onClose: () => void };
 

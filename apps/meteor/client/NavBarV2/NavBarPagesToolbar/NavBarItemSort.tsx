@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useSortMenu } from './hooks/useSortMenu';
 
-type SortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type NavBarItemSortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const Sort = (props: SortProps) => {
+const NavBarItemSort = (props: NavBarItemSortProps) => {
 	const { t } = useTranslation();
 
 	const sections = useSortMenu();
@@ -15,4 +15,4 @@ const Sort = (props: SortProps) => {
 	return <GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={SidebarV2Action} {...props} />;
 };
 
-export default Sort;
+export default NavBarItemSort;

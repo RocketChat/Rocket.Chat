@@ -8,8 +8,6 @@ import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';
 
 import SearchList from './SearchList';
-import CreateRoom from './actions/CreateRoom';
-import Sort from './actions/Sort';
 
 const wrapperStyle = css`
 	position: absolute;
@@ -130,8 +128,6 @@ const SearchSection = () => {
 							onClick={() => setRecentButtonPressed(!recentButtonPressed)}
 							pressed={recentButtonPressed}
 						/>
-						{recentButtonPressed ? <IconButton icon='sort' disabled small /> : <Sort />}
-						<CreateRoom />
 					</>
 				)}
 			</SidebarV2Section>

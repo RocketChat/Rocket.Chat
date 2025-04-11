@@ -3,16 +3,16 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCreateRoom } from './hooks/useCreateRoomMenu';
+import { useCreateNewMenu } from './hooks/useCreateNewMenu';
 
 type CreateRoomProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const CreateRoom = (props: CreateRoomProps) => {
+const NavBarItemCreateNew = (props: CreateRoomProps) => {
 	const { t } = useTranslation();
 
-	const sections = useCreateRoom();
+	const sections = useCreateNewMenu();
 
-	return <GenericMenu icon='edit-rounded' sections={sections} title={t('Create_new')} is={SidebarV2Action} {...props} />;
+	return <GenericMenu icon='plus' sections={sections} title={t('Create_new')} is={SidebarV2Action} {...props} />;
 };
 
-export default CreateRoom;
+export default NavBarItemCreateNew;

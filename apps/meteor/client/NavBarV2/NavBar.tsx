@@ -11,19 +11,22 @@ import {
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
 } from './NavBarOmnichannelToolbar';
-import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
+import {
+	NavBarItemMarketPlaceMenu,
+	NavBarItemDirectoryPage,
+	NavBarItemHomePage,
+	NavBarItemCreateNew,
+	NavBarItemSort,
+} from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
-import { NavBarItemVoipDialer } from './NavBarVoipToolbar';
+import { NavBarItemVoipDialer, NavBarItemVoipToggler } from './NavBarVoipToolbar';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 
 const NavBar = () => {
 	const t = useTranslation();
 	const user = useUser();
-
-	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const hasManageAppsPermission = usePermission('manage-apps');
@@ -51,11 +54,22 @@ const NavBar = () => {
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
-					{hasAuditLicense && <NavBarItemAuditMenu />}
+					<NavBarItemCreateNew />
+					<NavBarItemSort />
 				</NavBarGroup>
+			</NavBarSection>
+			<NavBarSection>
+				{showVoip && (
+					<>
+						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
+							<NavBarItemVoipDialer primary={isCallEnabled} />
+							<NavBarItemVoipToggler />
+						</NavBarGroup>
+						<NavBarDivider />
+					</>
+				)}
 				{showOmnichannel && (
 					<>
-						<NavBarDivider />
 						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
 							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
@@ -63,18 +77,9 @@ const NavBar = () => {
 							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 							<NavBarItemOmnichannelLivechatToggle />
 						</NavBarGroup>
-					</>
-				)}
-				{showVoip && (
-					<>
 						<NavBarDivider />
-						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
-							<NavBarItemVoipDialer primary={isCallEnabled} />
-						</NavBarGroup>
 					</>
 				)}
-			</NavBarSection>
-			<NavBarSection>
 				<NavBarGroup aria-label={t('Workspace_and_user_settings')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
