@@ -39,97 +39,108 @@ test.describe.serial('report message', () => {
 	});
 
 	test('should show report message option in message menu for other users messages', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
+		await test.step('send message as user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			const testMessage = faker.lorem.sentence();
+			await poHomeChannel.content.sendMessage(testMessage);
+		});
 
-		const adminHomeChannel = new HomeChannel(adminPage);
-
-		await adminHomeChannel.sidenav.openChat(targetChannel);
-
-		await adminHomeChannel.content.openLastMessageMenu();
-
-		await expect(adminPage.getByRole('menuitem', { name: 'Report' })).toBeVisible();
+		await test.step('verify report option is visible for the other user', async () => {
+			const adminHomeChannel = new HomeChannel(adminPage);
+			await adminHomeChannel.sidenav.openChat(targetChannel);
+			await adminHomeChannel.content.openLastMessageMenu();
+			await expect(adminPage.getByRole('menuitem', { name: 'Report' })).toBeVisible();
+		});
 	});
 
 	test('should not show report message option in message menu for own messages', async ({ page }) => {
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
+		await test.step('send message as user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			const testMessage = faker.lorem.sentence();
+			await poHomeChannel.content.sendMessage(testMessage);
+		});
 
-		await poHomeChannel.content.openLastMessageMenu();
-
-		await expect(page.getByRole('menuitem', { name: 'Report' })).not.toBeVisible();
+		await test.step('verify report option is not visible for own message', async () => {
+			await poHomeChannel.content.openLastMessageMenu();
+			await expect(page.getByRole('menuitem', { name: 'Report' })).not.toBeVisible();
+		});
 	});
 
-	test('should validate empty report description', async ({ page }) => {
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
+	test('should validate empty report description', async () => {
+		await test.step('send message as user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			const testMessage = faker.lorem.sentence();
+			await poHomeChannel.content.sendMessage(testMessage);
+		});
 
-		const adminHomeChannel = new HomeChannel(adminPage);
-		await adminPage.goto('/home');
-		await adminHomeChannel.sidenav.openChat(targetChannel);
+		await test.step('try to submit empty report', async () => {
+			const adminHomeChannel = new HomeChannel(adminPage);
+			await adminHomeChannel.sidenav.openChat(targetChannel);
 
-		await adminHomeChannel.content.openLastMessageMenu();
-		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
+			await adminHomeChannel.content.openLastMessageMenu();
+			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 
-		await reportModal.btnSubmitReport.click();
-
-		await expect(reportModal.reportDescriptionError).toBeVisible();
+			await reportModal.btnSubmitReport.click();
+			await expect(reportModal.reportDescriptionError).toBeVisible();
+		});
 	});
 
-	test('should be able to cancel reporting a message', async ({ page }) => {
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
+	test('should be able to cancel reporting a message', async () => {
+		await test.step('send message as user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			const testMessage = faker.lorem.sentence();
+			await poHomeChannel.content.sendMessage(testMessage);
+		});
 
-		const adminHomeChannel = new HomeChannel(adminPage);
-		await adminPage.goto('/home');
-		await adminHomeChannel.sidenav.openChat(targetChannel);
+		await test.step('open and cancel report modal', async () => {
+			const adminHomeChannel = new HomeChannel(adminPage);
+			await adminHomeChannel.sidenav.openChat(targetChannel);
 
-		await adminHomeChannel.content.openLastMessageMenu();
-		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
+			await adminHomeChannel.content.openLastMessageMenu();
+			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 
-		await expect(reportModal.modalTitle).toBeVisible();
-
-		await reportModal.btnCancelReport.click();
-
-		await expect(reportModal.modalTitle).not.toBeVisible();
+			await expect(reportModal.modalTitle).toBeVisible();
+			await reportModal.btnCancelReport.click();
+			await expect(reportModal.modalTitle).not.toBeVisible();
+		});
 	});
 
-	test('should successfully report a message and verify its appearance in moderation console', async ({ page }) => {
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
+	test('should successfully report a message and verify its appearance in moderation console', async () => {
+		let testMessage: string;
+		let reportDescription: string;
 
-		const adminHomeChannel = new HomeChannel(adminPage);
-		await adminPage.goto('/home');
-		await adminHomeChannel.sidenav.openChat(targetChannel);
+		await test.step('send message as user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			testMessage = faker.lorem.sentence();
+			await poHomeChannel.content.sendMessage(testMessage);
+		});
 
-		await adminHomeChannel.content.openLastMessageMenu();
-		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
+		await test.step('report message as the other user', async () => {
+			const adminHomeChannel = new HomeChannel(adminPage);
+			await adminHomeChannel.sidenav.openChat(targetChannel);
 
-		const reportDescription = faker.lorem.sentence();
-		await reportModal.inputReportDescription.fill(reportDescription);
+			await adminHomeChannel.content.openLastMessageMenu();
+			await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 
-		await reportModal.btnSubmitReport.click();
+			reportDescription = faker.lorem.sentence();
+			await reportModal.inputReportDescription.fill(reportDescription);
 
-		await expect(adminPage.getByText('Report has been sent')).toBeVisible();
+			await reportModal.btnSubmitReport.click();
 
-		await adminPage.goto('/admin/moderation/messages');
+			await expect(adminPage.getByText('Report has been sent')).toBeVisible();
+		});
 
-		await expect(adminPage.getByRole('tab', { name: 'Reported messages' })).toBeVisible();
-		await expect(adminPage.getByText('user1')).toBeVisible();
-		await adminPage.getByText('user1').click();
+		await test.step('verify report in moderation console', async () => {
+			await adminPage.goto('/admin/moderation/messages');
 
-		await expect(adminPage.getByText(testMessage)).toBeVisible();
+			await expect(adminPage.getByRole('tab', { name: 'Reported messages' })).toBeVisible();
+			await expect(adminPage.getByRole('link', { name: 'user1' })).toBeVisible();
+			await adminPage.getByRole('link', { name: 'user1' }).click();
 
-		await adminPage.getByRole('button', { name: 'Show reports' }).click();
-		await expect(adminPage.getByText(reportDescription)).toBeVisible();
+			await expect(adminPage.getByText(testMessage)).toBeVisible();
+
+			await adminPage.getByRole('button', { name: 'Show reports' }).click();
+			await expect(adminPage.getByText(reportDescription)).toBeVisible();
+		});
 	});
 });
