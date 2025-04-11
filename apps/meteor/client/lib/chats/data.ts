@@ -1,4 +1,11 @@
-import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import {
+	isOTRAckMessage,
+	isOTRMessage,
+	type IEditedMessage,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
@@ -85,6 +92,10 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
+		if (isOTRMessage(message) || isOTRAckMessage(message)) {
+			return false;
+		}
+
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
 		const editOwn = message?.u && message.u._id === Meteor.userId();
@@ -104,7 +115,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return true;
 	};
 
-	const findPreviousOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
+	const findPreviousOwnMessage = async (message?: IMessage): Promise<IMessage | undefined> => {
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -112,7 +123,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const msg = Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
+			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { ...(message && { $lt: message.ts }) } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
 
