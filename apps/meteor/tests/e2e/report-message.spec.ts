@@ -72,7 +72,7 @@ test.describe.serial('report message', () => {
 		await adminHomeChannel.content.openLastMessageMenu();
 		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 
-		await expect(adminPage.getByRole('dialog', { name: 'Report this message?' })).toBeVisible();
+		await expect(reportModal.modalTitle).toBeVisible();
 
 		// Fill in report description
 		const reportDescription = faker.lorem.sentence();
@@ -80,7 +80,7 @@ test.describe.serial('report message', () => {
 
 		await reportModal.btnSubmitReport.click();
 
-		await expect(reportModal.reportSuccessMessage).toBeVisible();
+		await expect(adminPage.getByText('Report has been sent')).toBeVisible();
 	});
 
 	test('should validate empty report description', async ({ page }) => {
@@ -114,11 +114,11 @@ test.describe.serial('report message', () => {
 		await adminHomeChannel.content.openLastMessageMenu();
 		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
 
-		await expect(adminPage.getByRole('dialog', { name: 'Report this message?' })).toBeVisible();
+		await expect(reportModal.modalTitle).toBeVisible();
 
 		await reportModal.btnCancelReport.click();
 
-		await expect(adminPage.getByRole('dialog', { name: 'Report this message?' })).not.toBeVisible();
+		await expect(reportModal.modalTitle).not.toBeVisible();
 	});
 
 	test('should show reported message in moderation console', async ({ page }) => {
