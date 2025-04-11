@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import InviteUsers from './InviteUsers';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -36,6 +36,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	const { closeTab } = useRoomToolbox();
 	const format = useFormatDateAndTime();
 	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
+	const requestSent = useRef<boolean>(false);
 
 	const handleEdit = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: true })));
 	const handleBackToLink = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
@@ -80,6 +81,9 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	);
 
 	useEffect(() => {
+		if (requestSent.current) return;
+		requestSent.current = true;
+
 		(async (): Promise<void> => {
 			try {
 				const data = await findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) });
