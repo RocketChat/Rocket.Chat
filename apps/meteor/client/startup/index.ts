@@ -8,7 +8,6 @@ import './deviceManagement';
 import './e2e';
 import './iframeCommands';
 import './incomingMessages';
-import './loadMissedMessages';
 import './messageObserve';
 import './messageTypes';
 import './reloadRoomAfterLogin';

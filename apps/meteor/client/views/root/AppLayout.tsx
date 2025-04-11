@@ -5,6 +5,7 @@ import PageLoading from './PageLoading';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
@@ -59,6 +60,7 @@ const AppLayout = () => {
 	useAutoupdate();
 	useCodeHighlight();
 	useLoginViaQuery();
+	useLoadMissedMessages();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
