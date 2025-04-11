@@ -138,6 +138,10 @@ export class Router<
 	}
 
 	private async parseBodyParams(request: HonoRequest, overrideBodyParams: Record<string, any> = {}) {
+		if (Object.keys(overrideBodyParams).length !== 0) {
+			return overrideBodyParams;
+		}
+
 		try {
 			let parsedBody = {};
 			const contentType = request.header('content-type');
@@ -151,14 +155,14 @@ export class Router<
 			}
 			// This is necessary to keep the compatibility with the previous version, otherwise the bodyParams will be an empty string when no content-type is sent
 			if (parsedBody === '') {
-				return { ...overrideBodyParams };
+				return {};
 			}
 
 			if (Array.isArray(parsedBody)) {
 				return parsedBody;
 			}
 
-			return { ...parsedBody, ...overrideBodyParams };
+			return { ...parsedBody };
 			// eslint-disable-next-line no-empty
 		} catch {}
 
