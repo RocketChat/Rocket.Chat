@@ -58,31 +58,6 @@ test.describe.serial('report message', () => {
 		await expect(page.getByRole('menuitem', { name: 'Report' })).not.toBeVisible();
 	});
 
-	test('should be able to report a message', async ({ page }) => {
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const testMessage = faker.lorem.sentence();
-		await poHomeChannel.content.sendMessage(testMessage);
-
-		// Admin reports the message
-		const adminHomeChannel = new HomeChannel(adminPage);
-		await adminPage.goto('/home');
-		await adminHomeChannel.sidenav.openChat(targetChannel);
-
-		await adminHomeChannel.content.openLastMessageMenu();
-		await adminPage.getByRole('menuitem', { name: 'Report' }).click();
-
-		await expect(reportModal.modalTitle).toBeVisible();
-
-		// Fill in report description
-		const reportDescription = faker.lorem.sentence();
-		await reportModal.inputReportDescription.fill(reportDescription);
-
-		await reportModal.btnSubmitReport.click();
-
-		await expect(adminPage.getByText('Report has been sent')).toBeVisible();
-	});
-
 	test('should validate empty report description', async ({ page }) => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
@@ -121,7 +96,7 @@ test.describe.serial('report message', () => {
 		await expect(reportModal.modalTitle).not.toBeVisible();
 	});
 
-	test('should show reported message in moderation console', async ({ page }) => {
+	test('should successfully report a message and verify its appearance in moderation console', async ({ page }) => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		const testMessage = faker.lorem.sentence();
@@ -138,6 +113,8 @@ test.describe.serial('report message', () => {
 		await reportModal.inputReportDescription.fill(reportDescription);
 
 		await reportModal.btnSubmitReport.click();
+
+		await expect(adminPage.getByText('Report has been sent')).toBeVisible();
 
 		await adminPage.goto('/admin/moderation');
 
