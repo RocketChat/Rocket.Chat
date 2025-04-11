@@ -510,6 +510,10 @@ class RocketChatIntegrationHandler {
 
 		if (opts.data) {
 			opts.headers['Content-Type'] = 'application/json';
+			if (opts.data.channel_name && opts.data.channel_name.startsWith('tg-')) {
+				// telegram outgoing integration
+				opts.data.chat_id = opts.data.channel_name.split('-')[1];
+			}
 		}
 
 		fetch(
@@ -610,7 +614,6 @@ class RocketChatIntegrationHandler {
 					if (trigger.retryFailedCalls) {
 						if (tries < trigger.retryCount && trigger.retryDelay) {
 							await updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
-
 							let waitTime;
 
 							switch (trigger.retryDelay) {
