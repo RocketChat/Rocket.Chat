@@ -42,9 +42,9 @@ export interface IAuditServerAppActor {
 export type IAuditServerActor = IAuditServerUserActor | IAuditServerSystemActor | IAuditServerAppActor;
 
 interface IAuditServerEvent {
+	_id: string;
 	t: string;
 	ts: Date;
-
 	actor: IAuditServerActor;
 }
 
