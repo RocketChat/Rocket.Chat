@@ -22,8 +22,13 @@ test.describe.serial('report message', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await deleteChannel(api, targetChannel);
-		await adminPage.close();
+		await Promise.all([
+			api.post('/moderation.user.deleteReportedMessages', {
+				userId: 'user1',
+			}),
+			deleteChannel(api, targetChannel),
+			adminPage.close(),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
