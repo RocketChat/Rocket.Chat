@@ -42,10 +42,11 @@ export const useLegacyThreadMessages = (
 
 	useEffect(() => {
 		setLoading(true);
-		getThreadMessages({ tmid }).then((messages) => {
-			upsertMessageBulk({ msgs: messages }, Messages);
-			setLoading(false);
-		});
+		getThreadMessages({ tmid })
+			.then((messages) => upsertMessageBulk({ msgs: messages }))
+			.then(() => {
+				setLoading(false);
+			});
 	}, [getThreadMessages, tmid]);
 
 	return { messages, loading };

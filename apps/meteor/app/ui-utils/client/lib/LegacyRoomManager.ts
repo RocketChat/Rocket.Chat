@@ -1,11 +1,11 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import type { MinimongoSelector } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
@@ -149,7 +149,7 @@ const computation = Tracker.autorun(() => {
 						'notify-room',
 						[`${record.rid}/deleteMessageBulk`],
 						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-							const query: Mongo.Selector<IMessage> = { rid };
+							const query: MinimongoSelector<IMessage> = { rid };
 
 							if (ids) {
 								query._id = { $in: ids };
