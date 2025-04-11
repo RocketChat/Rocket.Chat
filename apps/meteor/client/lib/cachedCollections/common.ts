@@ -14,7 +14,7 @@ export const hasOwn = Object.prototype.hasOwnProperty;
 //    being called
 //  - dontIncludeLeafArrays, a bool which causes an argument to be passed to
 //    expandArraysInBranches if it is called
-export const ELEMENT_OPERATORS = {
+const ELEMENT_OPERATORS = {
 	$lt: makeInequality((cmpValue: number) => cmpValue < 0),
 	$gt: makeInequality((cmpValue: number) => cmpValue > 0),
 	$lte: makeInequality((cmpValue: number) => cmpValue <= 0),
@@ -670,7 +670,7 @@ function distanceCoordinatePairs(a: any, b: any) {
 
 // Takes something that is not an operator object and returns an element matcher
 // for equality with that thing.
-export function equalityElementMatcher(elementSelector: any) {
+function equalityElementMatcher(elementSelector: any) {
 	if (isOperatorObject(elementSelector)) {
 		throw Error("Can't create equalityValueSelector for operator object");
 	}
@@ -1104,7 +1104,7 @@ function operatorBranchedMatcher(valueSelector: any, matcher: any, isRoot: any) 
 //                        conflict resolution.
 // initial tree - Optional Object: starting tree.
 // @returns - Object: tree represented as a set of nested objects
-export function pathsToTree(paths: any, newLeafFn: any, conflictFn: any, root: any = {}) {
+function pathsToTree(paths: any, newLeafFn: any, conflictFn: any, root: any = {}) {
 	paths.forEach((path: any) => {
 		const pathArray = path.split('.');
 		let tree = root;
@@ -1306,7 +1306,7 @@ export function projectionDetails(fields: any) {
 }
 
 // Takes a RegExp object and returns an element matcher.
-export function regexpElementMatcher(regexp: any) {
+function regexpElementMatcher(regexp: any) {
 	return (value: any) => {
 		if (value instanceof RegExp) {
 			return value.toString() === regexp.toString();

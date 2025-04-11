@@ -1,6 +1,7 @@
 import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
 
+import type { ObserveCallbacks } from './Cursor';
 import { Cursor } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
@@ -21,12 +22,12 @@ import {
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		function _isPromise(obj: any): obj is Promise<any>;
+		function _isPromise(obj: unknown): obj is Promise<unknown>;
 		function _runFresh(func: () => void): void;
 		class _SynchronousQueue {
-			queueTask(arg0: () => void): any;
+			queueTask(arg0: () => void): void;
 
-			drain(): any;
+			drain(): unknown;
 		}
 	}
 }
@@ -34,8 +35,8 @@ declare module 'meteor/meteor' {
 // XXX type checking on selectors (graceful error if malformed)
 
 // LocalCollection: a set of documents that supports queries and modifiers.
-export class LocalCollection {
-	_docs: InstanceType<typeof LocalCollection._IdMap>;
+export class LocalCollection<T extends { _id: string }> {
+	_docs: IdMap<T>;
 
 	_observeQueue: Meteor._SynchronousQueue;
 
@@ -43,13 +44,13 @@ export class LocalCollection {
 
 	queries: Record<string, any>;
 
-	_savedOriginals: InstanceType<typeof LocalCollection._IdMap> | null;
+	_savedOriginals: IdMap<T> | null;
 
 	paused: boolean;
 
 	constructor() {
 		// _id -> document (also containing id)
-		this._docs = new LocalCollection._IdMap();
+		this._docs = new IdMap<T>();
 
 		this._observeQueue = new Meteor._SynchronousQueue();
 
@@ -478,7 +479,7 @@ export class LocalCollection {
 			throw new Error('Called saveOriginals twice without retrieveOriginals');
 		}
 
-		this._savedOriginals = new LocalCollection._IdMap();
+		this._savedOriginals = new IdMap<T>();
 	}
 
 	prepareUpdate(selector: any) {
@@ -491,7 +492,7 @@ export class LocalCollection {
 
 		// We should only clone each document once, even if it appears in multiple
 		// queries
-		const docMap = new LocalCollection._IdMap();
+		const docMap = new IdMap<T>();
 		const idsMatched = LocalCollection._idsMatchedBySelector(selector);
 
 		Object.keys(this.queries).forEach((qid) => {
@@ -503,7 +504,7 @@ export class LocalCollection {
 				// pretty rare case, so we just clone the entire result set with
 				// no optimizations for documents that appear in these result
 				// sets and other queries.
-				if (query.results instanceof LocalCollection._IdMap) {
+				if (query.results instanceof IdMap) {
 					qidToOriginalResults[qid] = query.results.clone();
 					return;
 				}
@@ -937,7 +938,7 @@ export class LocalCollection {
 	// call. Optionally, you can specify your own observeChanges callbacks which are
 	// invoked immediately before the docs field is updated; this object is made
 	// available as `this` to those callbacks.
-	static _CachingChangeObserver = class _CachingChangeObserver {
+	static _CachingChangeObserver = class _CachingChangeObserver<T> {
 		ordered: any;
 
 		docs: any;
@@ -962,7 +963,7 @@ export class LocalCollection {
 			const callbacks = options.callbacks || {};
 
 			if (this.ordered) {
-				this.docs = new OrderedDict();
+				this.docs = new OrderedDict<T>();
 				this.applyChange = {
 					addedBefore: (id: any, fields: any, before: any) => {
 						// Take a shallow copy since the top-level properties can be changed
@@ -993,7 +994,7 @@ export class LocalCollection {
 					},
 				};
 			} else {
-				this.docs = new LocalCollection._IdMap();
+				this.docs = new IdMap<T>();
 				this.applyChange = {
 					added: (id: any, fields: any) => {
 						// Take a shallow copy since the top-level properties can be changed
@@ -1035,8 +1036,6 @@ export class LocalCollection {
 			};
 		}
 	};
-
-	static _IdMap = class _IdMap extends IdMap<any> {};
 
 	// Wrap a transform function to return objects that have the _id field
 	// of the untransformed document. This ensures that subsystems such as
@@ -1498,7 +1497,7 @@ export class LocalCollection {
 		});
 	};
 
-	static _observeFromObserveChanges = (cursor: any, observeCallbacks: any) => {
+	static _observeFromObserveChanges = (cursor: any, observeCallbacks: ObserveCallbacks<any>) => {
 		const transform = cursor.getTransform() || ((doc: any) => doc);
 		let suppressed = !!observeCallbacks._suppress_initial;
 
@@ -1523,7 +1522,7 @@ export class LocalCollection {
 						// eslint-disable-next-line no-nested-ternary
 						observeCallbacks.addedAt(doc, indices ? (before ? this.docs.indexOf(before) : this.docs.size()) : -1, before);
 					} else {
-						observeCallbacks.added(doc);
+						observeCallbacks.added!(doc);
 					}
 				},
 				changed(id: any, fields: any) {
@@ -1543,7 +1542,7 @@ export class LocalCollection {
 					if (observeCallbacks.changedAt) {
 						observeCallbacks.changedAt(transform(doc), oldDoc, indices ? this.docs.indexOf(id) : -1);
 					} else {
-						observeCallbacks.changed(transform(doc), oldDoc);
+						observeCallbacks.changed!(transform(doc), oldDoc);
 					}
 				},
 				movedBefore(id: any, before: any) {
@@ -1575,7 +1574,7 @@ export class LocalCollection {
 					if (observeCallbacks.removedAt) {
 						observeCallbacks.removedAt(doc, indices ? this.docs.indexOf(id) : -1);
 					} else {
-						observeCallbacks.removed(doc);
+						observeCallbacks.removed!(doc);
 					}
 				},
 			};

@@ -2,14 +2,26 @@
 // maintaining a dataset backed by observeChanges.  It supports ordering items
 // by specifying the item they now come before.
 
-import { MongoID } from './MongoId';
+import { MongoID, type MongoIDType } from './MongoId';
 
 // The implementation is a dictionary that contains nodes of a doubly-linked
 // list as its values.
 
+type ElementType<TValue> = {
+	key: MongoIDType;
+	value: TValue;
+	next: ElementType<TValue> | null;
+	prev: ElementType<TValue> | null;
+};
+
 // constructs a new element struct
 // next and prev are whole elements, not keys.
-function element(key: any, value: any, next: any, prev?: any): any {
+function element<TValue>(
+	key: MongoIDType,
+	value: TValue,
+	next: ElementType<TValue> | null,
+	prev: ElementType<TValue> | null = null,
+): ElementType<TValue> {
 	return {
 		key,
 		value,
@@ -18,27 +30,20 @@ function element(key: any, value: any, next: any, prev?: any): any {
 	};
 }
 
-export class OrderedDict {
-	_dict: Record<string, any>;
+export class OrderedDict<TValue> {
+	private _dict: Record<string, ElementType<TValue>> = Object.create(null);
 
-	_first: any;
+	private _first: ElementType<TValue> | null = null;
 
-	_last: any;
+	private _last: ElementType<TValue> | null = null;
 
-	_size: number;
+	private _size = 0;
 
-	_stringify: (x: any) => string = MongoID.idStringify;
-
-	constructor() {
-		this._dict = Object.create(null);
-		this._first = null;
-		this._last = null;
-		this._size = 0;
-	}
+	_stringify = MongoID.idStringify;
 
 	// the "prefix keys with a space" thing comes from here
 	// https://github.com/documentcloud/underscore/issues/376#issuecomment-2815649
-	_k(key: any): string {
+	_k(key: MongoIDType): string {
 		return ` ${this._stringify(key)}`;
 	}
 
@@ -50,7 +55,7 @@ export class OrderedDict {
 		return this._size;
 	}
 
-	_linkEltIn(elt: any): void {
+	_linkEltIn(elt: ElementType<TValue>): void {
 		if (!elt.next) {
 			elt.prev = this._last;
 			if (this._last) this._last.next = elt;
@@ -63,14 +68,14 @@ export class OrderedDict {
 		if (this._first === null || this._first === elt.next) this._first = elt;
 	}
 
-	_linkEltOut(elt: any): void {
+	_linkEltOut(elt: ElementType<TValue>): void {
 		if (elt.next) elt.next.prev = elt.prev;
 		if (elt.prev) elt.prev.next = elt.next;
 		if (elt === this._last) this._last = elt.prev;
 		if (elt === this._first) this._first = elt.next;
 	}
 
-	putBefore(key: any, item: any, before: any): void {
+	putBefore(key: MongoIDType, item: TValue, before: MongoIDType): void {
 		if (this._dict[this._k(key)]) throw new Error(`Item ${key} already present in OrderedDict`);
 		const elt = before ? element(key, item, this._dict[this._k(before)]) : element(key, item, null);
 		if (typeof elt.next === 'undefined') throw new Error('could not find item to put this one before');
@@ -79,11 +84,11 @@ export class OrderedDict {
 		this._size++;
 	}
 
-	append(key: any, item: any): void {
+	append(key: MongoIDType, item: TValue): void {
 		this.putBefore(key, item, null);
 	}
 
-	remove(key: any): any {
+	remove(key: MongoIDType): TValue {
 		const elt = this._dict[this._k(key)];
 		if (typeof elt === 'undefined') throw new Error(`Item ${key} not present in OrderedDict`);
 		this._linkEltOut(elt);
@@ -92,13 +97,13 @@ export class OrderedDict {
 		return elt.value;
 	}
 
-	get(key: any): any {
+	get(key: MongoIDType): TValue | undefined {
 		if (this.has(key)) {
 			return this._dict[this._k(key)].value;
 		}
 	}
 
-	has(key: any): boolean {
+	has(key: MongoIDType): boolean {
 		return Object.prototype.hasOwnProperty.call(this._dict, this._k(key));
 	}
 
@@ -106,7 +111,17 @@ export class OrderedDict {
 	// iter(value, key, index) on each one.
 
 	// Stops whenever iter returns OrderedDict.BREAK, or after the last element.
-	forEach(iter: (value: any, key: any, index: number) => any, context: any = null): void {
+	forEach(iter: (value: TValue, key: MongoIDType, index: number) => void | typeof OrderedDict.BREAK, context?: null): void;
+
+	forEach<TContext>(
+		iter: (this: TContext, value: TValue, key: MongoIDType, index: number) => void | typeof OrderedDict.BREAK,
+		context: TContext,
+	): void;
+
+	forEach<TContext>(
+		iter: (this: TContext | null, value: TValue, key: MongoIDType, index: number) => void | typeof OrderedDict.BREAK,
+		context: TContext | null = null,
+	): void {
 		let i = 0;
 		let elt = this._first;
 		while (elt !== null) {
@@ -117,7 +132,20 @@ export class OrderedDict {
 		}
 	}
 
-	async forEachAsync(asyncIter: (value: any, key: any, index: number) => Promise<any>, context: any = null): Promise<void> {
+	async forEachAsync(
+		asyncIter: (value: TValue, key: MongoIDType, index: number) => Promise<void | typeof OrderedDict.BREAK>,
+		context?: null,
+	): Promise<void>;
+
+	async forEachAsync<TContext>(
+		asyncIter: (this: TContext, value: TValue, key: MongoIDType, index: number) => Promise<void | typeof OrderedDict.BREAK>,
+		context: TContext,
+	): Promise<void>;
+
+	async forEachAsync<TContext>(
+		asyncIter: (this: TContext | null, value: TValue, key: MongoIDType, index: number) => Promise<void | typeof OrderedDict.BREAK>,
+		context: TContext | null = null,
+	): Promise<void> {
 		let i = 0;
 		let elt = this._first;
 		while (elt !== null) {
@@ -129,35 +157,35 @@ export class OrderedDict {
 		}
 	}
 
-	first(): any {
+	first(): MongoIDType | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._first.key;
+		return this._first!.key;
 	}
 
-	firstValue(): any {
+	firstValue(): TValue | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._first.value;
+		return this._first!.value;
 	}
 
-	last(): any {
+	last(): MongoIDType | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._last.key;
+		return this._last!.key;
 	}
 
-	lastValue(): any {
+	lastValue(): TValue | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._last.value;
+		return this._last!.value;
 	}
 
-	prev(key: any): any {
+	prev(key: MongoIDType): MongoIDType | null {
 		if (this.has(key)) {
 			const elt = this._dict[this._k(key)];
 			if (elt.prev) return elt.prev.key;
@@ -165,7 +193,7 @@ export class OrderedDict {
 		return null;
 	}
 
-	next(key: any): any {
+	next(key: MongoIDType): MongoIDType | null {
 		if (this.has(key)) {
 			const elt = this._dict[this._k(key)];
 			if (elt.next) return elt.next.key;
@@ -173,7 +201,7 @@ export class OrderedDict {
 		return null;
 	}
 
-	moveBefore(key: any, before: any): void {
+	moveBefore(key: MongoIDType, before: MongoIDType): void {
 		const elt = this._dict[this._k(key)];
 		const eltBefore = before ? this._dict[this._k(before)] : null;
 		if (typeof elt === 'undefined') {
@@ -193,7 +221,7 @@ export class OrderedDict {
 	}
 
 	// Linear, sadly.
-	indexOf(key: any): number | null {
+	indexOf(key: MongoIDType): number | null {
 		let ret = null;
 		this.forEach((_v, k, i) => {
 			if (this._k(k) === this._k(key)) {
@@ -216,5 +244,5 @@ export class OrderedDict {
 		});
 	}
 
-	static BREAK = { break: true };
+	static readonly BREAK = { break: true } as const;
 }

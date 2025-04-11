@@ -1,5 +1,7 @@
+export type MongoIDType = unknown;
+
 export class MongoID {
-	static idStringify(id: unknown): string {
+	static idStringify(id: MongoIDType): string {
 		if (typeof id === 'string') {
 			const firstChar = id.charAt(0);
 			if (id === '') {
@@ -26,7 +28,7 @@ export class MongoID {
 		}
 	}
 
-	static idParse(id: string): unknown {
+	static idParse(id: string): MongoIDType {
 		const firstChar = id.charAt(0);
 		if (id === '') {
 			return id;

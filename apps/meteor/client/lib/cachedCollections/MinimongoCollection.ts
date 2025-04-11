@@ -17,7 +17,7 @@ interface IDocumentMapStore<T extends { _id: string }> {
 }
 
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
-	protected _collection = new LocalCollection();
+	protected _collection = new LocalCollection<T>();
 
 	readonly use = create<IDocumentMapStore<T>>()((_set, get) => ({
 		records: [],
@@ -28,7 +28,6 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 
 	constructor() {
 		super(null);
-		this._collection = new LocalCollection();
 
 		let internal = false;
 

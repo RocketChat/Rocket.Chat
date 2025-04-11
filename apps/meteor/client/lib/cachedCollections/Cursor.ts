@@ -1,37 +1,89 @@
 import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter, Hint, Sort } from 'mongodb';
 
+import { IdMap } from './IdMap';
 import { LocalCollection } from './LocalCollection';
 import { Matcher } from './Matcher';
+import type { MongoIDType } from './MongoId';
 import { Sorter } from './Sorter';
 import { hasOwn } from './common';
 
+type SortSpecifier = Sort;
+
+type FieldSpecifier = {
+	[id: string]: number | boolean;
+};
+
+type Selector<T> = Filter<T>;
+
+type Transform<T> = ((doc: T) => any) | null | undefined;
+
+type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
+	? ReturnType<TTransform>
+	: TTransform extends null
+		? T
+		: TProjection;
+
+type Options<T> = {
+	/** Sort order (default: natural order) */
+	sort?: SortSpecifier | undefined;
+	/** Number of results to skip at the beginning */
+	skip?: number | undefined;
+	/** Maximum number of results to return */
+	limit?: number | undefined;
+	/**
+	 * Dictionary of fields to return or exclude.
+	 * @deprecated use projection instead
+	 */
+	fields?: FieldSpecifier | undefined;
+	/** Dictionary of fields to return or exclude. */
+	projection?: FieldSpecifier | undefined;
+	/** (Server only) Overrides MongoDB's default index selection and query optimization process. Specify an index to force its use, either by its name or index specification. */
+	hint?: Hint | undefined;
+	/** (Client only) Default `true`; pass `false` to disable reactivity */
+	reactive?: boolean | undefined;
+	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
+	transform?: Transform<T> | undefined;
+};
+
+export type ObserveCallbacks<T> = {
+	addedAt?: (document: T, atIndex: number, before: unknown) => void;
+	added?: (document: T) => void;
+	changedAt?: (newDocument: T, oldDocument: T, atIndex: number) => void;
+	changed?: (newDocument: T, oldDocument: T) => void;
+	removedAt?: (document: T, atIndex: number) => void;
+	removed?: (document: T) => void;
+	movedTo?: (document: T, oldIndex: number, newIndex: number, before: unknown) => void;
+	_suppress_initial?: boolean;
+	_no_indices?: boolean;
+};
+
 // Cursor: a specification for a particular subset of documents, w/ a defined
 // order, limit, and offset.  creating a Cursor with LocalCollection.find(),
-export class Cursor<T extends { _id: string }> {
-	collection: LocalCollection;
+export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
+	collection: LocalCollection<T>;
 
-	sorter: Sorter | null;
+	sorter: Sorter | null = null;
 
 	matcher: Matcher;
 
-	_selectorId: any;
+	private _selectorId: MongoIDType | undefined;
 
 	skip: number;
 
 	limit: number | undefined;
 
-	fields: any;
+	fields: FieldSpecifier | undefined;
 
-	_projectionFn: Function;
+	private _projectionFn: (doc: T) => TProjection;
 
-	_transform: Function | null;
+	private _transform: TOptions['transform'];
 
 	reactive: boolean | undefined;
 
 	// don't call this ctor directly.  use LocalCollection.find().
-	constructor(collection: LocalCollection, selector: Mongo.Selector<T>, options: Mongo.Options<T> = {}) {
+	constructor(collection: LocalCollection<T>, selector: Selector<T>, options?: TOptions) {
 		this.collection = collection;
 		this.sorter = null;
 		this.matcher = new Matcher(selector);
@@ -42,22 +94,22 @@ export class Cursor<T extends { _id: string }> {
 		} else {
 			this._selectorId = undefined;
 
-			if (this.matcher.hasGeoQuery() || options.sort) {
-				this.sorter = new Sorter(options.sort || []);
+			if (this.matcher.hasGeoQuery() || options?.sort) {
+				this.sorter = new Sorter(options?.sort || []);
 			}
 		}
 
-		this.skip = options.skip || 0;
-		this.limit = options.limit;
-		this.fields = options.projection || options.fields;
+		this.skip = options?.skip || 0;
+		this.limit = options?.limit;
+		this.fields = options?.projection || options?.fields;
 
 		this._projectionFn = LocalCollection._compileProjection(this.fields || {});
 
-		this._transform = LocalCollection.wrapTransform(options.transform);
+		this._transform = LocalCollection.wrapTransform(options?.transform);
 
 		// by default, queries register w/ Tracker when it is available.
 		if (typeof Tracker !== 'undefined') {
-			this.reactive = options.reactive === undefined ? true : options.reactive;
+			this.reactive = options?.reactive === undefined ? true : options.reactive;
 		}
 	}
 
@@ -73,7 +125,7 @@ export class Cursor<T extends { _id: string }> {
 	 * @locus Anywhere
 	 * @returns {Number}
 	 */
-	count() {
+	count(): number {
 		if (this.reactive) {
 			// allow the observe to be unordered
 			this._depend({ added: true, removed: true }, true);
@@ -92,17 +144,17 @@ export class Cursor<T extends { _id: string }> {
 	 * @locus Anywhere
 	 * @returns {Object[]}
 	 */
-	fetch() {
-		const result: any = [];
+	fetch(): DispatchTransform<TOptions['transform'], T, TProjection>[] {
+		const result: DispatchTransform<TOptions['transform'], T, TProjection>[] = [];
 
-		this.forEach((doc: any) => {
+		this.forEach((doc) => {
 			result.push(doc);
 		});
 
 		return result;
 	}
 
-	[Symbol.iterator]() {
+	[Symbol.iterator](): Iterator<DispatchTransform<TOptions['transform'], T, TProjection>> {
 		if (this.reactive) {
 			this._depend({
 				addedBefore: true,
@@ -119,19 +171,21 @@ export class Cursor<T extends { _id: string }> {
 			next: () => {
 				if (index < objects.length) {
 					// This doubles as a clone operation.
-					let element = this._projectionFn(objects[index++]);
+					const element = this._projectionFn(objects[index++]);
 
-					if (this._transform) element = this._transform(element);
+					if (this._transform) {
+						return { value: this._transform(element) };
+					}
 
 					return { value: element };
 				}
 
-				return { done: true };
+				return { value: undefined, done: true };
 			},
 		};
 	}
 
-	[Symbol.asyncIterator]() {
+	[Symbol.asyncIterator](): AsyncIterator<DispatchTransform<TOptions['transform'], T, TProjection>> {
 		const syncResult = this[Symbol.iterator]();
 		return {
 			async next() {
@@ -159,7 +213,10 @@ export class Cursor<T extends { _id: string }> {
 	 * @param {Any} [thisArg] An object which will be the value of `this` inside
 	 *                        `callback`.
 	 */
-	forEach(callback: any, thisArg?: any) {
+	forEach<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void>(
+		callback: TIterationCallback,
+		thisArg?: ThisParameterType<TIterationCallback>,
+	): void {
 		if (this.reactive) {
 			this._depend({
 				addedBefore: true,
@@ -169,15 +226,16 @@ export class Cursor<T extends { _id: string }> {
 			});
 		}
 
-		this._getRawObjects({ ordered: true }).forEach((element: any, i: any) => {
+		this._getRawObjects({ ordered: true }).forEach((element: T, i: number) => {
 			// This doubles as a clone operation.
-			element = this._projectionFn(element);
+			const projection = this._projectionFn(element);
 
 			if (this._transform) {
-				element = this._transform(element);
+				callback.call(thisArg, this._transform(projection), i, this);
+				return;
 			}
 
-			callback.call(thisArg, element, i, this);
+			callback.call(thisArg, projection as DispatchTransform<TOptions['transform'], T, TProjection>, i, this);
 		});
 	}
 
@@ -198,10 +256,13 @@ export class Cursor<T extends { _id: string }> {
 	 * @param {Any} [thisArg] An object which will be the value of `this` inside
 	 *                        `callback`.
 	 */
-	map(callback: any, thisArg?: any) {
-		const result: any = [];
+	map<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => any>(
+		callback: TIterationCallback,
+		thisArg?: ThisParameterType<TIterationCallback>,
+	): ReturnType<TIterationCallback>[] {
+		const result: ReturnType<TIterationCallback>[] = [];
 
-		this.forEach((doc: any, i: any) => {
+		this.forEach((doc, i) => {
 			result.push(callback.call(thisArg, doc, i, this));
 		});
 
@@ -237,7 +298,7 @@ export class Cursor<T extends { _id: string }> {
 	 * @param {Object} callbacks Functions to call to deliver the result set as it
 	 *                           changes
 	 */
-	observe(options: any) {
+	observe(options: ObserveCallbacks<DispatchTransform<TOptions['transform'], T, TProjection>>) {
 		return LocalCollection._observeFromObserveChanges(this, options);
 	}
 
@@ -247,7 +308,7 @@ export class Cursor<T extends { _id: string }> {
 	 * @memberOf Mongo.Cursor
 	 * @instance
 	 */
-	observeAsync(options: any) {
+	observeAsync(options: ObserveCallbacks<DispatchTransform<TOptions['transform'], T, TProjection>>) {
 		return new Promise((resolve) => resolve(this.observe(options)));
 	}
 
@@ -279,7 +340,7 @@ export class Cursor<T extends { _id: string }> {
 			throw Error('You may not observe a cursor with {fields: {_id: 0}}');
 		}
 
-		const distances = this.matcher.hasGeoQuery() && ordered && new LocalCollection._IdMap();
+		const distances = this.matcher.hasGeoQuery() && ordered && new IdMap<T>();
 
 		const query: any = {
 			cursor: this,
@@ -307,7 +368,7 @@ export class Cursor<T extends { _id: string }> {
 		});
 
 		if (this.collection.paused) {
-			query.resultsSnapshot = ordered ? [] : new LocalCollection._IdMap();
+			query.resultsSnapshot = ordered ? [] : new IdMap<T>();
 		}
 
 		// wrap callbacks we were passed. callbacks only fire when not paused and
@@ -471,7 +532,7 @@ export class Cursor<T extends { _id: string }> {
 	// (otherwise it will just create its own _IdMap). The observeChanges
 	// implementation uses this to remember the distances after this function
 	// returns.
-	_getRawObjects(options: any = {}) {
+	_getRawObjects(options: { ordered?: boolean; applySkipLimit?: boolean; distances?: any } = {}) {
 		// By default this method will respect skip and limit because .fetch(),
 		// .forEach() etc... expect this behaviour. It can be forced to ignore
 		// skip and limit by setting applySkipLimit to false (.count() does this,
@@ -480,7 +541,7 @@ export class Cursor<T extends { _id: string }> {
 
 		// XXX use OrderedDict instead of array, and make IdMap and OrderedDict
 		// compatible
-		const results: any = options.ordered ? [] : new LocalCollection._IdMap();
+		const results: any = options.ordered ? [] : new IdMap<T>();
 
 		// fast path for single ID value
 		if (this._selectorId !== undefined) {
@@ -512,7 +573,7 @@ export class Cursor<T extends { _id: string }> {
 				distances = options.distances;
 				distances.clear();
 			} else {
-				distances = new LocalCollection._IdMap();
+				distances = new IdMap<T>();
 			}
 		}
 
@@ -575,7 +636,7 @@ export class Cursor<T extends { _id: string }> {
 	 * @locus Anywhere
 	 * @returns {Promise}
 	 */
-	countAsync() {
+	countAsync(): Promise<number> {
 		try {
 			return Promise.resolve(this.count());
 		} catch (error) {
@@ -591,7 +652,7 @@ export class Cursor<T extends { _id: string }> {
 	 * @locus Anywhere
 	 * @returns {Promise}
 	 */
-	fetchAsync() {
+	fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T, TProjection>[]> {
 		try {
 			return Promise.resolve(this.fetch());
 		} catch (error) {
@@ -614,7 +675,9 @@ export class Cursor<T extends { _id: string }> {
 	 *                        `callback`.
 	 * @returns {Promise}
 	 */
-	forEachAsync(callback: any, thisArg: any) {
+	forEachAsync<
+		TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void,
+	>(callback: TIterationCallback, thisArg: ThisParameterType<TIterationCallback>): Promise<void> {
 		try {
 			return Promise.resolve(this.forEach(callback, thisArg));
 		} catch (error) {
@@ -636,7 +699,10 @@ export class Cursor<T extends { _id: string }> {
 	 *                        `callback`.
 	 * @returns {Promise}
 	 */
-	mapAsync(callback: any, thisArg: any) {
+	mapAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => any>(
+		callback: TIterationCallback,
+		thisArg: ThisParameterType<TIterationCallback>,
+	): Promise<ReturnType<TIterationCallback>[]> {
 		try {
 			return Promise.resolve(this.map(callback, thisArg));
 		} catch (error) {

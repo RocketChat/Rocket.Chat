@@ -1,37 +1,35 @@
 import { EJSON } from 'meteor/ejson';
 
-import { MongoID } from './MongoId';
-
-type IdType = unknown;
+import { MongoID, type MongoIDType } from './MongoId';
 
 export class IdMap<TValue> {
 	_map: Map<string, TValue> = new Map();
 
-	private _idStringify: (id: IdType) => string = MongoID.idStringify;
+	private _idStringify = MongoID.idStringify;
 
-	private _idParse: (id: string) => IdType = MongoID.idParse;
+	private _idParse = MongoID.idParse;
 
 	// Some of these methods are designed to match methods on OrderedDict, since
 	// (eg) ObserveMultiplex and _CachingChangeObserver use them interchangeably.
 	// (Conceivably, this should be replaced with "UnorderedDict" with a specific
 	// set of methods that overlap between the two.)
 
-	get(id: IdType): TValue | undefined {
+	get(id: MongoIDType): TValue | undefined {
 		const key = this._idStringify(id);
 		return this._map.get(key);
 	}
 
-	set(id: IdType, value: TValue): void {
+	set(id: MongoIDType, value: TValue): void {
 		const key = this._idStringify(id);
 		this._map.set(key, value);
 	}
 
-	remove(id: IdType): void {
+	remove(id: MongoIDType): void {
 		const key = this._idStringify(id);
 		this._map.delete(key);
 	}
 
-	has(id: IdType): boolean {
+	has(id: MongoIDType): boolean {
 		const key = this._idStringify(id);
 		return this._map.has(key);
 	}
@@ -45,7 +43,7 @@ export class IdMap<TValue> {
 	}
 
 	// Iterates over the items in the map. Return `false` to break the loop.
-	forEach(iterator: (value: TValue, key: IdType) => boolean | void): void {
+	forEach(iterator: (value: TValue, key: MongoIDType) => boolean | void): void {
 		// don't use _.each, because we can't break out of it.
 		for (const [key, value] of this._map) {
 			const breakIfFalse = iterator.call(null, value, this._idParse(key));
@@ -55,7 +53,7 @@ export class IdMap<TValue> {
 		}
 	}
 
-	async forEachAsync(iterator: (value: TValue, key: IdType) => Promise<boolean | void>): Promise<void> {
+	async forEachAsync(iterator: (value: TValue, key: MongoIDType) => Promise<boolean | void>): Promise<void> {
 		for (const [key, value] of this._map) {
 			// eslint-disable-next-line no-await-in-loop
 			const breakIfFalse = await iterator.call(null, value, this._idParse(key));
@@ -69,7 +67,7 @@ export class IdMap<TValue> {
 		return this._map.size;
 	}
 
-	setDefault(id: IdType, def: TValue): TValue {
+	setDefault(id: MongoIDType, def: TValue): TValue {
 		const key = this._idStringify(id);
 		if (this._map.has(key)) {
 			return this._map.get(key)!;
