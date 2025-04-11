@@ -8,6 +8,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useRestrictedRoles } from './hooks/useRestrictedRoles';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
@@ -61,6 +62,7 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoadMissedMessages();
+	useRestrictedRoles();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
