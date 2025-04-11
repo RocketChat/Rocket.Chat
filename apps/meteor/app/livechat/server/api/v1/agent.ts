@@ -5,10 +5,9 @@ import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.cha
 
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { RoutingManager } from '../../lib/RoutingManager';
 import { getRequiredDepartment } from '../../lib/departmentsLib';
-import { setUserStatusLivechat } from '../../lib/utils';
+import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -97,7 +96,7 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			const canChangeStatus = await LivechatTyped.allowAgentChangeServiceStatus(newStatus, agentId);
+			const canChangeStatus = await allowAgentChangeServiceStatus(newStatus, agentId);
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {

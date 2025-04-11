@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
+import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -285,7 +285,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	}
 
 	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
-		return Livechat.notifyGuestStatusChanged(token, status);
+		return notifyGuestStatusChanged(token, status);
 	}
 
 	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
