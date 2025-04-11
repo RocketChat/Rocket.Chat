@@ -116,14 +116,15 @@ test.describe.serial('report message', () => {
 
 		await expect(adminPage.getByText('Report has been sent')).toBeVisible();
 
-		await adminPage.goto('/admin/moderation');
+		await adminPage.goto('/admin/moderation/messages');
 
+		await expect(adminPage.getByRole('tab', { name: 'Reported messages' })).toBeVisible();
 		await expect(adminPage.getByText('user1')).toBeVisible();
 		await adminPage.getByText('user1').click();
 
 		await expect(adminPage.getByText(testMessage)).toBeVisible();
 
-		await adminPage.getByRole('button', { name: 'Show reports' }).first().click();
+		await adminPage.getByRole('button', { name: 'Show reports' }).click();
 		await expect(adminPage.getByText(reportDescription)).toBeVisible();
 	});
 });
