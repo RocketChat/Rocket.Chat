@@ -770,9 +770,11 @@ test.describe.parallel('Federation - Direct Messages', () => {
 					await poFederationChannelServer1.content.sendMessage('hello world');
 
 					await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
+					await expect(poFederationChannelServer1.tabs.btnVideoCall).toBeDisabled();
 
 					await poFederationChannelServer2.sidenav.openChat(usernameWithDomainFromServer1);
 					await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
+					await expect(poFederationChannelServer1.tabs.btnVideoCall).toBeDisabled();
 
 					await pageForServer2.close();
 				});
