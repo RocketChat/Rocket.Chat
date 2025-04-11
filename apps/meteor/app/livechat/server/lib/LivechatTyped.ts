@@ -1,21 +1,16 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
+import { updateDepartmentAgents } from './Helper';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { notifyOnLivechatInquiryChangedByToken } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { businessHourManager } from '../business-hour';
-import { updateDepartmentAgents } from './Helper';
-import { afterAgentAdded, afterRemoveAgent } from './hooks';
 
 class LivechatClass {
 	logger: Logger;
@@ -140,41 +135,6 @@ class LivechatClass {
 		}
 	}
 
-	async removeAgent(username: string) {
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Error('error-invalid-user');
-		}
-
-		const { _id } = user;
-
-		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
-			return afterRemoveAgent(user);
-		}
-
-		return false;
-	}
-
-	async removeManager(username: string) {
-		// TODO: we already validated user exists at this point, remove this check
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
-
-		if (!user) {
-			throw new Error('error-invalid-user');
-		}
-
-		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
-	}
-
-	async allowAgentChangeServiceStatus(statusLivechat: ILivechatAgentStatus, agentId: string) {
-		if (statusLivechat !== ILivechatAgentStatus.AVAILABLE) {
-			return true;
-		}
-
-		return businessHourManager.allowAgentChangeServiceStatus(agentId);
-	}
-
 	async notifyGuestStatusChanged(token: string, status: UserStatus) {
 		await LivechatRooms.updateVisitorStatus(token, status);
 
@@ -183,38 +143,6 @@ class LivechatClass {
 		if (inquiryVisitorStatus.modifiedCount) {
 			void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
 		}
-	}
-
-	async addAgent(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user');
-		}
-
-		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
-			return afterAgentAdded(user);
-		}
-
-		return false;
-	}
-
-	async addManager(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user');
-		}
-
-		if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
-			return user;
-		}
-
-		return false;
 	}
 }
 
