@@ -4453,7 +4453,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "Kisbetűsre",
   "SAML_Custom_Username_Normalize_None": "Nincs normalizálás",
   "SAML_Default_User_Role": "Alapértelmezett felhasználói szerep",
-  "Upload_file_description": "Fájl leírása",
   "SAML_Default_User_Role_Description": "Több szerepet is megadhat vesszővel elválasztva azokat.",
   "Upload_file_name": "Fájlnév",
   "Upload_file_question": "Feltölti a fájlt?",

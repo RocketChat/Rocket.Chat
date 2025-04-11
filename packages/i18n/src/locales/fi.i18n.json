@@ -4610,7 +4610,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "Pieniin kirjaimiin",
   "SAML_Custom_Username_Normalize_None": "Ei normalisointia",
   "SAML_Default_User_Role": "Käyttäjän oletusrooli",
-  "Upload_file_description": "Tiedoston kuvaus",
   "SAML_Default_User_Role_Description": "Voit määrittää useita rooleja ja erottaa ne toisistaan pilkuilla.",
   "Upload_file_name": "Tiedoston nimi",
   "Upload_file_question": "Ladataanko tiedosto?",

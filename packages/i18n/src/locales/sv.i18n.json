@@ -4622,7 +4622,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "Till gemener",
   "SAML_Custom_Username_Normalize_None": "Ingen normalisering",
   "SAML_Default_User_Role": "Standardanvändarroll",
-  "Upload_file_description": "Filbeskrivning",
   "SAML_Default_User_Role_Description": "Du kan ange flera roller avgränsade med kommatecken.",
   "Upload_file_name": "Filnamn",
   "Upload_file_question": "Ladda upp fil?",

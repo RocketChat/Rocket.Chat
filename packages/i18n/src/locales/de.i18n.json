@@ -4538,7 +4538,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "Zu Kleinschreibung",
   "SAML_Custom_Username_Normalize_None": "Keine Normalisierung",
   "SAML_Default_User_Role": "Standardbenutzerrolle",
-  "Upload_file_description": "Dateibeschreibung",
   "SAML_Default_User_Role_Description": "Sie können mehrere Rollen angeben, indem Sie sie durch Kommas trennen.",
   "Upload_file_name": "Dateiname",
   "Upload_file_question": "Datei hochladen?",

@@ -3617,7 +3617,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "至小写",
   "SAML_Custom_Username_Normalize_None": "无标准化",
   "SAML_Default_User_Role": "默认用户角色",
-  "Upload_file_description": "文件描述",
   "SAML_Default_User_Role_Description": "您可以指定多个角色，用逗号分隔。",
   "Upload_file_name": "文件名",
   "Upload_file_question": "上传文件？",

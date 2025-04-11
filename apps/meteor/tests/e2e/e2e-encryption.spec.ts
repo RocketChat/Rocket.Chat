@@ -159,20 +159,22 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.goto('/home');
 
 		const channelName = faker.string.uuid();
+		const updatedFileName = 'any_file1.txt';
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await poHomeChannel.sidenav.openChat(channelName);
 
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.descriptionInput.fill('any_description');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+		await poHomeChannel.content.btnUpdateFileUpload.click();
+		await poHomeChannel.content.btnSendMainComposer.click();
 
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 
 		await test.step('disable E2EE in the room', async () => {
 			await poHomeChannel.tabs.kebab.click();
@@ -189,17 +191,19 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.reload();
 
 		await test.step('upload the file in disabled E2EE room', async () => {
+			const updatedFileName = 'any_file1.txt';
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
 
 			await poHomeChannel.content.dragAndDropTxtFile();
-			await poHomeChannel.content.descriptionInput.fill('any_description');
-			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-			await poHomeChannel.content.btnModalConfirm.click();
+			await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+			await poHomeChannel.content.btnUpdateFileUpload.click();
+			await poHomeChannel.content.btnSendMainComposer.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
-			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+			await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 		});
 
 		await test.step('Enable E2EE in the room', async () => {
@@ -499,15 +503,19 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await page.waitForTimeout(1000);
+		// only enabled e2e if its available
+		const btnEnableE2EE = poHomeChannel.tabs.btnEnableE2E;
+		if (await btnEnableE2EE.isVisible()) {
+			await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+			await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+			await page.getByRole('button', { name: 'Enable encryption' }).click();
+			await page.waitForTimeout(1000);
+			await poHomeChannel.dismissToast();
+		} else {
+			await poHomeChannel.content.encryptedRoomHeaderIcon.first().click();
+		}
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-
-		await poHomeChannel.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
@@ -540,14 +548,16 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			await test.step('send a file in channel', async () => {
+				const updatedFileName = 'any_file1.txt';
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('any_description');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
+				await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+				await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+				await poHomeChannel.content.btnUpdateFileUpload.click();
+				await poHomeChannel.content.btnSendMainComposer.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 			});
 		});
 
@@ -569,29 +579,26 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			await test.step('send a text file in channel', async () => {
+				const updatedFileName = 'any_file1.txt';
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('message 1');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
+				await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+				await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+				await poHomeChannel.content.btnUpdateFileUpload.click();
+				await poHomeChannel.content.btnSendMainComposer.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 1');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
 			});
 
 			await test.step('set whitelisted media type setting', async () => {
 				await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: 'text/plain' });
 			});
 
-			await test.step('send text file again with whitelist setting set', async () => {
+			await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('message 2');
-				await poHomeChannel.content.fileNameInput.fill('any_file2.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
-
+				await expect(poHomeChannel.content.getFileComposerByName('any_file.txt')).toHaveAttribute('readonly');
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 			});
 
 			await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
@@ -599,14 +606,14 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
-				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('message 3');
-				await poHomeChannel.content.fileNameInput.fill('any_file3.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
+				const composerFilesLocator = poHomeChannel.content.getFileComposerByName('any_file.txt');
+				const composerFiles = await composerFilesLocator.all();
 
+				await poHomeChannel.content.dragAndDropTxtFile();
+
+				await expect(composerFilesLocator).toHaveCount(2);
+				await Promise.all(composerFiles.map((file) => expect(file).toHaveAttribute('readonly')));
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 			});
 		});
 
@@ -645,15 +652,11 @@ test.describe.serial('e2e-encryption', () => {
 					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				});
 
-				await test.step('send a text file in channel, file should not be encrypted', async () => {
+				await test.step('should not attach files to the composer', async () => {
 					await poHomeChannel.content.dragAndDropTxtFile();
-					await poHomeChannel.content.descriptionInput.fill('any_description');
-					await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-					await poHomeChannel.content.btnModalConfirm.click();
 
-					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
-					await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-					await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+					await expect(poHomeChannel.content.getFileComposerByName('any_file.txt')).not.toBeVisible();
+					await expect(poHomeChannel.content.btnSendMainComposer).toBeDisabled();
 				});
 			});
 		});

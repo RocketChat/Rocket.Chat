@@ -3943,7 +3943,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "小寫",
   "SAML_Custom_Username_Normalize_None": "沒有標準化",
   "SAML_Default_User_Role": "預設使用者角色",
-  "Upload_file_description": "檔案敘述",
   "SAML_Default_User_Role_Description": "您可以指定多個角色，並用逗號分隔。",
   "Upload_file_name": "檔案名稱",
   "Upload_file_question": "是否上傳檔案？",

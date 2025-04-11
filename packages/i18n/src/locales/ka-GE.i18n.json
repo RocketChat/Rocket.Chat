@@ -3253,7 +3253,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "პატარა ასოებში გადაყვანა",
   "SAML_Custom_Username_Normalize_None": "არანაირი ნორმალიზაცია",
   "SAML_Default_User_Role": "მომხმარებლის დეფაულტ როლი",
-  "Upload_file_description": "ფაილის აღწერა",
   "SAML_Default_User_Role_Description": "მძიმით გამოყოფით თქვენ შეგიძლიათ მიუთითოთ რამდენიმე როლი",
   "Upload_file_name": "ფაილის სახელი",
   "Upload_file_question": "გსურთ ატვირთოთ ფაილი?",

@@ -3590,7 +3590,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "Til små bogstaver",
   "SAML_Custom_Username_Normalize_None": "Ingen normalisering",
   "SAML_Default_User_Role": "Standard brugerrolle",
-  "Upload_file_description": "Filbeskrivelse",
   "SAML_Default_User_Role_Description": "Du kan specificere flere roller ved at adskille dem med kommaer.",
   "Upload_file_name": "Filnavn",
   "Upload_file_question": "Upload fil?",
