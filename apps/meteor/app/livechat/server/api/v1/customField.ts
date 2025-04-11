@@ -2,7 +2,7 @@ import { isLivechatCustomFieldsProps, isPOSTLivechatCustomFieldParams, isPOSTLiv
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Livechat } from '../../lib/LivechatTyped';
+import { setCustomFields } from '../../lib/custom-fields';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 import { findGuest } from '../lib/livechat';
 
@@ -17,7 +17,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			await Livechat.setCustomFields({ token, key, value, overwrite });
+			await setCustomFields({ token, key, value, overwrite });
 
 			return API.v1.success({ field: { key, value, overwrite } });
 		},
@@ -43,9 +43,7 @@ API.v1.addRoute(
 						overwrite: boolean;
 					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
 						const data = Object.assign({ token }, customField);
-						try {
-							await Livechat.setCustomFields(data);
-						} catch {
+						if (!(await setCustomFields(data))) {
 							throw new Error('error-setting-custom-field');
 						}
 
