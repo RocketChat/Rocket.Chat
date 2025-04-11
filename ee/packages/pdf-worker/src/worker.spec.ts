@@ -9,6 +9,7 @@ import {
 	dataWithMultipleMessagesAndABigMessage,
 	dataWithASingleMessageAndAnImage,
 	dataWithASingleSystemMessage,
+	dataWith2ReallyBigMessages,
 } from './worker.fixtures';
 
 const streamToBuffer = async (stream: NodeJS.ReadableStream) => {
@@ -74,6 +75,13 @@ it('should generate a pdf transcript for multiple messages, one big message and 
 
 it('should generate a pdf transcript for a single system message', async () => {
 	const stream = await pdfWorker.renderToStream({ data: dataWithASingleSystemMessage });
+	const buffer = await streamToBuffer(stream);
+
+	expect(buffer).toBeTruthy();
+});
+
+it('should generate a pdf transcript for rooms with messages consisting of tons of markdown elements', async () => {
+	const stream = await pdfWorker.renderToStream({ data: dataWith2ReallyBigMessages });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
