@@ -5,6 +5,7 @@ import { logLevel } from './logLevel';
 export * from './getPino';
 export * from './logLevel';
 export * from './logQueue';
+export * from './LogOperation';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
