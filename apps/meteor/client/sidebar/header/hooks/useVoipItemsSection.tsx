@@ -10,7 +10,7 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isEnabled, isReady, isRegistered, isReconnecting } = useVoipState();
 	const { register, unregister, onRegisteredOnce, onUnregisteredOnce } = useVoipAPI();
 
 	const toggleVoip = useMutation({
@@ -44,8 +44,12 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 			return t('Loading');
 		}
 
+		if (isReconnecting) {
+			return t('Reconnecting');
+		}
+
 		return '';
-	}, [clientError, isReady, toggleVoip.isPending, t]);
+	}, [clientError, isReady, toggleVoip.isPending, t, isReconnecting]);
 
 	return useMemo(() => {
 		if (!isEnabled) {
@@ -57,7 +61,7 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 				{
 					id: 'toggle-voip',
 					icon: isRegistered ? 'phone-disabled' : 'phone',
-					disabled: !isReady || toggleVoip.isPending,
+					disabled: !isReady || toggleVoip.isPending || isReconnecting,
 					onClick: () => toggleVoip.mutate(),
 					content: (
 						<Box is='span' title={tooltip}>
@@ -67,5 +71,5 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 				},
 			],
 		};
-	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
+	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip, isReconnecting]);
 };
