@@ -8,7 +8,7 @@ import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { validateRequiredCustomFields } from '../../lib/custom-fields';
-import { registerGuest, removeGuest } from '../../lib/guests';
+import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
 import { saveRoomInfo } from '../../lib/rooms';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -256,7 +256,7 @@ API.v1.addRoute('livechat/visitor.status', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		await LivechatTyped.notifyGuestStatusChanged(token, status);
+		await notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
 	},

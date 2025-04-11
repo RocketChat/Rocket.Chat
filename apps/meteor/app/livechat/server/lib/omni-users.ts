@@ -1,11 +1,14 @@
 import { api } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms, Users } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 
+import { updateDepartmentAgents } from './Helper';
 import { afterAgentAdded, afterRemoveAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { settings } from '../../../settings/server';
 
 export async function notifyAgentStatusChanged(userId: string, status?: UserStatus) {
@@ -85,4 +88,46 @@ export async function removeManager(username: string) {
 	}
 
 	return removeUserFromRolesAsync(user._id, ['livechat-manager']);
+}
+
+export async function saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
+	// TODO: check if these 'check' functions are necessary
+	check(_id, String);
+	check(agentData, Object);
+	check(agentDepartments, [String]);
+
+	const user = await Users.findOneById(_id);
+	if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
+		throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
+	}
+
+	await Users.setLivechatData(_id, removeEmpty(agentData));
+
+	const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
+
+	const toRemoveIds = currentDepartmentsForAgent
+		.filter((dept) => !agentDepartments.includes(dept.departmentId))
+		.map((dept) => dept.departmentId);
+	const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
+
+	await Promise.all(
+		await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
+			projection: {
+				_id: 1,
+				enabled: 1,
+			},
+		})
+			.map((dep) => {
+				return updateDepartmentAgents(
+					dep._id,
+					{
+						...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
+					},
+					dep.enabled,
+				);
+			})
+			.toArray(),
+	);
+
+	return true;
 }

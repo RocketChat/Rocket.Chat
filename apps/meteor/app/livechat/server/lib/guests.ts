@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, UserStatus } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
@@ -24,7 +24,11 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
-import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChanged,
+	notifyOnLivechatInquiryChanged,
+	notifyOnLivechatInquiryChangedByToken,
+} from '../../../lib/server/lib/notifyListener';
 
 export async function saveGuest(
 	guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string },
@@ -223,4 +227,15 @@ export async function getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
 	}
 
 	return postData;
+}
+
+export async function notifyGuestStatusChanged(token: string, status: UserStatus) {
+	// TODO: a promise.all maybe?
+	await LivechatRooms.updateVisitorStatus(token, status);
+
+	const inquiryVisitorStatus = await LivechatInquiry.updateVisitorStatus(token, status);
+
+	if (inquiryVisitorStatus.modifiedCount) {
+		void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
+	}
 }

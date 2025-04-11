@@ -1,15 +1,9 @@
 import { VideoConf } from '@rocket.chat/core-services';
-import type { IUser, ILivechatVisitor, ILivechatDepartment, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
-import { removeEmpty } from '@rocket.chat/tools';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
+import { LivechatDepartment, Users, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
 
-import { updateDepartmentAgents } from './Helper';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { notifyOnLivechatInquiryChangedByToken } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
 class LivechatClass {
@@ -28,11 +22,10 @@ class LivechatClass {
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
-			const botAgents = await Livechat.getBotAgents(department);
+			const botAgents = await Livechat.countBotAgents(department);
 			if (botAgents) {
-				const onlineBots = await Livechat.countBotAgents(department);
-				this.logger.debug(`Found ${onlineBots} online`);
-				if (onlineBots > 0) {
+				this.logger.debug(`Found ${botAgents} online`);
+				if (botAgents > 0) {
 					return true;
 				}
 			}
@@ -67,61 +60,12 @@ class LivechatClass {
 		return Users.checkOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	}
 
-	private async getBotAgents(department?: string) {
-		if (department) {
-			return LivechatDepartmentAgents.getBotsForDepartment(department);
-		}
-
-		return Users.findBotAgents();
-	}
-
 	private async countBotAgents(department?: string) {
 		if (department) {
 			return LivechatDepartmentAgents.countBotsForDepartment(department);
 		}
 
 		return Users.countBotAgents();
-	}
-
-	async saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
-		check(_id, String);
-		check(agentData, Object);
-		check(agentDepartments, [String]);
-
-		const user = await Users.findOneById(_id);
-		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
-		}
-
-		await Users.setLivechatData(_id, removeEmpty(agentData));
-
-		const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();
-
-		const toRemoveIds = currentDepartmentsForAgent
-			.filter((dept) => !agentDepartments.includes(dept.departmentId))
-			.map((dept) => dept.departmentId);
-		const toAddIds = agentDepartments.filter((d) => !currentDepartmentsForAgent.some((c) => c.departmentId === d));
-
-		await Promise.all(
-			await LivechatDepartment.findInIds([...toRemoveIds, ...toAddIds], {
-				projection: {
-					_id: 1,
-					enabled: 1,
-				},
-			})
-				.map((dep) => {
-					return updateDepartmentAgents(
-						dep._id,
-						{
-							...(toRemoveIds.includes(dep._id) ? { remove: [{ agentId: _id }] } : { upsert: [{ agentId: _id, count: 0, order: 0 }] }),
-						},
-						dep.enabled,
-					);
-				})
-				.toArray(),
-		);
-
-		return true;
 	}
 
 	async updateCallStatus(callId: string, rid: string, status: 'ended' | 'declined', user: IUser | ILivechatVisitor) {
@@ -132,16 +76,6 @@ class LivechatClass {
 			}
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
-		}
-	}
-
-	async notifyGuestStatusChanged(token: string, status: UserStatus) {
-		await LivechatRooms.updateVisitorStatus(token, status);
-
-		const inquiryVisitorStatus = await LivechatInquiry.updateVisitorStatus(token, status);
-
-		if (inquiryVisitorStatus.modifiedCount) {
-			void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
 		}
 	}
 }
