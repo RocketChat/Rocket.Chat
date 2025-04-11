@@ -78,6 +78,8 @@ export class MockedAppRootBuilder {
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
+		disconnect: () => Promise.reject(new Error('not implemented')),
+		reconnect: () => Promise.reject(new Error('not implemented')),
 		info: undefined,
 	};
 
@@ -646,7 +648,7 @@ export class MockedAppRootBuilder {
 																	</VideoConfContext.Provider>
 																</ActionManagerContext.Provider>
 															</UserPresenceContext.Provider>
-															{/* 		
+															{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
 														</AuthorizationContext.Provider>
