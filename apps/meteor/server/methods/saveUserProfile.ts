@@ -16,6 +16,7 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
+import { removeOtherTokens } from '../lib/removeOtherTokens';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -142,7 +143,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await Meteor.callAsync('removeOtherTokens');
+				await removeOtherTokens(this.userId, this.connection?.id || '');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
