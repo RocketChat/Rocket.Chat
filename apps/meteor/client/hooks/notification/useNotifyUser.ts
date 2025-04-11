@@ -1,6 +1,6 @@
-import type { AtLeast, INotificationDesktop, ISubscription } from '@rocket.chat/core-typings';
+import type { AtLeast, INotificationDesktop, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useCustomSound, useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useEmbeddedLayout } from '../useEmbeddedLayout';
@@ -9,8 +9,7 @@ import { useNewMessageNotification } from './useNewMessageNotification';
 import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 
-export const useNotifyUser = () => {
-	const user = useUser();
+export const useNotifyUser = (user: IUser) => {
 	const router = useRouter();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
@@ -20,7 +19,7 @@ export const useNotifyUser = () => {
 	const showDesktopNotification = useDesktopNotification();
 
 	const notifyNewRoom = useEffectEvent(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
-		if (!user || user.status === 'busy') {
+		if (user.status === 'busy') {
 			return;
 		}
 
@@ -57,10 +56,6 @@ export const useNotifyUser = () => {
 	});
 
 	useEffect(() => {
-		if (!user?._id) {
-			return;
-		}
-
 		const unsubNotification = notifyUserStream(`${user._id}/notification`, notifyNewMessageAudioAndDesktop);
 
 		const unsubSubs = notifyUserStream(`${user._id}/subscriptions-changed`, (action, sub) => {
@@ -75,7 +70,7 @@ export const useNotifyUser = () => {
 			unsubNotification();
 			unsubSubs();
 		};
-	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
+	}, [notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user._id]);
 
 	useEffect(() => () => notificationSounds.stopNewRoom(), [notificationSounds]);
 };

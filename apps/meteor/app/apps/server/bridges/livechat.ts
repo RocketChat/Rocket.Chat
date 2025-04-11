@@ -12,11 +12,13 @@ import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
+import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import { registerGuest } from '../../../livechat/server/lib/guests';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
 import { createRoom } from '../../../livechat/server/lib/rooms';
+import { transfer } from '../../../livechat/server/lib/transfer';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -277,7 +279,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return LivechatTyped.transfer(
+		return transfer(
 			(await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom)) as IOmnichannelRoom,
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
@@ -368,6 +370,6 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is setting livechat visitor's custom fields.`);
 
-		return LivechatTyped.setCustomFields(data);
+		return setCustomFields(data);
 	}
 }
