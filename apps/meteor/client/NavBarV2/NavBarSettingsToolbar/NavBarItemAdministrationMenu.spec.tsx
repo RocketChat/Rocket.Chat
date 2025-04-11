@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import NavBarItemAdministrationMenu from './NavBarItemAdministrationMenu';
 
-it('should not display the menu if any permission is set', async () => {
+it('should not display the menu if no permission is set', async () => {
 	render(<NavBarItemAdministrationMenu />, { wrapper: mockAppRoot().build() });
 
 	expect(screen.queryByRole('button', { name: 'Manage' })).not.toBeInTheDocument();

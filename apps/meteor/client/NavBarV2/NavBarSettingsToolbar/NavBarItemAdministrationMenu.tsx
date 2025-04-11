@@ -16,22 +16,17 @@ const NavBarItemAdministrationMenu = (props: NavBarItemAdministrationMenuProps) 
 	const adminSection = useAdministrationMenu();
 	const auditSection = useAuditMenu();
 
+	const adminRoutesRegex = new RegExp(['/omnichannel/', '/admin', '/audit'].join('|'));
+	const pressed = adminRoutesRegex.test(currentRoute || '');
+
 	const sections = [adminSection, auditSection].filter((section) => section.items.length > 0);
 
-	if (sections.every((section) => section.items.length === 0)) {
+	if (sections.length === 0) {
 		return null;
 	}
 
 	return (
-		<GenericMenu
-			sections={sections}
-			title={t('Manage')}
-			is={NavBarItem}
-			icon='cog'
-			pressed={currentRoute?.includes('/omnichannel/') || currentRoute?.includes('/admin')}
-			placement='bottom-end'
-			{...props}
-		/>
+		<GenericMenu sections={sections} title={t('Manage')} is={NavBarItem} icon='cog' pressed={pressed} placement='bottom-end' {...props} />
 	);
 };
 
