@@ -216,7 +216,7 @@ export class RocketChatSettingsAdapter {
 		const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 		const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 
-		const siteUrl = settings.get<string>('Site_Url');
+		const siteUrl = new URL(settings.get<string>('Site_Url')).hostname;
 
 		await settingsRegistry.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
 			readonly: process.env.NODE_ENV === 'production',
