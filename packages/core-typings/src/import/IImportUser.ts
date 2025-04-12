@@ -19,4 +19,5 @@ export interface IImportUser {
 
 	password?: string;
 	voipExtension?: string;
+	federated?: boolean;
 }
