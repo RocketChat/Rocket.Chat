@@ -72,7 +72,7 @@ const mocks = {
 	},
 	'../../../../../app/livechat/server/lib/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
 	'../../../../../app/livechat/server/lib/Helper': { forwardRoomToAgent },
-	'../../../../../app/livechat/server/lib/LivechatTyped': { Livechat: { returnRoomAsInquiry: returnRoomAsInquiryMock } },
+	'../../../../../app/livechat/server/lib/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
 	'../../../../../app/settings/server': { settings: { get: settingsGet } },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {

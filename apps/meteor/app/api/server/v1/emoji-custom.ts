@@ -8,6 +8,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { EmojiData } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
+import { deleteEmojiCustom } from '../../../emoji-custom/server/methods/deleteEmojiCustom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -203,7 +204,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "emojiId" params is required!');
 			}
 
-			await Meteor.callAsync('deleteEmojiCustom', emojiId);
+			await deleteEmojiCustom(this.userId, emojiId);
 
 			return API.v1.success();
 		},
