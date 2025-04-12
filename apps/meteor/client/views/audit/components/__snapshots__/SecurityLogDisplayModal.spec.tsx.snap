@@ -1,0 +1,412 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r0:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r0:-title"
+              >
+                Setting_change
+              </h2>
+            </div>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Timestamp
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                March 20 2025, 5:17:46 PM
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Actor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-127j9mz"
+              >
+                <figure
+                  class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+                >
+                  <img
+                    alt=""
+                    aria-hidden="true"
+                    class="rcx-avatar__element rcx-avatar__element--x24"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                  />
+                </figure>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-2f8n8y"
+                >
+                  username
+                </div>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Setting
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                Show_message_in_email_notification
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_from
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                false
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_to
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                true
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          />
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders app without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r1:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r1:-title"
+              >
+                Setting_change
+              </h2>
+            </div>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Timestamp
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                March 20 2025, 5:17:46 PM
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Actor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                App
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                App_id
+              </div>
+              <span
+                class="rcx-skeleton rcx-skeleton--text"
+              />
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                app-id
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Setting
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                Show_message_in_email_notification
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_from
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                false
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_to
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                true
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          />
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders system without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby=":r2:-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id=":r2:-title"
+              >
+                Setting_change
+              </h2>
+            </div>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Timestamp
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                March 20 2025, 5:17:46 PM
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Actor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                System
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Reason
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                update
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Setting
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                Show_message_in_email_notification
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_from
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                false
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-op9h3g"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-pwio3x"
+              >
+                Changed_to
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+              >
+                true
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          />
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
