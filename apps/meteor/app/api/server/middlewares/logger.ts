@@ -1,28 +1,36 @@
 import type { Logger } from '@rocket.chat/logger';
-import type { Request, Response, NextFunction } from 'express';
+import type { MiddlewareHandler } from 'hono';
 
 import { getRestPayload } from '../../../../server/lib/logger/logPayloads';
 
-export const loggerMiddleware = (logger: Logger) => async (req: Request, res: Response, next: NextFunction) => {
-	const startTime = Date.now();
+export const loggerMiddleware =
+	(logger: Logger): MiddlewareHandler =>
+	async (c, next) => {
+		const startTime = Date.now();
 
-	const log = logger.logger.child({
-		method: req.method,
-		url: req.url,
-		userId: req.headers['x-user-id'],
-		userAgent: req.headers['user-agent'],
-		length: req.headers['content-length'],
-		host: req.headers.host,
-		referer: req.headers.referer,
-		remoteIP: req.ip,
-		...getRestPayload(req.body),
-	});
-	res.once('finish', () => {
+		let payload = {};
+
+		try {
+			payload = await c.req.raw.clone().json();
+			// eslint-disable-next-line no-empty
+		} catch {}
+
+		const log = logger.logger.child({
+			method: c.req.method,
+			url: c.req.url,
+			userId: c.req.header('x-user-id'),
+			userAgent: c.req.header('user-agent'),
+			length: c.req.header('content-length'),
+			host: c.req.header('host'),
+			referer: c.req.header('referer'),
+			remoteIP: c.get('remoteAddress'),
+			...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && getRestPayload(payload)),
+		});
+
+		await next();
+
 		log.http({
-			status: res.statusCode,
+			status: c.res.status,
 			responseTime: Date.now() - startTime,
 		});
-	});
-
-	next();
-};
+	};
