@@ -2,15 +2,13 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
-import { useForceLogout } from './hooks/useForceLogout';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
+import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
-import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
-import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
-import { useWebRTC } from './hooks/useWebRTC';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
@@ -22,8 +20,6 @@ import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/us
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
-import { useNotificationUserCalendar } from '../../hooks/notification/useNotificationUserCalendar';
-import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
@@ -47,7 +43,6 @@ const AppLayout = () => {
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
-	useNotifyUser();
 	useNotificationPermission();
 	useEmojiOne();
 	useRedirectToSetupWizard();
@@ -62,13 +57,10 @@ const AppLayout = () => {
 	useWordPressOAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
-	useOTRMessaging();
-	useUpdateVideoConfUser();
-	useWebRTC();
-	useStoreCookiesOnLogin();
 	useAutoupdate();
-	useForceLogout();
-	useNotificationUserCalendar();
+	useCodeHighlight();
+	useLoginViaQuery();
+	useLoadMissedMessages();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

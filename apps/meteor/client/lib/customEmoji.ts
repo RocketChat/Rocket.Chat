@@ -1,11 +1,8 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
 
-import { onLoggedIn } from '../../../../client/lib/loggedIn';
-import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
-import { getURL } from '../../../utils/client';
-import { sdk } from '../../../utils/client/lib/SDKClient';
+import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
+import { getURL } from '../../app/utils/client';
 
 const isSetNotNull = (fn: () => unknown) => {
 	let value;
@@ -15,38 +12,6 @@ const isSetNotNull = (fn: () => unknown) => {
 		value = null;
 	}
 	return value !== null && value !== undefined;
-};
-
-const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
-	if (!name) {
-		return;
-	}
-
-	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}${etag ? `?etag=${etag}` : ''}`);
-};
-
-export const deleteEmojiCustom = (emojiData: IEmoji) => {
-	delete emoji.list[`:${emojiData.name}:`];
-	const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
-	if (arrayIndex !== -1) {
-		emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
-	}
-	const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.name}:`) ?? -1;
-	if (arrayIndexList !== -1) {
-		emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
-	}
-	if (emojiData.aliases) {
-		for (const alias of emojiData.aliases) {
-			delete emoji.list[`:${alias}:`];
-			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
-			if (aliasIndex !== -1) {
-				emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
-			}
-		}
-	}
-
-	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
-	emoji.dispatchUpdate();
 };
 
 export const updateEmojiCustom = (emojiData: IEmoji) => {
@@ -98,7 +63,39 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 	emoji.dispatchUpdate();
 };
 
-const customRender = (html: string) => {
+export const deleteEmojiCustom = (emojiData: IEmoji) => {
+	delete emoji.list[`:${emojiData.name}:`];
+	const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
+	if (arrayIndex !== -1) {
+		emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
+	}
+	const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.name}:`) ?? -1;
+	if (arrayIndexList !== -1) {
+		emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
+	}
+	if (emojiData.aliases) {
+		for (const alias of emojiData.aliases) {
+			delete emoji.list[`:${alias}:`];
+			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
+			if (aliasIndex !== -1) {
+				emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+			}
+		}
+	}
+
+	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
+	emoji.dispatchUpdate();
+};
+
+const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
+	if (!name) {
+		return;
+	}
+
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}${etag ? `?etag=${etag}` : ''}`);
+};
+
+export const customRender = (html: string) => {
 	const emojisMatchGroup = emoji.packages.emojiCustom.list?.map(escapeRegExp).join('|');
 	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
@@ -131,42 +128,3 @@ const customRender = (html: string) => {
 
 	return html;
 };
-
-emoji.packages.emojiCustom = {
-	emojiCategories: [{ key: 'rocket', i18n: 'Custom' }],
-	categoryIndex: 1,
-	toneList: {},
-	list: [],
-	_regexpSignature: null,
-	_regexp: null,
-	emojisByCategory: {},
-	render: customRender,
-	renderPicker: customRender,
-};
-
-Meteor.startup(() => {
-	onLoggedIn(async () => {
-		try {
-			const {
-				emojis: { update: emojis },
-			} = await sdk.rest.get('/v1/emoji-custom.list', { query: '' });
-
-			emoji.packages.emojiCustom.emojisByCategory = { rocket: [] };
-			for (const currentEmoji of emojis) {
-				emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
-				emoji.packages.emojiCustom.list?.push(`:${currentEmoji.name}:`);
-				emoji.list[`:${currentEmoji.name}:`] = { ...currentEmoji, emojiPackage: 'emojiCustom' } as any;
-				for (const alias of currentEmoji.aliases) {
-					emoji.packages.emojiCustom.list?.push(`:${alias}:`);
-					emoji.list[`:${alias}:`] = {
-						emojiPackage: 'emojiCustom',
-						aliasOf: currentEmoji.name,
-					};
-				}
-			}
-			emoji.dispatchUpdate();
-		} catch (e) {
-			console.error('Error getting custom emoji', e);
-		}
-	});
-});

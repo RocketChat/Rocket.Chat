@@ -74,4 +74,10 @@ export class HomeOmnichannelContent extends HomeContent {
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}
+
+	async closeChat() {
+		await this.btnCloseChat.click();
+		await this.closeChatModal.inputComment.fill('any_comment');
+		await this.closeChatModal.btnConfirm.click();
+	}
 }

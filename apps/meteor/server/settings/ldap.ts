@@ -214,6 +214,11 @@ export const createLdapSettings = () =>
 					type: 'string',
 					enableQuery,
 				});
+
+				await this.add('LDAP_FederationHomeServer_Field', '', {
+					type: 'string',
+					enableQuery,
+				});
 			});
 
 			await this.section('LDAP_DataSync_Avatar', async function () {

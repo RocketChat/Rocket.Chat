@@ -1,17 +1,14 @@
-import { useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import type { CandidateData, DescriptionData, JoinData } from '../../../../app/webrtc/client/WebRTCClass';
 import { WebRTC } from '../../../../app/webrtc/client/WebRTCClass';
 import { WEB_RTC_EVENTS } from '../../../../app/webrtc/lib/constants';
 
-export const useWebRTC = () => {
-	const uid = useUserId();
+export const useWebRTC = (uid: string) => {
 	const notifyUser = useStream('notify-user');
 
 	useEffect(() => {
-		if (!uid) return;
-
 		const handleNotifyUser = (type: 'candidate' | 'description' | 'join', data: CandidateData | DescriptionData | JoinData) => {
 			if (data.room == null) return;
 

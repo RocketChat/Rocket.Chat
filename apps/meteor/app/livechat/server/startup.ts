@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { Livechat as LivechatTyped } from './lib/LivechatTyped';
+import { setUserStatusLivechatIf } from './lib/utils';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { callbacks } from '../../../lib/callbacks';
 import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
@@ -88,13 +88,9 @@ Meteor.startup(async () => {
 			return;
 		}
 
-		void LivechatTyped.setUserStatusLivechatIf(
-			user._id,
-			ILivechatAgentStatus.NOT_AVAILABLE,
-			{},
-			{ livechatStatusSystemModified: true },
-		).catch();
+		void setUserStatusLivechatIf(user._id, ILivechatAgentStatus.NOT_AVAILABLE, {}, { livechatStatusSystemModified: true }).catch();
 
+		// TODO: Shouldn't this notifier be the same as the one inside setUserStatusLivechatIf?
 		void notifyOnUserChange({
 			id: user._id,
 			clientAction: 'updated',

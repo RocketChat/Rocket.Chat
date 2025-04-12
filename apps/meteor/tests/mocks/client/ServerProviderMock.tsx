@@ -67,6 +67,8 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	reconnect: () => undefined,
+	disconnect: () => undefined,
 };
 
 type ServerProviderMockProps = {

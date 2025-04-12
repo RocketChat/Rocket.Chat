@@ -1,7 +1,7 @@
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { updateEmojiCustom, deleteEmojiCustom } from '../../../app/emoji-custom/client/lib/emojiCustom';
+import { updateEmojiCustom, deleteEmojiCustom } from '../../lib/customEmoji';
 
 export const useUpdateCustomEmoji = () => {
 	const notify = useStream('notify-logged');

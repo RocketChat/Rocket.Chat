@@ -175,7 +175,7 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
 			if (queuedInquiry) {
 				inquiry = queuedInquiry;
 				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {

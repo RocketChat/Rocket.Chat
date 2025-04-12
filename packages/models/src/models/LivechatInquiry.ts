@@ -153,8 +153,19 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
+	/**
+	 * Updates the `lastMessage` of inquiries that are not taken yet, after they're taken we only need to update room's `lastMessage`
+	 */
 	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
-		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+		return this.findOneAndUpdate(
+			{ rid, status: { $ne: LivechatInquiryStatus.TAKEN } },
+			{ $set: { lastMessage: message } },
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult> {
+		return this.updateOne({ _id: inquiryId }, { $set: { lastMessage } });
 	}
 
 	async findNextAndLock(
@@ -316,13 +327,17 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
 			{
-				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$set: {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					...(lastMessage && { lastMessage }),
+				},
 				$unset: { takenAt: 1 },
 			},
 			{ returnDocument: 'after' },
