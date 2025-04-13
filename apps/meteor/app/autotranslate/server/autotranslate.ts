@@ -310,7 +310,13 @@ export abstract class AutoTranslate {
 
 				const translations = await this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
-					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
+					// Store both original and translated messages in the requested format
+					const formattedTranslations = Object.entries(translations).reduce((acc, [lang, translation]) => {
+						acc[lang] = `\*\_${message.msg}\_\*\n--> ${translation}`;
+						return acc;
+					}, {} as ITranslationResult);
+					
+					await Messages.addTranslations(message._id, formattedTranslations, TranslationProviderRegistry[Provider] || '');
 					this.notifyTranslatedMessage(message._id);
 				}
 			});
@@ -326,7 +332,14 @@ export abstract class AutoTranslate {
 						const translations = await this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
 
 						if (!_.isEmpty(translations)) {
-							await Messages.addAttachmentTranslations(message._id, String(index), translations);
+							// Store both original and translated text in the requested format
+							const formattedTranslations = Object.entries(translations).reduce((acc, [lang, translation]) => {
+								const originalText = attachment.description || attachment.text || '';
+								acc[lang] = `\*\_${originalText}\_\*\n--> ${translation}`;
+								return acc;
+							}, {} as ITranslationResult);
+							
+							await Messages.addAttachmentTranslations(message._id, String(index), formattedTranslations);
 							this.notifyTranslatedMessage(message._id);
 						}
 					}
