@@ -435,6 +435,7 @@
   "Edit_Trigger": "עריכת טריגר",
   "edit-message": "עריכת הודעה",
   "edit-room": "עריכת Room",
+  "Device_Management_Device_Unknown": "לא ידוע",
   "multi_line": "מספר שורות",
   "edited": "נערך",
   "Editing_room": "עריכת חדר",
@@ -1060,6 +1061,7 @@
   "Profile_saved_successfully": "הפרופיל נשמר בהצלחה",
   "Public": "פּוּמְבֵּי",
   "Push": "דחיפה",
+  "Message_is_removed": "ההודעה הוסרה",
   "Push_apn_cert": "תעודת APN",
   "Push_apn_dev_cert": "תעודת סביבת פיתוח של APN",
   "Push_apn_dev_key": "מפתח סביבת פיתוח של APN",
@@ -1514,6 +1516,7 @@
   "Your_push_was_sent_to_s_devices": "הודעת ה-push נשלח בהצלחה ל-%s מכשירים",
   "Your_question": "השאלה שלך",
   "Teams_New_Name_Label": "שם",
+  "Teams_New_Add_members_Label": "חברים",
   "Teams_New_Broadcast_Description": "רק משתמשים מורשים יוכלו לכתוב הודעות, אבל שאר המשתמשים יכולים להגיב",
   "Teams_New_Description_Label": "נושא",
   "Teams_New_Private_Label": "פרטי",
@@ -1528,6 +1531,7 @@
   "View_mode": "מצב תצוגה",
   "VoIP_Management_Server_Username": "שם משתמש",
   "VoIP_Management_Server_Password": "ססמה",
+  "VoIP_TeamCollab_Enabled": "מופעל",
   "You_have_a_new_message": "יש לך הודעה חדשה",
   "registration.page.login.errors.wrongCredentials": "המשתמש לא נמצא או הסיסמה לא נכונה",
   "registration.page.registration.waitActivationWarning": "לפני שתוכל להתחבר, החשבון שלך חייב לעבור אישור על ידי האדמין.",
@@ -1542,5 +1546,7 @@
   "registration.component.form.invalidConfirmPass": "אימות הססמה אינו זהה לססמה",
   "registration.component.form.confirmPassword": "אמת את הסיסמה שלך",
   "registration.component.form.sendConfirmationEmail": "שליחת דוא״ל אימות",
-  "UpgradeToGetMore_engagement-dashboard_Title": "סטטיסטיקה"
+  "onboarding.component.form.action.back": "חזרה",
+  "UpgradeToGetMore_engagement-dashboard_Title": "סטטיסטיקה",
+  "Delete_roomType_description": "מחיקת חדר יגרום למחיקת כל ההודעות שפורסמו בחדר. פעולה זו בלתי הפיכה."
 }
