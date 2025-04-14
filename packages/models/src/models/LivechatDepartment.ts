@@ -282,6 +282,28 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find<T>(query, projection && { projection });
 	}
 
+	findEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
+		projection: FindOptions<T>['projection'] = {},
+	): FindCursor<T> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+			showOnRegistration: true,
+		};
+		return this.find<T>(query, projection && { projection });
+	}
+
+	findOneEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
+		projection: FindOptions<T>['projection'] = {},
+	): Promise<T | null> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+			showOnRegistration: true,
+		};
+		return this.findOne<T>(query, projection && { projection });
+	}
+
 	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
 		projection: FindOptions<T>['projection'] = {},

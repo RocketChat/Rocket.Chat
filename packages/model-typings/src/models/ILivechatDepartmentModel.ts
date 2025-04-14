@@ -64,4 +64,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	unarchiveDepartment(_id: string): Promise<Document | UpdateResult>;
 	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult>;
 	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult>;
+	findEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(projection?: FindOptions<T>['projection']): FindCursor<T>;
+	findOneEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
+		projection?: FindOptions<T>['projection'],
+	): Promise<T | null>;
 }

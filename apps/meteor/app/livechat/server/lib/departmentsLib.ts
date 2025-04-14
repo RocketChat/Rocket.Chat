@@ -254,10 +254,8 @@ export async function removeDepartment(departmentId: string) {
 		`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
 	);
 
-	const removeByDept = LivechatDepartmentAgents.removeByDepartmentId(_id);
-
 	const promiseResponses = await Promise.allSettled([
-		removeByDept,
+		LivechatDepartmentAgents.removeByDepartmentId(_id),
 		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 		LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 	]);
@@ -290,16 +288,13 @@ export async function removeDepartment(departmentId: string) {
 }
 
 export async function getRequiredDepartment(onlineRequired = true) {
-	const departments = LivechatDepartment.findEnabledWithAgents();
+	if (!onlineRequired) {
+		return LivechatDepartment.findOneEnabledWithAgentsAndRegistration();
+	}
+
+	const departments = LivechatDepartment.findEnabledWithAgentsAndRegistration();
 
 	for await (const dept of departments) {
-		if (!dept.showOnRegistration) {
-			continue;
-		}
-		if (!onlineRequired) {
-			return dept;
-		}
-
 		const onlineAgents = await LivechatDepartmentAgents.countOnlineForDepartment(dept._id);
 		if (onlineAgents) {
 			return dept;
