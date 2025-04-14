@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Livechat } from '../lib/LivechatTyped';
+import { saveAgentInfo } from '../lib/omni-users';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -29,6 +29,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Livechat.saveAgentInfo(_id, agentData, agentDepartments);
+		return saveAgentInfo(_id, agentData, agentDepartments);
 	},
 });
