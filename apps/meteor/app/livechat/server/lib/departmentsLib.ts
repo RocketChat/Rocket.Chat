@@ -4,6 +4,7 @@ import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, Livecha
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
+import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import { livechatLogger } from './logger';
 import { callbacks } from '../../../../lib/callbacks';
@@ -27,7 +28,6 @@ export async function saveDepartment(
 	},
 	departmentUnit?: { _id?: string },
 ) {
-	check(_id, Match.Maybe(String));
 	if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
 		throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
 			method: 'livechat:saveDepartment',
@@ -35,7 +35,9 @@ export async function saveDepartment(
 	}
 
 	const department = _id
-		? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 } })
+		? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'archived' | 'enabled' | 'parentId'>>(_id, {
+				projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 },
+			})
 		: null;
 
 	if (departmentUnit && !departmentUnit._id && department && department.parentId) {
@@ -59,6 +61,7 @@ export async function saveDepartment(
 		});
 	}
 
+	// TODO: Use AJV or Zod for validation (or the lib we are using rn)
 	const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
 		enabled: Boolean,
 		name: String,
@@ -112,8 +115,8 @@ export async function saveDepartment(
 	}
 
 	if (fallbackForwardDepartment) {
-		const fallbackDep = await LivechatDepartment.findOneById(fallbackForwardDepartment, {
-			projection: { _id: 1, fallbackForwardDepartment: 1 },
+		const fallbackDep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(fallbackForwardDepartment, {
+			projection: { _id: 1 },
 		});
 		if (!fallbackDep) {
 			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
@@ -156,11 +159,7 @@ export async function archiveDepartment(_id: string) {
 		throw new Error('department-not-found');
 	}
 
-	await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
-
-	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
-
-	await callbacks.run('livechat.afterDepartmentArchived', department);
+	await afterDepartmentArchived(department);
 }
 
 export async function unarchiveDepartment(_id: string) {
@@ -170,12 +169,7 @@ export async function unarchiveDepartment(_id: string) {
 		throw new Meteor.Error('department-not-found');
 	}
 
-	// TODO: these kind of actions should be on events instead of here
-	await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
-
-	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
-
-	return true;
+	await afterDepartmentUnarchived(department);
 }
 
 export async function saveDepartmentAgents(
@@ -185,6 +179,7 @@ export async function saveDepartmentAgents(
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 ) {
+	// TODO: remove when endpoint is validated
 	check(_id, String);
 	check(departmentAgents, {
 		upsert: Match.Maybe([
@@ -213,13 +208,15 @@ export async function saveDepartmentAgents(
 	return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 }
 
-export async function setDepartmentForGuest({ token, department }: { token: string; department: string }) {
-	check(token, String);
-	check(department, String);
+export async function setDepartmentForGuest({ visitorId, department }: { visitorId: string; department: string }) {
+	livechatLogger.debug({
+		msg: 'Switching departments for visitor',
+		visitorId,
+		department,
+	});
 
-	livechatLogger.debug(`Switching departments for user with token ${token} (to ${department})`);
-
-	const updateUser = {
+	// TODO: move to model
+	const visitorUpdate = {
 		$set: {
 			department,
 		},
@@ -230,11 +227,8 @@ export async function setDepartmentForGuest({ token, department }: { token: stri
 		throw new Meteor.Error('invalid-department', 'Provided department does not exists');
 	}
 
-	const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-	if (!visitor) {
-		throw new Meteor.Error('invalid-token', 'Provided token is invalid');
-	}
-	await LivechatVisitors.updateById(visitor._id, updateUser);
+	// Visitor is already validated at this point
+	await LivechatVisitors.updateById(visitorId, visitorUpdate);
 }
 
 export async function removeDepartment(departmentId: string) {
