@@ -32,32 +32,7 @@ export class NetworkBroker implements IBroker {
 		this.metrics = broker.metrics;
 	}
 
-	async call(method: string, data: any): Promise<any> {
-		if (!(await this.started)) {
-			return;
-		}
-
-		const context = asyncLocalStorage.getStore();
-
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, data);
-		}
-
-		const services: { name: string }[] = await this.broker.call('$node.services', {
-			onlyAvailable: true,
-		});
-		if (!services.find((service) => service.name === method.split('.')[0])) {
-			return new Error('method-not-available');
-		}
-
-		return this.broker.call(method, data, {
-			meta: {
-				optl: injectCurrentContext(),
-			},
-		});
-	}
-
-	async callWithOptions(method: string, data: any, options: CallingOptions): Promise<any> {
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
 		if (!(await this.started)) {
 			return;
 		}
@@ -80,7 +55,6 @@ export class NetworkBroker implements IBroker {
 			...options,
 			meta: {
 				optl: injectCurrentContext(),
-				...options.meta,
 			},
 		});
 	}

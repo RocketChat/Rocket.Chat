@@ -29,7 +29,11 @@ export class LocalBroker implements IBroker {
 
 	private defaultDependencies = ['settings'];
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
+		if (options) {
+			logger.warn('Options are not supported in LocalBroker');
+		}
+
 		return tracerActiveSpan(
 			`action ${method}`,
 			{},
@@ -46,11 +50,6 @@ export class LocalBroker implements IBroker {
 			},
 			injectCurrentContext(),
 		);
-	}
-
-	async callWithOptions(method: string, data: any, _options: CallingOptions): Promise<any> {
-		logger.warn('callWithOptions is not supported in LocalBroker, using call instead');
-		return this.call(method, data);
 	}
 
 	async destroyService(instance: ServiceClass): Promise<void> {
