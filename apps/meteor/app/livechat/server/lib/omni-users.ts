@@ -61,7 +61,7 @@ export async function removeAgent(id: IUser['_id']) {
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Error('error-invalid-user');
+		throw new Meteor.Error('error-invalid-user');
 	}
 	const { _id } = user;
 
@@ -76,7 +76,7 @@ export async function removeManager(id: IUser['_id']) {
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1 } });
 
 	if (!user) {
-		throw new Error('error-invalid-user');
+		throw new Meteor.Error('error-invalid-user');
 	}
 
 	return removeUserFromRolesAsync(user._id, ['livechat-manager']);
