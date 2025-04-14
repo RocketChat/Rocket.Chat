@@ -291,7 +291,6 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
-
 type ResultForStatus<TResponse, K> =
 	K extends SuccessStatusCodes
 		? SuccessResult<InferResult<K extends keyof TResponse ? TResponse[K] : unknown>, K>
@@ -314,7 +313,6 @@ type Results<TResponse extends TypedOptions['response']> = {
 }[keyof TResponse] & {
 	headers?: Record<string, string>;
 };
-
 
 export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
 	this: TypedThis<TOptions, TPath>,
