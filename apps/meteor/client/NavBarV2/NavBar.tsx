@@ -4,6 +4,7 @@ import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts
 import { useVoipState } from '@rocket.chat/ui-voip';
 import { useRef } from 'react';
 
+import NavbarNavigation from './NavBarNavigation';
 import {
 	NavBarItemOmniChannelCallDialPad,
 	NavBarItemOmnichannelContact,
@@ -58,6 +59,7 @@ const NavBar = () => {
 					<NavBarItemSort />
 				</NavBarGroup>
 			</NavBarSection>
+			<NavbarNavigation />
 			<NavBarSection>
 				{showVoip && (
 					<>
