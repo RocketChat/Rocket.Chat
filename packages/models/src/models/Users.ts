@@ -2454,6 +2454,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser> = {}) {
+		const query = { _id: userId, roles: role };
+
+		return this.findOne(query, options);
+	}
+
 	async findByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
 		const data = (await Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
 		const query = {
