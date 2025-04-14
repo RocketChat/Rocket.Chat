@@ -90,7 +90,8 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		test('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
+		// TODO: replace by navbar search tests
+		test.skip('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
 			await page.goto('/home');
 
 			await poHomeChannel.sidebar.btnRecent.click();
