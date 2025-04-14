@@ -244,9 +244,12 @@ export async function removeDepartment(departmentId: string) {
 
 	const removedAgents = await LivechatDepartmentAgents.findByDepartmentId(department._id, { projection: { agentId: 1 } }).toArray();
 
-	livechatLogger.debug(
-		`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
-	);
+	const actions = ['Removing department agents', 'Unsetting fallback department', 'Removing department from rooms'];
+	livechatLogger.debug({
+		msg: 'Post department removal actions',
+		departmentId: _id,
+		actions,
+	});
 
 	const promiseResponses = await Promise.allSettled([
 		LivechatDepartmentAgents.removeByDepartmentId(_id),
@@ -256,7 +259,11 @@ export async function removeDepartment(departmentId: string) {
 
 	promiseResponses.forEach((response, index) => {
 		if (response.status === 'rejected') {
-			livechatLogger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
+			livechatLogger.error({
+				msg: 'Post removal action failed',
+				actionId: actions[index],
+				error: response.reason,
+			});
 		}
 	});
 
@@ -289,11 +296,7 @@ export async function getRequiredDepartment(onlineRequired = true) {
 	const departments = LivechatDepartment.findEnabledWithAgentsAndRegistration();
 
 	for await (const dept of departments) {
-		const departmentAgents = await LivechatDepartmentAgents.findByDepartmentId(dept._id, { projection: { username: 1 } }).toArray();
-		const onlineAgents = await Users.countOnlineUserFromList(
-			departmentAgents.map((a) => a.username),
-			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
-		);
+		const onlineAgents = await checkOnlineForDepartment(dept._id);
 		if (onlineAgents) {
 			return dept;
 		}
