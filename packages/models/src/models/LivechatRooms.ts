@@ -1976,14 +1976,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}, options?: FindOptions<IOmnichannelRoom>) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByVisitorIdAndAgentId(

@@ -200,7 +200,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
-	findByVisitorToken(visitorToken: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	findByVisitorToken(
+		visitorToken: string,
+		extraQuery?: Filter<IOmnichannelRoom>,
+		options?: FindOptions<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
 	findByVisitorIdAndAgentId(
 		visitorId?: string,
 		agentId?: string,
