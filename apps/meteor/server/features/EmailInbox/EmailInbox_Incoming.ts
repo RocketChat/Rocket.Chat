@@ -36,8 +36,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				delete guest.department;
 				return guest;
 			}
-			await setDepartmentForGuest({ visitorId: guest._id, department });
-			return LivechatVisitors.findOneEnabledById(guest._id, {});
+			return setDepartmentForGuest({ visitorId: guest._id, department });
 		}
 		return guest;
 	}

@@ -216,20 +216,13 @@ export async function setDepartmentForGuest({ visitorId, department }: { visitor
 		department,
 	});
 
-	// TODO: move to model
-	const visitorUpdate = {
-		$set: {
-			department,
-		},
-	};
-
 	const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(department, { projection: { _id: 1 } });
 	if (!dep) {
 		throw new Meteor.Error('invalid-department', 'Provided department does not exists');
 	}
 
 	// Visitor is already validated at this point
-	await LivechatVisitors.updateById(visitorId, visitorUpdate);
+	return LivechatVisitors.updateDepartmentById(visitorId, department);
 }
 
 export async function removeDepartment(departmentId: string) {

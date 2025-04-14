@@ -79,11 +79,6 @@ export async function saveGuest(
 }
 
 export async function removeGuest({ _id, token }: { _id: string; token: string }) {
-	const guest = await LivechatVisitors.findOneEnabledById(_id, { projection: { _id: 1, token: 1 } });
-	if (!guest) {
-		throw new Error('error-invalid-guest');
-	}
-
 	await cleanGuestHistory(token);
 	return LivechatVisitors.disableById(_id);
 }
