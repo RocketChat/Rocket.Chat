@@ -49,6 +49,6 @@ export async function getDenoVersion(cwd: string) {
 
 		return 'Not available';
 	} catch (e) {
-		console.error(e)
+		console.error(e);
 	}
 }
