@@ -33,7 +33,7 @@ export async function addManager(username: string) {
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 
 	if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
@@ -47,7 +47,7 @@ export async function addAgent(username: string) {
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 
 	if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
@@ -61,7 +61,7 @@ export async function removeAgent(id: IUser['_id']) {
 	const user = await Users.findOneByUsername(id, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 	const { _id } = user;
 
@@ -76,7 +76,7 @@ export async function removeManager(id: IUser['_id']) {
 	const user = await Users.findOneByUsername(id, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 
 	return removeUserFromRolesAsync(user._id, ['livechat-manager']);
@@ -90,7 +90,7 @@ export async function saveAgentInfo(_id: string, agentData: any, agentDepartment
 
 	const user = await Users.findOneById(_id);
 	if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-		throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
+		throw new Error('error-user-is-not-agent');
 	}
 
 	await Users.setLivechatData(_id, removeEmpty(agentData));
