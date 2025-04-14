@@ -200,7 +200,9 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'installed',
-			{ authRequired: true },
+			// This is required for apps status queries to happen from other instances
+			// Is there a better way to do this?
+			// { authRequired: true },
 			{
 				async get() {
 					const apps = await manager.get();
