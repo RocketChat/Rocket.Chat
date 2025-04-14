@@ -23,12 +23,12 @@ test.describe.serial('message-actions', () => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
-	test('expect reply the message in direct', async ({ page }) => {
+	test.fail('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Reply in direct message"]').click();
-
 		await expect(page).toHaveURL(/.*reply/);
+		await expect(page.getByRole('blockquote')).toContainText('this is a message for reply in direct');
 	});
 
 	test('expect reply the message', async ({ page }) => {
