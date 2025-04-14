@@ -291,25 +291,30 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+
+type ResultForStatus<TResponse, K> =
+	K extends SuccessStatusCodes
+		? SuccessResult<InferResult<TResponse & { [key in K]: unknown }[K]>, K>
+	: K extends RedirectStatusCodes
+		? RedirectResult<InferResult<TResponse & { [key in K]: unknown }[K]>, K>
+	: K extends 400
+		? FailureResult<InferResult<TResponse & { 400: unknown }[400]>>
+	: K extends 401
+		? UnauthorizedResult<InferResult<TResponse & { 401: unknown }[401]>>
+	: K extends 403
+		? ForbiddenResult<InferResult<TResponse & { 403: unknown }[403]>>
+	: K extends 404
+		? NotFoundResult<InferResult<TResponse & { 404: unknown }[404]>>
+	: K extends ErrorStatusCodes
+		? InternalError<InferResult<TResponse & { 500: unknown }[500]>, K>
+	: never;
+
 type Results<TResponse extends TypedOptions['response']> = {
-	[K in keyof TResponse]: K extends SuccessStatusCodes
-		? SuccessResult<InferResult<TResponse[200]>, K>
-		: K extends RedirectStatusCodes
-			? RedirectResult<InferResult<TResponse[300]>, K>
-			: K extends 400
-				? FailureResult<InferResult<TResponse[400]>>
-				: K extends 401
-					? UnauthorizedResult<InferResult<TResponse[401]>>
-					: K extends 403
-						? ForbiddenResult<InferResult<TResponse[403]>>
-						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
-							: K extends ErrorStatusCodes
-								? InternalError<InferResult<TResponse[500]>, K>
-								: never;
+	[K in keyof TResponse]: ResultForStatus<TResponse, K>;
 }[keyof TResponse] & {
 	headers?: Record<string, string>;
 };
+
 
 export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
 	this: TypedThis<TOptions, TPath>,
