@@ -1,7 +1,7 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { validateRequiredCustomFields } from '../../../../../../app/livechat/server/lib/validateRequiredCustomFields';
+import { validateRequiredCustomFields } from '../../../../../../app/livechat/server/lib/custom-fields';
 
 describe('validateRequiredCustomFields', () => {
 	it('should throw an error if the required custom fields are not provided', async () => {
