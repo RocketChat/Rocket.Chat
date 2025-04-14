@@ -293,19 +293,19 @@ type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TRes
 
 type ResultForStatus<TResponse, K> =
 	K extends SuccessStatusCodes
-		? SuccessResult<InferResult<TResponse & { [key in K]: unknown }[K]>, K>
+		? SuccessResult<InferResult<K extends keyof TResponse ? TResponse[K] : unknown>, K>
 	: K extends RedirectStatusCodes
-		? RedirectResult<InferResult<TResponse & { [key in K]: unknown }[K]>, K>
+		? RedirectResult<InferResult<K extends keyof TResponse ? TResponse[K] : unknown>, K>
 	: K extends 400
-		? FailureResult<InferResult<TResponse & { 400: unknown }[400]>>
+		? FailureResult<InferResult<400 extends keyof TResponse ? TResponse[400] : unknown>>
 	: K extends 401
-		? UnauthorizedResult<InferResult<TResponse & { 401: unknown }[401]>>
+		? UnauthorizedResult<InferResult<401 extends keyof TResponse ? TResponse[401] : unknown>>
 	: K extends 403
-		? ForbiddenResult<InferResult<TResponse & { 403: unknown }[403]>>
+		? ForbiddenResult<InferResult<403 extends keyof TResponse ? TResponse[403] : unknown>>
 	: K extends 404
-		? NotFoundResult<InferResult<TResponse & { 404: unknown }[404]>>
+		? NotFoundResult<InferResult<404 extends keyof TResponse ? TResponse[404] : unknown>>
 	: K extends ErrorStatusCodes
-		? InternalError<InferResult<TResponse & { 500: unknown }[500]>, K>
+		? InternalError<InferResult<K extends keyof TResponse ? TResponse[K] : unknown>, K>
 	: never;
 
 type Results<TResponse extends TypedOptions['response']> = {
