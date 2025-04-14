@@ -48,3 +48,5 @@ export type DeepPartial<T> = {
 				? DeepPartial<T[P]>
 				: T[P];
 };
+
+export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;

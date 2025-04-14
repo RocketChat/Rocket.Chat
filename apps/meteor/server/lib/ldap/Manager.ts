@@ -41,6 +41,11 @@ export class LDAPManager {
 				return this.fallbackToDefaultLogin(username, password);
 			}
 
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
+				return this.fallbackToDefaultLogin(username, password);
+			}
+
 			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
 			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
@@ -75,6 +80,11 @@ export class LDAPManager {
 			}
 
 			if (ldapUser === undefined) {
+				return;
+			}
+
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
 				return;
 			}
 
@@ -140,12 +150,12 @@ export class LDAPManager {
 	}
 
 	// This method will only find existing users that are already linked to LDAP
-	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined | null> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
 			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
-			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
+			return UsersRaw.findOneByLDAPId<IUser>(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 	}
 
@@ -165,6 +175,7 @@ export class LDAPManager {
 
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
+		const homeServer = this.getFederationHomeServer(ldapUser);
 		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
 		const voipExtension = this.getLdapExtension(ldapUser);
@@ -182,6 +193,10 @@ export class LDAPManager {
 					id,
 				},
 			},
+			...(homeServer && {
+				username: `${username}:${homeServer}`,
+				federated: true,
+			}),
 		};
 
 		this.onMapUserData(ldapUser, userData);
@@ -341,7 +356,7 @@ export class LDAPManager {
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
 		usedUsername?: string | undefined,
-	): Promise<IUser | undefined> {
+	): Promise<IUser | undefined | null> {
 		logger.debug({
 			msg: 'Syncing user data',
 			ldapUser: omit(ldapUser, '_raw'),
@@ -500,15 +515,48 @@ export class LDAPManager {
 		return this.getLdapDynamicValue(ldapUser, usernameField);
 	}
 
+	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
+		if (!settings.get<boolean>('Federation_Matrix_enabled')) {
+			return;
+		}
+
+		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
+		const homeServer = this.getLdapDynamicValue(ldapUser, homeServerField);
+
+		if (!homeServer) {
+			return;
+		}
+
+		logger.debug({ msg: 'User has a federation home server', homeServer });
+
+		const localServer = settings.get<string>('Federation_Matrix_homeserver_domain');
+		if (localServer === homeServer) {
+			return;
+		}
+
+		return homeServer;
+	}
+
+	protected static getFederatedUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
+		const username = this.slugifyUsername(ldapUser, requestUsername);
+		const homeServer = this.getFederationHomeServer(ldapUser);
+
+		if (homeServer) {
+			return `${username}:${homeServer}`;
+		}
+
+		return username;
+	}
+
 	// This method will find existing users by LDAP id or by username.
-	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined | null> {
 		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;
 		}
 
 		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
-		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase(slugifiedUsername);
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase<IUser>(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {

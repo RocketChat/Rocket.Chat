@@ -3,7 +3,7 @@ import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 import type { DefaultError, Query } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
+import { isValidElement, useEffect } from 'react';
 
 import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';
@@ -47,9 +47,9 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 
 	useEffect(
 		() =>
-			subscribeToToastMessages(({ type, message, title = '' }) => {
+			subscribeToToastMessages(({ type, message, title = '', options }) => {
 				if (type === 'error' && typeof message === 'object') {
-					dispatchToastBar({ type, message: getErrorMessage(message) });
+					dispatchToastBar({ type, title, message: getErrorMessage(message), ...options });
 					return;
 				}
 
@@ -61,7 +61,12 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 					return;
 				}
 
-				dispatchToastBar({ type, message: title + message });
+				if (isValidElement(message)) {
+					dispatchToastBar({ type, title, message, ...options });
+					return;
+				}
+
+				dispatchToastBar({ type, title, message: String(message), ...options });
 			}),
 		[dispatchToastBar],
 	);

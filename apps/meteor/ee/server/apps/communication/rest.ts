@@ -6,9 +6,7 @@ import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import type express from 'express';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 import { ZodError } from 'zod';
 
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -28,7 +26,7 @@ import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceFor
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
-import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
+import { MarketplaceConnectionError, MarketplaceAppsError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
@@ -55,14 +53,17 @@ export class AppsRestApi {
 
 	async loadAPI() {
 		this.api = new API.ApiClass({
-			version: 'apps',
-			apiPath: '/api',
+			apiPath: '',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
+			version: 'apps',
 		});
+
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
+
+		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
+		API.api.use(this.api.router);
 	}
 
 	addManagementRoutes() {
@@ -122,7 +123,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -151,7 +152,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -229,7 +230,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 							}
 
-							if (e instanceof MarketplaceAppsError) {
+							if (e instanceof MarketplaceAppsError || e instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: e.message });
 							}
 
@@ -253,7 +254,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
 
-							if (err instanceof MarketplaceAppsError) {
+							if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: err.message });
 							}
 
@@ -407,7 +408,12 @@ export class AppsRestApi {
 						?.get('users')
 						?.convertToApp(await Meteor.userAsync());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
+					const aff = await manager.add(buff, {
+						...(marketplaceInfo && { marketplaceInfo }),
+						permissionsGranted,
+						enable: false,
+						user,
+					});
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -817,7 +823,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
@@ -1261,11 +1267,11 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+						return API.v1.success({ status: await prl.getStatus() });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
