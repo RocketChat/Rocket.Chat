@@ -23,18 +23,14 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const updateIncomingIntegration = async (
-	userId: string,
-	integrationId: string,
-	integration: INewIncomingIntegration | IUpdateIncomingIntegration,
-): Promise<IIntegration | null> => {
-	if (!integration.channel || typeof integration.channel.valueOf() !== 'string' || integration.channel.trim() === '') {
+function validateChannels(channelString: string | undefined): string[] {
+	if (!channelString || typeof channelString.valueOf() !== 'string' || channelString.trim() === '') {
 		throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 			method: 'updateIncomingIntegration',
 		});
 	}
 
-	const channels = integration.channel.split(',').map((channel) => channel.trim());
+	const channels = channelString.split(',').map((channel) => channel.trim());
 
 	for (const channel of channels) {
 		if (!validChannelChars.includes(channel[0])) {
@@ -43,6 +39,16 @@ export const updateIncomingIntegration = async (
 			});
 		}
 	}
+
+	return channels;
+}
+
+export const updateIncomingIntegration = async (
+	userId: string,
+	integrationId: string,
+	integration: INewIncomingIntegration | IUpdateIncomingIntegration,
+): Promise<IIntegration | null> => {
+	const channels = validateChannels(integration.channel);
 
 	let currentIntegration;
 
@@ -153,7 +159,8 @@ export const updateIncomingIntegration = async (
 		}
 	}
 
-	const user = await Users.findOne({ username: currentIntegration.username });
+	const username = 'username' in integration ? integration.username : currentIntegration.username;
+	const user = await Users.findOne({ username });
 
 	if (!user?._id) {
 		throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
@@ -173,7 +180,7 @@ export const updateIncomingIntegration = async (
 				emoji: integration.emoji,
 				alias: integration.alias,
 				channel: channels,
-				...('username' in integration && { username: integration.username }),
+				...('username' in integration && { username: user.username, userId: user._id }),
 				...(isFrozen
 					? {}
 					: {
@@ -188,6 +195,7 @@ export const updateIncomingIntegration = async (
 				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 			},
 		},
+		{ returnDocument: 'after' },
 	);
 
 	if (updatedIntegration) {
