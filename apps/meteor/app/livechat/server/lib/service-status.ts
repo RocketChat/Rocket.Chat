@@ -2,6 +2,7 @@ import type { ILivechatAgent, ILivechatDepartment, SelectedAgent } from '@rocket
 import { Users, LivechatDepartmentAgents, LivechatDepartment } from '@rocket.chat/models';
 import type { FindCursor } from 'mongodb';
 
+import { checkOnlineForDepartment, getOnlineForDepartment } from './departmentsLib';
 import { livechatLogger } from './logger';
 import { settings } from '../../../settings/server';
 
@@ -11,10 +12,7 @@ export async function getOnlineAgents(department?: string, agent?: SelectedAgent
 	}
 
 	if (department) {
-		const agents = await LivechatDepartmentAgents.findByDepartmentId(department, { projection: { agentId: 1 } }).toArray();
-		const agentIds = agents.map(({ agentId }) => agentId);
-
-		return Users.findOnlineUserFromList<ILivechatAgent>([...new Set(agentIds)], settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+		return getOnlineForDepartment(department);
 	}
 	return Users.findOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 }
@@ -49,16 +47,16 @@ export async function checkOnlineAgents(department?: string, agent?: { agentId: 
 	}
 
 	if (department) {
-		const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
+		const onlineForDep = await checkOnlineForDepartment(department);
 		if (onlineForDep || skipFallbackCheck) {
-			return onlineForDep;
+			return !!onlineForDep;
 		}
 
 		const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(department, {
 			projection: { fallbackForwardDepartment: 1 },
 		});
 		if (!dep?.fallbackForwardDepartment) {
-			return onlineForDep;
+			return !!onlineForDep;
 		}
 
 		return checkOnlineAgents(dep?.fallbackForwardDepartment);

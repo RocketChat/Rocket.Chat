@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
@@ -12,6 +12,7 @@ import {
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,
 } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -295,9 +296,31 @@ export async function getRequiredDepartment(onlineRequired = true) {
 	const departments = LivechatDepartment.findEnabledWithAgentsAndRegistration();
 
 	for await (const dept of departments) {
-		const onlineAgents = await LivechatDepartmentAgents.countOnlineForDepartment(dept._id);
+		const departmentAgents = await LivechatDepartmentAgents.findByDepartmentId(dept._id, { projection: { username: 1 } }).toArray();
+		const onlineAgents = await Users.countOnlineUserFromList(
+			departmentAgents.map((a) => a.username),
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		);
 		if (onlineAgents) {
 			return dept;
 		}
 	}
+}
+
+export async function checkOnlineForDepartment(departmentId: string) {
+	const depUsers = await LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+	const onlineForDep = await Users.findOneOnlineAgentByUserList(
+		depUsers.map((agent) => agent.username),
+		{ projection: { _id: 1 } },
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+	);
+
+	return !!onlineForDep;
+}
+
+export async function getOnlineForDepartment(departmentId: string) {
+	const agents = await LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+	const usernames = agents.map(({ username }) => username);
+
+	return Users.findOnlineUserFromList<ILivechatAgent>([...new Set(usernames)], settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 }
