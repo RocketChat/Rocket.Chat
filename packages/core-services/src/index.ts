@@ -50,6 +50,7 @@ import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVid
 import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
+export { AppStatusReport } from './types/IAppsEngineService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';

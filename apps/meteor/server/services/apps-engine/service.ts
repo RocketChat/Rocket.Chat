@@ -7,6 +7,7 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 
+import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
 
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
@@ -124,6 +125,23 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return (await Apps.self?.getManager()?.get(query))?.map((app) => app.getInfo());
 	}
 
+	async getAppsStatusLocal(): Promise<AppStatusReport[]> {
+		const apps = await Apps.self?.getManager()?.get();
+
+		if (!apps) {
+			return [];
+		}
+
+		return Promise.all(
+			apps.map(async (app) => ({
+				status: await app.getStatus(),
+				appId: app.getID(),
+				createdAt: app.getStorageItem().createdAt,
+				updatedAt: app.getStorageItem().updatedAt,
+			})),
+		);
+	}
+
 	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
 		const app = Apps.self?.getManager()?.getOneById(appId);
 
@@ -132,5 +150,41 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		}
 
 		return app.getStorageItem();
+	}
+
+	async getAppsStatusInCluster(): Promise<Record<string, AppStatusReport[]>> {
+		if (!isRunningMs()) {
+			throw new Error('Getting apps status in cluster is only available in microservices mode');
+		}
+
+		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
+		const nodes = services?.find((service) => service.name === 'apps-engine')?.nodes;
+
+		if (!nodes || nodes.length < 2) {
+			throw new Error('Not enough Apps-Engine nodes in deployment');
+		}
+
+		const apps: Promise<{ nodeID: string; appsStatus: AppStatusReport[] }>[] = nodes.map(async (nodeID) => {
+			const appsStatus: AppStatusReport[] | undefined = await this.api?.call('apps-engine.getAppsStatusLocal', [], { nodeID });
+
+			if (!appsStatus) {
+				throw new Error(`Failed to get apps status from node ${nodeID}`);
+			}
+
+			return {
+				nodeID,
+				appsStatus,
+			};
+		});
+
+		const resolvedApps = await Promise.all(apps);
+
+		return resolvedApps.reduce(
+			(acc, { nodeID, appsStatus }) => {
+				acc[nodeID] = appsStatus;
+				return acc;
+			},
+			{} as Record<string, AppStatusReport[]>,
+		);
 	}
 }
