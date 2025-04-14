@@ -11,17 +11,10 @@ export async function getOnlineAgents(department?: string, agent?: SelectedAgent
 	}
 
 	if (department) {
-		const departmentAgents = await LivechatDepartmentAgents.getOnlineForDepartment(department);
-		if (!departmentAgents) {
-			return;
-		}
+		const agents = await LivechatDepartmentAgents.findByDepartmentId(department, { projection: { agentId: 1 } }).toArray();
+		const agentIds = agents.map(({ agentId }) => agentId);
 
-		const agentIds = await departmentAgents.map(({ agentId }) => agentId).toArray();
-		if (!agentIds.length) {
-			return;
-		}
-
-		return Users.findByIds<ILivechatAgent>([...new Set(agentIds)]);
+		return Users.findOnlineUserFromList<ILivechatAgent>([...new Set(agentIds)], settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	}
 	return Users.findOnlineAgents(undefined, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 }
