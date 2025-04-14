@@ -7,7 +7,7 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { Livechat } from '../../../server/lib/LivechatTyped';
+import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
 
 const emptyStringArray: string[] = [];
 
@@ -73,12 +73,12 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
-				const user = await Livechat.addAgent(this.bodyParams.username);
+				const user = await addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = await Livechat.addManager(this.bodyParams.username);
+				const user = await addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
@@ -130,11 +130,11 @@ API.v1.addRoute(
 			}
 
 			if (this.urlParams.type === 'agent') {
-				if (await Livechat.removeAgent(user.username)) {
+				if (await removeAgent(user.username)) {
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
-				if (await Livechat.removeManager(user.username)) {
+				if (await removeManager(user.username)) {
 					return API.v1.success();
 				}
 			} else {
