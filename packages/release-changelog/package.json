@@ -10,7 +10,7 @@
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/node": "~20.17.8",
+		"@types/node": "~22.14.0",
 		"eslint": "~8.45.0",
 		"typescript": "~5.7.2"
 	},

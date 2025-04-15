@@ -134,7 +134,7 @@ test.describe.serial('channel-management', () => {
 		targetChannel = hugeName;
 
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '419px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '407px');
 	});
 
 	test('should open sidebar clicking on sidebar toggler', async ({ page }) => {
@@ -160,8 +160,8 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
-		await page.getByRole('textbox', { name: 'Name' }).fill(discussionName);
-		await page.getByRole('button', { name: 'Create' }).click();
+		await poHomeChannel.content.inputDiscussionName.fill(discussionName);
+		await poHomeChannel.content.btnCreateDiscussionModal.click();
 
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 	});

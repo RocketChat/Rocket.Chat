@@ -86,7 +86,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 
 	async checkIfDirectMessagesExists(): Promise<boolean> {
 		return (
-			(await this.col.countDocuments({
+			(await this.countDocuments({
 				'dataType': 'channel',
 				'data.t': 'd',
 			})) > 0
@@ -94,7 +94,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 	}
 
 	async countMessages(): Promise<number> {
-		return this.col.countDocuments({ dataType: 'message' });
+		return this.countDocuments({ dataType: 'message' });
 	}
 
 	async findChannelImportIdByNameOrImportId(channelIdentifier: string): Promise<string | undefined> {

@@ -183,8 +183,11 @@ class FileSystem implements IRocketChatFileStore {
 		}
 		return new Promise<IFile>((resolve) => {
 			const data: Buffer[] = [];
-			file.readStream.on('data', (chunk: Buffer) => {
-				return data.push(chunk);
+			file.readStream.on('data', (chunk) => {
+				if (Buffer.isBuffer(chunk)) {
+					return data.push(chunk);
+				}
+				return data.push(Buffer.from(chunk));
 			});
 			file.readStream.on('end', () => {
 				resolve({
@@ -210,7 +213,7 @@ export const RocketChatFile = {
 	},
 
 	dataURIParse(dataURI: string | Buffer) {
-		const imageData = Buffer.from(dataURI).toString().split(';base64,');
+		const imageData = (Buffer.isBuffer(dataURI) ? dataURI : Buffer.from(dataURI)).toString().split(';base64,');
 		return {
 			image: imageData[1],
 			contentType: imageData[0].replace('data:', ''),

@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 
 import { API } from '../../../api/server';
@@ -120,8 +121,8 @@ const eventHandlers = {
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
-				if (!persistedUser.federation) {
-					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+				if (!persistedUser.federation && user.federation) {
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: removeEmpty(user.federation) } });
 					federationAltered = true;
 				}
 			} else {
@@ -139,8 +140,11 @@ const eventHandlers = {
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
-					if (!persistedSubscription.federation) {
-						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+					if (!persistedSubscription.federation && subscription.federation) {
+						await Subscriptions.updateOne(
+							{ _id: persistedSubscription._id },
+							{ $set: { federation: removeEmpty(subscription.federation) } },
+						);
 						federationAltered = true;
 					}
 				} else {
@@ -148,7 +152,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					const { insertedId } = await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(removeEmpty(denormalizedSubscription));
 					if (insertedId) {
 						void notifyOnSubscriptionChangedById(insertedId);
 					}

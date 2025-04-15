@@ -6,8 +6,11 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
+import { validateRequiredCustomFields } from '../../lib/custom-fields';
+import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
+import { livechatLogger } from '../../lib/logger';
+import { saveRoomInfo } from '../../lib/rooms';
+import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -56,7 +59,7 @@ API.v1.addRoute(
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
-			const visitor = await LivechatTyped.registerGuest(guest);
+			const visitor = await registerGuest(guest);
 			if (!visitor) {
 				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',
@@ -70,7 +73,7 @@ API.v1.addRoute(
 				rooms.map(
 					(room: IRoom) =>
 						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
+						saveRoomInfo(room, {
 							_id: visitor._id,
 							name: visitor.name,
 							phone: visitor.phone?.[0]?.phoneNumber,
@@ -109,7 +112,7 @@ API.v1.addRoute(
 				);
 
 				if (processedKeys.length !== keys.length) {
-					LivechatTyped.logger.warn({
+					livechatLogger.warn({
 						msg: 'Some custom fields were not processed',
 						visitorId: visitor._id,
 						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
@@ -117,7 +120,7 @@ API.v1.addRoute(
 				}
 
 				if (errors.length > 0) {
-					LivechatTyped.logger.error({
+					livechatLogger.error({
 						msg: 'Error updating custom fields',
 						visitorId: visitor._id,
 						errors,
@@ -182,7 +185,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		}
 
 		const { _id } = visitor;
-		const result = await LivechatTyped.removeGuest(_id);
+		const result = await removeGuest(_id);
 		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
@@ -235,7 +238,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		await LivechatTyped.updateCallStatus(callId, rid, callStatus, guest);
+		await updateCallStatus(callId, rid, callStatus, guest);
 		return API.v1.success({ token, callStatus });
 	},
 });
@@ -254,7 +257,7 @@ API.v1.addRoute('livechat/visitor.status', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		await LivechatTyped.notifyGuestStatusChanged(token, status);
+		await notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
 	},

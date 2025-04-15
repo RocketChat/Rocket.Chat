@@ -17,7 +17,8 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { registerGuest } from '../../lib/guests';
+import { updateMessage, deleteMessage, sendMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -50,7 +51,7 @@ API.v1.addRoute(
 
 			const _id = this.bodyParams._id || Random.id();
 
-			const sendMessage = {
+			const messageToSend = {
 				guest,
 				message: {
 					_id,
@@ -66,7 +67,7 @@ API.v1.addRoute(
 				},
 			};
 
-			const result = await LivechatTyped.sendMessage(sendMessage);
+			const result = await sendMessage(messageToSend);
 			if (result) {
 				const message = await Messages.findOneById(_id);
 				if (!message) {
@@ -128,12 +129,13 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
+			// TODO: projection
 			const msg = await Messages.findOneById(_id);
 			if (!msg) {
 				throw new Error('invalid-message');
 			}
 
-			const result = await LivechatTyped.updateMessage({
+			const result = await updateMessage({
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg, rid: msg.rid },
 			});
@@ -175,7 +177,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = await LivechatTyped.deleteMessage({ guest, message });
+			const result = await deleteMessage({ guest, message });
 			if (result) {
 				return API.v1.success({
 					message: {
@@ -267,7 +269,7 @@ API.v1.addRoute(
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitor = await LivechatTyped.registerGuest(guest);
+				const visitor = await registerGuest(guest);
 				if (!visitor) {
 					throw new Error('error-livechat-visitor-registration');
 				}
@@ -280,7 +282,7 @@ API.v1.addRoute(
 
 			const sentMessages = await Promise.all(
 				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
-					const sendMessage = {
+					const messageToSend = {
 						guest,
 						message: {
 							_id: Random.id(),
@@ -295,7 +297,7 @@ API.v1.addRoute(
 						},
 					};
 
-					const sentMessage = await LivechatTyped.sendMessage(sendMessage);
+					const sentMessage = await sendMessage(messageToSend);
 					return {
 						username: sentMessage.u.username,
 						msg: sentMessage.msg,

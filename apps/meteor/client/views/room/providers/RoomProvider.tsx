@@ -11,6 +11,8 @@ import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { omit } from '../../../../lib/utils/omit';
+import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
@@ -21,7 +23,6 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
 
@@ -31,8 +32,6 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
-	useRoomRolesManagement(rid);
-
 	const resultFromServer = useRoomInfoEndpoint(rid);
 
 	const resultFromLocal = useRoomQuery(rid);
@@ -85,6 +84,14 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	const isSidepanelFeatureEnabled = useSidePanelNavigation();
+
+	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
+
+	useEffect(() => {
+		if (resultFromLocal.data) {
+			fireRoomOpenedEvent(omit(resultFromLocal.data, 'usernames'));
+		}
+	}, [rid, resultFromLocal.data, fireRoomOpenedEvent]);
 
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {

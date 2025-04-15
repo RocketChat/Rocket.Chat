@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
@@ -176,26 +176,9 @@ API.v1.addRoute(
 	{
 		async get() {
 			const userFields = { ...getBaseUserFields(), services: 1 };
-			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+			const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-			return API.v1.success(
-				await getUserInfo({
-					...user,
-					isOAuthUser: isOAuthUser({ ...user, services }),
-					...(services && {
-						services: {
-							...(services.github && { github: services.github }),
-							...(services.gitlab && { gitlab: services.gitlab }),
-							...(services.email2fa?.enabled && { email2fa: { enabled: services.email2fa.enabled } }),
-							...(services.totp?.enabled && { totp: { enabled: services.totp.enabled } }),
-							password: {
-								// The password hash shouldn't be leaked but the client may need to know if it exists.
-								exists: Boolean(services?.password?.bcrypt),
-							},
-						},
-					}),
-				}),
-			);
+			return API.v1.success(await getUserInfo(user));
 		},
 	},
 );
@@ -688,7 +671,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			const promises = settingsIds.map((settingId) => {
@@ -708,7 +691,7 @@ API.v1.addRoute(
 					_id: this.userId,
 					username: this.user.username!,
 					ip: this.requestIp,
-					useragent: this.request.headers['user-agent'] || '',
+					useragent: this.request.headers.get('user-agent') || '',
 				})(Settings.resetValueById, settingId);
 			});
 

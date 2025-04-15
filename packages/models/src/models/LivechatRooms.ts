@@ -727,7 +727,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllClosedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -741,7 +741,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllQueuedChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -754,7 +754,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -1362,7 +1362,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.departmentId = departmentId;
 		}
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findAllServiceTimeByAgent({
@@ -2128,7 +2128,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	getAnalyticsMetricsBetweenDate(
@@ -2322,7 +2322,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
@@ -2607,7 +2607,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
-		return this.col.countDocuments({ departmentId: { $exists: true } });
+		return this.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

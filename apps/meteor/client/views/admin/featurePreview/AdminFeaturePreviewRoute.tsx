@@ -15,7 +15,7 @@ const AdminFeaturePreviewRoute = (): ReactElement => {
 	}
 
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<EditableSettingsProvider>
 				<AdminFeaturePreviewPage />
 			</EditableSettingsProvider>
