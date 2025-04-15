@@ -20,10 +20,12 @@ test.describe.serial('permissions', () => {
 	});
 
 	test.describe.serial('Edit message', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowEditing', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowEditing', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(edit) not be visible', async ({ page }) => {
@@ -38,19 +40,15 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await expect(poHomeChannel.content.btnOptionEditMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowEditing', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Delete message', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowDeleting', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowDeleting', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(delete) not be visible', async ({ page }) => {
@@ -66,21 +64,17 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionDeleteMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowDeleting', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Pin message', () => {
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowPinning', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowPinning', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(pin) not be visible', async ({ page }) => {
@@ -92,21 +86,17 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionPinMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowPinning', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	// FIXME: Wrong behavior in Rocket.chat, currently it shows the button
 	// and after a click a "not allowed" alert pops up
 	test.describe.skip('Star message', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowStarring', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AllowStarring', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option(star) not be visible', async ({ page }) => {
@@ -121,78 +111,63 @@ test.describe.serial('permissions', () => {
 
 			await expect(poHomeChannel.content.btnOptionStarMessage).toBeHidden();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowStarring', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Upload file', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/FileUpload_Enabled', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('FileUpload_Enabled', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option (upload file) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnOptionFileUpload).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/FileUpload_Enabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Upload audio', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AudioRecorderEnabled', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_AudioRecorderEnabled', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option (upload audio) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnRecordAudio).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AudioRecorderEnabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Upload video', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_VideoRecorderEnabled', { value: false })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Message_VideoRecorderEnabled', false, true);
+		});
 
-			await expect(statusCode).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect option (upload video) not be visible', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await expect(poHomeChannel.content.btnVideoMessage).toBeDisabled();
 		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_VideoRecorderEnabled', { value: true })).status();
-
-			await expect(statusCode).toBe(200);
-		});
 	});
 
 	test.describe.serial('Filter words', () => {
-		test.beforeAll(async ({ api }) => {
-			const statusCode1 = (await api.post('/settings/Message_AllowBadWordsFilter', { value: true })).status();
-			const statusCode2 = (await api.post('/settings/Message_BadWordsFilterList', { value: 'badword' })).status();
+		test.beforeAll(async ({ updateSetting }) => {
+			await Promise.all([
+				updateSetting('Message_AllowBadWordsFilter', true, false),
+				updateSetting('Message_BadWordsFilterList', 'badword', ''),
+			]);
+		});
 
-			await expect(statusCode1).toBe(200);
-			await expect(statusCode2).toBe(200);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('expect badword be censored', async () => {
@@ -200,12 +175,6 @@ test.describe.serial('permissions', () => {
 			await poHomeChannel.content.sendMessage('badword');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('*'.repeat(7));
-		});
-
-		test.afterAll(async ({ api }) => {
-			const statusCode = (await api.post('/settings/Message_AllowBadWordsFilter', { value: false })).status();
-
-			await expect(statusCode).toBe(200);
 		});
 	});
 });

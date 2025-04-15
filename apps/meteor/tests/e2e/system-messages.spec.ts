@@ -4,7 +4,6 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -26,8 +25,8 @@ test.describe.serial('System Messages', () => {
 	let user: IUser;
 	let group: IRoom;
 
-	test.beforeAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'Hide_System_Messages', [])).status()).toBe(200);
+	test.beforeAll(async ({ api, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', [], []);
 
 		const groupResult = await api.post('/groups.create', { name: faker.string.uuid() });
 		await expect(groupResult.status()).toBe(200);
@@ -55,14 +54,18 @@ test.describe.serial('System Messages', () => {
 		await expect((await api.post('/groups.delete', { roomId: group._id })).status()).toBe(200);
 	});
 
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
+
 	test('expect "User added" system message to be visible', async ({ page, api }) => {
 		await expect((await api.post('/groups.invite', { roomId: group._id, userId: user._id })).status()).toBe(200);
 
 		await expect(findSysMes(page, 'au')).toBeVisible();
 	});
 
-	test('expect "User added" system message to be hidden', async ({ page, api }) => {
-		await expect((await setSettingValueById(api, 'Hide_System_Messages', ['au'])).status()).toBe(200);
+	test('expect "User added" system message to be hidden', async ({ page, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', ['au'], []);
 
 		await expect(findSysMes(page, 'au')).not.toBeVisible();
 	});
@@ -73,8 +76,8 @@ test.describe.serial('System Messages', () => {
 		await expect(findSysMes(page, 'ru')).toBeVisible();
 	});
 
-	test('expect "User removed" system message to be hidden', async ({ page, api }) => {
-		await expect((await setSettingValueById(api, 'Hide_System_Messages', ['ru'])).status()).toBe(200);
+	test('expect "User removed" system message to be hidden', async ({ page, updateSetting }) => {
+		await updateSetting('Hide_System_Messages', ['ru'], []);
 
 		await expect(findSysMes(page, 'ru')).not.toBeVisible();
 	});

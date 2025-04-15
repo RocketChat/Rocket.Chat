@@ -223,7 +223,7 @@ test.describe('OC - Livechat API', () => {
 		let departments: Awaited<ReturnType<typeof createDepartment>>[];
 		let pageContext: Page;
 
-		test.beforeAll(async ({ api }) => {
+		test.beforeAll(async ({ api, updateSetting }) => {
 			agent = await createAgent(api, 'user1');
 			agent2 = await createAgent(api, 'user2');
 
@@ -232,8 +232,10 @@ test.describe('OC - Livechat API', () => {
 
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
-			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
+			await Promise.all([
+				updateSetting('Livechat_offline_email', 'test@testing.com', ''),
+				updateSetting('Livechat_enabled_when_agent_idle', false, true),
+			]);
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -260,14 +262,14 @@ test.describe('OC - Livechat API', () => {
 			await pageContext?.close();
 		});
 
-		test.afterAll(async ({ api }) => {
+		test.afterAll(async ({ updateSetting, restoreSettings }) => {
 			await agent.delete();
 			await agent2.delete();
 
-			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+			await updateSetting('Omnichannel_enable_department_removal', true);
 			await Promise.all([...departments.map((department) => department.delete())]);
-			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
+			await updateSetting('Omnichannel_enable_department_removal', false);
+			await restoreSettings();
 		});
 
 		// clearBusinessUnit
@@ -693,10 +695,12 @@ test.describe('OC - Livechat API', () => {
 		let page: Page;
 		let agent: Awaited<ReturnType<typeof createAgent>>;
 
-		test.beforeAll(async ({ api }) => {
+		test.beforeAll(async ({ api, updateSetting }) => {
 			agent = await createAgent(api, 'user1');
-			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false });
+			await Promise.all([
+				updateSetting('Livechat_offline_email', 'test@testing.com', ''),
+				updateSetting('Livechat_enabled_when_agent_idle', false, true),
+			]);
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -722,9 +726,9 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async ({ api }) => {
+		test.afterAll(async ({ restoreSettings }) => {
 			await agent.delete();
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true });
+			await restoreSettings();
 		});
 
 		test('OC - Livechat API - onChatMaximized & onChatMinimized', async () => {

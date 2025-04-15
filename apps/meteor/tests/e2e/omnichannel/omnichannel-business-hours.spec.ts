@@ -19,20 +19,21 @@ test.describe('OC - Business Hours', () => {
 	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, updateSetting }) => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
 		agent = await createAgent(api, 'user2');
-		await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
-		await api.post('/settings/Livechat_business_hour_type', { value: 'Multiple' }).then((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			updateSetting('Livechat_enable_business_hours', true, false),
+			updateSetting('Livechat_business_hour_type', 'Multiple', 'Single'),
+		]);
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
-		await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
-		await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
+		await restoreSettings();
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

@@ -41,9 +41,8 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 		await page.goto('/admin/settings/Omnichannel');
 	});
 
-	test.afterAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_hide_watermark', { value: false });
-		await expect(res.status()).toBe(200);
+	test.afterAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_hide_watermark', false);
 	});
 
 	test('OC - Livechat - Hide watermark', async () => {

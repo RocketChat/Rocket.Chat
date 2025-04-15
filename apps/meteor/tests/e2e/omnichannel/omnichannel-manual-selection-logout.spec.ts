@@ -15,9 +15,8 @@ test.describe('OC - Manual Selection After Relogin', () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
 	// Change routing method to manual selection
-	test.beforeAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
-		expect(res.status()).toBe(200);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 	});
 
 	// Create agent and make it available
@@ -41,10 +40,8 @@ test.describe('OC - Manual Selection After Relogin', () => {
 	});
 
 	// Delete all data
-	test.afterAll(async ({ api }) => {
-		await agent.delete();
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
-		await injectInitialData();
+	test.afterAll(async ({ restoreSettings }) => {
+		await Promise.all([agent.delete(), restoreSettings(), injectInitialData()]);
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {

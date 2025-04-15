@@ -12,10 +12,10 @@ test.describe('Omnichannel close inquiry', () => {
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, updateSetting }) => {
 		newVisitor = createFakeVisitor();
 
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200));
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 		await api.post('/livechat/users/manager', { username: 'user1' });
 		await api.post('/livechat/users/agent', { username: 'user1' });
 	});
@@ -31,11 +31,11 @@ test.describe('Omnichannel close inquiry', () => {
 		await agent.page.close();
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await Promise.all([
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.delete('/livechat/users/agent/user1'),
 			await api.delete('/livechat/users/manager/user1'),
+			restoreSettings(),
 		]);
 	});
 

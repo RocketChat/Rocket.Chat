@@ -1,7 +1,6 @@
 import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
-import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Presence', () => {
@@ -13,12 +12,12 @@ test.describe.serial('Presence', () => {
 		await page.goto('/home');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('API_Use_REST_For_DDP_Calls', true, true);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
 	});
 
 	test.describe('Login using default settings', () => {
@@ -34,8 +33,8 @@ test.describe.serial('Presence', () => {
 	test.describe('Login using with "Methods by REST" disabled', () => {
 		test.skip(IS_EE, `Micro services don't support turning this setting off`);
 
-		test.beforeAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('API_Use_REST_For_DDP_Calls', false, true);
 		});
 
 		test('expect user to be online after log in', async ({ page }) => {
@@ -53,12 +52,12 @@ test.describe.serial('Presence', () => {
 		test.describe.configure({ timeout: 1000 * 60 * 10 });
 		test.use({ storageState: Users.admin.state });
 
-		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', true);
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Calendar_BusyStatus_Enabled', true, false);
 		});
 
-		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Calendar_BusyStatus_Enabled', false);
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('Should change user status to busy when there is an appointment', async ({ page, api }) => {

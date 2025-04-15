@@ -22,8 +22,8 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Livechat when agent idle
-	test.beforeAll(async ({ api }) => {
-		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
+	test.beforeAll(async ({ updateSetting }) => {
+		await updateSetting('Livechat_enabled_when_agent_idle', false, true);
 	});
 
 	// Create agent sessions
@@ -35,12 +35,12 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Delete all data
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ restoreSettings }) => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...agents.map((agent) => agent.delete()),
 			...managers.map((manager) => manager.delete()),
-			api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
+			restoreSettings(),
 		]);
 	});
 

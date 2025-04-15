@@ -8,7 +8,7 @@ import {
 	createTargetTeam,
 	deleteChannel,
 	deleteTeam,
-	setSettingValueById,
+	updateSetting,
 	createTargetDiscussion,
 	createChannelWithTeam,
 	deleteRoom,
@@ -26,14 +26,14 @@ test.describe.serial('feature preview', () => {
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
-	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
+	test.beforeAll(async ({ api, updateSetting }) => {
+		await updateSetting('Accounts_AllowFeaturePreview', true, false);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 		targetDiscussion = await createTargetDiscussion(api);
 	});
 
-	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
+	test.afterAll(async ({ api, restoreSettings }) => {
+		await restoreSettings();
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 	});
@@ -216,7 +216,7 @@ test.describe.serial('feature preview', () => {
 			let user1Page: Page;
 
 			test.beforeAll(async ({ api, browser }) => {
-				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
+				await updateSetting(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
 
 				const { channelName, teamName } = await createChannelWithTeam(api);
 				targetTeam = teamName;
@@ -225,7 +225,7 @@ test.describe.serial('feature preview', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
+				await updateSetting(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
 
 				await deleteChannel(api, targetChannelWithTeam);
 				await deleteTeam(api, targetTeam);

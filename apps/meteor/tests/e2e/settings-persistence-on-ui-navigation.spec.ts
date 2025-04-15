@@ -1,11 +1,10 @@
 import { Users } from './fixtures/userStates';
-import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('settings-persistence-on-ui-navigation', () => {
-	test.beforeAll(({ api }) => setSettingValueById(api, 'Hide_System_Messages', []));
+	test.beforeAll(({ updateSetting }) => updateSetting('Hide_System_Messages', [], []));
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/admin/settings/Message');
@@ -23,7 +22,9 @@ test.describe.serial('settings-persistence-on-ui-navigation', () => {
 		});
 	});
 
-	test.afterAll(({ api }) => setSettingValueById(api, 'Hide_System_Messages', []));
+	test.afterAll(async ({ restoreSettings }) => {
+		await restoreSettings();
+	});
 
 	test('expect settings to persist in ui when navigating back and forth', async ({ page }) => {
 		const settingInput = await page.locator('[data-qa-setting-id="Hide_System_Messages"] input');

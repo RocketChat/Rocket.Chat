@@ -12,8 +12,8 @@ test.describe.serial('Forget session on window close setting', () => {
 	});
 
 	test.describe('Setting off', async () => {
-		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Accounts_ForgetUserSessionOnWindowClose', false, false);
 		});
 
 		test('Login using credentials and reload to stay logged in', async ({ page, context }) => {
@@ -32,12 +32,12 @@ test.describe.serial('Forget session on window close setting', () => {
 
 	// TODO: Fix this test
 	test.describe.skip('Setting on', async () => {
-		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true });
+		test.beforeAll(async ({ updateSetting }) => {
+			await updateSetting('Accounts_ForgetUserSessionOnWindowClose', true);
 		});
 
-		test.afterAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
+		test.afterAll(async ({ restoreSettings }) => {
+			await restoreSettings();
 		});
 
 		test('Login using credentials and reload to get logged out', async ({ page, context }) => {

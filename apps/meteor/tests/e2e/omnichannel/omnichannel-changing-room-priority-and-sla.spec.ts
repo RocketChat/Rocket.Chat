@@ -28,15 +28,14 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api, browser, updateSetting }) => {
 		let statusCode = (await api.post('/livechat/users/agent', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
-		expect(statusCode).toBe(200);
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection', 'Auto_Selection');
 
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
@@ -44,13 +43,13 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async ({ api, restoreSettings }) => {
 		await agent.page.close();
 
 		await Promise.all([
 			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
 			api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`),
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+			restoreSettings(),
 		]);
 	});
 
