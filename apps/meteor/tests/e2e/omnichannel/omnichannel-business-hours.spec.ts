@@ -5,7 +5,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
-import { createBusinessHour, deleteBusinessHour } from '../utils/omnichannel/businessHours';
+import { createBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -40,10 +40,6 @@ test.describe('OC - Business Hours', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelBusinessHours = new OmnichannelBusinessHours(page);
-	});
-
-	test.afterEach(async ({ api }) => {
-		void deleteBusinessHour(api, BHid);
 	});
 
 	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
@@ -176,6 +172,12 @@ test.describe('OC - Business Hours', () => {
 			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).toBeChecked();
 
 			await poOmnichannelBusinessHours.btnSave.click();
+		});
+
+		await test.step('expect delete business hours', async () => {
+			await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
+			await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
+			await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
 		});
 	});
 });

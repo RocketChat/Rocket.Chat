@@ -45,9 +45,3 @@ export const createBusinessHour = async (api: BaseTest['api'], { id = null, name
 
 	return response;
 };
-
-export const deleteBusinessHour = async (api: BaseTest['api'], id?: string) => {
-	await api.post('/method.call/livechat:removeBusinessHour', {
-		message: JSON.stringify({ msg: 'method', id: id || '33', method: 'livechat:removeBusinessHour', params: [id] }),
-	});
-};
