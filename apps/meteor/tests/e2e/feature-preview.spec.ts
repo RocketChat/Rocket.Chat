@@ -90,12 +90,11 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		// TODO: replace by navbar search tests
-		test.skip('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
+		test('should display recent chats when navbar search is clicked', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.btnRecent.click();
-			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
+			await poHomeChannel.navbar.searchInput.click();
+			await expect(poHomeChannel.navbar.searchList).toBeVisible();
 		});
 
 		test('should not display room topic in direct message', async ({ page }) => {
@@ -170,10 +169,9 @@ test.describe.serial('feature preview', () => {
 		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
-			await poHomeChannel.sidebar.typeSearch(targetChannel);
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 			await poHomeChannel.sidebar.escSearch();
@@ -186,7 +184,7 @@ test.describe.serial('feature preview', () => {
 		test('should not show NavBar in embedded layout', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
 			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
 			await page.goto(embeddedLayoutURL);
@@ -195,7 +193,7 @@ test.describe.serial('feature preview', () => {
 
 		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidebar.openChat(targetDiscussion.fname);
+			await poHomeChannel.navbar.openChat(targetDiscussion.fname);
 
 			await test.step('should not display avatar in room header', async () => {
 				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
@@ -332,7 +330,7 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello world';
 
 			await poHomeChannel.navbar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
 		});
@@ -343,7 +341,7 @@ test.describe.serial('feature preview', () => {
 			const parsedWrong = 'hello &gt; world';
 
 			await poHomeChannel.navbar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
