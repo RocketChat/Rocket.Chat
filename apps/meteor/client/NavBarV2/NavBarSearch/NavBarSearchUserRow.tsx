@@ -11,27 +11,16 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 type NavBarSearchUserRowProps = {
 	room: SubscriptionWithRoom;
 	id: string;
-	style?: CSSStyleRule;
 	AvatarTemplate: ReactElement;
 } & Partial<ComponentProps<typeof NavBarSearchItem>>;
 
-const NavBarSearchUserRow = ({ room, id, style, AvatarTemplate, ...props }: NavBarSearchUserRowProps) => {
+const NavBarSearchUserRow = ({ room, id, AvatarTemplate, ...props }: NavBarSearchUserRowProps) => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 	const title = useRealName ? room.fname || room.name : room.name || room.fname || '';
 	const icon = <SidebarV2ItemIcon icon={<ReactiveUserStatus uid={room._id} />} />;
 	const href = roomCoordinator.getRouteLink(room.t, { name: room.name }) || '';
 
-	return (
-		<NavBarSearchItem
-			{...props}
-			style={{ height: '100%', ...style }}
-			id={id}
-			href={href}
-			title={title}
-			avatar={AvatarTemplate}
-			icon={icon}
-		/>
-	);
+	return <NavBarSearchItem {...props} id={id} href={href} title={title} avatar={AvatarTemplate} icon={icon} />;
 };
 
 export default memo(NavBarSearchUserRow);
