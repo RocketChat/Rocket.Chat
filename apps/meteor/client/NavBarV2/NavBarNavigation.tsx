@@ -1,4 +1,4 @@
-import { IconButton, NavBarGroup, NavBarSection } from '@rocket.chat/fuselage';
+import { NavBarGroup, NavBarSection, NavBarItem } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { FocusScope } from 'react-aria';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ const NavbarNavigation = () => {
 				<NavBarSearch />
 			</FocusScope>
 			<NavBarGroup>
-				<IconButton title={t('Back')} onClick={() => navigate(-1)} icon='chevron-right' small />
-				<IconButton title={t('Forward')} onClick={() => navigate(1)} icon='chevron-left' small />
+				<NavBarItem title={t('Back')} onClick={() => navigate(-1)} icon='chevron-right' small />
+				<NavBarItem title={t('Forward')} onClick={() => navigate(1)} icon='chevron-left' small />
 			</NavBarGroup>
 		</NavBarSection>
 	);
