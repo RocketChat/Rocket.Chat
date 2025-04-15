@@ -14,7 +14,8 @@ export function getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: stri
 			const key = field.trim();
 
 			if (ldapKeyExists(ldapUser, key)) {
-				return getLdapString(ldapUser, key);
+				// We've already validated so it won't ever return undefined, but add a fallback to ensure it doesn't break if something gets changed
+				return getLdapString(ldapUser, key) || '';
 			}
 
 			return '';

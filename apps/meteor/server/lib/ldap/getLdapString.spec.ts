@@ -30,7 +30,7 @@ describe('getLdapString', () => {
 		expect(getLdapString(ldapUser, 'foo')).to.be.undefined;
 	});
 
-	it('should handle empty keys and return undefined', () => {
+	it('should handle empty keys and return an empty string', () => {
 		expect(getLdapString(ldapUser, '')).to.be.undefined;
 		expect(getLdapString(ldapUser, '   ')).to.be.undefined;
 	});
