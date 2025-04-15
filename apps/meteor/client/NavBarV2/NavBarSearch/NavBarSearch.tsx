@@ -21,7 +21,7 @@ const NavBarSearch = () => {
 	const focusManager = useFocusManager();
 	const shortcut = getShortcut();
 
-	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
+	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
 
 	const {
 		formState: { isDirty },

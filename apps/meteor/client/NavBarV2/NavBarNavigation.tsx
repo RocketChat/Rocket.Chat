@@ -14,9 +14,9 @@ const NavbarNavigation = () => {
 			<FocusScope>
 				<NavBarSearch />
 			</FocusScope>
-			<NavBarGroup>
-				<NavBarItem title={t('Back')} onClick={() => navigate(-1)} icon='chevron-right' small />
-				<NavBarItem title={t('Forward')} onClick={() => navigate(1)} icon='chevron-left' small />
+			<NavBarGroup aria-label={t('History_navigation')}>
+				<NavBarItem title={t('Back_in_history')} onClick={() => navigate(-1)} icon='chevron-right' small />
+				<NavBarItem title={t('Forward_in_history')} onClick={() => navigate(1)} icon='chevron-left' small />
 			</NavBarGroup>
 		</NavBarSection>
 	);

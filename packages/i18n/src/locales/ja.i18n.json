@@ -3554,7 +3554,6 @@
   "set-react-when-readonly": "読み取り専用時の応答の設定",
   "set-react-when-readonly_description": "読み取り専用チャネルのメッセージに応答する機能を設定する権限",
   "set-readonly": "読み取り専用の設定",
-  "Pages": "ページ",
   "set-readonly_description": "チャネルを読み取り専用チャネルに設定する権限",
   "Settings": "設定",
   "Settings_updated": "設定を更新しました",
