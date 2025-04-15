@@ -1,14 +1,14 @@
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/core-services';
 import type { AtLeast, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import ExpiryMap from 'expiry-map';
 
 import { logger } from './logger';
 
+// Allow to request a transcript again after 15 seconds, assuming the first one didn't complete
+const LockMap = new ExpiryMap<string, boolean>(15000);
+
 const serviceName = 'omnichannel-transcript' as const;
-export const requestPdfTranscript = async (
-	room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'>,
-	requestedBy: string,
-): Promise<void> => {
+export const requestPdfTranscript = async (room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v'>, requestedBy: string): Promise<void> => {
 	if (room.open) {
 		throw new Error('room-still-open');
 	}
@@ -17,15 +17,18 @@ export const requestPdfTranscript = async (
 		throw new Error('improper-room-state');
 	}
 
-	// Don't request a transcript if there's already one requested :)
-	if (room.pdfTranscriptRequested) {
+	if (room.pdfTranscriptFileId) {
+		throw new Error('transcript-already-exists');
+	}
+
+	// Don't request a transcript if there's already one requested
+	if (LockMap.has(room._id)) {
 		// TODO: use logger
-		logger.info(`Transcript already requested for room ${room._id}`);
+		logger.info({ msg: `Transcript already requested`, roomId: room._id });
 		return;
 	}
 
-	// TODO: change this with a timestamp, allowing users to request a transcript again after a while if the first one fails
-	await LivechatRooms.setTranscriptRequestedPdfById(room._id);
+	LockMap.set(room._id, true);
 
 	const details = { details: { rid: room._id, userId: requestedBy, from: serviceName } };
 	// Make the whole process sync when running on test mode
