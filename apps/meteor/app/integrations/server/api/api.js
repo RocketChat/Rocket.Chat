@@ -87,25 +87,29 @@ async function executeIntegrationRest() {
 	};
 
 	const scriptEngine = getEngine(this.request.integration);
-
 	if (scriptEngine.integrationHasValidScript(this.request.integration)) {
-		this.request.setEncoding('utf8');
-		const content_raw = this.request.read();
+		const buffers = [];
+		for await (const chunk of this.request.body) {
+			buffers.push(chunk);
+		}
+		const content_raw = Buffer.concat(buffers).toString('utf8');
+		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
+		const url = new URL(this.request.url, `${protocol}//${this.request.headers.host}`);
 
 		const request = {
 			url: {
-				hash: this.request._parsedUrl.hash,
-				search: this.request._parsedUrl.search,
+				hash: url.hash,
+				search: url.search,
 				query: this.queryParams,
-				pathname: this.request._parsedUrl.pathname,
-				path: this.request._parsedUrl.path,
+				pathname: url.pathname,
+				path: url.path,
 			},
 			url_raw: this.request.url,
 			url_params: this.urlParams,
 			content: this.bodyParams,
 			content_raw,
-			headers: this.request.headers,
-			body: this.request.body,
+			headers: Object.fromEntries(this.request.headers.entries()),
+			body: this.bodyParams,
 			user: {
 				_id: this.user._id,
 				name: this.user.name,
@@ -321,7 +325,7 @@ const middleware = async (c, next) => {
 	}
 
 	try {
-		const body = await (req.header('content-type')?.includes('application/json') ? req.raw.clone().json() : req.raw.clone().text());
+		const body = Object.fromEntries(new URLSearchParams(await req.raw.clone().text()));
 		if (!body || typeof body !== 'object' || !('payload' in body) || Object.keys(body).length !== 1) {
 			return next();
 		}
