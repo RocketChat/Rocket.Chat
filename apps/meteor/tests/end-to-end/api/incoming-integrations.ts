@@ -330,6 +330,71 @@ describe('[Incoming Integrations]', () => {
 						});
 				});
 		});
+
+		it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
+			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+			let withScript: IIntegration | undefined;
+
+			await updatePermission('manage-incoming-integrations', ['admin']);
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test with script',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: false,
+					channel: '#general',
+					script: `
+						class Script {
+							process_incoming_request({ request }) {
+								return {
+									content:{
+										text: request.content.text
+									}
+								};
+							}
+						}
+					`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					withScript = res.body.integration;
+				});
+
+			if (!withScript) {
+				throw new Error('Integration not created');
+			}
+
+			await request
+				.post(`/hooks/${withScript._id}/${withScript.token}`)
+				.set('Content-Type', 'application/x-www-form-urlencoded')
+				.send(`payload=${JSON.stringify(payload)}`)
+				.expect(200)
+				.expect(async () => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
+						});
+				});
+
+			await removeIntegration(withScript._id, 'incoming');
+		});
 	});
 
 	describe('[/integrations.history]', () => {
