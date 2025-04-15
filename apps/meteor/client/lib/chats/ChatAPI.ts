@@ -68,8 +68,6 @@ export type DataAPI = {
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
-	findLastOwnMessage(): Promise<IMessage | undefined>;
-	getLastOwnMessage(): Promise<IMessage>;
 	findPreviousOwnMessage(message?: IMessage): Promise<IMessage | undefined>;
 	getPreviousOwnMessage(message: IMessage): Promise<IMessage>;
 	findNextOwnMessage(message: IMessage): Promise<IMessage | undefined>;

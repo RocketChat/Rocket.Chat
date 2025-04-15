@@ -64,29 +64,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return message;
 	};
 
-	const findLastOwnMessage = async (): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			return undefined;
-		}
-
-		return Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true } },
-			{ sort: { ts: -1 }, reactive: false },
-		);
-	};
-
-	const getLastOwnMessage = async (): Promise<IMessage> => {
-		const message = await findLastOwnMessage();
-
-		if (!message) {
-			throw new Error('Message not found');
-		}
-
-		return message;
-	};
-
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
 		if (MessageTypes.isSystemMessage(message)) {
 			return false;
@@ -319,8 +296,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getMessageByID,
 		findLastMessage,
 		getLastMessage,
-		findLastOwnMessage,
-		getLastOwnMessage,
 		findPreviousOwnMessage,
 		getPreviousOwnMessage,
 		findNextOwnMessage,
