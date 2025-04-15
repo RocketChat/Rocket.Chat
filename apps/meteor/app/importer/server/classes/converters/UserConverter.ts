@@ -259,6 +259,10 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			return;
 		}
 
+		if (Boolean(userData.federated) !== Boolean(existingUser.federated)) {
+			throw new Error("Local and Federated users can't be converted to each other.");
+		}
+
 		userData._id = _id;
 
 		if (!userData.roles && !existingUser.roles) {
@@ -295,8 +299,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			await Users.setUtcOffset(_id, userData.utcOffset);
 		}
 
-		if (userData.name || userData.username) {
-			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+		const localUsername = userData.federated ? undefined : userData.username;
+		if (userData.name || localUsername) {
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -347,6 +352,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
 			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
+			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}
 
