@@ -44,12 +44,21 @@ describe('ldapKeyExists', () => {
 		expect(ldapKeyExists(ldapUser, ' mail ')).to.be.false;
 	});
 
+	it('should return false for empty keys', () => {
+		const ldapUser: ILDAPEntry = {
+			_raw: {},
+			cn: 'John Doe',
+		};
+		expect(ldapKeyExists(ldapUser, '')).to.be.false;
+		expect(ldapKeyExists(ldapUser, ' ')).to.be.false;
+	});
+
 	it('should handle keys with different casing', () => {
 		const ldapUser: ILDAPEntry = {
 			_raw: {},
 			CN: 'John Doe',
 		};
-		// Assuming the key lookup is case-sensitive as standard object behavior in JS
+
 		expect(ldapKeyExists(ldapUser, 'CN')).to.be.true;
 		expect(ldapKeyExists(ldapUser, 'cn')).to.be.false;
 	});
