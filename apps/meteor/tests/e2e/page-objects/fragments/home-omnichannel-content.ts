@@ -55,10 +55,6 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.getByRole('dialog').locator('p[data-type="email"]');
 	}
 
-	get infoContactName(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-name"]');
-	}
-
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
@@ -71,15 +67,17 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="on-hold-modal"]');
 	}
 
-	get btnEditRoomInfo(): Locator {
-		return this.page.locator('button[data-qa-id="room-info-edit"]');
-	}
-
 	get btnOnHoldConfirm(): Locator {
 		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
 	}
 
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
+	}
+
+	async closeChat() {
+		await this.btnCloseChat.click();
+		await this.closeChatModal.inputComment.fill('any_comment');
+		await this.closeChatModal.btnConfirm.click();
 	}
 }

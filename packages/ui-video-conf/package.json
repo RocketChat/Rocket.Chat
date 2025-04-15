@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "16.0.0",
+	"version": "17.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -24,7 +24,7 @@
 		"@babel/core": "~7.26.0",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "~0.61.0",
+		"@rocket.chat/fuselage": "~0.62.0",
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/icons": "^0.42.0",
 		"@rocket.chat/jest-presets": "workspace:~",
