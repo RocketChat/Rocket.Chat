@@ -124,11 +124,4 @@ export class OmnichannelContacts {
 		await this.page.locator(`role=option[name='${option}']`).click();
 		await this.page.getByRole('button', { name: 'Apply' }).click();
 	}
-
-	async selectFromDate(option: string) {
-		await this.inputFromDate.click();
-		await this.inputFromDate.fill(option);
-		// await this.page.locator(`type=date[value='${option}']`).click();
-		await this.page.getByRole('button', { name: 'Apply' }).click();
-	}
 }
