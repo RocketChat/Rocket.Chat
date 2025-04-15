@@ -28,7 +28,8 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Reply in direct message"]').click();
 		await expect(page).toHaveURL(/.*reply/);
-		await expect(page.getByRole('blockquote')).toContainText('this is a message for reply in direct');
+		await poHomeChannel.content.waitForChannel();
+		await expect(page.locator('footer').locator('blockquote', { hasText: 'this is a message for reply in direct' })).toBeVisible();
 	});
 
 	test('expect reply the message', async ({ page }) => {
