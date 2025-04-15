@@ -1,7 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { checkOnlineAgents } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
@@ -32,7 +32,7 @@ const validateMaxChats = async ({
 	}
 	const { agentId } = agent;
 
-	if (!(await Livechat.checkOnlineAgents(undefined, agent))) {
+	if (!(await checkOnlineAgents(undefined, agent))) {
 		cbLogger.debug('Provided agent is not online');
 		throw new Error('Provided agent is not online');
 	}

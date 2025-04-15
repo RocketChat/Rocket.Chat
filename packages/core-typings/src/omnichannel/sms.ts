@@ -1,5 +1,3 @@
-import type { Request } from 'express';
-
 type ServiceMedia = {
 	url: string;
 	contentType: string;
@@ -29,7 +27,7 @@ export interface ISMSProviderConstructor {
 
 export interface ISMSProvider {
 	parse(data: unknown): ServiceData;
-	validateRequest(request: Request): boolean;
+	validateRequest(request: Request): Promise<boolean>;
 
 	sendBatch?(from: string, to: string[], message: string): Promise<SMSProviderResult>;
 	response(): SMSProviderResponse;
