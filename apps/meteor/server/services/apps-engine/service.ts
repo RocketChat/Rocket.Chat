@@ -125,7 +125,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return (await Apps.self?.getManager()?.get(query))?.map((app) => app.getInfo());
 	}
 
-	async getAppsStatusLocal(): Promise<AppStatusReport[]> {
+	async getAppsStatusLocal(): Promise<{ status: AppStatus; appId: string }[]> {
 		const apps = await Apps.self?.getManager()?.get();
 
 		if (!apps) {
@@ -136,8 +136,6 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			apps.map(async (app) => ({
 				status: await app.getStatus(),
 				appId: app.getID(),
-				createdAt: app.getStorageItem().createdAt,
-				updatedAt: app.getStorageItem().updatedAt,
 			})),
 		);
 	}
@@ -152,39 +150,52 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return app.getStorageItem();
 	}
 
-	async getAppsStatusInCluster(): Promise<Record<string, AppStatusReport[]>> {
+	async getAppsStatusInCluster(): Promise<AppStatusReport> {
 		if (!isRunningMs()) {
 			throw new Error('Getting apps status in cluster is only available in microservices mode');
 		}
 
-		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
-		const nodes = services?.find((service) => service.name === 'apps-engine')?.nodes;
+		if (!this.api) {
+			throw new Error('AppsEngineService is not initialized');
+		}
 
-		if (!nodes || nodes.length < 2) {
+		// If we are running MS AND this.api is defined, we KNOW there is a local node
+		/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+		const { id: localNodeId } = (await this.api.nodeList()).find((node) => node.local)!;
+
+		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
+
+		// We can filter out the local node because we already know its status
+		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
+
+		if (!availableNodes || availableNodes.length < 1) {
 			throw new Error('Not enough Apps-Engine nodes in deployment');
 		}
 
-		const apps: Promise<{ nodeID: string; appsStatus: AppStatusReport[] }>[] = nodes.map(async (nodeID) => {
-			const appsStatus: AppStatusReport[] | undefined = await this.api?.call('apps-engine.getAppsStatusLocal', [], { nodeID });
+		const statusByApp: AppStatusReport = {};
+
+		const apps: Promise<void>[] = availableNodes.map(async (nodeID) => {
+			const appsStatus: Awaited<ReturnType<typeof this.getAppsStatusLocal>> | undefined = await this.api?.call(
+				'apps-engine.getAppsStatusLocal',
+				[],
+				{ nodeID },
+			);
 
 			if (!appsStatus) {
 				throw new Error(`Failed to get apps status from node ${nodeID}`);
 			}
 
-			return {
-				nodeID,
-				appsStatus,
-			};
+			appsStatus.forEach(({ status, appId }) => {
+				if (!statusByApp[appId]) {
+					statusByApp[appId] = [];
+				}
+
+				statusByApp[appId].push({ instanceId: nodeID, status });
+			});
 		});
 
-		const resolvedApps = await Promise.all(apps);
+		await Promise.all(apps);
 
-		return resolvedApps.reduce(
-			(acc, { nodeID, appsStatus }) => {
-				acc[nodeID] = appsStatus;
-				return acc;
-			},
-			{} as Record<string, AppStatusReport[]>,
-		);
+		return statusByApp;
 	}
 }

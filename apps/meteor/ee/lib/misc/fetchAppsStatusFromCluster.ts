@@ -15,14 +15,19 @@ export async function fetchAppsStatusFromCluster() {
 	return fetchAppsStatusFromHighAvailability();
 }
 
-export async function fetchAppsStatusFromHighAvailability(): Promise<Record<string, AppStatusReport[]>> {
+export async function fetchAppsStatusFromHighAvailability(): Promise<AppStatusReport> {
 	// Moleculer connections
 	const connections = await getInstanceList();
+
+	if (connections.length < 2) {
+		throw new Error('Not enough connections to fetch apps status');
+	}
 
 	// Instance status from the database
 	const instances = await InstanceStatus.find().toArray();
 
-	const appsStatusPromises: Promise<{ instanceId: string; appsStatus: AppStatusReport[] }>[] = [];
+	const appsStatusPromises: Promise<void>[] = [];
+	const statusByApp: AppStatusReport = {};
 
 	connections.forEach((conn) => {
 		if (conn.local) {
@@ -57,30 +62,27 @@ export async function fetchAppsStatusFromHighAvailability(): Promise<Record<stri
 						throw new Error('Failed to fetch apps status');
 					}
 
-					return {
-						instanceId: instance._id,
-						appsStatus: data.apps.map((app) => {
-							if (!app.status) {
-								throw new Error('App status is undefined');
-							}
+					data.apps.forEach((app) => {
+						// Status should ALWAYS exist for the 'installed' endpoint, but the type definition
+						// doesn't enforce it. So we need to check for it.
+						if (!app.status) {
+							throw new Error('App status is undefined');
+						}
 
-							return {
-								status: app.status,
-								appId: app.id,
-							};
-						}),
-					};
+						if (!statusByApp[app.id]) {
+							statusByApp[app.id] = [];
+						}
+
+						statusByApp[app.id].push({
+							instanceId: instance._id,
+							status: app.status,
+						});
+					});
 				}),
 		);
 	});
 
-	const appsStatus = await Promise.all(appsStatusPromises);
+	await Promise.all(appsStatusPromises);
 
-	return appsStatus.reduce(
-		(acc, curr) => {
-			acc[curr.instanceId] = curr.appsStatus;
-			return acc;
-		},
-		{} as Record<string, AppStatusReport[]>,
-	);
+	return statusByApp;
 }

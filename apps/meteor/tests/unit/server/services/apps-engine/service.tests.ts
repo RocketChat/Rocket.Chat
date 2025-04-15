@@ -16,6 +16,7 @@ const AppsMock = {
 
 const apiMock = {
 	call: sinon.stub(),
+	nodeList: sinon.stub(),
 };
 
 const isRunningMsMock = sinon.stub();
@@ -41,6 +42,15 @@ describe('AppsEngineService', () => {
 		expect(new AppsEngineService()).to.be.instanceOf(AppsEngineService);
 	});
 
+	describe('#getAppsStatusInCluster - part 1', () => {
+		it('should error if api is not available', async () => {
+			isRunningMsMock.returns(true);
+
+			const service = new AppsEngineService();
+			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('AppsEngineService is not initialized');
+		});
+	});
+
 	beforeEach(() => {
 		service = new AppsEngineService();
 		service.api = apiMock;
@@ -48,6 +58,7 @@ describe('AppsEngineService', () => {
 
 	afterEach(() => {
 		apiMock.call.reset();
+		apiMock.nodeList.reset();
 		AppsMock.self.isInitialized.reset();
 		AppsMock.self.getManager.reset();
 		AppsMock.self.getStorage.reset();
@@ -92,10 +103,6 @@ describe('AppsEngineService', () => {
 				{
 					getStatus: sinon.stub().resolves('enabled'),
 					getID: sinon.stub().returns('app1'),
-					getStorageItem: sinon.stub().returns({
-						createdAt: new Date('2024-01-01'),
-						updatedAt: new Date('2024-01-02'),
-					}),
 				},
 			];
 			const mockManager = { get: sinon.stub().resolves(mockApps) };
@@ -106,8 +113,6 @@ describe('AppsEngineService', () => {
 				{
 					status: 'enabled',
 					appId: 'app1',
-					createdAt: new Date('2024-01-01'),
-					updatedAt: new Date('2024-01-02'),
 				},
 			]);
 		});
@@ -141,7 +146,7 @@ describe('AppsEngineService', () => {
 		});
 	});
 
-	describe('#getAppsStatusInCluster', () => {
+	describe('#getAppsStatusInCluster - part 2', () => {
 		it('should throw error when not in microservices mode', async () => {
 			isRunningMsMock.returns(false);
 			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith(
@@ -149,39 +154,77 @@ describe('AppsEngineService', () => {
 			);
 		});
 
-		it('should throw error when not enough nodes are available', async () => {
+		it('should throw error when not enough apps-engine nodes are available', async () => {
 			isRunningMsMock.returns(true);
+			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call.resolves([{ name: 'apps-engine', nodes: ['node1'] }]);
 
 			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('Not enough Apps-Engine nodes in deployment');
 		});
 
-		it('should return status from all nodes', async () => {
+		it('should not call the service for the local node', async () => {
 			isRunningMsMock.returns(true);
+			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call
 				.onFirstCall()
 				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2'] }])
 				.onSecondCall()
-				.resolves([{ status: 'enabled', appId: 'app1' }])
+				.resolves([
+					{ status: 'enabled', appId: 'app1' },
+					{ status: 'enabled', appId: 'app2' },
+				])
 				.onThirdCall()
-				.resolves([{ status: 'initialized', appId: 'app1' }]);
+				.rejects(new Error('Should not be called'));
 
 			const result = await service.getAppsStatusInCluster();
+
 			expect(result).to.deep.equal({
-				node1: [{ status: 'enabled', appId: 'app1' }],
-				node2: [{ status: 'initialized', appId: 'app1' }],
+				app1: [{ instanceId: 'node2', status: 'enabled' }],
+				app2: [{ instanceId: 'node2', status: 'enabled' }],
+			});
+		});
+
+		it('should return status from all nodes', async () => {
+			isRunningMsMock.returns(true);
+			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
+			apiMock.call
+				.onFirstCall()
+				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2', 'node3'] }])
+				.onSecondCall()
+				.resolves([
+					{ status: 'enabled', appId: 'app1' },
+					{ status: 'enabled', appId: 'app2' },
+				])
+				.onThirdCall()
+				.resolves([
+					{ status: 'initialized', appId: 'app1' },
+					{ status: 'enabled', appId: 'app2' },
+				]);
+
+			const result = await service.getAppsStatusInCluster();
+
+			expect(result).to.deep.equal({
+				app1: [
+					{ instanceId: 'node2', status: 'enabled' },
+					{ instanceId: 'node3', status: 'initialized' },
+				],
+				app2: [
+					{ instanceId: 'node2', status: 'enabled' },
+					{ instanceId: 'node3', status: 'enabled' },
+				],
 			});
 		});
 
 		it('should throw error when failed to get status from a node', async () => {
 			isRunningMsMock.returns(true);
+			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call
 				.onFirstCall()
 				.resolves([{ name: 'apps-engine', nodes: ['node1', 'node2'] }])
 				.onSecondCall()
 				.resolves(undefined);
 
-			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('Failed to get apps status from node node1');
+			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('Failed to get apps status from node node2');
 		});
 	});
 });

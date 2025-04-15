@@ -24,30 +24,71 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 		fetchMock.reset();
 	});
 
-	it('should skip local connections', async () => {
+	it('should throw an error when there are not enough connections', async () => {
 		getInstanceListMock.resolves([{ local: true, id: 'local1', ipList: ['127.0.0.1'] }]);
-		InstanceStatusMock.find().toArray.resolves([]);
 
-		const result = await fetchAppsStatusFromHighAvailability();
-		expect(result).to.deep.equal({});
+		await expect(fetchAppsStatusFromHighAvailability()).to.be.rejectedWith('Not enough connections to fetch apps status');
 	});
 
-	it('should throw error when instance is not found', async () => {
-		getInstanceListMock.resolves([{ local: false, id: 'remote1', ipList: ['192.168.1.1'] }]);
+	it('should throw an error when instance is not found', async () => {
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
+
 		InstanceStatusMock.find().toArray.resolves([]);
 
 		await expect(fetchAppsStatusFromHighAvailability()).to.be.rejectedWith('Instance not found');
 	});
 
 	it('should throw error when instance has no port', async () => {
-		getInstanceListMock.resolves([{ local: false, id: 'remote1', ipList: ['192.168.1.1'] }]);
-		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote1', extraInformation: {} }]);
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
+
+		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote2', extraInformation: {} }]);
 
 		await expect(fetchAppsStatusFromHighAvailability()).to.be.rejectedWith('Instance has no port');
 	});
 
+	it('should skip local connections', async () => {
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
+
+		InstanceStatusMock.find().toArray.resolves([
+			{ _id: 'remote1', extraInformation: { port: 3000 } },
+			{ _id: 'remote2', extraInformation: { port: 3002 } },
+		]);
+
+		fetchMock
+			.withArgs('http://192.168.1.2:3002/api/apps/installed')
+			.resolves({
+				json: () =>
+					Promise.resolve({
+						success: true,
+						apps: [
+							{ id: 'app1', status: 'enabled' },
+							{ id: 'app2', status: 'disabled' },
+						],
+					}),
+			})
+			.withArgs('http://192.168.1.1:3000/api/apps/installed')
+			.rejects(new Error('Should not be called'));
+
+		const result = await fetchAppsStatusFromHighAvailability();
+
+		expect(result).to.deep.equal({
+			app1: [{ status: 'enabled', instanceId: 'remote2' }],
+			app2: [{ status: 'disabled', instanceId: 'remote2' }],
+		});
+	});
+
 	it('should successfully fetch apps status from multiple instances', async () => {
 		getInstanceListMock.resolves([
+			{ local: true, id: 'remote0', ipList: ['192.168.1.3'] },
 			{ local: false, id: 'remote1', ipList: ['192.168.1.1'] },
 			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
 		]);
@@ -65,7 +106,7 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 						success: true,
 						apps: [
 							{ id: 'app1', status: 'enabled' },
-							{ id: 'app2', status: 'disabled' },
+							{ id: 'app2', status: 'enabled' },
 						],
 					}),
 			})
@@ -76,7 +117,7 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 						success: true,
 						apps: [
 							{ id: 'app1', status: 'initialized' },
-							{ id: 'app3', status: 'enabled' },
+							{ id: 'app2', status: 'enabled' },
 						],
 					}),
 			});
@@ -84,21 +125,24 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 		const result = await fetchAppsStatusFromHighAvailability();
 
 		expect(result).to.deep.equal({
-			remote1: [
-				{ status: 'enabled', appId: 'app1' },
-				{ status: 'disabled', appId: 'app2' },
+			app1: [
+				{ status: 'enabled', instanceId: 'remote1' },
+				{ status: 'initialized', instanceId: 'remote2' },
 			],
-			remote2: [
-				{ status: 'initialized', appId: 'app1' },
-				{ status: 'enabled', appId: 'app3' },
+			app2: [
+				{ status: 'enabled', instanceId: 'remote1' },
+				{ status: 'enabled', instanceId: 'remote2' },
 			],
 		});
 	});
 
 	it('should throw error when fetch response is not successful', async () => {
-		getInstanceListMock.resolves([{ local: false, id: 'remote1', ipList: ['192.168.1.1'] }]);
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
 
-		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote1', extraInformation: { port: 3000 } }]);
+		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote2', extraInformation: { port: 3000 } }]);
 
 		fetchMock.resolves({
 			json: () =>
@@ -114,9 +158,12 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 	// This is a case that should never happen, as installed apps always have a status
 	// However, for the sake of completeness and coverage, we should test it
 	it('should throw error when app status is undefined', async () => {
-		getInstanceListMock.resolves([{ local: false, id: 'remote1', ipList: ['192.168.1.1'] }]);
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
 
-		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote1', extraInformation: { port: 3000 } }]);
+		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote2', extraInformation: { port: 3000 } }]);
 
 		fetchMock.resolves({
 			json: () =>
@@ -132,9 +179,12 @@ describe('fetchAppsStatusFromHighAvailability', () => {
 	});
 
 	it('should handle network errors during fetch', async () => {
-		getInstanceListMock.resolves([{ local: false, id: 'remote1', ipList: ['192.168.1.1'] }]);
+		getInstanceListMock.resolves([
+			{ local: true, id: 'remote1', ipList: ['192.168.1.1'] },
+			{ local: false, id: 'remote2', ipList: ['192.168.1.2'] },
+		]);
 
-		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote1', extraInformation: { port: 3000 } }]);
+		InstanceStatusMock.find().toArray.resolves([{ _id: 'remote2', extraInformation: { port: 3000 } }]);
 
 		fetchMock.rejects(new Error('Network error'));
 

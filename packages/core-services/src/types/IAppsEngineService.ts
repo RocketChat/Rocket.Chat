@@ -4,15 +4,12 @@ import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFil
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 export type AppStatusReport = {
-	status: AppStatus;
-	appId: string;
-	createdAt?: Date;
-	updatedAt?: Date;
+	[appId: string]: { instanceId: string; status: AppStatus }[];
 };
 
 export interface IAppsEngineService {
 	isInitialized(): boolean;
 	getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined>;
 	getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined>;
-	getAppsStatusInCluster(): Promise<Record<string, AppStatusReport[]>>;
+	getAppsStatusInCluster(): Promise<AppStatusReport>;
 }
