@@ -19,7 +19,7 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
 	if (overwrite) {
 		contact.customFields ??= {};
 		contact.customFields[key] = value;

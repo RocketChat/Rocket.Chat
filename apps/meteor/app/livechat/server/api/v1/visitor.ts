@@ -1,12 +1,12 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
+import type { ILivechatContact, IRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms, LivechatContacts } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { validateRequiredCustomFields } from '../../lib/custom-fields';
+import { updateContactsCustomFields, validateRequiredCustomFields } from '../../lib/custom-fields';
 import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
@@ -93,6 +93,8 @@ API.v1.addRoute(
 				).toArray();
 				validateRequiredCustomFields(keys, livechatCustomFields);
 
+				const visitorHasContacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+
 				const matchingCustomFields = livechatCustomFields.filter((field) => keys.includes(field._id));
 				const processedKeys = await Promise.all(
 					matchingCustomFields.map(async (field) => {
@@ -105,6 +107,12 @@ API.v1.addRoute(
 						// TODO: Change this to Bulk update
 						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
 							errors.push(key);
+						}
+
+						if (visitorHasContacts.length > 0) {
+							await Promise.all(
+								visitorHasContacts.map((contact: ILivechatContact) => updateContactsCustomFields(contact, key, value, overwrite)),
+							);
 						}
 
 						return key;

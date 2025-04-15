@@ -8,7 +8,7 @@ import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - custom fields', () => {
+describe.only('LIVECHAT - custom fields', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -233,6 +233,16 @@ describe('LIVECHAT - custom fields', () => {
 				visibility: 'public',
 				regexp: '',
 			});
+
+			await createCustomField({
+				searchable: true,
+				field: `${customFieldName}_2`,
+				label: `${customFieldName}_2`,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
 		});
 
 		it('should save the custom field on Contact when available', async () => {
@@ -267,6 +277,51 @@ describe('LIVECHAT - custom fields', () => {
 					expect(res.body).to.have.property('contact');
 					expect(res.body.contact).to.have.property('customFields');
 					expect(res.body.contact.customFields).to.have.property(customFieldName, customFieldValue);
+				});
+		});
+
+		it('Should save multiple custom fields on Contact when available', async () => {
+			// Save the custom field on Visitor/Contact
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token: visitor.token, key: customFieldName, value: customFieldValue, overwrite: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token: visitor.token, key: `${customFieldName}_2`, value: customFieldValue, overwrite: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			// Fetch the visitor to validate custom fields are properly set.
+			await request
+				.get(api(`livechat/visitor/${visitor.token}`))
+				.set(credentials)
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.visitor).to.have.property('livechatData');
+					expect(res.body.visitor.livechatData).to.have.property(customFieldName, customFieldValue);
+					expect(res.body.visitor.livechatData).to.have.property(`${customFieldName}_2`, customFieldValue);
+				});
+
+			// Fetch the visitor's contact to validate custom fields are properly set.
+			await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ contactId })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('contact');
+					expect(res.body.contact).to.have.property('customFields');
+					expect(res.body.contact.customFields).to.have.property(customFieldName, customFieldValue);
+					expect(res.body.contact.customFields).to.have.property(`${customFieldName}_2`, customFieldValue);
 				});
 		});
 
