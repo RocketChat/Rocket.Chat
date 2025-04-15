@@ -15,7 +15,7 @@ type NavBarSearchItemProps = {
 
 const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, ...props }: NavBarSearchItemProps) => {
 	return (
-		<SidebarV2Item role='listitem' {...props}>
+		<SidebarV2Item role='option' {...props}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon && icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>

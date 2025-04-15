@@ -14,7 +14,7 @@ import { getShortcut } from './getShortcut';
 import { useSearchItems } from './hooks/useSearchItems';
 import { CustomScrollbars } from '../../components/CustomScrollbars';
 
-const isListItem = (node: Element) => node.getAttribute('role') === 'listitem';
+const isOption = (node: Element) => node.getAttribute('role') === 'option';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
@@ -72,14 +72,14 @@ const NavBarSearch = () => {
 			if (e.code === 'ArrowUp') {
 				return focusManager?.focusPrevious({
 					wrap: true,
-					accept: (node) => isListItem(node),
+					accept: (node) => isOption(node),
 				});
 			}
 
 			if (e.code === 'ArrowDown') {
 				focusManager?.focusNext({
 					wrap: true,
-					accept: (node) => isListItem(node),
+					accept: (node) => isOption(node),
 				});
 			}
 		}
@@ -109,7 +109,7 @@ const NavBarSearch = () => {
 	}, [focusManager, handleEscSearch, setFocus]);
 
 	return (
-		<Box mie={8} width='x622' position='relative'>
+		<Box role='search' mie={8} width='x622' position='relative'>
 			<TextInput
 				{...rest}
 				{...triggerProps}
@@ -125,14 +125,14 @@ const NavBarSearch = () => {
 						e.preventDefault();
 
 						focusManager?.focusNext({
-							accept: (node) => isListItem(node),
+							accept: (node) => isOption(node),
 						});
 					}
 				}}
 				autoComplete='off'
 				placeholder={placeholder}
 				ref={mergedRefs}
-				role='searchbox'
+				role='combobox'
 				small
 				addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} />}
 			/>
@@ -153,14 +153,13 @@ const NavBarSearch = () => {
 					aria-busy={isLoading}
 				>
 					<CustomScrollbars>
-						<div {...overlayProps} role='listbox' tabIndex={-1} onKeyDown={handleKeyDown}>
-							{!filterText && (
+						<div {...overlayProps} role='listbox' aria-label={t('Channels')} tabIndex={-1} onKeyDown={handleKeyDown}>
+							{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
+							{items.length > 0 && (
 								<Box color='title-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
-									{t('Recent')}
+									{filterText ? t('Results') : t('Recent')}
 								</Box>
 							)}
-							{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
-							{isLoading && <div>{t('Loading')}</div>}
 							{items.map((item) => (
 								<div key={item._id}>
 									<NavBarSearchRow room={item} onClick={handleSelect} />
