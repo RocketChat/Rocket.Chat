@@ -359,7 +359,6 @@ export class LDAPConnection {
 						realEntries++;
 					} catch (e) {
 						searchLogger.error(e);
-						throw e;
 					}
 				});
 
@@ -531,7 +530,6 @@ export class LDAPConnection {
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
-					throw e;
 				}
 			});
 
@@ -609,7 +607,6 @@ export class LDAPConnection {
 					}
 				} catch (e) {
 					searchLogger.error(e);
-					throw e;
 				}
 			});
 
