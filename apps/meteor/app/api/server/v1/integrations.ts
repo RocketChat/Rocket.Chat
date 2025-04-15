@@ -10,7 +10,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import {
@@ -19,8 +18,10 @@ import {
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addIncomingIntegration } from '../../../integrations/server/methods/incoming/addIncomingIntegration';
 import { deleteIncomingIntegration } from '../../../integrations/server/methods/incoming/deleteIncomingIntegration';
+import { updateIncomingIntegration } from '../../../integrations/server/methods/incoming/updateIncomingIntegration';
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { updateOutgoingIntegration } from '../../../integrations/server/methods/outgoing/updateOutgoingIntegration';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
@@ -248,7 +249,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					await Meteor.callAsync('updateOutgoingIntegration', integration._id, bodyParams);
+					await updateOutgoingIntegration(this.userId, integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),
@@ -260,7 +261,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					await Meteor.callAsync('updateIncomingIntegration', integration._id, bodyParams);
+					await updateIncomingIntegration(this.userId, integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),

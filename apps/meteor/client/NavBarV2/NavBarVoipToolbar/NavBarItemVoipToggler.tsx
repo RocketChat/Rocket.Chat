@@ -14,7 +14,7 @@ const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isEnabled, isReady, isRegistered, isReconnecting } = useVoipState();
 	const { register, unregister, onRegisteredOnce, onUnregisteredOnce } = useVoipAPI();
 
 	const toggleVoip = useMutation({
@@ -48,15 +48,19 @@ const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 			return t('Loading');
 		}
 
+		if (isReconnecting) {
+			return t('Reconnecting');
+		}
+
 		return isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling');
-	}, [clientError, isRegistered, isReady, toggleVoip.isPending, t]);
+	}, [clientError, isRegistered, isReconnecting, isReady, toggleVoip.isPending, t]);
 
 	return isEnabled ? (
 		<NavBarItem
 			{...props}
 			title={title}
 			icon={isRegistered ? 'phone-disabled' : 'phone'}
-			disabled={!isReady || toggleVoip.isPending}
+			disabled={!isReady || toggleVoip.isPending || isReconnecting}
 			onClick={() => toggleVoip.mutate()}
 		/>
 	) : null;
