@@ -133,7 +133,7 @@ test.describe("OC - Contact Center [Auto Selection]", async () => {
     await Promise.all([
       // Delete conversations
       ...conversations.map((conversation) => conversation.delete()),
-      // // Delete departments
+      // Delete departments
       ...departments.map((department) => department.delete()),
       // Delete agents
       ...agents.map((agent) => agent.delete()),
