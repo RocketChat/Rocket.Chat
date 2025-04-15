@@ -6,10 +6,11 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { registerGuest, removeGuest } from '../../lib/guests';
+import { validateRequiredCustomFields } from '../../lib/custom-fields';
+import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
+import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
-import { validateRequiredCustomFields } from '../../lib/validateRequiredCustomFields';
+import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -111,7 +112,7 @@ API.v1.addRoute(
 				);
 
 				if (processedKeys.length !== keys.length) {
-					LivechatTyped.logger.warn({
+					livechatLogger.warn({
 						msg: 'Some custom fields were not processed',
 						visitorId: visitor._id,
 						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
@@ -119,7 +120,7 @@ API.v1.addRoute(
 				}
 
 				if (errors.length > 0) {
-					LivechatTyped.logger.error({
+					livechatLogger.error({
 						msg: 'Error updating custom fields',
 						visitorId: visitor._id,
 						errors,
@@ -237,7 +238,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		await LivechatTyped.updateCallStatus(callId, rid, callStatus, guest);
+		await updateCallStatus(callId, rid, callStatus, guest);
 		return API.v1.success({ token, callStatus });
 	},
 });
@@ -256,7 +257,7 @@ API.v1.addRoute('livechat/visitor.status', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		await LivechatTyped.notifyGuestStatusChanged(token, status);
+		await notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
 	},

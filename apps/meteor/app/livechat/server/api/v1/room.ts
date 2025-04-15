@@ -23,12 +23,12 @@ import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { closeRoom } from '../../lib/closeRoom';
 import { saveGuest } from '../../lib/guests';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
 import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -244,7 +244,7 @@ API.v1.addRoute(
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!(await LivechatTyped.transfer(room, guest, { departmentId: department, transferredBy }))) {
+			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -340,7 +340,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
+			const chatForwardedResult = await transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
 			}
