@@ -9,6 +9,10 @@ export function executeSplit(input: string, operation: LDAPVariableSplit): strin
 		throw new Error('Invalid SPLIT operation.');
 	}
 
+	if (!input) {
+		return input;
+	}
+
 	const result = input.split(operation.pattern);
 	if (!result) {
 		return;
