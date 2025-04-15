@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-added new settings to allow configuring custom variables with string manipulation functions on the LDAP data mapper
+Adds new settings to allow configuring custom variables with string manipulation functions on the LDAP data mapper
