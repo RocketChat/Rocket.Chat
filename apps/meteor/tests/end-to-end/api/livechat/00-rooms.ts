@@ -40,6 +40,7 @@ import {
 	makeAgentUnavailable,
 	sendAgentMessage,
 	fetchInquiry,
+	takeInquiry,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
@@ -82,7 +83,7 @@ describe('LIVECHAT - rooms', () => {
 		if (IS_EE) {
 			// install the app
 			await request
-				.post(apps('/'))
+				.post(apps())
 				.set(credentials)
 				.send({ url: APP_URL })
 				.expect('Content-Type', 'application/json')
@@ -1169,6 +1170,67 @@ describe('LIVECHAT - rooms', () => {
 			await deleteDepartment(initialDepartment._id);
 			await deleteDepartment(forwardToOfflineDepartment._id);
 		});
+
+		(IS_EE ? it : it.skip)(
+			'should update inquiry last message when manager forward to offline department and the inquiry returns to queued',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+				const { department: initialDepartment, agent } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment, agent: offlineAgent } = await createDepartmentWithAnOfflineAgent({
+					allowReceiveForwardOffline: true,
+				});
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const inq = await fetchInquiry(newRoom._id);
+				await takeInquiry(inq._id, agent.credentials);
+
+				const msgText = `return to queue ${Date.now()}`;
+				await request.post(api('livechat/message')).send({ token: newVisitor.token, rid: newRoom._id, msg: msgText }).expect(200);
+
+				await makeAgentUnavailable(offlineAgent.credentials);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				await request
+					.get(api(`livechat/queue`))
+					.set(credentials)
+					.query({
+						count: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.queue).to.be.an('array');
+						expect(res.body.queue[0].chats).not.to.undefined;
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					});
+
+				const inquiry = await fetchInquiry(newRoom._id);
+
+				expect(inquiry).to.have.property('_id', inquiry._id);
+				expect(inquiry).to.have.property('rid', newRoom._id);
+				expect(inquiry).to.have.property('lastMessage');
+				expect(inquiry.lastMessage).to.have.property('msg', '');
+				expect(inquiry.lastMessage).to.have.property('t', 'livechat_transfer_history');
+
+				await deleteDepartment(initialDepartment._id);
+				await deleteDepartment(forwardToOfflineDepartment._id);
+			},
+		);
 
 		let roomId: string;
 		let visitorToken: string;

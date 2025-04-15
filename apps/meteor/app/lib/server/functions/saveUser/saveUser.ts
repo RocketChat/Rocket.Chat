@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { MeteorError } from '@rocket.chat/core-services';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -7,6 +8,7 @@ import type { ClientSession } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
+import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
 import { generatePassword } from '../../lib/generatePassword';
@@ -50,12 +52,17 @@ export type SaveUserData = {
 	sendWelcomeEmail?: boolean;
 
 	customFields?: Record<string, any>;
+	active?: boolean;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
 
+type SaveUserOptions = {
+	auditStore?: UserChangedAuditStore;
+};
+
 const _saveUser = (session?: ClientSession) =>
-	async function (userId: IUser['_id'], userData: SaveUserData) {
+	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
 			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -81,9 +88,17 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (!isUpdateUserData(userData)) {
-			// pass session?
+			// TODO audit new users
 			return saveNewUser(userData, sendPassword);
 		}
+
+		if (!oldUserData) {
+			throw new MeteorError('error-user-not-found', 'User not found', {
+				method: 'saveUser',
+			});
+		}
+
+		options?.auditStore?.setOriginalUser(oldUserData);
 
 		await validateUserEditing(userId, userData);
 
@@ -164,6 +179,16 @@ const _saveUser = (session?: ClientSession) =>
 		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
 
 		await onceTransactionCommitedSuccessfully(async () => {
+			if (session && options?.auditStore) {
+				// setting this inside here to avoid moving `executeSetUserActiveStatus` from the endpoint fn
+				// updater will be commited by this point, so it won't affect the external user activation/deactivation
+				if (userData.active !== undefined) {
+					updater.set('active', userData.active);
+				}
+				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
+				void options.auditStore.commitAuditEvent();
+			}
+
 			// App IPostUserUpdated event hook
 			// We need to pass the session here to ensure this record is fetched
 			// with the uncommited transaction data.
@@ -209,5 +234,9 @@ export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
 	}
-	return _saveUser();
+
+	const saveUserNoSession = _saveUser();
+	return function saveUser(userId: IUser['_id'], userData: SaveUserData, _options?: any) {
+		return saveUserNoSession(userId, userData);
+	};
 })();

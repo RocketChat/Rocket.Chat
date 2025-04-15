@@ -28,6 +28,7 @@ import type { Filter } from 'mongodb';
 import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -80,7 +81,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.setHeader('Location', url);
+			this.response.headers.set('Location', url);
 
 			return {
 				statusCode: 307,
@@ -114,8 +115,14 @@ API.v1.addRoute(
 			if (userData.name && !validateNameChars(userData.name)) {
 				return API.v1.failure('Name contains invalid characters');
 			}
+			const auditStore = new UserChangedAuditStore({
+				_id: this.user._id,
+				ip: this.requestIp,
+				useragent: this.request.headers.get('user-agent') || '',
+				username: this.user.username || '',
+			});
 
-			await saveUser(this.userId, userData);
+			await saveUser(this.userId, userData, { auditStore });
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
@@ -123,9 +130,9 @@ API.v1.addRoute(
 					data: { active },
 					confirmRelinquish,
 				} = this.bodyParams;
-
 				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
 			}
+
 			const { fields } = await this.parseJsonQuery();
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
@@ -885,7 +892,7 @@ API.v1.addRoute(
 			await Users.enableEmail2FAByUserId(this.userId);
 
 			// When 2FA is enable we logout all other clients
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 			if (!xAuthToken) {
 				return API.v1.success();
 			}
@@ -1063,7 +1070,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
 				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
