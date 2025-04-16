@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 
 import {
 	VoipActions as Actions,
@@ -21,7 +21,7 @@ type VoipOngoingViewProps = {
 	position?: PositionOffsets;
 };
 
-const VoipOngoingView = ({ session, position }: VoipOngoingViewProps) => {
+const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ session, position }, ref) => {
 	const { startTransfer } = useVoipTransferModal({ session });
 	const contactData = useVoipContactId({ session, transferEnabled: false });
 
@@ -36,7 +36,7 @@ const VoipOngoingView = ({ session, position }: VoipOngoingViewProps) => {
 	};
 
 	return (
-		<Container secondary data-testid='vc-popup-ongoing' position={position}>
+		<Container ref={ref} secondary data-testid='vc-popup-ongoing' position={position}>
 			<Header>
 				<Timer />
 			</Header>
@@ -63,6 +63,8 @@ const VoipOngoingView = ({ session, position }: VoipOngoingViewProps) => {
 			</Footer>
 		</Container>
 	);
-};
+});
+
+VoipOngoingView.displayName = 'VoipOngoingView';
 
 export default VoipOngoingView;
