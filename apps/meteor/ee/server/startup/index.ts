@@ -8,8 +8,6 @@ import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 
-console.log('ee/server/startup/index.ts')
-
 export const registerEEBroker = async (): Promise<void> => {
 	// only starts network broker if running in micro services mode
 	if (isRunningMs()) {

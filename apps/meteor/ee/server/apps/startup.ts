@@ -70,7 +70,6 @@ export const startupApp = async function startupApp() {
 	License.onModule(disableAppsWithAddonsCallback);
 
 	Apps.initialize();
-	console.log('_appServerOrchestrator step 2')
 
 	void Apps.load();
 
