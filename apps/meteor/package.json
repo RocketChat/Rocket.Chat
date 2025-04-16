@@ -163,6 +163,7 @@
 		"babel-loader": "^9.2.1",
 		"babel-plugin-array-includes": "^2.0.3",
 		"babel-plugin-istanbul": "^6.1.1",
+		"babel-plugin-react-compiler": "^19.0.0-beta-ebf51a3-20250411",
 		"chai": "^4.5.0",
 		"chai-as-promised": "^7.1.2",
 		"chai-datetime": "^1.8.1",

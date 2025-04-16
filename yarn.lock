@@ -8793,6 +8793,7 @@ __metadata:
     babel-loader: "npm:^9.2.1"
     babel-plugin-array-includes: "npm:^2.0.3"
     babel-plugin-istanbul: "npm:^6.1.1"
+    babel-plugin-react-compiler: "npm:^19.0.0-beta-ebf51a3-20250411"
     bad-words: "npm:^3.0.4"
     bcrypt: "npm:^5.1.1"
     body-parser: "npm:1.20.3"
@@ -15268,6 +15269,15 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
   checksum: 10/150233571072b6b3dfe946242da39cba8587b7f908d1c006f7545fc88b0e3c3018d445739beb61e7a75835f0c2751dbe884a94ff9b245ec42369d9267e0e1b3f
+  languageName: node
+  linkType: hard
+
+"babel-plugin-react-compiler@npm:^19.0.0-beta-ebf51a3-20250411":
+  version: 19.0.0-beta-ebf51a3-20250411
+  resolution: "babel-plugin-react-compiler@npm:19.0.0-beta-ebf51a3-20250411"
+  dependencies:
+    "@babel/types": "npm:^7.26.0"
+  checksum: 10/aebbe6602a2284d799d54ad5ca4b1a889be5d490639db104b796530a92253e131df4a9e0658d29ef37e48f78e6d40e29403bf96dac43351fde5e538b53c1f5eb
   languageName: node
   linkType: hard
 
