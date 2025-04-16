@@ -5,7 +5,7 @@ import type { Db, Collection } from 'mongodb';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 type AgentMetadata = {
-	username?: string;
+	username: string;
 };
 
 declare module '@rocket.chat/model-typings' {
