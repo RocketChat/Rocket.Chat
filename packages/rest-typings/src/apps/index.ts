@@ -26,8 +26,6 @@ type GETAppsLogsFilter = {
 	endDate?: string;
 };
 
-// export const isAppsLogsFilter;
-
 export type AppsEndpoints = {
 	'/apps/count': {
 		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
@@ -97,14 +95,7 @@ export type AppsEndpoints = {
 
 	'/apps/:id/languages': {
 		GET: () => {
-			languages: {
-				[key: string]: {
-					Params: string;
-					Description: string;
-					Setting_Name: string;
-					Setting_Description: string;
-				};
-			};
+			languages: { [language: string]: { [key: string]: string } };
 		};
 	};
 
