@@ -47,7 +47,7 @@ meteor@2.1.0
 meteor-base@1.5.2
 meteor-developer-oauth@1.3.3
 meteorhacks:inject-initial@1.0.5
-minifier-css@2.0.0
+minifier-css@2.0.1
 minimongo@2.0.2
 modern-browsers@0.2.0
 modules@0.20.3
