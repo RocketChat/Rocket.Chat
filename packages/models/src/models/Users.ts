@@ -1628,27 +1628,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	async getUnavailableAgents(
-		_departmentId?: string | undefined,
-		_extraQuery?: Document | undefined,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	> {
-		return [] as {
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[];
+	async getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]> {
+		return [] as { username: string }[];
 	}
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T> {

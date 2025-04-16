@@ -251,19 +251,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): FindCursor<T>;
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
-	getUnavailableAgents(
-		departmentId?: string,
-		extraQuery?: Document,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	>;
+	getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,
