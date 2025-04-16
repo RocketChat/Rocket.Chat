@@ -55,11 +55,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 
-	const {
-		listWrapperRef: listWrapperScrollRef,
-		listRef: listScrollRef,
-		onScroll: handleScroll,
-	} = useLegacyThreadMessageListScrolling(mainMessage);
+	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef } = useLegacyThreadMessageListScrolling(mainMessage);
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -75,7 +71,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomScrollbars ref={scrollRef} onScroll={handleScroll} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
+			<CustomScrollbars ref={scrollRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<Box
 					is='ul'
 					className={[listStyle, 'thread']}
