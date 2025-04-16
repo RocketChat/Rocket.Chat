@@ -1629,7 +1629,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	async getUnavailableAgents(_departmentId?: string, _extraQuery?: Document): Promise<{ username: string }[]> {
-		return [] as { username: string }[];
+		return [];
 	}
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T> {
