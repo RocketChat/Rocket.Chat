@@ -55,7 +55,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef } = useLegacyThreadMessageListScrolling(mainMessage);
+	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, jumpToRef } = useLegacyThreadMessageListScrolling(mainMessage);
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -64,9 +64,8 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messageListRef } = useMessageListNavigation();
 
-	const ref = useRef<HTMLElement | null>(null);
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, messageListRef);
-	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef, ref);
+	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
@@ -84,7 +83,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider messageListRef={ref}>
+						<MessageListProvider messageListRef={jumpToRef}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);

@@ -3,6 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef } from 'react';
+import { throttle } from 'underscore';
 
 import { callbacks } from '../../../../../../lib/callbacks';
 import { useSafeRefCallback } from '../../../../../hooks/useSafeRefCallback';
@@ -12,13 +13,28 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 	const listWrapperRef = useRef<HTMLDivElement>(null);
 	const listRef = useRef<HTMLElement>(null);
 
+	const jumpToRef = useRef<HTMLElement>(undefined);
+
 	const atBottomRef = useRef(true);
+	const sendToBottomIfNecessaryInner = useCallback(
+		throttle((listWrapper: HTMLDivElement) => {
+			if (jumpToRef.current) {
+				atBottomRef.current = false;
+			}
+			if (atBottomRef.current === true) {
+				console.log(`[${Date.now()}]`, 'scrolling to bottom');
+				listWrapper?.scrollTo(30, listWrapper.scrollHeight);
+			}
+		}, 100),
+		[],
+	);
+
 	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			const listWrapper = listWrapperRef.current;
-			listWrapper?.scrollTo(30, listWrapper.scrollHeight);
+		if (!listWrapperRef.current) {
+			return;
 		}
-	}, []);
+		sendToBottomIfNecessaryInner(listWrapperRef.current);
+	}, [sendToBottomIfNecessaryInner]);
 
 	const room = useRoom();
 	const user = useUser();
@@ -31,9 +47,13 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 					return;
 				}
 
+				if (!listWrapperRef.current) {
+					return;
+				}
+
 				if (msg.u._id === user?._id) {
 					atBottomRef.current = true;
-					sendToBottomIfNecessary();
+					sendToBottomIfNecessaryInner(listWrapperRef.current);
 				}
 			},
 			callbacks.priority.MEDIUM,
@@ -43,34 +63,25 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 		return () => {
 			callbacks.remove('streamNewMessage', `thread-scroll-${room._id}`);
 		};
-	}, [room._id, sendToBottomIfNecessary, user?._id, mainMessage._id]);
+	}, [room._id, sendToBottomIfNecessaryInner, user?._id, mainMessage._id]);
 
 	const listWrapperRefCallback = useSafeRefCallback(
-		useCallback(
-			(node: HTMLDivElement | null) => {
-				if (node === null) {
-					return;
-				}
+		useCallback((node: HTMLDivElement | null) => {
+			if (node === null) {
+				return;
+			}
 
-				const setScrollToBottom = () => {
-					const { scrollTop, scrollHeight, clientHeight } = node;
-					atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
-				};
-				node.addEventListener('scroll', setScrollToBottom);
+			const setScrollToBottom = () => {
+				const { scrollTop, scrollHeight, clientHeight } = node;
+				atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
+				console.log('updating atBottomRef', atBottomRef.current);
+			};
 
-				const observer = new ResizeObserver(() => {
-					sendToBottomIfNecessary();
-				});
-
-				observer.observe(node);
-
-				return () => {
-					observer.disconnect();
-					node.removeEventListener('scroll', setScrollToBottom);
-				};
-			},
-			[sendToBottomIfNecessary],
-		),
+			node.addEventListener('scroll', setScrollToBottom);
+			return () => {
+				node.removeEventListener('scroll', setScrollToBottom);
+			};
+		}, []),
 	);
 
 	const listRefCallback = useSafeRefCallback(
@@ -79,12 +90,21 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 				if (node === null) {
 					return;
 				}
-				const observer = new ResizeObserver(() => {
-					sendToBottomIfNecessary();
+
+				// Create an observer instance linked to the callback function
+				const mutation = new MutationObserver((mutationList) => {
+					for (const mutation of mutationList) {
+						if (mutation.type === 'childList') {
+							sendToBottomIfNecessary();
+						}
+					}
 				});
-				observer.observe(node);
+				mutation.observe(node, {
+					childList: true,
+				});
+
 				return () => {
-					observer.disconnect();
+					mutation.disconnect();
 				};
 			},
 			[sendToBottomIfNecessary],
@@ -92,9 +112,30 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 	);
 
 	return {
-		listWrapperRef: useMergedRefs(listWrapperRefCallback, listWrapperRef),
+		listWrapperRef: useMergedRefs(
+			useSafeRefCallback(
+				useCallback(
+					(node: HTMLDivElement | null) => {
+						if (node === null) {
+							return;
+						}
+
+						const observer = new ResizeObserver(() => {
+							sendToBottomIfNecessary();
+						});
+						observer.observe(node);
+						return () => {
+							observer.disconnect();
+						};
+					},
+					[sendToBottomIfNecessary],
+				),
+			),
+			listWrapperRefCallback,
+			listWrapperRef,
+		),
 		listRef: useMergedRefs(listRefCallback, listRef),
 		requestScrollToBottom: sendToBottomIfNecessary,
-		// onScroll,
+		jumpToRef,
 	};
 };

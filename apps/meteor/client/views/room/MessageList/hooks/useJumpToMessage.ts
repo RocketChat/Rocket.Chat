@@ -3,48 +3,69 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
+import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
-const SCROLL_EXTRA_OFFSET = 60;
 
 export const useJumpToMessage = (messageId: IMessage['_id']) => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
 	const listRef = useMessageListRef();
 	const router = useRouter();
 
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node || !scroll) {
-				return;
-			}
-			setTimeout(() => {
-				if (listRef?.current) {
-					const wrapper = listRef.current;
-					const containerRect = wrapper.getBoundingClientRect();
-					const messageRect = node.getBoundingClientRect();
-
-					const offset = messageRect.top - containerRect.top;
-					const scrollPosition = wrapper.scrollTop;
-					const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
-
-					wrapper.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
+	const ref = useSafeRefCallback(
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node || !scroll) {
+					return;
 				}
 
-				const { msg: _, ...search } = router.getSearchParameters();
-				router.navigate(
-					{
-						pathname: router.getLocationPathname(),
-						search,
+				if (listRef) {
+					listRef.current = node;
+				}
+
+				node.scrollIntoView({
+					behavior: 'smooth',
+					block: 'center',
+				});
+				const handleScroll = () => {
+					const { msg: _, ...search } = router.getSearchParameters();
+					router.navigate(
+						{
+							pathname: router.getLocationPathname(),
+							search,
+						},
+						{ replace: true },
+					);
+					setTimeout(clearHighlightMessage, 2000);
+				};
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								handleScroll();
+							}
+						});
 					},
-					{ replace: true },
+					{
+						threshold: 0.1,
+					},
 				);
 
+				observer.observe(node);
+
 				setHighlightMessage(messageId);
-				setTimeout(clearHighlightMessage, 2000);
-			}, 500);
-		},
-		[listRef, messageId, router],
+
+				return () => {
+					observer.disconnect();
+					if (listRef) {
+						listRef.current = undefined;
+					}
+				};
+			},
+			[listRef, messageId, router],
+		),
 	);
 
 	if (jumpToMessageParam !== messageId) {
