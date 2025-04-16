@@ -20,28 +20,14 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function updateContactsCustomFields(
-	// contact: ILivechatContact,
-	visitorId: string,
-	key: string,
-	value: string,
-	overwrite: boolean,
-): Promise<void> {
+export async function updateContactsCustomFields(visitorId: string, key: string, value: string, overwrite: boolean): Promise<void> {
 	const queryUpdates: UpdateFilter<ILivechatContact> = {};
 
 	if (overwrite) {
-		// contact.customFields ??= {};
-		// contact.customFields[key] = value;
 		queryUpdates.$set = { [`customFields.${key}`]: value };
 	} else {
-		// contact.conflictingFields ??= [];
-		// contact.conflictingFields.push({ field: `customFields.${key}`, value });
 		queryUpdates.$addToSet = { conflictingFields: { field: `customFields.${key}`, value } };
 	}
-
-	// await LivechatContacts.updateById(contact._id, {
-	// 	$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
-	// });
 
 	await LivechatContacts.updateByVisitorId(visitorId, queryUpdates);
 
