@@ -1628,7 +1628,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	async getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]> {
+	async getUnavailableAgents(_departmentId?: string, _extraQuery?: Document): Promise<{ username: string }[]> {
 		return [] as { username: string }[];
 	}
 
