@@ -50,6 +50,7 @@ import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 import type { WebdavEndpoints } from './v1/webdav';
+import { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -84,6 +85,7 @@ export interface Endpoints
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
+		IntegrationHooksEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
