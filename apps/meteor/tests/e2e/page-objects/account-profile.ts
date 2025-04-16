@@ -152,4 +152,8 @@ export class AccountProfile {
 	get totp2FASwitch(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via TOTP' }) });
 	}
+
+	get required2faModalSetUpButton(): Locator {
+		return this.page.locator('dialog >> button');
+	}
 }
