@@ -8,7 +8,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { adminUsername, password } from '../../data/user';
+import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -607,6 +607,16 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.update]', () => {
+		let senderUser: IUser;
+		let sendUserCredentials: Credentials;
+
+		before(async () => {
+			senderUser = await createUser();
+			sendUserCredentials = await login(senderUser.username, password);
+		});
+
+		after(() => deleteUser(senderUser));
+
 		it('should update an integration by id and return the new data', (done) => {
 			void request
 				.put(api('integrations.update'))
@@ -661,7 +671,7 @@ describe('[Incoming Integrations]', () => {
 					name: 'Incoming test updated x2',
 					enabled: true,
 					alias: 'test updated x2',
-					username: adminUsername,
+					username: senderUser.username,
 					scriptEnabled: true,
 					overrideDestinationChannelEnabled: true,
 					channel: '#general',
@@ -675,8 +685,8 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated x2');
 					expect(res.body.integration.alias).to.be.equal('test updated x2');
-					expect(res.body.integration.username).to.be.equal(adminUsername);
-					expect(res.body.integration.userId).to.be.equal(credentials['X-User-Id']);
+					expect(res.body.integration.username).to.be.equal(senderUser.username);
+					expect(res.body.integration.userId).to.be.equal(sendUserCredentials['X-User-Id']);
 					integration = res.body.integration;
 				});
 		});
@@ -702,7 +712,7 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage);
-					expect(message?.u).have.property('username', adminUsername);
+					expect(message?.u).have.property('username', senderUser.username);
 				});
 		});
 	});
