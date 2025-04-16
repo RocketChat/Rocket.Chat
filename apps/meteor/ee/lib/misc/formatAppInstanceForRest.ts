@@ -4,6 +4,7 @@ import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server/marketplace/license';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { AppStatusReport } from '@rocket.chat/core-services';
+import type { App } from '@rocket.chat/core-typings';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
@@ -13,7 +14,7 @@ interface IAppInfoRest extends IAppInfo {
 	licenseValidation?: AppLicenseValidationResult;
 	private: boolean;
 	migrated: boolean;
-	clusterStatus?: AppStatusReport[string];
+	clusterStatus?: App['clusterStatus'];
 }
 
 export async function formatAppInstanceForRest(app: ProxiedApp, clusterStatus?: AppStatusReport): Promise<IAppInfoRest> {
