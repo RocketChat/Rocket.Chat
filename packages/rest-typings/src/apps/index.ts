@@ -16,6 +16,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
+export type AppWithClusterStatus = App & {
+	clusterStatus?: {
+		instanceId: string;
+		status: AppStatus;
+	}[];
+};
+
 export type AppsEndpoints = {
 	'/apps/count': {
 		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
@@ -123,6 +130,10 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		GET: () => {
 			status: string;
+			clusterStatus: {
+				instanceId: string;
+				status: AppStatus;
+			};
 		};
 		POST: (params: { status: AppStatus }) => {
 			status: AppStatus;
@@ -173,7 +184,9 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/installed': {
-		GET: () => { apps: App[] };
+		GET: (params: {
+			includeClusterStatus?: 'true' | 'false';
+		}) => { success: true; apps: AppWithClusterStatus[] } | { success: false; error: string };
 	};
 
 	'/apps/buildExternalAppRequest': {
