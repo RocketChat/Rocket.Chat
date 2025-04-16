@@ -215,6 +215,7 @@ export type UrlParams<T extends string> = string extends T
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
+export * from './apps';
 export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';

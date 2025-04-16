@@ -16,15 +16,10 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { AppLogsProps } from './appLogsProps';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-type GETAppsLogsFilter = {
-	logLevel?: '0' | '1' | '2';
-	method?: string;
-	startDate?: string;
-	endDate?: string;
-};
+export * from './appLogsProps';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -100,7 +95,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/logs': {
-		GET: (params: PaginatedRequest<GETAppsLogsFilter>) => PaginatedResult<{
+		GET: (params: AppLogsProps) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
 	};
