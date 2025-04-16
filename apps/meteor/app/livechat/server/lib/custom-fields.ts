@@ -69,11 +69,6 @@ export async function setCustomFields({
 			throw new Error(`Visitor with token "${token}" not found.`);
 		}
 
-		// const result = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-		// if (result) {
-		// 	await Promise.all(result.map((contact: ILivechatContact) => updateContactsCustomFields(contact, key, value, overwrite)));
-		// }
-
 		await updateContactsCustomFields(visitor._id, key, value, overwrite);
 	}
 }
