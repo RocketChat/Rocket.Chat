@@ -29,20 +29,25 @@ export class AppApisBridge extends ApiBridge {
 		super();
 		this.appRouters = new Map();
 
-		apiServer.use('/api/apps/private/:appId/:hash', bodyParser.json(), (req: IRequestWithPrivateHash, res: Response) => {
-			const notFound = (): Response => res.sendStatus(404);
+		apiServer.use(
+			'/api/apps/private/:appId/:hash',
+			bodyParser.urlencoded(),
+			bodyParser.json(),
+			(req: IRequestWithPrivateHash, res: Response) => {
+				const notFound = (): Response => res.sendStatus(404);
 
-			const router = this.appRouters.get(req.params.appId);
+				const router = this.appRouters.get(req.params.appId);
 
-			if (router) {
-				req._privateHash = req.params.hash;
-				return router(req, res, notFound);
-			}
+				if (router) {
+					req._privateHash = req.params.hash;
+					return router(req, res, notFound);
+				}
 
-			notFound();
-		});
+				notFound();
+			},
+		);
 
-		apiServer.use('/api/apps/public/:appId', bodyParser.json(), (req: Request, res: Response) => {
+		apiServer.use('/api/apps/public/:appId', bodyParser.urlencoded(), bodyParser.json(), (req: Request, res: Response) => {
 			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
