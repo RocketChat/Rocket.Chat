@@ -5,12 +5,7 @@ import type { Db, Collection } from 'mongodb';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 type AgentMetadata = {
-	'agentId'?: string;
-	'username'?: string;
-	'lastAssignTime'?: Date;
-	'lastRoutingTime'?: Date;
-	'queueInfo.chats'?: number;
-	[x: string]: any;
+	username?: string;
 };
 
 declare module '@rocket.chat/model-typings' {
@@ -52,7 +47,7 @@ export class UsersEE extends UsersRaw {
 			: [];
 
 		return this.col
-			.aggregate(
+			.aggregate<AgentMetadata>(
 				[
 					{
 						$match: {
