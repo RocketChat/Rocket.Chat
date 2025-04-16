@@ -100,12 +100,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number }>;
 	getLastAvailableAgentRouted(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date }>;
 
 	setLastRoutingTime(userId: IUser['_id']): Promise<WithId<IUser> | null>;
 
