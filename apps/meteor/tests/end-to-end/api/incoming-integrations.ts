@@ -956,7 +956,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.true;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
 				});
 		});
 
@@ -982,7 +982,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
-					expect(!!(res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.true;
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).to.be.undefined;
 				});
 		});
 
@@ -1008,7 +1008,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.true;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
 				});
 		});
 
@@ -1034,7 +1034,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
-					expect(!!(res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.true;
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).to.be.undefined;
 				});
 		});
 
@@ -1058,7 +1058,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.undefined;
 				});
 
 			await request
@@ -1072,7 +1072,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('members').and.to.be.an('array');
-					expect(!!(res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).to.be.true;
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.undefined;
 				});
 		});
 	});
