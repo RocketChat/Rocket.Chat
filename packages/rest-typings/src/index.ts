@@ -26,6 +26,7 @@ import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
 import type { InstancesEndpoints } from './v1/instances';
 import type { IntegrationsEndpoints } from './v1/integrations';
+import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -50,7 +51,6 @@ import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 import type { WebdavEndpoints } from './v1/webdav';
-import { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
