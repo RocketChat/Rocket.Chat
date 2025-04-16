@@ -33,7 +33,7 @@ export class OmnichannelContacts {
 	}
 
 	get closeChip(): Locator {
-		return this.page.locator("//button[@class='rcx-box rcx-chip rcx-css-ennnjo']/i");
+		return this.page.locator('button.rcx-chip i');
 	}
 
 	get inputServedBy(): Locator {
@@ -57,7 +57,7 @@ export class OmnichannelContacts {
 	}
 
 	get inputTags(): Locator {
-		return this.page.locator('//*[label="Tags"]//input');
+		return this.page.locator('//*[label="Tags"]').getByRole('listbox');
 	}
 
 	get inputFromDate(): Locator {
@@ -68,28 +68,24 @@ export class OmnichannelContacts {
 		return this.page.getByRole('button', { name: 'Clear filters' });
 	}
 
-	get deleteClosedChat(): Locator {
-		return this.page.locator('button[title="More"]');
-	}
-
 	get close(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
 	get servedByChip(): Locator {
-		return this.page.locator('//span[contains(@class, "rcx-chip__text")][contains(text(), "Served By:")]');
+		return this.page.getByRole('button', { name: 'Served By:' });
 	}
 
 	get statusChip(): Locator {
-		return this.page.locator('//span[contains(@class, "rcx-chip__text")][contains(text(), "Status:")]');
+		return this.page.getByRole('button', { name: 'Status:' });
 	}
 
 	get departmentChip(): Locator {
-		return this.page.locator('//span[contains(@class, "rcx-chip__text")][contains(text(), "Department:")]');
+		return this.page.getByRole('button', { name: 'Department:' });
 	}
 
 	get searchChip(): Locator {
-		return this.page.locator('//span[contains(@class, "rcx-chip__text")][contains(text(), "Text:")]');
+		return this.page.getByRole('button', { name: 'Text:' });
 	}
 
 	async selectServedBy(option: string) {

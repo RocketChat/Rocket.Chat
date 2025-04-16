@@ -183,19 +183,19 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 
 			// Select user2
-			await poContacts.closeChip.click();
+			await poContacts.closeChip.first().click();
 			await poContacts.selectServedBy('user2');
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.servedByChip).toContainText('user2');
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 
 			// Select all users
-			await poContacts.closeChip.click();
+			await poContacts.closeChip.first().click();
 			await poContacts.selectServedBy('user1');
 			await poContacts.selectServedBy('user2');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await poContacts.closeChip.click();
+			await poContacts.closeChip.first().click();
 		});
 
 		await test.step('expect to filter by status', async () => {
@@ -230,7 +230,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
 			await expect(poContacts.departmentChip).toContainText(departmentA.name);
-			await poContacts.closeChip.click();
+			await poContacts.closeChip.first().click();
 
 			// select department B
 			await poContacts.selectDepartment(departmentB.name);
@@ -238,7 +238,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
 			await expect(poContacts.departmentChip).toContainText(departmentB.name);
-			await poContacts.closeChip.click();
+			await poContacts.closeChip.first().click();
 
 			// select all departments
 			await poContacts.selectDepartment(departmentA.name);
