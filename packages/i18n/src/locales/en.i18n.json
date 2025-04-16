@@ -6223,6 +6223,8 @@
   "Voice_calling_registration_failed": "Voice calling registration failed",
   "Voice_Call_Extension": "Voice Call Extension",
   "VoIP": "VoIP",
+  "Voip_draggable": "Draggable Call Popup",
+  "Voip_draggable_description": "Allows the call popup to be dragged around the screen",
   "VoIP_available_setup_freeswitch_server_details": "VoIP is available but the FreeSwitch server details need to be set up from the team voice call settings.",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks": "Enable SIP Options Keep Alive",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description": "Monitor the status of multiple external SIP gateways by sending periodic SIP OPTIONS messages. Used for unstable networks.",
