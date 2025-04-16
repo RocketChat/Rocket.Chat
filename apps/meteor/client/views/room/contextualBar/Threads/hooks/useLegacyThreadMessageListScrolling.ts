@@ -22,7 +22,6 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 				atBottomRef.current = false;
 			}
 			if (atBottomRef.current === true) {
-				console.log(`[${Date.now()}]`, 'scrolling to bottom');
 				listWrapper?.scrollTo(30, listWrapper.scrollHeight);
 			}
 		}, 100),
@@ -74,7 +73,6 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 			const setScrollToBottom = () => {
 				const { scrollTop, scrollHeight, clientHeight } = node;
 				atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
-				console.log('updating atBottomRef', atBottomRef.current);
 			};
 
 			node.addEventListener('scroll', setScrollToBottom);
