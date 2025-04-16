@@ -19,6 +19,7 @@ export class UsersEE extends UsersRaw {
 		super(db, trash);
 	}
 
+	// @ts-expect-error - typings are good
 	getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
