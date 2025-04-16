@@ -86,6 +86,7 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poAccountProfile.email2FASwitch).toBeVisible();
 			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.dismissToast();
 
 			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
