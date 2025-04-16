@@ -56,8 +56,6 @@ export function upsertMessageBulk(
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
 
-const waitAfterFlush = (fn: () => void) => setTimeout(() => Tracker.afterFlush(fn), 10);
-
 class RoomHistoryManagerClass extends Emitter {
 	private lastRequest?: Date;
 
