@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useRef } from 'react';
 
@@ -23,7 +24,6 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
 			const listWrapper = listWrapperRef.current;
-
 			listWrapper?.scrollTo(30, listWrapper.scrollHeight);
 		}
 	}, []);
@@ -53,18 +53,44 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 		};
 	}, [room._id, sendToBottomIfNecessary, user?._id, mainMessage._id]);
 
-	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
+	const listWrapperRefCallback = useCallback(
+		(node: HTMLDivElement | null) => {
+			if (node === null) {
+				return;
+			}
+			const observer = new ResizeObserver(() => {
+				sendToBottomIfNecessary();
+			});
 
-		if (listWrapperRef.current) observer.observe(listWrapperRef.current);
-		if (listRef.current) observer.observe(listRef.current);
+			observer.observe(node);
 
-		return () => {
-			observer.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
+			return () => {
+				observer.disconnect();
+			};
+		},
+		[sendToBottomIfNecessary],
+	);
 
-	return { listWrapperRef, listRef, requestScrollToBottom: sendToBottomIfNecessary, onScroll };
+	const listRefCallback = useCallback(
+		(node: HTMLDivElement | null) => {
+			if (node === null) {
+				return;
+			}
+			const observer = new ResizeObserver(() => {
+				sendToBottomIfNecessary();
+			});
+			observer.observe(node);
+			return () => {
+				observer.disconnect();
+			};
+		},
+		[sendToBottomIfNecessary],
+	);
+
+	return {
+		listWrapperRef: useMergedRefs(listWrapperRefCallback, listWrapperRef),
+		listRef: useMergedRefs(listRefCallback, listRef),
+		requestScrollToBottom: sendToBottomIfNecessary,
+		onScroll,
+	};
 };
