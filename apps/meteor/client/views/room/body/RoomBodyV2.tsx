@@ -93,7 +93,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
+	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
@@ -248,7 +248,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={innerBoxRef} />
+												<MessageList rid={room._id} messageListRef={jumpToRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
