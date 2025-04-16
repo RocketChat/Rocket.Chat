@@ -8,7 +8,7 @@ import { createCustomField } from '../../../data/livechat/custom-fields';
 import { createVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - custom fields', () => {
+describe.only('LIVECHAT - custom fields', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

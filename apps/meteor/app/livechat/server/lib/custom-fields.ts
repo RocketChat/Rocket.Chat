@@ -1,5 +1,6 @@
 import type { ILivechatContact, ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import type { UpdateFilter } from 'mongodb';
 
 import { livechatLogger } from './logger';
 import { i18n } from '../../../utils/lib/i18n';
@@ -19,20 +20,32 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+export async function updateContactsCustomFields(
+	// contact: ILivechatContact,
+	visitorId: string,
+	key: string,
+	value: string,
+	overwrite: boolean,
+): Promise<void> {
+	const queryUpdates: UpdateFilter<ILivechatContact> = {};
+
 	if (overwrite) {
-		contact.customFields ??= {};
-		contact.customFields[key] = value;
+		// contact.customFields ??= {};
+		// contact.customFields[key] = value;
+		queryUpdates.$set = { [`customFields.${key}`]: value };
 	} else {
-		contact.conflictingFields ??= [];
-		contact.conflictingFields.push({ field: `customFields.${key}`, value });
+		// contact.conflictingFields ??= [];
+		// contact.conflictingFields.push({ field: `customFields.${key}`, value });
+		queryUpdates.$addToSet = { conflictingFields: { field: `customFields.${key}`, value } };
 	}
 
-	await LivechatContacts.updateById(contact._id, {
-		$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
-	});
+	// await LivechatContacts.updateById(contact._id, {
+	// 	$set: { customFields: contact.customFields, conflictingFields: contact.conflictingFields },
+	// });
 
-	livechatLogger.debug({ msg: 'Contact updated', contactId: contact._id });
+	await LivechatContacts.updateByVisitorId(visitorId, queryUpdates);
+
+	livechatLogger.debug({ msg: 'Contacts updated', visitorId });
 }
 
 export async function setCustomFields({
@@ -70,9 +83,11 @@ export async function setCustomFields({
 			throw new Error(`Visitor with token "${token}" not found.`);
 		}
 
-		const result = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-		if (result) {
-			await Promise.all(result.map((contact: ILivechatContact) => updateContactsCustomFields(contact, key, value, overwrite)));
-		}
+		// const result = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+		// if (result) {
+		// 	await Promise.all(result.map((contact: ILivechatContact) => updateContactsCustomFields(contact, key, value, overwrite)));
+		// }
+
+		await updateContactsCustomFields(visitor._id, key, value, overwrite);
 	}
 }
