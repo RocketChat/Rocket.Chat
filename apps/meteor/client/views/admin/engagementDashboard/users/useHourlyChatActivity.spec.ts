@@ -39,6 +39,7 @@ it('should return utc time', async () => {
 
 it('should return local time', async () => {
 	// Will fail locally if system is not set to the same timezone as the CI (GMT - 8, Pacific Time)
+	console.log('TIMEZONE_OFFSET', new Date().getTimezoneOffset());
 	const receivedData = {
 		hours: [
 			{ hour: 0, users: 0 },
