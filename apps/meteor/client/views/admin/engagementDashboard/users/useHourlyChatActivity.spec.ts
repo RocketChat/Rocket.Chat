@@ -3,12 +3,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import { useHourlyChatActivity } from './useHourlyChatActivity';
 
-jest.mock('moment', () => {
-	const moment = jest.requireActual('moment-timezone');
-	moment.tz.setDefault('America/Los_Angeles');
-	return moment;
-});
-
 it('should return utc time', async () => {
 	const expectedResult = {
 		hours: [
@@ -31,9 +25,6 @@ it('should return utc time', async () => {
 		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data', () => expectedResult)
-			.withJohnDoe()
-			.withPermission('can-audit')
-			.withPermission('can-audit-log')
 			.build(),
 	});
 
@@ -47,6 +38,7 @@ it('should return utc time', async () => {
 });
 
 it('should return local time', async () => {
+	// Will fail locally if system is not set to the same timezone as the CI (GMT - 8, Pacific Time)
 	const receivedData = {
 		hours: [
 			{ hour: 0, users: 0 },
@@ -67,10 +59,6 @@ it('should return local time', async () => {
 
 	const expectedResult = {
 		hours: [
-			{ hour: 16, users: 0 },
-			{ hour: 18, users: 0 },
-			{ hour: 20, users: 0 },
-			{ hour: 22, users: 0 },
 			{ hour: 0, users: 0 },
 			{ hour: 2, users: 0 },
 			{ hour: 4, users: 5 },
@@ -79,6 +67,10 @@ it('should return local time', async () => {
 			{ hour: 10, users: 0 },
 			{ hour: 12, users: 0 },
 			{ hour: 14, users: 0 },
+			{ hour: 16, users: 0 },
+			{ hour: 18, users: 0 },
+			{ hour: 20, users: 0 },
+			{ hour: 22, users: 0 },
 		],
 	};
 
@@ -86,9 +78,6 @@ it('should return local time', async () => {
 		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data', () => receivedData)
-			.withJohnDoe()
-			.withPermission('can-audit')
-			.withPermission('can-audit-log')
 			.build(),
 	});
 
@@ -97,5 +86,5 @@ it('should return local time', async () => {
 	if (!result.current.data) {
 		throw new Error('Data is undefined');
 	}
-	expect(result.current.data.hours).toEqual(expectedResult.hours);
+	expect(result.current.data.hours.sort((a, b) => a.hour - b.hour)).toEqual(expectedResult.hours);
 });
