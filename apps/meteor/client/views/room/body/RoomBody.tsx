@@ -81,7 +81,7 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const innerBoxRef = useRef<HTMLDivElement | null>(null);
+	const innerBoxRef = useRef<HTMLElement>(undefined);
 
 	const {
 		wrapperRef: unreadBarWrapperRef,
