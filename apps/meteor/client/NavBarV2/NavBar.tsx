@@ -1,9 +1,9 @@
-import { useToolbar } from '@react-aria/toolbar';
 import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { useVoipState } from '@rocket.chat/ui-voip';
-import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import NavbarNavigation from './NavBarNavigation';
 import {
 	NavBarItemOmniChannelCallDialPad,
 	NavBarItemOmnichannelContact,
@@ -25,7 +25,7 @@ import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnable
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
 
 const NavBar = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 
 	const showOmnichannel = useOmnichannelEnabled();
@@ -38,19 +38,10 @@ const NavBar = () => {
 	const isCallReady = useIsCallReady();
 	const { isEnabled: showVoip } = useVoipState();
 
-	const pagesToolbarRef = useRef(null);
-	const { toolbarProps: pagesToolbarProps } = useToolbar({ 'aria-label': t('Pages') }, pagesToolbarRef);
-
-	const omnichannelToolbarRef = useRef(null);
-	const { toolbarProps: omnichannelToolbarProps } = useToolbar({ 'aria-label': t('Omnichannel') }, omnichannelToolbarRef);
-
-	const voipToolbarRef = useRef(null);
-	const { toolbarProps: voipToolbarProps } = useToolbar({ 'aria-label': t('Voice_Call') }, voipToolbarRef);
-
 	return (
 		<NavBarComponent aria-label='header'>
 			<NavBarSection>
-				<NavBarGroup role='toolbar' ref={pagesToolbarRef} {...pagesToolbarProps}>
+				<NavBarGroup aria-label={t('Pages_and_actions')}>
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
@@ -58,10 +49,11 @@ const NavBar = () => {
 					<NavBarItemSort />
 				</NavBarGroup>
 			</NavBarSection>
+			<NavbarNavigation />
 			<NavBarSection>
 				{showVoip && (
 					<>
-						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
+						<NavBarGroup aria-label={t('Voice_Call')}>
 							<NavBarItemVoipDialer primary={isCallEnabled} />
 							<NavBarItemVoipToggler />
 						</NavBarGroup>
@@ -70,7 +62,7 @@ const NavBar = () => {
 				)}
 				{showOmnichannel && (
 					<>
-						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
+						<NavBarGroup aria-label={t('Omnichannel')}>
 							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
 							<NavBarItemOmnichannelContact title={t('Contact_Center')} />
@@ -80,7 +72,7 @@ const NavBar = () => {
 						<NavBarDivider />
 					</>
 				)}
-				<NavBarGroup aria-label={t('Workspace_and_user_settings')}>
+				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
