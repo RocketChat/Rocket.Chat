@@ -1287,13 +1287,17 @@ export class AppsRestApi {
 
 					const response: { status: AppStatus; clusterStatus?: AppStatusReport[string] } = { status: await app.getStatus() };
 
-					const clusterStatus = await fetchAppsStatusFromCluster();
+					try {
+						const clusterStatus = await fetchAppsStatusFromCluster();
 
-					if (clusterStatus?.[app.getID()]) {
-						response.clusterStatus = clusterStatus[app.getID()];
+						if (clusterStatus?.[app.getID()]) {
+							response.clusterStatus = clusterStatus[app.getID()];
+						}
+					} catch (e) {
+						orchestrator.getRocketChatLogger().warn('App status endpoint: could not fetch status across cluster', e);
 					}
 
-					return API.v1.success(clusterStatus);
+					return API.v1.success(response);
 				},
 				async post() {
 					const { id: appId } = this.urlParams;
