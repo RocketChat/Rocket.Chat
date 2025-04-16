@@ -8937,6 +8937,7 @@ __metadata:
     re-resizable: "npm:^6.10.1"
     react: "npm:~18.3.1"
     react-aria: "npm:~3.37.0"
+    react-compiler-runtime: "npm:^19.0.0-beta-ebf51a3-20250411"
     react-docgen-typescript-plugin: "npm:^1.0.8"
     react-dom: "npm:~18.3.1"
     react-error-boundary: "npm:^3.1.4"
@@ -31229,6 +31230,15 @@ __metadata:
     react: ^16.8.5 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.5 || ^17.0.0 || ^18.0.0
   checksum: 10/2de8162a74f7fc78294e5a928b92d3fff02c579d137a25d53b1ab4313abeb108709bb7281512f7f94d18257de3122b8c85cb5a8375113cb8657088b1a9bda65b
+  languageName: node
+  linkType: hard
+
+"react-compiler-runtime@npm:^19.0.0-beta-ebf51a3-20250411":
+  version: 19.0.0-beta-ebf51a3-20250411
+  resolution: "react-compiler-runtime@npm:19.0.0-beta-ebf51a3-20250411"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+  checksum: 10/cb8eb348e2c87787e035e865551786a99490d4078b00ec3b7acab0deb7019bdd530f010761f9aa3f5527454e3692b751fff139444f5b8b71d14efd6ca91ff91a
   languageName: node
   linkType: hard
 
