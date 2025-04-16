@@ -19,6 +19,7 @@ import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 import { IOutgoingIntegration } from '@rocket.chat/core-typings';
+import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
 
 type Callbacks = {
 	added(id: string, record: object): void;
@@ -203,14 +204,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		this.onEvent('watch.integrations', async ({ clientAction, id, data }) => {
 			switch (clientAction) {
 				case 'inserted':
-					if (data.type === 'webhook-outgoing') {
-						triggerHandler.addIntegration(data as IOutgoingIntegration);
+					if (isOutgoingIntegration(data)) {
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
-					if (data.type === 'webhook-outgoing') {
-						triggerHandler.removeIntegration(data as IOutgoingIntegration);
-						triggerHandler.addIntegration(data as IOutgoingIntegration);
+					if (isOutgoingIntegration(data)) {
+						triggerHandler.removeIntegration(data);
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'removed':
