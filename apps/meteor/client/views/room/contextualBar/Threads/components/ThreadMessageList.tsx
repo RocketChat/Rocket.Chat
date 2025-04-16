@@ -64,17 +64,14 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messageListRef } = useMessageListNavigation();
 
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, messageListRef);
-	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef);
-
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomScrollbars ref={scrollRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
+			<CustomScrollbars ref={listScrollRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<Box
 					is='ul'
 					className={[listStyle, 'thread']}
-					ref={listRef}
+					ref={messageListRef}
 					aria-label={t('Thread_message_list')}
 					style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 				>
