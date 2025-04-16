@@ -1,4 +1,5 @@
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useCustomSound,
@@ -13,6 +14,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { VoipPopupDraggable } from '../components';
 import VoipPopup from '../components/VoipPopup';
 import VoipPopupPortal from '../components/VoipPopupPortal';
 import type { VoipContextValue } from '../contexts/VoipContext';
@@ -172,6 +174,8 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		};
 	}, [voipClient, isVoipEnabled, error, changeAudioInputDevice, changeAudioOutputDevice]);
 
+	const isVoipDraggableEnabled = useFeaturePreview('voip-draggable');
+
 	return (
 		<VoipContext.Provider value={contextValue}>
 			{children}
@@ -184,7 +188,11 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 				)}
 
 			<VoipPopupPortal>
-				<VoipPopup position={{ bottom: 132, right: 24 }} />
+				{isVoipDraggableEnabled ? (
+					<VoipPopupDraggable initialPosition={{ bottom: 132, right: 24 }} />
+				) : (
+					<VoipPopup position={{ bottom: 132, right: 24 }} />
+				)}
 			</VoipPopupPortal>
 		</VoipContext.Provider>
 	);
