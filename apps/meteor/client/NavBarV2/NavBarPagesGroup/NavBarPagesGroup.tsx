@@ -11,7 +11,7 @@ import NavBarPagesStackMenu from './NavBarPagesStackMenu';
 
 const NavBarPagesGroup = () => {
 	const { t } = useTranslation();
-	const { isCompactScreen, isMobile } = useLayout();
+	const { isTablet, isMobile } = useLayout();
 
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
@@ -19,8 +19,8 @@ const NavBarPagesGroup = () => {
 
 	return (
 		<NavBarGroup aria-label={t('Pages_and_actions')}>
-			{isCompactScreen && <NavBarPagesStackMenu />}
-			{!isCompactScreen && (
+			{isTablet && <NavBarPagesStackMenu />}
+			{!isTablet && (
 				<>
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />

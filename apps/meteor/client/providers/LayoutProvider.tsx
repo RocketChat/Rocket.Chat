@@ -26,9 +26,9 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('md');
-	const isCompactScreen = !breakpoints.includes('lg');
+	const isTablet = !breakpoints.includes('lg');
 
-	const shouldToggle = isCompactScreen || isMobile;
+	const shouldToggle = isTablet || isMobile;
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);
@@ -52,7 +52,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 			value={useMemo(
 				() => ({
 					isMobile,
-					isCompactScreen,
+					isTablet,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					navbar: {
@@ -80,7 +80,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 				}),
 				[
 					isMobile,
-					isCompactScreen,
+					isTablet,
 					navBarSearchExpanded,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,

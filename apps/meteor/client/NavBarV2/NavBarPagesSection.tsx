@@ -5,11 +5,11 @@ import NavBarPagesGroup from './NavBarPagesGroup';
 import SidebarToggler from '../components/SidebarToggler';
 
 const NavBarPagesSection = () => {
-	const { isCompactScreen } = useLayout();
+	const { isTablet } = useLayout();
 
 	return (
 		<NavBarSection>
-			{isCompactScreen && (
+			{isTablet && (
 				<>
 					<NavBarGroup>
 						<SidebarToggler />
