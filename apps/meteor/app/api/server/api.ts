@@ -88,7 +88,7 @@ interface IAPIDefaultFieldsToExclude {
 	inviteToken: number;
 }
 
-type RateLimiterOptions = {
+export type RateLimiterOptions = {
 	numRequestsAllowed?: number;
 	intervalTimeInMS?: number;
 };
@@ -320,6 +320,16 @@ export class APIClass<
 		};
 	}
 
+	public unavailableResult<T>(msg?: T): InternalError<T, 503, 'Service unavailable'> {
+		return {
+			statusCode: 503,
+			body: {
+				success: false,
+				error: msg || 'Service unavailable',
+			},
+		};
+	}
+
 	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
 		return {
 			statusCode: 401,
@@ -421,7 +431,7 @@ export class APIClass<
 	}: {
 		routes: string[];
 		rateLimiterOptions: RateLimiterOptions | boolean;
-		endpoints: string[];
+		endpoints: Record<string, string> | string[];
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
