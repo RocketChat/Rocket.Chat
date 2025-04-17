@@ -107,6 +107,7 @@ API.v1.addRoute(
 							errors.push(key);
 						}
 
+						// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
 						const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
 						if (contacts.length > 0) {
 							await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
