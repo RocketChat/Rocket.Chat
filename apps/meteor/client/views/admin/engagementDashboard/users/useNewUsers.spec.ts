@@ -43,7 +43,7 @@ it('should return utc time', async () => {
 				users: 0,
 			},
 		],
-		end: new Date('2025-05-14T02:59:59.999Z'),
+		end: new Date('2025-05-13T23:59:59.999Z'),
 		period: {
 			count: 15,
 			variation: 2,
