@@ -28,7 +28,7 @@ const NavBarControlsMenu = ({ voipItems, omnichannelItems, isVoipEnabled, isPres
 	return (
 		<GenericMenu
 			sections={sections}
-			title={t('More')}
+			title={t('Voice_and_omnichannel')}
 			is={NavBarItem}
 			placement='bottom-start'
 			icon='kebab'
