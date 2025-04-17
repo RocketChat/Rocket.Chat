@@ -46,6 +46,7 @@
 		},
 		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
+			"env": ["BABEL_ENV"],
 			"cache": false
 		}
 	}

@@ -1,6 +1,6 @@
 import type { AtLeast, IMessage } from '@rocket.chat/core-typings';
 import { isOTRMessage } from '@rocket.chat/core-typings';
-import { useMethod, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import OTR from '../../../../app/otr/client/OTR';
@@ -9,16 +9,11 @@ import { t } from '../../../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 
-export const useOTRMessaging = () => {
-	const uid = useUserId();
+export const useOTRMessaging = (uid: string) => {
 	const updateOTRAck = useMethod('updateOTRAck');
 	const notifyUser = useStream('notify-user');
 
 	useEffect(() => {
-		if (!uid) {
-			return;
-		}
-
 		const handleNotifyUser = (type: 'handshake' | 'acknowledge' | 'deny' | 'end', data: { roomId: string; userId: string }) => {
 			if (!data.roomId || !data.userId || data.userId === uid) {
 				return;

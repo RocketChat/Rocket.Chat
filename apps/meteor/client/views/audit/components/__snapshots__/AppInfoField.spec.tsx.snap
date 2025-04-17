@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-op9h3g"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-pwio3x"
+      >
+        Actor
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+      >
+        App
+      </div>
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-op9h3g"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-pwio3x"
+      >
+        App_id
+      </div>
+      <span
+        class="rcx-skeleton rcx-skeleton--text"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+      >
+        app-id
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders NoAppInfo without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-op9h3g"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-pwio3x"
+      >
+        Actor
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+      >
+        App
+      </div>
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-op9h3g"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-pwio3x"
+      >
+        App Id
+      </div>
+      <span
+        class="rcx-skeleton rcx-skeleton--text"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1cuayu0"
+      >
+        app-id
+      </div>
+    </div>
+  </div>
+</body>
+`;

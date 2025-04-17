@@ -5,7 +5,7 @@ import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { getLivechatRoomGuestInfo } from '../lib/guests';
 import { sendRequest } from '../lib/webhooks';
 
 type AdditionalFields =
@@ -97,11 +97,11 @@ async function sendToCRM(
 		return room;
 	}
 
-	const postData: Awaited<ReturnType<typeof LivechatTyped.getLivechatRoomGuestInfo>> & {
+	const postData: Awaited<ReturnType<typeof getLivechatRoomGuestInfo>> & {
 		type: string;
 		messages: IOmnichannelSystemMessage[];
 	} = {
-		...(await LivechatTyped.getLivechatRoomGuestInfo(room)),
+		...(await getLivechatRoomGuestInfo(room)),
 		type,
 		messages: [],
 	};

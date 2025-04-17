@@ -6,12 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { getInitSettings } from '../../lib/settings';
-
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
-	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
-}
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
