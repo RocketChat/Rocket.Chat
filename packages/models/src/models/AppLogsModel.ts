@@ -4,10 +4,7 @@ import type { Db, DeleteResult, Filter } from 'mongodb';
 import { BaseRaw } from './BaseRaw';
 
 export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
-	constructor(
-		db: Db,
-		private readonly expireAfterSeconds: number = 60 * 60 * 24 * 30,
-	) {
+	constructor(db: Db) {
 		super(db, 'apps_logs', undefined);
 	}
 
@@ -17,7 +14,7 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 				key: {
 					_updatedAt: 1,
 				},
-				expireAfterSeconds: this.expireAfterSeconds,
+				expireAfterSeconds: 60 * 60 * 24 * 30,
 			},
 		];
 	}
