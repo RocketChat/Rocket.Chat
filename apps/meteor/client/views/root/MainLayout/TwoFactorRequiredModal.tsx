@@ -1,4 +1,4 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
+import { Button, Modal, ModalContent, ModalFooter, ModalFooterControllers, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,17 +13,17 @@ const TwoFactorRequiredModal = () => {
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Two-factor_authentication_required')}</Modal.Title>
-			</Modal.Header>
-			<Modal.Content>{t('Two-factor_authentication_required_modal')}</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			<ModalHeader>
+				<ModalTitle>{t('Two-factor_authentication_required')}</ModalTitle>
+			</ModalHeader>
+			<ModalContent>{t('Two-factor_authentication_required_modal')}</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button primary onClick={closeModal}>
 						{t('Set_up_2FA')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
