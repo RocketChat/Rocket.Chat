@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { HeaderToolbar } from '../../../../components/Header';
-import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
 import BackButton from './BackButton';
@@ -41,7 +40,6 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 			...parentSlot,
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
 				<HeaderToolbar>
-					{isMobile && <SidebarToggler />}
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>
 			),

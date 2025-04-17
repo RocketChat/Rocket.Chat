@@ -25,10 +25,13 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('md');
+	const isCompactScreen = !breakpoints.includes('lg');
+
+	const shouldToggle = isCompactScreen || isMobile;
 
 	useEffect(() => {
-		setIsCollapsed(isMobile);
-	}, [isMobile]);
+		setIsCollapsed(shouldToggle);
+	}, [shouldToggle]);
 
 	useEffect(() => {
 		const eventHandler = (event: MessageEvent<any>) => {
@@ -48,11 +51,12 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 			value={useMemo(
 				() => ({
 					isMobile,
+					isCompactScreen,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					sidebar: {
 						isCollapsed,
-						toggle: isMobile ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
+						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
@@ -68,7 +72,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],
+				[isMobile, isCompactScreen, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, shouldToggle, breakpoints, hiddenActions, router],
 			)}
 		/>
 	);

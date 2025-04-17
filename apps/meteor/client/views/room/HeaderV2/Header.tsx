@@ -17,20 +17,16 @@ type HeaderProps = {
 };
 
 const Header = ({ room }: HeaderProps): ReactElement | null => {
-	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
 
 	const slots = useMemo(
 		() => ({
-			start: isMobile && (
-				<HeaderToolbar>
-					<SidebarToggler />
-				</HeaderToolbar>
-			),
+			start: null,
 		}),
-		[isMobile],
+		[],
 	);
 
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {

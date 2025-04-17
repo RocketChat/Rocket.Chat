@@ -3,7 +3,6 @@ import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { HeaderToolbar } from '../../../../components/Header';
-import SidebarToggler from '../../../../components/SidebarToggler';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';
@@ -27,10 +26,7 @@ const VoipRoomHeader = ({ slots: parentSlot, room }: VoipRoomHeaderProps) => {
 		() => ({
 			...parentSlot,
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
-				<HeaderToolbar>
-					{isMobile && <SidebarToggler />}
-					{currentRouteName === 'omnichannel-directory' && <BackButton />}
-				</HeaderToolbar>
+				<HeaderToolbar>{currentRouteName === 'omnichannel-directory' && <BackButton />}</HeaderToolbar>
 			),
 		}),
 		[isMobile, currentRouteName, parentSlot],
