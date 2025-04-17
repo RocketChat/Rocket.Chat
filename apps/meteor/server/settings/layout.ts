@@ -89,6 +89,7 @@ export const createLayoutSettings = () =>
 				invalidValue: false,
 				enterprise: true,
 				public: true,
+				modules: ['hide-watermark'],
 				enableQuery: [
 					{
 						_id: 'Layout_Home_Body',
