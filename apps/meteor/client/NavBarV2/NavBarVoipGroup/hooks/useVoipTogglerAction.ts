@@ -1,16 +1,10 @@
-import { NavBarItem } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMutation } from '@tanstack/react-query';
-import type { HTMLAttributes } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
-	primary?: boolean;
-};
-
-const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
+export const useVoipTogglerAction = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -55,15 +49,11 @@ const NavBarItemVoipToggler = (props: NavBarItemVoipDialerProps) => {
 		return isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling');
 	}, [clientError, isRegistered, isReconnecting, isReady, toggleVoip.isPending, t]);
 
-	return isEnabled ? (
-		<NavBarItem
-			{...props}
-			title={title}
-			icon={isRegistered ? 'phone-disabled' : 'phone'}
-			disabled={!isReady || toggleVoip.isPending || isReconnecting}
-			onClick={() => toggleVoip.mutate()}
-		/>
-	) : null;
+	return {
+		handleToggleVoip: () => toggleVoip.mutate(),
+		title,
+		isEnabled,
+		isRegistered,
+		isDisabled: !isReady || toggleVoip.isPending || isReconnecting,
+	};
 };
-
-export default NavBarItemVoipToggler;
