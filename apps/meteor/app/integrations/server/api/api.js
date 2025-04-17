@@ -94,7 +94,7 @@ async function executeIntegrationRest() {
 		}
 		const content_raw = Buffer.concat(buffers).toString('utf8');
 		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
-		const url = new URL(this.request.url, `${protocol}//${this.request.headers.host}`);
+		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
 
 		const request = {
 			url: {
@@ -325,13 +325,22 @@ const middleware = async (c, next) => {
 	}
 
 	try {
-		const body = Object.fromEntries(new URLSearchParams(await req.raw.clone().text()));
-		if (!body || typeof body !== 'object' || !('payload' in body) || Object.keys(body).length !== 1) {
+		const content = await req.raw.clone().text();
+		const body = Object.fromEntries(new URLSearchParams(content));
+		if (!body || typeof body !== 'object' || Object.keys(body).length !== 1) {
 			return next();
 		}
 
-		// need to compose the full payload in this weird way because body-parser thought it was a form
-		c.set('bodyParams-override', JSON.parse(body.payload));
+		if (body.payload) {
+			// need to compose the full payload in this weird way because body-parser thought it was a form
+			c.set('bodyParams-override', JSON.parse(body.payload));
+			return next();
+		}
+		incomingLogger.debug({
+			msg: 'Body received as application/x-www-form-urlencoded without the "payload" key, parsed as string',
+			content,
+		});
+		c.set('bodyParams-override', JSON.parse(content));
 	} catch (e) {
 		c.body(JSON.stringify({ success: false, error: e.message }), 400);
 	}

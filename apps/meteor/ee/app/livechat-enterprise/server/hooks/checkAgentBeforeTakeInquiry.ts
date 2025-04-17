@@ -4,7 +4,7 @@ import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Help
 import { checkOnlineAgents } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getMaxNumberSimultaneousChat } from '../lib/Helper';
+import { isAgentWithinChatLimits } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 
 const validateMaxChats = async ({
@@ -48,34 +48,18 @@ const validateMaxChats = async ({
 	}
 
 	const { department: departmentId } = inquiry;
-
-	const maxNumberSimultaneousChat = await getMaxNumberSimultaneousChat({
-		agentId,
-		departmentId,
-	});
-
-	if (maxNumberSimultaneousChat === 0) {
-		cbLogger.debug(`Chat can be taken by Agent ${agentId}: max number simultaneous chats on range`);
-		return agent;
-	}
-
-	const user = await Users.getAgentAndAmountOngoingChats(agentId);
+	const user = await Users.getAgentAndAmountOngoingChats(agentId, departmentId);
 	if (!user) {
 		cbLogger.debug({ msg: 'No valid agent found', agentId });
 		throw new Error('No valid agent found');
 	}
 
-	const { queueInfo: { chats = 0 } = {} } = user;
-	const maxChats = typeof maxNumberSimultaneousChat === 'number' ? maxNumberSimultaneousChat : parseInt(maxNumberSimultaneousChat, 10);
+	const { queueInfo: { chats = 0, chatsForDepartment = 0 } = {} } = user;
 
-	cbLogger.debug({ msg: 'Validating agent is within max number of chats', agentId, user, maxChats });
-	if (maxChats <= chats) {
-		await callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
-		throw new Error('error-max-number-simultaneous-chats-reached');
+	if (await isAgentWithinChatLimits({ agentId, departmentId, totalChats: chats, departmentChats: chatsForDepartment })) {
+		return user;
 	}
-
-	cbLogger.debug(`Agent ${agentId} can take inquiry ${inquiry._id}`);
-	return agent;
+	throw new Error('error-max-number-simultaneous-chats-reached');
 };
 
 callbacks.add('livechat.checkAgentBeforeTakeInquiry', validateMaxChats, callbacks.priority.MEDIUM, 'livechat-before-take-inquiry');
