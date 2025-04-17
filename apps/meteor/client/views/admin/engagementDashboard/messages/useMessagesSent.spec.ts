@@ -64,7 +64,6 @@ it('should return utc time', async () => {
 
 	await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-	console.log(result.current.data);
 	if (!result.current.data) {
 		throw new Error('Data is undefined');
 	}
@@ -126,7 +125,6 @@ it.skip('should return local time', async () => {
 
 	await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-	console.log(result.current.data);
 	if (!result.current.data) {
 		throw new Error('Data is undefined');
 	}

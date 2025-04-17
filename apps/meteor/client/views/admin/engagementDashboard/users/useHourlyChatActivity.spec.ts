@@ -40,7 +40,6 @@ it('should return utc time', async () => {
 // CI is currently running in UTC, so no local time is returned
 // TODO: find a way to simulate local time properly in tests
 it.skip('should return local time', async () => {
-	console.log('TIMEZONE_OFFSET', new Date().getTimezoneOffset());
 	const receivedData = {
 		hours: [
 			{ hour: 0, users: 0 },
