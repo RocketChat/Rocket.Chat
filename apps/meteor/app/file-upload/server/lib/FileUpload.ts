@@ -289,7 +289,7 @@ export const FileUpload = {
 		file = FileUpload.addExtensionTo(file);
 		const image = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
-		const transformer = sharp().resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
+		const transformer = sharp({ failOn: 'error' }).resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
 		image.pipe(transformer);
 		return result;
@@ -320,7 +320,7 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = sharp({ failOn: 'error' }).resize({ width, height, fit: 'inside' });
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
