@@ -4,9 +4,6 @@ import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, memo, useMemo } from 'react';
 
-import { HeaderToolbar } from '../../../components/Header';
-import SidebarToggler from '../../../components/SidebarToggler';
-
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
