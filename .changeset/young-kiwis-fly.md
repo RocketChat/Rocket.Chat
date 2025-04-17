@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+'@rocket.chat/meteor': patch
 ---
 
-`setCustomFields` now updates the Contect's `customFields` as expected
+Fixes contact custom fields not being updated when updating a visitor's custom field
