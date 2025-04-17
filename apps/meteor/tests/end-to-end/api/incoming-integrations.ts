@@ -1,5 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -606,6 +607,16 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.update]', () => {
+		let senderUser: IUser;
+		let sendUserCredentials: Credentials;
+
+		before(async () => {
+			senderUser = await createUser();
+			sendUserCredentials = await login(senderUser.username, password);
+		});
+
+		after(() => deleteUser(senderUser));
+
 		it('should update an integration by id and return the new data', (done) => {
 			void request
 				.put(api('integrations.update'))
@@ -629,6 +640,7 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
 					expect(res.body.integration.alias).to.be.equal('test updated');
+					integration = res.body.integration;
 				})
 				.end(done);
 		});
@@ -648,6 +660,60 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
+		});
+
+		it("should update an integration's username and associated userId correctly and return the new data", async () => {
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated x2',
+					enabled: true,
+					alias: 'test updated x2',
+					username: senderUser.username,
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated x2');
+					expect(res.body.integration.alias).to.be.equal('test updated x2');
+					expect(res.body.integration.username).to.be.equal(senderUser.username);
+					expect(res.body.integration.userId).to.be.equal(sendUserCredentials['X-User-Id']);
+					integration = res.body.integration;
+				});
+		});
+
+		it('should send messages to the channel under the updated username', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(200);
+
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage);
+					expect(message?.u).have.property('username', senderUser.username);
+				});
 		});
 	});
 
