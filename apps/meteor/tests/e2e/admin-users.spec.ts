@@ -1,10 +1,33 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+
+const user = {
+	_id: undefined as string | undefined,
+	username: faker.string.uuid(),
+	name: faker.person.firstName(),
+	email: faker.internet.email(),
+	password: faker.internet.password(),
+};
+
+test.beforeAll('Create new user', async ({ api }) => {
+	const response = await api.post('/users.create', user);
+	expect(response.status()).toBe(200);
+	const data = await response.json();
+	user._id = data.user._id;
+});
+
+test.beforeEach('Open Admin > Users', async ({ page }) => {
+	await page.goto('/admin/users');
+});
+
+test.afterAll('Delete new user', async ({ api }) => {
+	const response = await api.post('/users.delete', { userId: user._id });
+	expect(response.status()).toBe(200);
+});
 
 test(
 	'New user shows in correct tabs when deactivated',
@@ -16,10 +39,7 @@ test(
 		},
 	},
 	async ({ page }) => {
-		const poAdmin = new Admin(page);
-		await page.goto('/admin/users');
-
-		const { username } = await createUser(poAdmin);
+		const { username } = user;
 
 		await page.getByPlaceholder('Search Users').fill(username);
 
@@ -64,28 +84,3 @@ test(
 		});
 	},
 );
-
-async function createUser(poAdmin: Admin) {
-	const firstName = faker.person.firstName();
-	const lastName = faker.person.lastName();
-	const email = faker.internet.email({ firstName, lastName });
-	const username = faker.internet.userName({ firstName, lastName });
-	const password = faker.internet.password();
-
-	await poAdmin.tabs.users.btnNewUser.click();
-	await poAdmin.tabs.users.inputEmail.fill(email);
-	await poAdmin.tabs.users.inputName.fill(firstName);
-	await poAdmin.tabs.users.inputUserName.fill(username);
-	await poAdmin.tabs.users.inputSetManually.click();
-	await poAdmin.tabs.users.inputPassword.fill(password);
-	await poAdmin.tabs.users.inputConfirmPassword.fill(password);
-	await poAdmin.tabs.users.btnSave.click();
-
-	return {
-		email,
-		firstName,
-		lastName,
-		username,
-		password,
-	};
-}
