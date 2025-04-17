@@ -43,7 +43,7 @@ export async function setCustomFields({
 	value: string;
 	overwrite: boolean;
 	token: string;
-}): Promise<void> {
+}): Promise<number> {
 	livechatLogger.debug(`Setting custom fields data for visitor with token ${token}`);
 
 	const customField = await LivechatCustomField.findOneById(key);
@@ -58,19 +58,25 @@ export async function setCustomFields({
 		}
 	}
 
+	let result;
 	if (customField.scope === 'room') {
-		await LivechatRooms.updateDataByToken(token, key, value, overwrite);
+		result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 	} else {
-		await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+		result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 
 		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-		if (!visitor) {
-			throw new Error(`Visitor with token "${token}" not found.`);
-		}
-
-		const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-		if (contacts.length > 0) {
-			await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+		if (visitor) {
+			const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+			if (contacts.length > 0) {
+				await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+			}
 		}
 	}
+
+	if (typeof result === 'boolean') {
+		// Note: this only happens when !overwrite is passed, in this case we don't do any db update
+		return 0;
+	}
+
+	return result.modifiedCount;
 }
