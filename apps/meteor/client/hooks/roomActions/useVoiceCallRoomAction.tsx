@@ -1,17 +1,16 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaPermissions } from '../../../views/room/composer/messageBox/hooks/useMediaPermissions';
-import { useRoom } from '../../../views/room/contexts/RoomContext';
-import { useUserInfoQuery } from '../../useUserInfoQuery';
-import { useVoipWarningModal } from '../../useVoipWarningModal';
+import { useMediaPermissions } from '../../views/room/composer/messageBox/hooks/useMediaPermissions';
+import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useUserInfoQuery } from '../useUserInfoQuery';
+import { useVoipWarningModal } from '../useVoipWarningModal';
 
-const useVoipMenuOptions = () => {
+export const useVoiceCallRoomAction = () => {
 	const { t } = useTranslation();
 	const { uids = [] } = useRoom();
 	const ownUserId = useUserId();
@@ -32,10 +31,10 @@ const useVoipMenuOptions = () => {
 	const isDM = members.length === 1;
 
 	const disabled = isMicPermissionDenied || !isDM || isInCall || isPending;
-	const allowed = isDM && !isInCall && !isPending;
+	const allowed = canStartVoiceCall && isDM && !isInCall && !isPending;
 	const canMakeVoipCall = allowed && isRemoteRegistered && isRegistered && isEnabled && !isMicPermissionDenied;
 
-	const title = useMemo(() => {
+	const tooltip = useMemo(() => {
 		if (isMicPermissionDenied) {
 			return t('Microphone_access_not_allowed');
 		}
@@ -54,33 +53,20 @@ const useVoipMenuOptions = () => {
 		dispatchWarning();
 	});
 
-	return useMemo(() => {
-		if (!canStartVoiceCall) {
+	return useMemo((): RoomToolboxActionConfig | undefined => {
+		if (!allowed) {
 			return undefined;
 		}
 
-		const items: GenericMenuItemProps[] = [
-			{
-				id: 'start-voip-call',
-				icon: 'phone',
-				disabled,
-				onClick: handleOnClick,
-				content: (
-					<Box is='span' title={title}>
-						{t('Voice_call')}
-					</Box>
-				),
-			},
-		];
-
 		return {
-			items,
+			id: 'start-voice-call',
+			title: 'Voice_Call',
+			icon: 'phone',
+			featured: true,
+			action: handleOnClick,
 			groups: ['direct'] as const,
 			disabled,
-			order: 4,
-			allowed,
+			tooltip,
 		};
-	}, [disabled, title, t, handleOnClick, allowed, canStartVoiceCall]);
+	}, [allowed, disabled, handleOnClick, tooltip]);
 };
-
-export default useVoipMenuOptions;
