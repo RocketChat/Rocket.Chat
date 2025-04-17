@@ -6,6 +6,7 @@ import type {
 	ILDAPCallback,
 	ILDAPPageCallback,
 } from '@rocket.chat/core-typings';
+import type { LogOperation } from '@rocket.chat/logger';
 import ldapjs from 'ldapjs';
 
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
@@ -94,24 +95,29 @@ export class LDAPConnection {
 		}
 	}
 
-	public async connect(): Promise<any> {
+	public async connect(operation?: LogOperation): Promise<any> {
+		const connectOperation = operation?.addOperation('LDAPConnection.connect');
 		return new Promise((resolve, reject) => {
 			this.initializeConnection((error, result) => {
 				if (error) {
+					connectOperation?.addRecord({ msg: 'Failed to initialize connection', error });
 					return reject(error);
 				}
 
+				connectOperation?.addRecord({ msg: 'Connection successful', resultType: typeof result });
 				return resolve(result);
-			});
+			}, connectOperation);
 		});
 	}
 
-	public disconnect(): void {
+	public disconnect(operation?: LogOperation): void {
+		operation?.addRecord('Disconnecting');
 		this.usingAuthentication = false;
 		this.connected = false;
 		connLogger.info('Disconnecting');
 
 		if (this.client) {
+			operation?.addRecord('Unbinding client');
 			this.client.unbind();
 		}
 	}
@@ -125,7 +131,7 @@ export class LDAPConnection {
 		}
 	}
 
-	public async searchByUsername(escapedUsername: string): Promise<ILDAPEntry[]> {
+	public async searchByUsername(escapedUsername: string, operation?: LogOperation): Promise<ILDAPEntry[]> {
 		const searchOptions: ldapjs.SearchOptions = {
 			filter: this.getUserFilter(escapedUsername),
 			scope: this.options.userSearchScope || 'sub',
@@ -146,18 +152,21 @@ export class LDAPConnection {
 			baseDN: this.options.baseDN,
 			searchOptions,
 		});
-		return this.search(this.options.baseDN, searchOptions);
+		return this.search(this.options.baseDN, searchOptions, operation);
 	}
 
-	public async findOneByUsername(username: string): Promise<ILDAPEntry | undefined> {
-		const results = await this.searchByUsername(username);
+	public async findOneByUsername(username: string, operation?: LogOperation): Promise<ILDAPEntry | undefined> {
+		const findOperation = operation?.addOperation('LDAPConnection.findOneByUsername', { username });
+		const results = await this.searchByUsername(username, findOperation);
+
+		findOperation?.addRecord({ msg: 'Results', results: results.length });
 
 		if (results.length === 1) {
 			return results[0];
 		}
 	}
 
-	public async searchById(id: string, attribute?: string): Promise<ILDAPEntry[]> {
+	public async searchById(id: string, attribute?: string, operation?: LogOperation): Promise<ILDAPEntry[]> {
 		const searchOptions: ldapjs.SearchOptions = {
 			scope: this.options.userSearchScope || 'sub',
 			attributes: this.options.attributesToQuery,
@@ -171,6 +180,8 @@ export class LDAPConnection {
 		} else if (this.options.uniqueIdentifierField) {
 			// If we don't know what attribute the id came from, we have to look for all of them.
 			const possibleFields = this.options.uniqueIdentifierField.split(',').concat(this.options.userSearchField.split(','));
+
+			operation?.addRecord({ msg: 'Search using all possible unique identifiers', possibleFields });
 			const filters = [];
 			for (const field of possibleFields) {
 				if (!field) {
@@ -192,21 +203,23 @@ export class LDAPConnection {
 		searchLogger.info({ msg: 'Searching by id', id });
 		searchLogger.debug({ msg: 'search filter', searchOptions, baseDN: this.options.baseDN });
 
-		return this.search(this.options.baseDN, searchOptions);
+		return this.search(this.options.baseDN, searchOptions, operation);
 	}
 
-	public async findOneById(id: string, attribute?: string): Promise<ILDAPEntry | undefined> {
-		const results = await this.searchById(id, attribute);
+	public async findOneById(id: string, attribute?: string, operation?: LogOperation): Promise<ILDAPEntry | undefined> {
+		const findOperation = operation?.addOperation('LDAPConnection.findOneById', { params: { id, attribute } });
+		const results = await this.searchById(id, attribute, findOperation);
+		findOperation?.addRecord({ msg: 'Results', results: results.length });
 		if (results.length === 1) {
 			return results[0];
 		}
 	}
 
-	public async searchAllUsers<T = ldapjs.SearchEntry>({
-		dataCallback,
-		endCallback,
-		entryCallback,
-	}: ILDAPSearchAllCallbacks<T>): Promise<void> {
+	public async searchAllUsers<T = ldapjs.SearchEntry>(
+		{ dataCallback, endCallback, entryCallback }: ILDAPSearchAllCallbacks<T>,
+		operation?: LogOperation,
+	): Promise<void> {
+		const searchOperation = operation?.addOperation('LDAPConnection.searchAllUsers');
 		searchLogger.info('Searching all users');
 
 		const searchOptions: ldapjs.SearchOptions = {
@@ -224,21 +237,26 @@ export class LDAPConnection {
 				this.options.searchPageSize,
 				(error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 					if (error) {
+						searchOperation?.addRecord({ msg: 'search page error', error });
 						endCallback?.(error);
 						return;
 					}
 
 					count += entries.length;
+					searchOperation?.addRecord({ msg: 'page callback', entries: entries.length, count, end });
 					dataCallback?.(entries);
 					if (end) {
+						searchOperation?.addRecord('calling end callback');
 						endCallback?.();
 					}
 
 					if (next) {
+						searchOperation?.addRecord('calling next');
 						next(count);
 					}
 				},
 				entryCallback,
+				searchOperation,
 			);
 			return;
 		}
@@ -251,6 +269,7 @@ export class LDAPConnection {
 				endCallback?.(error);
 			},
 			entryCallback,
+			searchOperation,
 		);
 	}
 
@@ -269,12 +288,22 @@ export class LDAPConnection {
 		}
 	}
 
-	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ILDAPEntry[]> {
-		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) => this.extractLdapEntryData(entry));
+	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions, operation?: LogOperation): Promise<ILDAPEntry[]> {
+		const entriesOperation = operation?.addOperation('entries');
+
+		return this.doCustomSearch<ILDAPEntry>(
+			baseDN,
+			searchOptions,
+			(entry) => {
+				const entryOperation = entriesOperation?.addOperation('entryCallback');
+				return this.extractLdapEntryData(entry, entryOperation);
+			},
+			operation,
+		);
 	}
 
-	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ldapjs.SearchEntry[]> {
-		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry);
+	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions, operation?: LogOperation): Promise<ldapjs.SearchEntry[]> {
+		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry, operation);
 	}
 
 	public async searchAndCount(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<number> {
@@ -286,27 +315,35 @@ export class LDAPConnection {
 		return count;
 	}
 
-	public extractLdapAttribute(value: Buffer | Buffer[] | string): ILDAPExtractedValue {
+	public extractLdapAttribute(value: Buffer | Buffer[] | string, operation?: LogOperation): ILDAPExtractedValue {
 		if (Array.isArray(value)) {
-			return value.map((item) => this.extractLdapAttribute(item));
+			const arrayOperation = operation?.addOperation('Extracting Array');
+			return value.map((item) => this.extractLdapAttribute(item, arrayOperation));
 		}
 
 		if (typeof value === 'string') {
+			operation?.addRecord('Extracting String Value');
 			return value;
 		}
 
+		operation?.addRecord({ msg: 'Extracting Value as String', valueType: typeof value });
 		return value.toString();
 	}
 
-	public extractLdapEntryData(entry: ldapjs.SearchEntry): ILDAPEntry {
+	public extractLdapEntryData(entry: ldapjs.SearchEntry, operation?: LogOperation): ILDAPEntry {
+		const entryOperation = operation?.addOperation('LDAPConnection.extractLdapEntryData');
+
 		const values: ILDAPEntry = {
 			_raw: entry.raw,
 		};
 
 		Object.keys(values._raw).forEach((key) => {
-			values[key] = this.extractLdapAttribute(values._raw[key]);
-
+			const attributeOperation = entryOperation?.addOperation(`Extracting Attribute ${key}`);
+			values[key] = this.extractLdapAttribute(values._raw[key], attributeOperation);
 			const dataType = typeof values[key];
+
+			attributeOperation?.addDataOperation('Value', { value: values[key], dataType });
+
 			// eslint-disable-next-line no-control-regex
 			if (dataType === 'string' && values[key].length > 100 && /[\x00-\x1F]/.test(values[key])) {
 				mapLogger.debug({
@@ -325,8 +362,15 @@ export class LDAPConnection {
 		return values;
 	}
 
-	public async doCustomSearch<T>(baseDN: string, searchOptions: ldapjs.SearchOptions, entryCallback: ILDAPEntryCallback<T>): Promise<T[]> {
-		await this.runBeforeSearch(searchOptions);
+	public async doCustomSearch<T>(
+		baseDN: string,
+		searchOptions: ldapjs.SearchOptions,
+		entryCallback: ILDAPEntryCallback<T>,
+		operation?: LogOperation,
+	): Promise<T[]> {
+		const searchOperation = operation?.addOperation('LDAPConnection.doCustomSearch');
+
+		await this.runBeforeSearch(searchOptions, searchOperation);
 
 		if (!searchOptions.scope) {
 			searchOptions.scope = this.options.userSearchScope || 'sub';
@@ -335,15 +379,18 @@ export class LDAPConnection {
 
 		let realEntries = 0;
 
+		searchOperation?.addRecord({ msg: 'Search Options', searchOptions, baseDN });
 		return new Promise((resolve, reject) => {
 			this.client.search(baseDN, searchOptions, (error, res: ldapjs.SearchCallbackResponse) => {
 				if (error) {
+					searchOperation?.addRecord({ msg: 'Search Error', error });
 					searchLogger.error(error);
 					reject(error);
 					return;
 				}
 
 				res.on('error', (error) => {
+					searchOperation?.addRecord({ msg: 'Search Response Error', error });
 					searchLogger.error(error);
 					reject(error);
 				});
@@ -351,19 +398,24 @@ export class LDAPConnection {
 				const entries: T[] = [];
 
 				res.on('searchEntry', (entry) => {
+					const entryOperation = searchOperation?.addOperation('searchEntry');
+
 					try {
+						entryOperation?.addRecord('Calling entryCallback');
 						const result = entryCallback(entry);
 						if (result) {
 							entries.push(result as T);
 						}
 						realEntries++;
 					} catch (e) {
+						entryOperation?.addRecord({ msg: 'Entry Error', error: e });
 						searchLogger.error(e);
 						throw e;
 					}
 				});
 
 				res.on('end', () => {
+					searchOperation?.addRecord({ msg: 'Search Results', entries: entries.length, realEntries });
 					searchLogger.info(`LDAP Search found ${realEntries} entries and loaded the data of ${entries.length}.`);
 					resolve(entries);
 				});
@@ -392,7 +444,7 @@ export class LDAPConnection {
 		return `(&${filter.join('')})`;
 	}
 
-	public async searchMembersOfGroupFilter(): Promise<string[]> {
+	public async searchMembersOfGroupFilter(operation?: LogOperation): Promise<string[]> {
 		if (!this.options.groupFilterEnabled) {
 			return [];
 		}
@@ -401,7 +453,10 @@ export class LDAPConnection {
 			return [];
 		}
 
+		const groupOperation = operation?.addOperation('searchMembersOfGroupFilter');
+
 		if (!this.options.groupFilterGroupMemberFormat) {
+			groupOperation?.addRecord('Missing Format setting');
 			searchLogger.debug(`LDAP Group Filter is enabled but no group member format is set.`);
 			return [];
 		}
@@ -423,14 +478,16 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
 
-		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+		const result = await this.searchRaw(this.options.baseDN, searchOptions, groupOperation);
 
 		if (!Array.isArray(result) || result.length === 0) {
 			searchLogger.debug({ msg: 'No groups found', result });
 			return [];
 		}
 
-		const members = this.extractLdapAttribute(result[0].raw[this.options.groupFilterGroupMemberAttribute]) as string | string[];
+		const extractOperation = groupOperation?.addOperation('extractLdapAttribute', { key: this.options.groupFilterGroupMemberAttribute });
+		const value = result[0].raw[this.options.groupFilterGroupMemberAttribute];
+		const members = this.extractLdapAttribute(value, extractOperation) as string | string[];
 
 		return ensureArray<string>(members);
 	}
@@ -485,14 +542,19 @@ export class LDAPConnection {
 		}
 	}
 
-	public async bindDN(dn: string, password: string): Promise<void> {
+	public async bindDN(dn: string, password: string, operation?: LogOperation): Promise<void> {
+		const bindOperation = operation?.addOperation('LDAPConnection.bindDN');
+
 		return new Promise<void>((resolve, reject) => {
 			try {
+				bindOperation?.addRecord({ msg: 'binding user', dn });
 				this.client.bind(dn, password, (error) => {
 					if (error) {
+						bindOperation?.addRecord({ msg: 'bindDN error', error });
 						return reject(error);
 					}
 
+					bindOperation?.addRecord('bindDN successful');
 					resolve();
 				});
 			} catch (error) {
@@ -506,19 +568,24 @@ export class LDAPConnection {
 		searchOptions: ldapjs.SearchOptions,
 		callback: ILDAPCallback,
 		entryCallback?: ILDAPEntryCallback<T>,
+		operation?: LogOperation,
 	): Promise<void> {
-		await this.runBeforeSearch(searchOptions);
+		const searchOperation = operation?.addOperation('LDAPConnection.doAsyncSearch');
+
+		await this.runBeforeSearch(searchOptions, searchOperation);
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
 		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (error) {
+				searchOperation?.addRecord({ msg: 'search error', error });
 				searchLogger.error(error);
 				callback(error);
 				return;
 			}
 
 			res.on('error', (error) => {
+				searchOperation?.addRecord({ msg: 'search response error', error });
 				searchLogger.error(error);
 				callback(error);
 			});
@@ -526,16 +593,26 @@ export class LDAPConnection {
 			const entries: T[] = [];
 
 			res.on('searchEntry', (entry) => {
+				const entryOperation = searchOperation?.addOperation('searchEntry');
+
 				try {
+					if (entryCallback) {
+						entryOperation?.addRecord('calling entryCallback');
+					} else {
+						entryOperation?.addRecord('using raw entry');
+					}
+
 					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 				} catch (e) {
+					entryOperation?.addRecord({ msg: 'failed to add entry ', e });
 					searchLogger.error(e);
 					throw e;
 				}
 			});
 
 			res.on('end', () => {
+				searchOperation?.addRecord({ msg: 'Search result count', count: entries.length });
 				searchLogger.info({ msg: 'Search result count', count: entries.length });
 				callback(null, entries);
 			});
@@ -545,7 +622,9 @@ export class LDAPConnection {
 	private processSearchPage<T>(
 		{ entries, title, end, next }: { entries: T[]; title: string; end: boolean; next?: () => void },
 		callback: ILDAPPageCallback,
+		operation?: LogOperation,
 	): void {
+		operation?.addRecord({ msg: 'LDAPConnection.processSearchPage', title, entries: entries.length, end, hasNext: Boolean(next) });
 		searchLogger.info(title);
 		// Force LDAP idle to wait the record processing
 		this._updateIdle(true);
@@ -566,24 +645,29 @@ export class LDAPConnection {
 		pageSize: number,
 		callback: ILDAPPageCallback,
 		entryCallback?: ILDAPEntryCallback<T>,
+		operation?: LogOperation,
 	): Promise<void> {
+		const searchOperation = operation?.addOperation('LDAPConnection.doPagedSearch');
 		searchOptions.paged = {
 			pageSize,
 			pagePause: true,
 		};
 
-		await this.runBeforeSearch(searchOptions);
+		await this.runBeforeSearch(searchOptions, searchOperation);
 
+		searchOperation?.addRecord({ msg: 'searchOptions', searchOptions, baseDN });
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
 		this.client.search(baseDN, searchOptions, (error: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (error) {
+				searchOperation?.addRecord({ msg: 'search error', error });
 				searchLogger.error(error);
 				callback(error);
 				return;
 			}
 
 			res.on('error', (error) => {
+				searchOperation?.addRecord({ msg: 'search response error', error });
 				searchLogger.error(error);
 				callback(error);
 			});
@@ -592,11 +676,21 @@ export class LDAPConnection {
 			const internalPageSize = pageSize * 2;
 
 			res.on('searchEntry', (entry) => {
+				const entryOperation = searchOperation?.addOperation('searchEntry');
+
 				try {
+					if (entryCallback) {
+						entryOperation?.addRecord('calling entryCallback');
+					} else {
+						entryOperation?.addRecord('using raw entry');
+					}
+
 					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 
 					if (entries.length >= internalPageSize) {
+						const pageOperation = operation?.addOperation('Internal Page', { entries: entries.length });
+
 						this.processSearchPage<T>(
 							{
 								entries,
@@ -604,6 +698,7 @@ export class LDAPConnection {
 								end: false,
 							},
 							callback,
+							pageOperation,
 						);
 						entries = [];
 					}
@@ -614,7 +709,10 @@ export class LDAPConnection {
 			});
 
 			res.on('page', (_result, next) => {
+				const pageOperation = searchOperation?.addOperation('page');
+
 				if (!next) {
+					pageOperation?.addRecord('final page');
 					this._updateIdle(true);
 					this.processSearchPage<T>(
 						{
@@ -623,6 +721,7 @@ export class LDAPConnection {
 							end: true,
 						},
 						callback,
+						pageOperation,
 					);
 					entries = [];
 				} else if (entries.length) {
@@ -634,12 +733,17 @@ export class LDAPConnection {
 							next,
 						},
 						callback,
+						pageOperation,
 					);
 					entries = [];
+				} else {
+					pageOperation?.addRecord('no entries to process');
 				}
 			});
 
 			res.on('end', () => {
+				const endOperation = searchOperation?.addOperation('end');
+
 				if (entries.length) {
 					this.processSearchPage<T>(
 						{
@@ -648,8 +752,11 @@ export class LDAPConnection {
 							end: true,
 						},
 						callback,
+						endOperation,
 					);
 					entries = [];
+				} else {
+					endOperation?.addRecord('no entries to process');
 				}
 			});
 		});
@@ -660,19 +767,27 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}, operation?: LogOperation): Promise<void> {
+		const bindOperation = operation?.addOperation('LDAPConnection.maybeBindDN');
+
 		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
+			bindOperation?.addRecord({
+				msg: 'Skipping maybeBindDN',
+				usingAuth: this.usingAuthentication,
+				hasAuthOptions: Boolean(this.options.authentication),
+			});
 			return;
 		}
 
 		if (!this.options.authenticationUserDN) {
+			bindOperation?.addRecord('Missing UserDN for authentication');
 			logger.error('Invalid UserDN for authentication');
 			return;
 		}
 
 		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
 		try {
-			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
+			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword, bindOperation);
 			this.usingAuthentication = true;
 		} catch (error) {
 			authLogger.error({
@@ -684,12 +799,12 @@ export class LDAPConnection {
 		}
 	}
 
-	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
-		return this.maybeBindDN();
+	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions, operation?: LogOperation): Promise<void> {
+		return this.maybeBindDN(undefined, operation);
 	}
 
-	public async bindAuthenticationUser(): Promise<void> {
-		return this.maybeBindDN({ forceBindAuthenticationUser: true });
+	public async bindAuthenticationUser(operation?: LogOperation): Promise<void> {
+		return this.maybeBindDN({ forceBindAuthenticationUser: true }, operation);
 	}
 
 	/*
@@ -760,7 +875,7 @@ export class LDAPConnection {
 		}
 	}
 
-	private initializeConnection(callback: ILDAPCallback): void {
+	private initializeConnection(callback: ILDAPCallback, operation?: LogOperation): void {
 		connLogger.info('Init Setup');
 		this._receivedResponse = false;
 		this._connectionTimedOut = false;
@@ -770,19 +885,27 @@ export class LDAPConnection {
 		connLogger.info({ msg: 'Connecting', url: clientOptions.url });
 		connLogger.debug({ msg: 'clientOptions', clientOptions });
 
+		operation?.addRecord({ msg: 'Create ldap client', clientOptions });
+
 		this.client = ldapjs.createClient(clientOptions);
 
 		this.client.on('error', (error) => {
+			operation?.addRecord({ msg: 'Client ERROR event', error });
+
 			connLogger.error(error);
 			this.handleConnectionResponse(error, null);
 		});
 
 		this.client.on('idle', () => {
+			operation?.addRecord({ msg: 'Client IDLE event' });
+
 			searchLogger.info('Idle');
 			this.disconnect();
 		});
 
 		this.client.on('close', () => {
+			operation?.addRecord({ msg: 'Client CLOSE event' });
+
 			searchLogger.info('Closed');
 		});
 
@@ -792,21 +915,26 @@ export class LDAPConnection {
 			// https://github.com/mcavage/node-ldapjs/issues/349
 			tlsOptions.host = this.options.host;
 
+			const tlsOperation = operation?.addOperation('Starting TLS');
+
 			connLogger.info('Starting TLS');
 			connLogger.debug({ msg: 'tlsOptions', tlsOptions });
 
 			this.client.starttls(tlsOptions, null, (error, response) => {
 				if (error) {
+					tlsOperation?.addRecord({ msg: 'TLS Connection Error', error });
 					connLogger.error({ msg: 'TLS connection', error });
 					return this.handleConnectionResponse(error, null);
 				}
 
+				tlsOperation?.addRecord('TLS connected');
 				connLogger.info('TLS connected');
 				this.connected = true;
 				this.handleConnectionResponse(null, response);
 			});
 		} else {
 			this.client.on('connect', (response) => {
+				operation?.addRecord('LDAP Connected');
 				connLogger.info('LDAP connected');
 				this.connected = true;
 				this.handleConnectionResponse(null, response);
@@ -815,6 +943,7 @@ export class LDAPConnection {
 
 		setTimeout(() => {
 			if (!this._receivedResponse) {
+				operation?.addRecord({ msg: 'connection time out', timeout: clientOptions.connectTimeout });
 				connLogger.error({ msg: 'connection time out', timeout: clientOptions.connectTimeout });
 				this.handleConnectionResponse(new Error('Timeout'));
 				this._connectionTimedOut = true;
