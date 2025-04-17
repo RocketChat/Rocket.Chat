@@ -3331,6 +3331,8 @@
   "LDAP_UserSearch_GroupFilter": "Group Filter",
   "LDAP_DataSync": "Data Sync",
   "LDAP_DataSync_DataMap": "Mapping",
+  "LDAP_DataSync_UseVariables": "Use Variables",
+  "LDAP_DataSync_VariableMap": "Variables Configuration",
   "Members_List": "Members List",
   "mention-all": "Mention All",
   "LDAP_DataSync_Avatar": "Avatar",
