@@ -1,5 +1,6 @@
 import { Box, Icon, TextInput, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent, useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { useFocusManager, useOverlayTrigger } from 'react-aria';
@@ -20,6 +21,7 @@ const NavBarSearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcut();
+	const { navbar } = useLayout();
 
 	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
 
@@ -108,12 +110,21 @@ const NavBarSearch = () => {
 		};
 	}, [focusManager, handleEscSearch, setFocus]);
 
+	useEffect(() => {
+		if (!state.isOpen) {
+			navbar.collapseSearch?.();
+		}
+	}, [navbar, state.isOpen]);
+
 	return (
-		<Box role='search' mie={8} width='x622' position='relative'>
+		<Box width='100%' maxWidth='x622' role='search' mi={8} position='relative'>
 			<TextInput
 				{...rest}
 				{...triggerProps}
-				onFocus={() => state.setOpen(true)}
+				onFocus={() => {
+					navbar.expandSearch?.();
+					state.setOpen(true);
+				}}
 				onKeyDown={(e) => {
 					state.setOpen(true);
 

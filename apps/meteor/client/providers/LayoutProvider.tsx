@@ -17,6 +17,7 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
 
@@ -54,6 +55,11 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					isCompactScreen,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navbar: {
+						searchExpanded: navBarSearchExpanded,
+						expandSearch: isMobile ? () => setNavBarSearchExpanded(true) : undefined,
+						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
+					},
 					sidebar: {
 						isCollapsed,
 						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
@@ -72,7 +78,18 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),
-				[isMobile, isCompactScreen, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, shouldToggle, breakpoints, hiddenActions, router],
+				[
+					isMobile,
+					isCompactScreen,
+					navBarSearchExpanded,
+					isEmbedded,
+					showTopNavbarEmbeddedLayout,
+					isCollapsed,
+					shouldToggle,
+					breakpoints,
+					hiddenActions,
+					router,
+				],
 			)}
 		/>
 	);
