@@ -166,7 +166,7 @@ export class Router<
 			// eslint-disable-next-line no-empty
 		} catch {}
 
-		return { ...overrideBodyParams };
+		return {};
 	}
 
 	private parseQueryParams(request: HonoRequest) {
