@@ -1,5 +1,5 @@
 import type { IRoom, ILivechatCustomField } from '@rocket.chat/core-typings';
-import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms, LivechatContacts } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -107,7 +107,10 @@ API.v1.addRoute(
 							errors.push(key);
 						}
 
-						await updateContactsCustomFields(visitor._id, key, value, overwrite);
+						const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+						if (contacts.length > 0) {
+							await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+						}
 
 						return key;
 					}),

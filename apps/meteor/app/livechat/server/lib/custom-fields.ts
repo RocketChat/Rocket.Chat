@@ -1,6 +1,5 @@
 import type { ILivechatContact, ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
-import type { UpdateFilter } from 'mongodb';
 
 import { livechatLogger } from './logger';
 import { i18n } from '../../../utils/lib/i18n';
@@ -20,18 +19,18 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function updateContactsCustomFields(visitorId: string, key: string, value: string, overwrite: boolean): Promise<void> {
-	const queryUpdates: UpdateFilter<ILivechatContact> = {};
-
-	if (overwrite) {
-		queryUpdates.$set = { [`customFields.${key}`]: value };
+export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+	if (overwrite || !contact.customFields || !contact.customFields[key]) {
+		contact.customFields ??= {};
+		contact.customFields[key] = value;
 	} else {
-		queryUpdates.$addToSet = { conflictingFields: { field: `customFields.${key}`, value } };
+		contact.conflictingFields ??= [];
+		contact.conflictingFields.push({ field: `customFields.${key}`, value });
 	}
 
-	await LivechatContacts.updateByVisitorId(visitorId, queryUpdates);
+	await LivechatContacts.updateContact(contact._id, { customFields: contact.customFields, conflictingFields: contact.conflictingFields });
 
-	livechatLogger.debug({ msg: 'Contacts updated', visitorId });
+	livechatLogger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
 }
 
 export async function setCustomFields({
@@ -69,6 +68,9 @@ export async function setCustomFields({
 			throw new Error(`Visitor with token "${token}" not found.`);
 		}
 
-		await updateContactsCustomFields(visitor._id, key, value, overwrite);
+		const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+		if (contacts.length > 0) {
+			await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+		}
 	}
 }

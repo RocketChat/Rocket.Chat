@@ -366,5 +366,54 @@ describe('LIVECHAT - custom fields', () => {
 					expect(res.body.contact.conflictingFields[0]).to.have.property('value', conflictingFieldValue);
 				});
 		});
+
+		it('should not save the custom field as a conflict on Contact when overwrite is false but custom field is not registered yet', async () => {
+			await createCustomField({
+				searchable: true,
+				field: `${customFieldName}_3`,
+				label: `${customFieldName}_3`,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+
+			// Save the custom field on Contact
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token: visitor.token, key: `${customFieldName}_3`, value: customFieldValue, overwrite: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			// Fetch the visitor to validate custom fields are properly set.
+			await request
+				.get(api(`livechat/visitor/${visitor.token}`))
+				.set(credentials)
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.visitor).to.have.property('livechatData');
+					expect(res.body.visitor.livechatData).to.have.property(`${customFieldName}_3`, customFieldValue);
+				});
+
+			// Fetch the visitor's contact to validate custom fields are properly set.
+			await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ contactId })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('contact');
+					expect(res.body.contact).to.have.property('customFields');
+					expect(res.body.contact.customFields).to.have.property(`${customFieldName}_3`, customFieldValue);
+
+					// Validate custom fields contain both entries, indicating conflict criteria
+					expect(res.body.contact.conflictingFields).to.have.lengthOf(1);
+					expect(res.body.contact.conflictingFields[0]).to.not.have.property('field', `customFields.${customFieldName}_3`);
+				});
+		});
 	});
 });
