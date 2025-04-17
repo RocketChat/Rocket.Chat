@@ -9,6 +9,7 @@ import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 import type { ContactInfo, VoipSession } from '../definitions';
 import LocalStream from './LocalStream';
 import RemoteStream from './RemoteStream';
+import { getMainInviteRejectionReason } from './getMainInviteRejectionReason';
 
 export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
 	callestablished: ContactInfo;
@@ -846,45 +847,9 @@ class VoipClient extends Emitter<VoipEvents> {
 	};
 
 	private onInvitationCancel(invitation: Invitation, message: SipCancel): void {
-		try {
-			const reasons = message?.request?.headers?.Reason;
-
-			const parsedReasons: string[] = reasons?.map(({ raw }) => raw.match(/text="(.+)"/)?.[1] || raw).filter((r) => r);
-			if (!parsedReasons?.length) {
-				throw new Error('error-missing-reason');
-			}
-
-			const naturalEndings = [
-				'ORIGINATOR_CANCEL',
-				'NO_ANSWER',
-				'NORMAL_CLEARING',
-				'USER_BUSY',
-				'NO_USER_RESPONSE',
-				'NORMAL_UNSPECIFIED',
-			] as const;
-
-			for (const ending of naturalEndings) {
-				if (parsedReasons.includes(ending)) {
-					// Do not emit any errors for normal endings
-					return;
-				}
-			}
-
-			if (parsedReasons.includes('USER_NOT_REGISTERED')) {
-				// This one means an error happened
-				this.emit('incomingcallerror', 'USER_NOT_REGISTERED');
-				return;
-			}
-
-			if (invitation.state === SessionState.Initial) {
-				// Call was canceled at the initial state and it was not due to one of the natural reasons, treat it as unexpected
-				this.emit('incomingcallerror', parsedReasons[0]);
-				return;
-			}
-
-			console.warn('The call was canceled for an unexpected reason', parsedReasons);
-		} catch {
-			console.error('Failed to determine the cause of an invitation cancel.');
+		const reason = getMainInviteRejectionReason(invitation, message);
+		if (reason) {
+			this.emit('incomingcallerror', reason);
 		}
 	}
 
