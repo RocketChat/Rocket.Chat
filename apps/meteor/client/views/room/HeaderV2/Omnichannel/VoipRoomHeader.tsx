@@ -1,5 +1,5 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { HeaderToolbar } from '../../../../components/Header';
@@ -12,7 +12,7 @@ type VoipRoomHeaderProps = {
 	room: IVoipRoom;
 } & Omit<RoomHeaderProps, 'room'>;
 
-const VoipRoomHeader = ({ slots: parentSlot, room }: VoipRoomHeaderProps) => {
+const VoipRoomHeader = ({ room }: VoipRoomHeaderProps) => {
 	const router = useRouter();
 
 	const currentRouteName = useSyncExternalStore(
@@ -20,16 +20,13 @@ const VoipRoomHeader = ({ slots: parentSlot, room }: VoipRoomHeaderProps) => {
 		useCallback(() => router.getRouteName(), [router]),
 	);
 
-	const { isMobile } = useLayout();
-
 	const slots = useMemo(
 		() => ({
-			...parentSlot,
-			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
+			start: currentRouteName === 'omnichannel-directory' && (
 				<HeaderToolbar>{currentRouteName === 'omnichannel-directory' && <BackButton />}</HeaderToolbar>
 			),
 		}),
-		[isMobile, currentRouteName, parentSlot],
+		[currentRouteName],
 	);
 	return <RoomHeader slots={slots} room={{ ...room, name: parseOutboundPhoneNumber(room.fname) }} />;
 };
