@@ -222,7 +222,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 		});
 
-		it('should return an error if requestTagsBeforeClosing is true but no tags are provided', async () => {
+		it('should return an error if requestTagBeforeClosing is true but no tags are provided', async () => {
 			await request
 				.post(api('livechat/department'))
 				.set(credentials)
@@ -240,7 +240,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 		});
 
-		it('should return an error if requestTagsBeforeClosing is true but tags are not an array', async () => {
+		it('should return an error if requestTagBeforeClosing is true but tags are not an array', async () => {
 			await request
 				.post(api('livechat/department'))
 				.set(credentials)
@@ -257,6 +257,31 @@ import { IS_EE } from '../../../e2e/config/constants';
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+
+		it('should create department if requestTagBeforeClosing is true and tags are an array', async () => {
+			const chatClosingTags = ['tagA', 'tagB'];
+			const { body } = await request
+				.post(api('livechat/department'))
+				.set(credentials)
+				.send({
+					department: {
+						name: 'Test',
+						enabled: true,
+						showOnOfflineForm: true,
+						showOnRegistration: true,
+						email: 'bla@bla',
+						requestTagBeforeClosingChat: true,
+						chatClosingTags,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body.department).to.have.property('requestTagBeforeClosingChat', true);
+			expect(body.department.chatClosingTags).to.deep.equal(chatClosingTags);
+
+			await deleteDepartment(body.department._id);
 		});
 
 		it('should return an error if fallbackForwardDepartment is present but is not a department id', async () => {
