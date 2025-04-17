@@ -1,3 +1,4 @@
+import type { Keys } from '@rocket.chat/icons';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMutation } from '@tanstack/react-query';
@@ -52,6 +53,7 @@ export const useVoipTogglerAction = () => {
 	return {
 		handleToggleVoip: () => toggleVoip.mutate(),
 		title,
+		icon: (isRegistered ? 'phone' : 'phone-disabled') as Keys,
 		isEnabled,
 		isRegistered,
 		isDisabled: !isReady || toggleVoip.isPending || isReconnecting,
