@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 
-import { api, credentials, request } from '../api-data';
+import { api, credentials, request, methodCall } from '../api-data';
 import { password } from '../user';
 import { createUser, login } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
@@ -75,4 +75,24 @@ export const createAnOfflineAgent = async (): Promise<{
 		credentials: createdUserCredentials,
 		user: agent,
 	};
+};
+
+export const updateLivechatSettingsForUser = async (
+	agentId: string,
+	livechatSettings: Record<string, any>,
+	agentDepartments: string[] = [],
+): Promise<void> => {
+	await request
+		.post(methodCall('livechat:saveAgentInfo'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'livechat:saveAgentInfo',
+				params: [agentId, livechatSettings, agentDepartments],
+				id: 'id',
+				msg: 'method',
+			}),
+		})
+		.expect('Content-Type', 'application/json')
+		.expect(200);
 };

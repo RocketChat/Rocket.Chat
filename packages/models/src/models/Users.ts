@@ -678,12 +678,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async getAgentAndAmountOngoingChats(userId: IUser['_id']): Promise<{
+	async getAgentAndAmountOngoingChats(
+		userId: IUser['_id'],
+		departmentId?: string,
+	): Promise<{
 		agentId: string;
 		username?: string;
 		lastAssignTime?: Date;
 		lastRoutingTime?: Date;
-		queueInfo: { chats: number };
+		queueInfo: { chats: number; chatsForDepartment?: number };
 	}> {
 		const aggregate = [
 			{
@@ -718,6 +721,26 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 							},
 						},
 					},
+					...(departmentId
+						? {
+								'queueInfo.chatsForDepartment': {
+									$size: {
+										$filter: {
+											input: '$subs',
+											as: 'sub',
+											cond: {
+												$and: [
+													{ $eq: ['$$sub.t', 'l'] },
+													{ $eq: ['$$sub.open', true] },
+													{ $ne: ['$$sub.onHold', true] },
+													{ $eq: ['$$sub.department', departmentId] },
+												],
+											},
+										},
+									},
+								},
+							}
+						: {}),
 				},
 			},
 			{ $sort: { 'queueInfo.chats': 1, 'lastAssignTime': 1, 'lastRoutingTime': 1, 'username': 1 } },
@@ -1605,27 +1628,8 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	async getUnavailableAgents(
-		_departmentId?: string | undefined,
-		_extraQuery?: Document | undefined,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	> {
-		return [] as {
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[];
+	async getUnavailableAgents(_departmentId?: string, _extraQuery?: Document): Promise<{ username: string }[]> {
+		return [];
 	}
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T> {

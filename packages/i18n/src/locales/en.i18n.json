@@ -4162,6 +4162,7 @@
   "Missing_configuration": "Missing configuration",
   "Recent_Import_History": "Recent Import History",
   "Record": "Record",
+  "Reconnecting": "Reconnecting",
   "Mobex_sms_gateway_address": "Mobex SMS Gateway Address",
   "Mobex_sms_gateway_address_desc": "IP or Host of your Mobex service with specified port. E.g. `http://192.168.1.1:1401` or `https://www.example.com:1401`",
   "Mobex_sms_gateway_from_number": "From",
