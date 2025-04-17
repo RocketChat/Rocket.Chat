@@ -25,7 +25,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 			open,
 		})),
 	departmentsToApplyBusinessHour: '',
-	active: businessHourData?.active || true,
+	active: businessHourData?.active ?? true,
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
