@@ -16,7 +16,7 @@ const TwoFactorRequiredModal = () => {
 			<ModalHeader>
 				<ModalTitle>{t('Two-factor_authentication_required')}</ModalTitle>
 			</ModalHeader>
-			<ModalContent>{t('Two-factor_authentication_required_modal')}</ModalContent>
+			<ModalContent>{t('Enable_two-factor_authentication_callout_description')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button primary onClick={closeModal}>

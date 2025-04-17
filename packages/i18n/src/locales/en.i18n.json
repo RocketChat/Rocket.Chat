@@ -1680,7 +1680,6 @@
   "Custom_Script_On_Logout": "Custom Script for Logout Flow",
   "Custom_Script_On_Logout_Description": "Custom Script that will run on execute logout flow  ONLY",
   "Two-factor_authentication_required": "Two-factor authentication required",
-  "Two-factor_authentication_required_modal": "Two-factor authentication (2FA) is now required for your account on this workspace. 2FA must be setup and enabled before you can proceed with other tasks.",
   "Set_up_2FA": "Set up 2FA",
   "Disabled": "Disabled",
   "Disallow_reacting": "Disallow Reacting",
