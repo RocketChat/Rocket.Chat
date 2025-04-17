@@ -1,5 +1,5 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentPropsWithoutRef, FormEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
@@ -51,44 +51,54 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		updateCodesRemaining();
 	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
 
-	const handleEnableTotp = useCallback(
-		async (e: FormEvent<HTMLInputElement>) => {
-			if (!e.currentTarget?.checked) {
-				if (!totpEnabled) {
-					setRegisteringTotp(false);
-				} else {
-					const onDisable = async (authCode: string): Promise<void> => {
-						try {
-							const result = await disableTotpFn(authCode);
+	const enableTotp = useEffectEvent(async () => {
+		try {
+			const result = await enableTotpFn();
 
-							if (!result) {
-								return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-							}
+			setTotpSecret(result.secret);
+			setQrCode(qrcode(result.url, { size: 200 }));
 
-							dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						}
-						closeModal();
-					};
+			setRegisteringTotp(true);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
 
-					setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
+	const disableTotp = useEffectEvent(async () => {
+		if (!totpEnabled) {
+			setRegisteringTotp(false);
+
+			return;
+		}
+
+		const onDisable = async (authCode: string): Promise<void> => {
+			try {
+				const result = await disableTotpFn(authCode);
+
+				if (!result) {
+					dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+
+					return;
 				}
-			} else {
-				try {
-					const result = await enableTotpFn();
 
-					setTotpSecret(result.secret);
-					setQrCode(qrcode(result.url, { size: 200 }));
-
-					setRegisteringTotp(true);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
+				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-		},
-		[closeModal, disableTotpFn, dispatchToastMessage, enableTotpFn, setModal, setQrCode, setRegisteringTotp, setTotpSecret, t, totpEnabled],
-	);
+
+			closeModal();
+		};
+
+		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
+	});
+
+	const handleToggleTotp = useEffectEvent(async (e: FormEvent<HTMLInputElement>) => {
+		if (e.currentTarget?.checked) {
+			void enableTotp();
+		} else {
+			void disableTotp();
+		}
+	});
 
 	const totpId = useId();
 	const totpCodeId = useId();
@@ -136,7 +146,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 				<Field>
 					<FieldRow>
 						<FieldLabel htmlFor={totpId}>{t('Two-factor_authentication_via_TOTP')}</FieldLabel>
-						<ToggleSwitch id={totpId} checked={registeringTotp || totpEnabled} onChange={handleEnableTotp} />
+						<ToggleSwitch id={totpId} checked={registeringTotp || totpEnabled} onChange={handleToggleTotp} />
 					</FieldRow>
 				</Field>
 				{!totpEnabled && registeringTotp && (
