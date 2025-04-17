@@ -1,4 +1,5 @@
 import type {
+	AvailableAgentsAggregation,
 	AtLeast,
 	DeepWritable,
 	ILivechatAgent,
@@ -1657,7 +1658,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	async getUnavailableAgents(_departmentId?: string, _extraQuery?: Document): Promise<{ username: string }[]> {
+	async getUnavailableAgents(
+		_departmentId?: string,
+		_extraQuery?: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		return [];
 	}
 
@@ -1939,7 +1943,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>, enabledWhenAgentIdle?: boolean) {
+	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<AvailableAgentsAggregation>, enabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
 		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);

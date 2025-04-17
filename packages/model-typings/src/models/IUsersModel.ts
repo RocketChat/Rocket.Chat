@@ -1,4 +1,5 @@
 import type {
+	AvailableAgentsAggregation,
 	IUser,
 	IRole,
 	ILivechatAgent,
@@ -253,7 +254,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): FindCursor<T>;
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
-	getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]>;
+	getUnavailableAgents(
+		departmentId?: string,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,
@@ -292,7 +296,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countAgents(): Promise<number>;
 	getNextAgent(
 		ignoreAgentId?: string,
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 		enabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;

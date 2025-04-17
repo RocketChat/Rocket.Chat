@@ -1,12 +1,12 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
-import type { Document } from 'mongodb';
+import type { Filter } from 'mongodb';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 
-export async function getChatLimitsQuery(departmentId?: string): Promise<Document[] | Document> {
-	const limitFilter: Document[] = [];
+export async function getChatLimitsQuery(departmentId?: string): Promise<Filter<AvailableAgentsAggregation>> {
+	const limitFilter: Filter<AvailableAgentsAggregation> = [];
 
 	if (departmentId) {
 		const departmentLimit =
