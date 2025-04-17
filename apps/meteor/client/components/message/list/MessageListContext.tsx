@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { KeyboardEvent, MouseEvent, RefObject } from 'react';
+import type { KeyboardEvent, MouseEvent, MutableRefObject } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { useFormatDate } from '../../../hooks/useFormatDate';
@@ -34,7 +34,6 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	messageListRef?: RefObject<HTMLElement>;
 	apiEmbedEnabled: boolean;
 	readReceipts: {
 		enabled: boolean;
@@ -43,6 +42,7 @@ export type MessageListContextValue = {
 	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
+	messageListRef?: MutableRefObject<HTMLElement | undefined>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -64,7 +64,6 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showUsername: false,
 	showColors: false,
 	username: undefined,
-	messageListRef: { current: null },
 	apiEmbedEnabled: false,
 	readReceipts: {
 		enabled: false,
@@ -74,6 +73,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
+	messageListRef: { current: undefined },
 });
 
 export const useShowTranslated: MessageListContextValue['autoTranslate']['showAutoTranslate'] = (...args) =>
