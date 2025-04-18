@@ -6,13 +6,14 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getInstanceList } from '../../../app/api/server/helpers/getInstanceList';
 import { isRunningMs } from '../../../server/lib/isRunningMs';
+import { Instance } from '../../server/sdk';
 
 export async function fetchAppsStatusFromCluster() {
 	if (isRunningMs()) {
-		return Apps.getAppsStatusInCluster();
+		return Apps.getAppsStatusInNodes();
 	}
 
-	return fetchAppsStatusFromHighAvailability();
+	return Instance.getAppsStatusInInstances();
 }
 
 export async function fetchAppsStatusFromHighAvailability(): Promise<AppStatusReport> {

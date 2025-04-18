@@ -125,6 +125,16 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return (await Apps.self?.getManager()?.get(query))?.map((app) => app.getInfo());
 	}
 
+	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
+		const app = Apps.self?.getManager()?.getOneById(appId);
+
+		if (!app) {
+			return;
+		}
+
+		return app.getStorageItem();
+	}
+
 	async getAppsStatusLocal(): Promise<{ status: AppStatus; appId: string }[]> {
 		const apps = await Apps.self?.getManager()?.get();
 
@@ -140,17 +150,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		);
 	}
 
-	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
-		const app = Apps.self?.getManager()?.getOneById(appId);
-
-		if (!app) {
-			return;
-		}
-
-		return app.getStorageItem();
-	}
-
-	async getAppsStatusInCluster(): Promise<AppStatusReport> {
+	async getAppsStatusInNodes(): Promise<AppStatusReport> {
 		if (!isRunningMs()) {
 			throw new Error('Getting apps status in cluster is only available in microservices mode');
 		}

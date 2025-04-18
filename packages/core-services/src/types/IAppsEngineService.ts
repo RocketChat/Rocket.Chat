@@ -11,5 +11,6 @@ export interface IAppsEngineService {
 	isInitialized(): boolean;
 	getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined>;
 	getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined>;
-	getAppsStatusInCluster(): Promise<AppStatusReport>;
+	getAppsStatusLocal(): Promise<{ appId: string; status: AppStatus }[]>;
+	getAppsStatusInNodes(): Promise<AppStatusReport>;
 }

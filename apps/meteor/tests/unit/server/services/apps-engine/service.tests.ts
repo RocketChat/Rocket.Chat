@@ -1,3 +1,4 @@
+import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -36,24 +37,24 @@ const serviceMocks = {
 const { AppsEngineService } = proxyquire.noCallThru().load('../../../../../server/services/apps-engine/service', serviceMocks);
 
 describe('AppsEngineService', () => {
-	let service: InstanceType<typeof AppsEngineService>;
+	let service: IAppsEngineService;
 
 	it('should instantiate properly', () => {
 		expect(new AppsEngineService()).to.be.instanceOf(AppsEngineService);
 	});
 
-	describe('#getAppsStatusInCluster - part 1', () => {
+	describe('#getAppsStatusInNode - part 1', () => {
 		it('should error if api is not available', async () => {
 			isRunningMsMock.returns(true);
 
 			const service = new AppsEngineService();
-			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('AppsEngineService is not initialized');
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('AppsEngineService is not initialized');
 		});
 	});
 
 	beforeEach(() => {
 		service = new AppsEngineService();
-		service.api = apiMock;
+		(service as any).api = apiMock;
 	});
 
 	afterEach(() => {
@@ -146,10 +147,10 @@ describe('AppsEngineService', () => {
 		});
 	});
 
-	describe('#getAppsStatusInCluster - part 2', () => {
+	describe('#getAppsStatusInNode - part 2', () => {
 		it('should throw error when not in microservices mode', async () => {
 			isRunningMsMock.returns(false);
-			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith(
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith(
 				'Getting apps status in cluster is only available in microservices mode',
 			);
 		});
@@ -159,7 +160,7 @@ describe('AppsEngineService', () => {
 			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call.resolves([{ name: 'apps-engine', nodes: ['node1'] }]);
 
-			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('Not enough Apps-Engine nodes in deployment');
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('Not enough Apps-Engine nodes in deployment');
 		});
 
 		it('should not call the service for the local node', async () => {
@@ -176,7 +177,7 @@ describe('AppsEngineService', () => {
 				.onThirdCall()
 				.rejects(new Error('Should not be called'));
 
-			const result = await service.getAppsStatusInCluster();
+			const result = await service.getAppsStatusInNodes();
 
 			expect(result).to.deep.equal({
 				app1: [{ instanceId: 'node2', status: 'enabled' }],
@@ -201,7 +202,7 @@ describe('AppsEngineService', () => {
 					{ status: 'enabled', appId: 'app2' },
 				]);
 
-			const result = await service.getAppsStatusInCluster();
+			const result = await service.getAppsStatusInNodes();
 
 			expect(result).to.deep.equal({
 				app1: [
@@ -224,7 +225,7 @@ describe('AppsEngineService', () => {
 				.onSecondCall()
 				.resolves(undefined);
 
-			await expect(service.getAppsStatusInCluster()).to.be.rejectedWith('Failed to get apps status from node node2');
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('Failed to get apps status from node node2');
 		});
 	});
 });
