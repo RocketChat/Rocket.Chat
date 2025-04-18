@@ -1,0 +1,40 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "only_numbers_and_English",
+      "value": "Only numbers and English can be entered"
+    },
+    {
+      "name": "visitor_name_cannot_empty",
+      "value": "visitor name cannot be empty"
+    },
+    {
+      "name": "enter_correct_phone_number",
+      "value": "Please enter the correct phone number"
+    },
+    {
+      "name": "enter_correct_email",
+      "value": "Please enter the correct email address"
+    },
+    {
+      "name": "channel_name_cannot_be_empty",
+      "value": "channelName cannot be empty"
+    },
+    {
+      "name": "group_name_cannot_be_empty",
+      "value": "group name cannot be empty"
+    }
+  ]
+}

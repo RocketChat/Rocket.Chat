@@ -1,0 +1,18 @@
+{
+  "license": "MIT",
+  "devDependencies": {},
+  "keywords": [
+    "OpenHarmony",
+    "rocketchat"
+  ],
+  "author": "hihope",
+  "name": "@ohos/rocketchat",
+  "description": "Application interface for server methods and message stream subscriptions.Using this package third party apps can control and query a Rocket.Chat server instance, via REST APIs. Designed especially for chat automation, this library makes it easy for application developers to provide the best solutions and experience for their community.",
+  "main": "rocketChat.ets",
+  "repository": "https://gitee.com/openharmony-tpc/RocketChat",
+  "version": "2.0.1",
+  "dependencies": {},
+  "tags": [
+    "rocketchat"
+  ]
+}
