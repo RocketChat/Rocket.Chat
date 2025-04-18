@@ -4614,6 +4614,7 @@
   "Page_not_found": "Fant ikke siden",
   "set-react-when-readonly_description": "Tillatelse til å angi evnen til å reagere på meldinger i en skrivebeskyttet kanal",
   "set-readonly": "Sett skrivebeskyttet",
+  "Pages": "Sider",
   "set-readonly_description": "Tillatelse til å sette en kanal til skrivebeskyttet kanal",
   "Settings": "Innstillinger",
   "Parent_channel_or_team": "Foreldrekanal eller team",

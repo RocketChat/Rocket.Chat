@@ -4685,6 +4685,7 @@
   "Page_not_found": "Page not found",
   "set-react-when-readonly_description": "Permission to set the ability to react to messages in a read only channel",
   "set-readonly": "Set ReadOnly",
+  "Pages": "Pages",
   "Pages_and_actions": "Pages and actions",
   "set-readonly_description": "Permission to set a channel to read only channel",
   "Settings": "Settings",
