@@ -4,6 +4,11 @@ import userEvent from '@testing-library/user-event';
 
 import NavBarItemAdministrationMenu from './NavBarItemAdministrationMenu';
 
+const handleMenuClick = async () => {
+	const menuButton = await screen.findByRole('button', { name: 'Manage' });
+	await userEvent.click(menuButton);
+};
+
 it('should not display the menu if no permission is set', async () => {
 	render(<NavBarItemAdministrationMenu />, { wrapper: mockAppRoot().build() });
 
@@ -13,8 +18,7 @@ it('should not display the menu if no permission is set', async () => {
 it('should display the workspace menu item if at least one admin permission is set', async () => {
 	render(<NavBarItemAdministrationMenu />, { wrapper: mockAppRoot().withPermission('access-permissions').build() });
 
-	const menuButton = await screen.findByRole('button', { name: 'Manage' });
-	await userEvent.click(menuButton);
+	await handleMenuClick();
 	expect(await screen.findByRole('menuitem', { name: 'Workspace' })).toBeInTheDocument();
 });
 
@@ -23,8 +27,7 @@ it('should display the omnichannel menu item if view-livechat-manager permission
 		wrapper: mockAppRoot().withPermission('view-livechat-manager').withPermission('access-permissions').build(),
 	});
 
-	const menuButton = await screen.findByRole('button', { name: 'Manage' });
-	await userEvent.click(menuButton);
+	await handleMenuClick();
 	expect(await screen.findByRole('menuitem', { name: 'Omnichannel' })).toBeInTheDocument();
 });
 
@@ -33,9 +36,7 @@ it('should not display any audit items if has at least one admin permission, som
 		wrapper: mockAppRoot().withPermission('access-permissions').withPermission('can-audit').build(),
 	});
 
-	const menuButton = await screen.findByRole('button', { name: 'Manage' });
-	await userEvent.click(menuButton);
-
+	await handleMenuClick();
 	expect(screen.queryByRole('menuitem', { name: 'Messages' })).not.toBeInTheDocument();
 });
 
@@ -58,9 +59,7 @@ it('should display audit items if has at least one admin permission, both audit 
 			.build(),
 	});
 
-	const menuButton = await screen.findByRole('button', { name: 'Manage' });
-	await userEvent.click(menuButton);
-
+	await handleMenuClick();
 	await waitFor(() => {
 		expect(screen.getByText('Messages')).toBeInTheDocument();
 	});
