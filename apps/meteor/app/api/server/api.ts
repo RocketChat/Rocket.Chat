@@ -7,8 +7,7 @@ import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
-import express from 'express';
-import type { Request, Response } from 'express';
+import type express from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -34,12 +33,15 @@ import type {
 	TypedAction,
 	TypedOptions,
 	UnauthorizedResult,
+	RedirectStatusCodes,
+	RedirectResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
+import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import type { Route } from './router';
 import { Router } from './router';
@@ -86,7 +88,7 @@ interface IAPIDefaultFieldsToExclude {
 	inviteToken: number;
 }
 
-type RateLimiterOptions = {
+export type RateLimiterOptions = {
 	numRequestsAllowed?: number;
 	intervalTimeInMS?: number;
 };
@@ -102,34 +104,6 @@ const rateLimiterDictionary: Record<
 		options: RateLimiterOptions;
 	}
 > = {};
-
-const getRequestIP = (req: Request): string | null => {
-	const socket = req.socket || (req.connection as any)?.socket;
-	const remoteAddress = String(
-		req.headers['x-real-ip'] || (typeof socket !== 'string' && (socket?.remoteAddress || req.connection?.remoteAddress || null)),
-	);
-	const forwardedFor = String(req.headers['x-forwarded-for']);
-
-	if (!socket) {
-		return remoteAddress || forwardedFor || null;
-	}
-
-	const httpForwardedCount = parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0;
-	if (httpForwardedCount <= 0) {
-		return remoteAddress;
-	}
-
-	if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
-		return remoteAddress;
-	}
-
-	const forwardedForIPs = forwardedFor.trim().split(/\s*,\s*/);
-	if (httpForwardedCount > forwardedForIPs.length) {
-		return remoteAddress;
-	}
-
-	return forwardedForIPs[forwardedForIPs.length - httpForwardedCount];
-};
 
 const generateConnection = (
 	ipAddress: string,
@@ -218,7 +192,6 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-
 		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
@@ -273,6 +246,13 @@ export class APIClass<
 		} as SuccessResult<T>;
 
 		return finalResult as SuccessResult<T>;
+	}
+
+	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
+		return {
+			statusCode: code,
+			body: result,
+		};
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
@@ -340,6 +320,16 @@ export class APIClass<
 		};
 	}
 
+	public unavailableResult<T>(msg?: T): InternalError<T, 503, 'Service unavailable'> {
+		return {
+			statusCode: 503,
+			body: {
+				success: false,
+				error: msg || 'Service unavailable',
+			},
+		};
+	}
+
 	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
 		return {
 			statusCode: 401,
@@ -399,9 +389,12 @@ export class APIClass<
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
 		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
-		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? '');
-		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
-		response.setHeader('X-RateLimit-Reset', new Date().getTime() + attemptResult.timeToReset);
+		response.headers.set(
+			'X-RateLimit-Limit',
+			String(rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed ?? ''),
+		);
+		response.headers.set('X-RateLimit-Remaining', String(attemptResult.numInvocationsLeft));
+		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
 			throw new Meteor.Error(
@@ -438,7 +431,7 @@ export class APIClass<
 	}: {
 		routes: string[];
 		rateLimiterOptions: RateLimiterOptions | boolean;
-		endpoints: string[];
+		endpoints: Record<string, string> | string[];
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
 			throw new Meteor.Error('"rateLimiterOptions" must be an object');
@@ -485,8 +478,8 @@ export class APIClass<
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
-		const code = request.headers['x-2fa-code'] ? String(request.headers['x-2fa-code']) : undefined;
-		const method = request.headers['x-2fa-method'] ? String(request.headers['x-2fa-method']) : undefined;
+		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
+		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
 
 		await checkCodeForUser({
 			user: userId,
@@ -620,7 +613,7 @@ export class APIClass<
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
 	> {
-		this.addRoute([subpath], { ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
@@ -752,6 +745,7 @@ export class APIClass<
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(operations).forEach((method) => {
 				const _options = { ...options };
+				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
 					(operations as Record<string, any>)[method as string] = {
@@ -771,14 +765,12 @@ export class APIClass<
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.requestIp = getRequestIP(this.request)!;
-
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute(this.request);
+							const user = await api.authenticatedRoute.call(this, this.request);
 							this.user = user!;
-							this.userId = String(this.request.headers['x-user-id']);
-							this.token = (this.request.headers['x-auth-token'] &&
-								Accounts._hashLoginToken(String(this.request.headers['x-auth-token'])))!;
+							this.userId = String(this.request.headers.get('x-user-id'));
+							const authToken = this.request.headers.get('x-auth-token');
+							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
 						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
@@ -796,7 +788,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${api.apiPath}${this.request.route.path}${this.request.method.toLowerCase()}`,
+							route: `/${route}${this.request.method.toLowerCase()}`,
 						};
 
 						let result;
@@ -903,7 +895,7 @@ export class APIClass<
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).logger = logger;
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
-					_options as TypedOptions,
+					{ ..._options, tags } as TypedOptions,
 					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
@@ -922,9 +914,11 @@ export class APIClass<
 	}
 
 	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const { 'x-user-id': userId } = req.headers;
+		const headers = Object.fromEntries(req.headers.entries());
 
-		const userToken = String(req.headers['x-auth-token']);
+		const { 'x-user-id': userId } = headers;
+
+		const userToken = String(headers['x-auth-token']);
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -963,7 +957,7 @@ export class APIClass<
 				return bodyParams;
 			}
 
-			const code = bodyCode || request.headers['x-2fa-code'];
+			const code = bodyCode || request.headers.get('x-2fa-code');
 
 			const auth: Record<string, any> = {
 				password,
@@ -1025,7 +1019,7 @@ export class APIClass<
 					const args = loginCompatibility(this.bodyParams, request);
 
 					const invocation = new DDPCommon.MethodInvocation({
-						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
+						connection: generateConnection(this.requestIp || '', this.request.headers),
 					});
 
 					try {
@@ -1217,13 +1211,10 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-Meteor.startup(() => {
-	(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(
+export const startRestAPI = () => {
+	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
-			.use((_req, res, next) => {
-				res.removeHeader('X-Powered-By');
-				next();
-			})
+			.use(remoteAddressMiddleware)
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
@@ -1231,18 +1222,4 @@ Meteor.startup(() => {
 			.use(API.v1.router)
 			.use(API.default.router).router,
 	);
-});
-
-(WebApp.connectHandlers as unknown as ReturnType<typeof express>)
-	.use(
-		express.json({
-			limit: '50mb',
-		}),
-	)
-	.use(
-		express.urlencoded({
-			extended: true,
-			limit: '50mb',
-		}),
-	)
-	.use(express.query({}));
+};

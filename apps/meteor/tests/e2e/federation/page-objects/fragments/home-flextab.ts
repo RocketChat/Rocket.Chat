@@ -44,6 +44,10 @@ export class FederationHomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
 	}
 
+	get btnVideoCall(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
+	}
+
 	get btnDiscussion(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-discussion"]');
 	}

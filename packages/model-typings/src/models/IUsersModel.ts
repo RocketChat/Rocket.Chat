@@ -117,7 +117,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 	getAgentAndAmountOngoingChats(
 		userId: IUser['_id'],
-	): Promise<{ agentId: string; username?: string; lastAssignTime?: Date; lastRoutingTime?: Date; queueInfo: { chats: number } }>;
+		departmentId?: string,
+	): Promise<{
+		agentId: string;
+		username?: string;
+		lastAssignTime?: Date;
+		lastRoutingTime?: Date;
+		queueInfo: { chats: number; chatsForDepartment?: number };
+	}>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 
@@ -230,6 +237,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
 
+	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
+
 	findSearchedServerNamesByUserId(userId: IUser['_id']): Promise<string[]>;
 
 	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
@@ -242,19 +251,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): FindCursor<T>;
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
-	getUnavailableAgents(
-		departmentId?: string,
-		extraQuery?: Document,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	>;
+	getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,

@@ -7,8 +7,8 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { schedulerLogger } from './logger';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { returnRoomAsInquiry } from '../../../../../app/livechat/server/lib/rooms';
 import { settings } from '../../../../../app/settings/server';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
@@ -91,7 +91,7 @@ export class AutoTransferChatSchedulerClass {
 		if (!RoutingManager.getConfig()?.autoAssignAgent) {
 			this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
 
-			await LivechatTyped.returnRoomAsInquiry(room, departmentId, {
+			await returnRoomAsInquiry(room, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: await this.getSchedulerUser(),
