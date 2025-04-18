@@ -55,7 +55,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	public async init() {
-		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI } = this.config;
+		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI, iceGatheringTimeout } = this.config;
 
 		const transportOptions = {
 			server: webSocketURI,
@@ -64,7 +64,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		};
 
 		const sdpFactoryOptions = {
-			iceGatheringTimeout: 10,
+			...(typeof iceGatheringTimeout === 'number' && { iceGatheringTimeout }),
 			peerConnectionConfiguration: { iceServers },
 		};
 
