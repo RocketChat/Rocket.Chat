@@ -53,11 +53,11 @@ export class OmnichannelContacts {
 	}
 
 	get inputStatus(): Locator {
-		return this.page.locator("//*[label='Status']/button");
+		return this.page.getByTestId('hidden-select-container');
 	}
 
 	get inputTags(): Locator {
-		return this.page.locator('//*[label="Tags"]').getByRole('listbox');
+		return this.page.getByRole('listbox').nth(2);
 	}
 
 	get inputFromDate(): Locator {
