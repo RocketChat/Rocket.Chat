@@ -1,7 +1,5 @@
-import { isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
@@ -12,11 +10,11 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRoom } from '../../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';
-import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import { useRoom } from '../../views/room/contexts/RoomContext';
+import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
-const useVideoConfMenuOptions = () => {
+export const useVideoCallRoomAction = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const user = useUser();
@@ -54,7 +52,6 @@ const useVideoConfMenuOptions = () => {
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
 	const disabled = federated || (!!room.ro && !permittedToPostReadonly);
 	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : '';
-	const order = isOmnichannelRoom(room) ? -1 : 4;
 
 	const handleOpenVideoConf = useEffectEvent(async () => {
 		if (isCalling || isRinging) {
@@ -69,29 +66,21 @@ const useVideoConfMenuOptions = () => {
 		}
 	});
 
-	return useMemo(() => {
-		const items: GenericMenuItemProps[] = [
-			{
-				id: 'start-video-call',
-				icon: 'video',
-				disabled,
-				onClick: handleOpenVideoConf,
-				content: (
-					<Box is='span' title={tooltip}>
-						{t('Video_call')}
-					</Box>
-				),
-			},
-		];
+	return useMemo((): RoomToolboxActionConfig | undefined => {
+		if (!allowed) {
+			return undefined;
+		}
 
 		return {
-			items,
-			disabled,
-			allowed,
-			order,
+			id: 'start-video-call',
+			title: 'Video_call',
+			icon: 'video',
+			featured: true,
+			action: handleOpenVideoConf,
+			order: -1,
 			groups,
+			disabled,
+			tooltip,
 		};
-	}, [allowed, disabled, groups, handleOpenVideoConf, order, t, tooltip]);
+	}, [allowed, groups, disabled, handleOpenVideoConf, tooltip]);
 };
-
-export default useVideoConfMenuOptions;

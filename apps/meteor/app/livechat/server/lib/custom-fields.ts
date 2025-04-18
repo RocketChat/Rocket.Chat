@@ -1,5 +1,5 @@
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import { LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
+import type { ILivechatContact, ILivechatCustomField } from '@rocket.chat/core-typings';
+import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
 import { i18n } from '../../../utils/lib/i18n';
@@ -19,7 +19,31 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
+export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+	if (overwrite || !contact.customFields || !contact.customFields[key]) {
+		contact.customFields ??= {};
+		contact.customFields[key] = value;
+	} else {
+		contact.conflictingFields ??= [];
+		contact.conflictingFields.push({ field: `customFields.${key}`, value });
+	}
+
+	await LivechatContacts.updateContact(contact._id, { customFields: contact.customFields, conflictingFields: contact.conflictingFields });
+
+	livechatLogger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
+}
+
+export async function setCustomFields({
+	token,
+	key,
+	value,
+	overwrite,
+}: {
+	key: string;
+	value: string;
+	overwrite: boolean;
+	token: string;
+}): Promise<number> {
 	livechatLogger.debug(`Setting custom fields data for visitor with token ${token}`);
 
 	const customField = await LivechatCustomField.findOneById(key);
@@ -39,6 +63,14 @@ export async function setCustomFields({ token, key, value, overwrite }: { key: s
 		result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 	} else {
 		result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		if (visitor) {
+			const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+			if (contacts.length > 0) {
+				await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+			}
+		}
 	}
 
 	if (typeof result === 'boolean') {
