@@ -8,11 +8,10 @@ import { useOmnichannelCallToggleAction } from '../NavBarOmnichannelGroup/hooks/
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	voipItems: GenericMenuItemProps[];
 	omnichannelItems: GenericMenuItemProps[];
-	isVoipEnabled: boolean;
 	isPressed: boolean;
 };
 
-const NavBarControlsWithCall = ({ voipItems, omnichannelItems, isVoipEnabled, isPressed, ...props }: NavBarControlsMenuProps) => {
+const NavBarControlsWithCall = ({ voipItems, omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
 	const {
 		icon: omnichannelCallIcon,
 		title: omnichannelCallTitle,
@@ -45,15 +44,7 @@ const NavBarControlsWithCall = ({ voipItems, omnichannelItems, isVoipEnabled, is
 		},
 	] as GenericMenuItemProps[];
 
-	return (
-		<NavBarControlsMenu
-			voipItems={voipItems}
-			omnichannelItems={omnichannelItemsWithCall}
-			isVoipEnabled={isVoipEnabled}
-			isPressed={isPressed}
-			{...props}
-		/>
-	);
+	return <NavBarControlsMenu voipItems={voipItems} omnichannelItems={omnichannelItemsWithCall} isPressed={isPressed} {...props} />;
 };
 
 export default NavBarControlsWithCall;

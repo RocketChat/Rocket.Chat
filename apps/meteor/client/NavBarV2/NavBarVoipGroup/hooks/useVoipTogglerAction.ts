@@ -9,7 +9,7 @@ export const useVoipTogglerAction = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { clientError, isEnabled, isReady, isRegistered, isReconnecting } = useVoipState();
+	const { clientError, isReady, isRegistered, isReconnecting } = useVoipState();
 	const { register, unregister, onRegisteredOnce, onUnregisteredOnce } = useVoipAPI();
 
 	const toggleVoip = useMutation({
@@ -54,7 +54,6 @@ export const useVoipTogglerAction = () => {
 		handleToggleVoip: () => toggleVoip.mutate(),
 		title,
 		icon: (isRegistered ? 'phone' : 'phone-disabled') as Keys,
-		isEnabled,
 		isRegistered,
 		isDisabled: !isReady || toggleVoip.isPending || isReconnecting,
 	};

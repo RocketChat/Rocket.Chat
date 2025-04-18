@@ -15,13 +15,7 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const isCallEnabled = useIsCallEnabled();
 
-	const {
-		isEnabled: isVoipEnabled,
-		title: dialerTitle,
-		handleToggleDialer,
-		isPressed: isVoipDialerPressed,
-		isDisabled: dialerDisabled,
-	} = useVoipDialerAction();
+	const { title: dialerTitle, handleToggleDialer, isPressed: isVoipDialerPressed, isDisabled: dialerDisabled } = useVoipDialerAction();
 	const { isRegistered, title: togglerTitle, handleToggleVoip, isDisabled: togglerDisabled } = useVoipTogglerAction();
 
 	const {
@@ -87,26 +81,10 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const isPressed = isVoipDialerPressed || isQueuePressed || isContactPressed;
 
 	if (isCallEnabled) {
-		return (
-			<NavbarControlsWithCall
-				voipItems={voipItems}
-				omnichannelItems={omnichannelItems}
-				isVoipEnabled={isVoipEnabled}
-				isPressed={isPressed}
-				{...props}
-			/>
-		);
+		return <NavbarControlsWithCall voipItems={voipItems} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 	}
 
-	return (
-		<NavBarControlsMenu
-			voipItems={voipItems}
-			omnichannelItems={omnichannelItems}
-			isVoipEnabled={isVoipEnabled}
-			isPressed={isPressed}
-			{...props}
-		/>
-	);
+	return <NavBarControlsMenu voipItems={voipItems} omnichannelItems={omnichannelItems} isPressed={isPressed} {...props} />;
 };
 
 export default NavBarControlsWithData;

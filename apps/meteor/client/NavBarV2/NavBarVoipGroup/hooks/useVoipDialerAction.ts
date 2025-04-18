@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 export const useVoipDialerAction = () => {
 	const { t } = useTranslation();
 	const { sidebar } = useLayout();
-	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isReady, isRegistered } = useVoipState();
 	const { open: isDialerOpen, openDialer, closeDialer } = useVoipDialer();
 
 	const handleToggleDialer = useEffectEvent(() => {
@@ -27,5 +27,5 @@ export const useVoipDialerAction = () => {
 		return t('New_Call');
 	}, [clientError, isReady, isRegistered, t]);
 
-	return { handleToggleDialer, title, isPressed: isDialerOpen, isEnabled, isDisabled: !isReady || !isRegistered };
+	return { handleToggleDialer, title, isPressed: isDialerOpen, isDisabled: !isReady || !isRegistered };
 };

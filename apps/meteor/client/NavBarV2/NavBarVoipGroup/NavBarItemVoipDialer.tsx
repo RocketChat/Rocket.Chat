@@ -8,11 +8,9 @@ type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 };
 
 const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
-	const { isEnabled, title, handleToggleDialer, isPressed, isDisabled } = useVoipDialerAction();
+	const { title, handleToggleDialer, isPressed, isDisabled } = useVoipDialerAction();
 
-	return isEnabled ? (
-		<NavBarItem {...props} title={title} icon='dialpad' onClick={handleToggleDialer} pressed={isPressed} disabled={isDisabled} />
-	) : null;
+	return <NavBarItem {...props} title={title} icon='dialpad' onClick={handleToggleDialer} pressed={isPressed} disabled={isDisabled} />;
 };
 
 export default NavBarItemVoipDialer;

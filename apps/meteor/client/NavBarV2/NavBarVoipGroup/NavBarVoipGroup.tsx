@@ -11,7 +11,11 @@ const NavBarVoipGroup = () => {
 	const { isEnabled: showVoip } = useVoipState();
 	const isCallEnabled = useIsCallEnabled();
 
-	return showVoip ? (
+	if (!showVoip) {
+		return null;
+	}
+
+	return (
 		<>
 			<NavBarGroup aria-label={t('Voice_Call')}>
 				<NavBarItemVoipDialer primary={isCallEnabled} />
@@ -19,7 +23,7 @@ const NavBarVoipGroup = () => {
 			</NavBarGroup>
 			<NavBarDivider />
 		</>
-	) : null;
+	);
 };
 
 export default NavBarVoipGroup;
