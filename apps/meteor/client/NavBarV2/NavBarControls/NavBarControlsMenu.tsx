@@ -5,6 +5,8 @@ import { useVoipState } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
+
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	voipItems: GenericMenuItemProps[];
 	omnichannelItems: GenericMenuItemProps[];
@@ -14,6 +16,7 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 const NavBarControlsMenu = ({ voipItems, omnichannelItems, isPressed, ...props }: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
 	const { isEnabled: showVoip } = useVoipState();
+	const showOmnichannel = useOmnichannelEnabled();
 
 	const sections = [
 		{
@@ -22,9 +25,13 @@ const NavBarControlsMenu = ({ voipItems, omnichannelItems, isPressed, ...props }
 		},
 		{
 			title: t('Omnichannel'),
-			items: omnichannelItems,
+			items: showOmnichannel ? omnichannelItems : [],
 		},
 	].filter((section) => section.items.length > 0);
+
+	if (sections.length === 0) {
+		return null;
+	}
 
 	return (
 		<GenericMenu

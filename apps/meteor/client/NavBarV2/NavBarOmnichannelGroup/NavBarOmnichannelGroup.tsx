@@ -16,7 +16,11 @@ const NavBarOmnichannelGroup = () => {
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
 
-	return showOmnichannel ? (
+	if (!showOmnichannel) {
+		return null;
+	}
+
+	return (
 		<>
 			<NavBarGroup aria-label={t('Omnichannel')}>
 				<NavBarItemOmnichannelQueue />
@@ -27,7 +31,7 @@ const NavBarOmnichannelGroup = () => {
 			</NavBarGroup>
 			<NavBarDivider />
 		</>
-	) : null;
+	);
 };
 
 export default NavBarOmnichannelGroup;
