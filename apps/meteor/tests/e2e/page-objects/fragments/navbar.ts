@@ -13,12 +13,32 @@ export class Navbar {
 		return this.page.getByRole('navigation', { name: 'header' });
 	}
 
+	get btnSidebarToggler(): Locator {
+		return this.navbar.getByRole('button', { name: 'Open sidebar' });
+	}
+
+	get btnVoiceAndOmnichannel(): Locator {
+		return this.navbar.getByRole('button', { name: 'Voice and omnichannel' });
+	}
+
+	get groupHistoryNavigation(): Locator {
+		return this.navbar.getByRole('group', { name: 'History navigation' });
+	}
+
 	get pagesGroup(): Locator {
 		return this.navbar.getByRole('group', { name: 'Pages and actions' });
 	}
 
 	get homeButton(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Home' });
+	}
+
+	get btnDirectory(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Directory' });
+	}
+
+	get btnMenuPages(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}
 
 	get navbarSearchSection(): Locator {

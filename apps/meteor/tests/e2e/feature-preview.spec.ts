@@ -90,11 +90,40 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		test('should display recent chats when navbar search is clicked', async ({ page }) => {
+		test('should render global header navigation', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.navbar.searchInput.click();
-			await expect(poHomeChannel.navbar.searchList).toBeVisible();
+			await test.step('should display recent chats when navbar search is clicked', async () => {
+				await poHomeChannel.navbar.searchInput.click();
+				await expect(poHomeChannel.navbar.searchList).toBeVisible();
+				await poHomeChannel.navbar.searchInput.blur();
+			});
+
+			await test.step('should display home and directory button', async () => {
+				await expect(poHomeChannel.navbar.homeButton).toBeVisible();
+				await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
+			});
+
+			await test.step('should display home and directory inside a menu and sidebar toggler in tablet view', async () => {
+				await page.setViewportSize({ width: 1023, height: 767 });
+				await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).toBeVisible();
+			});
+
+			await test.step('should display voice and omnichannel items inside a menu in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
+			});
+
+			await test.step('should hide everything else when navbar search is focused in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await poHomeChannel.navbar.searchInput.click();
+
+				await expect(poHomeChannel.navbar.btnMenuPages).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).not.toBeVisible();
+				await expect(poHomeChannel.navbar.groupHistoryNavigation).not.toBeVisible();
+			});
 		});
 
 		test('should not display room topic in direct message', async ({ page }) => {
