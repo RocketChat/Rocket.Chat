@@ -10,6 +10,7 @@ import type {
 	TransferData,
 	IOmnichannelAgent,
 	UserStatus,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -25,6 +26,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -488,7 +490,31 @@ class LivechatClass {
 		return ret;
 	}
 
-	async setCustomFields({ token, key, value, overwrite }: { key: string; value: string; overwrite: boolean; token: string }) {
+	async updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
+		if (overwrite || !contact.customFields || !contact.customFields[key]) {
+			contact.customFields ??= {};
+			contact.customFields[key] = value;
+		} else {
+			contact.conflictingFields ??= [];
+			contact.conflictingFields.push({ field: `customFields.${key}`, value });
+		}
+
+		await LivechatContacts.updateContact(contact._id, { customFields: contact.customFields, conflictingFields: contact.conflictingFields });
+
+		Livechat.logger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
+	}
+
+	async setCustomFields({
+		token,
+		key,
+		value,
+		overwrite,
+	}: {
+		key: string;
+		value: string;
+		overwrite: boolean;
+		token: string;
+	}): Promise<number> {
 		Livechat.logger.debug(`Setting custom fields data for visitor with token ${token}`);
 
 		const customField = await LivechatCustomField.findOneById(key);
@@ -508,6 +534,14 @@ class LivechatClass {
 			result = await LivechatRooms.updateDataByToken(token, key, value, overwrite);
 		} else {
 			result = await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+
+			const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+			if (visitor) {
+				const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+				if (contacts.length > 0) {
+					await Promise.all(contacts.map((contact) => this.updateContactsCustomFields(contact, key, value, overwrite)));
+				}
+			}
 		}
 
 		if (typeof result === 'boolean') {
