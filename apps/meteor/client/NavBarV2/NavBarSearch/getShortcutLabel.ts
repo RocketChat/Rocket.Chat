@@ -14,7 +14,7 @@ const mobileCheck = function () {
 	return check;
 };
 
-export const getShortcut = (): string => {
+export const getShortcutLabel = (): string => {
 	if (navigator.userAgentData?.mobile || mobileCheck()) {
 		return '';
 	}
