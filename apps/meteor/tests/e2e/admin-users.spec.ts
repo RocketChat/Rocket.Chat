@@ -4,12 +4,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from './fixtures/userStates';
 import { expect, test } from './utils/test';
 
-test.describe('Admin > Users', () => {
-	test.use({ storageState: Users.admin.state });
+test.use({ storageState: Users.admin.state });
 
+test.describe('Admin > Users', () => {
 	let user: IUser;
 
-	test.beforeAll('Create new user', async ({ api }) => {
+	test.beforeAll('Create a new user', async ({ api }) => {
 		const response = await api.post('/users.create', {
 			email: faker.internet.email(),
 			name: faker.person.fullName(),
@@ -21,11 +21,11 @@ test.describe('Admin > Users', () => {
 		user = json.user;
 	});
 
-	test.beforeEach('Open Admin > Users', async ({ page }) => {
+	test.beforeEach('Go to /admin/users', async ({ page }) => {
 		await page.goto('/admin/users');
 	});
 
-	test.afterAll('Delete new user', async ({ api }) => {
+	test.afterAll('Delete the new user', async ({ api }) => {
 		const response = await api.post('/users.delete', { userId: user._id });
 		expect(response.status()).toBe(200);
 	});
