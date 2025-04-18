@@ -1,16 +1,15 @@
-import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IUser, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
 import { UsersRaw } from '@rocket.chat/models';
-import type { Db, Collection } from 'mongodb';
+import type { Db, Collection, Filter } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
-type AgentMetadata = {
-	username: string;
-};
-
 declare module '@rocket.chat/model-typings' {
 	interface IUsersModel {
-		getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]>;
+		getUnavailableAgents(
+			departmentId: string,
+			customFilter: Filter<AvailableAgentsAggregation>,
+		): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	}
 }
 
@@ -19,7 +18,10 @@ export class UsersEE extends UsersRaw {
 		super(db, trash);
 	}
 
-	getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
+	getUnavailableAgents(
+		departmentId: string,
+		customFilter: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
 			? [
@@ -46,7 +48,7 @@ export class UsersEE extends UsersRaw {
 			: [];
 
 		return this.col
-			.aggregate<AgentMetadata>(
+			.aggregate<AvailableAgentsAggregation>(
 				[
 					{
 						$match: {
