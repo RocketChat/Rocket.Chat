@@ -238,7 +238,7 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 					existsOnlyOnProxyServer: false,
 				}),
 			);
-			bridge.getUserProfileInformation.resolves({ displayname: 'normalizedInviterId' });
+			bridge.getUserProfileInformation.resolves({ displayName: 'normalizedInviterId' });
 			await service.afterUserRealNameChanged('id', 'name');
 
 			expect(bridge.setUserDisplayName.called).to.be.false;
@@ -252,7 +252,7 @@ describe('Federation - Application - FederationUserServiceSender', () => {
 					_id: '_id',
 				}),
 			);
-			bridge.getUserProfileInformation.resolves({ displayname: 'different' });
+			bridge.getUserProfileInformation.resolves({ displayName: 'different' });
 			await service.afterUserRealNameChanged('id', 'name');
 
 			expect(bridge.setUserDisplayName.calledWith('externalInviterId', 'name')).to.be.true;

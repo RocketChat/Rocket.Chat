@@ -33,13 +33,14 @@ describe('useRestoreScrollPosition', () => {
 		expect(mockElement.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
 	});
 
-	it('should not restore scroll position if already at bottom', () => {
-		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: 100, atBottom: true });
+	it('should do nothing if no previous scroll position is stored', () => {
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ atBottom: true });
 
 		const mockElement = {
 			addEventListener: jest.fn(),
 			removeEventListener: jest.fn(),
 			scrollHeight: 800,
+			scrollTop: 123,
 		};
 
 		const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: mockElement });
@@ -47,7 +48,7 @@ describe('useRestoreScrollPosition', () => {
 		const { unmount } = renderHook(() => useRestoreScrollPosition());
 
 		expect(useRefSpy).toHaveBeenCalledWith(null);
-		expect(mockElement).toHaveProperty('scrollTop', 800);
+		expect(mockElement).toHaveProperty('scrollTop', 123);
 		expect(mockElement).not.toHaveProperty('scrollLeft');
 
 		unmount();

@@ -12,15 +12,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, key, value, overwrite } = this.bodyParams;
-
 			const guest = await findGuest(token);
 			if (!guest) {
 				throw new Error('invalid-token');
 			}
 
-			if (!(await setCustomFields({ token, key, value, overwrite }))) {
-				return API.v1.failure();
-			}
+			await setCustomFields({ token, key, value, overwrite });
 
 			return API.v1.success({ field: { key, value, overwrite } });
 		},
@@ -46,9 +43,7 @@ API.v1.addRoute(
 						overwrite: boolean;
 					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
 						const data = Object.assign({ token }, customField);
-						if (!(await setCustomFields(data))) {
-							throw new Error('error-setting-custom-field');
-						}
+						await setCustomFields(data);
 
 						return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
 					},

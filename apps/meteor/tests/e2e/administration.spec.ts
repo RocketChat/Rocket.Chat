@@ -277,6 +277,66 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
+	test.describe.serial('Third party login', () => {
+		const appName = faker.string.uuid();
+		const appRedirectURI = faker.internet.url();
+
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/third-party-login');
+		});
+
+		test('should show Third-party login page', async ({ page }) => {
+			await page.goto('/admin/third-party-login');
+
+			await expect(page.locator('h1 >> text="Third-party login"')).toBeVisible();
+		});
+
+		test('should not be able to create a new application without application name', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputRedirectURI.fill(appRedirectURI);
+			await poAdmin.btnSave.click();
+
+			await expect(page.getByText('Name required')).toBeVisible();
+		});
+
+		test('should not be able to create a new application without redirect URI', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputApplicationName.fill(appName);
+			await poAdmin.btnSave.click();
+
+			await expect(page.getByText('Redirect URI required')).toBeVisible();
+		});
+
+		test('should be able to create a new application', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputApplicationName.fill(appName);
+			await poAdmin.inputRedirectURI.fill(appRedirectURI);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.getThirdPartyAppByName(appName)).toBeVisible();
+			await expect(page.getByText('Application added')).toBeVisible();
+		});
+
+		test('should be able see aplication fields', async () => {
+			await poAdmin.getThirdPartyAppByName(appName).click();
+			await expect(poAdmin.inputApplicationName).toBeVisible();
+			await expect(poAdmin.inputRedirectURI).toBeVisible();
+			await expect(poAdmin.inputClientId).toBeVisible();
+			await expect(poAdmin.inputClientSecret).toBeVisible();
+			await expect(poAdmin.inputAuthUrl).toBeVisible();
+			await expect(poAdmin.inputTokenUrl).toBeVisible();
+		});
+
+		test('should be able to delete an application', async ({ page }) => {
+			await poAdmin.getThirdPartyAppByName(appName).click();
+			await poAdmin.btnDelete.click();
+			await poUtils.btnModalConfirmDelete.click();
+
+			await expect(page.getByText('Your entry has been deleted.')).toBeVisible();
+			await expect(poAdmin.getIntegrationByName(appName)).not.toBeVisible();
+		});
+	});
+
 	test.describe('Integrations', () => {
 		const messageCodeHighlightDefault =
 			'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';

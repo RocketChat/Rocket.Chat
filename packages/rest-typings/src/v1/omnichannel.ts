@@ -590,7 +590,7 @@ const POSTLivechatDepartmentSchema = {
 				showOnOfflineForm: {
 					type: 'boolean',
 				},
-				requestTagsBeforeClosingChat: {
+				requestTagBeforeClosingChat: {
 					type: 'boolean',
 					nullable: true,
 				},

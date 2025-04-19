@@ -1,4 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
+import type { AriaAttributes } from 'react';
 import { useMemo } from 'react';
 import type { Control, UseFormRegister } from 'react-hook-form';
 import { useWatch, useFieldArray } from 'react-hook-form';
@@ -10,12 +11,12 @@ import type { EditDepartmentFormData } from '../definitions';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-type DepartmentAgentsTableProps = {
+type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	control: Control<EditDepartmentFormData>;
 	register: UseFormRegister<EditDepartmentFormData>;
 };
 
-function DepartmentAgentsTable({ control, register }: DepartmentAgentsTableProps) {
+function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabelledBy }: DepartmentAgentsTableProps) {
 	const { t } = useTranslation();
 	const { fields, append, remove } = useFieldArray({ control, name: 'agentList' });
 	const agentList = useWatch({ control, name: 'agentList' });
@@ -25,7 +26,7 @@ function DepartmentAgentsTable({ control, register }: DepartmentAgentsTableProps
 
 	return (
 		<>
-			<AddAgent agentList={agentList} data-qa='DepartmentSelect-AgentsTable' onAdd={append} />
+			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} data-qa='DepartmentSelect-AgentsTable' onAdd={append} />
 
 			<GenericTable>
 				<GenericTableHeader>
