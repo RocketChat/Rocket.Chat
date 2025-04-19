@@ -38,29 +38,16 @@ API.v1
 					required: ['statistics', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
 			},
 		},
 		async function () {
-      try {
 			const { refresh = 'false' } = this.queryParams;
 			const statistics = await getLastStatistics({
 				userId: this.userId,
 				refresh: refresh === 'true',
 			});
 			return API.v1.success({ statistics, success: true });
-		  } catch (error) {
-				return API.v1.failure({ error: error.message }, 400);
-			}
-    },
+		},
 	)
 	.get(
 		'statistics.list',
@@ -93,19 +80,9 @@ API.v1
 					required: ['statistics', 'success'],
 					additionalProperties: false,
 				}),
-        400: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
 			},
 		},
 		async function () {
-      try {
 			const { offset, count } = this.queryParams;
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const { offset: paginationOffset, count: paginationCount } = await getPaginationItems({
@@ -118,9 +95,6 @@ API.v1
 				pagination: { offset: paginationOffset, count: paginationCount, sort, fields },
 			});
 			return API.v1.success({ statistics, success: true });
-      } catch (error) {
-				return API.v1.failure({ error: error.message }, 400);
-			}
 		},
 	)
 	.post(
@@ -169,19 +143,9 @@ API.v1
 					required: ['success'],
 					additionalProperties: false,
 				}),
-        400: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
 			},
 		},
 		async function () {
-      try {
 			const events = this.bodyParams;
 			if (events?.params) {
 				events.params.forEach((event) => {
@@ -190,8 +154,5 @@ API.v1
 				});
 			}
 			return API.v1.success();
-      } catch (error) {
-				return API.v1.failure({ error: error.message }, 400);
-			}
 		},
 	);
