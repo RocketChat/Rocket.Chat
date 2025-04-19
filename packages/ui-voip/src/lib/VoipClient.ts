@@ -46,6 +46,8 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
+	private reconnecting = false;
+
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
@@ -53,7 +55,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	public async init() {
-		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI } = this.config;
+		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI, iceGatheringTimeout } = this.config;
 
 		const transportOptions = {
 			server: webSocketURI,
@@ -62,7 +64,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		};
 
 		const sdpFactoryOptions = {
-			iceGatheringTimeout: 10,
+			...(typeof iceGatheringTimeout === 'number' && { iceGatheringTimeout }),
 			peerConnectionConfiguration: { iceServers },
 		};
 
@@ -400,7 +402,15 @@ class VoipClient extends Emitter<VoipEvents> {
 		}
 
 		if (connectionRetryCount !== -1 && reconnectionAttempt > connectionRetryCount) {
+			console.error('VoIP reconnection limit reached.');
+			this.reconnecting = false;
+			this.emit('stateChanged');
 			return;
+		}
+
+		if (!this.reconnecting) {
+			this.reconnecting = true;
+			this.emit('stateChanged');
 		}
 
 		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
@@ -521,6 +531,10 @@ class VoipClient extends Emitter<VoipEvents> {
 		return !!this.error;
 	}
 
+	public isReconnecting(): boolean {
+		return this.reconnecting;
+	}
+
 	public isOnline(): boolean {
 		return this.online;
 	}
@@ -604,6 +618,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			isOutgoing: this.isOutgoing(),
 			isInCall: this.isInCall(),
 			isError: this.isError(),
+			isReconnecting: this.isReconnecting(),
 		};
 	}
 
@@ -760,15 +775,51 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	private onUserAgentConnected = (): void => {
+		console.log('VoIP user agent connected.');
+
+		const wasReconnecting = this.reconnecting;
+
+		this.reconnecting = false;
 		this.networkEmitter.emit('connected');
 		this.emit('stateChanged');
+
+		if (!this.isReady() || !wasReconnecting) {
+			return;
+		}
+
+		this.register()
+			.then(() => {
+				this.emit('stateChanged');
+			})
+			.catch((error?: any) => {
+				console.error('VoIP failed to register after user agent connection.');
+				if (error) {
+					console.error(error);
+				}
+			});
 	};
 
 	private onUserAgentDisconnected = (error: any): void => {
+		console.log('VoIP user agent disconnected.');
+
+		this.reconnecting = !!error;
 		this.networkEmitter.emit('disconnected');
 		this.emit('stateChanged');
 
 		if (error) {
+			if (this.isRegistered()) {
+				this.unregister()
+					.then(() => {
+						this.emit('stateChanged');
+					})
+					.catch((error?: any) => {
+						console.error('VoIP failed to unregister after user agent disconnection.');
+						if (error) {
+							console.error(error);
+						}
+					});
+			}
+
 			this.networkEmitter.emit('connectionerror', error);
 			this.attemptReconnection();
 		}
