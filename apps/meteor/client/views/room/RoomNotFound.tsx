@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
 import NotFoundState from '../../components/NotFoundState';
-import SidebarToggler from '../../components/SidebarToggler';
+import { SidebarTogglerV2 } from '../../components/SidebarTogglerV2';
 
 const RoomNotFound = (): ReactElement => {
 	const { t } = useTranslation();
@@ -20,7 +20,7 @@ const RoomNotFound = (): ReactElement => {
 						<FeaturePreviewOff>
 							<Header justifyContent='start'>
 								<HeaderToolbar>
-									<SidebarToggler />
+									<SidebarTogglerV2 />
 								</HeaderToolbar>
 							</Header>
 						</FeaturePreviewOff>

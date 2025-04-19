@@ -5,7 +5,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbar } from '../Header';
-import SidebarToggler from '../SidebarToggler';
+import { SidebarTogglerV2 } from '../SidebarTogglerV2';
 
 type PageHeaderProps = {
 	title: ReactNode;
@@ -36,7 +36,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 					<FeaturePreview feature='newNavigation'>
 						<FeaturePreviewOff>
 							<HeaderToolbar>
-								<SidebarToggler />
+								<SidebarTogglerV2 />
 							</HeaderToolbar>
 						</FeaturePreviewOff>
 						<FeaturePreviewOn>{null}</FeaturePreviewOn>

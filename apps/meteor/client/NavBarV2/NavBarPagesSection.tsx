@@ -2,7 +2,7 @@ import { NavBarDivider, NavBarGroup, NavBarSection } from '@rocket.chat/fuselage
 import { useLayout } from '@rocket.chat/ui-contexts';
 
 import NavBarPagesGroup from './NavBarPagesGroup';
-import SidebarToggler from '../components/SidebarToggler';
+import { SidebarTogglerV2 } from '../components/SidebarTogglerV2';
 
 const NavBarPagesSection = () => {
 	const { isTablet } = useLayout();
@@ -12,7 +12,7 @@ const NavBarPagesSection = () => {
 			{isTablet && (
 				<>
 					<NavBarGroup>
-						<SidebarToggler />
+						<SidebarTogglerV2 />
 					</NavBarGroup>
 					<NavBarDivider />
 				</>
