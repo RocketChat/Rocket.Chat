@@ -20,7 +20,7 @@ type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
-	<View style={styles.wrapper}>
+	<View style={styles.wrapper} wrap>
 		{items.map(({ value }, index) => (
 			<View style={styles.list} key={index}>
 				<Text style={styles.bullet}>•</Text>

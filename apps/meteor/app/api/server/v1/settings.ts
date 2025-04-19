@@ -212,7 +212,7 @@ API.v1.addRoute(
 					_id: this.userId,
 					username: this.user.username!,
 					ip: this.requestIp,
-					useragent: this.request.headers['user-agent'] || '',
+					useragent: this.request.headers.get('user-agent') || '',
 				});
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
