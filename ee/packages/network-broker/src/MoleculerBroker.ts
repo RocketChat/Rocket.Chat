@@ -4,6 +4,7 @@ import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
+import { getInstanceMethods } from './getInstanceMethods';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -17,7 +18,7 @@ const lifecycle: { [k: string]: string } = {
 	stopped: 'stopped',
 };
 
-export class NetworkBroker implements IBroker {
+export class MoleculerBroker implements IBroker {
 	private broker: ServiceBroker;
 
 	private started: Promise<boolean> = Promise.resolve(false);
@@ -67,11 +68,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
-		const methods = (
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
-		).filter((name) => name !== 'constructor');
+		const methods = getInstanceMethods(instance);
 
 		const serviceInstance = instance as any;
 
