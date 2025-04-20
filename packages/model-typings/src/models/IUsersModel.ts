@@ -1,4 +1,5 @@
 import type {
+	AvailableAgentsAggregation,
 	IUser,
 	IRole,
 	ILivechatAgent,
@@ -100,12 +101,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number }>;
 	getLastAvailableAgentRouted(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date }>;
 
 	setLastRoutingTime(userId: IUser['_id']): Promise<WithId<IUser> | null>;
 
@@ -117,7 +120,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 	getAgentAndAmountOngoingChats(
 		userId: IUser['_id'],
-	): Promise<{ agentId: string; username?: string; lastAssignTime?: Date; lastRoutingTime?: Date; queueInfo: { chats: number } }>;
+		departmentId?: string,
+	): Promise<{
+		agentId: string;
+		username?: string;
+		lastAssignTime?: Date;
+		lastRoutingTime?: Date;
+		queueInfo: { chats: number; chatsForDepartment?: number };
+	}>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 
@@ -246,17 +256,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getUnavailableAgents(
 		departmentId?: string,
-		extraQuery?: Document,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	>;
+		extraQuery?: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,
@@ -295,7 +296,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countAgents(): Promise<number>;
 	getNextAgent(
 		ignoreAgentId?: string,
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 		enabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;

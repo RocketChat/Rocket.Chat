@@ -78,7 +78,6 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 
 		const onCallTerminated = (): void => {
 			voipSounds.playCallEnded();
-			voipSounds.stopCallEnded();
 			voipSounds.stopDialer();
 			voipSounds.stopRinger();
 			window.removeEventListener('beforeunload', onBeforeUnload);
@@ -109,6 +108,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		voipClient.networkEmitter.on('localnetworkoffline', onNetworkDisconnected);
 
 		return (): void => {
+			voipSounds.stopCallEnded();
 			voipClient.off('incomingcall', onIncomingCallRinging);
 			voipClient.off('outgoingcall', onOutgoingCallRinging);
 			voipClient.off('callestablished', onCallEstablished);

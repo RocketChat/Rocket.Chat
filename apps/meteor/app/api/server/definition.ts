@@ -55,10 +55,10 @@ export type ForbiddenResult<T> = {
 	};
 };
 
-export type InternalError<T, StatusCode = 500> = {
+export type InternalError<T, StatusCode extends ErrorStatusCodes = 500, D = 'Internal server error'> = {
 	statusCode: StatusCode;
 	body: {
-		error: T | 'Internal server error';
+		error: T | D;
 		success: false;
 	};
 };
@@ -311,7 +311,8 @@ type Results<TResponse extends TypedOptions['response']> = {
 	headers?: Record<string, string>;
 };
 
-export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
-	this: TypedThis<TOptions, TPath>,
-	request: Request,
-) => PromiseOrValue<Results<TOptions['response']>>;
+export type TypedAction<
+	TOptions extends TypedOptions,
+	TPath extends string = '',
+	TThis extends TypedThis<TOptions, TPath> = TypedThis<TOptions, TPath>,
+> = (this: TThis, request: Request) => PromiseOrValue<Results<TOptions['response']>>;
