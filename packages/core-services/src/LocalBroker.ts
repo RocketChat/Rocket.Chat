@@ -6,7 +6,7 @@ import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
-import type { IBroker, IBrokerNode } from './types/IBroker';
+import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
@@ -29,7 +29,11 @@ export class LocalBroker implements IBroker {
 
 	private defaultDependencies = ['settings'];
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
+		if (options) {
+			logger.warn('Options are not supported in LocalBroker');
+		}
+
 		return tracerActiveSpan(
 			`action ${method}`,
 			{},
