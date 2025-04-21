@@ -129,6 +129,11 @@ export type App = {
 	private: boolean;
 	documentationUrl: string;
 	migrated: boolean;
+	// Status of the app across the cluster (when deployment includes multiple instances)
+	clusterStatus?: {
+		instanceId: string;
+		status: AppStatus;
+	}[];
 };
 
 export type AppCategory = {
