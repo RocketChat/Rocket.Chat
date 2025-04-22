@@ -4066,7 +4066,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "In kleine letters",
   "SAML_Custom_Username_Normalize_None": "Geen normalisatie",
   "SAML_Default_User_Role": "Standaard gebruikersrol",
-  "Upload_file_description": "Bestandsomschrijving",
   "SAML_Default_User_Role_Description": "U kunt meerdere rollen specificeren, gescheiden door komma's.",
   "Upload_file_name": "Bestandsnaam",
   "Upload_file_question": "Upload bestand?",

@@ -4832,7 +4832,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "लोअरकेस करने के लिए",
   "SAML_Custom_Username_Normalize_None": "कोई सामान्यीकरण नहीं",
   "SAML_Default_User_Role": "डिफ़ॉल्ट उपयोगकर्ता भूमिका",
-  "Upload_file_description": "फाइल विवरण",
   "SAML_Default_User_Role_Description": "आप एकाधिक भूमिकाएँ निर्दिष्ट कर सकते हैं, उन्हें अल्पविराम से अलग कर सकते हैं।",
   "Upload_file_name": "फ़ाइल का नाम",
   "Upload_file_question": "दस्तावेज अपलोड करें?",

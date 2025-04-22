@@ -4037,7 +4037,6 @@
   "SAML_Custom_Username_Normalize_Lowercase": "小文字にする",
   "SAML_Custom_Username_Normalize_None": "正規化なし",
   "SAML_Default_User_Role": "デフォルトのユーザーロール",
-  "Upload_file_description": "ファイルの説明",
   "SAML_Default_User_Role_Description": "複数の役割をコンマで区切って指定できます。",
   "Upload_file_name": "ファイル名",
   "Upload_file_question": "ファイルをアップロードしますか？",
