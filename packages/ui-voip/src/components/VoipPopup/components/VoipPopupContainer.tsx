@@ -1,6 +1,7 @@
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
 import type { ReactNode } from 'react';
+import { forwardRef } from 'react';
 import { FocusScope } from 'react-aria';
 
 export type PositionOffsets = Partial<{
@@ -32,18 +33,23 @@ const Container = styled(
 	min-height: 128px;
 	border-radius: 4px;
 	border: 1px solid ${Palette.stroke['stroke-dark'].toString()};
-	box-shadow: 0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
+	box-shadow:
+		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 	background-color: ${(p) => (p.secondary ? Palette.surface['surface-neutral'].toString() : Palette.surface['surface-light'].toString())};
 	z-index: 100;
 `;
 
-const VoipPopupContainer = ({ children, secondary = false, position = { top: 0, left: 0 }, ...props }: ContainerProps) => (
-	<FocusScope autoFocus restoreFocus>
-		<Container aria-labelledby='voipPopupTitle' secondary={secondary} position={position} {...props}>
-			{children}
-		</Container>
-	</FocusScope>
+const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(
+	({ children, secondary = false, position = { top: 0, left: 0 }, ...props }, ref) => (
+		<FocusScope autoFocus restoreFocus>
+			<Container ref={ref} aria-labelledby='voipPopupTitle' secondary={secondary} position={position} {...props}>
+				{children}
+			</Container>
+		</FocusScope>
+	),
 );
+
+VoipPopupContainer.displayName = 'VoipPopupContainer';
 
 export default VoipPopupContainer;

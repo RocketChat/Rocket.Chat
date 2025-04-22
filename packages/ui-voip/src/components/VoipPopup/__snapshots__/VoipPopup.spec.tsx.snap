@@ -9,7 +9,7 @@ exports[`renders ErrorCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-smrun1"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -410,7 +410,7 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-smrun1"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -811,7 +811,7 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-smrun1"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -1212,7 +1212,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voipPopupTitle"
-      class="rcx-css-1u0qz2a"
+      class="rcx-css-smrun1"
       data-testid="vc-popup-dialer"
     >
       <header
