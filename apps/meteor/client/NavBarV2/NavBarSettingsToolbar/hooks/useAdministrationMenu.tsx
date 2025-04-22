@@ -48,10 +48,8 @@ export const useAdministrationMenu = () => {
 		onClick: () => router.navigate('/omnichannel/current'),
 	};
 
-	return [
-		{
-			title: t('Manage'),
-			items: [isAdmin && workspace, isOmnichannel && omnichannel].filter(Boolean) as GenericMenuItemProps[],
-		},
-	];
+	return {
+		title: t('Manage'),
+		items: [isAdmin && workspace, isOmnichannel && omnichannel].filter(Boolean) as GenericMenuItemProps[],
+	};
 };
