@@ -83,16 +83,6 @@ export async function removeManager(id: IUser['_id']) {
 }
 
 export async function saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
-	// TODO: check if these 'check' functions are necessary
-	check(_id, String);
-	check(agentData, Object);
-	check(agentDepartments, [String]);
-
-	const user = await Users.findOneById(_id);
-	if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-		throw new Error('error-user-is-not-agent');
-	}
-
 	await Users.setLivechatData(_id, removeEmpty(agentData));
 
 	const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();

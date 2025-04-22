@@ -15,15 +15,18 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
-		const uid = Meteor.userId();
-		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
+		check(_id, String);
+		check(agentData, Object);
+		check(agentDepartments, [String]);
+
+		const user = Meteor.user();
+		if (!user || !(await hasPermissionAsync(user._id, 'manage-livechat-agents'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAgentInfo',
 			});
 		}
 
-		const user = await Users.findOneById(_id);
-		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
+		if (!(await hasRoleAsync(user._id, 'livechat-agent'))) {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {
 				method: 'livechat:saveAgentInfo',
 			});
