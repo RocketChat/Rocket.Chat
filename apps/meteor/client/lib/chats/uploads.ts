@@ -49,14 +49,13 @@ const send = async (
 ): Promise<void> => {
 	const id = Random.id();
 
-	updateUploads((uploads) => [
-		...uploads,
-		{
-			id,
-			name: fileContent?.raw.name || file.name,
-			percentage: 0,
-		},
-	]);
+	const upload: Upload = {
+		id,
+		name: fileContent?.raw.name || file.name,
+		percentage: 0,
+	};
+
+	updateUploads((uploads) => [...uploads, upload]);
 
 	try {
 		await new Promise((resolve, reject) => {
@@ -128,6 +127,9 @@ const send = async (
 						t,
 						content,
 					});
+				} else if (xhr.readyState === xhr.DONE && xhr.status === 400) {
+					const error = JSON.parse(xhr.responseText);
+					updateUploads((uploads) => [...uploads, { ...upload, error: new Error(error.error) }]);
 				}
 			};
 
