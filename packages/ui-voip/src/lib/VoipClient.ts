@@ -1,6 +1,6 @@
 import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, VoIPUserConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions } from 'sip.js';
+import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions, Cancel as SipCancel } from 'sip.js';
 import { Registerer, RequestPendingError, SessionState, UserAgent, Invitation, Inviter, RegistererState, UserAgentState } from 'sip.js';
 import type { IncomingResponse, OutgoingByeRequest, URI } from 'sip.js/lib/core';
 import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
@@ -9,12 +9,14 @@ import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 import type { ContactInfo, VoipSession } from '../definitions';
 import LocalStream from './LocalStream';
 import RemoteStream from './RemoteStream';
+import { getMainInviteRejectionReason } from './getMainInviteRejectionReason';
 
 export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
 	callestablished: ContactInfo;
 	incomingcall: ContactInfo;
 	outgoingcall: ContactInfo;
 	dialer: { open: boolean };
+	incomingcallerror: string;
 };
 
 type SessionError = {
@@ -55,7 +57,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	public async init() {
-		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI } = this.config;
+		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI, iceGatheringTimeout } = this.config;
 
 		const transportOptions = {
 			server: webSocketURI,
@@ -64,7 +66,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		};
 
 		const sdpFactoryOptions = {
-			iceGatheringTimeout: 10,
+			...(typeof iceGatheringTimeout === 'number' && { iceGatheringTimeout }),
 			peerConnectionConfiguration: { iceServers },
 		};
 
@@ -770,6 +772,7 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	private setError(error: SessionError | null) {
+		console.error(error);
 		this.error = error;
 		this.emit('stateChanged');
 	}
@@ -843,11 +846,22 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.emit('unregistrationerror', error);
 	};
 
+	private onInvitationCancel(invitation: Invitation, message: SipCancel): void {
+		const reason = getMainInviteRejectionReason(invitation, message);
+		if (reason) {
+			this.emit('incomingcallerror', reason);
+		}
+	}
+
 	private onIncomingCall = async (invitation: Invitation): Promise<void> => {
 		if (!this.isRegistered() || this.session) {
 			await invitation.reject();
 			return;
 		}
+
+		invitation.delegate = {
+			onCancel: (cancel: SipCancel) => this.onInvitationCancel(invitation, cancel),
+		};
 
 		this.initSession(invitation);
 

@@ -381,6 +381,33 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 			expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.undefined;
 		});
+
+		describe('roomName filter', () => {
+			let room1: IOmnichannelRoom;
+			let room2: IOmnichannelRoom;
+			before(async () => {
+				const visitor = await createVisitor(undefined, 'TEST_1');
+				const visitor2 = await createVisitor(undefined, 'TEST_2');
+				room1 = await createLivechatRoom(visitor.token);
+				room2 = await createLivechatRoom(visitor2.token);
+			});
+
+			it('should return only rooms matching exact term when roomName is between quotes', async () => {
+				const { body } = await request.get(api('livechat/rooms')).query({ roomName: `"TEST_1"` }).set(credentials).expect(200);
+				expect(body.rooms[0].fname).to.equal('TEST_1');
+				expect(body.rooms.find((r: IOmnichannelRoom) => r.fname === 'TEST_2')).to.be.undefined;
+			});
+			it('should return rooms matching using regex when searching by roomName', async () => {
+				const { body } = await request.get(api('livechat/rooms')).query({ roomName: `TEST_` }).set(credentials).expect(200);
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room1._id)).to.be.not.undefined;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room2._id)).to.be.not.undefined;
+			});
+			it('should return empty if no room matches term', async () => {
+				const { body } = await request.get(api('livechat/rooms')).query({ roomName: `"TEST_"` }).set(credentials).expect(200);
+				expect(body.rooms).to.be.empty;
+			});
+		});
+
 		it('should return both closed/open when open param is not passed', async () => {
 			// Create and close a room
 			const visitor = await createVisitor();
