@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
@@ -110,6 +111,47 @@ test.describe.parallel('administration', () => {
 			await poAdmin.btnEdit.click();
 			await expect(poAdmin.tabs.users.inputUserName).toHaveValue(username);
 			await expect(poAdmin.tabs.users.joinDefaultChannels).not.toBeVisible();
+		});
+
+		test.describe('delete user who is last owner of a room', () => {
+			const channelName = faker.string.uuid();
+			let user: IUser;
+			test.beforeAll(async ({ api }) => {
+				const createUserResponse = await api.post('/users.create', {
+					email: faker.internet.email(),
+					name: faker.person.fullName(),
+					password: faker.internet.password(),
+					username: faker.internet.userName(),
+				});
+
+				expect(createUserResponse.status()).toBe(200);
+				user = (await createUserResponse.json()).user;
+
+				// TODO: refactor createChannel utility in order to get channel data when creating
+				const response = await api.post('/channels.create', { name: channelName, members: [user.username] });
+				const { channel } = await response.json();
+
+				await api.post('/channels.addOwner', { roomId: channel._id, username: user.username });
+				await api.post('/channels.removeOwner', { roomId: channel._id, userId: Users.admin.data._id });
+			});
+
+			test('expect to show owner change modal', async ({ page }) => {
+				await poAdmin.inputSearchUsers.type(user.username);
+				await poAdmin.getUserRow(user.username).click();
+				await poAdmin.tabs.users.btnMoreActions.click();
+				await poAdmin.tabs.users.btnDeleteUser.click();
+
+				await expect(page.getByRole('dialog', { name: 'Are you sure?' })).toBeVisible();
+				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
+				await expect(page.getByRole('dialog', { name: 'Are you sure?' })).toContainText(
+					`A new owner will be assigned automatically to the ${channelName} room.`,
+				);
+				await expect(page.getByRole('dialog').getByRole('button', { name: 'Delete' })).toBeVisible();
+				await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
+
+				await expect(poUtils.toastBarSuccess).toBeVisible();
+				await expect(page.getByRole('heading', { name: 'No users' })).toBeVisible();
+			});
 		});
 	});
 

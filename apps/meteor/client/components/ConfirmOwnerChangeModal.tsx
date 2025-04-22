@@ -38,7 +38,7 @@ const ConfirmOwnerChangeModal = ({
 				<Trans
 					i18nKey='A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__'
 					values={{ count: shouldChangeOwner.length, rooms: shouldChangeOwner.join(', ') }}
-					components={{ br: <br /> }}
+					components={{ br: <br />, bold: <Box is='span' fontWeight='bold' /> }}
 				/>
 			);
 		}
