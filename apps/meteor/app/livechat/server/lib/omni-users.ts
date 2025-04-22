@@ -8,7 +8,6 @@ import { afterAgentAdded, afterRemoveAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { settings } from '../../../settings/server';
 
 export async function notifyAgentStatusChanged(userId: string, status?: UserStatus) {

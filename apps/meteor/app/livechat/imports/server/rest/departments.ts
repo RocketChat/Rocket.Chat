@@ -270,7 +270,6 @@ API.v1.addRoute(
 	'livechat/department/:_id/agents',
 	{
 		authRequired: true,
-		// TODO: Use AJV
 		permissionsRequired: {
 			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
 			POST: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
