@@ -64,7 +64,7 @@ const ConfirmOwnerChangeModal = ({
 				<Trans
 					i18nKey='__count__empty_rooms_will_be_removed_automatically__rooms__'
 					values={{ count: shouldBeRemoved.length, rooms: shouldBeRemoved.join(', ') }}
-					components={{ br: <br /> }}
+					components={{ br: <br />, bold: <Box is='span' fontWeight='bold' /> }}
 				/>
 			);
 		}
