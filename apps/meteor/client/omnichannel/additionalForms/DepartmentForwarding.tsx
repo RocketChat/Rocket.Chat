@@ -5,9 +5,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDepartmentsList } from '../../components/Omnichannel/hooks/useDepartmentsList';
-import { useRecordList } from '../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import { useInfiniteDepartmentsList } from '../../components/Omnichannel/hooks/useInfiniteDepartmentsList';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 type DepartmentForwardingProps = {
@@ -24,11 +22,13 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+	const {
+		data: departmentsItems = [],
+		fetchNextPage,
+		hasNextPage,
+	} = useInfiniteDepartmentsList(
 		useMemo(() => ({ filter: departmentsFilter, departmentId, showArchived: true }), [departmentId, departmentsFilter]),
 	);
-
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const options = useMemo(() => {
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
@@ -55,16 +55,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						options={options}
 						value={value}
 						placeholder={t('Select_an_option')}
-						endReached={
-							departmentsPhase === AsyncStatePhase.LOADING
-								? () => undefined
-								: (start?: number) => {
-										if (start === undefined) {
-											return;
-										}
-										loadMoreDepartments(start, Math.min(50, departmentsTotal));
-									}
-						}
+						endReached={hasNextPage ? () => fetchNextPage() : () => undefined}
 						renderItem={({ label, ...props }) => (
 							<CheckOption
 								{...props}
