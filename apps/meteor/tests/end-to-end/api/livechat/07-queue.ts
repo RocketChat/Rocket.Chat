@@ -386,7 +386,7 @@ describe('LIVECHAT - Queue', () => {
 	});
 });
 
-(IS_EE ? describe.only : describe.skip)('Livechat - Chat limits - AutoSelection', () => {
+(IS_EE ? describe : describe.skip)('Livechat - Chat limits - AutoSelection', () => {
 	let testUser: { user: IUser; credentials: Credentials };
 	let testDepartment: ILivechatDepartment;
 	let testDepartment2: ILivechatDepartment;
