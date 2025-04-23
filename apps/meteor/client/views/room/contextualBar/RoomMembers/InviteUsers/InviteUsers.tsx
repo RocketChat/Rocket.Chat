@@ -1,4 +1,3 @@
-import { Callout } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,6 @@ type InviteUsersProps = {
 	onClickEdit: () => void;
 	captionText: string;
 	linkText: string;
-	error?: Error;
 };
 
 const InviteUsers = ({
@@ -35,7 +33,6 @@ const InviteUsers = ({
 	daysAndMaxUses,
 	captionText,
 	linkText,
-	error,
 }: InviteUsersProps): ReactElement => {
 	const { t } = useTranslation();
 
@@ -47,9 +44,8 @@ const InviteUsers = ({
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
-				{error && <Callout type='danger'>{error.toString()}</Callout>}
-				{isEditing && !error && <EditInviteLink onClickNewLink={onClickNewLink} daysAndMaxUses={daysAndMaxUses} />}
-				{!isEditing && !error && <InviteLink captionText={captionText} onClickEdit={onClickEdit} linkText={linkText} />}
+				{isEditing && <EditInviteLink onClickNewLink={onClickNewLink} daysAndMaxUses={daysAndMaxUses} />}
+				{!isEditing && <InviteLink captionText={captionText} onClickEdit={onClickEdit} linkText={linkText} />}
 			</ContextualbarScrollableContent>
 		</>
 	);
