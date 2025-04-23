@@ -26,12 +26,11 @@ API.v1.addRoute(
 				token ? await findGuestWithoutActivity(token) : null,
 			]);
 
-			if (!guest) {
-				return API.v1.success({ config: { ...config, online: status } });
-			}
-
-			const room = await findOpenRoom(guest.token);
-			const [agent, extraInfo] = await Promise.all([room?.servedBy ? findAgent(room.servedBy._id) : null, getExtraConfigInfo(room)]);
+			const room = guest ? await findOpenRoom(guest.token) : null;
+			const [agent, extraInfo] = await Promise.all([
+				room?.servedBy ? findAgent(room.servedBy._id) : null,
+				room ? getExtraConfigInfo(room) : null,
+			]);
 
 			return API.v1.success({
 				config: { ...config, online: status, guest, ...extraInfo, ...(room && { room }), ...(agent && { agent }) },
