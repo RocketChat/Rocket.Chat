@@ -160,17 +160,23 @@ export async function archiveDepartment(_id: string) {
 		throw new Error('department-not-found');
 	}
 
-	await afterDepartmentArchived(department);
+	const status = await LivechatDepartment.archiveDepartment(department._id);
+	if (status.modifiedCount) {
+		await afterDepartmentArchived(department);
+	}
 }
 
 export async function unarchiveDepartment(_id: string) {
-	const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(_id, { projection: { _id: 1 } });
 
 	if (!department) {
 		throw new Meteor.Error('department-not-found');
 	}
 
-	await afterDepartmentUnarchived(department);
+	const status = await LivechatDepartment.unarchiveDepartment(department._id);
+	if (status.modifiedCount) {
+		await afterDepartmentUnarchived(department);
+	}
 }
 
 export async function saveDepartmentAgents(

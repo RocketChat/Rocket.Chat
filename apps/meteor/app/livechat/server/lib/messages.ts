@@ -143,8 +143,9 @@ export async function sendMessage({
 	agent?: SelectedAgent;
 }) {
 	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
-	return Object.assign(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room), {
+	return {
+		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
 		newRoom,
 		showConnecting: showConnecting(),
-	});
+	};
 }

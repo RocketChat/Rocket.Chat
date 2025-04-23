@@ -58,7 +58,7 @@ export async function addAgent(username: string) {
 }
 
 export async function removeAgent(id: IUser['_id']) {
-	const user = await Users.findOneById(id, { projection: { _id: 1, username: 1 } });
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
 		throw new Error('error-invalid-user');
@@ -73,7 +73,7 @@ export async function removeAgent(id: IUser['_id']) {
 }
 
 export async function removeManager(id: IUser['_id']) {
-	const user = await Users.findOneById(id, { projection: { _id: 1, username: 1 } });
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1 } });
 
 	if (!user) {
 		throw new Error('error-invalid-user');

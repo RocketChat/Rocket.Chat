@@ -46,7 +46,7 @@ export async function saveGuest(
 		...(name && { name }),
 		...(email && { email }),
 		...(phone && { phone }),
-		...(livechatData && { livechatData: {} }),
+		livechatData: {},
 	};
 
 	const customFields: Record<string, any> = {};

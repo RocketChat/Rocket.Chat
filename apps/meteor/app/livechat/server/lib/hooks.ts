@@ -26,10 +26,7 @@ export async function afterRemoveAgent(user: AtLeast<IUser, '_id' | 'username'>)
 }
 
 export async function afterDepartmentArchived(department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>) {
-	await Promise.all([
-		LivechatDepartmentAgents.disableAgentsByDepartmentId(department._id),
-		LivechatDepartment.archiveDepartment(department._id),
-	]);
+	await LivechatDepartmentAgents.disableAgentsByDepartmentId(department._id);
 
 	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(department._id);
 
@@ -37,10 +34,7 @@ export async function afterDepartmentArchived(department: AtLeast<ILivechatDepar
 }
 
 export async function afterDepartmentUnarchived(department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>) {
-	await Promise.all([
-		LivechatDepartmentAgents.enableAgentsByDepartmentId(department._id),
-		LivechatDepartment.unarchiveDepartment(department._id),
-	]);
+	await LivechatDepartmentAgents.enableAgentsByDepartmentId(department._id);
 
 	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(department._id);
 }
