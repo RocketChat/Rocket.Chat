@@ -332,7 +332,7 @@ API.v1.addRoute(
 		async get() {
 			const { query } = this.queryParams;
 
-			const result = await spotlightMethod(this.userId, query);
+			const result = await spotlightMethod({ text: query, userId: this.userId });
 
 			return API.v1.success(result);
 		},

@@ -34,13 +34,19 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const spotlightMethod = async (
-	userId: string,
-	text: string,
-	usernames: string[] = [],
-	type: SpotlightType = { users: true, rooms: true, mentions: false, includeFederatedRooms: false },
-	rid?: string,
-) => {
+export const spotlightMethod = async ({
+	text,
+	usernames = [],
+	type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false },
+	rid,
+	userId,
+}: {
+	text: string;
+	usernames?: string[];
+	type?: SpotlightType;
+	rid?: string;
+	userId?: string | null;
+}) => {
 	const spotlight = new Spotlight();
 	const { mentions, includeFederatedRooms } = type;
 
@@ -62,12 +68,7 @@ export const spotlightMethod = async (
 
 Meteor.methods<ServerMethods>({
 	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
-		const { userId } = this;
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'spotlight' });
-		}
-
-		return spotlightMethod(userId, text, usernames, type, rid);
+		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
 	},
 });
 
