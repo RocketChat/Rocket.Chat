@@ -4,9 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../hooks/useAsyncState';
-import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
+import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
 	value?: string;
@@ -33,7 +31,11 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+	const {
+		data: departmentsItems = [],
+		fetchNextPage,
+		hasNextPage,
+	} = useInfiniteDepartmentsList(
 		useMemo(
 			() => ({
 				filter: debouncedDepartmentsFilter,
@@ -48,8 +50,6 @@ const AutoCompleteDepartment = ({
 		),
 	);
 
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
-
 	return (
 		<PaginatedSelectFiltered
 			withTitle
@@ -61,11 +61,7 @@ const AutoCompleteDepartment = ({
 			options={departmentsItems}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
-			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING
-					? (): void => undefined
-					: (start): void => loadMoreDepartments(start, Math.min(50, departmentsTotal))
-			}
+			endReached={hasNextPage ? () => fetchNextPage() : () => undefined}
 		/>
 	);
 };
