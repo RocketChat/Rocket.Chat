@@ -82,6 +82,18 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		];
 	}
 
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+
+	async findOneById<P extends Document = IOmnichannelRoom>(_id: IOmnichannelRoom['_id'], options?: FindOptions<P>): Promise<P | null>;
+
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
+		if (options) {
+			return this.findOne(query, options);
+		}
+		return this.findOne(query);
+	}
+
 	getQueueMetrics({
 		departmentId,
 		agentId,
