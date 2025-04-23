@@ -25,6 +25,7 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 
 async function findDepartments(
 	businessUnit?: string,
+	userId?: string,
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
 	// TODO: check this function usage
 	return (
@@ -36,7 +37,9 @@ async function findDepartments(
 			showOnRegistration: 1,
 			showOnOfflineForm: 1,
 			departmentsAllowedToForward: 1,
-		})
+		},
+			{ userId },
+		)
 	).toArray();
 }
 
@@ -95,11 +98,11 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
+export async function settings({ businessUnit = '', userId }: { businessUnit?: string, userId?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = await getInitSettings();
 	const triggers = await findTriggers();
-	const departments = await findDepartments(businessUnit);
+	const departments = await findDepartments(businessUnit, userId);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {

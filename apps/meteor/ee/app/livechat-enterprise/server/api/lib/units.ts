@@ -2,6 +2,7 @@ import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor } from '@rocket.cha
 import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindOptions } from 'mongodb';
+import { getUnitsFromUser } from '../../methods/getUnitsFromUserRoles';
 
 export async function findUnitsOfUser({
 	text,
@@ -85,6 +86,7 @@ export async function findUnitMonitors({ unitId }: { unitId: string }): Promise<
 	return LivechatUnitMonitors.find({ unitId }).toArray();
 }
 
-export async function findUnitById({ unitId }: { unitId: string }): Promise<IOmnichannelBusinessUnit | null> {
-	return LivechatUnit.findOneById<IOmnichannelBusinessUnit>(unitId);
+export async function findUnitById({ unitId, userId }: { unitId: string; userId: string }): Promise<IOmnichannelBusinessUnit | null> {
+	const unitsFromUser = await getUnitsFromUser(userId);
+	return LivechatUnit.findOneById(unitId, {}, { unitsFromUser });
 }

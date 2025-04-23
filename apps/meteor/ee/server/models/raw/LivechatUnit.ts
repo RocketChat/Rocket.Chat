@@ -5,13 +5,24 @@ import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult
 
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
-const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
+// const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
+// 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
+
+// 	const units = await getUnitsFromUser();
+// 	if (Array.isArray(units)) {
+// 		const expressions = query.$and || [];
+// 		const condition = { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] };
+// 		query.$and = [condition, ...expressions];
+// 	}
+
+// 	return query;
+// };
+const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}, unitsFromUser?: string[]) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
 
-	const units = await getUnitsFromUser();
-	if (Array.isArray(units)) {
+	if (Array.isArray(unitsFromUser)) {
 		const expressions = query.$and || [];
-		const condition = { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] };
+		const condition = { $or: [{ ancestors: { $in: unitsFromUser } }, { _id: { $in: unitsFromUser } }] };
 		query.$and = [condition, ...expressions];
 	}
 
@@ -31,22 +42,36 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return super.findPaginated({ ...query, type: 'u' }, options);
 	}
 
-	// @ts-expect-error - Overriding base types :)
-	async find(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<FindCursor<IOmnichannelBusinessUnit>> {
-		const query = await addQueryRestrictions(originalQuery);
-		return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
-	}
+	// // @ts-expect-error - Overriding base types :)
+	// async find(
+	// 	originalQuery: Filter<IOmnichannelBusinessUnit>,
+	// 	options: FindOptions<IOmnichannelBusinessUnit>,
+	// ): Promise<FindCursor<IOmnichannelBusinessUnit>> {
+	// 	console.log('FIND')
+	// 	const query = await addQueryRestrictions(originalQuery);
+	// 	return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
+	// }
 
 	// @ts-expect-error - Overriding base types :)
 	async findOne(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
 		options: FindOptions<IOmnichannelBusinessUnit>,
+		extra?: Record<string, any>,
 	): Promise<IOmnichannelBusinessUnit | null> {
-		const query = await addQueryRestrictions(originalQuery);
+		console.log('FIND ONE', originalQuery, extra)
+		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
 		return this.col.findOne(query, options);
+	}
+
+	async findOneById(
+		_id: IOmnichannelBusinessUnit['_id'],
+		options: FindOptions<IOmnichannelBusinessUnit>,
+		extra?: Record<string, any>,
+	): Promise<IOmnichannelBusinessUnit | null> {
+		if (options) {
+			return this.findOne({ _id }, options, extra);
+		}
+		return this.findOne({ _id }, {}, extra);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {

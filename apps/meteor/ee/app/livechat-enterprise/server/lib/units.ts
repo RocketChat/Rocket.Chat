@@ -17,3 +17,4 @@ export async function getUnitsFromUser(): Promise<string[] | undefined> {
 
 	return Meteor.callAsync('livechat:getUnitsFromUser');
 }
+

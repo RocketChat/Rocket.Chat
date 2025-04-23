@@ -8,6 +8,7 @@ import { removeSLAFromRooms } from './SlaHelper';
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
+import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -50,10 +51,12 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	async removeUnit(_id: string) {
+	async removeUnit(_id: string, userId: string) {
 		check(_id, String);
 
-		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
+		console.log('UnitId removeUnit', _id);
+		const unitsFromUser = await getUnitsFromUser(userId);
+		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } }, { unitsFromUser });
 
 		if (!unit) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
@@ -67,6 +70,7 @@ export const LivechatEnterprise = {
 		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
 		unitMonitors: { monitorId: string; username: string },
 		unitDepartments: { departmentId: string }[],
+		userId: string,
 	) {
 		check(_id, Match.Maybe(String));
 
@@ -94,7 +98,9 @@ export const LivechatEnterprise = {
 
 		let ancestors: string[] = [];
 		if (_id) {
-			const unit = await LivechatUnit.findOneById(_id);
+			console.log('UnitId saveUnit', _id);
+			const unitsFromUser = await getUnitsFromUser(userId);
+			const unit = await LivechatUnit.findOneById(_id, {}, { unitsFromUser });
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',

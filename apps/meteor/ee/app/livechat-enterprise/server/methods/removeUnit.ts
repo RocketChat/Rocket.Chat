@@ -18,6 +18,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeUnit' });
 		}
 
-		return (await LivechatEnterprise.removeUnit(id)).deletedCount > 0;
+		return (await LivechatEnterprise.removeUnit(id, uid)).deletedCount > 0;
 	},
 });

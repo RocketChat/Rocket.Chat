@@ -26,8 +26,12 @@ export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { u
 	}
 
 	if (unitId) {
-		const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(unitId, {
+		console.log('UnitId manageDepartmentUnit', unitId);
+		const unit = await LivechatUnit.findOneById(unitId, {
 			projection: { ancestors: 1 },
+		},
+		{
+			unitsFromUser: accessibleUnits
 		});
 
 		if (!unit) {

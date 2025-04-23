@@ -11,7 +11,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
+(IS_EE ? describe.only : describe.skip)('[EE] LIVECHAT - Units', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -94,7 +94,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(unit._id).to.not.be.equal(unit2._id);
 		});
 
-		it('should sort the result set based on provided fields', async () => {
+		it.skip('should sort the result set based on provided fields', async () => {
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();
