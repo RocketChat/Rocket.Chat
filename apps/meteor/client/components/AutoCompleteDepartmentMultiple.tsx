@@ -5,9 +5,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../hooks/useAsyncState';
-import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
+import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepartmentsList';
 
 type AutoCompleteDepartmentMultipleProps = {
 	value?: PaginatedMultiSelectOption[];
@@ -31,14 +29,16 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+	const {
+		data: departmentsItems = [],
+		fetchNextPage,
+		hasNextPage,
+	} = useInfiniteDepartmentsList(
 		useMemo(
 			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: true }), enabled }),
 			[debouncedDepartmentsFilter, enabled, onlyMyDepartments, showArchived],
 		),
 	);
-
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const departmentOptions = useMemo(() => {
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value)) || [];
@@ -70,16 +70,7 @@ const AutoCompleteDepartmentMultiple = ({
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			renderItem={renderItem}
-			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING
-					? () => undefined
-					: (start?: number) => {
-							if (start === undefined) {
-								return;
-							}
-							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
-						}
-			}
+			endReached={hasNextPage ? () => fetchNextPage() : () => undefined}
 		/>
 	);
 };
