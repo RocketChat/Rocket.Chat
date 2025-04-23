@@ -3,9 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { AriaAttributes, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../lib/asyncState';
-import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
+import { useInfiniteAgentsList } from './Omnichannel/hooks/useInfiniteAgentsList';
 
 type AutoCompleteAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	value: string;
@@ -37,14 +35,19 @@ const AutoCompleteAgent = ({
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
-	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
-		useMemo(
-			() => ({ text: debouncedAgentsFilter, onlyAvailable, haveAll, haveNoAgentsSelectedOption, excludeId, showIdleAgents }),
-			[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
-		),
+	useMemo(
+		() => ({ text: debouncedAgentsFilter, onlyAvailable, haveAll, haveNoAgentsSelectedOption, excludeId, showIdleAgents }),
+		[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
 	);
 
-	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
+	const { data: agentsItems = [], fetchNextPage } = useInfiniteAgentsList({
+		text: debouncedAgentsFilter,
+		onlyAvailable,
+		haveAll,
+		haveNoAgentsSelectedOption,
+		excludeId,
+		showIdleAgents,
+	});
 
 	return (
 		<PaginatedSelectFiltered
@@ -59,9 +62,7 @@ const AutoCompleteAgent = ({
 			options={agentsItems}
 			data-qa='autocomplete-agent'
 			aria-labelledby={ariaLabelledBy}
-			endReached={
-				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
-			}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };
