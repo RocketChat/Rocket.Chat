@@ -180,7 +180,6 @@ export async function saveDepartmentAgents(
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 ) {
-	// TODO: remove when endpoint is validated
 	check(_id, String);
 	check(departmentAgents, {
 		upsert: Match.Maybe([
