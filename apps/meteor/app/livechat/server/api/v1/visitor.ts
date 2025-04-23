@@ -66,7 +66,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, this.userId);
 			// If it's updating an existing visitor, it must also update the roomInfo
 			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
 			await Promise.all(
@@ -169,7 +169,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		if (!visitor) {
 			throw new Meteor.Error('invalid-token');
 		}
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, this.userId);
 		const rooms = await LivechatRooms.findOpenByVisitorToken(
 			this.urlParams.token,
 			{
@@ -210,7 +210,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, this.userId);
 			const rooms = await LivechatRooms.findOpenByVisitorToken(
 				this.urlParams.token,
 				{

@@ -54,7 +54,6 @@ export const LivechatEnterprise = {
 	async removeUnit(_id: string, userId: string) {
 		check(_id, String);
 
-		console.log('UnitId removeUnit', _id);
 		const unitsFromUser = await getUnitsFromUser(userId);
 		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } }, { unitsFromUser });
 
@@ -98,7 +97,6 @@ export const LivechatEnterprise = {
 
 		let ancestors: string[] = [];
 		if (_id) {
-			console.log('UnitId saveUnit', _id);
 			const unitsFromUser = await getUnitsFromUser(userId);
 			const unit = await LivechatUnit.findOneById(_id, {}, { unitsFromUser });
 			if (!unit) {
@@ -150,7 +148,11 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
+	async saveSLA(
+		_id: string | null,
+		slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
+		executedBy: string,
+	) {
 		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
 		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
 		if (exists) {
@@ -166,13 +168,13 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			await updateSLAInquiries(sla);
+			await updateSLAInquiries(executedBy, sla);
 		}
 
 		return sla;
 	},
 
-	async removeSLA(_id: string) {
+	async removeSLA(executedBy: string, _id: string) {
 		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
 		if (!sla) {
 			throw new Error(`SLA with id ${_id} not found`);
@@ -183,6 +185,6 @@ export const LivechatEnterprise = {
 			throw new Error(`Error removing SLA with id ${_id}`);
 		}
 
-		await removeSLAFromRooms(_id);
+		await removeSLAFromRooms(_id, executedBy);
 	},
 };

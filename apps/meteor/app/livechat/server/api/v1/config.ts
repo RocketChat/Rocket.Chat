@@ -26,7 +26,7 @@ API.v1.addRoute(
 			const status = await online(department);
 			const guest = token ? await findGuestWithoutActivity(token) : null;
 
-			const room = guest ? await findOpenRoom(guest.token) : undefined;
+			const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
 			const agent = guest && room && room.servedBy && (await findAgent(room.servedBy._id));
 
 			const extra = await getExtraConfigInfo(room);

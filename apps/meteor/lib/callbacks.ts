@@ -179,7 +179,11 @@ type ChainedCallbackSignatures = {
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
-	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>, unitsFilter?: string[]) => FilterOperators<IOmnichannelRoom>;
+	'livechat.applyRoomRestrictions': (
+		query: FilterOperators<IOmnichannelRoom>,
+		unitsFilter?: string[],
+		userId?: string,
+	) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };

@@ -31,13 +31,15 @@ async function findDepartments(
 	return (
 		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
 			Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
-		>(businessUnit, {
-			_id: 1,
-			name: 1,
-			showOnRegistration: 1,
-			showOnOfflineForm: 1,
-			departmentsAllowedToForward: 1,
-		},
+		>(
+			businessUnit,
+			{
+				_id: 1,
+				name: 1,
+				showOnRegistration: 1,
+				showOnOfflineForm: 1,
+				departmentsAllowedToForward: 1,
+			},
 			{ userId },
 		)
 	).toArray();
@@ -68,7 +70,7 @@ export async function findRoom(token: string, rid?: string): Promise<IOmnichanne
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
+export async function findOpenRoom(token: string, departmentId?: string, callerId?: string): Promise<IOmnichannelRoom | undefined> {
 	const options = {
 		projection: {
 			departmentId: 1,
@@ -78,7 +80,7 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		},
 	};
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, callerId);
 	const rooms = departmentId
 		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options, extraQuery).toArray()
 		: await LivechatRooms.findOpenByVisitorToken(token, options, extraQuery).toArray();
@@ -98,7 +100,9 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '', userId }: { businessUnit?: string, userId?: string } = {}): Promise<Record<string, string | number | any>> {
+export async function settings({ businessUnit = '', userId }: { businessUnit?: string; userId?: string } = {}): Promise<
+	Record<string, string | number | any>
+> {
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = await getInitSettings();
 	const triggers = await findTriggers();

@@ -3,20 +3,6 @@ import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typin
 import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms, BaseRaw } from '@rocket.chat/models';
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
-
-// const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
-// 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
-
-// 	const units = await getUnitsFromUser();
-// 	if (Array.isArray(units)) {
-// 		const expressions = query.$and || [];
-// 		const condition = { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] };
-// 		query.$and = [condition, ...expressions];
-// 	}
-
-// 	return query;
-// };
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}, unitsFromUser?: string[]) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
 
@@ -42,23 +28,12 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return super.findPaginated({ ...query, type: 'u' }, options);
 	}
 
-	// // @ts-expect-error - Overriding base types :)
-	// async find(
-	// 	originalQuery: Filter<IOmnichannelBusinessUnit>,
-	// 	options: FindOptions<IOmnichannelBusinessUnit>,
-	// ): Promise<FindCursor<IOmnichannelBusinessUnit>> {
-	// 	console.log('FIND')
-	// 	const query = await addQueryRestrictions(originalQuery);
-	// 	return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
-	// }
-
 	// @ts-expect-error - Overriding base types :)
 	async findOne(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
 		options: FindOptions<IOmnichannelBusinessUnit>,
 		extra?: Record<string, any>,
 	): Promise<IOmnichannelBusinessUnit | null> {
-		console.log('FIND ONE', originalQuery, extra)
 		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
 		return this.col.findOne(query, options);
 	}
