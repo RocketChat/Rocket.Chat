@@ -66,9 +66,6 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		// Clean up existing tags first
-		// await api.post('/livechat/tags.remove', { tagId: 'tagA' });
-		// await api.post('/livechat/tags.remove', { tagId: 'tagB' });
 		tags = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
 
 		tags.forEach((res) => expect(res.response.status()).toBe(200));
@@ -147,12 +144,9 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 	test.beforeEach(async ({ page }) => {
 		poContacts = new OmnichannelContacts(page);
 		poOmniSection = new OmnichannelSection(page);
-	});
-
-	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await poOmniSection.btnContactCenter.click();
-		await poContacts.clickChats.click();
+		await poContacts.tabChats.click();
 		await page.waitForURL(URL.contactCenterChats);
 	});
 
@@ -163,7 +157,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await poContacts.inputSearch.fill(visitorA);
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.searchChip).toContainText(visitorA);
+			await expect(poContacts.chipSearch).toContainText(visitorA);
 
 			await poContacts.inputSearch.fill('');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
@@ -174,28 +168,28 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 
-			await poContacts.clickFilters.click();
+			await poContacts.btnFilters.click();
 
 			// Select user1
 			await poContacts.selectServedBy('user1');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.servedByChip).toContainText('user1');
+			await expect(poContacts.chipServedBy).toContainText('user1');
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 
 			// Select user2
-			await poContacts.closeChip.first().click();
+			await poContacts.btnCloseChip.first().click();
 			await poContacts.selectServedBy('user2');
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.servedByChip).toContainText('user2');
+			await expect(poContacts.chipServedBy).toContainText('user2');
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 
 			// Select all users
-			await poContacts.closeChip.first().click();
+			await poContacts.btnCloseChip.first().click();
 			await poContacts.selectServedBy('user1');
 			await poContacts.selectServedBy('user2');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await poContacts.closeChip.first().click();
+			await poContacts.btnCloseChip.first().click();
 		});
 
 		await test.step('expect to filter by status', async () => {
@@ -203,24 +197,24 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
-			await expect(poContacts.statusChip).toContainText('Closed');
+			await expect(poContacts.chipStatus).toContainText('Closed');
 
 			await poContacts.selectStatus('opened');
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.statusChip).toContainText('Open');
+			await expect(poContacts.chipStatus).toContainText('Open');
 
 			await poContacts.selectStatus('onhold');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.statusChip).toContainText('On hold');
+			await expect(poContacts.chipStatus).toContainText('On hold');
 
 			await poContacts.selectStatus('all');
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
+			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
 		});
 
 		await test.step('expect to filter by department', async () => {
@@ -229,16 +223,16 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.departmentChip).toContainText(departmentA.name);
-			await poContacts.closeChip.first().click();
+			await expect(poContacts.chipDepartment).toContainText(departmentA.name);
+			await poContacts.btnCloseChip.first().click();
 
 			// select department B
 			await poContacts.selectDepartment(departmentB.name);
 			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.departmentChip).toContainText(departmentB.name);
-			await poContacts.closeChip.first().click();
+			await expect(poContacts.chipDepartment).toContainText(departmentB.name);
+			await poContacts.btnCloseChip.first().click();
 
 			// select all departments
 			await poContacts.selectDepartment(departmentA.name);
@@ -270,7 +264,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		const [departmentA] = departments.map(({ data }) => data);
 
 		await test.step('expect to display result as per applied filters ', async () => {
-			await poContacts.clickFilters.click();
+			await poContacts.btnFilters.click();
 			await poContacts.selectServedBy('user1');
 			await poContacts.selectStatus('onhold');
 			await poContacts.selectDepartment(departmentA.name);
@@ -282,7 +276,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		});
 
 		await test.step('expect to clear all filters ', async () => {
-			await poContacts.clearFilters.click();
+			await poContacts.btnClearFilters.click();
 			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
 			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
@@ -291,8 +285,10 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 
 	test('Close contextual bar with filter screen', async () => {
 		await test.step('expect to close filters contextual bar ', async () => {
-			await poContacts.clickFilters.click();
-			await poContacts.close.click();
+			await poContacts.btnFilters.click();
+			await poContacts.btnClose.click();
+			await expect(poContacts.btnFilters).toBeVisible();
+			await expect(poContacts.btnClearFilters).not.toBeVisible();
 		});
 	});
 });

@@ -28,11 +28,11 @@ export class OmnichannelContacts {
 		return this.page.locator(`td >> text="${contactName}"`);
 	}
 
-	get clickFilters(): Locator {
+	get btnFilters(): Locator {
 		return this.page.getByText('Filters');
 	}
 
-	get closeChip(): Locator {
+	get btnCloseChip(): Locator {
 		return this.page.locator('button.rcx-chip i');
 	}
 
@@ -44,15 +44,15 @@ export class OmnichannelContacts {
 		return this.page.locator('//*[label="Department"]//input');
 	}
 
-	get clickApply(): Locator {
+	get btnApply(): Locator {
 		return this.page.getByRole('button', { name: 'Apply' });
 	}
 
-	get clickChats(): Locator {
+	get tabChats(): Locator {
 		return this.page.getByRole('tab', { name: 'Chats' });
 	}
 
-	get inputStatus(): Locator {
+	get selectStatusContainer(): Locator {
 		return this.page.getByTestId('hidden-select-container');
 	}
 
@@ -64,27 +64,27 @@ export class OmnichannelContacts {
 		return this.page.locator('[type="date"] [placeholder="From"]');
 	}
 
-	get clearFilters(): Locator {
+	get btnClearFilters(): Locator {
 		return this.page.getByRole('button', { name: 'Clear filters' });
 	}
 
-	get close(): Locator {
+	get btnClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get servedByChip(): Locator {
+	get chipServedBy(): Locator {
 		return this.page.getByRole('button', { name: 'Served By:' });
 	}
 
-	get statusChip(): Locator {
+	get chipStatus(): Locator {
 		return this.page.getByRole('button', { name: 'Status:' });
 	}
 
-	get departmentChip(): Locator {
+	get chipDepartment(): Locator {
 		return this.page.getByRole('button', { name: 'Department:' });
 	}
 
-	get searchChip(): Locator {
+	get chipSearch(): Locator {
 		return this.page.getByRole('button', { name: 'Text:' });
 	}
 
@@ -96,7 +96,7 @@ export class OmnichannelContacts {
 	}
 
 	async selectStatus(option: string) {
-		await this.inputStatus.click();
+		await this.selectStatusContainer.click();
 		await this.page.locator(`[role='option'][data-key='${option}']`).click();
 		await this.page.getByRole('button', { name: 'Apply' }).click();
 	}
