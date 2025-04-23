@@ -42,7 +42,13 @@ const ConfirmOwnerChangeModal = ({
 				/>
 			);
 		}
-		return <Trans i18nKey='A_new_owner_will_be_assigned_automatically_to__count__rooms' values={{ count: shouldChangeOwner.length }} />;
+		return (
+			<Trans
+				i18nKey='A_new_owner_will_be_assigned_automatically_to__count__rooms'
+				values={{ count: shouldChangeOwner.length }}
+				components={{ bold: <Box is='span' fontWeight='bold' /> }}
+			/>
+		);
 	});
 
 	const getRemovedRooms = useEffectEvent(() => {
