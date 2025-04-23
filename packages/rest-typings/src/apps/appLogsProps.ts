@@ -13,8 +13,8 @@ const AppLogsPropsSchema = {
 	properties: {
 		logLevel: { type: 'string', enum: ['0', '1', '2'], nullable: true },
 		method: { type: 'string', nullable: true },
-		startDate: { type: 'string', format: 'date', nullable: true },
-		endDate: { type: 'string', format: 'date', nullable: true },
+		startDate: { type: 'string', format: 'date-time', nullable: true },
+		endDate: { type: 'string', format: 'date-time', nullable: true },
 		offset: { type: 'number' },
 		count: { type: 'number' },
 	},
