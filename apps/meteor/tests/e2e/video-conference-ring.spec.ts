@@ -34,8 +34,7 @@ test.describe('video conference ringing', () => {
 
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
 		await test.step('should user1 calls user2', async () => {
-			await poHomeChannel.content.btnCall.click();
-			await poHomeChannel.content.menuItemVideoCall.click();
+			await poHomeChannel.content.btnVideoCall.click();
 			await poHomeChannel.content.btnStartVideoCall.click();
 
 			await expect(poHomeChannel.content.getVideoConfPopupByName('Calling user2')).toBeVisible();
