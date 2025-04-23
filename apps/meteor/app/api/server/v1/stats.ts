@@ -32,11 +32,38 @@ API.v1
 				200: ajv.compile({
 					type: 'object',
 					properties: {
-						statistics: { type: 'object', additionalProperties: true },
-						success: { type: 'boolean' },
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
 					},
-					required: ['statistics', 'success'],
-					additionalProperties: false,
+					required: ['success'],
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
+				}),
+				401: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
 				}),
 			},
 		},
@@ -46,7 +73,7 @@ API.v1
 				userId: this.userId,
 				refresh: refresh === 'true',
 			});
-			return API.v1.success({ statistics, success: true });
+			return API.v1.success({ ...statistics, success: true });
 		},
 	)
 	.get(
@@ -74,27 +101,67 @@ API.v1
 				200: ajv.compile({
 					type: 'object',
 					properties: {
-						statistics: { type: 'object', additionalProperties: true },
+						statistics: {
+							type: 'array',
+							items: {
+								type: 'object',
+							},
+						},
+						count: { type: 'integer', minimum: 1, default: 25 },
+						offset: { type: 'integer', minimum: 0, default: 0 },
+						total: { type: 'integer', minimum: 1, default: 25 },
 						success: { type: 'boolean' },
 					},
-					required: ['statistics', 'success'],
 					additionalProperties: false,
+					required: ['statistics', 'success'],
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
+				}),
+				401: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
 				}),
 			},
 		},
 		async function () {
-			const { offset, count } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const { offset: paginationOffset, count: paginationCount } = await getPaginationItems({
-				offset,
-				count,
-			});
-			const statistics = await getStatistics({
+
+			const { statistics, ...pagination } = await getStatistics({
 				userId: this.userId,
 				query,
-				pagination: { offset: paginationOffset, count: paginationCount, sort, fields },
+				pagination: {
+					offset,
+					count,
+					sort,
+					fields,
+				},
 			});
-			return API.v1.success({ statistics, success: true });
+			return API.v1.success({
+				statistics,
+				...pagination,
+				success: true,
+			});
 		},
 	)
 	.post(
@@ -142,6 +209,32 @@ API.v1
 					},
 					required: ['success'],
 					additionalProperties: false,
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
+				}),
+				401: ajv.compile({
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
 				}),
 			},
 		},
