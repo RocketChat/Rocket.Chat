@@ -1,5 +1,6 @@
 import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isActionAttachment } from '@rocket.chat/core-typings';
+import { Markup } from '@rocket.chat/gazzodown';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
 
 import { ActionAttachment } from './default/ActionAttachtment';
@@ -71,9 +72,12 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 				)}
 				{!collapsed && (
 					<>
-						{attachment.text && (
-							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
-						)}
+						{attachment.text &&
+							(attachment.md ? (
+								<Markup tokens={attachment.md} />
+							) : (
+								<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
+							))}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
 							<FieldsAttachment
