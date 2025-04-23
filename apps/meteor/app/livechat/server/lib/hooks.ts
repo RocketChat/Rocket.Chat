@@ -1,6 +1,6 @@
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents, LivechatDepartment } from '@rocket.chat/models';
+import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { setUserStatusLivechat } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
