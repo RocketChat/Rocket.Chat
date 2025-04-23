@@ -23,17 +23,14 @@ API.v1.addRoute(
 			const [config, status, guest] = await Promise.all([
 				cachedSettings({ businessUnit }),
 				online(department),
-				token ? await findGuestWithoutActivity(token) : null,
+				token ? findGuestWithoutActivity(token) : null,
 			]);
 
-			const room = guest ? await findOpenRoom(guest.token) : null;
-			const [agent, extraInfo] = await Promise.all([
-				room?.servedBy ? findAgent(room.servedBy._id) : null,
-				room ? getExtraConfigInfo(room) : null,
-			]);
+			const room = guest ? await findOpenRoom(guest.token) : undefined;
+			const [agent, extraInfo] = await Promise.all([room?.servedBy ? findAgent(room.servedBy._id) : null, getExtraConfigInfo(room)]);
 
 			return API.v1.success({
-				config: { ...config, online: status, guest, ...extraInfo, ...(room && { room }), ...(agent && { agent }) },
+				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
 			});
 		},
 	},
