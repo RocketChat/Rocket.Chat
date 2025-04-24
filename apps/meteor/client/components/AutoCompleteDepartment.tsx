@@ -40,7 +40,7 @@ const AutoCompleteDepartment = ({
 		haveNone,
 		excludeId,
 		showArchived,
-		selectedDepartment: value,
+		selectedDepartmentId: value,
 		unitId,
 	});
 
