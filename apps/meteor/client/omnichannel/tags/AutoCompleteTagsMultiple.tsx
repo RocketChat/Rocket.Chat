@@ -1,25 +1,26 @@
-import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useInfiniteTagsList } from '../../components/Omnichannel/hooks/useInfiniteTagsList';
 
-type AutoCompleteTagsMultipleProps = {
-	id?: string;
-	value?: PaginatedMultiSelectOption[];
-	onChange?: (value: PaginatedMultiSelectOption[]) => void;
+type AutoCompleteTagsMultipleProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+> & {
 	department?: string;
 	viewAll?: boolean;
 };
 
 const AutoCompleteTagsMultiple = ({
-	id,
 	value = [],
 	onChange = () => undefined,
 	department,
 	viewAll = false,
+	placeholder,
+	...props
 }: AutoCompleteTagsMultipleProps) => {
 	const { t } = useTranslation();
 	const [tagsFilter, setTagsFilter] = useState('');
@@ -39,8 +40,8 @@ const AutoCompleteTagsMultiple = ({
 
 	return (
 		<PaginatedMultiSelectFiltered
-			id={id}
 			withTitle
+			{...props}
 			value={value}
 			onChange={onChange}
 			filter={tagsFilter}
@@ -49,7 +50,7 @@ const AutoCompleteTagsMultiple = ({
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
-			placeholder={t('Select_an_option')}
+			placeholder={placeholder ?? t('Select_an_option')}
 			endReached={() => fetchNextPage()}
 		/>
 	);
