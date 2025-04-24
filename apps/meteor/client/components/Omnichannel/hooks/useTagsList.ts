@@ -17,7 +17,7 @@ type TagListItem = {
 
 const DEFAULT_QUERY_LIMIT = 25;
 
-export const useInfiniteTagsList = (options: TagsListOptions) => {
+export const useTagsList = (options: TagsListOptions) => {
 	const { viewAll, department, filter, limit } = options;
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
