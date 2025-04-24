@@ -59,12 +59,6 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 		extraQuery?: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
-	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
-	getOnlineForDepartment(
-		departmentId: string,
-		isLivechatEnabledWhenAgentIdle?: boolean,
-	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
-	countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
 	countBotsForDepartment(departmentId: string): Promise<number>;
 	getNextBotForDepartment(
