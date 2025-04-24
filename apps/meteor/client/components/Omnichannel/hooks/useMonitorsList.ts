@@ -15,7 +15,7 @@ type MonitorListItem = {
 
 const DEFAULT_QUERY_LIMIT = 25;
 
-export const useInfiniteMonitorsList = (options: MonitorsListOptions) => {
+export const useMonitorsList = (options: MonitorsListOptions) => {
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 
 	const formatMonitorItem = (monitor: Serialized<ILivechatMonitor>): MonitorListItem => ({

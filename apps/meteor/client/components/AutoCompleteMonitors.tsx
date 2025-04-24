@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInfiniteMonitorsList } from './Omnichannel/hooks/useInfiniteMonitorsList';
+import { useMonitorsList } from './Omnichannel/hooks/useMonitorsList';
 
 type AutoCompleteMonitorsProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
@@ -16,7 +16,7 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
 
-	const { data: monitorsOptions, fetchNextPage } = useInfiniteMonitorsList({ filter: debouncedMonitorsFilter });
+	const { data: monitorsOptions, fetchNextPage } = useMonitorsList({ filter: debouncedMonitorsFilter });
 	const selectedValues = useMemo(() => new Set(value.map((item) => item.value)), [value]);
 
 	return (
