@@ -21,6 +21,7 @@ import { useId, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';
+import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -31,7 +32,6 @@ import {
 } from '../../components/Contextualbar';
 import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
 
 type UnitEditFormData = {
@@ -65,20 +65,11 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
 
-	const [departmentsFilter, setDepartmentsFilter] = useState('');
-	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
-
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
 		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
 	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(monitorsList);
-
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsByUnitsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId: unitData?._id }), [debouncedDepartmentsFilter, unitData?._id]),
-	);
-
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const visibilityOpts: SelectOption[] = [
 		['public', t('Public')],
@@ -121,15 +112,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	});
 
 	const { departments, monitors } = watch();
-
-	const departmentsOptions = useMemo(() => {
-		const pending = departments.filter(({ value }) => !departmentsItems.find((dep) => dep._id === value));
-		const mappedDepartmentsItems = departmentsItems?.map(({ _id, name }) => ({
-			value: _id,
-			label: name,
-		}));
-		return [...mappedDepartmentsItems, ...pending];
-	}, [departments, departmentsItems]);
 
 	const monitorsOptions = useMemo(() => {
 		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon._id === value));
@@ -237,33 +219,18 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Departments') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
-										<PaginatedMultiSelectFiltered
+										<AutoCompleteDepartmentMultiple
+											withCheckbox
 											id={departmentsField}
 											name={name}
 											value={value}
-											onChange={onChange}
-											onBlur={onBlur}
-											withTitle
-											filter={departmentsFilter}
-											setFilter={setDepartmentsFilter}
-											options={departmentsOptions}
+											unitId={unitData?._id}
 											error={Boolean(errors?.departments)}
-											placeholder={t('Select_an_option')}
-											endReached={
-												departmentsPhase === AsyncStatePhase.LOADING
-													? undefined
-													: (start) => start && loadMoreDepartments(start, Math.min(50, departmentsTotal))
-											}
 											aria-describedby={`${departmentsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departments)}
-											renderItem={({ label, ...props }) => (
-												<CheckOption
-													{...props}
-													label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-													selected={value.some((item) => item.value === props.value)}
-												/>
-											)}
+											onChange={onChange}
+											onBlur={onBlur}
 										/>
 									)}
 								/>
