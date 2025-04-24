@@ -6,6 +6,7 @@ import type { ReactElement } from 'react';
 import { useState, useEffect } from 'react';
 
 import InviteUsers from './InviteUsers';
+import InviteUsersEdit from './InviteUsersEdit';
 import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -92,30 +93,37 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	});
 
 	if (isError) {
-		return <InviteUsersError error={error} onClose={closeTab} />;
+		return <InviteUsersError error={error} onClose={closeTab} onClickBack={onClickBack} />;
 	}
 
 	if (isLoading) {
-		return <InviteUsersLoading onClose={closeTab} />;
+		return <InviteUsersLoading onClose={closeTab} onClickBack={onClickBack} />;
 	}
 
-	if (isSuccess && data) {
+	if (isEditing) {
 		return (
-			<InviteUsers
-				isEditing={isEditing}
-				linkText={data?.url}
-				captionText={linkExpirationText(data)}
+			<InviteUsersEdit
 				daysAndMaxUses={{ days, maxUses }}
-				onClose={closeTab}
-				onClickBackMembers={onClickBack}
 				onClickBackLink={handleBackToLink}
-				onClickEdit={handleEdit}
 				onClickNewLink={handleGenerateLink}
+				onClose={closeTab}
 			/>
 		);
 	}
 
-	return <InviteUsersError error={new Error(t('Something_Went_Wrong'))} onClose={closeTab} />;
+	if (isSuccess) {
+		return (
+			<InviteUsers
+				linkText={data.url}
+				captionText={linkExpirationText(data)}
+				onClose={closeTab}
+				onClickBackMembers={onClickBack}
+				onClickEdit={handleEdit}
+			/>
+		);
+	}
+
+	return <InviteUsersError error={new Error(t('Something_Went_Wrong'))} onClose={closeTab} onClickBack={onClickBack} />;
 };
 
 export default InviteUsersWithData;

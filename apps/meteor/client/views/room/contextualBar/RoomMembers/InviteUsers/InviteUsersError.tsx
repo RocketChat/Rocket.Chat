@@ -1,33 +1,18 @@
 import { Callout } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import {
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarScrollableContent,
-} from '../../../../../components/Contextualbar';
+import InviteUsersWrapper from './InviteUsersWrapper';
 
 type InviteUsersProps = {
 	onClose: () => void;
 	error: Error;
+	onClickBack?: (() => void) | undefined;
 };
 
-const InviteUsersError = ({ onClose, error }: InviteUsersProps): ReactElement => {
-	const { t } = useTranslation();
-
-	return (
-		<>
-			<ContextualbarHeader>
-				<ContextualbarTitle>{t('Invite_Users')}</ContextualbarTitle>
-				{onClose && <ContextualbarClose onClick={onClose} />}
-			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
-				<Callout type='danger'>{error.toString()}</Callout>
-			</ContextualbarScrollableContent>
-		</>
-	);
-};
+const InviteUsersError = ({ onClose, error, onClickBack }: InviteUsersProps): ReactElement => (
+	<InviteUsersWrapper onClose={onClose} onClickBack={onClickBack}>
+		<Callout type='danger'>{(error || '').toString()}</Callout>
+	</InviteUsersWrapper>
+);
 
 export default InviteUsersError;

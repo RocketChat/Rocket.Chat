@@ -1,32 +1,17 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import {
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarScrollableContent,
-} from '../../../../../components/Contextualbar';
+import InviteUsersWrapper from './InviteUsersWrapper';
 
 type InviteUsersProps = {
 	onClose: () => void;
+	onClickBack: (() => void) | undefined;
 };
 
-const InviteUsersLoading = ({ onClose }: InviteUsersProps): ReactElement => {
-	const { t } = useTranslation();
-
-	return (
-		<>
-			<ContextualbarHeader>
-				<ContextualbarTitle>{t('Invite_Users')}</ContextualbarTitle>
-				{onClose && <ContextualbarClose onClick={onClose} />}
-			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
-				<Skeleton w='full' />
-			</ContextualbarScrollableContent>
-		</>
-	);
-};
+const InviteUsersLoading = ({ onClose, onClickBack: onClickBackMembers }: InviteUsersProps): ReactElement => (
+	<InviteUsersWrapper onClose={onClose} onClickBack={onClickBackMembers}>
+		<Skeleton w='full' />
+	</InviteUsersWrapper>
+);
 
 export default InviteUsersLoading;
