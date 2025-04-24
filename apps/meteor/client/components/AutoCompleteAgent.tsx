@@ -1,38 +1,34 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { AriaAttributes, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 import { useInfiniteAgentsList } from './Omnichannel/hooks/useInfiniteAgentsList';
 
-type AutoCompleteAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+type AutoCompleteAgentProps = Omit<
+	ComponentProps<typeof PaginatedSelectFiltered>,
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+> & {
 	value: string;
-	error?: string;
-	placeholder?: string;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
-	withTitle?: boolean;
 	onChange: (value: string) => void;
 };
 
 const AutoCompleteAgent = ({
 	value,
-	error,
-	placeholder,
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
 	excludeId,
 	showIdleAgents = true,
 	onlyAvailable = false,
-	withTitle = false,
 	onChange,
-	'aria-labelledby': ariaLabelledBy,
+	...props
 }: AutoCompleteAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
-
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
 	useMemo(
@@ -51,17 +47,14 @@ const AutoCompleteAgent = ({
 
 	return (
 		<PaginatedSelectFiltered
-			withTitle={withTitle}
+			{...props}
 			value={value}
-			error={error}
-			placeholder={placeholder}
-			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
 			data-qa='autocomplete-agent'
-			aria-labelledby={ariaLabelledBy}
+			onChange={onChange}
 			endReached={() => fetchNextPage()}
 		/>
 	);
