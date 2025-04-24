@@ -1,11 +1,8 @@
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../lib/asyncState';
-import { useAvailableAgentsList } from './Omnichannel/hooks/useAvailableAgentsList';
+import { useInfiniteAvailableAgentsList } from './Omnichannel/hooks/useInfiniteAvailableAgentsList';
 
 type AutoCompleteAgentProps = {
 	onChange: (value: string) => void;
@@ -15,38 +12,15 @@ type AutoCompleteAgentProps = {
 };
 
 const AutoCompleteAgentWithoutExtension = (props: AutoCompleteAgentProps) => {
-	const { value, currentExtension, onChange = (): void => undefined, haveAll = false } = props;
+	const { value, currentExtension, onChange = (): void => undefined } = props;
 	const [agentsFilter, setAgentsFilter] = useState<string | number | undefined>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter as string, 500);
 
-	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAvailableAgentsList(
-		useMemo(
-			() => ({ text: debouncedAgentsFilter, includeExtension: currentExtension, haveAll }),
-			[currentExtension, debouncedAgentsFilter, haveAll],
-		),
-	);
-	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(AgentsList);
-	const sortedByName = agentsItems
-		.sort((a, b) => {
-			if (value === 'all') {
-				return -1;
-			}
-
-			if (a?.username?.localeCompare(b?.username || '')) {
-				return 1;
-			}
-			if (b?.username?.localeCompare(b?.username || '')) {
-				return -1;
-			}
-
-			return 0;
-		})
-		.map((agent): ILivechatAgent & { label: string; value: string } => ({
-			...agent,
-			label: agent?.username || '',
-			value: agent?.username || '',
-		}));
+	const { data: agentsItems = [], fetchNextPage } = useInfiniteAvailableAgentsList({
+		text: debouncedAgentsFilter,
+		includeExtension: currentExtension,
+	});
 
 	return (
 		<PaginatedSelectFiltered
@@ -55,10 +29,8 @@ const AutoCompleteAgentWithoutExtension = (props: AutoCompleteAgentProps) => {
 			flexShrink={0}
 			filter={agentsFilter as string | undefined}
 			setFilter={setAgentsFilter}
-			options={sortedByName}
-			endReached={
-				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
-			}
+			options={agentsItems}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };
