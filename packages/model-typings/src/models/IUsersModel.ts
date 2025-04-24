@@ -282,7 +282,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }: { userId: IUser['_id']; tokenName: string }): Promise<IUser | null>;
-	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): Promise<boolean>;
 	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenIdle?: boolean): FindCursor<T>;
 	countOnlineAgents(agentId: string): Promise<number>;
@@ -442,4 +441,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
 }

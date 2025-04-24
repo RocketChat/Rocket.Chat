@@ -4,6 +4,7 @@ import {
 	type MessageTypesValues,
 	type IOmnichannelSystemMessage,
 	type ILivechatVisitor,
+	type IOmnichannelRoom,
 	isFileAttachment,
 	isFileImageAttachment,
 	type AtLeast,
@@ -11,7 +12,6 @@ import {
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,11 +37,12 @@ export async function sendTranscript({
 	subject?: string;
 	user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 }): Promise<boolean> {
-	check(rid, String);
-	check(email, String);
 	logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
 
-	const room = await LivechatRooms.findOneById(rid);
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v'>>(rid, { projection: { _id: 1, v: 1 } });
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
 
 	const visitor = room?.v as ILivechatVisitor;
 	if (token !== visitor?.token) {
@@ -51,15 +52,6 @@ export async function sendTranscript({
 	const userLanguage = settings.get<string>('Language') || 'en';
 	const timezone = getTimezone(user);
 	logger.debug(`Transcript will be sent using ${timezone} as timezone`);
-
-	if (!room) {
-		throw new Error('error-invalid-room');
-	}
-
-	// allow to only user to send transcripts from their own chats
-	if (room.t !== 'l') {
-		throw new Error('error-invalid-room');
-	}
 
 	const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
 	const showSystemMessages = settings.get<boolean>('Livechat_transcript_show_system_messages');
@@ -74,7 +66,7 @@ export async function sendTranscript({
 		'omnichannel_priority_change_history',
 	];
 	const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-	const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
+	const messages = Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
 		rid,
 		ignoredMessageTypes,
 		closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),

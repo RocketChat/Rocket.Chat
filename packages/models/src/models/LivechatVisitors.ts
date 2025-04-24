@@ -440,6 +440,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			},
 		);
 	}
+
+	updateDepartmentById(_id: string, department: string) {
+		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
+	}
 }
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
