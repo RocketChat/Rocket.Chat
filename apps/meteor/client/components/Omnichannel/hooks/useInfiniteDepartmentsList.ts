@@ -7,11 +7,10 @@ import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 
 type DepartmentsListOptions = {
 	filter: string;
-	departmentId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
-	excludeDepartmentId?: string;
+	excludeId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
 	selectedDepartment?: string;
@@ -29,34 +28,22 @@ export const useInfiniteDepartmentsList = (options: DepartmentsListOptions) => {
 	});
 
 	return useInfiniteQuery({
-		queryKey: [
-			'/v1/livechat/department',
-			options.onlyMyDepartments,
-			options.filter,
-			options.limit,
-			options.excludeDepartmentId,
-			options.enabled,
-			options.showArchived,
-		],
-		queryFn: async ({ pageParam }) => {
-			const start = pageParam ?? 0;
-
+		queryKey: ['/v1/livechat/department', options],
+		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { departments, ...data } = await getDepartments({
 				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
 				text: options.filter,
-				offset: start,
-				count: options.limit ?? 25,
+				offset,
+				count: options.limit ?? 50,
 				sort: `{ "name": 1 }`,
-				excludeDepartmentId: options.excludeDepartmentId,
+				excludeDepartmentId: options.excludeId,
 				enabled: options.enabled ? 'true' : 'false',
 				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
 			return {
 				...data,
-				departments: departments.map(formatDepartmentItem).filter((department) => {
-					return department._id !== options.departmentId;
-				}),
+				departments: departments.map(formatDepartmentItem),
 			};
 		},
 		select: (data) => {
