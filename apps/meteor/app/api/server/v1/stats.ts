@@ -49,10 +49,10 @@ API.v1
 						installedAt: { type: 'string' },
 						branch: {
 							anyOf: [{ type: 'null' }, {}],
-						}, // need attentions
+						}, // FIXME: Always return null
 						tag: {
 							anyOf: [{ type: 'null' }, {}],
-						}, //need attentions
+						}, // FIXME: Always return null
 						deploymentFingerprintHash: { type: 'string' },
 						deploymentFingerprintVerified: { type: 'boolean' },
 						version: { type: 'string' },
@@ -70,7 +70,7 @@ API.v1
 							type: 'object',
 							properties: {
 								none: { type: 'integer' },
-								es: { type: 'integer' }, // add new
+								es: { type: 'integer' },
 							},
 						},
 						totalRooms: { type: 'integer' },
@@ -96,17 +96,17 @@ API.v1
 								properties: {
 									id: {
 										anyOf: [{ type: 'null' }, {}],
-									}, //need attentions
+									}, // FIXME: Always return null
 									alias: {
 										anyOf: [{ type: 'null' }, {}],
-									}, //need attentions
-									type: { type: 'string' }, // added new
-									count: { type: 'integer' }, // added new
+									}, // FIXME: Always return null
+									type: { type: 'string' },
+									count: { type: 'integer' },
 								},
 							},
 						},
 						totalLivechatPublicCustomFields: { type: 'integer' },
-						totalLivechatRoomsWithDepartment: { type: 'integer' }, // added new
+						totalLivechatRoomsWithDepartment: { type: 'integer' },
 						livechatAutomaticForwardingUnansweredChats: { type: 'boolean' },
 						routingAlgorithm: { type: 'string' },
 						onHoldEnabled: { type: 'boolean' },
@@ -175,7 +175,7 @@ API.v1
 						totalLivechatMessages: { type: 'integer' },
 						totalMessages: { type: 'integer' },
 						lastLogin: { type: 'string' },
-						lastMessageSentAt: { type: 'object' }, // to-do convert lastMessageSentAt: from JavaScript `Date` object to string
+						lastMessageSentAt: { type: 'object' }, // TODO: convert `lastMessageSentAt` from JavaScript `Date` object to string
 						federatedServers: { type: 'integer' },
 						federatedUsers: { type: 'integer' },
 						lastSeenSubscription: { type: 'string' },
@@ -186,10 +186,10 @@ API.v1
 								platform: { type: 'string' },
 								arch: { type: 'string' },
 								release: { type: 'string' },
-								uptime: { type: 'number' }, // intiger fixed
+								uptime: { type: 'number' },
 								loadavg: {
 									type: 'array',
-									items: { type: 'number' }, // intiger fixed
+									items: { type: 'number' },
 								},
 								totalmem: { type: 'integer' },
 								freemem: { type: 'integer' },
@@ -201,7 +201,7 @@ API.v1
 							properties: {
 								nodeVersion: { type: 'string' },
 								pid: { type: 'integer' },
-								uptime: { type: 'number' }, // integer fixed
+								uptime: { type: 'number' },
 							},
 						},
 						deploy: {
@@ -219,13 +219,11 @@ API.v1
 							type: 'object',
 							properties: {
 								_id: { type: 'string' },
-								// to-do convert _updatedAt: from JavaScript `Date` object to string
-								_updatedAt: { type: 'object' },
+								_updatedAt: { type: 'object' }, // TODO: convert `_updatedAt` from JavaScript `Date` object to string
 								locked: { type: 'boolean' },
 								version: { type: 'integer' },
 								buildAt: { type: 'string' },
-								// to-do convert lockedAt: from JavaScript `Date` object to string
-								lockedAt: { type: 'object' },
+								lockedAt: { type: 'object' }, // TODO: convert `lockedAt` from JavaScript `Date` object to string
 							},
 						},
 						uploadsTotalSize: { type: 'integer' },
@@ -241,9 +239,8 @@ API.v1
 								totalInstalled: { type: 'integer' },
 								totalActive: { type: 'integer' },
 								totalFailed: { type: 'integer' },
-
-								totalPrivateApps: { type: 'integer' }, // add new
-								totalPrivateAppsEnabled: { type: 'integer' }, // add new
+								totalPrivateApps: { type: 'integer' },
+								totalPrivateAppsEnabled: { type: 'integer' },
 							},
 						},
 						uniqueUsersOfYesterday: {
@@ -344,8 +341,8 @@ API.v1
 										syncChannels: { type: 'boolean' },
 										syncAvatar: { type: 'boolean' },
 										groupFilter: { type: 'boolean' },
-										backgroundSync: { type: 'object' }, // boolean fixed
-										ee: { type: 'object' }, // boolean fixed
+										backgroundSync: { type: 'object' },
+										ee: { type: 'object' },
 									},
 								},
 								saml: {
@@ -365,7 +362,7 @@ API.v1
 									properties: {
 										enabled: { type: 'boolean' },
 										users: { type: 'integer' },
-										allowUserCreation: { type: 'boolean' }, // intiger fixed
+										allowUserCreation: { type: 'boolean' },
 										alwaysSyncUserData: { type: 'boolean' },
 									},
 								},
@@ -438,7 +435,6 @@ API.v1
 							},
 						},
 						contactVerification: {
-							// totally new fixed
 							type: 'object',
 							properties: {
 								totalContacts: { type: 'integer' },
@@ -502,7 +498,7 @@ API.v1
 									properties: {
 										liveStream: {
 											anyOf: [{ type: 'null' }, {}],
-										}, //need attentions
+										}, // FIXME: Always return null
 									},
 								},
 								message: {
@@ -630,7 +626,7 @@ API.v1
 							type: 'object',
 							properties: {
 								enabled: { type: 'boolean' },
-								maximumSizeOfPublicRoomsUsers: { type: 'boolean' }, // integer fixed
+								maximumSizeOfPublicRoomsUsers: { type: 'boolean' },
 								biggestRoom: { type: 'string', nullable: true },
 								smallestRoom: { type: 'string', nullable: true },
 								amountOfExternalUsers: { type: 'integer' },
@@ -647,8 +643,8 @@ API.v1
 						webRTCEnabled: { type: 'boolean' },
 						webRTCEnabledForOmnichannel: { type: 'boolean' },
 						omnichannelWebRTCCalls: { type: 'integer' },
-						createdAt: { type: 'object' }, // to-do convert createdAt: from JavaScript `Date` object to string
-						_updatedAt: { type: 'object' }, // to-do convert _updatedAt: from JavaScript `Date` object to string
+						createdAt: { type: 'object' }, // TODO: convert `createdAt` from JavaScript `Date` object to string
+						_updatedAt: { type: 'object' }, // TODO: convert `_updatedAt` from JavaScript `Date` object to string
 						statsToken: { type: 'string' },
 						success: {
 							type: 'boolean',
