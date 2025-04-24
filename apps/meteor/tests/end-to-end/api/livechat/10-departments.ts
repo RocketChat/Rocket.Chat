@@ -850,7 +850,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should throw an error if the user doesnt have the permission to manage the departments', async () => {
 			await updatePermission('manage-livechat-departments', []);
 			await updatePermission('add-livechat-department-agents', []);
-			await request.post(api('livechat/department/test/agents')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			await request
+				.post(api('livechat/department/test/agents'))
+				.set(credentials)
+				.send({ upsert: [], remove: [] })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
 
 		it('should throw an error if the departmentId is not valid', async () => {
