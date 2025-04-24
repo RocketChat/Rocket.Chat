@@ -4,8 +4,8 @@ import type { ComponentProps } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInfiniteUnitsList } from '../../components/Omnichannel/hooks/useInfiniteUnitsList';
 import type { UnitOption } from '../../components/Omnichannel/hooks/useUnitsList';
+import { useUnitsList } from '../../components/Omnichannel/hooks/useUnitsList';
 
 type AutoCompleteUnitProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
@@ -32,7 +32,7 @@ const AutoCompleteUnit = ({
 
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
-	const { data: unitsList, fetchNextPage } = useInfiniteUnitsList({ text: debouncedUnitFilter, haveNone });
+	const { data: unitsList, fetchNextPage } = useUnitsList({ text: debouncedUnitFilter, haveNone });
 
 	const handleLoadItems = useEffectEvent(onLoadItems);
 

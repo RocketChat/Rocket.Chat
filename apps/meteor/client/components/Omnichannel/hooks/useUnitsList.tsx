@@ -17,7 +17,7 @@ export type UnitOption = {
 
 const DEFAULT_QUERY_LIMIT = 25;
 
-export const useInfiniteUnitsList = (options: UnitsListOptions) => {
+export const useUnitsList = (options: UnitsListOptions) => {
 	const { t } = useTranslation();
 	const { haveNone = false, text, limit } = options;
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
