@@ -16,7 +16,7 @@ const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompl
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
-	const { data: unitItems = [], fetchNextPage } = useInfiniteUnitsList({ text: debouncedUnitFilter });
+	const { data: unitItems, fetchNextPage } = useInfiniteUnitsList({ text: debouncedUnitFilter });
 
 	return (
 		<PaginatedMultiSelectFiltered

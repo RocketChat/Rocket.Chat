@@ -15,6 +15,8 @@ export type UnitOption = {
 	label: string;
 };
 
+const DEFAULT_QUERY_LIMIT = 25;
+
 export const useInfiniteUnitsList = (options: UnitsListOptions) => {
 	const { t } = useTranslation();
 	const { haveNone = false, text, limit } = options;
@@ -32,7 +34,7 @@ export const useInfiniteUnitsList = (options: UnitsListOptions) => {
 			const { units, ...data } = await getUnits({
 				...(text && { text }),
 				offset,
-				count: limit ?? 25,
+				count: limit ?? DEFAULT_QUERY_LIMIT,
 				sort: `{ "name": 1 }`,
 			});
 
@@ -58,5 +60,9 @@ export const useInfiniteUnitsList = (options: UnitsListOptions) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
+		initialData: () => ({
+			pages: [{ units: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pageParams: [0],
+		}),
 	});
 };
