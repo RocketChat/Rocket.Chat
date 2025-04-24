@@ -19,6 +19,7 @@ code.hljs {
 	background: #373b41;
 }
 .hljs-name,
+.hljs-title.function_,
 .hljs-title {
 	color: #f0c674;
 }
