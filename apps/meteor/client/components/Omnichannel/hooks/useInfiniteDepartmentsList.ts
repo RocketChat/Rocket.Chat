@@ -15,11 +15,14 @@ type DepartmentsListOptions = {
 	showArchived?: boolean;
 	selectedDepartment?: string;
 	limit?: number;
+	unitId?: string;
 };
 
 export const useInfiniteDepartmentsList = (options: DepartmentsListOptions) => {
 	const { t } = useTranslation();
-	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getLivechatDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getUnitDepartments = useEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', { unitId: options.unitId || 'none' });
+	const getDepartments = options.unitId !== undefined ? getUnitDepartments : getLivechatDepartments;
 
 	const formatDepartmentItem = ({ _id, name, ...department }: Serialized<ILivechatDepartment>): DepartmentListItem => ({
 		_id,
@@ -36,9 +39,11 @@ export const useInfiniteDepartmentsList = (options: DepartmentsListOptions) => {
 				offset,
 				count: options.limit ?? 50,
 				sort: `{ "name": 1 }`,
-				excludeDepartmentId: options.excludeId,
-				enabled: options.enabled ? 'true' : 'false',
-				showArchived: options.showArchived ? 'true' : 'false',
+				...(!options.unitId && {
+					excludeDepartmentId: options.excludeId,
+					enabled: options.enabled ? 'true' : 'false',
+					showArchived: options.showArchived ? 'true' : 'false',
+				}),
 			});
 
 			return {

@@ -15,6 +15,7 @@ type AutoCompleteDepartmentMultipleProps = {
 	enabled?: boolean;
 	withCheckbox?: boolean;
 	excludeId?: string;
+	unitId?: string;
 } & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
 
 const AutoCompleteDepartmentMultiple = ({
@@ -24,6 +25,7 @@ const AutoCompleteDepartmentMultiple = ({
 	enabled = false,
 	withCheckbox = true,
 	excludeId,
+	unitId,
 	onChange = () => undefined,
 }: AutoCompleteDepartmentMultipleProps) => {
 	const { t } = useTranslation();
@@ -37,6 +39,7 @@ const AutoCompleteDepartmentMultiple = ({
 		onlyMyDepartments,
 		showArchived,
 		enabled,
+		unitId,
 	});
 
 	const departmentOptions = useMemo(() => {
