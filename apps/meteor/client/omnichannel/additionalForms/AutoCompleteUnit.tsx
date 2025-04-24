@@ -1,18 +1,18 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { ComponentProps } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useInfiniteUnitsList } from '../../components/Omnichannel/hooks/useInfiniteUnitsList';
 import type { UnitOption } from '../../components/Omnichannel/hooks/useUnitsList';
 
-type AutoCompleteUnitProps = {
-	id?: string;
-	disabled?: boolean;
-	value: string | undefined;
-	error?: string;
-	placeholder?: string;
+type AutoCompleteUnitProps = Omit<
+	ComponentProps<typeof PaginatedSelectFiltered>,
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+> & {
 	haveNone?: boolean;
+	value: string | undefined;
 	onChange: (value: string) => void;
 	onLoadItems?: (list: UnitOption[]) => void;
 };
