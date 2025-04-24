@@ -11,8 +11,8 @@ import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/remove
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
-		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(username, {
-			projection: { _id: 1, username: 1 },
+		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, {
+			projection: { _id: 1 },
 		});
 
 		if (!user) {
@@ -29,8 +29,8 @@ export const LivechatEnterprise = {
 	},
 
 	async removeMonitor(username: string) {
-		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(username, {
-			projection: { _id: 1, username: 1 },
+		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, {
+			projection: { _id: 1 },
 		});
 
 		if (!user) {
@@ -158,16 +158,9 @@ export const LivechatEnterprise = {
 	},
 
 	async removeSLA(_id: string) {
-		const sla = await OmnichannelServiceLevelAgreements.findOneById<Pick<IOmnichannelServiceLevelAgreements, '_id'>>(_id, {
-			projection: { _id: 1 },
-		});
-		if (!sla) {
-			throw new Error(`SLA with id ${_id} not found`);
-		}
-
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
 		if (!removedResult || removedResult.deletedCount !== 1) {
-			throw new Error(`Error removing SLA with id ${_id}`);
+			throw new Error(`SLA with id ${_id} not found`);
 		}
 
 		await removeSLAFromRooms(_id);
