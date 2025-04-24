@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInfiniteTagsList } from '../../components/Omnichannel/hooks/useInfiniteTagsList';
+import { useTagsList } from '../../components/Omnichannel/hooks/useTagsList';
 
 type AutoCompleteTagsMultipleProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
@@ -27,7 +27,7 @@ const AutoCompleteTagsMultiple = ({
 
 	const debouncedTagsFilter = useDebouncedValue(tagsFilter, 500);
 
-	const { data: tagsItems, fetchNextPage } = useInfiniteTagsList({
+	const { data: tagsItems, fetchNextPage } = useTagsList({
 		filter: debouncedTagsFilter,
 		department,
 		viewAll,
