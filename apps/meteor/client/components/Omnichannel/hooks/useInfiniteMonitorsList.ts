@@ -13,6 +13,8 @@ type MonitorListItem = {
 	value: string;
 };
 
+const DEFAULT_QUERY_LIMIT = 25;
+
 export const useInfiniteMonitorsList = (options: MonitorsListOptions) => {
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 
@@ -28,7 +30,7 @@ export const useInfiniteMonitorsList = (options: MonitorsListOptions) => {
 			const { monitors, ...data } = await getMonitors({
 				text: options.filter,
 				offset,
-				count: options.limit ?? 25,
+				count: options.limit ?? DEFAULT_QUERY_LIMIT,
 				sort: JSON.stringify({ username: 1 }),
 			});
 
@@ -43,5 +45,9 @@ export const useInfiniteMonitorsList = (options: MonitorsListOptions) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
+		initialData: () => ({
+			pages: [{ monitors: [], total: 0, offset: 0, count: options.limit ?? DEFAULT_QUERY_LIMIT }],
+			pageParams: [0],
+		}),
 	});
 };
