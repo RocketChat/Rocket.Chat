@@ -125,20 +125,31 @@ export class CustomOAuth implements IOAuthProvider {
 		});
 	}
 
-	static configureOAuthService(serviceName: string, options: OauthConfig): void {
+	static configureOAuthService(serviceName: string, options: OauthConfig): CustomOAuth {
 		const existingInstance = configuredOAuthServices.get(serviceName);
 		if (existingInstance) {
 			existingInstance.configure(options);
-			return;
+			return existingInstance;
 		}
 
 		// If we don't have a reference to the instance for this service and it was already registered on meteor,
-		// then there's nothing we can do to update it - luckily we probably don't need to, since services are only loaded once.
+		// then there's nothing we can do to update it
 		if (Accounts.oauth.serviceNames().includes(serviceName)) {
-			console.error(`CustomOAuth service already registered, skipping new configuration.`, serviceName);
-			return;
+			throw new Error(`CustomOAuth service [${serviceName}] already registered, skipping new configuration.`);
 		}
 
-		configuredOAuthServices.set(serviceName, new CustomOAuth(serviceName, options));
+		const instance = new CustomOAuth(serviceName, options);
+		configuredOAuthServices.set(serviceName, instance);
+		return instance;
+	}
+
+	static configureCustomOAuthService(serviceName: string, options: OauthConfig): CustomOAuth | undefined {
+		// Custom OAuth services are configured based on the login service list, so if this ends up being called multiple times, simply ignore it
+		// Non-Custom OAuth services are configured based on code, so if configureOAuthService is called multiple times for them, it's a bug and it should throw.
+		try {
+			return this.configureOAuthService(serviceName, options);
+		} catch (e) {
+			console.error(e);
+		}
 	}
 }

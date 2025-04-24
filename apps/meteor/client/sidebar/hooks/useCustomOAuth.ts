@@ -12,7 +12,7 @@ export const useCustomOAuth = () => {
 						continue;
 					}
 
-					CustomOAuth.configureOAuthService(service.service, {
+					CustomOAuth.configureCustomOAuthService(service.service, {
 						serverURL: service.serverURL,
 						authorizePath: service.authorizePath,
 						scope: service.scope,
