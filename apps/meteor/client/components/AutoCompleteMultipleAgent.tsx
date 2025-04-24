@@ -2,11 +2,9 @@ import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../lib/asyncState';
-import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
+import { useInfiniteAgentsList } from './Omnichannel/hooks/useInfiniteAgentsList';
 
 type AutoCompleteMultipleAgentProps = {
 	value: PaginatedMultiSelectOption[];
@@ -33,14 +31,12 @@ const AutoCompleteMultipleAgent = ({
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
-	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
-		useMemo(
-			() => ({ text: debouncedAgentsFilter, onlyAvailable, excludeId, showIdleAgents }),
-			[debouncedAgentsFilter, excludeId, onlyAvailable, showIdleAgents],
-		),
-	);
-
-	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
+	const { data: agentsItems = [], fetchNextPage } = useInfiniteAgentsList({
+		text: debouncedAgentsFilter,
+		onlyAvailable,
+		excludeId,
+		showIdleAgents,
+	});
 
 	return (
 		<PaginatedMultiSelectFiltered
@@ -56,9 +52,7 @@ const AutoCompleteMultipleAgent = ({
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
 			data-qa='autocomplete-multiple-agent'
-			endReached={
-				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start!, Math.min(50, agentsTotal))
-			}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };
