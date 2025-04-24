@@ -14,6 +14,7 @@ type AutoCompleteDepartmentMultipleProps = {
 	showArchived?: boolean;
 	enabled?: boolean;
 	withCheckbox?: boolean;
+	excludeId?: string;
 } & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
 
 const AutoCompleteDepartmentMultiple = ({
@@ -22,6 +23,7 @@ const AutoCompleteDepartmentMultiple = ({
 	showArchived = false,
 	enabled = false,
 	withCheckbox = true,
+	excludeId,
 	onChange = () => undefined,
 }: AutoCompleteDepartmentMultipleProps) => {
 	const { t } = useTranslation();
@@ -29,16 +31,13 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const {
-		data: departmentsItems = [],
-		fetchNextPage,
-		hasNextPage,
-	} = useInfiniteDepartmentsList(
-		useMemo(
-			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, ...(showArchived && { showArchived: true }), enabled }),
-			[debouncedDepartmentsFilter, enabled, onlyMyDepartments, showArchived],
-		),
-	);
+	const { data: departmentsItems = [], fetchNextPage } = useInfiniteDepartmentsList({
+		filter: debouncedDepartmentsFilter,
+		excludeId,
+		onlyMyDepartments,
+		showArchived,
+		enabled,
+	});
 
 	const departmentOptions = useMemo(() => {
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value)) || [];
@@ -70,7 +69,7 @@ const AutoCompleteDepartmentMultiple = ({
 			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			renderItem={renderItem}
-			endReached={hasNextPage ? () => fetchNextPage() : () => undefined}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };

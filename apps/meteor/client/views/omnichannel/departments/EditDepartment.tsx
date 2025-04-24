@@ -335,7 +335,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 														id={departmentsAllowedToForwardFieldId}
 														withCheckbox
 														showArchived
-														excludeDepartmentId={id ?? ''}
+														excludeId={id ?? ''}
 														value={value}
 														maxWidth='100%'
 														w='100%'
@@ -358,7 +358,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											<AutoCompleteDepartment
 												id={fallbackForwardDepartmentField}
 												haveNone
-												excludeDepartmentId={department?._id}
+												excludeId={department?._id}
 												value={value}
 												onChange={onChange}
 												onlyMyDepartments

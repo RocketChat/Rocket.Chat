@@ -1,7 +1,7 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepartmentsList';
@@ -9,7 +9,7 @@ import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepar
 type AutoCompleteDepartmentProps = {
 	value?: string;
 	onChange: (value: string) => void;
-	excludeDepartmentId?: string;
+	excludeId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
@@ -18,7 +18,7 @@ type AutoCompleteDepartmentProps = {
 
 const AutoCompleteDepartment = ({
 	value,
-	excludeDepartmentId,
+	excludeId,
 	onlyMyDepartments,
 	onChange,
 	haveAll,
@@ -31,24 +31,15 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const {
-		data: departmentsItems = [],
-		fetchNextPage,
-		hasNextPage,
-	} = useInfiniteDepartmentsList(
-		useMemo(
-			() => ({
-				filter: debouncedDepartmentsFilter,
-				onlyMyDepartments,
-				haveAll,
-				haveNone,
-				excludeDepartmentId,
-				showArchived,
-				selectedDepartment: value,
-			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, value],
-		),
-	);
+	const { data: departmentsItems = [], fetchNextPage } = useInfiniteDepartmentsList({
+		filter: debouncedDepartmentsFilter,
+		onlyMyDepartments,
+		haveAll,
+		haveNone,
+		excludeId,
+		showArchived,
+		selectedDepartment: value,
+	});
 
 	return (
 		<PaginatedSelectFiltered
@@ -61,7 +52,8 @@ const AutoCompleteDepartment = ({
 			options={departmentsItems}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
-			endReached={hasNextPage ? () => fetchNextPage() : () => undefined}
+			endReached={() => fetchNextPage()}
+			renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 		/>
 	);
 };
