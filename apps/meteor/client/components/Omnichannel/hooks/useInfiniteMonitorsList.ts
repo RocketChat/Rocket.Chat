@@ -34,10 +34,10 @@ export const useInfiniteMonitorsList = (options: MonitorsListOptions) => {
 
 			return {
 				...data,
-				tags: monitors.map(formatMonitorItem),
+				monitors: monitors.map(formatMonitorItem),
 			};
 		},
-		select: (data) => data.pages.flatMap<MonitorListItem>((page) => page.tags),
+		select: (data) => data.pages.flatMap<MonitorListItem>((page) => page.monitors),
 		initialPageParam: 0,
 		getNextPageParam: (lastPage) => {
 			const offset = lastPage.offset + lastPage.count;
