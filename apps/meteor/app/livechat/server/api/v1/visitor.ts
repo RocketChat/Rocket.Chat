@@ -190,8 +190,8 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
-		const { _id } = visitor;
-		const result = await removeGuest(_id);
+		const { _id, token } = visitor;
+		const result = await removeGuest({ _id, token });
 		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
