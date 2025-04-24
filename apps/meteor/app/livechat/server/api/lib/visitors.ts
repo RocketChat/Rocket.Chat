@@ -62,7 +62,7 @@ export async function findChatHistory({
 		throw new Error('error-not-allowed');
 	}
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, userId);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId });
 	const { cursor, totalCount } = LivechatRooms.findPaginatedByVisitorId(
 		visitorId,
 		{

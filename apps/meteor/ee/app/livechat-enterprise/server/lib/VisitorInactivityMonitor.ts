@@ -123,7 +123,7 @@ export class VisitorInactivityMonitor {
 			return;
 		}
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {} });
 		const promises: Promise<void>[] = [];
 		await LivechatRooms.findAbandonedOpenRooms(new Date(), extraQuery).forEach((room) => {
 			switch (action) {

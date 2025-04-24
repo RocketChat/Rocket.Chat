@@ -276,7 +276,7 @@ export const updatePredictedVisitorAbandonment = async () => {
 		await LivechatRooms.unsetAllPredictedVisitorAbandonment();
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {} });
 		const promisesArray: Promise<void>[] = [];
 		await LivechatRooms.findOpen(extraQuery).forEach((room) => {
 			promisesArray.push(setPredictedVisitorAbandonmentTime(room));
@@ -314,7 +314,7 @@ export const updateSLAInquiries = async (
 
 	const { _id: slaId } = sla;
 	const promises: Promise<void>[] = [];
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, executedBy);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: executedBy });
 	await LivechatRooms.findOpenBySlaId(slaId, {}, extraQuery).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});

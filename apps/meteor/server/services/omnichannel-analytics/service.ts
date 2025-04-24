@@ -59,7 +59,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			return;
 		}
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, executedBy);
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: executedBy });
 		return this.agentOverview.callAction(name, from, to, departmentId, extraQuery);
 	}
 
@@ -104,7 +104,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			dataPoints: [],
 		};
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, executedBy);
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: executedBy });
 		if (isSameDay) {
 			// data for single day
 			const m = moment(from);
@@ -170,7 +170,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		const t = i18n.getFixedT(language);
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, executedBy);
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: executedBy });
 		return this.overview.callAction(name, from, to, departmentId, timezone, t, extraQuery);
 	}
 }

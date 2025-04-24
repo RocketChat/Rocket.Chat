@@ -16,7 +16,7 @@ export const closeOmnichannelConversations = async (
 	subscribedRooms: SubscribedRooms[],
 	executedBy?: string,
 ): Promise<void> => {
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, executedBy);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: executedBy });
 	const roomsInfo = LivechatRooms.findByIds(
 		subscribedRooms.map(({ rid }) => rid),
 		{},

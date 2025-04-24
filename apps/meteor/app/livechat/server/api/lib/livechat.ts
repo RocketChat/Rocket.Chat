@@ -80,7 +80,7 @@ export async function findOpenRoom(token: string, departmentId?: string, callerI
 		},
 	};
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, callerId);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId: callerId });
 	const rooms = departmentId
 		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options, extraQuery).toArray()
 		: await LivechatRooms.findOpenByVisitorToken(token, options, extraQuery).toArray();

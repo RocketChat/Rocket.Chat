@@ -12,7 +12,7 @@ export const restrictQuery = async ({
 }: {
 	originalQuery?: FilterOperators<IOmnichannelRoom>;
 	unitsFilter?: string[];
-	userId?: string | null;
+	userId?: string;
 }) => {
 	const query = { ...originalQuery };
 

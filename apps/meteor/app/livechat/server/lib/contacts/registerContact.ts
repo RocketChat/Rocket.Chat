@@ -93,7 +93,7 @@ export async function registerContact(
 
 	await LivechatVisitors.updateOne({ _id: visitorId }, updateUser);
 
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, undefined, userId);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {}, userId });
 	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId, {}, extraQuery).toArray();
 
 	if (rooms?.length) {
