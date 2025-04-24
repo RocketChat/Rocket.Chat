@@ -36,7 +36,7 @@ const AutoCompleteAgent = ({
 		[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
 	);
 
-	const { data: agentsItems = [], fetchNextPage } = useInfiniteAgentsList({
+	const { data: agentsItems, fetchNextPage } = useInfiniteAgentsList({
 		text: debouncedAgentsFilter,
 		onlyAvailable,
 		haveAll,

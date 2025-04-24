@@ -18,6 +18,8 @@ type AgentOption = {
 	label: string;
 };
 
+const DEFAULT_QUERY_LIMIT = 25;
+
 export const useInfiniteAgentsList = (options: AgentsListOptions) => {
 	const { t } = useTranslation();
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
@@ -25,16 +27,14 @@ export const useInfiniteAgentsList = (options: AgentsListOptions) => {
 
 	return useInfiniteQuery({
 		queryKey: ['/v1/livechat/users/agent', { text, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
-		queryFn: async ({ pageParam }) => {
-			const start = pageParam ?? 0;
-
+		queryFn: async ({ pageParam: offset = 0 }) => {
 			return getAgents({
 				...(text && { text }),
 				...(excludeId && { excludeId }),
 				showIdleAgents,
 				onlyAvailable,
-				offset: start,
-				count: limit,
+				offset,
+				count: limit ?? DEFAULT_QUERY_LIMIT,
 				sort: `{ "name": 1 }`,
 			});
 		},
@@ -68,5 +68,9 @@ export const useInfiniteAgentsList = (options: AgentsListOptions) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
+		initialData: () => ({
+			pages: [{ users: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pageParams: [0],
+		}),
 	});
 };

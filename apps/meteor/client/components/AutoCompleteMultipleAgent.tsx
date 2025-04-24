@@ -31,7 +31,7 @@ const AutoCompleteMultipleAgent = ({
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
-	const { data: agentsItems = [], fetchNextPage } = useInfiniteAgentsList({
+	const { data: agentsItems, fetchNextPage } = useInfiniteAgentsList({
 		text: debouncedAgentsFilter,
 		onlyAvailable,
 		excludeId,
