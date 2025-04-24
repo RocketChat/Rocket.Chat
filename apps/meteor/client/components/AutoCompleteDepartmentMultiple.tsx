@@ -42,17 +42,19 @@ const AutoCompleteDepartmentMultiple = ({
 		unitId,
 	});
 
+	const selectedValues = useMemo(() => new Set(value.map((item) => item.value)), [value]);
+
 	const departmentOptions = useMemo(() => {
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value)) || [];
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
 
-	const renderItem = ({ label, ...props }: ComponentProps<typeof Option>): ReactElement => {
+	const renderItem = ({ label, value, ...props }: ComponentProps<typeof Option>): ReactElement => {
 		if (withCheckbox) {
 			<CheckOption
 				{...props}
 				label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-				selected={value.some((item) => item.value === props.value)}
+				selected={value ? selectedValues.has(value) : false}
 			/>;
 		}
 
