@@ -11,7 +11,7 @@ import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/remove
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
-		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'roles'>>(username, {
+		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username'>>(username, {
 			projection: { _id: 1, username: 1 },
 		});
 
@@ -50,13 +50,12 @@ export const LivechatEnterprise = {
 	},
 
 	async removeUnit(_id: string) {
-		const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id'>>(_id, { projection: { _id: 1 } });
-
-		if (!unit) {
+		const result = await LivechatUnit.removeById(_id);
+		if (!result.deletedCount) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
 		}
 
-		return LivechatUnit.removeById(_id);
+		return result;
 	},
 
 	async saveUnit(
