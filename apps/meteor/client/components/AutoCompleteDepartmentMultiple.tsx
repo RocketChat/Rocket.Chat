@@ -5,7 +5,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepartmentsList';
+import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentMultipleProps = {
 	value?: PaginatedMultiSelectOption[];
@@ -33,7 +33,7 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { data: departmentsItems, fetchNextPage } = useInfiniteDepartmentsList({
+	const { data: departmentsItems, fetchNextPage } = useDepartmentsList({
 		filter: debouncedDepartmentsFilter,
 		excludeId,
 		onlyMyDepartments,

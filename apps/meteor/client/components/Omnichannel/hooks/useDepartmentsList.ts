@@ -1,115 +1,99 @@
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../lib/lists/RecordList';
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
-import { normalizeDepartments } from '../utils/normalizeDepartments';
 
 type DepartmentsListOptions = {
 	filter: string;
-	departmentId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
-	excludeDepartmentId?: string;
+	excludeId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-	selectedDepartment?: string;
+	selectedDepartmentId?: string;
+	limit?: number;
+	unitId?: string;
 };
 
-export const useDepartmentsList = (
-	options: DepartmentsListOptions,
-): {
-	itemsList: RecordList<DepartmentListItem>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
+const DEFAULT_QUERY_LIMIT = 50;
+
+export const useDepartmentsList = (options: DepartmentsListOptions) => {
 	const { t } = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
-	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
+	const getLivechatDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getUnitDepartments = useEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', { unitId: options.unitId || 'none' });
+	const getDepartments = options.unitId !== undefined ? getUnitDepartments : getLivechatDepartments;
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartmentId ?? '' });
 
-	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
-	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartment ?? '' });
+	const formatDepartmentItem = ({ _id, name, ...department }: Serialized<ILivechatDepartment>): DepartmentListItem => ({
+		_id,
+		label: department.archived ? `${name} [${t('Archived')}]` : name,
+		value: _id,
+	});
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const { data: selectedDepartmentItem } = useQuery({
+		queryKey: ['/v1/livechat/department/:_id', options.selectedDepartmentId],
+		queryFn: async () => getDepartment({}),
+		select: (data) => formatDepartmentItem(data.department),
+		enabled: options.selectedDepartmentId !== undefined,
+	});
 
-	const fetchData = useCallback(
-		async (start: number, end: number) => {
-			const { departments, total } = await getDepartments({
+	return useInfiniteQuery({
+		queryKey: ['/v1/livechat/department', options],
+		queryFn: async ({ pageParam: offset = 0 }) => {
+			const { departments, ...data } = await getDepartments({
 				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
 				text: options.filter,
-				offset: start,
-				count: end + start,
+				offset,
+				count: options.limit ?? DEFAULT_QUERY_LIMIT,
 				sort: `{ "name": 1 }`,
-				excludeDepartmentId: options.excludeDepartmentId,
-				enabled: options.enabled ? 'true' : 'false',
-				showArchived: options.showArchived ? 'true' : 'false',
+				...(!options.unitId && {
+					excludeDepartmentId: options.excludeId,
+					enabled: options.enabled ? 'true' : 'false',
+					showArchived: options.showArchived ? 'true' : 'false',
+				}),
 			});
 
-			const items = departments
-				.filter((department) => {
-					if (options.departmentId && department._id === options.departmentId) {
-						return false;
-					}
-					return true;
-				})
-				.map(
-					({ _id, name, ...department }): DepartmentListItem => ({
-						_id,
-						label: department.archived ? `${name} [${t('Archived')}]` : name,
-						value: _id,
-					}),
-				);
+			return {
+				...data,
+				departments: departments.map(formatDepartmentItem).filter((item) => item._id !== options.selectedDepartmentId),
+			};
+		},
+		select: (data) => {
+			const items = data.pages.flatMap<DepartmentListItem>((page) => page.departments);
 
-			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment ?? '', getDepartment);
+			if (selectedDepartmentItem) {
+				items.unshift(selectedDepartmentItem);
+			}
 
-			options.haveAll &&
-				normalizedItems.unshift({
+			if (options.haveAll) {
+				items.unshift({
 					_id: '',
 					label: t('All'),
 					value: 'all',
 				});
+			}
 
-			options.haveNone &&
-				normalizedItems.unshift({
+			if (options.haveNone) {
+				items.unshift({
 					_id: '',
 					label: t('None'),
 					value: '',
 				});
+			}
 
-			return {
-				items: normalizedItems,
-				itemCount: options.departmentId ? total - 1 : total,
-			};
+			return items;
 		},
-		[
-			getDepartments,
-			options.onlyMyDepartments,
-			options.filter,
-			options.excludeDepartmentId,
-			options.enabled,
-			options.showArchived,
-			options.selectedDepartment,
-			options.haveAll,
-			options.haveNone,
-			options.departmentId,
-			getDepartment,
-			t,
-		],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
-
-	return {
-		reload,
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage) => {
+			const offset = lastPage.offset + lastPage.count;
+			return offset < lastPage.total ? offset : undefined;
+		},
+		initialData: () => ({
+			pages: [{ departments: [], total: 0, offset: 0, count: options.limit ?? DEFAULT_QUERY_LIMIT }],
+			pageParams: [0],
+		}),
+	});
 };
