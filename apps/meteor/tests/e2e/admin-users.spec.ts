@@ -7,7 +7,7 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe('Admin > Users', () => {
-	let user: IUser;
+	let user: IUser & { username: string };
 
 	test.beforeAll('Create a new user', async ({ api }) => {
 		const response = await api.post('/users.create', {
@@ -41,10 +41,6 @@ test.describe('Admin > Users', () => {
 		},
 		async ({ page }) => {
 			const { username } = user;
-
-			if (!username) {
-				throw new Error('User does not have a username');
-			}
 
 			await page.getByPlaceholder('Search Users').fill(username);
 
