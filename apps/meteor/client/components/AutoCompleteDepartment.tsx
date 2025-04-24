@@ -14,12 +14,14 @@ type AutoCompleteDepartmentProps = {
 	haveAll?: boolean;
 	haveNone?: boolean;
 	showArchived?: boolean;
+	unitId?: string;
 } & Omit<ComponentProps<typeof PaginatedSelectFiltered>, 'options' | 'setFilter'>;
 
 const AutoCompleteDepartment = ({
 	value,
 	excludeId,
 	onlyMyDepartments,
+	unitId,
 	onChange,
 	haveAll,
 	haveNone,
@@ -39,6 +41,7 @@ const AutoCompleteDepartment = ({
 		excludeId,
 		showArchived,
 		selectedDepartment: value,
+		unitId,
 	});
 
 	return (
