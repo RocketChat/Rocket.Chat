@@ -1869,18 +1869,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query);
 	}
 
-	// TODO: check if this is still valid/used for something
-	setOperator(_id: IUser['_id'], operator: boolean) {
-		// TODO:: Create class Agent
-		const update = {
-			$set: {
-				operator,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
-	}
-
 	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
@@ -2501,6 +2489,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser> = {}) {
+		const query = { _id: userId, roles: role };
+
+		return this.findOne(query, options);
 	}
 
 	async findByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
@@ -3396,9 +3390,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	removeAgent(_id: IUser['_id']) {
 		const update: UpdateFilter<IUser> = {
-			$set: {
-				operator: false,
-			},
 			$unset: {
 				livechat: 1,
 				statusLivechat: 1,
