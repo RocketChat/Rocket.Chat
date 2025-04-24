@@ -83,10 +83,9 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 
 	useEffect(() => {
 		if (isSuccess) {
-			setInviteState((prevState) => ({ ...prevState, url: data?.url, caption: linkExpirationText(data) }));
 			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
 		}
-	}, [dispatchToastMessage, linkExpirationText, data, isSuccess, t]);
+	}, [dispatchToastMessage, isSuccess, t]);
 
 	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
