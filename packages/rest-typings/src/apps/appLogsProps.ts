@@ -17,6 +17,7 @@ const AppLogsPropsSchema = {
 		endDate: { type: 'string', format: 'date-time', nullable: true },
 		offset: { type: 'number' },
 		count: { type: 'number' },
+		sort: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 };
