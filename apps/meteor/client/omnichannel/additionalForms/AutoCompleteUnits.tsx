@@ -1,33 +1,28 @@
-import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useInfiniteUnitsList } from '../../components/Omnichannel/hooks/useInfiniteUnitsList';
 
-type AutoCompleteUnitsProps = {
-	value?: PaginatedMultiSelectOption[];
-	error?: boolean;
-	placeholder?: string;
-	onChange: (value: PaginatedMultiSelectOption[]) => void;
-};
+type AutoCompleteUnitsProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+>;
 
-const AutoCompleteUnits = ({ value, error, placeholder, onChange }: AutoCompleteUnitsProps): ReactElement => {
+const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompleteUnitsProps): ReactElement => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
-
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
 	const { data: unitItems = [], fetchNextPage } = useInfiniteUnitsList({ text: debouncedUnitFilter });
 
 	return (
 		<PaginatedMultiSelectFiltered
+			{...props}
 			value={value}
-			error={error}
 			placeholder={placeholder || t('Select_an_option')}
-			onChange={onChange}
 			filter={unitsFilter}
 			width='100%'
 			flexShrink={0}
@@ -35,6 +30,7 @@ const AutoCompleteUnits = ({ value, error, placeholder, onChange }: AutoComplete
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			options={unitItems}
 			data-qa='autocomplete-multiple-unit'
+			onChange={onChange}
 			endReached={() => fetchNextPage()}
 		/>
 	);
