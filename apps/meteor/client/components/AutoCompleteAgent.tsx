@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-import { useInfiniteAgentsList } from './Omnichannel/hooks/useInfiniteAgentsList';
+import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 type AutoCompleteAgentProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
@@ -36,7 +36,7 @@ const AutoCompleteAgent = ({
 		[debouncedAgentsFilter, excludeId, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents],
 	);
 
-	const { data: agentsItems, fetchNextPage } = useInfiniteAgentsList({
+	const { data: agentsItems, fetchNextPage } = useAgentsList({
 		text: debouncedAgentsFilter,
 		onlyAvailable,
 		haveAll,
