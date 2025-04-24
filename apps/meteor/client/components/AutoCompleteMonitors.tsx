@@ -16,7 +16,7 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
 
-	const { data: monitorsOptions = [], fetchNextPage } = useInfiniteMonitorsList({ filter: debouncedMonitorsFilter });
+	const { data: monitorsOptions, fetchNextPage } = useInfiniteMonitorsList({ filter: debouncedMonitorsFilter });
 	const selectedValues = useMemo(() => new Set(value.map((item) => item.value)), [value]);
 
 	return (
