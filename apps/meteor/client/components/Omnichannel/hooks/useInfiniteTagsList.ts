@@ -15,6 +15,8 @@ type TagListItem = {
 	value: string;
 };
 
+const DEFAULT_QUERY_LIMIT = 25;
+
 export const useInfiniteTagsList = (options: TagsListOptions) => {
 	const { viewAll, department, filter, limit } = options;
 
@@ -32,7 +34,7 @@ export const useInfiniteTagsList = (options: TagsListOptions) => {
 			const { tags, ...data } = await getTags({
 				text: filter,
 				offset,
-				count: limit ?? 25,
+				count: limit ?? DEFAULT_QUERY_LIMIT,
 				...(viewAll && { viewAll: 'true' }),
 				...(department && { department }),
 				sort: JSON.stringify({ name: 1 }),
@@ -43,13 +45,15 @@ export const useInfiniteTagsList = (options: TagsListOptions) => {
 				tags: tags.map(formatTagItem),
 			};
 		},
-		select: (data) => {
-			return data.pages.flatMap<TagListItem>((page) => page.tags);
-		},
+		select: (data) => data.pages.flatMap<TagListItem>((page) => page.tags),
 		initialPageParam: 0,
 		getNextPageParam: (lastPage) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
+		initialData: () => ({
+			pages: [{ tags: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pageParams: [0],
+		}),
 	});
 };
