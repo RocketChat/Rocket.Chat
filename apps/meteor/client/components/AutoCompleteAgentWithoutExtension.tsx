@@ -5,14 +5,13 @@ import { memo, useState } from 'react';
 import { useInfiniteAvailableAgentsList } from './Omnichannel/hooks/useInfiniteAvailableAgentsList';
 
 type AutoCompleteAgentProps = {
-	onChange: (value: string) => void;
+	value: string;
 	haveAll?: boolean;
-	value?: string;
 	currentExtension?: string;
+	onChange: (value: string) => void;
 };
 
-const AutoCompleteAgentWithoutExtension = (props: AutoCompleteAgentProps) => {
-	const { value, currentExtension, onChange = (): void => undefined } = props;
+const AutoCompleteAgentWithoutExtension = ({ value, currentExtension, onChange, ...props }: AutoCompleteAgentProps) => {
 	const [agentsFilter, setAgentsFilter] = useState<string | number | undefined>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter as string, 500);
@@ -24,6 +23,7 @@ const AutoCompleteAgentWithoutExtension = (props: AutoCompleteAgentProps) => {
 
 	return (
 		<PaginatedSelectFiltered
+			{...props}
 			value={value}
 			onChange={onChange}
 			flexShrink={0}
