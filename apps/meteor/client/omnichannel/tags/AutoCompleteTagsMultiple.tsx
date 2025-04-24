@@ -27,7 +27,7 @@ const AutoCompleteTagsMultiple = ({
 
 	const debouncedTagsFilter = useDebouncedValue(tagsFilter, 500);
 
-	const { data: tagsItems = [], fetchNextPage } = useInfiniteTagsList({
+	const { data: tagsItems, fetchNextPage } = useInfiniteTagsList({
 		filter: debouncedTagsFilter,
 		department,
 		viewAll,
