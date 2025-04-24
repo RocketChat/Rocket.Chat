@@ -1,7 +1,7 @@
 import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useInfiniteMonitorsList } from './Omnichannel/hooks/useInfiniteMonitorsList';
@@ -17,6 +17,7 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
 
 	const { data: monitorsOptions = [], fetchNextPage } = useInfiniteMonitorsList({ filter: debouncedMonitorsFilter });
+	const selectedValues = useMemo(() => new Set(value.map((item) => item.value)), [value]);
 
 	return (
 		<PaginatedMultiSelectFiltered
@@ -30,8 +31,8 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 			endReached={() => fetchNextPage()}
 			onBlur={onBlur}
 			onChange={onChange}
-			renderItem={({ label, ...props }) => (
-				<CheckOption {...props} label={label} selected={value.some((item) => item.value === props.value)} />
+			renderItem={({ label, value, ...props }) => (
+				<CheckOption {...props} label={label} selected={value ? selectedValues.has(value) : false} />
 			)}
 		/>
 	);
