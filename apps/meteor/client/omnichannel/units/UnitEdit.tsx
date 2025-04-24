@@ -21,6 +21,7 @@ import { useId, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';
+import AutoCompleteMonitors from '../../components/AutoCompleteMonitors';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -32,7 +33,6 @@ import {
 import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
-import { useMonitorsList } from '../../views/hooks/useMonitorsList';
 
 type UnitEditFormData = {
 	name: string;
@@ -62,17 +62,8 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 
 	const handleDeleteUnit = useRemoveUnit();
 
-	const [monitorsFilter, setMonitorsFilter] = useState('');
-	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
-
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
-
-	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
-	);
-
-	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(monitorsList);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsByUnitsList(
 		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId: unitData?._id }), [debouncedDepartmentsFilter, unitData?._id]),
@@ -130,15 +121,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		}));
 		return [...mappedDepartmentsItems, ...pending];
 	}, [departments, departmentsItems]);
-
-	const monitorsOptions = useMemo(() => {
-		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon._id === value));
-		const mappedMonitorsItems = monitorsItems?.map(({ _id, name }) => ({
-			value: _id,
-			label: name,
-		}));
-		return [...mappedMonitorsItems, ...pending];
-	}, [monitors, monitorsItems]);
 
 	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
@@ -284,29 +266,16 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Monitors') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
-										<PaginatedMultiSelectFiltered
+										<AutoCompleteMonitors
 											id={monitorsField}
 											name={name}
 											value={value}
-											onChange={onChange}
-											onBlur={onBlur}
-											withTitle
-											filter={monitorsFilter}
-											setFilter={setMonitorsFilter}
-											options={monitorsOptions}
 											error={Boolean(errors?.monitors)}
-											placeholder={t('Select_an_option')}
-											endReached={
-												monitorsPhase === AsyncStatePhase.LOADING
-													? undefined
-													: (start) => start && loadMoreMonitors(start, Math.min(50, monitorsTotal))
-											}
 											aria-describedby={`${monitorsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.monitors)}
-											renderItem={({ label, ...props }) => (
-												<CheckOption {...props} label={label} selected={value.some((item) => item.value === props.value)} />
-											)}
+											onChange={onChange}
+											onBlur={onBlur}
 										/>
 									)}
 								/>
