@@ -1,13 +1,10 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useInfiniteUnitsList } from '../../components/Omnichannel/hooks/useInfiniteUnitsList';
 import type { UnitOption } from '../../components/Omnichannel/hooks/useUnitsList';
-import { useUnitsList } from '../../components/Omnichannel/hooks/useUnitsList';
-import { useRecordList } from '../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../lib/asyncState';
-import type { RecordList } from '../../lib/lists/RecordList';
 
 type AutoCompleteUnitProps = {
 	id?: string;
@@ -17,7 +14,7 @@ type AutoCompleteUnitProps = {
 	placeholder?: string;
 	haveNone?: boolean;
 	onChange: (value: string) => void;
-	onLoadItems?: (list: RecordList<UnitOption>) => void;
+	onLoadItems?: (list: UnitOption[]) => void;
 };
 
 const AutoCompleteUnit = ({
@@ -35,16 +32,13 @@ const AutoCompleteUnit = ({
 
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
-	const { itemsList, loadMoreItems: loadMoreUnits } = useUnitsList(
-		useMemo(() => ({ text: debouncedUnitFilter, haveNone }), [debouncedUnitFilter, haveNone]),
-	);
-	const { phase: unitsPhase, itemCount: unitsTotal, items: unitsList } = useRecordList(itemsList);
+	const { data: unitsList = [], fetchNextPage } = useInfiniteUnitsList({ text: debouncedUnitFilter, haveNone });
 
 	const handleLoadItems = useEffectEvent(onLoadItems);
 
 	useEffect(() => {
-		handleLoadItems(itemsList);
-	}, [handleLoadItems, unitsTotal, itemsList]);
+		handleLoadItems(unitsList);
+	}, [handleLoadItems, unitsList]);
 
 	return (
 		<PaginatedSelectFiltered
@@ -61,9 +55,7 @@ const AutoCompleteUnit = ({
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			value={value}
 			width='100%'
-			endReached={
-				unitsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreUnits(start, Math.min(50, unitsTotal))
-			}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };
