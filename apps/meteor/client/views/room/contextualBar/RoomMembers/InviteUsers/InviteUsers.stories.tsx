@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import InviteUsers from './InviteUsers';
@@ -13,7 +14,18 @@ export default {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>,
+		mockAppRoot()
+			.withTranslations('en', 'core', {
+				'Edit_Invite': 'Edit invite',
+				'Invite_Users': 'Invite users',
+				'Invite_Link': 'Invite link',
+				'Expiration_(Days)': 'Expiration (Days)',
+				'Max_number_of_uses': 'Max number of uses',
+			})
+			.buildStoryDecorator(),
+	],
 } satisfies Meta<typeof InviteUsers>;
 
 export const Default: StoryFn<typeof InviteUsers> = (args) => <InviteUsers {...args} />;
