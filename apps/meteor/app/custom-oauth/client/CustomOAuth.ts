@@ -18,6 +18,8 @@ import { isURL } from '../../../lib/utils/isURL';
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
 
+const configuredOAuthServices = new Map<string, CustomOAuth>();
+
 export class CustomOAuth implements IOAuthProvider {
 	public serverURL: string;
 
@@ -121,5 +123,22 @@ export class CustomOAuth implements IOAuthProvider {
 				height: 450,
 			},
 		});
+	}
+
+	static configureOAuthService(serviceName: string, options: OauthConfig): void {
+		const existingInstance = configuredOAuthServices.get(serviceName);
+		if (existingInstance) {
+			existingInstance.configure(options);
+			return;
+		}
+
+		// If we don't have a reference to the instance for this service and it was already registered on meteor,
+		// then there's nothing we can do to update it - luckily we probably don't need to, since services are only loaded once.
+		if (Accounts.oauth.serviceNames().includes(serviceName)) {
+			console.error(`CustomOAuth service already registered, skipping new configuration.`, serviceName);
+			return;
+		}
+
+		configuredOAuthServices.set(serviceName, new CustomOAuth(serviceName, options));
 	}
 }
