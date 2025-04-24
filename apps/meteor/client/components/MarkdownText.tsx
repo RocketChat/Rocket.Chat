@@ -42,8 +42,14 @@ const listItemMarked = (text: string): string => {
 };
 const horizontalRuleMarked = (): string => '';
 
+const { code: codeRenderer } = documentRenderer;
+function codeMarked(this: marked.Renderer, code: string, language: string | undefined): string {
+	return codeRenderer.call(this, code, language, true);
+}
+
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
+documentRenderer.code = codeMarked.bind(documentRenderer);
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
