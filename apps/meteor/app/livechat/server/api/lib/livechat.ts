@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -26,7 +27,6 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 async function findDepartments(
 	businessUnit?: string,
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
-	// TODO: check this function usage
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
 		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
 	>(businessUnit, {
@@ -177,13 +177,22 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	};
 }
 
-// TODO: try to use a patchfunction instead of a callback
-export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> {
-	return callbacks.run('livechat.onLoadConfigApi', { room });
-}
+export const getExtraConfigInfo = makeFunction(
+	async (options: {
+		room?: IOmnichannelRoom;
+	}): Promise<{
+		queueInfo?: unknown;
+		customFields?: {
+			options?: string[] | undefined;
+			_id: string;
+			label: string;
+			regexp: string | undefined;
+			required: boolean;
+			type: string | undefined;
+			defaultValue: string | null;
+		}[];
+		room?: IOmnichannelRoom;
+	}> => options,
+);
 
-// TODO: please forgive me for this. Still finding the good types for these callbacks
-// TODO2: try to use a patchfunction instead of a callback
-export function onCheckRoomParams(params: any): Promise<unknown> {
-	return callbacks.run('livechat.onCheckRoomApiParams', params);
-}
+export const onCheckRoomParams = makeFunction((params: any) => params);

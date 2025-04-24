@@ -27,7 +27,7 @@ API.v1.addRoute(
 			]);
 
 			const room = guest ? await findOpenRoom(guest.token) : undefined;
-			const [agent, extraInfo] = await Promise.all([room?.servedBy ? findAgent(room.servedBy._id) : null, getExtraConfigInfo(room)]);
+			const [agent, extraInfo] = await Promise.all([room?.servedBy ? findAgent(room.servedBy._id) : null, getExtraConfigInfo({ room })]);
 
 			return API.v1.success({
 				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
