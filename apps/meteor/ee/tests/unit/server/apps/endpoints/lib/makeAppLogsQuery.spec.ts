@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { makeAppLogsQuery } from '../../../../../../server/apps/communication/endpoints/lib/makeAppLogsQuery';
 
-describe('makeLogsQuery', () => {
+describe('makeAppLogsQuery', () => {
 	const appId = 'test-app-id';
 
 	it('should create a basic query with appId', () => {
@@ -101,7 +101,7 @@ describe('makeLogsQuery', () => {
 	it('should combine all filters when all parameters are provided', () => {
 		const queryParams: AppLogsProps = {
 			logLevel: '1',
-			method: 'POST',
+			method: 'app:construct',
 			startDate: '2024-01-01T00:00:00.000Z',
 			endDate: '2024-01-02T00:00:00.000Z',
 		};
@@ -113,7 +113,7 @@ describe('makeLogsQuery', () => {
 		expect(result).to.deep.equal({
 			appId,
 			'entries.severity': { $in: ['error', 'warn', 'info', 'log'] },
-			'method': 'POST',
+			'method': 'app:construct',
 			'_updatedAt': {
 				$gte: new Date(queryParams.startDate as string),
 				$lte: expectedEndDate,
