@@ -186,7 +186,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let result;
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', { query: {} });
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 
 		if (departmentId) {
 			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}, extraQuery).toArray();
