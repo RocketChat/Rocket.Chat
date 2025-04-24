@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInfiniteDepartmentsList } from './Omnichannel/hooks/useInfiniteDepartmentsList';
+import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
 	value?: string;
@@ -33,7 +33,7 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { data: departmentsItems, fetchNextPage } = useInfiniteDepartmentsList({
+	const { data: departmentsItems, fetchNextPage } = useDepartmentsList({
 		filter: debouncedDepartmentsFilter,
 		onlyMyDepartments,
 		haveAll,

@@ -21,7 +21,7 @@ const initialDepartmentsListMock = Array.from(Array(25)).map((_, index) => {
 });
 
 it('should not fetch and add selected department if it is already in the departments list on first fetch', async () => {
-	const selectedDepartmentMappedToOption = {
+	const selectedDepartmentIdMappedToOption = {
 		_id: '5',
 		label: 'test_department_5',
 		value: '5',
@@ -36,7 +36,7 @@ it('should not fetch and add selected department if it is already in the departm
 				onlyMyDepartments: true,
 				haveAll: true,
 				showArchived: true,
-				selectedDepartment: '5',
+				selectedDepartmentId: '5',
 			}),
 		{
 			wrapper: mockAppRoot()
@@ -52,9 +52,9 @@ it('should not fetch and add selected department if it is already in the departm
 	);
 
 	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
-	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(selectedDepartmentMappedToOption));
+	await waitFor(() => expect(result.current.data).toContainEqual(selectedDepartmentIdMappedToOption));
 	// The expected length is 26 because the hook will add the 'All' item on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(26));
+	await waitFor(() => expect(result.current.data.length).toBe(26));
 });
 
 it('should fetch and add selected department if it is not part of departments list on first fetch', async () => {
@@ -86,7 +86,7 @@ it('should fetch and add selected department if it is not part of departments li
 				onlyMyDepartments: true,
 				haveAll: true,
 				showArchived: true,
-				selectedDepartment: '56f5be8bcf8cd67f9e9bcfdc',
+				selectedDepartmentId: '56f5be8bcf8cd67f9e9bcfdc',
 			}),
 		{
 			wrapper: mockAppRoot()
@@ -103,7 +103,7 @@ it('should fetch and add selected department if it is not part of departments li
 		},
 	);
 
-	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(missingDepartmentMappedToOption));
+	await waitFor(() => expect(result.current.data).toContainEqual(missingDepartmentMappedToOption));
 	// The expected length is 27 because the hook will add the 'All' item and the missing department on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(27));
+	await waitFor(() => expect(result.current.data.length).toBe(27));
 });
