@@ -33,7 +33,7 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { data: departmentsItems = [], fetchNextPage } = useInfiniteDepartmentsList({
+	const { data: departmentsItems, fetchNextPage } = useInfiniteDepartmentsList({
 		filter: debouncedDepartmentsFilter,
 		excludeId,
 		onlyMyDepartments,
