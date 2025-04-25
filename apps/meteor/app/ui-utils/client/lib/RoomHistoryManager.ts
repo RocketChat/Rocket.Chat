@@ -14,6 +14,8 @@ import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 
+const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
+
 export async function upsertMessage(
 	{
 		msg,
@@ -69,6 +71,10 @@ class RoomHistoryManagerClass extends Emitter {
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
 			oldestTs?: Date;
+			scroll?: {
+				scrollHeight: number;
+				scrollTop: number;
+			};
 		}
 	> = {};
 
@@ -162,12 +168,19 @@ class RoomHistoryManagerClass extends Emitter {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
-		await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+		const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+		room.scroll = {
+			scrollHeight: wrapper.scrollHeight,
+			scrollTop: wrapper.scrollTop,
+		};
 
 		upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
 			subscription,
 		});
+
+		this.emit('loaded-messages');
 
 		if (!room.loaded) {
 			room.loaded = 0;
@@ -186,6 +199,25 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		room.isLoading.set(false);
+		await waitAfterFlush();
+	}
+
+	public restoreScroll(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+		if (room.scroll === undefined) {
+			return;
+		}
+
+		if (!wrapper) {
+			return;
+		}
+
+		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
+		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
+
+		room.scroll = undefined;
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
@@ -210,6 +242,8 @@ class RoomHistoryManagerClass extends Emitter {
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
+
+			this.emit('loaded-messages');
 
 			room.isLoading.set(false);
 			if (!room.loaded) {
