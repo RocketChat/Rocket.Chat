@@ -1,4 +1,3 @@
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
@@ -100,10 +99,12 @@ export async function newIntegratorMessage({
 	department,
 	message,
 	visitor,
+	source,
 }: {
 	department?: string;
 	message: IMessage;
 	visitor: RegisterGuestType;
+	source: IOmnichannelRoomInfo['source'];
 }) {
 	const visitorFound = await defineVisitor(visitor);
 	if (!visitorFound) {
@@ -115,26 +116,12 @@ export async function newIntegratorMessage({
 		throw new Error('error-department-not-online');
 	}
 
-	const appId = 'get-app-id';
-	const appName = 'get-app-name';
-
 	const room = await defineRoom({
 		visitor: visitorFound,
 		agentId: undefined,
 		customFields: { department },
 		roomInfo: {
-			source: {
-				type: OmnichannelSourceType.APP,
-				id: appId,
-				alias: appName,
-				// ...(source &&
-				// 	source.type === 'app' && {
-				// 		sidebarIcon: source.sidebarIcon,
-				// 		defaultIcon: source.defaultIcon,
-				// 		label: source.label,
-				// 		destination: source.destination,
-				// 	}),
-			},
+			source,
 		},
 	});
 	if (!room) {
