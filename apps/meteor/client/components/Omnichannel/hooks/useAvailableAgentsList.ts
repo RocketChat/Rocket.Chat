@@ -27,7 +27,7 @@ export const useAvailableAgentsList = (options: AgentsListOptions) => {
 	});
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/livechat/tags', options],
+		queryKey: ['/v1/omnichannel/agents/available', options],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { agents, ...data } = await getAgents({
 				...(text && { text }),
