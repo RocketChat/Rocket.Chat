@@ -22,6 +22,15 @@
   - @rocket.chat/core-services@0.9.0-rc.0
   </details>
 
+## 0.1.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.8.1
+  </details>
+
 ## 0.1.11
 
 ### Patch Changes

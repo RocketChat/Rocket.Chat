@@ -22,6 +22,17 @@
   - @rocket.chat/ui-contexts@18.0.0-rc.0
   </details>
 
+## 17.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.1
+  - @rocket.chat/ui-contexts@17.0.1
+  - @rocket.chat/ui-client@17.0.1
+  </details>
+
 ## 17.0.0
 
 ### Patch Changes

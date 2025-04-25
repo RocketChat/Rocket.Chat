@@ -175,6 +175,43 @@
   - @rocket.chat/server-cloud-communication@0.0.2
   </details>
 
+## 7.5.1
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35732](https://github.com/RocketChat/Rocket.Chat/pull/35732) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with dynamic API routes requiring a server restart to be operable.
+
+- ([#35728](https://github.com/RocketChat/Rocket.Chat/pull/35728) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes Omnichannel Contact Center's chats filter not working when "From" and "To" fields have the same date
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.1
+  - @rocket.chat/rest-typings@7.5.1
+  - @rocket.chat/license@1.0.11
+  - @rocket.chat/omnichannel-services@0.3.17
+  - @rocket.chat/pdf-worker@0.2.17
+  - @rocket.chat/presence@0.2.20
+  - @rocket.chat/api-client@0.2.20
+  - @rocket.chat/apps@0.4.1
+  - @rocket.chat/core-services@0.8.1
+  - @rocket.chat/cron@0.1.20
+  - @rocket.chat/freeswitch@1.2.7
+  - @rocket.chat/fuselage-ui-kit@17.0.1
+  - @rocket.chat/gazzodown@17.0.1
+  - @rocket.chat/model-typings@1.5.1
+  - @rocket.chat/ui-contexts@17.0.1
+  - @rocket.chat/models@1.4.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.12
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@13.0.1
+  - @rocket.chat/ui-client@17.0.1
+  - @rocket.chat/ui-video-conf@17.0.1
+  - @rocket.chat/ui-voip@7.0.1
+  - @rocket.chat/web-ui-registration@17.0.1
+  - @rocket.chat/instance-status@0.1.20
+  </details>
+
 ## 7.5.0
 
 ### Minor Changes

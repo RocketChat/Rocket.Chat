@@ -20,6 +20,8 @@
 
 - ([#35832](https://github.com/RocketChat/Rocket.Chat/pull/35832)) Fixes an issue where Voice Calls were unable to gather Ice Servers
 
+## 7.5.1
+
 ## 7.5.0
 
 ### Minor Changes

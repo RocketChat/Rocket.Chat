@@ -28,6 +28,17 @@
   - @rocket.chat/rest-typings@7.6.0-rc.0
   </details>
 
+## 0.8.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.1
+  - @rocket.chat/rest-typings@7.5.1
+  - @rocket.chat/models@1.4.1
+  </details>
+
 ## 0.8.0
 
 ### Minor Changes
