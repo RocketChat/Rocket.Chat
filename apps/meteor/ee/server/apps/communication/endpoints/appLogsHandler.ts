@@ -28,7 +28,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 				let query: Record<string, any>;
 
 				try {
-					query = makeAppLogsQuery(this.urlParams.id, this.queryParams);
+					query = makeAppLogsQuery(this.queryParams, this.urlParams.id);
 				} catch (error) {
 					return api.failure({ error: error instanceof Error ? error.message : 'Unknown error' });
 				}

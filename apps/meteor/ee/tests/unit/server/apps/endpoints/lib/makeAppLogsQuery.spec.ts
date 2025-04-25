@@ -8,14 +8,14 @@ describe('makeAppLogsQuery', () => {
 
 	it('should create a basic query with appId', () => {
 		const queryParams: AppLogsProps = {};
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams, appId);
 
 		expect(result).to.deep.equal({ appId });
 	});
 
 	it('should include log level filter when logLevel is provided', () => {
 		const queryParams: AppLogsProps = { logLevel: '1' };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams, appId);
 
 		expect(result).to.deep.equal({
 			appId,
@@ -25,7 +25,7 @@ describe('makeAppLogsQuery', () => {
 
 	it('should include all log levels when logLevel is 2', () => {
 		const queryParams: AppLogsProps = { logLevel: '2' };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams, appId);
 
 		expect(result).to.deep.equal({
 			appId,
@@ -34,22 +34,21 @@ describe('makeAppLogsQuery', () => {
 	});
 
 	it('should include method filter when method is provided', () => {
-		const queryParams: AppLogsProps = { method: 'POST' };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const queryParams: AppLogsProps = { method: 'app:construct' };
+		const result = makeAppLogsQuery(queryParams, appId);
 
 		expect(result).to.deep.equal({
 			appId,
-			method: 'POST',
+			method: 'app:construct',
 		});
 	});
 
 	it('should include start date filter when startDate is provided', () => {
 		const startDate = '2024-01-01T00:00:00.000Z';
 		const queryParams: AppLogsProps = { startDate };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams);
 
 		expect(result).to.deep.equal({
-			appId,
 			_updatedAt: {
 				$gte: new Date(startDate),
 			},
@@ -59,13 +58,12 @@ describe('makeAppLogsQuery', () => {
 	it('should include end date filter when endDate is provided', () => {
 		const endDate = '2024-01-01T00:00:00.000Z';
 		const queryParams: AppLogsProps = { endDate };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(endDate);
 		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
-			appId,
 			_updatedAt: {
 				$lte: expectedEndDate,
 			},
@@ -76,13 +74,12 @@ describe('makeAppLogsQuery', () => {
 		const startDate = '2024-01-01T00:00:00.000Z';
 		const endDate = '2024-01-02T00:00:00.000Z';
 		const queryParams: AppLogsProps = { startDate, endDate };
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(endDate);
 		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
-			appId,
 			_updatedAt: {
 				$gte: new Date(startDate),
 				$lte: expectedEndDate,
@@ -95,7 +92,7 @@ describe('makeAppLogsQuery', () => {
 		const endDate = '2024-01-01T00:00:00.000Z';
 		const queryParams: AppLogsProps = { startDate, endDate };
 
-		expect(() => makeAppLogsQuery(appId, queryParams)).to.throw('Invalid date range');
+		expect(() => makeAppLogsQuery(queryParams)).to.throw('Invalid date range');
 	});
 
 	it('should combine all filters when all parameters are provided', () => {
@@ -105,13 +102,12 @@ describe('makeAppLogsQuery', () => {
 			startDate: '2024-01-01T00:00:00.000Z',
 			endDate: '2024-01-02T00:00:00.000Z',
 		};
-		const result = makeAppLogsQuery(appId, queryParams);
+		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(queryParams.endDate as string);
 		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
-			appId,
 			'entries.severity': { $in: ['error', 'warn', 'info', 'log'] },
 			'method': 'app:construct',
 			'_updatedAt': {
