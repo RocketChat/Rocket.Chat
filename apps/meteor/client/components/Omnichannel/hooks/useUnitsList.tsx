@@ -19,7 +19,7 @@ const DEFAULT_QUERY_LIMIT = 25;
 
 export const useUnitsList = (options: UnitsListOptions) => {
 	const { t } = useTranslation();
-	const { haveNone = false, text, limit } = options;
+	const { haveNone = false, text, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
 
 	const formatUnitItem = (u: Serialized<IOmnichannelBusinessUnit>): UnitOption => ({
@@ -34,7 +34,7 @@ export const useUnitsList = (options: UnitsListOptions) => {
 			const { units, ...data } = await getUnits({
 				...(text && { text }),
 				offset,
-				count: limit ?? DEFAULT_QUERY_LIMIT,
+				count: limit,
 				sort: `{ "name": 1 }`,
 			});
 
@@ -61,7 +61,7 @@ export const useUnitsList = (options: UnitsListOptions) => {
 			return offset < lastPage.total ? offset : undefined;
 		},
 		initialData: () => ({
-			pages: [{ units: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pages: [{ units: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],
 		}),
 	});
