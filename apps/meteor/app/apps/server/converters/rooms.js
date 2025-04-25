@@ -138,7 +138,7 @@ export class AppRoomsConverter {
 		const newRoom = {
 			...(room.id && { _id: room.id }),
 			...(typeof room.type !== 'undefined' && { t: room.type }),
-			...(typeof room.ts !== 'undefined' && { ts: room.createdAt }),
+			...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
 			...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
 			...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
 			...(room.displayName && { fname: room.displayName }),
@@ -170,11 +170,7 @@ export class AppRoomsConverter {
 		};
 
 		if (!isPartial) {
-			Object.assign(
-				newRoom,
-				{ t: room.type, ts: room.createdAt, msgs: room.messageCount || 0, _updatedAt: room.updatedAt },
-				room._unmappedProperties_,
-			);
+			Object.assign(newRoom, room._unmappedProperties_);
 		}
 
 		return newRoom;
