@@ -54,7 +54,6 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
@@ -1313,10 +1312,9 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
-
+			const updateFields: Record<string, any> = {};
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message);
+				updateFields.statusText = this.bodyParams.message;
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
@@ -1328,29 +1326,29 @@ API.v1.addRoute(
 							method: 'users.setStatus',
 						});
 					}
-
-					await Users.updateOne(
-						{ _id: user._id },
-						{
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						},
-					);
-
-					const { _id, username, statusText, roles, name } = user;
-					void api.broadcast('presence.status', {
-						user: { status, _id, username, statusText: this.bodyParams.message || statusText, roles, name },
-						previousStatus: user.status,
-					});
-
-					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-				} else {
-					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-						method: 'users.setStatus',
-					});
+					updateFields.status = status;
+					updateFields.statusDefault = status;
 				}
+			}
+			if (Object.keys(updateFields).length > 0) {
+				await Users.updateOne(
+					{ _id: user._id },
+					{
+						$set: updateFields,
+					},
+				);
+
+				const { _id, username, statusText, roles, name, status } = { ...user, ...updateFields };
+				void api.broadcast('presence.status', {
+					user: { status, _id, username, statusText, roles, name },
+					previousStatus: user.status,
+				});
+
+				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
+			} else {
+				throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					method: 'users.setStatus',
+				});
 			}
 
 			return API.v1.success();
