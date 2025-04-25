@@ -14,7 +14,10 @@ type AgentOption = {
 	value: string;
 };
 
+const DEFAULT_QUERY_LIMIT = 25;
+
 export const useInfiniteAvailableAgentsList = (options: AgentsListOptions) => {
+	const { text, includeExtension, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getAgents = useEndpoint('GET', '/v1/omnichannel/agents/available');
 
 	const formatTagItem = (agent: Serialized<ILivechatAgent>): AgentOption => ({
@@ -27,10 +30,10 @@ export const useInfiniteAvailableAgentsList = (options: AgentsListOptions) => {
 		queryKey: ['/v1/livechat/tags', options],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { agents, ...data } = await getAgents({
-				...(options.text && { text: options.text }),
-				...(options.includeExtension && { includeExtension: options.includeExtension }),
+				...(text && { text }),
+				...(includeExtension && { includeExtension }),
 				offset,
-				count: options.limit ?? 25,
+				count: limit,
 				sort: `{ "username": 1 }`,
 			});
 
@@ -45,5 +48,9 @@ export const useInfiniteAvailableAgentsList = (options: AgentsListOptions) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
+		initialData: () => ({
+			pages: [{ agents: [], offset: 0, count: 0, total: Infinity }],
+			pageParams: [0],
+		}),
 	});
 };

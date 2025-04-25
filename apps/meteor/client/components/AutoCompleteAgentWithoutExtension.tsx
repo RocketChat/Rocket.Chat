@@ -16,7 +16,7 @@ const AutoCompleteAgentWithoutExtension = ({ value, currentExtension, onChange, 
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter as string, 500);
 
-	const { data: agentsItems = [], fetchNextPage } = useInfiniteAvailableAgentsList({
+	const { data: agentsItems, fetchNextPage } = useInfiniteAvailableAgentsList({
 		text: debouncedAgentsFilter,
 		includeExtension: currentExtension,
 	});
