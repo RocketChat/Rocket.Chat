@@ -1,5 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { AtLeast, IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -7,6 +9,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -305,6 +308,171 @@ describe('[Incoming Integrations]', () => {
 					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
 				});
 		});
+
+		it('should send a message if the payload is a application/x-www-form-urlencoded JSON', async () => {
+			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.set('Content-Type', 'application/x-www-form-urlencoded')
+				.send(`payload=${JSON.stringify(payload)}`)
+				.expect(200)
+				.expect(async () => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
+						});
+				});
+		});
+
+		it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
+			const payload = { msg: `Message as x-www-form-urlencoded JSON sent successfully at #${Date.now()}` };
+			let withScript: IIntegration | undefined;
+
+			await updatePermission('manage-incoming-integrations', ['admin']);
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test with script',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: false,
+					channel: '#general',
+					script: `
+						class Script {
+							process_incoming_request({ request }) {
+								return {
+									content:{
+										text: request.content.text
+									}
+								};
+							}
+						}
+					`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					withScript = res.body.integration;
+				});
+
+			if (!withScript) {
+				throw new Error('Integration not created');
+			}
+
+			await request
+				.post(`/hooks/${withScript._id}/${withScript.token}`)
+				.set('Content-Type', 'application/x-www-form-urlencoded')
+				.send(`payload=${JSON.stringify(payload)}`)
+				.expect(200)
+				.expect(async () => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === payload.msg)).to.be.true;
+						});
+				});
+
+			await removeIntegration(withScript._id, 'incoming');
+		});
+
+		it('should send a message if the payload is a application/x-www-form-urlencoded JSON(when not set, default one) but theres no "payload" key, its just a string, the integration has a valid script', async () => {
+			const payload = { test: 'test' };
+			let withScript: IIntegration | undefined;
+
+			await updatePermission('manage-incoming-integrations', ['admin']);
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test with script and default content-type',
+					enabled: true,
+					alias: 'test',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: false,
+					channel: '#general',
+					script:
+						'const buildMessage = (obj) => {\n' +
+						'  \n' +
+						'    const template = `[#VALUE](${ obj.test })`;\n' +
+						'  \n' +
+						'    return {\n' +
+						'      text: template\n' +
+						'    };\n' +
+						'  };\n' +
+						'  \n' +
+						'  class Script {\n' +
+						'    process_incoming_request({ request }) {\n' +
+						'      msg = buildMessage(request.content);\n' +
+						'  \n' +
+						'      return {\n' +
+						'        content:{\n' +
+						'              text: msg.text\n' +
+						'        }\n' +
+						'      };\n' +
+						'    }\n' +
+						'  }\n' +
+						'					\n',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					withScript = res.body.integration;
+				});
+
+			if (!withScript) {
+				throw new Error('Integration not created');
+			}
+
+			await request
+				.post(`/hooks/${withScript._id}/${withScript.token}`)
+				.send(JSON.stringify(payload))
+				.expect(200)
+				.expect(async () => {
+					return request
+						.get(api('channels.messages'))
+						.set(credentials)
+						.query({
+							roomId: 'GENERAL',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
+						});
+				});
+
+			await removeIntegration(withScript._id, 'incoming');
+		});
 	});
 
 	describe('[/integrations.history]', () => {
@@ -516,6 +684,16 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.update]', () => {
+		let senderUser: IUser;
+		let sendUserCredentials: Credentials;
+
+		before(async () => {
+			senderUser = await createUser();
+			sendUserCredentials = await login(senderUser.username, password);
+		});
+
+		after(() => deleteUser(senderUser));
+
 		it('should update an integration by id and return the new data', (done) => {
 			void request
 				.put(api('integrations.update'))
@@ -539,6 +717,7 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
 					expect(res.body.integration.alias).to.be.equal('test updated');
+					integration = res.body.integration;
 				})
 				.end(done);
 		});
@@ -558,6 +737,60 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
+		});
+
+		it("should update an integration's username and associated userId correctly and return the new data", async () => {
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated x2',
+					enabled: true,
+					alias: 'test updated x2',
+					username: senderUser.username,
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated x2');
+					expect(res.body.integration.alias).to.be.equal('test updated x2');
+					expect(res.body.integration.username).to.be.equal(senderUser.username);
+					expect(res.body.integration.userId).to.be.equal(sendUserCredentials['X-User-Id']);
+					integration = res.body.integration;
+				});
+		});
+
+		it('should send messages to the channel under the updated username', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(200);
+
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage);
+					expect(message?.u).have.property('username', senderUser.username);
+				});
 		});
 	});
 
@@ -653,6 +886,269 @@ describe('[Incoming Integrations]', () => {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('Additional Tests for Message Delivery Permissions', () => {
+		let nonMemberUser: IUser;
+		let privateTeam: ITeam;
+		let publicChannelInPrivateTeam: IRoom;
+		let privateRoom: IRoom;
+		let publicRoom: IRoom;
+		let integration2: IIntegration;
+		let integration3: IIntegration;
+		let integration4: IIntegration;
+
+		before(async () => {
+			nonMemberUser = await createUser({ username: `g_${Random.id()}` });
+			privateTeam = await createTeam(credentials, `private.team.${Random.id()}`, TEAM_TYPE.PRIVATE);
+
+			const [publicInPrivateResponse, privateRoomResponse, publicRoomResponse] = await Promise.all([
+				createRoom({
+					type: 'c',
+					name: `teamPrivate.publicChannel.${Random.id()}`,
+					credentials,
+					extraData: {
+						teamId: privateTeam._id,
+					},
+				}),
+				createRoom({
+					type: 'p',
+					name: `privateChannel.${Random.id()}`,
+					credentials,
+				}),
+				createRoom({
+					type: 'c',
+					name: `publicChannel.${Random.id()}`,
+					credentials,
+				}),
+			]);
+
+			publicChannelInPrivateTeam = publicInPrivateResponse.body.channel;
+			privateRoom = privateRoomResponse.body.group;
+			publicRoom = publicRoomResponse.body.channel;
+
+			await updatePermission('manage-incoming-integrations', ['admin']);
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test 2 - Sending Messages',
+					enabled: true,
+					alias: 'Incoming test 2 - Sending Messages',
+					username: nonMemberUser.username as string,
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: false,
+					channel: `#${privateRoom.fname}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					integration2 = res.body.integration;
+				});
+
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test 3 - Sending Messages',
+					enabled: true,
+					alias: 'Incoming test 3 - Sending Messages',
+					username: nonMemberUser.username as string,
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: false,
+					channel: `#${publicChannelInPrivateTeam.fname}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					integration3 = res.body.integration;
+				});
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test 4 - Sending Messages',
+					enabled: true,
+					alias: 'Incoming test 4 - Sending Messages',
+					username: nonMemberUser.username as string,
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: false,
+					channel: `#${publicRoom.fname}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					integration4 = res.body.integration;
+				});
+		});
+
+		after(async () => {
+			await Promise.all(
+				[publicRoom, privateRoom, publicChannelInPrivateTeam].map((room) => deleteRoom({ type: room.t as 'c' | 'p', roomId: room._id })),
+			);
+			await deleteTeam(credentials, privateTeam.name);
+			await deleteUser(nonMemberUser);
+			await Promise.all([
+				...[integration2, integration3, integration4].map((integration) =>
+					request.post(api('integrations.remove')).set(credentials).send({
+						integrationId: integration._id,
+						type: integration.type,
+					}),
+				),
+				updatePermission('manage-incoming-integrations', ['admin']),
+			]);
+		});
+
+		it('should not send a message to a private rooms on behalf of a non member', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration2._id}/${integration2.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', 'error-not-allowed');
+				});
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: privateRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
+		});
+
+		it('should not add non member to private rooms when sending message', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration2._id}/${integration2.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', 'error-not-allowed');
+				});
+			await request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: privateRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).to.be.undefined;
+				});
+		});
+
+		it('should not send a message to public channel of a private team on behalf of a non team member', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration3._id}/${integration3.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', 'error-not-allowed');
+				});
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicChannelInPrivateTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
+		});
+
+		it('should not add non team member to the public channel in a private team when sending message', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration3._id}/${integration3.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', 'error-not-allowed');
+				});
+			await request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: publicChannelInPrivateTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).to.be.undefined;
+				});
+		});
+
+		it('should send messages from non-members to public rooms and add them as room members', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration4._id}/${integration4.token}`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(200);
+
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.undefined;
+				});
+
+			await request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: publicRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.undefined;
+				});
 		});
 	});
 });

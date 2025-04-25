@@ -46,7 +46,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 
 	hasChanges() {
-		const filter = this._getUpdateFilter();
+		const filter = this.getRawUpdateFilter();
 		return this._hasChanges(filter);
 	}
 
@@ -54,7 +54,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return Object.keys(filter).length > 0;
 	}
 
-	private _getUpdateFilter() {
+	public getRawUpdateFilter() {
 		return {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
@@ -68,7 +68,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			throw new Error('Updater is dirty');
 		}
 		this.dirty = true;
-		const filter = this._getUpdateFilter();
+		const filter = this.getRawUpdateFilter();
 		if (!this._hasChanges(filter)) {
 			throw new Error('No changes to update');
 		}

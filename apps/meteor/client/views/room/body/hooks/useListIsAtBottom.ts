@@ -4,9 +4,12 @@ import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 export const useListIsAtBottom = () => {
 	const atBottomRef = useRef(true);
+
+	const jumpToRef = useRef<HTMLElement>(undefined);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
@@ -15,6 +18,9 @@ export const useListIsAtBottom = () => {
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
+		if (jumpToRef.current) {
+			atBottomRef.current = false;
+		}
 		if (atBottomRef.current === true) {
 			sendToBottom();
 		}
@@ -27,37 +33,45 @@ export const useListIsAtBottom = () => {
 		return isAtBottomLib(innerBoxRef.current, threshold);
 	}, []);
 
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			const messageList = node.querySelector('ul');
-
-			if (!messageList) {
-				return;
-			}
-
-			const observer = new ResizeObserver(() => {
-				if (atBottomRef.current === true) {
-					node.scrollTo({ left: 30, top: node.scrollHeight });
+	const ref = useSafeRefCallback(
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
 				}
-			});
 
-			observer.observe(messageList);
+				const messageList = node.querySelector('ul');
 
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
+				if (!messageList) {
+					return;
+				}
+
+				const observer = new ResizeObserver(() => {
+					if (jumpToRef.current) {
+						atBottomRef.current = false;
+					}
+					if (atBottomRef.current === true) {
+						node.scrollTo({ left: 30, top: node.scrollHeight });
+					}
+				});
+
+				observer.observe(messageList);
+
+				const handleScroll = withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(100);
-				}),
-				{
+				});
+
+				node.addEventListener('scroll', handleScroll, {
 					passive: true,
-				},
-			);
-		},
-		[isAtBottom],
+				});
+
+				return () => {
+					observer.disconnect();
+					node.removeEventListener('scroll', handleScroll);
+				};
+			},
+			[isAtBottom],
+		),
 	);
 
 	return {
@@ -66,5 +80,6 @@ export const useListIsAtBottom = () => {
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
+		jumpToRef,
 	};
 };

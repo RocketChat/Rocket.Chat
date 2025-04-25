@@ -1,9 +1,10 @@
 import { Tracker } from 'meteor/tracker';
 
+import { fireGlobalEventBase } from './fireGlobalEventBase';
 import { settings } from '../../../app/settings/client';
 
 export const fireGlobalEvent = (eventName: string, detail?: unknown): void => {
-	window.dispatchEvent(new CustomEvent(eventName, { detail }));
+	const dispatchIframeMessage = fireGlobalEventBase(eventName, detail);
 
 	Tracker.autorun((computation) => {
 		const enabled = settings.get('Iframe_Integration_send_enable');
@@ -13,14 +14,6 @@ export const fireGlobalEvent = (eventName: string, detail?: unknown): void => {
 
 		computation.stop();
 
-		if (enabled) {
-			parent.postMessage(
-				{
-					eventName,
-					data: detail,
-				},
-				settings.get('Iframe_Integration_send_target_origin'),
-			);
-		}
+		dispatchIframeMessage(enabled, settings.get('Iframe_Integration_send_target_origin'));
 	});
 };

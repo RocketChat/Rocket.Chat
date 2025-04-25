@@ -114,7 +114,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							name='department'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments />
+								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments withCheckbox={false} />
 							)}
 						/>
 					</FieldRow>

@@ -82,19 +82,19 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	countPrioritizedRooms(): Promise<number> {
-		return this.col.countDocuments({ priorityId: { $exists: true } });
+		return this.countDocuments({ priorityId: { $exists: true } });
 	}
 
 	countRoomsWithSla(): Promise<number> {
-		return this.col.countDocuments({ slaId: { $exists: true } });
+		return this.countDocuments({ slaId: { $exists: true } });
 	}
 
 	countRoomsWithPdfTranscriptRequested(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptRequested: true });
+		return this.countDocuments({ pdfTranscriptRequested: true });
 	}
 
 	countRoomsWithTranscriptSent(): Promise<number> {
-		return this.col.countDocuments({ pdfTranscriptFileId: { $exists: true } });
+		return this.countDocuments({ pdfTranscriptFileId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
@@ -548,7 +548,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			departmentId: {
 				$exists: false,
@@ -626,7 +626,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,
@@ -721,7 +721,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}
 
 	getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
-		return this.col.countDocuments({
+		return this.countDocuments({
 			t: 'l',
 			ts: {
 				$gte: start,

@@ -15,6 +15,7 @@ import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
@@ -62,6 +63,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useDeleteUser();
 	useUpdateAvatar();
+	useIdleConnection();
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({

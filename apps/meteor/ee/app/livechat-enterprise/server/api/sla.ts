@@ -18,6 +18,7 @@ API.v1.addRoute(
 			GET: isLivechatPrioritiesProps,
 			POST: isCreateOrUpdateLivechatSlaProps,
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -62,6 +63,7 @@ API.v1.addRoute(
 		validateParams: {
 			PUT: isCreateOrUpdateLivechatSlaProps,
 		},
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {

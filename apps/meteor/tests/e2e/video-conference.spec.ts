@@ -29,8 +29,7 @@ test.describe('video conference', () => {
 	test('expect create video conference in a "targetChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
@@ -64,8 +63,7 @@ test.describe('video conference', () => {
 	test('expect create video conference in a direct', async () => {
 		await poHomeChannel.sidenav.openChat('user2');
 
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
@@ -81,8 +79,7 @@ test.describe('video conference', () => {
 	test('expect create video conference in a "targetTeam"', async () => {
 		await poHomeChannel.sidenav.openChat(targetTeam);
 
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
@@ -98,8 +95,7 @@ test.describe('video conference', () => {
 	test('expect create video conference in a direct multiple', async () => {
 		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
 
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
@@ -115,6 +111,6 @@ test.describe('video conference', () => {
 	test('expect create video conference not available in a "targetReadOnlyChannel"', async () => {
 		await poHomeChannel.sidenav.openChat(targetReadOnlyChannel);
 
-		await expect(poHomeChannel.content.btnCall).hasAttribute('disabled');
+		await expect(poHomeChannel.content.btnVideoCall).hasAttribute('disabled');
 	});
 });

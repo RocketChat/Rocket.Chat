@@ -121,7 +121,7 @@ export class RecordList<T extends { _id: string; _updatedAt?: Date }> extends Em
 				}
 			}
 
-			if (info.itemCount) {
+			if (Number.isInteger(info.itemCount)) {
 				this.#itemCount = info.itemCount;
 				this.#hasChanges = true;
 			}
