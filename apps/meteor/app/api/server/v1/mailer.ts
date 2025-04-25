@@ -1,8 +1,9 @@
 import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
 import Ajv from 'ajv';
-import { API } from '../api';
+
 import { sendMail } from '../../../mail-messages/server/functions/sendMail';
 import { Mailer } from '../../../mail-messages/server/lib/Mailer';
+import { API } from '../api';
 
 const ajv = new Ajv();
 
