@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-type AutoCompleteDepartmentMultipleProps = {
+type AutoCompleteDepartmentMultipleProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'options' | 'renderItem' | 'setFilter' | 'filter' | 'placeholder' | 'endReached'
+> & {
 	value?: PaginatedMultiSelectOption[];
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 	onlyMyDepartments?: boolean;
@@ -16,7 +19,7 @@ type AutoCompleteDepartmentMultipleProps = {
 	withCheckbox?: boolean;
 	excludeId?: string;
 	unitId?: string;
-} & Omit<ComponentProps<typeof PaginatedMultiSelectFiltered>, 'options'>;
+};
 
 const AutoCompleteDepartmentMultiple = ({
 	value = [],
@@ -27,6 +30,7 @@ const AutoCompleteDepartmentMultiple = ({
 	excludeId,
 	unitId,
 	onChange = () => undefined,
+	...props
 }: AutoCompleteDepartmentMultipleProps) => {
 	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -64,6 +68,7 @@ const AutoCompleteDepartmentMultiple = ({
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
+			{...props}
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
