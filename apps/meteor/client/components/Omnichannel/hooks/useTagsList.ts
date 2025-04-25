@@ -18,7 +18,7 @@ type TagListItem = {
 const DEFAULT_QUERY_LIMIT = 25;
 
 export const useTagsList = (options: TagsListOptions) => {
-	const { viewAll, department, filter, limit } = options;
+	const { viewAll, department, filter, limit = DEFAULT_QUERY_LIMIT } = options;
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 
@@ -34,7 +34,7 @@ export const useTagsList = (options: TagsListOptions) => {
 			const { tags, ...data } = await getTags({
 				text: filter,
 				offset,
-				count: limit ?? DEFAULT_QUERY_LIMIT,
+				count: limit,
 				...(viewAll && { viewAll: 'true' }),
 				...(department && { department }),
 				sort: JSON.stringify({ name: 1 }),
@@ -52,7 +52,7 @@ export const useTagsList = (options: TagsListOptions) => {
 			return offset < lastPage.total ? offset : undefined;
 		},
 		initialData: () => ({
-			pages: [{ tags: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pages: [{ tags: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],
 		}),
 	});
