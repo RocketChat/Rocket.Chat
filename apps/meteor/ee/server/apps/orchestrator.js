@@ -174,7 +174,6 @@ export class AppServerOrchestrator {
 	}
 
 	async load() {
-		console.log('load called');
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
