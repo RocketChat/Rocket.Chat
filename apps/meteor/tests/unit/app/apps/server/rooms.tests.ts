@@ -112,8 +112,24 @@ describe('The AppMessagesConverter instance', () => {
 			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
 			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
 			expect(rocketchatRoom).to.have.property('sysMes', appRoom.displaySystemMessages);
-			expect(rocketchatRoom).to.have.property('msgs', 0);
 			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
+
+			expect(rocketchatRoom).to.not.have.property('msgs');
+			expect(rocketchatRoom).to.not.have.property('ro');
+			expect(rocketchatRoom).to.not.have.property('default');
+			expect(rocketchatRoom).to.not.have.property('t');
+		});
+
+		it('should return a proper schema when receiving a partial object', async () => {
+			const appRoom = RoomsMock.convertedData.GENERALPartialWithOptionalProps as unknown as IAppsRoom;
+			const rocketchatRoom = await roomConverter.convertAppRoom(appRoom, true);
+
+			expect(rocketchatRoom).to.have.property('_id', appRoom.id);
+			expect(rocketchatRoom).to.have.property('name', appRoom.slugifiedName);
+			expect(rocketchatRoom).to.have.property('sysMes', appRoom.displaySystemMessages);
+			expect(rocketchatRoom).to.have.property('_updatedAt', appRoom.updatedAt);
+			expect(rocketchatRoom).to.have.property('msgs', appRoom.messageCount);
+			expect(rocketchatRoom).to.have.property('t', 'c');
 
 			expect(rocketchatRoom).to.not.have.property('ro');
 			expect(rocketchatRoom).to.not.have.property('default');
