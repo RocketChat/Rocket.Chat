@@ -23,7 +23,15 @@ const DEFAULT_QUERY_LIMIT = 25;
 export const useAgentsList = (options: AgentsListOptions) => {
 	const { t } = useTranslation();
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
-	const { text, onlyAvailable = false, showIdleAgents = true, excludeId, haveAll, haveNoAgentsSelectedOption, limit = 25 } = options;
+	const {
+		text,
+		onlyAvailable = false,
+		showIdleAgents = true,
+		excludeId,
+		haveAll,
+		haveNoAgentsSelectedOption,
+		limit = DEFAULT_QUERY_LIMIT,
+	} = options;
 
 	return useInfiniteQuery({
 		queryKey: ['/v1/livechat/users/agent', { text, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
@@ -34,7 +42,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 				showIdleAgents,
 				onlyAvailable,
 				offset,
-				count: limit ?? DEFAULT_QUERY_LIMIT,
+				count: limit,
 				sort: `{ "name": 1 }`,
 			});
 		},
@@ -69,7 +77,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 			return offset < lastPage.total ? offset : undefined;
 		},
 		initialData: () => ({
-			pages: [{ users: [], total: 0, offset: 0, count: limit ?? DEFAULT_QUERY_LIMIT }],
+			pages: [{ users: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],
 		}),
 	});
