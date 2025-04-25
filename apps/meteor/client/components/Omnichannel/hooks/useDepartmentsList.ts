@@ -22,6 +22,7 @@ const DEFAULT_QUERY_LIMIT = 50;
 
 export const useDepartmentsList = (options: DepartmentsListOptions) => {
 	const { t } = useTranslation();
+	const { limit = DEFAULT_QUERY_LIMIT } = options;
 	const getLivechatDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const getUnitDepartments = useEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', { unitId: options.unitId || 'none' });
 	const getDepartments = options.unitId !== undefined ? getUnitDepartments : getLivechatDepartments;
@@ -47,7 +48,7 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
 				text: options.filter,
 				offset,
-				count: options.limit ?? DEFAULT_QUERY_LIMIT,
+				count: limit,
 				sort: `{ "name": 1 }`,
 				...(!options.unitId && {
 					excludeDepartmentId: options.excludeId,
@@ -92,7 +93,7 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 			return offset < lastPage.total ? offset : undefined;
 		},
 		initialData: () => ({
-			pages: [{ departments: [], total: 0, offset: 0, count: options.limit ?? DEFAULT_QUERY_LIMIT }],
+			pages: [{ departments: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],
 		}),
 	});
