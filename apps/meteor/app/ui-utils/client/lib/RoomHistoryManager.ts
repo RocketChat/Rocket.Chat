@@ -56,8 +56,6 @@ export function upsertMessageBulk(
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
 
-const waitAfterFlush = (fn: () => void) => setTimeout(() => Tracker.afterFlush(fn), 10);
-
 class RoomHistoryManagerClass extends Emitter {
 	private lastRequest?: Date;
 
@@ -156,8 +154,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		this.unqueue();
 
-		let previousHeight: number | undefined;
-		let scroll: number | undefined;
 		const { messages = [] } = result;
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
@@ -166,12 +162,7 @@ class RoomHistoryManagerClass extends Emitter {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
-		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
-
-		if (wrapper) {
-			previousHeight = wrapper.scrollHeight;
-			scroll = wrapper.scrollTop;
-		}
+		await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
 
 		upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -193,12 +184,6 @@ class RoomHistoryManagerClass extends Emitter {
 		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
 			return this.getMore(rid);
 		}
-
-		waitAfterFlush(() => {
-			this.emit('loaded-messages');
-			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
-			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
-		});
 
 		room.isLoading.set(false);
 	}

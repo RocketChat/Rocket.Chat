@@ -3,12 +3,6 @@ import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-context
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
-
 export const useAuditItems = (): GenericMenuItemProps[] => {
 	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
@@ -19,6 +13,7 @@ export const useAuditItems = (): GenericMenuItemProps[] => {
 
 	const auditHomeRoute = useRoute('audit-home');
 	const auditSettingsRoute = useRoute('audit-log');
+	const securityLogsRoute = useRoute('security-logs');
 
 	if (!hasAuditPermission && !hasAuditLogPermission) {
 		return [];
@@ -37,5 +32,14 @@ export const useAuditItems = (): GenericMenuItemProps[] => {
 		onClick: () => auditSettingsRoute.push(),
 	};
 
-	return [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem].filter(Boolean) as GenericMenuItemProps[];
+	const securityLogItem: GenericMenuItemProps = {
+		id: 'securityLog',
+		icon: 'document-eye',
+		content: t('Security_logs'),
+		onClick: () => securityLogsRoute.push(),
+	};
+
+	return [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem, hasAuditLogPermission && securityLogItem].filter(
+		Boolean,
+	) as GenericMenuItemProps[];
 };
