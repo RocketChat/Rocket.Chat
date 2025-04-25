@@ -1,9 +1,6 @@
 # Meteor packages used by this project, one per line.
-
 #
-
 # 'meteor add' and 'meteor remove' will edit this file for you,
-
 # but you can also edit it by hand.
 
 rocketchat:ddp
@@ -15,16 +12,16 @@ rocketchat:user-presence
 
 accounts-base@3.1.1
 accounts-facebook@1.3.4
-accounts-github@1.5.1
 accounts-google@1.4.1
 accounts-meteor-developer@1.5.1
 accounts-oauth@1.4.6
 accounts-password@3.2.0
-accounts-twitter@1.5.2
 
 google-oauth@1.4.5
 oauth@3.0.2
 oauth2@1.3.3
+# oauth1 is used only by twitter oauth
+oauth1@1.5.2
 
 check@1.4.4
 ddp-rate-limiter@1.2.2

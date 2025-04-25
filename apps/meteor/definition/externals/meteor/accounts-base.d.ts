@@ -45,6 +45,13 @@ declare module 'meteor/accounts-base' {
 
 		function config(options: { clientStorage: 'session' | 'local' }): void;
 
+		function registerClientLoginFunction(
+			funcName: string,
+			func: (options?: RequestCredentialOptions | RequestCredentialCallback, callback?: RequestCredentialCallback) => void,
+		);
+
+		function applyLoginFunction(funcName: string, ...args: unknown[]): void;
+
 		class ConfigError extends Error {}
 
 		class LoginCancelledError extends Error {
