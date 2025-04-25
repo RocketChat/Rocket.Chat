@@ -20,9 +20,11 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 					return;
 				}
 
-				if (listRef) {
-					listRef.current = node;
+				if (!listRef) {
+					return;
 				}
+
+				listRef.current = node;
 
 				node.scrollIntoView({
 					behavior: 'smooth',
