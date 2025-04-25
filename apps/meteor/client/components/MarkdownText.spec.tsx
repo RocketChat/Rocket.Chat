@@ -31,11 +31,12 @@ const markdownText = `
   gabriel.engel@rocket.chat
   +55991999999
   \`Inline code\`
+  \`2 < 3 > 1 & 4 "Test"\`
   \`\`\`typescript
   const test = 'this is code'
   \`\`\`
   \`\`\`
-  Two > One
+  Two < Three > One & Four "Test"
   \`\`\`
   **Bold text within __Italics__**
   *Bold text with single asterik and underscore within _Italics_*
@@ -66,7 +67,7 @@ it('should render html elements as expected using default parser', async () => {
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('<code>Inline code</code>');
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
-	expect(normalizedHtml).toContain('<pre><code>Two &gt; One </code></pre>');
+	expect(normalizedHtml).toContain('<pre><code>Two &lt; Three &gt; One &amp; Four "Test" </code></pre>');
 	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
