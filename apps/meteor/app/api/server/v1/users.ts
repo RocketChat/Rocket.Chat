@@ -54,6 +54,7 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
+import { getNewStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
@@ -1314,7 +1315,10 @@ API.v1.addRoute(
 
 			const updateFields: Record<string, any> = {};
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				updateFields.statusText = this.bodyParams.message;
+				const statusText = getNewStatusText(user.statusText, this.bodyParams.message);
+				if (statusText) {
+					updateFields.statusText = statusText;
+				}
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];

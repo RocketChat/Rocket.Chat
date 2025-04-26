@@ -9,12 +9,15 @@ import { onceTransactionCommitedSuccessfully } from '../../../../server/database
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 
+export const getNewStatusText = (previousStatusText: string | undefined, newStatusText: string) => {
+	const statusText = newStatusText.trim().substr(0, 120);
+	return previousStatusText === statusText ? '' : statusText;
+};
+
 async function _setStatusText(userId: string, statusText: string, updater?: Updater<IUser>, session?: ClientSession): Promise<boolean> {
 	if (!userId) {
 		return false;
 	}
-
-	statusText = statusText.trim().substr(0, 120);
 
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>>(userId, {
 		projection: { username: 1, name: 1, status: 1, roles: 1, statusText: 1 },
@@ -25,7 +28,9 @@ async function _setStatusText(userId: string, statusText: string, updater?: Upda
 		return false;
 	}
 
-	if (user.statusText === statusText) {
+	statusText = getNewStatusText(user.statusText, statusText);
+
+	if (!statusText) {
 		return true;
 	}
 
