@@ -1152,7 +1152,10 @@ API.v1
 				401: ajv.compile({
 					type: 'object',
 					properties: {
-						error: {
+						status: {
+							type: 'string',
+						},
+						message: {
 							type: 'string',
 						},
 						success: {
@@ -1160,7 +1163,7 @@ API.v1
 							description: 'Indicates if the request was successful.',
 						},
 					},
-					required: ['success', 'error'],
+					required: ['success', 'status', 'message'],
 				}),
 			},
 		},
