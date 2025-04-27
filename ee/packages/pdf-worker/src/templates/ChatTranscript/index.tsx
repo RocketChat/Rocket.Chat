@@ -65,7 +65,7 @@ export const ChatTranscriptPDF = ({ header, messages, t }: ChatTranscriptData) =
 
 	return (
 		<Document>
-			<Page size='A4' style={styles.page}>
+			<Page size='A4' style={styles.page} wrap>
 				<Header
 					title={header.siteName}
 					subtitle={t('Chat_transcript')}

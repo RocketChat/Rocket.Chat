@@ -106,6 +106,7 @@ export const updateOutgoingIntegration = async (
 						},
 					}),
 		},
+		{ returnDocument: 'after' },
 	);
 
 	if (updatedIntegration) {

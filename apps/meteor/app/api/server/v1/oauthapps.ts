@@ -4,6 +4,8 @@ import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isD
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
+import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
+import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -56,7 +58,7 @@ API.v1.addRoute(
 		async post() {
 			const { appId } = this.bodyParams;
 
-			const result = await Meteor.callAsync('updateOAuthApp', appId, this.bodyParams);
+			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
 
 			return API.v1.success(result);
 		},
@@ -74,7 +76,7 @@ API.v1.addRoute(
 		async post() {
 			const { appId } = this.bodyParams;
 
-			const result = await Meteor.callAsync('deleteOAuthApp', appId);
+			const result = await deleteOAuthApp(this.userId, appId);
 
 			return API.v1.success(result);
 		},

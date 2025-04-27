@@ -25,14 +25,15 @@ import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotif
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
 import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction';
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
-import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
 import { useThreadRoomAction } from './hooks/roomActions/useThreadRoomAction';
 import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedFilesListRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
+import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
+import { useVoiceCallRoomAction } from './hooks/roomActions/useVoiceCallRoomAction';
 import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { RoomToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
@@ -63,12 +64,13 @@ export const roomActionHooks = [
 	useRocketSearchRoomAction,
 	useRoomInfoRoomAction,
 	useStarredMessagesRoomAction,
-	useStartCallRoomAction,
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
 	useAppsRoomStarActions,
+	useVideoCallRoomAction,
+	useVoiceCallRoomAction,
 ] satisfies (() => RoomToolboxActionConfig | undefined)[];
 
 export const quickActionHooks = [

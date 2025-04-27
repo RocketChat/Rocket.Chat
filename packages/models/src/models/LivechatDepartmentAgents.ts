@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { AvailableAgentsAggregation, ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -177,7 +177,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
@@ -224,58 +224,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		};
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
-	}
-
-	async checkOnlineForDepartment(departmentId: string): Promise<boolean> {
-		const agents = await this.findByDepartmentId(departmentId).toArray();
-
-		if (agents.length === 0) {
-			return false;
-		}
-
-		const onlineUser = await Users.findOneOnlineAgentByUserList(agents.map((agent) => agent.username));
-
-		return Boolean(onlineUser);
-	}
-
-	async getOnlineForDepartment(
-		departmentId: string,
-		isLivechatEnabledWhenAgentIdle?: boolean,
-	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined> {
-		const agents = await this.findByDepartmentId(departmentId).toArray();
-
-		if (agents.length === 0) {
-			return;
-		}
-
-		const onlineUsers = await Users.findOnlineUserFromList(
-			agents.map((a) => a.username),
-			isLivechatEnabledWhenAgentIdle,
-		).toArray();
-
-		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
-
-		const query = {
-			departmentId,
-			username: {
-				$in: onlineUsernames,
-			},
-		};
-
-		return this.find(query);
-	}
-
-	async countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number> {
-		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
-
-		if (agents.length === 0) {
-			return 0;
-		}
-
-		return Users.countOnlineUserFromList(
-			agents.map((a) => a.username),
-			isLivechatEnabledWhenAgentIdle,
-		);
 	}
 
 	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {

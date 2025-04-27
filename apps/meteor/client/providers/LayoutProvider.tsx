@@ -17,6 +17,7 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
 
@@ -25,10 +26,13 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const [isEmbedded] = useState(() => router.getSearchParameters().layout === 'embedded');
 
 	const isMobile = !breakpoints.includes('md');
+	const isTablet = !breakpoints.includes('lg');
+
+	const shouldToggle = isTablet || isMobile;
 
 	useEffect(() => {
-		setIsCollapsed(isMobile);
-	}, [isMobile]);
+		setIsCollapsed(shouldToggle);
+	}, [shouldToggle]);
 
 	useEffect(() => {
 		const eventHandler = (event: MessageEvent<any>) => {
@@ -48,11 +52,17 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 			value={useMemo(
 				() => ({
 					isMobile,
+					isTablet,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navbar: {
+						searchExpanded: navBarSearchExpanded,
+						expandSearch: isMobile ? () => setNavBarSearchExpanded(true) : undefined,
+						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
+					},
 					sidebar: {
 						isCollapsed,
-						toggle: isMobile ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
+						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
@@ -68,7 +78,18 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),
-				[isMobile, isEmbedded, showTopNavbarEmbeddedLayout, isCollapsed, breakpoints, router, hiddenActions],
+				[
+					isMobile,
+					isTablet,
+					navBarSearchExpanded,
+					isEmbedded,
+					showTopNavbarEmbeddedLayout,
+					isCollapsed,
+					shouldToggle,
+					breakpoints,
+					hiddenActions,
+					router,
+				],
 			)}
 		/>
 	);

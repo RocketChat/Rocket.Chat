@@ -62,7 +62,7 @@ const OAuthAppsTable = (): ReactElement => {
 			)}
 			{isSuccess && data?.oauthApps.length === 0 && <GenericNoResults />}
 			{isSuccess && data?.oauthApps.length > 0 && (
-				<GenericTable>
+				<GenericTable aria-label={t('Third_party_applications_table')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data?.oauthApps.map(({ _id, name, _createdAt, _createdBy: { username: createdBy } }) => (

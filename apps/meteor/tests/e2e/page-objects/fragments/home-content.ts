@@ -375,12 +375,8 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
-	get btnCall(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
-	}
-
-	get menuItemVideoCall(): Locator {
-		return this.page.locator('role=menuitem[name="Video call"]');
+	get btnVideoCall(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
 	get btnStartVideoCall(): Locator {
