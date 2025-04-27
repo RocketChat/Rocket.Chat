@@ -71,6 +71,74 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
+const responseSchema400 = {
+	type: 'object',
+	properties: {
+		error: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success', 'error'],
+};
+
+const responseSchema401 = {
+	type: 'object',
+	properties: {
+		status: {
+			type: 'string',
+		},
+		message: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['status', 'message'],
+};
+
+const responseSchema403 = {
+	type: 'object',
+	properties: {
+		error: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success', 'error'],
+};
+
+const querySchema = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+			format: 'date-time',
+			description: 'Start date',
+		},
+		end: {
+			type: 'string',
+			format: 'date-time',
+			description: 'End date',
+		},
+	},
+	required: ['start', 'end'],
+	additionalProperties: false,
+};
+
+interface IQuery {
+	start: string;
+	end: string;
+}
+
 API.v1
 	.get(
 		'/engagement-dashboard/users/new-users',
@@ -78,24 +146,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<{
-				start: string;
-				end: string;
-			}>({
-				type: 'object',
-				properties: {
-					start: {
-						type: 'string',
-						description: 'Start date',
-					},
-					end: {
-						type: 'string',
-						description: 'End date',
-					},
-				},
-				required: ['start', 'end'],
-				additionalProperties: false,
-			}),
+			query: ajv.compile<IQuery>(querySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -107,6 +158,7 @@ API.v1
 								properties: {
 									day: {
 										type: 'string',
+										format: 'date-time',
 									},
 									users: {
 										type: 'integer',
@@ -152,48 +204,9 @@ API.v1
 					required: ['days', 'period', 'yesterday', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['status', 'message'],
-				}),
-				403: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				400: ajv.compile(responseSchema400),
+				401: ajv.compile(responseSchema401),
+				403: ajv.compile(responseSchema403),
 			},
 		},
 		async function () {
@@ -217,24 +230,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<{
-				start: string;
-				end: string;
-			}>({
-				type: 'object',
-				properties: {
-					start: {
-						type: 'string',
-						description: 'Start date',
-					},
-					end: {
-						type: 'string',
-						description: 'End date',
-					},
-				},
-				required: ['start', 'end'],
-				additionalProperties: false,
-			}),
+			query: ajv.compile<IQuery>(querySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -276,48 +272,9 @@ API.v1
 					required: ['month', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['status', 'message'],
-				}),
-				403: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				400: ajv.compile(responseSchema400),
+				401: ajv.compile(responseSchema401),
+				403: ajv.compile(responseSchema403),
 			},
 		},
 		async function () {
@@ -348,6 +305,7 @@ API.v1
 				properties: {
 					start: {
 						type: 'string',
+						format: 'date-time',
 						description: 'Start date',
 					},
 				},
@@ -381,48 +339,9 @@ API.v1
 					required: ['hours', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['status', 'message'],
-				}),
-				403: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				400: ajv.compile(responseSchema400),
+				401: ajv.compile(responseSchema401),
+				403: ajv.compile(responseSchema403),
 			},
 		},
 		async function () {
@@ -452,6 +371,7 @@ API.v1
 				properties: {
 					start: {
 						type: 'string',
+						format: 'date-time',
 						description: 'Start date',
 					},
 				},
@@ -493,48 +413,9 @@ API.v1
 					required: ['month', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['status', 'message'],
-				}),
-				403: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				400: ajv.compile(responseSchema400),
+				401: ajv.compile(responseSchema401),
+				403: ajv.compile(responseSchema403),
 			},
 		},
 		async function () {
@@ -557,24 +438,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<{
-				start: string;
-				end: string;
-			}>({
-				type: 'object',
-				properties: {
-					start: {
-						type: 'string',
-						description: 'Start date',
-					},
-					end: {
-						type: 'string',
-						description: 'End date',
-					},
-				},
-				required: ['start', 'end'],
-				additionalProperties: false,
-			}),
+			query: ajv.compile<IQuery>(querySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -614,48 +478,9 @@ API.v1
 					required: ['week', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['status', 'message'],
-				}),
-				403: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
+				400: ajv.compile(responseSchema400),
+				401: ajv.compile(responseSchema401),
+				403: ajv.compile(responseSchema403),
 			},
 		},
 		async function () {
