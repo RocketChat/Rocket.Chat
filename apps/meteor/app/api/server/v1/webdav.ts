@@ -1,12 +1,9 @@
 import { api } from '@rocket.chat/core-services';
 import { WebdavAccounts } from '@rocket.chat/models';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { API } from '../api';
 import { findWebdavAccountsByUserId } from '../lib/webdav';
-
-// TO-DO: remove this AJV instance and import one from the core-typings
-const ajv = new Ajv({ coerceTypes: true });
 
 type POSTRemoveWebdavAccount = {
 	accountId: string;
@@ -25,26 +22,141 @@ const POSTRemoveWebdavAccountSchema = {
 
 const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
-API.v1.addRoute(
-	'webdav.getMyAccounts',
-	{ authRequired: true },
-	{
-		async get() {
+API.v1
+	.get(
+		'webdav.getMyAccounts',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						accounts: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: {
+										type: 'string',
+									},
+									server_url: {
+										type: 'string',
+									},
+									username: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+									},
+								},
+								required: ['_id', 'server_url', 'username', 'name'],
+								additionalProperties: false,
+							},
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'accounts'],
+					additionalProperties: false,
+				}),
+				401: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'message'],
+				}),
+			},
+		},
+		async function () {
 			return API.v1.success({
 				accounts: await findWebdavAccountsByUserId({ uid: this.userId }),
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'webdav.removeWebdavAccount',
-	{
-		authRequired: true,
-		validateParams: isPOSTRemoveWebdavAccount,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'webdav.removeWebdavAccount',
+		{
+			authRequired: true,
+			validateParams: isPOSTRemoveWebdavAccount,
+			bodyParams: ajv.compile<{
+				accountId: string;
+			}>({
+				type: 'object',
+				properties: {
+					accountId: {
+						type: 'string',
+						description: 'The ID of the WebDAV account to remove.',
+					},
+				},
+				required: ['accountId'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						result: {
+							type: 'object',
+							properties: {
+								acknowledged: {
+									type: 'boolean',
+								},
+								deletedCount: {
+									type: 'integer',
+								},
+							},
+							required: ['acknowledged', 'deletedCount'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						errorType: {
+							type: 'string',
+						},
+						error: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'errorType', 'error'],
+				}),
+				401: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'message'],
+				}),
+			},
+		},
+		async function () {
 			const { accountId } = this.bodyParams;
 
 			const removed = await WebdavAccounts.removeByUserAndId(accountId, this.userId);
@@ -57,5 +169,4 @@ API.v1.addRoute(
 
 			return API.v1.success({ result: removed });
 		},
-	},
-);
+	);
