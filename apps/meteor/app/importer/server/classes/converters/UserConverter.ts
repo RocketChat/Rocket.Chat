@@ -286,7 +286,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);
 		this.addUserImportId(updateData, userData);
-		this.addUserEmails(updateData, userData, existingUser.emails || []);
+		if (!userData.federated) {
+			this.addUserEmails(updateData, userData, existingUser.emails || []);
+		}
 
 		if (Object.keys(updateData.$set).length === 0) {
 			delete updateData.$set;
