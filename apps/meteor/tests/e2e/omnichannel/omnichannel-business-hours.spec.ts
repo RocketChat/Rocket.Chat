@@ -110,7 +110,7 @@ test.describe('OC - Business Hours', () => {
 		await test.step('expect department to be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await expect(poOmnichannelBusinessHours.findOption(department2.data.name)).toBeVisible();
+			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeVisible();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
@@ -124,7 +124,7 @@ test.describe('OC - Business Hours', () => {
 		await test.step('expect department to not be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await expect(poOmnichannelBusinessHours.findOption(department2.data.name)).toBeHidden();
+			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeHidden();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
