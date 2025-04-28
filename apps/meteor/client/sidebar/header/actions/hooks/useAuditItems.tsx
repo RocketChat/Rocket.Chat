@@ -39,7 +39,7 @@ export const useAuditItems = (): GenericMenuItemProps[] => {
 		onClick: () => securityLogsRoute.push(),
 	};
 
-	return [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem, hasAuditLogPermission && securityLogItem].filter(
+	return [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem, hasAuditPermission && securityLogItem].filter(
 		Boolean,
 	) as GenericMenuItemProps[];
 };
