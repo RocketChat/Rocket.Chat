@@ -118,19 +118,7 @@ API.v1
 		{
 			authRequired: true,
 			validateParams: isPOSTRemoveWebdavAccount,
-			body: ajv.compile<{
-				accountId: string;
-			}>({
-				type: 'object',
-				properties: {
-					accountId: {
-						type: 'string',
-						description: 'The ID of the WebDAV account to remove.',
-					},
-				},
-				required: ['accountId'],
-				additionalProperties: false,
-			}),
+			body: isPOSTRemoveWebdavAccount,
 			response: {
 				200: ajv.compile({
 					type: 'object',
