@@ -9,13 +9,13 @@ type VoipPopupDraggableProps = {
 };
 
 const VoipPopupDraggable = ({ initialPosition = { top: 20, right: 20 } }: VoipPopupDraggableProps) => {
-	const [draggableRef, containerRef] = useDraggable();
+	const [draggableRef, containerRef, handleElementRef] = useDraggable();
 
 	useLayoutEffect(() => {
 		containerRef(document.querySelector('body'));
 	}, [containerRef]);
 
-	return <VoipPopup ref={draggableRef} position={initialPosition} />;
+	return <VoipPopup ref={draggableRef} position={initialPosition} dragHandleRef={handleElementRef} />;
 };
 
 export default VoipPopupDraggable;

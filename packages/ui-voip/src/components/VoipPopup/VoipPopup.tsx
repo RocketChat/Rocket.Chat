@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, Ref } from 'react';
 
 import { isVoipErrorSession, isVoipIncomingSession, isVoipOngoingSession, isVoipOutgoingSession } from '../../definitions';
 import type { PositionOffsets } from './components/VoipPopupContainer';
@@ -10,28 +10,33 @@ import OutgoingView from './views/VoipOutgoingView';
 import { useVoipDialer } from '../../hooks/useVoipDialer';
 import { useVoipSession } from '../../hooks/useVoipSession';
 
-const VoipPopup = forwardRef<HTMLDivElement, { position?: PositionOffsets }>(({ position, ...props }, ref) => {
+type VoipPopupProps = {
+	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
+};
+
+const VoipPopup = forwardRef<HTMLDivElement, VoipPopupProps>(({ position, dragHandleRef, ...props }, ref) => {
 	const session = useVoipSession();
 	const { open: isDialerOpen } = useVoipDialer();
 
 	if (isVoipIncomingSession(session)) {
-		return <IncomingView ref={ref} session={session} position={position} {...props} />;
+		return <IncomingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
 	}
 
 	if (isVoipOngoingSession(session)) {
-		return <OngoingView ref={ref} session={session} position={position} {...props} />;
+		return <OngoingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
 	}
 
 	if (isVoipOutgoingSession(session)) {
-		return <OutgoingView ref={ref} session={session} position={position} {...props} />;
+		return <OutgoingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
 	}
 
 	if (isVoipErrorSession(session)) {
-		return <ErrorView ref={ref} session={session} position={position} {...props} />;
+		return <ErrorView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
 	}
 
 	if (isDialerOpen) {
-		return <DialerView ref={ref} position={position} {...props} />;
+		return <DialerView ref={ref} position={position} dragHandleRef={dragHandleRef} {...props} />;
 	}
 
 	return null;

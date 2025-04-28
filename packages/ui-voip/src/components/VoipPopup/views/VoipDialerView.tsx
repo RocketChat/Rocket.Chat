@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipDialPad as DialPad, VoipSettingsButton as SettingsButton } from '../..';
@@ -13,7 +13,7 @@ import Header from '../components/VoipPopupHeader';
 
 type VoipDialerViewProps = {
 	position?: PositionOffsets;
-	dragHandleRef?: React.RefObject<HTMLSpanElement>;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
 const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ position, dragHandleRef }, ref) => {

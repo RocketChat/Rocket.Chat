@@ -1,5 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useMemo, forwardRef } from 'react';
+import { useMemo, forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipActions as Actions, VoipContactId as CallContactId } from '../..';
@@ -15,7 +15,7 @@ import Header from '../components/VoipPopupHeader';
 type VoipErrorViewProps = {
 	session: VoipErrorSession;
 	position?: PositionOffsets;
-	dragHandleRef?: React.RefObject<HTMLSpanElement>;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
 const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session, position, dragHandleRef }, ref) => {

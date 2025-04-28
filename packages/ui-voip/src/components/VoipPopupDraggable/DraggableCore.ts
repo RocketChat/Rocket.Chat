@@ -66,8 +66,6 @@ class DraggableElement extends Emitter<{
 }> {
 	private element: HTMLElement;
 
-	private handle: HandleElement;
-
 	private isDragging = false;
 
 	private offsetX = 0;
@@ -82,10 +80,9 @@ class DraggableElement extends Emitter<{
 		y: 0,
 	};
 
-	constructor(element: HTMLElement, { handle, restorePosition }: DraggableElementOptions = {}) {
+	constructor(element: HTMLElement, { restorePosition }: DraggableElementOptions = {}) {
 		super();
 		this.element = element;
-		this.handle = new HandleElement(handle ?? element);
 		if (restorePosition) {
 			this.restorePosition(restorePosition);
 		}
@@ -97,11 +94,8 @@ class DraggableElement extends Emitter<{
 	}
 
 	init(): () => void {
-		const onDragStart = this.onDragStart.bind(this);
 		const onDragMove = this.onDragMove.bind(this);
 		const onDragEnd = this.onDragEnd.bind(this);
-
-		const offDragStart = this.handle.onDragStart(onDragStart);
 
 		DRAG_MOVE_EVENTS.forEach((event) => {
 			document.addEventListener(event, onDragMove);
@@ -111,7 +105,6 @@ class DraggableElement extends Emitter<{
 		});
 
 		return () => {
-			offDragStart();
 			DRAG_MOVE_EVENTS.forEach((event) => {
 				document.removeEventListener(event, onDragMove);
 			});
@@ -121,7 +114,7 @@ class DraggableElement extends Emitter<{
 		};
 	}
 
-	private onDragStart({ clientX, clientY }: { clientX: number; clientY: number }): void {
+	public handleDragStart({ clientX, clientY }: { clientX: number; clientY: number }): void {
 		this.isDragging = true;
 		const rect = this.getBoundingClientRect();
 		this.setMouseOffset(clientX, clientY);
@@ -265,7 +258,27 @@ function bindDraggableElement(draggableElement: DraggableElement, bounds: DOMRec
 export const useDraggable = () => {
 	const draggableElementRef = useRef<DraggableElement | null>(null);
 	const boundingElementRef = useRef<BoundingElement | null>(null);
+	const handleElementRef = useRef<HandleElement | null>(null);
 	const restorePositionRef = useRef<DOMRect | null>(null);
+
+	const handleElementCallbackRef = useSafeRefCallback(
+		useCallback((node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+
+			const handleElement = new HandleElement(node);
+			handleElementRef.current = handleElement;
+
+			return handleElement.onDragStart(({ clientX, clientY }) => {
+				if (!draggableElementRef.current) {
+					return;
+				}
+
+				draggableElementRef.current.handleDragStart({ clientX, clientY });
+			});
+		}, []),
+	);
 
 	const draggableCallbackRef = useSafeRefCallback(
 		useCallback((node: HTMLElement | null) => {
@@ -276,6 +289,7 @@ export const useDraggable = () => {
 			const draggableElement = new DraggableElement(node, { restorePosition: restorePositionRef.current || undefined });
 			draggableElementRef.current = draggableElement;
 
+			// TODO: Fix this, mimic onDragStart from HandleElement
 			const offNodeListeners = draggableElement.init();
 
 			const off = draggableElement.on('dragEnd', (rect) => {
@@ -312,5 +326,5 @@ export const useDraggable = () => {
 		}, []),
 	);
 
-	return [draggableCallbackRef, boundingCallbackRef];
+	return [draggableCallbackRef, boundingCallbackRef, handleElementCallbackRef];
 };

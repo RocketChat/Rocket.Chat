@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipActions as Actions, VoipContactId as CallContactId } from '../..';
@@ -14,7 +14,7 @@ import Header from '../components/VoipPopupHeader';
 type VoipIncomingViewProps = {
 	session: VoipIncomingSession;
 	position?: PositionOffsets;
-	dragHandleRef?: React.RefObject<HTMLSpanElement>;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
 const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(({ session, position, dragHandleRef, ...props }, ref) => {

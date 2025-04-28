@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, Ref } from 'react';
 
 import {
 	VoipActions as Actions,
@@ -20,7 +20,7 @@ import Header from '../components/VoipPopupHeader';
 type VoipOngoingViewProps = {
 	session: VoipOngoingSession;
 	position?: PositionOffsets;
-	dragHandleRef?: React.RefObject<HTMLSpanElement>;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
 const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ session, position, dragHandleRef }, ref) => {
