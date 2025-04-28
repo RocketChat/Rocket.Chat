@@ -14,6 +14,7 @@ import type {
 	ILivechatAgent,
 	ILivechatTag,
 	IOmnichannelBusinessUnit,
+	ILivechatDepartment,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -389,3 +390,19 @@ export function createFakeBusinessUnit(overrides?: Partial<Serialized<IOmnichann
 		...overrides,
 	};
 }
+
+export const createFakeDepartment = (overrides: Partial<Serialized<ILivechatDepartment>> = {}): Serialized<ILivechatDepartment> => ({
+	_id: faker.string.uuid(),
+	name: `${faker.commerce.department()} ${faker.string.uuid()}`,
+	enabled: true,
+	email: faker.internet.email(),
+	showOnRegistration: false,
+	showOnOfflineForm: false,
+	type: 'd',
+	_updatedAt: new Date().toISOString(),
+	offlineMessageChannelName: '',
+	numAgents: 0,
+	ancestors: undefined,
+	parentId: undefined,
+	...overrides,
+});
