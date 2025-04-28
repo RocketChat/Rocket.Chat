@@ -87,7 +87,7 @@ API.v1
 		{
 			authRequired: true,
 			validateParams: isPOSTRemoveWebdavAccount,
-			bodyParams: ajv.compile<{
+			body: ajv.compile<{
 				accountId: string;
 			}>({
 				type: 'object',
