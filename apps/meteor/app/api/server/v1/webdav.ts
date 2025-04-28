@@ -34,6 +34,7 @@ const commonUnauthorizedErrorSchema = {
 		},
 	},
 	required: ['success', 'message'],
+	additionalProperties: false,
 };
 
 const commonBadRequestErrorSchema = {
@@ -51,6 +52,7 @@ const commonBadRequestErrorSchema = {
 		},
 	},
 	required: ['success', 'errorType', 'error'],
+	additionalProperties: false,
 };
 
 API.v1
