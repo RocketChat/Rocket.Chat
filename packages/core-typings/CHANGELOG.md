@@ -1,5 +1,29 @@
 # @rocket.chat/core-typings
 
+## 7.6.0-rc.2
+
+## 7.6.0-rc.1
+
+## 7.6.0-rc.0
+
+### Minor Changes
+
+- ([#35717](https://github.com/RocketChat/Rocket.Chat/pull/35717)) Adds new settings to allow configuring custom variables with string manipulation functions on the LDAP data mapper
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#34494](https://github.com/RocketChat/Rocket.Chat/pull/34494)) Implements auditing events for `/v1/users.update` API endpoint
+
+- ([#35718](https://github.com/RocketChat/Rocket.Chat/pull/35718)) Adds a new setting to allow syncing federated users data through LDAP
+
+### Patch Changes
+
+- ([#35790](https://github.com/RocketChat/Rocket.Chat/pull/35790)) Fixes an issue in `Admin > Settings` page where sometimes settings guarded by a license module would not be editable despite having the required modules.
+
+- ([#35832](https://github.com/RocketChat/Rocket.Chat/pull/35832)) Fixes an issue where Voice Calls were unable to gather Ice Servers
+
+## 7.5.1
+
 ## 7.5.0
 
 ### Minor Changes
