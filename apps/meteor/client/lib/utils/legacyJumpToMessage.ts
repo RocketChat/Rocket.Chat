@@ -36,13 +36,11 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 	}
 
 	if (RoomManager.opened === message.rid) {
-		RoomHistoryManager.getSurroundingMessages(message);
+		await RoomHistoryManager.getSurroundingMessages(message);
 		return;
 	}
 
 	await goToRoomById(message.rid);
 
-	setTimeout(() => {
-		RoomHistoryManager.getSurroundingMessages(message);
-	}, 400);
+	await RoomHistoryManager.getSurroundingMessages(message);
 };

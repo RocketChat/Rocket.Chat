@@ -216,7 +216,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
 		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
-
 		room.scroll = undefined;
 	}
 
@@ -281,7 +280,7 @@ class RoomHistoryManagerClass extends Emitter {
 		return room.isLoading.get();
 	}
 
-	public async clear(rid: IRoom['_id']) {
+	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		Messages.remove({ rid });
 		room.isLoading.set(true);
@@ -303,7 +302,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
-		void this.clear(message.rid);
+		this.clear(message.rid);
 
 		const subscription = Subscriptions.findOne({ rid: message.rid });
 

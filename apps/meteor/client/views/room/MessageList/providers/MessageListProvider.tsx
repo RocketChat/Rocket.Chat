@@ -1,6 +1,6 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject, ReactNode } from 'react';
+import type { ReactNode, RefCallback } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -18,7 +18,7 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: MutableRefObject<HTMLElement | undefined>;
+	messageListRef?: RefCallback<HTMLElement | undefined>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;

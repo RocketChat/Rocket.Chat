@@ -8,6 +8,8 @@ import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
 	const ref = useRef<HTMLElement>(null);
 
+	const jumpToRef = useRef<HTMLElement>(undefined);
+
 	useEffect(() => {
 		if (!ref.current) {
 			return;
@@ -15,7 +17,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 
 		const refValue = ref.current;
 
-		const handleScroll = withThrottling({ wait: 100 })(async (event) => {
+		const handleScroll = withThrottling({ wait: 300 })(async (event) => {
 			const lastScrollTopRef = event.target.scrollTop;
 			const height = event.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(rid);
@@ -26,9 +28,16 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 				return;
 			}
 
+			if (jumpToRef.current) {
+				return;
+			}
+
 			if (hasMore === true && lastScrollTopRef <= height / 3) {
 				await RoomHistoryManager.getMore(rid);
 
+				if (jumpToRef.current) {
+					return;
+				}
 				flushSync(() => {
 					RoomHistoryManager.restoreScroll(rid);
 				});
@@ -50,5 +59,6 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 
 	return {
 		innerRef: ref,
+		jumpToRef,
 	};
 };

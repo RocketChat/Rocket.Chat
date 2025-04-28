@@ -4,6 +4,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
+import { setRef } from '../../composer/hooks/useMessageComposerMergedRefs';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
@@ -24,7 +25,7 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 					return;
 				}
 
-				listRef.current = node;
+				setRef(listRef, node);
 
 				node.scrollIntoView({
 					behavior: 'smooth',
@@ -62,7 +63,7 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 				return () => {
 					observer.disconnect();
 					if (listRef) {
-						listRef.current = undefined;
+						setRef(listRef, undefined);
 					}
 				};
 			},
