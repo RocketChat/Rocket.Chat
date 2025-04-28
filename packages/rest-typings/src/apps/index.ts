@@ -95,7 +95,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/logs': {
-		GET: (params: AppLogsProps) => PaginatedResult<{
+		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
 	};

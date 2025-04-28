@@ -6,39 +6,42 @@ import { makeAppLogsQuery } from '../../../../../../server/apps/communication/en
 describe('makeAppLogsQuery', () => {
 	const appId = 'test-app-id';
 
-	it('should create a basic query with appId', () => {
+	it('should return an empty object when no parameters are provided', () => {
 		const queryParams: AppLogsProps = {};
-		const result = makeAppLogsQuery(queryParams, appId);
+		const result = makeAppLogsQuery(queryParams);
+		expect(result).to.deep.equal({});
+	});
+
+	it('should create a basic query with appId', () => {
+		const queryParams: AppLogsProps = { appId };
+		const result = makeAppLogsQuery(queryParams);
 
 		expect(result).to.deep.equal({ appId });
 	});
 
 	it('should include log level filter when logLevel is provided', () => {
 		const queryParams: AppLogsProps = { logLevel: '1' };
-		const result = makeAppLogsQuery(queryParams, appId);
+		const result = makeAppLogsQuery(queryParams);
 
 		expect(result).to.deep.equal({
-			appId,
 			'entries.severity': { $in: ['error', 'warn', 'info', 'log'] },
 		});
 	});
 
 	it('should include all log levels when logLevel is 2', () => {
 		const queryParams: AppLogsProps = { logLevel: '2' };
-		const result = makeAppLogsQuery(queryParams, appId);
+		const result = makeAppLogsQuery(queryParams);
 
 		expect(result).to.deep.equal({
-			appId,
 			'entries.severity': { $in: ['error', 'warn', 'info', 'log', 'debug', 'success'] },
 		});
 	});
 
 	it('should include method filter when method is provided', () => {
 		const queryParams: AppLogsProps = { method: 'app:construct' };
-		const result = makeAppLogsQuery(queryParams, appId);
+		const result = makeAppLogsQuery(queryParams);
 
 		expect(result).to.deep.equal({
-			appId,
 			method: 'app:construct',
 		});
 	});

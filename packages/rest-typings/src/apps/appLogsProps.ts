@@ -2,6 +2,7 @@ import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { ajv } from '../v1/Ajv';
 
 export type AppLogsProps = PaginatedRequest<{
+	appId?: string;
 	logLevel?: '0' | '1' | '2';
 	method?: string;
 	startDate?: string;
@@ -11,6 +12,7 @@ export type AppLogsProps = PaginatedRequest<{
 const AppLogsPropsSchema = {
 	type: 'object',
 	properties: {
+		appId: { type: 'string', nullable: true },
 		logLevel: { type: 'string', enum: ['0', '1', '2'], nullable: true },
 		method: { type: 'string', nullable: true },
 		startDate: { type: 'string', format: 'date-time', nullable: true },

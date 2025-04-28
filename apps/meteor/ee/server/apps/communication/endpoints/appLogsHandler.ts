@@ -16,6 +16,10 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 					return api.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				}
 
+				if (this.queryParams.appId && this.queryParams.appId !== this.urlParams.id) {
+					return api.notFound(`Invalid query parameter "appId": ${this.queryParams.appId}`);
+				}
+
 				const { offset, count } = await getPaginationItems(this.queryParams);
 				const { sort } = await this.parseJsonQuery();
 
@@ -28,7 +32,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 				let query: Record<string, any>;
 
 				try {
-					query = makeAppLogsQuery(this.queryParams, this.urlParams.id);
+					query = makeAppLogsQuery(this.queryParams);
 				} catch (error) {
 					return api.failure({ error: error instanceof Error ? error.message : 'Unknown error' });
 				}

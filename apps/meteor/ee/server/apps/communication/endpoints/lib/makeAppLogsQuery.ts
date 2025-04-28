@@ -7,15 +7,14 @@ import type { AppLogsProps } from '@rocket.chat/rest-typings';
  * used by an endpoint handler which has query parameter validation.
  *
  * @param queryParams - The query parameters.
- * @param appId - The ID of the app.
  * @returns A query object for fetching app logs.
  * @throws {Error} If the date range is invalid.
  */
-export function makeAppLogsQuery(queryParams: AppLogsProps, appId?: string) {
+export function makeAppLogsQuery(queryParams: AppLogsProps) {
 	const query: Record<string, any> = {};
 
-	if (appId) {
-		query.appId = appId;
+	if (queryParams.appId) {
+		query.appId = queryParams.appId;
 	}
 
 	if (queryParams.logLevel) {
