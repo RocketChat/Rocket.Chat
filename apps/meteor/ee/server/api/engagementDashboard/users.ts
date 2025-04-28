@@ -147,7 +147,7 @@ interface IQuery {
 
 API.v1
 	.get(
-		'/engagement-dashboard/users/new-users',
+		'engagement-dashboard/users/new-users',
 		{
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
@@ -231,7 +231,7 @@ API.v1
 		},
 	)
 	.get(
-		'/engagement-dashboard/users/active-users',
+		'engagement-dashboard/users/active-users',
 		{
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
