@@ -22,6 +22,37 @@ const POSTRemoveWebdavAccountSchema = {
 
 const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
+const commonUnauthorizedErrorSchema = {
+	type: 'object',
+	properties: {
+		message: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success', 'message'],
+};
+
+const commonBadRequestErrorSchema = {
+	type: 'object',
+	properties: {
+		errorType: {
+			type: 'string',
+		},
+		error: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success', 'errorType', 'error'],
+};
+
 API.v1
 	.get(
 		'webdav.getMyAccounts',
@@ -61,19 +92,7 @@ API.v1
 					required: ['success', 'accounts'],
 					additionalProperties: false,
 				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'message'],
-				}),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
 			},
 		},
 		async function () {
@@ -125,35 +144,8 @@ API.v1
 					required: ['result', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						errorType: {
-							type: 'string',
-						},
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'errorType', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'message'],
-				}),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
 			},
 		},
 		async function () {
