@@ -27,7 +27,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { resetField, watch } = useFormContext();
 	const { filterText } = watch();
 
-	const debouncedFilter = useDebouncedValue(filterText, 200);
+	const debouncedFilter = useDebouncedValue(filterText, 500);
 
 	const handleSelect = useEffectEvent(() => {
 		state.close();
@@ -43,6 +43,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			zIndex={99}
 			padding={0}
 			pb={16}
+			mbs={4}
 			minHeight='x52'
 			maxHeight='50vh'
 			display='flex'
