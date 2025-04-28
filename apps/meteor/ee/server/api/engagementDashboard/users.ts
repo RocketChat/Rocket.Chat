@@ -83,6 +83,7 @@ const commonBadRequestErrorSchema = {
 		},
 	},
 	required: ['success', 'error'],
+	additionalProperties: false,
 };
 
 const commonUnauthorizedErrorSchema = {
@@ -100,6 +101,7 @@ const commonUnauthorizedErrorSchema = {
 		},
 	},
 	required: ['status', 'message'],
+	additionalProperties: false,
 };
 
 const forbiddenRequestResponseSchema = {
@@ -114,6 +116,7 @@ const forbiddenRequestResponseSchema = {
 		},
 	},
 	required: ['success', 'error'],
+	additionalProperties: false,
 };
 
 const userActivityQuerySchema = {
