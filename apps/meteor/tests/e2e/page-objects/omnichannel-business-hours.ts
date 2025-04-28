@@ -27,8 +27,12 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 		return this.page.locator('[name="name"]');
 	}
 
+	get fieldDepartment(): Locator {
+		return this.page.getByLabel('Departments', { exact: true });
+	}
+
 	get inputDepartments(): Locator {
-		return this.page.getByLabel('Departments', { exact: true }).getByRole('textbox');
+		return this.fieldDepartment.getByRole('textbox');
 	}
 
 	findRowByName(name: string): Locator {
@@ -56,7 +60,11 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 	}
 
 	findOption(name: string): Locator {
-		return this.page.getByRole('option', { name, exact: true });
+		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
+	}
+
+	findDepartmentsChipOption(name: string) {
+		return this.fieldDepartment.getByRole('option', { name, exact: true });
 	}
 
 	async selectDepartment(name: string) {
