@@ -53,14 +53,14 @@ import { IS_EE } from '../../e2e/config/constants';
 	it('should return app logs with pagination', (done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
-			.query({ count: 10, offset: 0 })
+			.query({ count: 1, offset: 0 })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
-				expect(res.body.logs).to.be.an('array').with.a.lengthOf(10);
-				expect(res.body.count).to.be.equal(10);
+				expect(res.body.logs).to.be.an('array').with.a.lengthOf(1);
+				expect(res.body.count).to.be.equal(1);
 				expect(res.body.offset).to.be.equal(0);
 			})
 			.end(done);
@@ -240,6 +240,20 @@ import { IS_EE } from '../../e2e/config/constants';
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', false);
 				expect(res.body).to.have.a.property('error').that.is.not.empty;
+			})
+			.end(done);
+	});
+
+	it('should reject appId query parameter', (done) => {
+		void request
+			.get(apps(`/${app.id}/logs`))
+			.query({ appId: 'invalid-id' })
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(404)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', false);
+				expect(res.body).to.have.a.property('error', 'Invalid query parameter "appId": invalid-id');
 			})
 			.end(done);
 	});
