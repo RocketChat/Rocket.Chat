@@ -8,15 +8,17 @@ import { useVoipContactId } from '../../../hooks/useVoipContactId';
 import Container from '../components/VoipPopupContainer';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Content from '../components/VoipPopupContent';
+import VoipPopupDragHandle from '../components/VoipPopupDragHandle';
 import Footer from '../components/VoipPopupFooter';
 import Header from '../components/VoipPopupHeader';
 
 type VoipErrorViewProps = {
 	session: VoipErrorSession;
 	position?: PositionOffsets;
+	dragHandleRef?: React.RefObject<HTMLSpanElement>;
 };
 
-const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session, position }, ref) => {
+const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session, position, dragHandleRef }, ref) => {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
@@ -37,15 +39,17 @@ const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session,
 
 	return (
 		<Container ref={ref} data-testid='vc-popup-error' position={position}>
-			<Header hideSettings>
-				<Box fontScale='p2' color='danger' fontWeight={700}>
-					<Icon name='warning' size={16} /> {title}
-				</Box>
-			</Header>
+			<VoipPopupDragHandle ref={dragHandleRef}>
+				<Header hideSettings>
+					<Box fontScale='p2' color='danger' fontWeight={700}>
+						<Icon name='warning' size={16} /> {title}
+					</Box>
+				</Header>
 
-			<Content>
-				<CallContactId {...contactData} />
-			</Content>
+				<Content>
+					<CallContactId {...contactData} />
+				</Content>
+			</VoipPopupDragHandle>
 
 			<Footer>
 				<Actions onEndCall={session.end} />
