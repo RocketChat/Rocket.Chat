@@ -22,7 +22,7 @@ const { AppRoomsConverter } = proxyquire.noCallThru().load('../../../../../app/a
 	},
 });
 
-describe.only('The AppMessagesConverter instance', () => {
+describe('The AppMessagesConverter instance', () => {
 	let roomConverter: IAppRoomsConverter;
 	let roomsMock: RoomsMock;
 
