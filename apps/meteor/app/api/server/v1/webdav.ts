@@ -101,11 +101,11 @@ API.v1
 			const userAccounts = await findWebdavAccountsByUserId({ uid: this.userId });
 
 			// Explicitly map to the desired structure, ensuring only allowed fields are returned
-			const accountsForResponse = userAccounts.map((account) => ({
-				userId: account.userId,
-				serverURL: account.serverURL,
-				username: account.username,
-				name: account.name,
+			const accountsForResponse = userAccounts.map(({ userId, serverURL, username, name }) => ({
+				userId,
+				serverURL,
+				username,
+				name,
 			}));
 
 			return API.v1.success({
