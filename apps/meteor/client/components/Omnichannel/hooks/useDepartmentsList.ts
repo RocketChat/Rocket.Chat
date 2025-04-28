@@ -1,6 +1,7 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
@@ -22,7 +23,8 @@ const DEFAULT_QUERY_LIMIT = 50;
 
 export const useDepartmentsList = (options: DepartmentsListOptions) => {
 	const { t } = useTranslation();
-	const { limit = DEFAULT_QUERY_LIMIT } = options;
+	const { enabled, filter, unitId, showArchived, excludeId, onlyMyDepartments, limit = DEFAULT_QUERY_LIMIT } = options;
+
 	const getLivechatDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const getUnitDepartments = useEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', { unitId: options.unitId || 'none' });
 	const getDepartments = options.unitId !== undefined ? getUnitDepartments : getLivechatDepartments;
@@ -34,26 +36,26 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 		value: _id,
 	});
 
-	const { data: selectedDepartmentItem } = useQuery({
+	const selectedQueryResult = useQuery({
 		queryKey: ['/v1/livechat/department/:_id', options.selectedDepartmentId],
 		queryFn: async () => getDepartment({}),
 		select: (data) => formatDepartmentItem(data.department),
 		enabled: options.selectedDepartmentId !== undefined,
 	});
 
-	return useInfiniteQuery({
+	const listQueryResult = useInfiniteQuery({
 		queryKey: ['/v1/livechat/department', options],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { departments, ...data } = await getDepartments({
-				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
-				text: options.filter,
+				onlyMyDepartments: `${!!onlyMyDepartments}`,
+				text: filter,
 				offset,
 				count: limit,
 				sort: `{ "name": 1 }`,
-				...(!options.unitId && {
-					excludeDepartmentId: options.excludeId,
-					enabled: options.enabled ? 'true' : 'false',
-					showArchived: options.showArchived ? 'true' : 'false',
+				...(!unitId && {
+					excludeDepartmentId: excludeId,
+					enabled: enabled ? 'true' : 'false',
+					showArchived: showArchived ? 'true' : 'false',
 				}),
 			});
 
@@ -64,10 +66,6 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 		},
 		select: (data) => {
 			const items = data.pages.flatMap<DepartmentListItem>((page) => page.departments);
-
-			if (selectedDepartmentItem) {
-				items.unshift(selectedDepartmentItem);
-			}
 
 			if (options.haveAll) {
 				items.unshift({
@@ -97,4 +95,17 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 			pageParams: [0],
 		}),
 	});
+
+	const data = useMemo(() => {
+		if (selectedQueryResult.data) {
+			return [...listQueryResult.data, selectedQueryResult.data];
+		}
+
+		return listQueryResult.data;
+	}, [selectedQueryResult.data, listQueryResult.data]);
+
+	return {
+		...listQueryResult,
+		data,
+	};
 };
