@@ -2,9 +2,11 @@ import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef } from 'react';
 
-const DRAG_START_EVENTS = ['mousedown', 'touchstart'] as const;
-const DRAG_END_EVENTS = ['mouseup', 'touchend'] as const;
-const DRAG_MOVE_EVENTS = ['mousemove', 'touchmove'] as const;
+const DRAG_START_EVENTS = ['pointerdown' /* , 'touchstart' */] as const;
+const DRAG_END_EVENTS = ['pointerup', 'pointercancel'] as const;
+const DRAG_MOVE_EVENTS = ['pointermove' /* , 'touchmove' */] as const;
+
+const isLeftClick = (e: PointerEvent) => e.button === 0;
 
 class HandleElement extends Emitter<{
 	dragStart: { clientX: number; clientY: number };
@@ -18,8 +20,12 @@ class HandleElement extends Emitter<{
 		this.element = element;
 	}
 
-	_onDragStart(e: MouseEvent | TouchEvent): void {
-		const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
+	_onDragStart(e: PointerEvent): void {
+		if (!isLeftClick(e)) {
+			return;
+		}
+
+		const { clientX, clientY } = e;
 		this.emit('dragStart', { clientX, clientY });
 	}
 
@@ -122,10 +128,10 @@ class DraggableElement extends Emitter<{
 		this.emit('dragStart', rect);
 	}
 
-	private onDragMove(e: MouseEvent | TouchEvent): void {
+	private onDragMove(e: PointerEvent): void {
 		if (!this.isDragging) return;
 
-		const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
+		const { clientX, clientY } = e;
 
 		const x = clientX - this.offsetX;
 		const y = clientY - this.offsetY;
