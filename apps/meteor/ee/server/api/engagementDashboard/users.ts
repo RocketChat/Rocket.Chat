@@ -71,7 +71,7 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
-const responseSchema400 = {
+const commonBadRequestErrorSchema = {
 	type: 'object',
 	properties: {
 		error: {
@@ -85,7 +85,7 @@ const responseSchema400 = {
 	required: ['success', 'error'],
 };
 
-const responseSchema401 = {
+const commonUnauthorizedErrorSchema = {
 	type: 'object',
 	properties: {
 		status: {
@@ -102,7 +102,7 @@ const responseSchema401 = {
 	required: ['status', 'message'],
 };
 
-const responseSchema403 = {
+const forbiddenRequestResponseSchema = {
 	type: 'object',
 	properties: {
 		error: {
@@ -116,7 +116,7 @@ const responseSchema403 = {
 	required: ['success', 'error'],
 };
 
-const querySchema = {
+const userActivityQuerySchema = {
 	type: 'object',
 	properties: {
 		start: {
@@ -146,7 +146,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<IQuery>(querySchema),
+			query: ajv.compile<IQuery>(userActivityQuerySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -204,9 +204,9 @@ API.v1
 					required: ['days', 'period', 'yesterday', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile(responseSchema400),
-				401: ajv.compile(responseSchema401),
-				403: ajv.compile(responseSchema403),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+				403: ajv.compile(forbiddenRequestResponseSchema),
 			},
 		},
 		async function () {
@@ -230,7 +230,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<IQuery>(querySchema),
+			query: ajv.compile<IQuery>(userActivityQuerySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -272,9 +272,9 @@ API.v1
 					required: ['month', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile(responseSchema400),
-				401: ajv.compile(responseSchema401),
-				403: ajv.compile(responseSchema403),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+				403: ajv.compile(forbiddenRequestResponseSchema),
 			},
 		},
 		async function () {
@@ -339,9 +339,9 @@ API.v1
 					required: ['hours', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile(responseSchema400),
-				401: ajv.compile(responseSchema401),
-				403: ajv.compile(responseSchema403),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+				403: ajv.compile(forbiddenRequestResponseSchema),
 			},
 		},
 		async function () {
@@ -413,9 +413,9 @@ API.v1
 					required: ['month', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile(responseSchema400),
-				401: ajv.compile(responseSchema401),
-				403: ajv.compile(responseSchema403),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+				403: ajv.compile(forbiddenRequestResponseSchema),
 			},
 		},
 		async function () {
@@ -438,7 +438,7 @@ API.v1
 			authRequired: true,
 			permissionsRequired: ['view-engagement-dashboard'],
 			license: ['engagement-dashboard'],
-			query: ajv.compile<IQuery>(querySchema),
+			query: ajv.compile<IQuery>(userActivityQuerySchema),
 			response: {
 				200: ajv.compile({
 					type: 'object',
@@ -478,9 +478,9 @@ API.v1
 					required: ['week', 'success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile(responseSchema400),
-				401: ajv.compile(responseSchema401),
-				403: ajv.compile(responseSchema403),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+				403: ajv.compile(forbiddenRequestResponseSchema),
 			},
 		},
 		async function () {
