@@ -124,6 +124,10 @@ export class RoomsMock extends BaseModelMock {
 			type: 'c',
 		},
 
+		UpdatedRoom: {
+			customFields: { custom: 'field' },
+		},
+
 		LivechatRoom: {
 			id: 'LivechatRoom',
 			slugifiedName: undefined,
