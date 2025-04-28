@@ -11,6 +11,7 @@ import { Meteor } from 'meteor/meteor';
 import { ZodError } from 'zod';
 
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
@@ -97,6 +98,7 @@ export class AppsRestApi {
 		registerAppsCountHandler(this);
 
 		registerAppLogsHandler(this);
+		registerAppGeneralLogsHandler(this);
 
 		this.api.addRoute(
 			'incompatibleModal',

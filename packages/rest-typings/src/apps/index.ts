@@ -64,6 +64,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/logs': {
+		GET: (params: AppLogsProps) => PaginatedResult<{
+			logs: ILogItem[];
+		}>;
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
