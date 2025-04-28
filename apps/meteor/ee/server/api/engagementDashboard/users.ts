@@ -84,6 +84,7 @@ const commonBadRequestErrorSchema = {
 	},
 	required: ['success', 'error'],
 	additionalProperties: false,
+	description: 'Bad Request',
 };
 
 const commonUnauthorizedErrorSchema = {
@@ -102,6 +103,7 @@ const commonUnauthorizedErrorSchema = {
 	},
 	required: ['status', 'message'],
 	additionalProperties: false,
+	description: 'Unauthorized',
 };
 
 const forbiddenRequestResponseSchema = {
@@ -117,6 +119,7 @@ const forbiddenRequestResponseSchema = {
 	},
 	required: ['success', 'error'],
 	additionalProperties: false,
+	description: 'Forbidden',
 };
 
 const userActivityQuerySchema = {
