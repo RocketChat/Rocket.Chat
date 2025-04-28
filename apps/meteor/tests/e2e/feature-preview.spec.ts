@@ -202,9 +202,11 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
-			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
-			await poHomeChannel.sidebar.markItemAsUnread(item);
-			await poHomeChannel.sidebar.escSearch();
+			await expect(async () => {
+				const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
+				await poHomeChannel.sidebar.markItemAsUnread(item);
+				await poHomeChannel.sidebar.escSearch();
+			}).toPass();
 
 			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
 			await collapser.click();
