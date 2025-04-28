@@ -210,7 +210,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 							{errors?.visibility && <FieldError id={`${visibilityField}-error`}>{errors?.visibility.message}</FieldError>}
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={departmentsField} required>
+							<FieldLabel id={departmentsField} required>
 								{t('Departments')}
 							</FieldLabel>
 							<FieldRow>
@@ -221,13 +221,13 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<AutoCompleteDepartmentMultiple
 											withCheckbox
-											id={departmentsField}
 											name={name}
 											value={value}
 											unitId={unitData?._id}
 											error={Boolean(errors?.departments)}
 											aria-describedby={`${departmentsField}-error`}
 											aria-required={true}
+											aria-labelledby={departmentsField}
 											aria-invalid={Boolean(errors?.departments)}
 											onChange={onChange}
 											onBlur={onBlur}
