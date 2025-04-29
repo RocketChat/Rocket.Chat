@@ -21,7 +21,7 @@ export class Sidebar {
 	}
 
 	getFirstRoomByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).first();
+		return this.firstChannelFromList.getByRole('link', { name });
 	}
 
 	get firstCollapser(): Locator {
