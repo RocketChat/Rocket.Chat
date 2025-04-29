@@ -4,9 +4,10 @@ import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { minutesToMilliseconds } from 'date-fns';
-import type { Meteor } from 'meteor/meteor';
 
-export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>> => {
+type APIErrorResult = { success: boolean; error: string };
+
+export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>, APIErrorResult> => {
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const uid = useUserId();
 	return useQuery({
@@ -15,7 +16,7 @@ export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<Operation
 		gcTime: minutesToMilliseconds(15),
 		staleTime: minutesToMilliseconds(5),
 
-		retry: (count, error: Meteor.Error) => {
+		retry: (count, error) => {
 			if (count > 2 || error.error === 'not-allowed') {
 				return false;
 			}
