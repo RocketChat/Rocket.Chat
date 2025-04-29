@@ -19,9 +19,9 @@ code.hljs {
 	background: #373b41;
 }
 
-.hljs-name,
-.hljs-title.function_,
-.hljs-title span {
+div.rcx-box span.hljs-name,
+div.rcx-box span.hljs-title.function_,
+div.rcx-box span.hljs-title {
 	color: #f0c674;
 }
 .hljs-comment,
