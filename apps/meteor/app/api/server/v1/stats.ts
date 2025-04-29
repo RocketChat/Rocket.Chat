@@ -1408,12 +1408,12 @@ API.v1
 		},
 		async function () {
 			const events = this.bodyParams;
-			if (events?.params) {
-				events.params.forEach((event) => {
-					const { eventName, ...params } = event;
-					void telemetryEvent.call(eventName, params);
-				});
-			}
+
+			events?.params?.forEach((event) => {
+				const { eventName, ...params } = event;
+				void telemetryEvent.call(eventName, params);
+			});
+
 			return API.v1.success();
 		},
 	);
