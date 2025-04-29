@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
-import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
