@@ -9,7 +9,7 @@ const mockSetPreferencesEndpoint = jest.fn();
 describe('useSavePreferences', () => {
 	it('should call setPreferencesEndpoint with correct data', async () => {
 		const dirtyFields = { language: true };
-		const { result } = renderHook(() => useSavePreferences({ dirtyFields }), {
+		const { result } = renderHook(() => useSavePreferences({ dirtyFields, reset: jest.fn(), currentData: {} }), {
 			wrapper: mockAppRoot().withEndpoint('POST', '/v1/users.setPreferences', mockSetPreferencesEndpoint).build(),
 		});
 

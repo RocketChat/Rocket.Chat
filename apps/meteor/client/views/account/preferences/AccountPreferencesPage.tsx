@@ -25,10 +25,13 @@ const AccountPreferencesPage = (): ReactElement => {
 	const {
 		handleSubmit,
 		reset,
+		watch,
 		formState: { isDirty, dirtyFields },
 	} = methods;
 
-	const handleSaveData = useSavePreferences({ dirtyFields });
+	const currentData = watch();
+
+	const handleSaveData = useSavePreferences({ dirtyFields, currentData, reset });
 
 	const preferencesFormId = useId();
 

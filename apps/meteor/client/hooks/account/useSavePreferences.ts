@@ -1,5 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import type { UseFormReset } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { getDirtyFields } from '../../lib/getDirtyFields';
@@ -8,9 +9,11 @@ import type { AccountPreferencesData } from '../../views/account/preferences/use
 
 type useSavePreferencesProps = {
 	dirtyFields: Partial<Record<keyof AccountPreferencesData, boolean | boolean[]>>;
+	reset: UseFormReset<AccountPreferencesData>;
+	currentData: AccountPreferencesData;
 };
 
-export const useSavePreferences = ({ dirtyFields }: useSavePreferencesProps) => {
+export const useSavePreferences = ({ dirtyFields, currentData, reset }: useSavePreferencesProps) => {
 	const setPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
 	const { t } = useTranslation();
 
@@ -26,6 +29,7 @@ export const useSavePreferences = ({ dirtyFields }: useSavePreferencesProps) => 
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
+		onSettled: () => reset(currentData, { keepValues: true }),
 	});
 
 	return async (formData: AccountPreferencesData) => {
