@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { normalizeI18nInterpolations, pipe } from './normalize.mjs';
+import { utils, typedef } from './utils.mjs';
 
 // read all files in the current directory
 
@@ -94,6 +95,10 @@ const dict: {
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 
+export type TranslationNamespace =
+	| (Extract<RocketchatI18nKeys, \`\${string}.\${string}\`> extends \`\${infer T}.\${string}\` ? (T extends Lowercase<T> ? T : never) : never)
+	| 'core';
+
 export default dict;
 `;
 
@@ -105,13 +110,28 @@ if (fs.existsSync(`./dist`)) {
 }
 fs.mkdirSync(`./dist`, { recursive: true });
 
-fs.writeFileSync(`./dist/languages.js`, `module.exports = ${JSON.stringify(languages, null, 2)}`);
+fs.writeFileSync(`./dist/languages.js`, `module.exports = ${JSON.stringify(languages, null, 2)};`);
 fs.writeFileSync(`./dist/languages.mjs`, `export default ${JSON.stringify(languages, null, 2)}`);
 fs.writeFileSync(
 	`./dist/languages.d.ts`,
 	`const languages: string[];
 export default languages;`,
 );
+
+fs.writeFileSync(
+	'./dist/utils.mjs',
+	`
+  import { isObject } from '@rocket.chat/tools'
+  ${utils}`,
+);
+fs.writeFileSync(
+	'./dist/utils.js',
+	`
+  const { isObject } = require('@rocket.chat/tools');
+  ${utils}`,
+);
+
+fs.writeFileSync('./dist/utils.d.ts', typedef);
 
 fs.writeFileSync(`./dist/index.mjs`, esm);
 fs.writeFileSync(`./dist/index.js`, cjs);
