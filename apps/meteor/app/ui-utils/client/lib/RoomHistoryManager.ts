@@ -42,18 +42,22 @@ export async function upsertMessage(
 	return collection.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk(
+export async function upsertMessageBulk(
 	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
 	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const { queries } = collection;
 	collection.queries = [];
-	msgs.forEach((msg, index) => {
-		if (index === msgs.length - 1) {
-			collection.queries = queries;
-		}
-		void upsertMessage({ msg, subscription }, collection);
-	});
+	const lastMessage = msgs.pop();
+
+	for await (const msg of msgs) {
+		await upsertMessage({ msg, subscription }, collection);
+	}
+
+	if (lastMessage) {
+		collection.queries = queries;
+		await upsertMessage({ msg: lastMessage, subscription }, collection);
+	}
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
@@ -175,7 +179,7 @@ class RoomHistoryManagerClass extends Emitter {
 			scrollTop: wrapper.scrollTop,
 		};
 
-		upsertMessageBulk({
+		await upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
 			subscription,
 		});
@@ -197,6 +201,8 @@ class RoomHistoryManagerClass extends Emitter {
 		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
 			return this.getMore(rid);
 		}
+
+		this.emit('loaded-messages');
 
 		room.isLoading.set(false);
 		await waitAfterFlush();
@@ -237,7 +243,7 @@ class RoomHistoryManagerClass extends Emitter {
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
 			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
-			upsertMessageBulk({
+			await upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
@@ -312,7 +318,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		Tracker.afterFlush(async () => {
 			this.emit('loaded-messages');
