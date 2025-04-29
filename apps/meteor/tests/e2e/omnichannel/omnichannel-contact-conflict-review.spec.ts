@@ -4,7 +4,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
+import { createCustomField } from '../utils/omnichannel/custom-field';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
@@ -16,46 +16,25 @@ test.use({ storageState: Users.user1.state });
 
 test.describe.serial('OC - Contact Review', () => {
 	let poHomeChannel: HomeOmnichannel;
-	let poRoomInfo: OmnichannelRoomInfo;
 
-	const customFieldName = 'customField';
+	const customFieldName = faker.string.uuid();
 	const visitorToken = faker.string.uuid();
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
+	let customField: Awaited<ReturnType<typeof createCustomField>>;
 
 	test.beforeAll(async ({ api }) => {
 		(
 			await Promise.all([
 				api.post('/livechat/users/agent', { username: 'user1' }),
 				api.post('/livechat/users/manager', { username: 'user1' }),
-				api.post('/method.call/livechat:saveCustomField', {
-					message: JSON.stringify({
-						method: 'livechat:saveCustomField',
-						params: [
-							null,
-							{
-								field: customFieldName,
-								label: customFieldName,
-								visibility: 'visible',
-								scope: 'visitor',
-								searchable: false,
-								regexp: '',
-								type: 'input',
-								required: false,
-								defaultValue: '',
-								options: '',
-								public: false,
-							},
-						],
-						id: 'id',
-						msg: 'method',
-					}),
-				}),
 			])
 		).every((res) => expect(res.status()).toBe(200));
+
+		customField = await createCustomField(api, { field: customFieldName });
 	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeOmnichannel(page);
-		poRoomInfo = new OmnichannelRoomInfo(page);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -64,14 +43,17 @@ test.describe.serial('OC - Contact Review', () => {
 	});
 
 	test.beforeEach(async ({ api }) => {
-		await createConversation(api, { visitorName: visitor.name, agentId: `user1`, visitorToken });
+		conversation = await createConversation(api, { visitorName: visitor.name, agentId: `user1`, visitorToken });
+	});
 
+	test.beforeEach(async ({ api }) => {
 		const resCustomFieldA = await api.post('/livechat/custom.field', {
 			token: visitorToken,
 			key: customFieldName,
 			value: 'custom-field-value',
 			overwrite: true,
 		});
+
 		expect(resCustomFieldA.status()).toBe(200);
 
 		const resCustomFieldB = await api.post('/livechat/custom.field', {
@@ -80,6 +62,7 @@ test.describe.serial('OC - Contact Review', () => {
 			value: 'custom-field-value-2',
 			overwrite: false,
 		});
+
 		expect(resCustomFieldB.status()).toBe(200);
 	});
 
@@ -87,21 +70,24 @@ test.describe.serial('OC - Contact Review', () => {
 		(await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')])).every((res) =>
 			expect(res.status()).toBe(200),
 		);
+
+		await conversation.delete();
+		await customField.delete();
 	});
 
 	test('OC - Contact Review - Update custom field conflicting', async ({ page }) => {
-		await test.step('expect to resolve custom field conflict', async () => {
-			await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
-			await poHomeChannel.content.btnContactInformation.click();
+		await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
+		await poHomeChannel.content.btnContactInformation.click();
 
-			await page.getByRole('button', { name: 'See conflicts' }).click();
+		await poHomeChannel.content.contactReviewModal.btnSeeConflicts.click();
 
-			await page.getByLabel(customFieldName).click();
-			await page.getByRole('option', { name: 'custom-field-value-2' }).click();
-			await page.getByRole('button', { name: 'Save' }).click();
+		await poHomeChannel.content.contactReviewModal.getFieldByName(customFieldName).click();
+		await poHomeChannel.content.contactReviewModal.findOption('custom-field-value-2').click();
+		await poHomeChannel.content.contactReviewModal.btnSave.click();
 
-			const response = await page.waitForResponse('**/api/v1/omnichannel/contacts.update');
-			expect(response.status()).toBe(200);
-		});
+		const response = await page.waitForResponse('**/api/v1/omnichannel/contacts.update');
+		await expect(response.status()).toBe(200);
+
+		await expect(poHomeChannel.content.contactReviewModal.btnSeeConflicts).not.toBeVisible();
 	});
 });
