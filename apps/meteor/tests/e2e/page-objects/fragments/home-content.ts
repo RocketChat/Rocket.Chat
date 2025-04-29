@@ -85,9 +85,19 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
+		const responsePromise = this.page.waitForResponse(
+			(response) =>
+				/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+		);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
-		await expect(this.getMessageByText(text)).toBeVisible();
-		await expect(this.lastUserMessage).not.toHaveClass('rcx-message--pending');
+
+		const response = await (await responsePromise).json();
+
+		const mid = JSON.parse(response.message).result._id;
+		const messageLocator = this.getMessageById(mid);
+
+		await expect(messageLocator).toBeVisible();
+		await expect(messageLocator).not.toHaveClass('rcx-message--pending');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -432,6 +442,10 @@ export class HomeContent {
 
 	getMessageByText(text: string): Locator {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
+	}
+
+	getMessageById(id: string): Locator {
+		return this.page.locator(`[data-qa-type="message"][id="${id}"]`);
 	}
 
 	async waitForChannel(): Promise<void> {
