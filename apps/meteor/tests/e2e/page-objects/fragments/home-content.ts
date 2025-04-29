@@ -86,7 +86,7 @@ export class HomeContent {
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
-		await expect(this.lastUserMessage).toContainText(text);
+		await expect(this.getMessageByText(text)).toBeVisible();
 		await expect(this.lastUserMessage).not.toHaveClass('rcx-message--pending');
 	}
 
