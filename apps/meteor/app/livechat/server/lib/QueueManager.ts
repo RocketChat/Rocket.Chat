@@ -14,16 +14,16 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepareLivechatRoom } from './Helper';
-import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
-import { getOnlineAgents } from './getOnlineAgents';
+import { checkOnlineForDepartment } from './departmentsLib';
+import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
@@ -70,7 +70,7 @@ const getDepartment = async (department: string): Promise<string | undefined> =>
 		return;
 	}
 
-	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+	if (await checkOnlineForDepartment(department)) {
 		return department;
 	}
 
@@ -328,7 +328,7 @@ export class QueueManager {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 
-			if (!agent && !guest.department && !(await Livechat.checkOnlineAgents())) {
+			if (!agent && !guest.department && !(await checkOnlineAgents())) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}

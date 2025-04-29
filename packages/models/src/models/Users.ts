@@ -1,4 +1,5 @@
 import type {
+	AvailableAgentsAggregation,
 	AtLeast,
 	DeepWritable,
 	ILivechatAgent,
@@ -544,10 +545,40 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
+		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }> {
-		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
+		const match = queryStatusAgentOnline(
+			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
+			isEnabledWhenAgentIdle,
+		);
+
+		const departmentFilter = department
+			? [
+					{
+						$lookup: {
+							from: 'rocketchat_livechat_department_agents',
+							let: { userId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
+										},
+									},
+								},
+							],
+							as: 'department',
+						},
+					},
+					{
+						$match: { department: { $size: 1 } },
+					},
+				]
+			: [];
+
 		const aggregate: Document[] = [
 			{ $match: match },
+			...departmentFilter,
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
@@ -570,34 +601,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				},
 			},
 			{
-				$lookup: {
-					from: 'rocketchat_livechat_department_agents',
-					localField: '_id',
-					foreignField: 'agentId',
-					as: 'departments',
-				},
-			},
-			{
 				$project: {
 					agentId: '$_id',
 					username: 1,
 					lastRoutingTime: 1,
-					departments: 1,
 					count: { $size: '$subs' },
 				},
 			},
 			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
+			{ $limit: 1 },
 		];
 
-		if (department) {
-			aggregate.push({ $unwind: '$departments' });
-			aggregate.push({ $match: { 'departments.departmentId': department } });
-		}
-
-		aggregate.push({ $limit: 1 });
-
 		const [agent] = await this.col
-			.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }>(aggregate)
+			.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number }>(aggregate)
 			.toArray();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
@@ -610,32 +626,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
+		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }> {
-		const match = queryStatusAgentOnline({ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }) }, isEnabledWhenAgentIdle);
+		const match = queryStatusAgentOnline(
+			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
+			isEnabledWhenAgentIdle,
+		);
+		const departmentFilter = department
+			? [
+					{
+						$lookup: {
+							from: 'rocketchat_livechat_department_agents',
+							let: { userId: '$_id' },
+							pipeline: [
+								{
+									$match: {
+										$expr: {
+											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
+										},
+									},
+								},
+							],
+							as: 'department',
+						},
+					},
+					{
+						$match: { department: { $size: 1 } },
+					},
+				]
+			: [];
+
 		const aggregate: Document[] = [
 			{ $match: match },
-			{
-				$lookup: {
-					from: 'rocketchat_livechat_department_agents',
-					localField: '_id',
-					foreignField: 'agentId',
-					as: 'departments',
-				},
-			},
-			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
+			...departmentFilter,
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1 } },
 			{ $sort: { lastRoutingTime: 1, username: 1 } },
 		];
 
-		if (department) {
-			aggregate.push({ $unwind: '$departments' });
-			aggregate.push({ $match: { 'departments.departmentId': department } });
-		}
-
 		aggregate.push({ $limit: 1 });
 
-		const [agent] = await this.col
-			.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }>(aggregate)
-			.toArray();
+		const [agent] = await this.col.aggregate<{ agentId: string; username?: string; lastRoutingTime?: Date }>(aggregate).toArray();
 		if (agent) {
 			await this.setLastRoutingTime(agent.agentId);
 		}
@@ -678,12 +708,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async getAgentAndAmountOngoingChats(userId: IUser['_id']): Promise<{
+	async getAgentAndAmountOngoingChats(
+		userId: IUser['_id'],
+		departmentId?: string,
+	): Promise<{
 		agentId: string;
 		username?: string;
 		lastAssignTime?: Date;
 		lastRoutingTime?: Date;
-		queueInfo: { chats: number };
+		queueInfo: { chats: number; chatsForDepartment?: number };
 	}> {
 		const aggregate = [
 			{
@@ -718,6 +751,26 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 							},
 						},
 					},
+					...(departmentId
+						? {
+								'queueInfo.chatsForDepartment': {
+									$size: {
+										$filter: {
+											input: '$subs',
+											as: 'sub',
+											cond: {
+												$and: [
+													{ $eq: ['$$sub.t', 'l'] },
+													{ $eq: ['$$sub.open', true] },
+													{ $ne: ['$$sub.onHold', true] },
+													{ $eq: ['$$sub.department', departmentId] },
+												],
+											},
+										},
+									},
+								},
+							}
+						: {}),
 				},
 			},
 			{ $sort: { 'queueInfo.chats': 1, 'lastAssignTime': 1, 'lastRoutingTime': 1, 'username': 1 } },
@@ -1606,26 +1659,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	async getUnavailableAgents(
-		_departmentId?: string | undefined,
-		_extraQuery?: Document | undefined,
-	): Promise<
-		{
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[]
-	> {
-		return [] as {
-			agentId: string;
-			username: string;
-			lastAssignTime: string;
-			lastRoutingTime: string;
-			livechat: { maxNumberSimultaneousChat: number };
-			queueInfo: { chats: number };
-		}[];
+		_departmentId?: string,
+		_extraQuery?: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
+		return [];
 	}
 
 	findBotAgents<T extends Document = ILivechatAgent>(usernameList?: string | string[]): FindCursor<T> {
@@ -1832,18 +1869,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query);
 	}
 
-	// TODO: check if this is still valid/used for something
-	setOperator(_id: IUser['_id'], operator: boolean) {
-		// TODO:: Create class Agent
-		const update = {
-			$set: {
-				operator,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
-	}
-
 	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
 		// TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId }, isLivechatEnabledWhenAgentIdle);
@@ -1906,7 +1931,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	// 2
-	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>, enabledWhenAgentIdle?: boolean) {
+	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<AvailableAgentsAggregation>, enabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
 		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);
@@ -2464,6 +2489,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser> = {}) {
+		const query = { _id: userId, roles: role };
+
+		return this.findOne(query, options);
 	}
 
 	async findByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
@@ -3359,9 +3390,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	removeAgent(_id: IUser['_id']) {
 		const update: UpdateFilter<IUser> = {
-			$set: {
-				operator: false,
-			},
 			$unset: {
 				livechat: 1,
 				statusLivechat: 1,
