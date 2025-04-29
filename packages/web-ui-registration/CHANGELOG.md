@@ -1,5 +1,52 @@
 # @rocket.chat/web-ui-registration
 
+## 18.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.2
+  </details>
+
+## 18.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.1
+  </details>
+
+## 18.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1eeb139158fcd621a2b8d3a7de5bb512e659261d, d8eb824d242cbbeafb11b1c4a806860e4541ba79, 4690c55d8e379d0bd5dfa444f3e0a4175e88d8de]:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.0
+  </details>
+
+## 17.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@17.0.1
+  </details>
+
+## 17.0.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff]:</summary>
+
+  - @rocket.chat/ui-contexts@17.0.0
+  </details>
+
 ## 17.0.0-rc.5
 
 ### Patch Changes

@@ -2,7 +2,6 @@ import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
-import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
 
@@ -12,7 +11,7 @@ export type RedirectStatusCodes = Exclude<Range<308>, Range<300>>;
 
 export type AuthorizationStatusCodes = Exclude<Range<451>, Range<400>>;
 
-export type ErrorStatusCodes = Exclude<Range<511>, Range<500>>;
+export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
@@ -56,10 +55,10 @@ export type ForbiddenResult<T> = {
 	};
 };
 
-export type InternalError<T, StatusCode = 500> = {
+export type InternalError<T, StatusCode extends ErrorStatusCodes = 500, D = 'Internal server error'> = {
 	statusCode: StatusCode;
 	body: {
-		error: T | 'Internal server error';
+		error: T | D;
 		success: false;
 	};
 };
@@ -137,6 +136,7 @@ export type PartialThis = {
 	readonly response: Response;
 	readonly userId: string;
 	readonly bodyParams: Record<string, unknown>;
+	readonly path: string;
 	readonly queryParams: Record<string, string>;
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
@@ -311,7 +311,8 @@ type Results<TResponse extends TypedOptions['response']> = {
 	headers?: Record<string, string>;
 };
 
-export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
-	this: TypedThis<TOptions, TPath>,
-	request: Request,
-) => PromiseOrValue<Results<TOptions['response']>>;
+export type TypedAction<
+	TOptions extends TypedOptions,
+	TPath extends string = '',
+	TThis extends TypedThis<TOptions, TPath> = TypedThis<TOptions, TPath>,
+> = (this: TThis, request: Request) => PromiseOrValue<Results<TOptions['response']>>;

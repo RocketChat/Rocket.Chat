@@ -1,5 +1,72 @@
 # @rocket.chat/ui-voip
 
+## 8.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.2
+  - @rocket.chat/ui-avatar@14.0.0-rc.2
+  - @rocket.chat/ui-client@18.0.0-rc.2
+  </details>
+
+## 8.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.1
+  - @rocket.chat/ui-avatar@14.0.0-rc.1
+  - @rocket.chat/ui-client@18.0.0-rc.1
+  </details>
+
+## 8.0.0-rc.0
+
+### Minor Changes
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+### Patch Changes
+
+- ([#35765](https://github.com/RocketChat/Rocket.Chat/pull/35765)) Fixes an issue causing VoIP calls to no longer reach the client after a temporary disconnection
+
+- ([#35832](https://github.com/RocketChat/Rocket.Chat/pull/35832)) Fixes an issue where Voice Calls were unable to gather Ice Servers
+
+- <details><summary>Updated dependencies [f545617c2ac3d67af533e64c2670d8d564a56d15, 6bf386dcc2a560963cf719fbc2d96569ce23a2de, 1eeb139158fcd621a2b8d3a7de5bb512e659261d, d8eb824d242cbbeafb11b1c4a806860e4541ba79, 5e3ab1a07163cd22ad4c41502ef232845d26bdc2, 72725d391e79b44e7380ee2fe640e2e4426c77ca, 4690c55d8e379d0bd5dfa444f3e0a4175e88d8de]:</summary>
+
+  - @rocket.chat/ui-client@18.0.0-rc.0
+  - @rocket.chat/ui-contexts@18.0.0-rc.0
+  - @rocket.chat/ui-avatar@14.0.0-rc.0
+  </details>
+
+## 7.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@17.0.1
+  - @rocket.chat/ui-avatar@13.0.1
+  - @rocket.chat/ui-client@17.0.1
+  </details>
+
+## 7.0.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- ([#35420](https://github.com/RocketChat/Rocket.Chat/pull/35420)) fixes an issue where audio from VoIP calls would sometimes not be played
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff]:</summary>
+
+  - @rocket.chat/ui-avatar@13.0.0
+  - @rocket.chat/ui-client@17.0.0
+  - @rocket.chat/ui-contexts@17.0.0
+  </details>
+
 ## 7.0.0-rc.5
 
 ### Patch Changes
