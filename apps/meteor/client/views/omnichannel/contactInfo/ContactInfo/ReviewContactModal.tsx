@@ -47,7 +47,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		const payload = {
 			name,
 			contactManager,
-			...(customFields && { ...customFields }),
+			...(customFields && { customFields }),
 			wipeConflicts: true,
 		};
 
