@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -17,7 +19,7 @@ test.describe.serial('OC - Contact Review', () => {
 	let poRoomInfo: OmnichannelRoomInfo;
 
 	const customFieldName = 'customField';
-	const visitorToken = '<KEY>';
+	const visitorToken = faker.string.uuid();
 
 	test.beforeAll(async ({ api }) => {
 		(
@@ -27,7 +29,22 @@ test.describe.serial('OC - Contact Review', () => {
 				api.post('/method.call/livechat:saveCustomField', {
 					message: JSON.stringify({
 						method: 'livechat:saveCustomField',
-						params: [null, customFieldName, customFieldName],
+						params: [
+							null,
+							{
+								field: customFieldName,
+								label: customFieldName,
+								visibility: 'visible',
+								scope: 'visitor',
+								searchable: false,
+								regexp: '',
+								type: 'input',
+								required: false,
+								defaultValue: '',
+								options: '',
+								public: false,
+							},
+						],
 						id: 'id',
 						msg: 'method',
 					}),
@@ -49,8 +66,21 @@ test.describe.serial('OC - Contact Review', () => {
 	test.beforeEach(async ({ api }) => {
 		await createConversation(api, { visitorName: visitor.name, agentId: `user1`, visitorToken });
 
-		void api.post('livechat/custom.field', { token: visitorToken, key: customFieldName, value: 'custom-field-value', overwrite: true });
-		void api.post('livechat/custom.field', { token: visitorToken, key: customFieldName, value: 'custom-field-value-2', overwrite: false });
+		const resCustomFieldA = await api.post('/livechat/custom.field', {
+			token: visitorToken,
+			key: customFieldName,
+			value: 'custom-field-value',
+			overwrite: true,
+		});
+		expect(resCustomFieldA.status()).toBe(200);
+
+		const resCustomFieldB = await api.post('/livechat/custom.field', {
+			token: visitorToken,
+			key: customFieldName,
+			value: 'custom-field-value-2',
+			overwrite: false,
+		});
+		expect(resCustomFieldB.status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
