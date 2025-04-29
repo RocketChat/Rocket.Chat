@@ -1164,7 +1164,6 @@ API.v1
 						'webRTCEnabledForOmnichannel',
 						'omnichannelWebRTCCalls',
 						'contactVerification',
-
 						'success',
 					],
 					// additionalProperties: false, FIXME: this must turn to true, becouse the response is dynamic
@@ -1175,11 +1174,12 @@ API.v1
 		},
 		async function () {
 			const { refresh = 'false' } = this.queryParams;
-			const statistics = await getLastStatistics({
-				userId: this.userId,
-				refresh: refresh === 'true',
-			});
-			return API.v1.success(statistics);
+			return API.v1.success(
+				await getLastStatistics({
+					userId: this.userId,
+					refresh: refresh === 'true',
+				}),
+			);
 		},
 	)
 	.get(
