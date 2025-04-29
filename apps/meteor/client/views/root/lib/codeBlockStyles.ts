@@ -18,9 +18,10 @@ code.hljs {
 .hljs::-moz-selection {
 	background: #373b41;
 }
+
 .hljs-name,
 .hljs-title.function_,
-.hljs-title {
+.hljs-title span {
 	color: #f0c674;
 }
 .hljs-comment,
