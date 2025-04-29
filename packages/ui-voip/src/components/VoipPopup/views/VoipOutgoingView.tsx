@@ -7,7 +7,6 @@ import { useVoipContactId } from '../../../hooks/useVoipContactId';
 import Container from '../components/VoipPopupContainer';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Content from '../components/VoipPopupContent';
-import VoipPopupDragHandle from '../components/VoipPopupDragHandle';
 import Footer from '../components/VoipPopupFooter';
 import Header from '../components/VoipPopupHeader';
 
@@ -17,19 +16,17 @@ type VoipOutgoingViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipOutgoingView = forwardRef<HTMLDivElement, VoipOutgoingViewProps>(({ session, position, dragHandleRef }, ref) => {
+const VoipOutgoingView = forwardRef<HTMLDivElement, VoipOutgoingViewProps>(({ session, position, ...props }, ref) => {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
 	return (
-		<Container ref={ref} data-testid='vc-popup-outgoing' position={position}>
-			<VoipPopupDragHandle ref={dragHandleRef}>
-				<Header>{`${t('Calling')}...`}</Header>
+		<Container ref={ref} data-testid='vc-popup-outgoing' position={position} {...props}>
+			<Header>{`${t('Calling')}...`}</Header>
 
-				<Content>
-					<CallContactId {...contactData} />
-				</Content>
-			</VoipPopupDragHandle>
+			<Content>
+				<CallContactId {...contactData} />
+			</Content>
 
 			<Footer>
 				<Actions onEndCall={session.end} />

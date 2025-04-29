@@ -13,7 +13,6 @@ import { useVoipTransferModal } from '../../../hooks/useVoipTransferModal';
 import Container from '../components/VoipPopupContainer';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Content from '../components/VoipPopupContent';
-import VoipPopupDragHandle from '../components/VoipPopupDragHandle';
 import Footer from '../components/VoipPopupFooter';
 import Header from '../components/VoipPopupHeader';
 
@@ -23,7 +22,7 @@ type VoipOngoingViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ session, position, dragHandleRef }, ref) => {
+const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ session, position, ...props }, ref) => {
 	const { startTransfer } = useVoipTransferModal({ session });
 	const contactData = useVoipContactId({ session, transferEnabled: false });
 
@@ -38,20 +37,18 @@ const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ sess
 	};
 
 	return (
-		<Container ref={ref} secondary data-testid='vc-popup-ongoing' position={position}>
-			<VoipPopupDragHandle ref={dragHandleRef}>
-				<Header>
-					<Timer />
-				</Header>
+		<Container ref={ref} secondary data-testid='vc-popup-ongoing' position={position} {...props}>
+			<Header>
+				<Timer />
+			</Header>
 
-				<Content>
-					<Status isMuted={session.isMuted} isHeld={session.isHeld} />
+			<Content>
+				<Status isMuted={session.isMuted} isHeld={session.isHeld} />
 
-					<CallContactId {...contactData} />
+				<CallContactId {...contactData} />
 
-					{isDialPadOpen && <DialPad value={dtmfValue} longPress={false} onChange={handleDTMF} />}
-				</Content>
-			</VoipPopupDragHandle>
+				{isDialPadOpen && <DialPad value={dtmfValue} longPress={false} onChange={handleDTMF} />}
+			</Content>
 
 			<Footer>
 				<Actions

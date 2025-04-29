@@ -7,7 +7,6 @@ import { useVoipAPI } from '../../../hooks/useVoipAPI';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Container from '../components/VoipPopupContainer';
 import Content from '../components/VoipPopupContent';
-import VoipPopupDragHandle from '../components/VoipPopupDragHandle';
 import Footer from '../components/VoipPopupFooter';
 import Header from '../components/VoipPopupHeader';
 
@@ -16,7 +15,7 @@ type VoipDialerViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ position, dragHandleRef }, ref) => {
+const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ position, ...props }, ref) => {
 	const { t } = useTranslation();
 	const { makeCall, closeDialer } = useVoipAPI();
 	const [number, setNumber] = useState('');
@@ -27,16 +26,14 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ positi
 	};
 
 	return (
-		<Container ref={ref} secondary data-testid='vc-popup-dialer' position={position}>
-			<VoipPopupDragHandle ref={dragHandleRef}>
-				<Header hideSettings onClose={closeDialer}>
-					{t('New_Call')}
-				</Header>
+		<Container ref={ref} secondary data-testid='vc-popup-dialer' position={position} {...props}>
+			<Header hideSettings onClose={closeDialer}>
+				{t('New_Call')}
+			</Header>
 
-				<Content>
-					<DialPad editable value={number} onChange={(value) => setNumber(value)} />
-				</Content>
-			</VoipPopupDragHandle>
+			<Content>
+				<DialPad editable value={number} onChange={(value) => setNumber(value)} />
+			</Content>
 
 			<Footer>
 				<ButtonGroup large>

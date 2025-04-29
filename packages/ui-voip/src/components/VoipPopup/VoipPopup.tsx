@@ -15,28 +15,28 @@ type VoipPopupProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipPopup = forwardRef<HTMLDivElement, VoipPopupProps>(({ position, dragHandleRef, ...props }, ref) => {
+const VoipPopup = forwardRef<HTMLDivElement, VoipPopupProps>(({ position, ...props }, ref) => {
 	const session = useVoipSession();
 	const { open: isDialerOpen } = useVoipDialer();
 
 	if (isVoipIncomingSession(session)) {
-		return <IncomingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
+		return <IncomingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipOngoingSession(session)) {
-		return <OngoingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
+		return <OngoingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipOutgoingSession(session)) {
-		return <OutgoingView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
+		return <OutgoingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipErrorSession(session)) {
-		return <ErrorView ref={ref} session={session} position={position} dragHandleRef={dragHandleRef} {...props} />;
+		return <ErrorView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isDialerOpen) {
-		return <DialerView ref={ref} position={position} dragHandleRef={dragHandleRef} {...props} />;
+		return <DialerView ref={ref} position={position} {...props} />;
 	}
 
 	return null;

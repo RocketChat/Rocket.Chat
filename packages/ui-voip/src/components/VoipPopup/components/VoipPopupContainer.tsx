@@ -1,8 +1,10 @@
 import { Palette } from '@rocket.chat/fuselage';
 import styled from '@rocket.chat/styled';
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import { FocusScope } from 'react-aria';
+
+import VoipPopupDragHandle from './VoipPopupDragHandle';
 
 export type PositionOffsets = Partial<{
 	top: number;
@@ -15,6 +17,7 @@ type ContainerProps = {
 	children: ReactNode;
 	secondary?: boolean;
 	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
 	['data-testid']: string;
 };
 
@@ -41,9 +44,10 @@ const Container = styled(
 `;
 
 const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(
-	({ children, secondary = false, position = { top: 0, left: 0 }, ...props }, ref) => (
+	({ children, secondary = false, position = { top: 0, left: 0 }, dragHandleRef, ...props }, ref) => (
 		<FocusScope autoFocus restoreFocus>
 			<Container ref={ref} aria-labelledby='voipPopupTitle' secondary={secondary} position={position} {...props}>
+				<VoipPopupDragHandle ref={dragHandleRef} />
 				{children}
 			</Container>
 		</FocusScope>

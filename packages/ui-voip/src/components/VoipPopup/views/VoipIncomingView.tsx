@@ -7,7 +7,6 @@ import { useVoipContactId } from '../../../hooks/useVoipContactId';
 import Container from '../components/VoipPopupContainer';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Content from '../components/VoipPopupContent';
-import VoipPopupDragHandle from '../components/VoipPopupDragHandle';
 import Footer from '../components/VoipPopupFooter';
 import Header from '../components/VoipPopupHeader';
 
@@ -17,19 +16,17 @@ type VoipIncomingViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(({ session, position, dragHandleRef, ...props }, ref) => {
+const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(({ session, position, ...props }, ref) => {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
 	return (
 		<Container ref={ref} data-testid='vc-popup-incoming' position={position} {...props}>
-			<VoipPopupDragHandle ref={dragHandleRef}>
-				<Header>{`${session.transferedBy ? t('Incoming_call_transfer') : t('Incoming_call')}...`}</Header>
+			<Header>{`${session.transferedBy ? t('Incoming_call_transfer') : t('Incoming_call')}...`}</Header>
 
-				<Content>
-					<CallContactId {...contactData} />
-				</Content>
-			</VoipPopupDragHandle>
+			<Content>
+				<CallContactId {...contactData} />
+			</Content>
 
 			<Footer>
 				<Actions onAccept={session.accept} onDecline={session.end} />
