@@ -983,12 +983,32 @@ const commonBadRequestErrorSchema = {
 		error: {
 			type: 'string',
 		},
+		stack: {
+			type: 'string',
+			nullable: true,
+		},
+		errorType: {
+			type: 'string',
+		},
+		details: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				method: {
+					type: 'string',
+				},
+			},
+		},
 		success: {
 			type: 'boolean',
 			description: 'Indicates if the request was successful.',
 		},
 	},
 	required: ['success', 'error'],
+	additionalProperties: false,
 };
 
 API.v1
