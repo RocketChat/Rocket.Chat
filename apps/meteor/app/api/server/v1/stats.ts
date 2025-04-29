@@ -1402,35 +1402,8 @@ API.v1
 					required: ['success'],
 					additionalProperties: false,
 				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'error'],
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: {
-						status: {
-							type: 'string',
-						},
-						message: {
-							type: 'string',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success', 'status', 'message'],
-				}),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
 			},
 		},
 		async function () {
