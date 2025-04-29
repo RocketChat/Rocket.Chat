@@ -5,7 +5,7 @@ import type { Options } from './MinimongoCollection';
 import type { Sorter } from './Sorter';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface BaseQuery<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
+export interface BaseQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> {
 	cursor: Cursor<T, TOptions, TProjection>;
 	dirty: boolean;
 	matcher: Matcher<T>;
@@ -13,7 +13,7 @@ export interface BaseQuery<T extends { _id: string }, TOptions extends Options<T
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface IncompleteUnorderedQuery<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T>
+export interface IncompleteUnorderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends BaseQuery<T, TOptions, TProjection> {
 	sorter: null;
 	ordered: false;
@@ -25,7 +25,7 @@ export interface IncompleteUnorderedQuery<T extends { _id: string }, TOptions ex
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface UnorderedQuery<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T>
+export interface UnorderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends IncompleteUnorderedQuery<T, TOptions, TProjection> {
 	results: IdMap<T['_id'], T>;
 	resultsSnapshot: IdMap<T['_id'], T> | null;
@@ -35,7 +35,7 @@ export interface UnorderedQuery<T extends { _id: string }, TOptions extends Opti
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface IncompleteOrderedQuery<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T>
+export interface IncompleteOrderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends BaseQuery<T, TOptions, TProjection> {
 	ordered: true;
 	sorter: Sorter<T>;
@@ -49,7 +49,7 @@ export interface IncompleteOrderedQuery<T extends { _id: string }, TOptions exte
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export interface OrderedQuery<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T>
+export interface OrderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends IncompleteOrderedQuery<T, TOptions, TProjection> {
 	results: T[];
 	resultsSnapshot: T[] | null;
@@ -60,7 +60,7 @@ export interface OrderedQuery<T extends { _id: string }, TOptions extends Option
 	movedBefore: (id: T['_id'], before: T['_id'] | null) => void;
 }
 
-export type Query<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> =
+export type Query<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> =
 	| IncompleteUnorderedQuery<T, TOptions, TProjection>
 	| UnorderedQuery<T, TOptions, TProjection>
 	| IncompleteOrderedQuery<T, TOptions, TProjection>

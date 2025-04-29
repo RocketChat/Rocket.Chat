@@ -165,7 +165,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 	private nextQueryIdCounter = 1;
 
-	readonly queries = new Map<QueryId, Query<T, Options<T>, any>>();
+	readonly queries = new Set<Query<T>>();
 
 	// null if not saving originals; an IdMap from id to original document value
 	// if saving originals. See comments before saveOriginals().
@@ -264,10 +264,10 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
-		const queriesToRecompute = new Set<Query<T, Options<T>, any>>();
+		const queriesToRecompute = new Set<Query<T>>();
 
 		// trigger live queries that match
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			if (query.dirty) {
 				continue;
 			}
@@ -283,9 +283,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			}
 		}
 
-		queriesToRecompute.forEach((query) => {
+		for (const query of queriesToRecompute) {
 			this._recomputeResults(query);
-		});
+		}
 
 		this._observeQueue.drain();
 		this.deferCallback(callback, null, id);
@@ -296,10 +296,10 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 	async insertAsync(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
-		const queriesToRecompute = new Set<Query<T, Options<T>, any>>();
+		const queriesToRecompute = new Set<Query<T>>();
 
 		// trigger live queries that match
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			if (query.dirty) {
 				continue;
 			}
@@ -316,9 +316,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			}
 		}
 
-		queriesToRecompute.forEach((query) => {
+		for (const query of queriesToRecompute) {
 			this._recomputeResults(query);
-		});
+		}
 
 		await this._observeQueue.drain();
 		this.deferCallback(callback, null, id);
@@ -338,7 +338,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		this.paused = true;
 
 		// Take a snapshot of the query results for each query.
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			query.resultsSnapshot = clone(query.results);
 		}
 	}
@@ -348,7 +348,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		this.clear();
 
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			if (query.ordered) {
 				query.results = [];
 			} else {
@@ -371,13 +371,13 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			}
 		});
 
-		const queriesToRecompute = new Set<Query<T, Options<T>, any>>();
-		const queryRemove = new Set<{ doc: T; query: Query<T, Options<T>, any> }>();
+		const queriesToRecompute = new Set<Query<T>>();
+		const queryRemove = new Set<{ doc: T; query: Query<T> }>();
 
 		for (const removeId of remove) {
 			const removeDoc = this.get(removeId)!;
 
-			for (const query of this.queries.values()) {
+			for (const query of this.queries) {
 				if (query.dirty) {
 					continue;
 				}
@@ -409,13 +409,13 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const { queriesToRecompute, queryRemove, count } = this.prepareRemove(selector);
 
 		// run live query callbacks _after_ we've removed the documents.
-		queryRemove.forEach((remove) => {
+		for (const remove of queryRemove) {
 			this._removeFromResultsSync(remove.query, remove.doc);
-		});
+		}
 
-		queriesToRecompute.forEach((query) => {
+		for (const query of queriesToRecompute) {
 			this._recomputeResults(query);
-		});
+		}
 
 		this._observeQueue.drain();
 
@@ -438,9 +438,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		for await (const remove of queryRemove) {
 			await this._removeFromResultsAsync(remove.query, remove.doc);
 		}
-		queriesToRecompute.forEach((query) => {
+		for (const query of queriesToRecompute) {
 			this._recomputeResults(query);
-		});
+		}
 
 		await this._observeQueue.drain();
 
@@ -463,7 +463,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		// observer methods won't actually fire when we trigger them.
 		this.paused = false;
 
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			if (query.dirty) {
 				query.dirty = false;
 
@@ -525,14 +525,14 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		// it. (We don't need to save the original results of paused queries because
 		// they already have a resultsSnapshot and we won't be diffing in
 		// _recomputeResults.)
-		const queryToOriginalResults = new Map<Query<T, Options<T>, any>, IdMap<T['_id'], T> | T[]>();
+		const queryToOriginalResults = new Map<Query<T>, IdMap<T['_id'], T> | T[]>();
 
 		// We should only clone each document once, even if it appears in multiple
 		// queries
 		const docMap = new Map<T['_id'], T>();
 		const idsMatched = this._idsMatchedBySelector(selector);
 
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			if ((query.cursor.skip || query.cursor.limit) && !this.paused) {
 				// Catch the case of a reactive `count()` on a cursor with skip
 				// or limit, which registers an unordered observe. This is a
@@ -643,7 +643,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
-		let recomputeQids: Record<QueryId, boolean> = {};
+		let recomputeQueries = new Set<Query<T>>();
 
 		let updateCount = 0;
 
@@ -653,7 +653,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			if (queryResult.result) {
 				// XXX Should we save the original even if mod ends up being a no-op?
 				this._saveOriginal(id, doc);
-				recomputeQids = await this._modifyAndNotifyAsync(doc, mod, queryResult.arrayIndices);
+				recomputeQueries = await this._modifyAndNotifyAsync(doc, mod, queryResult.arrayIndices);
 
 				++updateCount;
 
@@ -665,13 +665,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			return true;
 		});
 
-		(Object.keys(recomputeQids) as QueryId[]).forEach((qid) => {
-			const query = this.queries.get(qid);
-
-			if (query) {
-				this._recomputeResults(query, queriesToOriginalResults.get(query));
-			}
-		});
+		for (const query of recomputeQueries.keys()) {
+			this._recomputeResults(query, queriesToOriginalResults.get(query));
+		}
 
 		await this._observeQueue.drain();
 
@@ -745,7 +741,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
-		let recomputeQids = new Set<QueryId>();
+		let recomputeQueries = new Set<Query<T>>();
 
 		let updateCount = 0;
 
@@ -755,7 +751,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			if (queryResult.result) {
 				// XXX Should we save the original even if mod ends up being a no-op?
 				this._saveOriginal(id, doc);
-				recomputeQids = this._modifyAndNotifySync(doc, mod, queryResult.arrayIndices);
+				recomputeQueries = this._modifyAndNotifySync(doc, mod, queryResult.arrayIndices);
 
 				++updateCount;
 
@@ -767,12 +763,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			return true;
 		});
 
-		recomputeQids.forEach((qid) => {
-			const query = this.queries.get(qid);
-			if (query) {
-				this._recomputeResults(query, queriesToOriginalResults.get(query));
-			}
-		});
+		for (const query of recomputeQueries) {
+			this._recomputeResults(query, queriesToOriginalResults.get(query));
+		}
 
 		this._observeQueue.drain();
 
@@ -913,19 +906,19 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 	}
 
 	private _getMatchedDocAndModify(doc: T) {
-		const matchedBefore = new Map<QueryId, boolean>();
+		const matchedBefore = new Map<Query<T>, boolean>();
 
-		for (const [qid, query] of this.queries.entries()) {
+		for (const query of this.queries) {
 			if (query.dirty) {
 				continue;
 			}
 
 			if (query.ordered) {
-				matchedBefore.set(qid, query.matcher.documentMatches(doc).result);
+				matchedBefore.set(query, query.matcher.documentMatches(doc).result);
 			} else {
 				// Because we don't support skip or limit (yet) in unordered queries, we
 				// can just do a direct lookup.
-				matchedBefore.set(qid, (query.results as IdMap<T['_id'], T>).has(doc._id));
+				matchedBefore.set(query, (query.results as IdMap<T['_id'], T>).has(doc._id));
 			}
 		}
 
@@ -939,16 +932,16 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		doc = this._modify(doc, mod, { arrayIndices });
 		this.set(doc);
 
-		const recomputeQids = new Set<QueryId>();
+		const recomputeQueries = new Set<Query<T>>();
 
-		for (const [qid, query] of this.queries.entries()) {
+		for (const query of this.queries) {
 			if (query.dirty) {
 				continue;
 			}
 
 			const afterMatch = query.matcher.documentMatches(doc);
 			const after = afterMatch.result;
-			const before = matchedBefore.get(qid);
+			const before = matchedBefore.get(query);
 
 			if (query.cursor.skip || query.cursor.limit) {
 				// We need to recompute any query where the doc may have been in the
@@ -959,7 +952,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				// in the output. So it's safe to skip recompute if neither before or
 				// after are true.)
 				if (before || after) {
-					recomputeQids.add(qid);
+					recomputeQueries.add(query);
 				}
 			} else if (before && !after) {
 				this._removeFromResultsSync(query, doc);
@@ -969,7 +962,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				this._updateInResultsSync(query, doc, oldDoc);
 			}
 		}
-		return recomputeQids;
+		return recomputeQueries;
 	}
 
 	private async _modifyAndNotifyAsync(doc: T, mod: UpdateFilter<T>, arrayIndices: unknown) {
@@ -979,15 +972,15 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		doc = this._modify(doc, mod, { arrayIndices });
 		this.set(doc);
 
-		const recomputeQids: Record<QueryId, boolean> = {};
-		for (const [qid, query] of this.queries.entries()) {
+		const recomputeQueries = new Set<Query<T>>();
+		for (const query of this.queries) {
 			if (query.dirty) {
 				continue;
 			}
 
 			const afterMatch = query.matcher.documentMatches(doc);
 			const after = afterMatch.result;
-			const before = matchedBefore.get(qid);
+			const before = matchedBefore.get(query);
 
 			if (query.cursor.skip || query.cursor.limit) {
 				// We need to recompute any query where the doc may have been in the
@@ -998,7 +991,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				// in the output. So it's safe to skip recompute if neither before or
 				// after are true.)
 				if (before || after) {
-					recomputeQids[qid] = true;
+					recomputeQueries.add(query);
 				}
 			} else if (before && !after) {
 				// eslint-disable-next-line no-await-in-loop
@@ -1011,7 +1004,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				await this._updateInResultsAsync(query, doc, oldDoc);
 			}
 		}
-		return recomputeQids;
+		return recomputeQueries;
 	}
 
 	// Recomputes the results of a query and runs observe callbacks for the
@@ -1025,7 +1018,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 	// applied.
 	//
 	// oldResults is guaranteed to be ignored if the query is not paused.
-	private _recomputeResults(query: Query<T, Options<T>, any>, oldResults?: IdMap<T['_id'], T> | T[]) {
+	private _recomputeResults(query: Query<T>, oldResults?: IdMap<T['_id'], T> | T[]) {
 		if (this.paused) {
 			// There's no reason to recompute the results now as we're still paused.
 			// By flagging the query as "dirty", the recompute will be performed
@@ -1046,7 +1039,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 	}
 
 	recomputeAllResults() {
-		for (const query of this.queries.values()) {
+		for (const query of this.queries) {
 			this._recomputeResults(query);
 		}
 	}
@@ -1125,13 +1118,13 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		return replacement as T;
 	}
 
-	private _findInOrderedResults(query: Query<T, Options<T>, any>, doc: T): number {
+	private _findInOrderedResults(query: Query<T>, doc: T): number {
 		if (!query.ordered) {
 			throw createMinimongoError("Can't call _findInOrderedResults on unordered query");
 		}
 
-		for (let i = 0; i < (query as OrderedQuery<T, Options<T>, T>).results.length; i++) {
-			if ((query as OrderedQuery<T, Options<T>, T>).results[i]._id === doc._id) {
+		for (let i = 0; i < (query as OrderedQuery<T>).results.length; i++) {
+			if ((query as OrderedQuery<T>).results[i]._id === doc._id) {
 				return i;
 			}
 		}
@@ -1190,75 +1183,51 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		return null;
 	}
 
-	private _insertInResultsSync(query: Query<T, Options<T>, T>, doc: T) {
+	private _insertInResultsSync(query: Query<T>, doc: T) {
 		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
 
 		delete fields._id;
 
 		if (query.ordered) {
-			if (!(query as OrderedQuery<T, Options<T>, T>).sorter) {
-				(query as OrderedQuery<T, Options<T>, T>).addedBefore(
-					doc._id,
-					(query as OrderedQuery<T, Options<T>, T>).projectionFn(fields),
-					null,
-				);
-				(query as OrderedQuery<T, Options<T>, T>).results.push(doc);
+			if (!(query as OrderedQuery<T>).sorter) {
+				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
+				(query as OrderedQuery<T>).results.push(doc);
 			} else {
-				const i = this._insertInSortedList(
-					(query as OrderedQuery<T, Options<T>, T>).sorter.getComparator(),
-					(query as OrderedQuery<T, Options<T>, T>).results,
-					doc,
-				);
+				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
 
-				const next = (query as OrderedQuery<T, Options<T>, T>).results[i + 1]?._id ?? null;
+				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
 
-				(query as OrderedQuery<T, Options<T>, T>).addedBefore(
-					doc._id,
-					(query as OrderedQuery<T, Options<T>, T>).projectionFn(fields),
-					next,
-				);
+				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
 			}
 
-			(query as OrderedQuery<T, Options<T>, T>).added(doc._id, query.projectionFn(fields));
+			(query as OrderedQuery<T>).added(doc._id, query.projectionFn(fields));
 		} else {
-			(query as UnorderedQuery<T, Options<T>, T>).added(doc._id, (query as UnorderedQuery<T, Options<T>, T>).projectionFn(fields));
-			(query as UnorderedQuery<T, Options<T>, T>).results.set(doc._id, doc);
+			(query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
+			(query as UnorderedQuery<T>).results.set(doc._id, doc);
 		}
 	}
 
-	private async _insertInResultsAsync(query: Query<T, Options<T>, T>, doc: T) {
+	private async _insertInResultsAsync(query: Query<T>, doc: T) {
 		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
 
 		delete fields._id;
 
 		if (query.ordered) {
-			if (!(query as OrderedQuery<T, Options<T>, T>).sorter) {
-				await (query as OrderedQuery<T, Options<T>, T>).addedBefore(
-					doc._id,
-					(query as OrderedQuery<T, Options<T>, T>).projectionFn(fields),
-					null,
-				);
-				(query as OrderedQuery<T, Options<T>, T>).results.push(doc);
+			if (!(query as OrderedQuery<T>).sorter) {
+				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
+				(query as OrderedQuery<T>).results.push(doc);
 			} else {
-				const i = this._insertInSortedList(
-					(query as OrderedQuery<T, Options<T>, T>).sorter.getComparator(),
-					(query as OrderedQuery<T, Options<T>, T>).results,
-					doc,
-				);
+				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
 
-				const next = (query as OrderedQuery<T, Options<T>, T>).results[i + 1]?._id ?? null;
+				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
 
-				await (query as OrderedQuery<T, Options<T>, T>).addedBefore(
-					doc._id,
-					(query as OrderedQuery<T, Options<T>, T>).projectionFn(fields),
-					next,
-				);
+				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
 			}
 
-			await (query as OrderedQuery<T, Options<T>, T>).added(doc._id, (query as OrderedQuery<T, Options<T>, T>).projectionFn(fields));
+			await (query as OrderedQuery<T>).added(doc._id, (query as OrderedQuery<T>).projectionFn(fields));
 		} else {
-			await (query as UnorderedQuery<T, Options<T>, T>).added(doc._id, (query as UnorderedQuery<T, Options<T>, T>).projectionFn(fields));
-			(query as UnorderedQuery<T, Options<T>, T>).results.set(doc._id, doc);
+			await (query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
+			(query as UnorderedQuery<T>).results.set(doc._id, doc);
 		}
 	}
 
@@ -1371,35 +1340,35 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		return Object.freeze(newDoc);
 	}
 
-	private _removeFromResultsSync(query: Query<T, Options<T>, T>, doc: T) {
+	private _removeFromResultsSync(query: Query<T>, doc: T) {
 		if (query.ordered) {
 			const i = this._findInOrderedResults(query, doc);
 
-			(query as OrderedQuery<T, Options<T>, any>).removed(doc._id);
-			(query as OrderedQuery<T, Options<T>, any>).results.splice(i, 1);
+			(query as OrderedQuery<T>).removed(doc._id);
+			(query as OrderedQuery<T>).results.splice(i, 1);
 		} else {
 			const id = doc._id; // in case callback mutates doc
 
-			(query as UnorderedQuery<T, Options<T>, any>).removed(doc._id);
-			(query as UnorderedQuery<T, Options<T>, any>).results.remove(id);
+			(query as UnorderedQuery<T>).removed(doc._id);
+			(query as UnorderedQuery<T>).results.remove(id);
 		}
 	}
 
-	private async _removeFromResultsAsync(query: Query<T, Options<T>, T>, doc: T) {
+	private async _removeFromResultsAsync(query: Query<T>, doc: T) {
 		if (query.ordered) {
 			const i = this._findInOrderedResults(query, doc);
 
-			await (query as OrderedQuery<T, Options<T>, any>).removed(doc._id);
-			(query as OrderedQuery<T, Options<T>, any>).results.splice(i, 1);
+			await (query as OrderedQuery<T>).removed(doc._id);
+			(query as OrderedQuery<T>).results.splice(i, 1);
 		} else {
 			const id = doc._id; // in case callback mutates doc
 
-			await (query as UnorderedQuery<T, Options<T>, any>).removed(doc._id);
-			(query as UnorderedQuery<T, Options<T>, any>).results.remove(id);
+			await (query as UnorderedQuery<T>).removed(doc._id);
+			(query as UnorderedQuery<T>).results.remove(id);
 		}
 	}
 
-	private _updateInResultsSync(query: Query<T, Options<T>, T>, doc: T, oldDoc: T) {
+	private _updateInResultsSync(query: Query<T>, doc: T, oldDoc: T) {
 		if (doc._id !== oldDoc._id) {
 			throw new Error("Can't change a doc's _id while updating");
 		}
@@ -1409,8 +1378,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		if (!query.ordered) {
 			if (Object.keys(changedFields).length) {
-				(query as UnorderedQuery<T, Options<T>, any>).changed(doc._id, changedFields);
-				(query as UnorderedQuery<T, Options<T>, any>).results.set(doc._id, doc);
+				(query as UnorderedQuery<T>).changed(doc._id, changedFields);
+				(query as UnorderedQuery<T>).results.set(doc._id, doc);
 			}
 
 			return;
@@ -1419,7 +1388,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const oldIdx = this._findInOrderedResults(query, doc);
 
 		if (Object.keys(changedFields).length) {
-			(query as OrderedQuery<T, Options<T>, any>).changed(doc._id, changedFields);
+			(query as OrderedQuery<T>).changed(doc._id, changedFields);
 		}
 
 		if (!query.sorter) {
@@ -1427,22 +1396,18 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		}
 
 		// just take it out and put it back in again, and see if the index changes
-		(query as OrderedQuery<T, Options<T>, any>).results.splice(oldIdx, 1);
+		(query as OrderedQuery<T>).results.splice(oldIdx, 1);
 
-		const newIdx = this._insertInSortedList(
-			(query as OrderedQuery<T, Options<T>, any>).sorter.getComparator(),
-			(query as OrderedQuery<T, Options<T>, any>).results,
-			doc,
-		);
+		const newIdx = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
 
 		if (oldIdx !== newIdx) {
-			const next = (query as OrderedQuery<T, Options<T>, any>).results[newIdx + 1]?._id ?? null;
+			const next = (query as OrderedQuery<T>).results[newIdx + 1]?._id ?? null;
 
 			query.movedBefore && query.movedBefore(doc._id, next);
 		}
 	}
 
-	private async _updateInResultsAsync(query: Query<T, Options<T>, T>, doc: T, oldDoc: T) {
+	private async _updateInResultsAsync(query: Query<T>, doc: T, oldDoc: T) {
 		if (doc._id !== oldDoc._id) {
 			throw new Error("Can't change a doc's _id while updating");
 		}
@@ -1452,8 +1417,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		if (!query.ordered) {
 			if (Object.keys(changedFields).length) {
-				await (query as UnorderedQuery<T, Options<T>, any>).changed(doc._id, changedFields);
-				(query as UnorderedQuery<T, Options<T>, any>).results.set(doc._id, doc);
+				await (query as UnorderedQuery<T>).changed(doc._id, changedFields);
+				(query as UnorderedQuery<T>).results.set(doc._id, doc);
 			}
 
 			return;
@@ -1462,7 +1427,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const oldIdx = this._findInOrderedResults(query, doc);
 
 		if (Object.keys(changedFields).length) {
-			await (query as OrderedQuery<T, Options<T>, any>).changed(doc._id, changedFields);
+			await (query as OrderedQuery<T>).changed(doc._id, changedFields);
 		}
 
 		if (!query.sorter) {
@@ -1470,16 +1435,12 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		}
 
 		// just take it out and put it back in again, and see if the index changes
-		(query as OrderedQuery<T, Options<T>, any>).results.splice(oldIdx, 1);
+		(query as OrderedQuery<T>).results.splice(oldIdx, 1);
 
-		const newIdx = this._insertInSortedList(
-			(query as OrderedQuery<T, Options<T>, any>).sorter.getComparator(),
-			(query as OrderedQuery<T, Options<T>, any>).results,
-			doc,
-		);
+		const newIdx = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
 
 		if (oldIdx !== newIdx) {
-			const next = (query as OrderedQuery<T, Options<T>, any>).results[newIdx + 1]?._id ?? null;
+			const next = (query as OrderedQuery<T>).results[newIdx + 1]?._id ?? null;
 
 			query.movedBefore && (await query.movedBefore(doc._id, next));
 		}

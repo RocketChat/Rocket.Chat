@@ -3,7 +3,7 @@ import type { Filter } from 'mongodb';
 
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
-import type { LocalCollection, QueryId } from './LocalCollection';
+import type { LocalCollection } from './LocalCollection';
 import { Matcher } from './Matcher';
 import type { FieldSpecifier, Options, Transform } from './MinimongoCollection';
 import { ObserveHandle } from './ObserveHandle';
@@ -574,13 +574,10 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					sorter: null,
 				};
 
-		let qid: QueryId;
-
 		// Non-reactive queries call added[Before] and then never call anything
 		// else.
 		if (this.reactive) {
-			qid = this.collection.claimNextQueryId();
-			this.collection.queries.set(qid, query);
+			this.collection.queries.add(query);
 		}
 
 		query.results = this._getRawObjects({ ordered });
@@ -653,7 +650,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			collection: this.collection,
 			stop: () => {
 				if (this.reactive) {
-					this.collection.queries.delete(qid);
+					this.collection.queries.delete(query);
 				}
 			},
 			isReady: false,
