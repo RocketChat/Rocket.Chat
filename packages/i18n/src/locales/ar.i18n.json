@@ -1,5 +1,6 @@
 {
   "500": "خطأ محلي في الخادم",
+  "files": "الملفات",
   "#channel": "‎#channel",
   "%_of_conversations": "% من المحادثات",
   "0_Errors_Only": "0 - الأخطاء فقط",
@@ -1258,6 +1259,7 @@
   "Delete_all_closed_chats": "حذف كل الدردشات المغلقة",
   "Delete_message": "حذف رسالة",
   "Delete_my_account": "حذف حسابي",
+  "Delete_roomType_description": "سيترتب على حذف الغرفة حذف جميع الرسائل المنشورة. لا يمكن التراجع عن هذا الإجراء.",
   "Deleted": "تم الحذف!",
   "Deleted__roomName__": "<strong>تم حذف</strong> #{{roomName}}",
   "Deleting": "يتم الحذف",
@@ -1279,6 +1281,7 @@
   "Desktop_Notifications_Enabled": "إشعارات سطح المكتب ممكّنة",
   "Desktop_Notifications_Not_Enabled": "إشعارات سطح المكتب غير ممكّنة",
   "Details": "التفاصيل",
+  "Device_Management_Device_Unknown": "غير معروف",
   "Device_Management_IP": " عنوان IP",
   "Different_Style_For_User_Mentions": "نمط مختلف لإشارات المستخدم",
   "Direct": "مباشر",
@@ -1303,6 +1306,7 @@
   "Direct_Reply_Separator_Description": "[يمكنك التعديل فقط إذا كنت تعرف بالضبط ما تفعله، راجع المستندات]  \nالفاصل بين الجزء الأساسي وجزء العلامة من البريد الإلكتروني",
   "Direct_Reply_Username": "اسم المستخدم",
   "Direct_Reply_Username_Description": "يرجى استخدام البريد الإلكتروني المطلق، لا يسمح بوضع العلامات، سيتم تجاوزه",
+  "Direct_message": "رسالة مباشرة",
   "Direct_message_creation_description": "أنت على وشك إنشاء دردشة مع عدة مستخدمين. أضف الأشخاص الذين تود التحدث إليهم، كل شخص في المكان نفسه، باستخدام الرسائل المباشرة.",
   "Direct_message_someone": "رسالة مباشرة لشخص ما",
   "Direct_message_you_have_joined": "لقد انضممت إلى رسالة مباشرة جديدة مع ",
@@ -1439,6 +1443,7 @@
   "Enable_Svg_Favicon": "تفعيل رمز مفضلة SVG ",
   "Enable_inquiry_fetch_by_stream": "تمكين جلب بيانات الاستعلام من الخادم باستخدام الدفق",
   "Enable_omnichannel_auto_close_abandoned_rooms": "تمكين الإغلاق التلقائي للغرف التي هجرها الزائر",
+  "Enable_two-factor_authentication": "تمكين المصادقة الثنائية عبر TOTP",
   "Enabled": "تم التمكين",
   "Encrypted": "مشفر",
   "Encrypted_channel_Description": "القناة المشفرة بين النهايات. لن يعمل البحث مع الفِرَق المشفرة وقد لا تعرض الإشعارات محتوى الرسائل.",
@@ -2522,6 +2527,7 @@
   "Message_has_been_unpinned": "تم إلغاء تثبيت الرسالة",
   "Message_has_been_unstarred": "تم إلغاء تمييز الرسالة بنجمة",
   "Message_info": "معلومات الرسالة",
+  "Message_is_removed": "تمت إزالة الرسالة",
   "Message_pinning": "تثبيت الرسالة",
   "Message_removed": "تمت إزالة الرسالة",
   "Message_sent_by_email": "تم إرسال الرسالة عبر البريد الإلكتروني",
@@ -2830,6 +2836,7 @@
   "Pages": "صفحات",
   "Paid_Apps": "تطبيقات مدفوعة",
   "Parent_channel_doesnt_exist": "Channel غير موجودة.",
+  "Parent_channel_or_team": "القناة أو المجموعة الأصلية",
   "Participants": "المشاركون",
   "Password": "كلمة المرور",
   "Password_Change_Disabled": "قام مسؤول Rocket.Chat بتعطيل تغيير كلمات المرور",
@@ -2850,6 +2857,7 @@
   "Payload": "الحمولة",
   "Peer_Password": "كلمة مرور النظير",
   "People": "الأشخاص",
+  "People_can_only_join_by_being_invited": "يمكن فقط للأشخاص المدعوين الانضمام",
   "Permalink": "الرابط الثابت",
   "Permissions": "الأذونات",
   "Personal_Access_Tokens": "الرموز المميزة للوصول الشخصي",
@@ -2907,6 +2915,7 @@
   "Post_to_s_as_s": "الترحيل إلى <strong>%s</strong> كـ <strong>%s</strong>",
   "Preferences": "التفضيلات",
   "Preferences_saved": "تم حفظ التفضيلات",
+  "Premium": "مؤسسة",
   "Preparing_data_for_import_process": "تجهيز البيانات لعملية الاستيراد",
   "Preparing_list_of_channels": "تجهيز قائمة القنوات",
   "Preparing_list_of_messages": "تجهيز قائمة الرسائل",
@@ -4010,6 +4019,7 @@
   "VoIP_Server_Name": "اسم الخادم",
   "VoIP_Server_Websocket_Path": "مسار Websocket",
   "VoIP_Server_Websocket_Port": "منفذ Websocket",
+  "VoIP_TeamCollab_Enabled": "تم التمكين",
   "Voice_Call": "مكالمة صوتية",
   "Voip_Server_Configuration": "تكوين الخادم",
   "Voip_call_declined": "تم إنهاء المكالمة من قِبل الوكيل",
@@ -4147,10 +4157,6 @@
   "Your_temporary_password_is_password": "كلمة المرور المؤقتة الخاصة بك هي <strong>[password]</strong>.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
-  "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا: <br/> {{rooms}}",
-  "__username__is_no_longer__role__defined_by__user_by_": "لم يعد {{username}} في دور {{role}} من قِبل {{user_by}}",
-  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}",
   "access-mailer": "الوصول إلى شاشة مرسل البريد",
   "access-mailer_description": "إذن لإرسال بريد إلكتروني جماعي إلى كل المستخدمين.",
   "access-permissions": "شاشة أذونات الوصول",
@@ -4274,6 +4280,7 @@
   "email_plain_text_only": "إرسال رسائل بريد إلكتروني بنص عادي فقط",
   "email_style_description": "تجنب المحدِّدات المتداخلة",
   "email_style_label": "نمط البريد الإلكتروني",
+  "ensure_email_address_valid": "عنوان بريد إلكتروني غير صالح",
   "error-action-not-allowed": "{{action}} غير مسموح به",
   "error-agent-offline": "الوكيل غير متصل",
   "error-agent-status-service-offline": "حالة الوكيل غير متصل أو خدمة القناة متعددة الاتجاهات غير نشطة",
@@ -4426,7 +4433,6 @@
   "except_pinned": "(باستثناء المثبتة)",
   "expression": "التعبير",
   "file_pruned": "تم تنقيح الملف",
-  "files": "الملفات",
   "force-delete-message": "فرض حذف رسالة",
   "force-delete-message_description": "إذن لحذف رسالة بتخطي كل القيود",
   "get-password-policy-forbidRepeatingCharacters": "يجب ألا تحتوي كلمة المرور على رموز متكررة",
@@ -4519,10 +4525,10 @@
   "message": "رسالة",
   "message-impersonate": "انتحال صفة مستخدمين آخرين",
   "message-impersonate_description": "إذن لانتحال صفة مستخدمين آخرين باستخدام الاسم المستعار للرسالة",
-  "message_counter_few": "{{count}} رسائل",
-  "message_counter_many": "{{count}} رسائل",
   "message_counter_one": "{{count}} رسالة",
   "message_counter_other": "{{count}} رسائل",
+  "message_counter_many": "{{count}} رسائل",
+  "message_counter_few": "{{count}} رسائل",
   "message_counter_two": "{{count}} رسائل",
   "message_counter_zero": "{{count}} رسائل",
   "message_pruned": "تم تنقيح الرسالة",
@@ -4532,10 +4538,10 @@
   "meteor_status_connecting": "يتم الاتصال الآن...",
   "meteor_status_failed": "فشل الاتصال بالخادم",
   "meteor_status_offline": "وضع عدم الاتصال.",
-  "meteor_status_reconnect_in_few": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
-  "meteor_status_reconnect_in_many": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
   "meteor_status_reconnect_in_one": "المحاولة مرة أخرى خلال ثانية واحدة...",
   "meteor_status_reconnect_in_other": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
+  "meteor_status_reconnect_in_many": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
+  "meteor_status_reconnect_in_few": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
   "meteor_status_reconnect_in_two": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
   "meteor_status_reconnect_in_zero": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
   "meteor_status_try_now_offline": "الاتصال مرة أخرى",
@@ -4865,5 +4871,9 @@
   "you_are_in_preview_mode_of": "أنت في وضع المعاينة لقناة #<strong>{{room_name}}</strong>",
   "you_are_in_preview_mode_of_incoming_livechat": "أنت في وضع المعاينة لهذه الدردشة",
   "your_message": "رسالتك",
-  "your_message_optional": "رسالتك (اختياري)"
+  "your_message_optional": "رسالتك (اختياري)",
+  "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا: <br/> {{rooms}}",
+  "__username__is_no_longer__role__defined_by__user_by_": "لم يعد {{username}} في دور {{role}} من قِبل {{user_by}}",
+  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}"
 }
