@@ -28,22 +28,22 @@ const AccountPreferencesPage = (): ReactElement => {
 	const {
 		handleSubmit,
 		reset,
-		watch,
 		formState: { isDirty, dirtyFields },
 	} = methods;
 
-	const currentData = watch();
-
 	const setPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
 	const setPreferencesAction = useMutation({
-		mutationFn: setPreferencesEndpoint,
+		mutationFn: ({
+			data,
+		}: {
+			data: AccountPreferencesData & { dontAskAgainList?: { action: string; label: string }[] } & { highlights?: string[] };
+		}) => setPreferencesEndpoint({ data }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
-		onSettled: () => reset(currentData),
 	});
 
 	const handleSaveData = async (formData: AccountPreferencesData) => {
@@ -66,7 +66,6 @@ const AccountPreferencesPage = (): ReactElement => {
 					: [];
 			Object.assign(data, { dontAskAgainList: list });
 		}
-
 		setPreferencesAction.mutateAsync({ data });
 	};
 
