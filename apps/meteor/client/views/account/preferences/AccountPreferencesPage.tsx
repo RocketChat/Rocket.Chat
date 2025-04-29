@@ -1,6 +1,5 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -13,14 +12,12 @@ import PreferencesMyDataSection from './PreferencesMyDataSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
-import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
+import { useSavePreferences } from '../../../hooks/account/useSavePreferences';
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 	const preferencesValues = useAccountPreferencesValues();
 
@@ -31,43 +28,7 @@ const AccountPreferencesPage = (): ReactElement => {
 		formState: { isDirty, dirtyFields },
 	} = methods;
 
-	const setPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
-	const setPreferencesAction = useMutation({
-		mutationFn: ({
-			data,
-		}: {
-			data: AccountPreferencesData & { dontAskAgainList?: { action: string; label: string }[] } & { highlights?: string[] };
-		}) => setPreferencesEndpoint({ data }),
-		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
-		},
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-	});
-
-	const handleSaveData = async (formData: AccountPreferencesData) => {
-		const { highlights, dontAskAgainList, ...data } = getDirtyFields(formData, dirtyFields);
-		if (highlights || highlights === '') {
-			Object.assign(data, {
-				highlights:
-					typeof highlights === 'string' &&
-					highlights
-						.split(/,|\n/)
-						.map((val) => val.trim())
-						.filter(Boolean),
-			});
-		}
-
-		if (dontAskAgainList) {
-			const list =
-				Array.isArray(dontAskAgainList) && dontAskAgainList.length > 0
-					? dontAskAgainList.map(([action, label]) => ({ action, label }))
-					: [];
-			Object.assign(data, { dontAskAgainList: list });
-		}
-		setPreferencesAction.mutateAsync({ data });
-	};
+	const handleSaveData = useSavePreferences({ dirtyFields });
 
 	const preferencesFormId = useId();
 
