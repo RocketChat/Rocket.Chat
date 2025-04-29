@@ -202,7 +202,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
-			const item = poHomeChannel.sidebar.getFirstRoomByName(targetChannel);
+			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
 
 			await expect(item).toBeVisible();
 
