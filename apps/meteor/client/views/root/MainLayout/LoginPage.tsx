@@ -1,5 +1,3 @@
-import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import { useSession } from '@rocket.chat/ui-contexts';
 import type { LoginRoutes } from '@rocket.chat/web-ui-registration';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
@@ -13,7 +11,6 @@ const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; chi
 	const { t } = useTranslation();
 	const showForcedLogoutBanner = useSession('force_logout') as boolean | undefined;
 	const iframeLoginUrl = useIframeLogin();
-	const isDarkMode = useDarkMode();
 
 	if (iframeLoginUrl) {
 		return <iframe title={t('Login')} src={iframeLoginUrl} style={{ height: '100%', width: '100%' }} />;
@@ -21,7 +18,6 @@ const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; chi
 
 	return (
 		<>
-			<PaletteStyleTag theme={isDarkMode ? 'dark' : 'light'} tagId='registration-palette' />
 			{showForcedLogoutBanner && <LoggedOutBanner />}
 			<RegistrationRoute defaultRoute={defaultRoute} children={children} />
 		</>
