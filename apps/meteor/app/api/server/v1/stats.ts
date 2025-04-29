@@ -1369,21 +1369,18 @@ API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const { statistics, ...pagination } = await getStatistics({
-				userId: this.userId,
-				query,
-				pagination: {
-					offset,
-					count,
-					sort,
-					fields,
-				},
-			});
-			return API.v1.success({
-				statistics,
-				...pagination,
-				success: true,
-			});
+			return API.v1.success(
+				await getStatistics({
+					userId: this.userId,
+					query,
+					pagination: {
+						offset,
+						count,
+						sort,
+						fields,
+					},
+				}),
+			);
 		},
 	)
 	.post(
