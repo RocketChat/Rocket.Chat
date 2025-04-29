@@ -24,8 +24,6 @@ import {
 	clone,
 } from './common';
 
-export type QueryId = `${number}` & { __brand: 'QueryId' };
-
 interface ILocalCollection<T extends { _id: string }> {
 	paused: boolean;
 	find(selector?: Filter<T> | T['_id']): Cursor<T, Options<T>, T>;
@@ -163,8 +161,6 @@ interface ILocalCollection<T extends { _id: string }> {
 export class LocalCollection<T extends { _id: string }> implements ILocalCollection<T> {
 	readonly _observeQueue = new SynchronousQueue();
 
-	private nextQueryIdCounter = 1;
-
 	readonly queries = new Set<Query<T>>();
 
 	// null if not saving originals; an IdMap from id to original document value
@@ -212,10 +208,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 	private clear() {
 		this.store.setState({ records: [] });
-	}
-
-	claimNextQueryId() {
-		return `${this.nextQueryIdCounter++}` as QueryId;
 	}
 
 	find(selector: Filter<T> | T['_id'] = {}, options?: Options<T>) {
