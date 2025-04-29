@@ -20,6 +20,10 @@ export class Sidebar {
 		return this.channelsList.getByRole('link', { name });
 	}
 
+	getFirstRoomByName(name: string) {
+		return this.channelsList.getByRole('link', { name }).first();
+	}
+
 	get firstCollapser(): Locator {
 		return this.channelsList.getByRole('button').first();
 	}
