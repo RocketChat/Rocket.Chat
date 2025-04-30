@@ -137,12 +137,12 @@ export class AppRoomsConverter {
 
 		const newRoom = {
 			...(room.id && { _id: room.id }),
-			t: room.type,
-			ts: room.createdAt,
-			msgs: room.messageCount || 0,
-			_updatedAt: room.updatedAt,
+			...(typeof room.type !== 'undefined' && { t: room.type }),
+			...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
+			...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
+			...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
 			...(room.displayName && { fname: room.displayName }),
-			...(room.type !== 'd' && { name: room.slugifiedName }),
+			...(room.type !== 'd' && room.slugifiedName && { name: room.slugifiedName }),
 			...(room.members && { members: room.members }),
 			...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
 			...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
