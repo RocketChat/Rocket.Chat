@@ -106,7 +106,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test.only('OC - Edit agent  - Manage departments', async ({ page }) => {
+	test('OC - Edit agent  - Manage departments', async ({ page }) => {
 		await poOmnichannelAgents.selectUsername('user1');
 		await poOmnichannelAgents.btnAdd.click();
 		await poOmnichannelAgents.inputSearch.fill('user1');
