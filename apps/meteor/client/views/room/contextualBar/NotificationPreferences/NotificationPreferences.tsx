@@ -1,7 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { FocusScope } from 'react-aria';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +35,7 @@ const NotificationPreferences = ({
 	} = useFormContext();
 
 	return (
-		<FocusScope contain autoFocus restoreFocus>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='bell' />
 				<ContextualbarTitle>{t('Notifications_Preferences')}</ContextualbarTitle>
@@ -53,7 +52,7 @@ const NotificationPreferences = ({
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</FocusScope>
+		</>
 	);
 };
 

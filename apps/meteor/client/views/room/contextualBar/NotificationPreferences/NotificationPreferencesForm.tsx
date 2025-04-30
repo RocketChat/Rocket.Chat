@@ -1,13 +1,14 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
 import NotificationToggle from './components/NotificationToggle';
-import { useIsKeyboardNavigationActive } from '../../../../hooks/useIsKeyboardNavigationActive';
+import { isKeyboardNavigationActive } from '../../../../lib/utils/isKeyboardNavigationActive';
 
 type NotificationPreferencesFormProps = {
 	notificationOptions: {
@@ -22,8 +23,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 
 	const { showCounter } = watch();
 
-	const shouldAutoFocus = useIsKeyboardNavigationActive();
-
+	const shouldAutoFocus = useMemo(() => isKeyboardNavigationActive(), []);
 	const autoFocusRef = useAutoFocus<HTMLInputElement>(shouldAutoFocus);
 
 	return (

@@ -1,7 +1,7 @@
-export const useIsKeyboardNavigationActive = () => {
+export const isKeyboardNavigationActive = () => {
 	const { activeElement } = document;
 
-	if (!activeElement) {
+	if (!activeElement || !(activeElement instanceof HTMLElement)) {
 		return false;
 	}
 
