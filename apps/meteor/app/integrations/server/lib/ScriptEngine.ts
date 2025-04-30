@@ -225,6 +225,8 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 
 		const scriptResult = await this.executeOutgoingScript(integration, 'process_outgoing_response', sandbox, historyId);
 
+		console.log('scriptResult', scriptResult);
+
 		if (scriptResult === false) {
 			return scriptResult;
 		}

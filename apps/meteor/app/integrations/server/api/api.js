@@ -1,4 +1,4 @@
-import { Integrations, Users } from '@rocket.chat/models';
+import { Integrations, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
@@ -11,7 +11,7 @@ import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
 import { incomingLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
-
+import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
 // eslint-disable-next-line no-unused-vars
@@ -116,6 +116,16 @@ async function executeIntegrationRest() {
 				username: this.user.username,
 			},
 		};
+
+		console.log('trigger outgoing', request);
+		if (request.user.username == 'telegrambot') {
+			const channelName = 'tg-' + request.content.message.chat.id;
+			const projection = { ...API.v1.defaultFieldsToExclude };
+			const tgChannel = await Rooms.findOneByName(channelName || '', { projection });
+			if (!tgChannel) {
+				await createChannelMethod(this.user._id, channelName, [], false, {}, {}, false);
+			}
+		}
 
 		const result = await scriptEngine.processIncomingRequest({
 			integration: this.request.integration,
