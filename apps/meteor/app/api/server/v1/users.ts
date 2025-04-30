@@ -30,6 +30,7 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
@@ -1135,7 +1136,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await Meteor.callAsync('removeOtherTokens'));
+			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
 		},
 	},
 );

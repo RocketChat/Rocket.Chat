@@ -179,7 +179,7 @@ export class LDAPManager {
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const homeServer = this.getFederationHomeServer(ldapUser);
-		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
+		const emails = homeServer ? [] : this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
 		const voipExtension = this.getLdapExtension(ldapUser);
 

@@ -184,6 +184,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
 
+	removeNonLoginTokensExcept(userId: any, authToken: any): any;
+
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
