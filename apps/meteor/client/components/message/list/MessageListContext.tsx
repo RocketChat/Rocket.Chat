@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { KeyboardEvent, MouseEvent, MutableRefObject } from 'react';
+import type { KeyboardEvent, MouseEvent, RefCallback } from 'react';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
@@ -25,7 +25,7 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	messageListRef?: MutableRefObject<HTMLElement | undefined>;
+	messageListRef?: RefCallback<HTMLElement | undefined>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -43,7 +43,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showUsername: false,
 	showColors: false,
 	username: undefined,
-	messageListRef: { current: undefined },
+	messageListRef: undefined,
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
