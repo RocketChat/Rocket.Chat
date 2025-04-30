@@ -11,7 +11,7 @@ export const useIdleConnection = () => {
 	const { disconnect: disconnectServer, reconnect: reconnectServer } = useContext(ServerContext);
 
 	const disconnect = useEffectEvent(() => {
-		if (status === 'offline') {
+		if (status !== 'offline') {
 			if (!uid && allowAnonymousRead !== true) {
 				disconnectServer();
 			}
