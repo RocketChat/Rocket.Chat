@@ -81,7 +81,7 @@ export class HomeContent {
 		await this.joinRoom();
 	}
 
-	async sendMessage(text: string): Promise<void> {
+	async sendMessage(text: string, enforce = true): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
@@ -91,13 +91,15 @@ export class HomeContent {
 		);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 
-		const response = await (await responsePromise).json();
+		if (enforce) {
+			const response = await (await responsePromise).json();
 
-		const mid = JSON.parse(response.message).result._id;
-		const messageLocator = this.getMessageById(mid);
+			const mid = JSON.parse(response.message).result._id;
+			const messageLocator = this.getMessageById(mid);
 
-		await expect(messageLocator).toBeVisible();
-		await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+			await expect(messageLocator).toBeVisible();
+			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
