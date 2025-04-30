@@ -1,20 +1,10 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
 
-import type { Options } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 
 class UsersCollection extends MinimongoCollection<IUser> {
-	findOneById<TOptions extends Omit<Options<IUser>, 'limit'>>(uid: IUser['_id'], options?: TOptions) {
-		const query: Filter<IUser> = {
-			_id: uid,
-		};
-
-		return this.findOne(query, options);
-	}
-
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id']) {
-		const user = this.findOneById(uid, { fields: { roles: 1 } });
+		const user = this.findOne({ _id: uid }, { fields: { roles: 1 } });
 		return user && Array.isArray(user.roles) && user.roles.includes(roleId);
 	}
 

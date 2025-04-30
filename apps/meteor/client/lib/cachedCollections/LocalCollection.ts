@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions, Filter, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
-import { Cursor, type DispatchTransform } from './Cursor';
+import { Cursor } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import type { IDocumentMapStore } from './IDocumentMapStore';
-import { IdMap } from './IdMap';
+import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
 import type { Options } from './MinimongoCollection';
 import type { OrderedQuery, Query, UnorderedQuery } from './Query';
@@ -24,160 +24,16 @@ import {
 	clone,
 } from './common';
 
-interface ILocalCollection<T extends { _id: string }> {
-	paused: boolean;
-	find(selector?: Filter<T> | T['_id']): Cursor<T, Options<T>, T>;
-	find<O extends Options<T>>(selector?: Filter<T> | T['_id'], options?: O): Cursor<T, O, DispatchTransform<O['transform'], T, T>>;
-	findOne(selector?: Filter<T> | T['_id']): T | undefined;
-	findOne<O extends Omit<Options<T>, 'limit'>>(
-		selector?: Filter<T> | T['_id'],
-		options?: O,
-	): DispatchTransform<O['transform'], T, T> | undefined;
-	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void): T['_id'];
-	pauseObservers(): void;
-	remove(selector: Filter<T>, callback?: (error: Error | null, result: number) => void): number;
-	resumeObserversClient(): void;
-	retrieveOriginals(): IdMap<T['_id'], T | undefined>;
-	saveOriginals(): void;
-	update(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): { numberAffected: number; insertedId?: T['_id'] } | number;
-	update(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		options: { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean } | null,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): { numberAffected: number; insertedId?: T['_id'] } | number;
-	upsert(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): { numberAffected: number; insertedId?: T['_id'] } | number;
-	upsert(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		options: { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean } | null,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): { numberAffected: number; insertedId?: T['_id'] } | number;
-	countDocuments(selector?: Filter<T>, options?: CountDocumentsOptions): Promise<number>;
-	estimatedDocumentCount(options: CountDocumentsOptions): Promise<number>;
-	findOneAsync(selector?: Filter<T> | T['_id']): Promise<T | undefined>;
-	findOneAsync<O extends Omit<Options<T>, 'limit'>>(
-		selector?: Filter<T> | T['_id'],
-		options?: O,
-	): Promise<DispatchTransform<O['transform'], T, T> | undefined>;
-	insertAsync(doc: T, callback?: (error: Error | null, id: T['_id']) => void): Promise<T['_id']>;
-	resumeObserversServer(): Promise<void>;
-	updateAsync(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): Promise<{ numberAffected: number; insertedId?: T['_id'] } | number>;
-	updateAsync(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		options: { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean } | null,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): Promise<{ numberAffected: number; insertedId?: T['_id'] } | number>;
-	upsertAsync(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): Promise<{ numberAffected: number; insertedId?: T['_id'] } | number>;
-	upsertAsync(
-		selector: Filter<T>,
-		mod: UpdateFilter<T>,
-		options: { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean } | null,
-		callback: (
-			error: Error | null,
-			result:
-				| number
-				| {
-						numberAffected: number;
-						insertedId?: T['_id'];
-				  },
-		) => void,
-	): Promise<{ numberAffected: number; insertedId?: T['_id'] } | number>;
-}
-
-export class LocalCollection<T extends { _id: string }> implements ILocalCollection<T> {
+export class LocalCollection<T extends { _id: string }> {
 	readonly _observeQueue = new SynchronousQueue();
 
 	readonly queries = new Set<Query<T>>();
 
-	// null if not saving originals; an IdMap from id to original document value
-	// if saving originals. See comments before saveOriginals().
-	private _savedOriginals: IdMap<T['_id'], T | undefined> | null = null;
+	private _savedOriginals: Map<T['_id'], T | undefined> | null = null;
 
 	paused = false;
 
 	constructor(protected store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>) {}
-
-	private has(id: T['_id']) {
-		return this.store.getState().has(id);
-	}
-
-	private get(id: T['_id']) {
-		return this.store.getState().get(id);
-	}
 
 	all() {
 		return this.store.getState().records;
@@ -237,7 +93,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			throw createMinimongoError('Document must have an _id field');
 		}
 
-		if (this.has(doc._id)) {
+		if (this.store.getState().has(doc._id)) {
 			throw createMinimongoError(`Duplicate _id '${doc._id}'`);
 		}
 
@@ -251,18 +107,13 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		if (callback) Meteor.defer(() => callback(...args));
 	}
 
-	// XXX possibly enforce that 'undefined' does not appear (we assume
-	// this in our handling of null and $exists)
 	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
 		const queriesToRecompute = new Set<Query<T>>();
 
-		// trigger live queries that match
 		for (const query of this.queries) {
-			if (query.dirty) {
-				continue;
-			}
+			if (query.dirty) continue;
 
 			const matchResult = query.matcher.documentMatches(doc);
 
@@ -290,11 +141,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const id = this.prepareInsert(doc);
 		const queriesToRecompute = new Set<Query<T>>();
 
-		// trigger live queries that match
-		for (const query of this.queries) {
-			if (query.dirty) {
-				continue;
-			}
+		for await (const query of this.queries) {
+			if (query.dirty) continue;
 
 			const matchResult = query.matcher.documentMatches(doc);
 
@@ -302,7 +150,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				if (query.cursor.skip || query.cursor.limit) {
 					queriesToRecompute.add(query);
 				} else {
-					// eslint-disable-next-line no-await-in-loop
 					await this._insertInResultsAsync(query, doc);
 				}
 			}
@@ -312,24 +159,17 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			this._recomputeResults(query);
 		}
 
-		await this._observeQueue.drain();
+		this._observeQueue.drain();
 		this.deferCallback(callback, null, id);
 
 		return id;
 	}
 
-	// Pause the observers. No callbacks from observers will fire until
-	// 'resumeObservers' is called.
 	pauseObservers() {
-		// No-op if already paused.
-		if (this.paused) {
-			return;
-		}
+		if (this.paused) return;
 
-		// Set the 'paused' flag such that new observer messages don't fire.
 		this.paused = true;
 
-		// Take a snapshot of the query results for each query.
 		for (const query of this.queries) {
 			query.resultsSnapshot = clone(query.results);
 		}
@@ -355,20 +195,18 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 	private prepareRemove(selector: Filter<T>) {
 		const matcher = new Matcher(selector);
-		const remove = new Set<T['_id']>();
+		const remove = new Set<T>();
 
-		this._eachPossiblyMatchingDocSync(selector, (doc, id) => {
+		this._eachPossiblyMatchingDocSync(selector, (doc) => {
 			if (matcher.documentMatches(doc).result) {
-				remove.add(id);
+				remove.add(doc);
 			}
 		});
 
 		const queriesToRecompute = new Set<Query<T>>();
 		const queryRemove = new Set<{ doc: T; query: Query<T> }>();
 
-		for (const removeId of remove) {
-			const removeDoc = this.get(removeId)!;
-
+		for (const removeDoc of remove) {
 			for (const query of this.queries) {
 				if (query.dirty) {
 					continue;
@@ -383,8 +221,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 				}
 			}
 
-			this._saveOriginal(removeId, removeDoc);
-			this.delete(removeId);
+			this._saveOriginal(removeDoc._id, removeDoc);
+			this.delete(removeDoc._id);
 		}
 
 		return { queriesToRecompute, queryRemove, count: remove.size };
@@ -400,7 +238,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		const { queriesToRecompute, queryRemove, count } = this.prepareRemove(selector);
 
-		// run live query callbacks _after_ we've removed the documents.
 		for (const remove of queryRemove) {
 			this._removeFromResultsSync(remove.query, remove.doc);
 		}
@@ -426,7 +263,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		const { queriesToRecompute, queryRemove, count } = this.prepareRemove(selector);
 
-		// run live query callbacks _after_ we've removed the documents.
 		for await (const remove of queryRemove) {
 			await this._removeFromResultsAsync(remove.query, remove.doc);
 		}
@@ -434,7 +270,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			this._recomputeResults(query);
 		}
 
-		await this._observeQueue.drain();
+		this._observeQueue.drain();
 
 		this.deferCallback(callback, null, count);
 
@@ -508,7 +344,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			throw new Error('Called saveOriginals twice without retrieveOriginals');
 		}
 
-		this._savedOriginals = new IdMap<T['_id'], T>();
+		this._savedOriginals = new Map<T['_id'], T>();
 	}
 
 	private prepareUpdate(selector: Filter<T>) {
@@ -595,8 +431,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		return result;
 	}
 
-	// XXX atomicity: if multi is true, and one modification fails, do
-	// we rollback the whole operation, or what?
 	async updateAsync(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
@@ -643,7 +477,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			const queryResult = matcher.documentMatches(doc);
 
 			if (queryResult.result) {
-				// XXX Should we save the original even if mod ends up being a no-op?
 				this._saveOriginal(id, doc);
 				recomputeQueries = await this._modifyAndNotifyAsync(doc, mod, queryResult.arrayIndices);
 
@@ -685,8 +518,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		});
 	}
 
-	// XXX atomicity: if multi is true, and one modification fails, do
-	// we rollback the whole operation, or what?
 	update(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
@@ -741,7 +572,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 			const queryResult = matcher.documentMatches(doc);
 
 			if (queryResult.result) {
-				// XXX Should we save the original even if mod ends up being a no-op?
 				this._saveOriginal(id, doc);
 				recomputeQueries = this._modifyAndNotifySync(doc, mod, queryResult.arrayIndices);
 
@@ -860,10 +690,9 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const specificIds = this._idsMatchedBySelector(selector);
 
 		if (specificIds) {
-			for (const id of specificIds) {
-				const doc = this.get(id);
+			for await (const id of specificIds) {
+				const doc = this.store.getState().get(id);
 
-				// eslint-disable-next-line no-await-in-loop
 				if (doc && !(await fn(doc, id))) {
 					break;
 				}
@@ -882,7 +711,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		if (specificIds) {
 			for (const id of specificIds) {
-				const doc = this.get(id);
+				const doc = this.store.getState().get(id);
 
 				if (doc && !fn(doc, id)) {
 					break;
@@ -901,9 +730,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const matchedBefore = new Map<Query<T>, boolean>();
 
 		for (const query of this.queries) {
-			if (query.dirty) {
-				continue;
-			}
+			if (query.dirty) continue;
 
 			if (query.ordered) {
 				matchedBefore.set(query, query.matcher.documentMatches(doc).result);
@@ -927,9 +754,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		const recomputeQueries = new Set<Query<T>>();
 
 		for (const query of this.queries) {
-			if (query.dirty) {
-				continue;
-			}
+			if (query.dirty) continue;
 
 			const afterMatch = query.matcher.documentMatches(doc);
 			const after = afterMatch.result;
@@ -965,10 +790,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		this.set(doc);
 
 		const recomputeQueries = new Set<Query<T>>();
-		for (const query of this.queries) {
-			if (query.dirty) {
-				continue;
-			}
+		for await (const query of this.queries) {
+			if (query.dirty) continue;
 
 			const afterMatch = query.matcher.documentMatches(doc);
 			const after = afterMatch.result;
@@ -986,13 +809,10 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 					recomputeQueries.add(query);
 				}
 			} else if (before && !after) {
-				// eslint-disable-next-line no-await-in-loop
 				await this._removeFromResultsAsync(query, doc);
 			} else if (!before && after) {
-				// eslint-disable-next-line no-await-in-loop
 				await this._insertInResultsAsync(query, doc);
 			} else if (before && after) {
-				// eslint-disable-next-line no-await-in-loop
 				await this._updateInResultsAsync(query, doc, oldDoc);
 			}
 		}
@@ -1051,12 +871,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		this._savedOriginals.set(id, clone(doc));
 	}
-
-	// XXX the sorted-query logic below is laughably inefficient. we'll
-	// need to come up with a better datastructure for this.
-	//
-	// XXX the logic for observing with a skip or a limit is even more
-	// laughably inefficient. we recompute the whole results every time!
 
 	// This binary search puts a value between any equal values, and the first
 	// lesser value.
@@ -1240,13 +1054,13 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		let isModify = false;
 		let isReplace = false;
 
-		Object.keys(mod).forEach((key) => {
+		for (const key of Object.keys(mod)) {
 			if (key.slice(0, 1) === '$') {
 				isModify = true;
 			} else {
 				isReplace = true;
 			}
-		});
+		}
 
 		if (isModify && isReplace) {
 			throw new Error('Update parameter cannot have both modifier and non-modifier fields.');
@@ -1255,18 +1069,6 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 		return isModify;
 	}
 
-	// XXX need a strategy for passing the binding of $ into this
-	// function, from the compiled selector
-	//
-	// maybe just {key.up.to.just.before.dollarsign: array_index}
-	//
-	// XXX atomicity: if one modification fails, do we roll back the whole
-	// change?
-	//
-	// options:
-	//   - isInsert is set when _modify is being called to compute the document to
-	//     insert as part of an upsert operation. We use this primarily to figure
-	//     out when to set the fields in $setOnInsert, if present.
 	private _modify<U extends Partial<T>>(doc: U, modifier: UpdateFilter<T>, options: { isInsert?: boolean; arrayIndices?: unknown } = {}) {
 		if (!_isPlainObject(modifier)) {
 			throw createMinimongoError('Modifier must be an object');
@@ -1280,7 +1082,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 
 		if (isModifier) {
 			// apply modifiers to the doc.
-			Object.keys(modifier).forEach((operator) => {
+			for (const operator of Object.keys(modifier)) {
 				// Treat $setOnInsert as $set if this is an insert.
 				const setOnInsert = options.isInsert && operator === '$setOnInsert';
 				const modFunc = MODIFIERS[(setOnInsert ? '$set' : operator) as keyof typeof MODIFIERS];
@@ -1290,7 +1092,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 					throw createMinimongoError(`Invalid modifier specified ${operator}`);
 				}
 
-				Object.keys(operand).forEach((keypath) => {
+				for (const keypath of Object.keys(operand)) {
 					const arg = operand[keypath];
 
 					if (keypath === '') {
@@ -1310,8 +1112,8 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 					});
 
 					modFunc(target, keyparts.pop(), arg, keypath, newDoc);
-				});
-			});
+				}
+			}
 
 			if (doc._id && doc._id !== newDoc._id) {
 				throw createMinimongoError(
@@ -1440,7 +1242,7 @@ export class LocalCollection<T extends { _id: string }> implements ILocalCollect
 }
 
 const MODIFIERS = {
-	$currentDate(target: any, field: any, arg: any) {
+	$currentDate<TField extends string>(target: Record<TField, Date>, field: TField, arg: any) {
 		if (typeof arg === 'object' && hasOwn.call(arg, '$type')) {
 			if (arg.$type !== 'date') {
 				throw createMinimongoError('Minimongo does currently only support the date type in $currentDate modifiers', { field });
@@ -1617,7 +1419,6 @@ const MODIFIERS = {
 				throw createMinimongoError('$position must be a numeric value', { field });
 			}
 
-			// XXX should check to make sure integer
 			if (arg.$position < 0) {
 				throw createMinimongoError('$position in $push must be zero or positive', { field });
 			}
@@ -1632,7 +1433,6 @@ const MODIFIERS = {
 				throw createMinimongoError('$slice must be a numeric value', { field });
 			}
 
-			// XXX should check to make sure integer
 			slice = arg.$slice;
 		}
 
@@ -1643,30 +1443,26 @@ const MODIFIERS = {
 				throw createMinimongoError('$sort requires $slice to be present', { field });
 			}
 
-			// XXX this allows us to use a $sort whose value is an array, but that's
-			// actually an extension of the Node driver, so it won't work
-			// server-side. Could be confusing!
-			// XXX is it correct that we don't do geo-stuff here?
 			sortFunction = new Sorter(arg.$sort).getComparator();
 
-			toPush.forEach((element) => {
+			for (const element of toPush) {
 				if (_f._type(element) !== 3) {
 					throw createMinimongoError('$push like modifiers using $sort require all elements to be objects', { field });
 				}
-			});
+			}
 		}
 
 		// Actually push.
 		if (position === undefined) {
-			toPush.forEach((element) => {
+			for (const element of toPush) {
 				target[field].push(element);
-			});
+			}
 		} else {
 			const spliceArguments = [position, 0];
 
-			toPush.forEach((element) => {
+			for (const element of toPush) {
 				spliceArguments.push(element);
-			});
+			}
 
 			target[field].splice(...(spliceArguments as Parameters<typeof Array.prototype.splice>));
 		}
@@ -1725,13 +1521,13 @@ const MODIFIERS = {
 		} else if (!Array.isArray(toAdd)) {
 			throw createMinimongoError('Cannot apply $addToSet modifier to non-array', { field });
 		} else {
-			values.forEach((value: any) => {
+			for (const value of values) {
 				if (toAdd.some((element) => _f._equal(value, element))) {
-					return;
+					continue;
 				}
 
 				toAdd.push(value);
-			});
+			}
 		}
 	},
 	$pop(target: any, field: any, arg: any) {
@@ -1771,15 +1567,6 @@ const MODIFIERS = {
 
 		let out;
 		if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
-			// XXX would be much nicer to compile this once, rather than
-			// for each document we modify.. but usually we're not
-			// modifying that many documents, so we'll let it slide for
-			// now
-
-			// XXX Minimongo.Matcher isn't up for the job, because we need
-			// to permit stuff like {$pull: {a: {$gt: 4}}}.. something
-			// like {$gt: 4} is not normally a complete selector.
-			// same issue as $elemMatch possibly?
 			const matcher = new Matcher(arg);
 
 			out = toPull.filter((element) => !matcher.documentMatches(element).result);
@@ -1811,8 +1598,6 @@ const MODIFIERS = {
 		target[field] = toPull.filter((object) => !arg.some((element) => _f._equal(object, element)));
 	},
 	$bit(_target: any, field: any) {
-		// XXX mongo only supports $bit on integers, and we only support
-		// native javascript numbers (doubles) so far, so we can't support $bit
 		throw createMinimongoError('$bit is not supported', { field });
 	},
 	$v() {

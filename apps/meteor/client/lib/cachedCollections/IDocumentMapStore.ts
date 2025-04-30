@@ -1,5 +1,5 @@
 export interface IDocumentMapStore<T extends { _id: string }> {
-	readonly records: T[];
+	readonly records: readonly T[];
 	has(_id: T['_id']): boolean;
 	get(_id: T['_id']): T | undefined;
 	find<U extends T>(predicate: (record: T) => record is U): U | undefined;

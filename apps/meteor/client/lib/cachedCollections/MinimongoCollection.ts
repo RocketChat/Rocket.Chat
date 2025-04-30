@@ -1,8 +1,7 @@
 import { Mongo } from 'meteor/mongo';
-import type { Filter, Hint, Sort } from 'mongodb';
+import type { Hint, Sort } from 'mongodb';
 import { create } from 'zustand';
 
-import type { DispatchTransform } from './Cursor';
 import type { IDocumentMapStore } from './IDocumentMapStore';
 import { LocalCollection } from './LocalCollection';
 
@@ -65,17 +64,5 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 
 	replaceAll(records: T[]) {
 		this.state.replaceAll(records);
-	}
-
-	findOne(selector?: Filter<T> | T['_id']): T | undefined;
-
-	findOne<O extends Omit<Options<T>, 'limit'>>(
-		selector?: Filter<T> | T['_id'],
-		options?: O,
-	): DispatchTransform<O['transform'], T, T> | undefined;
-
-	findOne(selector?: Filter<T> | T['_id'], options?: Options<T>) {
-		// There is a type issue from meteor/mongo
-		return super.findOne(selector, options as any);
 	}
 }

@@ -7,7 +7,7 @@ export class SynchronousQueue {
 
 	private runTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	runTask(task: () => void) {
+	private runTask(task: () => void) {
 		if (!this.safeToRunTask()) throw new Error('Could not synchronously run a task from a running task');
 
 		this.tasks.push(task);
@@ -53,7 +53,7 @@ export class SynchronousQueue {
 		}
 	}
 
-	flush() {
+	private flush() {
 		this.runTask(() => undefined);
 	}
 
