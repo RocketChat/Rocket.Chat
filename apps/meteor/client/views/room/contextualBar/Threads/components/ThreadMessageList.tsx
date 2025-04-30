@@ -2,7 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
-import type { ReactElement } from 'react';
+import type { ReactElement, RefCallback } from 'react';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -79,7 +79,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider messageListRef={jumpToRef}>
+						<MessageListProvider messageListRef={jumpToRef as unknown as RefCallback<HTMLElement>}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
