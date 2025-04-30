@@ -968,9 +968,11 @@ const commonUnauthorizedErrorSchema = {
 	properties: {
 		status: {
 			type: 'string',
+			description: 'The status of the response.',
 		},
 		message: {
 			type: 'string',
+			description: 'The error message.',
 		},
 	},
 	required: ['status', 'message'],
@@ -982,13 +984,16 @@ const commonBadRequestErrorSchema = {
 	properties: {
 		error: {
 			type: 'string',
+			description: 'The error message.',
 		},
 		stack: {
 			type: 'string',
 			nullable: true,
+			description: 'The stack trace of the error.',
 		},
 		errorType: {
 			type: 'string',
+			description: 'The type of the error.',
 		},
 		details: {
 			type: 'object',
@@ -996,9 +1001,11 @@ const commonBadRequestErrorSchema = {
 			properties: {
 				rid: {
 					type: 'string',
+					description: 'The room ID.',
 				},
 				method: {
 					type: 'string',
+					description: 'The method that caused the error.',
 				},
 			},
 		},
