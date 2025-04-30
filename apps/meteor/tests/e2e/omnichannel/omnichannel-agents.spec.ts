@@ -106,7 +106,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Edit agent  - Manage departments', async ({ page }) => {
+	test.only('OC - Edit agent  - Manage departments', async ({ page }) => {
 		await poOmnichannelAgents.selectUsername('user1');
 		await poOmnichannelAgents.btnAdd.click();
 		await poOmnichannelAgents.inputSearch.fill('user1');
@@ -114,7 +114,20 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await poOmnichannelAgents.btnEdit.click();
 		await poOmnichannelAgents.selectDepartment(department.data.name);
+		const reg = new RegExp(`/api/v1/method.call/${encodeURIComponent('livechat:saveAgentInfo')}`);
+		const response = page.waitForResponse(reg);
 		await poOmnichannelAgents.btnSave.click();
+
+		/**
+		 * between saving and opening the agent info again it is necessary to
+		 * wait for the agent to be saved, since after successfully saving
+		 * the contextual bar is closed
+		 * otherwise content will be closed even if the current one is not the editing one
+		 */
+
+		await response;
+
+		await expect(poOmnichannelAgents.editCtxBar).not.toBeVisible();
 
 		await test.step('expect the selected department is visible', async () => {
 			await poOmnichannelAgents.findRowByUsername('user1').click();
