@@ -8334,6 +8334,7 @@ __metadata:
   resolution: "@rocket.chat/i18n-utils@workspace:packages/i18n-utils"
   dependencies:
     "@rocket.chat/i18n": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
     "@types/chalk": "npm:^2.2.4"
     "@types/ejson": "npm:^2.2.2"
     eslint: "npm:~8.45.0"

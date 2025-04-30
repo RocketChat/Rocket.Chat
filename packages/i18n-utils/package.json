@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/i18n": "workspace:^",
+		"@rocket.chat/tools": "workspace:^",
 		"i18next": "~23.4.9"
 	}
 }
