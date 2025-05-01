@@ -9,7 +9,7 @@
 		"typescript": "~5.7.2"
 	},
 	"scripts": {
-		"build": "node ./src/index.mjs",
+		"build": "node ./src/scripts/index.mjs",
 		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
