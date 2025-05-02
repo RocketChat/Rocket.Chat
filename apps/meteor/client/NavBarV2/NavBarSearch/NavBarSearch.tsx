@@ -9,6 +9,7 @@ import tinykeys from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
+import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 
@@ -38,6 +39,7 @@ const NavBarSearch = () => {
 
 	const handleKeyDown = useSearchInputNavigation(state);
 	const handleFocus = useSearchFocus(state);
+	const handleClick = useSearchClick(state);
 
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
@@ -78,6 +80,7 @@ const NavBarSearch = () => {
 					{...triggerProps}
 					onFocus={handleFocus}
 					onKeyDown={handleKeyDown}
+					onClick={handleClick}
 					autoComplete='off'
 					placeholder={placeholder}
 					ref={mergedRefs}

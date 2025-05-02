@@ -1,9 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Subscriptions } from '../../../app/models/client';
 
-export const toggleFavoriteRoom = (roomId: string, favorite: boolean) => {
-	const userId = Meteor.userId()!;
+export const toggleFavoriteRoom = (roomId: string, favorite: boolean, userId: string | null) => {
+	if (!userId) {
+		return;
+	}
 
 	Subscriptions.update(
 		{
