@@ -23,7 +23,6 @@
 	"files": [
 		"/dist"
 	],
-	"type": "module",
 	"volta": {
 		"extends": "../../package.json"
 	}
