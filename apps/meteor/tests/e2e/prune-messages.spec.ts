@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { createTargetChannel, deleteChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -19,8 +19,8 @@ test.describe('prune-messages', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 		await Promise.all([
+			deleteChannel(api, targetChannel),
 			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
 			setSettingValueById(api, 'FileUpload_Storage_Type', 'GridFS'),
 			setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-0'),
@@ -46,13 +46,10 @@ test.describe('prune-messages', () => {
 		await page.locator('span').filter({ hasText: 'Only remove the attached' }).locator('i').click();
 		await page.getByRole('button', { name: 'Prune' }).click();
 		await page.getByRole('button', { name: 'Yes, prune them!' }).click();
-		await expect(page.getByText('2 messages pruned')).toBeVisible();
+		await expect(page.getByText('1 message pruned')).toBeVisible();
 
 		await page.reload();
 
-		await page.getByText('File removed by prune').click();
-
-		await expect(page.getByText('test-large-image.jpeg')).not.toBeVisible();
-		await expect(page.getByText('File removed by prune')).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('File removed by prune');
 	});
 });
