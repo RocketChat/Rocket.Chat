@@ -160,32 +160,3 @@ API.v1
 			});
 		},
 	);
-
-// API.v1.addRoute(
-// 	'ldap.testSearch',
-// 	{ authRequired: true, permissionsRequired: ['test-admin-options'] },
-// 	{
-// 		async post() {
-// 			check(
-// 				this.bodyParams,
-// 				Match.ObjectIncluding({
-// 					username: String,
-// 				}),
-// 			);
-
-// 			if (!this.userId) {
-// 				throw new Error('error-invalid-user');
-// 			}
-
-// 			if (settings.get('LDAP_Enable') !== true) {
-// 				throw new Error('LDAP_disabled');
-// 			}
-
-// 			await LDAP.testSearch(this.bodyParams.username);
-
-// 			return API.v1.success({
-// 				message: 'LDAP_User_Found' as const,
-// 			});
-// 		},
-// 	},
-// );
