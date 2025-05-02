@@ -122,6 +122,11 @@ class RoomHistoryManagerClass extends Emitter {
 		return setTimeout(fn, 500 - difference);
 	}
 
+	public isLoaded(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.loaded !== undefined;
+	}
+
 	private unqueue() {
 		const requestId = this.requestsList.pop();
 		if (!requestId) {
@@ -308,14 +313,20 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
-		this.clear(message.rid);
 
 		const subscription = Subscriptions.findOne({ rid: message.rid });
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
+		this.clear(message.rid);
+
 		if (!result) {
 			return;
+		}
+		const { messages = [] } = result;
+
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
 		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });

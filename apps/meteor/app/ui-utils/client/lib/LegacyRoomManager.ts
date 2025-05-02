@@ -93,8 +93,6 @@ const computation = Tracker.autorun(() => {
 
 			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
 
-			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
-
 			if (room) {
 				if (record.streamActive !== true) {
 					void sdk
