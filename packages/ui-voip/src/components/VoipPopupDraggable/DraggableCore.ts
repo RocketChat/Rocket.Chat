@@ -8,6 +8,9 @@ const DRAG_MOVE_EVENTS = ['pointermove' /* , 'touchmove' */] as const;
 
 const isLeftClick = (e: PointerEvent) => e.button === 0;
 
+// holds the HTMLElement - should not be here
+// attaches DOM events - should not be here
+// emits events - This is ok.
 class HandleElement extends Emitter<{
 	dragStart: { clientX: number; clientY: number };
 }> {
@@ -60,6 +63,13 @@ type DraggableElementOptions = {
 	restorePosition?: DOMRect;
 };
 
+// holds the HTMLElement - should not be here
+// attaches DOM events - should not be here
+// handles DOM node manipulation - should not be here
+// returns the clientRect - shouold not be here
+// emits events - This is ok.
+// handles offset (mouse/touch) logic - This is ok.
+//
 class DraggableElement extends Emitter<{
 	dragStart: DOMRect;
 	dragEnd: DOMRect;
@@ -328,3 +338,26 @@ export const useDraggable = () => {
 
 	return [draggableCallbackRef, boundingCallbackRef, handleElementCallbackRef];
 };
+
+// one hook for each element
+// Manager Class (attach events and handle interactions)
+// Abstract class and extended classes for each element
+
+/**
+ * I have to separate the concepts:
+ * Base classes are responsible for emitting events
+ * Base classes should not know about the DOM
+ * Base Classes should not know about each other
+ *
+ * Dom manipulation could be a controlled state. This has the downside of having to wait for rerendering and can be heavy.
+ * At least there should be the option to either be controlled or uncontrolled, and the base classes should support this.
+ *
+ * I could emit events and have a middleware to apply the changes to the DOM.
+ * I could pass a function that receives the transform offset and applies it to the DOM.
+ *
+ * Now I have a few choices:
+ * 1. Extend the Base class for each element, which handles the DOM
+ * 2. Static class with methods for DOM Element
+ * 3. Hooks for each element (not sure about this one)
+ * 4.
+ */
