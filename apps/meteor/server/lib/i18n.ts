@@ -1,5 +1,4 @@
-import i18nDict from '@rocket.chat/i18n';
-import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n-utils';
+import i18nDict, { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
 
 import { i18n } from '../../app/utils/lib/i18n';
 

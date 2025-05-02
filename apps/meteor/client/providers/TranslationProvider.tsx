@@ -1,6 +1,4 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import languages from '@rocket.chat/i18n/dist/languages';
-import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import {
 	addSprinfToI18n,
 	extractTranslationKeys,
@@ -8,7 +6,9 @@ import {
 	availableTranslationNamespaces,
 	defaultTranslationNamespace,
 	extractTranslationNamespaces,
-} from '@rocket.chat/i18n-utils';
+} from '@rocket.chat/i18n';
+import languages from '@rocket.chat/i18n/dist/languages';
+import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';

@@ -256,7 +256,6 @@
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/i18n": "workspace:^",
-		"@rocket.chat/i18n-utils": "workspace:^",
 		"@rocket.chat/icons": "^0.42.0",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",

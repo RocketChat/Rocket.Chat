@@ -8329,20 +8329,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/i18n-utils@workspace:^, @rocket.chat/i18n-utils@workspace:packages/i18n-utils":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/i18n-utils@workspace:packages/i18n-utils"
-  dependencies:
-    "@rocket.chat/i18n": "workspace:^"
-    "@rocket.chat/tools": "workspace:^"
-    "@types/chalk": "npm:^2.2.4"
-    "@types/ejson": "npm:^2.2.2"
-    eslint: "npm:~8.45.0"
-    i18next: "npm:~23.4.9"
-    typescript: "npm:~5.7.2"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/i18n@workspace:^, @rocket.chat/i18n@workspace:packages/i18n, @rocket.chat/i18n@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/i18n@workspace:packages/i18n"
@@ -8666,7 +8652,6 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
-    "@rocket.chat/i18n-utils": "workspace:^"
     "@rocket.chat/icons": "npm:^0.42.0"
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
