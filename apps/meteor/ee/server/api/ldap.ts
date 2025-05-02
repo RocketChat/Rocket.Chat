@@ -1,3 +1,5 @@
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
