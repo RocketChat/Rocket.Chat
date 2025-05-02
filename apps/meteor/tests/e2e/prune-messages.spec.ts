@@ -42,7 +42,7 @@ test.describe('prune-messages', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
 
 		await page.getByRole('button', { name: 'Options' }).click();
-		await page.getByText('Prune Messages').click();
+		await page.getByRole('menuitem', { name: 'Prune Messages' }).click();
 		await page.locator('span').filter({ hasText: 'Only remove the attached' }).locator('i').click();
 		await page.getByRole('button', { name: 'Prune' }).click();
 		await page.getByRole('button', { name: 'Yes, prune them!' }).click();
