@@ -8334,9 +8334,14 @@ __metadata:
   resolution: "@rocket.chat/i18n@workspace:packages/i18n"
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tools": "workspace:~"
     eslint: "npm:~8.45.0"
+    i18next: "npm:~23.4.9"
     jest: "npm:~29.7.0"
     typescript: "npm:~5.7.2"
+  peerDependencies:
+    "@rocket.chat/tools": "workspace:~"
+    i18next: "*"
   languageName: unknown
   linkType: soft
 

@@ -4,7 +4,9 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tools": "workspace:~",
 		"eslint": "~8.45.0",
+		"i18next": "~23.4.9",
 		"jest": "~29.7.0",
 		"typescript": "~5.7.2"
 	},
@@ -25,5 +27,9 @@
 	],
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"peerDependencies": {
+		"@rocket.chat/tools": "workspace:~",
+		"i18next": "*"
 	}
 }
