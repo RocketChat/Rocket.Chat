@@ -11,7 +11,6 @@ test.describe('prune-messages', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await Promise.all([
-			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
 			setSettingValueById(api, 'FileUpload_Storage_Type', 'FileSystem'),
 			setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-0'),
 		]);
@@ -21,9 +20,8 @@ test.describe('prune-messages', () => {
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			deleteChannel(api, targetChannel),
-			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
 			setSettingValueById(api, 'FileUpload_Storage_Type', 'GridFS'),
-			setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-0'),
+			setSettingValueById(api, 'FileUpload_FileSystemPath', ''),
 		]);
 	});
 
