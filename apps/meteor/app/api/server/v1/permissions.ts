@@ -1,3 +1,4 @@
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
