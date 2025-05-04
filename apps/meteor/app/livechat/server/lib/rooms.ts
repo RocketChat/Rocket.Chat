@@ -16,6 +16,7 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
+	ReadReceipts,
 } from '@rocket.chat/models';
 
 import { normalizeTransferredByData } from './Helper';
@@ -32,6 +33,8 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChanged,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
@@ -226,6 +229,12 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 		return false;
 	}
 
+	// update inquiry's last message with room's last message to correctly display in the queue
+	// because we stop updating the inquiry when it's been taken
+	if (room.lastMessage) {
+		await LivechatInquiry.setLastMessageById(inquiry._id, room.lastMessage);
+	}
+
 	const transferredBy = normalizeTransferredByData(user, room);
 	livechatLogger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
 	const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
@@ -240,4 +249,38 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 	callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 	return true;
+}
+
+export async function removeOmnichannelRoom(rid: string) {
+	livechatLogger.debug(`Deleting room ${rid}`);
+	check(rid, String);
+	const room = await LivechatRooms.findOneById(rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+	}
+
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
+	const result = await Promise.allSettled([
+		Messages.removeByRoomId(rid),
+		ReadReceipts.removeByRoomId(rid),
+		Subscriptions.removeByRoomId(rid, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		}),
+		LivechatInquiry.removeByRoomId(rid),
+		LivechatRooms.removeById(rid),
+	]);
+
+	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
+		void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+	}
+
+	for (const r of result) {
+		if (r.status === 'rejected') {
+			livechatLogger.error(`Error removing room ${rid}: ${r.reason}`);
+			throw new Meteor.Error('error-removing-room', 'Error removing room');
+		}
+	}
 }

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -81,8 +81,6 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const innerBoxRef = useRef<HTMLDivElement | null>(null);
-
 	const {
 		wrapperRef: unreadBarWrapperRef,
 		innerRef: unreadBarInnerRef,
@@ -93,9 +91,18 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
+	const {
+		innerRef: isAtBottomInnerRef,
+		atBottomRef,
+		sendToBottom,
+		sendToBottomIfNecessary,
+		isAtBottom,
+		jumpToRef: jumpToRefIsAtBottom,
+	} = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
+
+	const jumpToRef = useMergedRefs(jumpToRefGetMore, jumpToRefIsAtBottom);
 
 	const {
 		uploads,
@@ -118,7 +125,6 @@ const RoomBody = (): ReactElement => {
 
 	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
-		innerBoxRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
@@ -245,7 +251,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={innerBoxRef} />
+												<MessageList rid={room._id} messageListRef={jumpToRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

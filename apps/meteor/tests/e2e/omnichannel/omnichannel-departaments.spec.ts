@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects';
+import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment, deleteDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -19,15 +20,18 @@ test.describe('OC - Manage Departments', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
 	let poOmnichannelDepartments: OmnichannelDepartments;
+	let agent: Awaited<ReturnType<typeof createAgent>>;
 
 	test.beforeAll(async ({ api }) => {
 		// turn on department removal
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: true });
+		agent = await createAgent(api, 'user1');
 	});
 
 	test.afterAll(async ({ api }) => {
 		// turn off department removal
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: false });
+		await agent.delete();
 	});
 
 	test.describe('Create first department', async () => {
@@ -38,7 +42,7 @@ test.describe('OC - Manage Departments', () => {
 			await poOmnichannelDepartments.sidenav.linkDepartments.click();
 		});
 
-		test('Create department', async () => {
+		test('Create department', async ({ page }) => {
 			const departmentName = faker.string.uuid();
 
 			await poOmnichannelDepartments.headingButtonNew('Create department').click();
@@ -65,12 +69,40 @@ test.describe('OC - Manage Departments', () => {
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
 			});
 
-			await test.step('expect create new department', async () => {
+			await test.step('expect to fill required fields', async () => {
 				await poOmnichannelDepartments.btnEnabled.click();
 				await poOmnichannelDepartments.inputName.fill(departmentName);
 				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
-				await poOmnichannelDepartments.btnSave.click();
+			});
 
+			await test.step('expect to fetch agents a reasonable number of times', async () => {
+				let requestCount = 0;
+
+				await page.route('**/v1/livechat/users/agent*', async (route) => {
+					requestCount++;
+					await route.continue();
+				});
+
+				await poOmnichannelDepartments.inputAgents.click();
+				await poOmnichannelDepartments.inputAgents.fill('user1');
+
+				await page.waitForTimeout(1000);
+				await expect(requestCount).toBeGreaterThan(0);
+				await expect(requestCount).toBeLessThan(3);
+
+				await poOmnichannelDepartments.inputAgents.click();
+			});
+
+			await test.step('expect to add an agent', async () => {
+				await poOmnichannelDepartments.inputAgents.click();
+				await poOmnichannelDepartments.inputAgents.fill('user1');
+				await poOmnichannelDepartments.findOption('user1 (@user1)').click();
+				await poOmnichannelDepartments.btnAddAgent.click();
+				await expect(poOmnichannelDepartments.findAgentRow('user1')).toBeVisible();
+			});
+
+			await test.step('expect create new department', async () => {
+				await poOmnichannelDepartments.btnSave.click();
 				await poOmnichannelDepartments.search(departmentName);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 			});

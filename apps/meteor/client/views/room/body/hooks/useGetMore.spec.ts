@@ -11,6 +11,7 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 		hasMoreNext: jest.fn(),
 		getMore: jest.fn(),
 		getMoreNext: jest.fn(),
+		restoreScroll: jest.fn(),
 	},
 }));
 
