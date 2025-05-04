@@ -19,7 +19,7 @@ async function getAccessToken(accessToken: string) {
 }
 
 export async function oAuth2ServerAuth(partialRequest: {
-	headers: Record<string, any>;
+	headers: Record<string, any>;	
 	query: Record<string, any>;
 }): Promise<{ user: IUser } | undefined> {
 	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');

@@ -11,6 +11,9 @@ import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 import HeaderSkeletonV2 from '../HeaderV2/HeaderSkeleton';
 
+// Import external CSS file to replace inline styles
+import './RoomLayout.css'; // Make sure to create this CSS file with required styles
+
 type RoomLayoutProps = {
 	header?: ReactNode;
 	body?: ReactNode;
@@ -41,12 +44,8 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
-	// const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
-	
-	// / On small screens (e.g. mobile), using 100% width for the contextual bar hides the close (X) button.
-	// To fix this, we reduce width slightly to 95%, allowing space for the close button to appear.
+	// Adjust contextual bar size on small screens to prevent UI issues
 	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '95%';
-
 
 	const layout = useLayout();
 
@@ -86,22 +85,14 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{/* {aside && (
-						<ContextualbarDialog position={contextualbarPosition}>
-							<Suspense fallback={null}>{aside}</Suspense>
-						</ContextualbarDialog>
-					)} */}
 
-
-			// Wrap the `aside` content in a Box to ensure padding and overflow are handled properly on smaller screens.
-			// This prevents UI elements like the close (X) button from being cut off or hidden.
-
+					{/* Render aside if it exists. Apply CSS class to handle padding and overflow for small screens */}
 					{aside && (
-					<ContextualbarDialog position={contextualbarPosition}>
-						<Box style={{ padding: '0.5rem', overflow: 'auto', height: '100%' }}>
-						<Suspense fallback={null}>{aside}</Suspense>
-						</Box>
-					</ContextualbarDialog>
+						<ContextualbarDialog position={contextualbarPosition}>
+							<Box className="asideBox">
+								<Suspense fallback={null}>{aside}</Suspense>
+							</Box>
+						</ContextualbarDialog>
 					)}
 				</Box>
 			</Box>
