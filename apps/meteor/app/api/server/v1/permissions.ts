@@ -143,10 +143,7 @@ API.v1.get(
 		let updatedSinceDate: Date | undefined;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
-				return API.v1.failure({
-					errorType: 'error-roomId-param-invalid',
-					error: 'The "updatedSince" query parameter must be a valid date.',
-				});
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			}
 			updatedSinceDate = new Date(updatedSince);
 		}
