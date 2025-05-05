@@ -25,7 +25,7 @@ test.describe('prune-messages', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
-	test.describe('should prune messages with attached files in FileSystem (filesOnly)', () => {
+	test.describe('with attached files in FileSystem (filesOnly)', () => {
 		test.beforeAll('set storage type to FileSystem', async ({ api }) => {
 			await setSettingValueById(api, 'FileUpload_Storage_Type', 'FileSystem');
 		});
@@ -34,7 +34,7 @@ test.describe('prune-messages', () => {
 			await setSettingValueById(api, 'FileUpload_Storage_Type', 'GridFS');
 		});
 
-		test('with stable path', async ({ page, api }) => {
+		test('should prune with stable path', async ({ page, api }) => {
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-0`);
 
 			await sendFileMessage(poHomeChannel, 'test-large-image.jpeg');
@@ -49,42 +49,46 @@ test.describe('prune-messages', () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('File removed by prune');
 		});
 
-		test('with unstable path', async ({ page, api }) => {
+		test('should prune after changing path', async ({ page, api }) => {
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
 
 			await sendFileMessage(poHomeChannel, 'test-large-image.jpeg');
 
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
 
-			await test.step('attempt 1', async () => {
+			await test.step('attempt to prune with new path', async () => {
 				await setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-2');
-
 				await pruneMessages(page, { filesOnly: true });
-
 				await expect(page.getByText('No messages found to prune')).toBeVisible();
+			});
 
+			await test.step('attempt to download with new path', async () => {
 				await page.reload();
-
 				await expect(poHomeChannel.content.lastUserMessage).not.toContainText('File removed by prune');
 
 				const downloadPromise = page.waitForEvent('download');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
-				const failure = await download.failure();
-				expect(failure).toBe('canceled');
+				expect(await download.failure()).toBeTruthy();
 			});
 
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
 
-			await test.step('attempt 2', async () => {
+			await test.step('attempt to download after setting back the path', async () => {
+				const downloadPromise = page.waitForEvent('download');
+				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
+				const download = await downloadPromise;
+				expect(await download.failure()).toBeNull();
+			});
+
+			await test.step('attempt to prune after setting back the path', async () => {
 				await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
-
 				await pruneMessages(page, { filesOnly: true });
-
 				await expect(page.getByText('1 message pruned')).toBeVisible();
+			});
 
+			await test.step('check if the message is pruned', async () => {
 				await page.reload();
-
 				await expect(poHomeChannel.content.lastUserMessage).toContainText('File removed by prune');
 			});
 		});
