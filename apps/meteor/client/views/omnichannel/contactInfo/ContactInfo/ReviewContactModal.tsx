@@ -47,7 +47,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		const payload = {
 			name,
 			contactManager,
-			...(customFields && { ...customFields }),
+			...(customFields && { customFields }),
 			wipeConflicts: true,
 		};
 
@@ -86,7 +86,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 					return (
 						<Field key={index}>
-							<FieldLabel>{t(label as TranslationKey)}</FieldLabel>
+							<FieldLabel id={name}>{t(label as TranslationKey)}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name={name}
@@ -94,16 +94,24 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 									rules={{
 										required: isContactManagerField ? undefined : t('Required_field', { field: t(label as TranslationKey) }),
 									}}
-									render={({ field: { value, onChange } }) => <Component options={mappedOptions} value={value} onChange={onChange} />}
+									render={({ field: { value, onChange } }) => (
+										<Component
+											aria-labelledby={name}
+											aria-describedby={`${name}-hint ${name}-error`}
+											options={mappedOptions}
+											value={value}
+											onChange={onChange}
+										/>
+									)}
 								/>
 							</FieldRow>
-							<FieldHint>
+							<FieldHint id={`${name}-hint`}>
 								<Box display='flex' alignItems='center'>
 									<Box mie={4}>{t('different_values_found', { number: values.length })}</Box>
 									<Badge variant='primary' small />
 								</Box>
 							</FieldHint>
-							{errors?.[name] && <FieldError>{errors?.[name]?.message}</FieldError>}
+							{errors?.[name] && <FieldError id={`${name}-error`}>{errors?.[name]?.message}</FieldError>}
 						</Field>
 					);
 				})}

@@ -45,6 +45,7 @@ test.describe.serial('feature preview', () => {
 
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
 		await page.goto('/account/feature-preview');
+		await page.waitForSelector('.main-content');
 
 		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
@@ -202,6 +203,9 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.sendMessage('hello world');
 
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
+
+			await expect(item).toBeVisible();
+
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 			await poHomeChannel.sidebar.escSearch();
 

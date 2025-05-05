@@ -91,9 +91,18 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef } = useListIsAtBottom();
+	const {
+		innerRef: isAtBottomInnerRef,
+		atBottomRef,
+		sendToBottom,
+		sendToBottomIfNecessary,
+		isAtBottom,
+		jumpToRef: jumpToRefIsAtBottom,
+	} = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
+
+	const jumpToRef = useMergedRefs(jumpToRefIsAtBottom, jumpToRefGetMore);
 
 	const {
 		uploads,
