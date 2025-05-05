@@ -37,42 +37,33 @@ const wrapper = mockAppRoot().withTranslations('en', 'core', {
 	changed_room_description_to__room_description_: 'changed room description to: {{room_description}}',
 });
 
+const createBaseMessage = (msg: string): IMessage => ({
+	_id: Random.id(),
+	t: 'room_changed_description',
+	rid: Random.id(),
+	ts: new Date(),
+	msg,
+	u: {
+		_id: Random.id(),
+		username: faker.person.firstName().toLocaleLowerCase(),
+		name: faker.person.fullName(),
+	},
+	groupable: false,
+	_updatedAt: new Date(),
+});
+
 describe('SystemMessage', () => {
 	it('should render system message', () => {
-		const message: IMessage = {
-			_id: Random.id(),
-			t: 'room_changed_description',
-			rid: Random.id(),
-			ts: new Date(),
-			msg: '& test &',
-			u: {
-				_id: Random.id(),
-				username: faker.person.firstName().toLocaleLowerCase(),
-				name: faker.person.fullName(),
-			},
-			groupable: false,
-			_updatedAt: new Date(),
-		};
+		const message = createBaseMessage('& test &');
+
 		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
 	});
 
 	it('should not show escaped html while rendering system message', () => {
-		const message: IMessage = {
-			_id: Random.id(),
-			t: 'room_changed_description',
-			rid: Random.id(),
-			ts: new Date(),
-			msg: '& test &',
-			u: {
-				_id: Random.id(),
-				username: faker.person.firstName().toLocaleLowerCase(),
-				name: faker.person.fullName(),
-			},
-			groupable: false,
-			_updatedAt: new Date(),
-		};
+		const message = createBaseMessage('& test &');
+
 		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
@@ -80,20 +71,8 @@ describe('SystemMessage', () => {
 	});
 
 	it('should not inject html', () => {
-		const message: IMessage = {
-			_id: Random.id(),
-			t: 'room_changed_description',
-			rid: Random.id(),
-			ts: new Date(),
-			msg: '<button title="test-title">OK</button>',
-			u: {
-				_id: Random.id(),
-				username: faker.person.firstName().toLocaleLowerCase(),
-				name: faker.person.fullName(),
-			},
-			groupable: false,
-			_updatedAt: new Date(),
-		};
+		const message = createBaseMessage('<button title="test-title">OK</button>');
+
 		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
 
 		expect(screen.queryByTitle('test-title')).not.toBeInTheDocument();
