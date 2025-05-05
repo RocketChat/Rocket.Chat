@@ -1,11 +1,14 @@
 import { api } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { FileProp, IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+
+const logger = new Logger('cleanRoomHistory');
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -45,11 +48,14 @@ export async function cleanRoomHistory({
 	});
 
 	for await (const document of cursor) {
-		const uploadsStore = FileUpload.getStore('Uploads');
+		const res = await deleteUploadedFiles(document);
 
-		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
+		if (res.failed.length) {
+			continue;
+		}
 
 		fileCount++;
+
 		if (filesOnly) {
 			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
 		}
@@ -136,4 +142,28 @@ export async function cleanRoomHistory({
 	}
 
 	return count;
+}
+
+async function deleteUploadedFiles(document: IMessage) {
+	logger.info(`Deleting files from message ${document._id}`);
+	const files = document.files || [];
+	if (!files.length) {
+		logger.info(`No files to delete from message ${document._id}`);
+	}
+
+	const uploadsStore = FileUpload.getStore('Uploads');
+	const results = await Promise.all(files.map(createFileDeletionHandler((file) => uploadsStore.deleteById(file._id))));
+	return { failed: results.filter((res) => !res.success), succeeded: results.filter((res) => res.success) };
+}
+
+function createFileDeletionHandler<T>(deleteFile: (file: FileProp) => Promise<T>) {
+	return async (file: FileProp) => {
+		try {
+			const result = await deleteFile(file);
+			return { success: true, file, result } as const;
+		} catch (error) {
+			logger.error(`Error deleting file '${file._id}' '${file.name}':`, error);
+			return { success: false, file, error } as const;
+		}
+	};
 }

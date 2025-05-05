@@ -139,7 +139,7 @@ export class Store {
 			// Copy file data
 			await store.write(rs, copyId, (err) => {
 				if (err) {
-					void this.removeById(copyId);
+					void this.deleteById(copyId);
 					this.onCopyError.call(this, err, fileId, file);
 				}
 				if (typeof callback === 'function') {
@@ -230,9 +230,6 @@ export class Store {
 	}
 
 	async removeById(fileId: string, options?: { session?: ClientSession }) {
-		// Delete the physical file in the store
-		await this.delete(fileId);
-
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		// Delete the temp file
@@ -244,6 +241,14 @@ export class Store {
 		});
 
 		await this.getCollection().removeById(fileId, { session: options?.session });
+	}
+
+	async deleteById(fileId: string, options?: { session?: ClientSession }) {
+		// Delete the physical file in the store
+		await this.delete(fileId);
+
+		// Remove the file from the database
+		await this.removeById(fileId, options);
 	}
 
 	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {

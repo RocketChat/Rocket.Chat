@@ -1,6 +1,5 @@
 import fs from 'fs';
 import { unlink } from 'fs/promises';
-import { isNativeError } from 'util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';
@@ -69,17 +68,7 @@ export class LocalStore extends Store {
 
 		this.delete = async (fileId, options) => {
 			const path = await this.getFilePath(fileId);
-
-			try {
-				await unlink(path);
-			} catch (err) {
-				if (!isNativeError(err) || !('code' in err) || err.code !== 'ENOENT') {
-					throw err;
-				}
-
-				return;
-			}
-
+			await unlink(path);
 			await this.removeById(fileId, { session: options?.session });
 		};
 
