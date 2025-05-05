@@ -24,6 +24,10 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 					return;
 				}
 				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
+					if (!element.isConnected) {
+						return;
+					}
+
 					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
 					if (msgIdRef.current && !RoomHistoryManager.isLoaded(rid)) {
