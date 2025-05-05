@@ -8,7 +8,10 @@ import { logger } from './logger';
 const LockMap = new ExpiryMap<string, boolean>(15000);
 
 const serviceName = 'omnichannel-transcript' as const;
-export const requestPdfTranscript = async (room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v'>, requestedBy: string): Promise<void> => {
+export const requestPdfTranscript = async (
+	room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptFileId'>,
+	requestedBy: string,
+): Promise<void> => {
 	if (room.open) {
 		throw new Error('room-still-open');
 	}

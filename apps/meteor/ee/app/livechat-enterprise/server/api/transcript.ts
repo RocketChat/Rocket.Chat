@@ -10,9 +10,12 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'], license: ['livechat-enterprise'] },
 	{
 		async post() {
-			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 't'>>(this.urlParams.rid, {
-				projection: { _id: 1, open: 1, v: 1, t: 1 },
-			});
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 't' | 'pdfTranscriptFileId'>>(
+				this.urlParams.rid,
+				{
+					projection: { _id: 1, open: 1, v: 1, t: 1, pdfTranscriptFileId: 1 },
+				},
+			);
 			if (!room) {
 				throw new Error('error-invalid-room');
 			}
