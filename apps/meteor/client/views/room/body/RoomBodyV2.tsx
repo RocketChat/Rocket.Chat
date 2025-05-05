@@ -36,6 +36,8 @@ import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
+import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -81,6 +83,10 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
+	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
+
+	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
+
 	const {
 		wrapperRef,
 		innerRef: unreadBarInnerRef,
@@ -102,7 +108,15 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
 
-	const jumpToRef = useMergedRefs(jumpToRefIsAtBottom, jumpToRefGetMore);
+	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
+
+	const jumpToRef = useMergedRefs(
+		jumpToRefIsAtBottom,
+		jumpToRefGetMore,
+		jumpToRefRestoreScrollPosition,
+		jumpToRefGetMoreImperative,
+		surroundingMessagesJumpTpRef,
+	);
 
 	const {
 		uploads,
@@ -110,8 +124,6 @@ const RoomBody = (): ReactElement => {
 		handleUploadProgressClose,
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
-
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -132,6 +144,7 @@ const RoomBody = (): ReactElement => {
 		getMoreInnerRef,
 		selectAndScrollRef,
 		messageListRef,
+		jumpToRefGetMoreImperativeInnerRef,
 	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -240,7 +253,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef}>
+										<CustomScrollbars ref={innerRef} key={room._id}>
 											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
