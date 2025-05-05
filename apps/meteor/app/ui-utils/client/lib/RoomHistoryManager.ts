@@ -86,7 +86,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public getRoom(rid: IRoom['_id']) {
 		if (!this.histories[rid]) {
-			console.log('create room history', rid, new Error().stack);
 			this.histories[rid] = {
 				hasMore: new ReactiveVar(true),
 				hasMoreNext: new ReactiveVar(false),
