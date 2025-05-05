@@ -11,7 +11,6 @@ import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
-import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages';
 
 type MessageListProviderProps = {
 	children: ReactNode;
@@ -51,8 +50,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 
 	const hasSubscription = Boolean(subscription);
 	const msgParameter = useSearchParameter('msg');
-
-	useLoadSurroundingMessages(msgParameter);
 
 	const chat = useChat();
 
