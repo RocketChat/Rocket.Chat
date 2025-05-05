@@ -15,10 +15,14 @@ import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
-import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../hooks/useFormatTime';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
+import {
+	useMessageListShowUsername,
+	useMessageListShowRealName,
+	useMessageListShowRoles,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+} from './list/MessageListContext';
 import { useUserCard } from '../../views/room/contexts/UserCardContext';
 
 type MessageHeaderProps = {
@@ -28,8 +32,8 @@ type MessageHeaderProps = {
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const formatTime = useFormatTime();
-	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useMessageListFormatTime();
+	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();

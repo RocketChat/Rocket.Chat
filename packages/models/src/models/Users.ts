@@ -1354,6 +1354,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	removeNonLoginTokensExcept(userId: IUser['_id'], authToken: string) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						hashedToken: { $ne: authToken },
+					},
+				},
+			},
+		);
+	}
+
 	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']) {
 		return this.updateMany(
 			{
@@ -1867,18 +1882,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.findOne(query);
-	}
-
-	// TODO: check if this is still valid/used for something
-	setOperator(_id: IUser['_id'], operator: boolean) {
-		// TODO:: Create class Agent
-		const update = {
-			$set: {
-				operator,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
 	}
 
 	async checkOnlineAgents(agentId: IUser['_id'], isLivechatEnabledWhenAgentIdle?: boolean) {
@@ -2501,6 +2504,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser> = {}) {
+		const query = { _id: userId, roles: role };
+
+		return this.findOne(query, options);
 	}
 
 	async findByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
@@ -3396,9 +3405,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	removeAgent(_id: IUser['_id']) {
 		const update: UpdateFilter<IUser> = {
-			$set: {
-				operator: false,
-			},
 			$unset: {
 				livechat: 1,
 				statusLivechat: 1,

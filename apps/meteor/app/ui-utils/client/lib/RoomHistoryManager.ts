@@ -14,6 +14,8 @@ import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 
+const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
+
 export async function upsertMessage(
 	{
 		msg,
@@ -40,18 +42,22 @@ export async function upsertMessage(
 	return collection.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk(
+export async function upsertMessageBulk(
 	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
 	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const { queries } = collection;
 	collection.queries = [];
-	msgs.forEach((msg, index) => {
-		if (index === msgs.length - 1) {
-			collection.queries = queries;
-		}
-		void upsertMessage({ msg, subscription }, collection);
-	});
+	const lastMessage = msgs.pop();
+
+	for await (const msg of msgs) {
+		await upsertMessage({ msg, subscription }, collection);
+	}
+
+	if (lastMessage) {
+		collection.queries = queries;
+		await upsertMessage({ msg: lastMessage, subscription }, collection);
+	}
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
@@ -69,6 +75,10 @@ class RoomHistoryManagerClass extends Emitter {
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
 			oldestTs?: Date;
+			scroll?: {
+				scrollHeight: number;
+				scrollTop: number;
+			};
 		}
 	> = {};
 
@@ -162,12 +172,19 @@ class RoomHistoryManagerClass extends Emitter {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
-		await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+		const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
 
-		upsertMessageBulk({
+		room.scroll = {
+			scrollHeight: wrapper.scrollHeight,
+			scrollTop: wrapper.scrollTop,
+		};
+
+		await upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
 			subscription,
 		});
+
+		this.emit('loaded-messages');
 
 		if (!room.loaded) {
 			room.loaded = 0;
@@ -185,7 +202,27 @@ class RoomHistoryManagerClass extends Emitter {
 			return this.getMore(rid);
 		}
 
+		this.emit('loaded-messages');
+
 		room.isLoading.set(false);
+		await waitAfterFlush();
+	}
+
+	public restoreScroll(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+		if (room.scroll === undefined) {
+			return;
+		}
+
+		if (!wrapper) {
+			return;
+		}
+
+		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
+		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
+		room.scroll = undefined;
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
@@ -206,10 +243,12 @@ class RoomHistoryManagerClass extends Emitter {
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
 			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
-			upsertMessageBulk({
+			await upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
+
+			this.emit('loaded-messages');
 
 			room.isLoading.set(false);
 			if (!room.loaded) {
@@ -247,7 +286,7 @@ class RoomHistoryManagerClass extends Emitter {
 		return room.isLoading.get();
 	}
 
-	public async clear(rid: IRoom['_id']) {
+	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		Messages.remove({ rid });
 		room.isLoading.set(true);
@@ -269,7 +308,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
-		void this.clear(message.rid);
+		this.clear(message.rid);
 
 		const subscription = Subscriptions.findOne({ rid: message.rid });
 
@@ -279,7 +318,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		Tracker.afterFlush(async () => {
 			this.emit('loaded-messages');
