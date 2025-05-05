@@ -50,7 +50,7 @@ function close(typeName: string) {
 
 		if (rid) {
 			RoomManager.close(rid);
-			return RoomHistoryManager.clear(rid);
+			return RoomHistoryManager.close(rid);
 		}
 	}
 }

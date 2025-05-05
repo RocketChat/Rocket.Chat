@@ -86,6 +86,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public getRoom(rid: IRoom['_id']) {
 		if (!this.histories[rid]) {
+			console.log('create room history', rid, new Error().stack);
 			this.histories[rid] = {
 				hasMore: new ReactiveVar(true),
 				hasMoreNext: new ReactiveVar(false),
@@ -291,10 +292,15 @@ class RoomHistoryManagerClass extends Emitter {
 		return room.isLoading.get();
 	}
 
+	public close(rid: IRoom['_id']) {
+		Messages.remove({ rid });
+		delete this.histories[rid];
+	}
+
 	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		Messages.remove({ rid });
-		room.isLoading.set(true);
+		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
 		room.oldestTs = undefined;
