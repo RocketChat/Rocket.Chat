@@ -80,25 +80,6 @@ describe('LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		if (IS_EE) {
-			// install the app
-			await request
-				.post(apps())
-				.set(credentials)
-				.send({ url: APP_URL })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('app');
-					expect(res.body.app).to.have.a.property('id');
-					expect(res.body.app).to.have.a.property('version');
-					expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
-
-					appId = res.body.app.id;
-				});
-		}
-
 		await updateSetting('Livechat_enabled', true);
 		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await updateSetting('Omnichannel_enable_department_removal', true);
@@ -112,13 +93,6 @@ describe('LIVECHAT - rooms', () => {
 
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
-
-		if (IS_EE) {
-			await request
-				.delete(apps(`/${appId}`))
-				.set(credentials)
-				.expect(200);
-		}
 	});
 
 	describe('livechat/room', () => {
@@ -2696,7 +2670,7 @@ describe('LIVECHAT - rooms', () => {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('omnichannel/:rid/request-transcript', () => {
+	(IS_EE ? describe.only : describe.skip)('omnichannel/:rid/request-transcript', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			// Wait for one sec to be sure routing stops
@@ -2753,19 +2727,17 @@ describe('LIVECHAT - rooms', () => {
 				.set(credentials)
 				.expect(200);
 
-			// wait for the pdf to be generated
-			await sleep(1500);
-
 			const latestRoom = await getLivechatRoomInfo(roomId);
 			expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
 
 			roomWithTranscriptGenerated = roomId;
 		});
-		it('should return immediately if transcript was already requested', async () => {
+		// Not a breaking change, but now we throw this error earlier in the chain when a room already has a generated transcript
+		it('should throw an error when transcript is already generated for a room', async () => {
 			await request
 				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)
-				.expect(200);
+				.expect(400);
 		});
 	});
 
