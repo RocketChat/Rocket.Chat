@@ -1,4 +1,3 @@
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
@@ -7,6 +6,7 @@ import { flushSync } from 'react-dom';
 import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
 	const msgId = useSearchParameter('msg');
