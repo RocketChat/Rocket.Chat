@@ -70,7 +70,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.btnCreateUnit.click();
 			await poOmnichannelUnits.inputName.fill(unitName);
 			await poOmnichannelUnits.selectVisibility('public');
-			await poOmnichannelUnits.selectDepartment(department.data);
+			await poOmnichannelUnits.selectDepartment(department.data.name);
 			await poOmnichannelUnits.selectMonitor('user2');
 			await poOmnichannelUnits.btnSave.click();
 			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
@@ -178,15 +178,15 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
-			await poOmnichannelUnits.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelUnits.selectDepartment(department2.data.name);
 			await poOmnichannelUnits.btnSave.click();
 			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
 
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
-			await expect(poOmnichannelUnits.selectOptionChip(department2.data.name)).toBeVisible();
-			await poOmnichannelUnits.selectOptionChip(department2.data.name).hover();
+			await expect(poOmnichannelUnits.findDepartmentsChipOption(department2.data.name)).toBeVisible();
+			await poOmnichannelUnits.findDepartmentsChipOption(department2.data.name).hover();
 
 			await expect(page.getByRole('tooltip', { name: department2.data.name })).toBeVisible();
 			await poOmnichannelUnits.btnContextualbarClose.click();
@@ -196,7 +196,7 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
-			await poOmnichannelUnits.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelUnits.selectDepartment(department2.data.name);
 			await poOmnichannelUnits.btnSave.click();
 			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
 
