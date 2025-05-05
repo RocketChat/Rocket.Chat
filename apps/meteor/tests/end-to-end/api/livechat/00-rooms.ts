@@ -2761,12 +2761,11 @@ describe('LIVECHAT - rooms', () => {
 
 			roomWithTranscriptGenerated = roomId;
 		});
-		// Not a breaking change, but now we throw this error earlier in the chain when a room already has a generated transcript
-		it('should throw an error when transcript is already generated for a room', async () => {
+		it('should return when transcript was already requested', async () => {
 			await request
 				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)
-				.expect(400);
+				.expect(200);
 		});
 	});
 

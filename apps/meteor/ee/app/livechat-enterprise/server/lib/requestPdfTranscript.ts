@@ -20,12 +20,8 @@ export const requestPdfTranscript = async (
 		throw new Error('improper-room-state');
 	}
 
-	if (room.pdfTranscriptFileId) {
-		throw new Error('transcript-already-exists');
-	}
-
 	// Don't request a transcript if there's already one requested
-	if (LockMap.has(room._id)) {
+	if (LockMap.has(room._id) || room.pdfTranscriptFileId) {
 		// TODO: use logger
 		logger.info({ msg: `Transcript already requested`, roomId: room._id });
 		return;

@@ -38,9 +38,8 @@ describe('requestPdfTranscript', () => {
 		await expect(requestPdfTranscript({}, 'userId')).to.be.rejectedWith('improper-room-state');
 	});
 	it('should not allow to request a transcript if it already exists', async () => {
-		await expect(requestPdfTranscript({ _id: 'roomIdxx', v: 1, pdfTranscriptFileId: 'afsdafadsfs' }, 'userId')).to.be.rejectedWith(
-			'transcript-already-exists',
-		);
+		const result = await requestPdfTranscript({ _id: 'roomIdxx', v: 1, pdfTranscriptFileId: 'afsdafadsfs' }, 'userId');
+		expect(result).to.be.undefined;
 	});
 	it('should not allow to request a transcript if it was already requested during the previous 15 seconds', async () => {
 		await requestPdfTranscript({ _id: 'roomId', v: 1 }, 'userId');
