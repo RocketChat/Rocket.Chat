@@ -210,7 +210,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 							{errors?.visibility && <FieldError id={`${visibilityField}-error`}>{errors?.visibility.message}</FieldError>}
 						</Field>
 						<Field>
-							<FieldLabel htmlFor={departmentsField} required>
+							<FieldLabel id={departmentsField} required>
 								{t('Departments')}
 							</FieldLabel>
 							<FieldRow>
@@ -220,7 +220,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 									rules={{ required: t('Required_field', { field: t('Departments') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<PaginatedMultiSelectFiltered
-											id={departmentsField}
+											aria-labelledby={departmentsField}
 											name={name}
 											value={value}
 											onChange={onChange}
