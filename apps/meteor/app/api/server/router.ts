@@ -239,12 +239,18 @@ export class Router<
 			);
 			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
 				const responseValidatorFn = options?.response?.[statusCode];
+				/* c8 ignore next 3 */
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-				if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
-					throw new Error(
-						`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+				if (responseValidatorFn && !responseValidatorFn(body)) {
+					return c.json(
+						{
+							success: false,
+							errorType: 'error-invalid-body',
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+						},
+						400,
 					);
 				}
 			}
