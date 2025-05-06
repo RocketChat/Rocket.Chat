@@ -6,20 +6,24 @@ import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 export const useReloadAfterLogin = (user: IUser | null) => {
-	const currentUsername = useRef<string>();
+	const usernameRef = useRef<string>();
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!currentUsername.current && user?.username) {
-			currentUsername.current = user.username;
+		const isNewUser = !usernameRef.current && user?.username;
+		const usernameChanged = user?.username && usernameRef.current !== user.username;
+
+		if (isNewUser || usernameChanged) {
+			usernameRef.current = user.username;
+
 			LegacyRoomManager.closeAllRooms();
 
 			const routeName = router.getRouteName();
 			if (!routeName) {
 				return;
 			}
-			const roomType = roomCoordinator.getRouteNameIdentifier(routeName);
 
+			const roomType = roomCoordinator.getRouteNameIdentifier(routeName);
 			if (roomType) {
 				router.navigate({
 					name: routeName,
@@ -27,8 +31,6 @@ export const useReloadAfterLogin = (user: IUser | null) => {
 				});
 			}
 		}
-		return () => {
-			currentUsername.current = undefined;
-		};
+		// Purposely not cleaning up usernameRef - it needs to be persistent when logging out/in
 	}, [router, user?.username]);
 };
