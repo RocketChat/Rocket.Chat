@@ -1,3 +1,4 @@
+import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +34,16 @@ export const useAgentsList = (options: AgentsListOptions) => {
 		limit = DEFAULT_QUERY_LIMIT,
 	} = options;
 
+	const formatAgentItem = (agent: Serialized<ILivechatAgent>) => ({
+		_id: agent._id,
+		label: `${agent.name || agent._id} (@${agent.username})`,
+		value: agent._id,
+	});
+
 	return useInfiniteQuery({
 		queryKey: ['/v1/livechat/users/agent', { text, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
 		queryFn: async ({ pageParam: offset = 0 }) => {
-			return getAgents({
+			const { users, ...data } = await getAgents({
 				...(text && { text }),
 				...(excludeId && { excludeId }),
 				showIdleAgents,
@@ -45,29 +52,30 @@ export const useAgentsList = (options: AgentsListOptions) => {
 				count: limit,
 				sort: `{ "name": 1 }`,
 			});
+
+			return {
+				...data,
+				users: users.map(formatAgentItem),
+			};
 		},
 		select: (data) => {
-			const items = data.pages.flatMap<AgentOption>(({ users }) => {
-				return users.map((agent) => ({
-					label: `${agent.name || agent._id} (@${agent.username})`,
-					value: agent._id,
-					_id: agent._id,
-				}));
-			});
+			const items = data.pages.flatMap<AgentOption>((page) => page.users);
 
-			haveAll &&
+			if (haveAll) {
 				items.unshift({
 					label: t('All'),
 					value: 'all',
 					_id: 'all',
 				});
+			}
 
-			haveNoAgentsSelectedOption &&
+			if (haveNoAgentsSelectedOption) {
 				items.unshift({
 					label: t('Empty_no_agent_selected'),
 					value: 'no-agent-selected',
 					_id: 'no-agent-selected',
 				});
+			}
 
 			return items;
 		},
