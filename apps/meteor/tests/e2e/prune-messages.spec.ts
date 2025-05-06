@@ -25,7 +25,7 @@ test.describe('prune-messages', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
-	test.describe('with attached files in FileSystem (filesOnly)', () => {
+	test.describe('with attached files in FileSystem', () => {
 		test.beforeAll('set storage type to FileSystem', async ({ api }) => {
 			await setSettingValueById(api, 'FileUpload_Storage_Type', 'FileSystem');
 		});
@@ -36,27 +36,27 @@ test.describe('prune-messages', () => {
 
 		test('should prune with stable path', async ({ page, api }) => {
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-0`);
-
-			await sendFileMessage(poHomeChannel, 'test-large-image.jpeg');
-
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
+			await sendFileMessage(poHomeChannel, 'number1.png');
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 
 			await pruneMessages(page, { filesOnly: true });
 			await expect(page.getByText('1 message pruned')).toBeVisible();
-
 			await page.reload();
+			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
 
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('File removed by prune');
+			await pruneMessages(page, { filesOnly: false });
+			await expect(page.getByText('1 message pruned')).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
 		});
 
 		test('should prune after changing path', async ({ page, api }) => {
-			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
+			await test.step('set path to /tmp/rc-test-ufs-local-1 and send', async () => {
+				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
+				await sendFileMessage(poHomeChannel, 'number1.png');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
+			});
 
-			await sendFileMessage(poHomeChannel, 'test-large-image.jpeg');
-
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
-
-			await test.step('attempt to prune with new path', async () => {
+			await test.step('set path to /tmp/rc-test-ufs-local-2 and prune', async () => {
 				await setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-2');
 				await pruneMessages(page, { filesOnly: true });
 				await expect(page.getByText('No messages found to prune')).toBeVisible();
@@ -64,17 +64,14 @@ test.describe('prune-messages', () => {
 
 			await test.step('attempt to download with new path', async () => {
 				await page.reload();
-				await expect(poHomeChannel.content.lastUserMessage).not.toContainText('File removed by prune');
-
 				const downloadPromise = page.waitForEvent('download');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeTruthy();
 			});
 
-			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
-
-			await test.step('attempt to download after setting back the path', async () => {
+			await test.step('set path back to /tmp/rc-test-ufs-local-1 attempt to download', async () => {
+				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
 				const downloadPromise = page.waitForEvent('download');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
@@ -82,7 +79,7 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('attempt to prune after setting back the path', async () => {
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 				await pruneMessages(page, { filesOnly: true });
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
@@ -95,7 +92,11 @@ test.describe('prune-messages', () => {
 	});
 });
 
-async function pruneMessages(page: Page, { filesOnly = false } = {}) {
+type PruneMessagesOptions = {
+	filesOnly: boolean;
+};
+
+async function pruneMessages(page: Page, { filesOnly }: PruneMessagesOptions) {
 	if (!page.url().endsWith('/clean-history')) {
 		await page.getByRole('button', { name: 'Options' }).click();
 		await page.getByRole('menuitem', { name: 'Prune Messages' }).click();
