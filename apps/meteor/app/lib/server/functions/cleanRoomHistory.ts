@@ -50,7 +50,7 @@ export async function cleanRoomHistory({
 	for await (const document of cursor) {
 		const res = await deleteUploadedFiles(document);
 
-		if (res.failed.length) {
+		if (res.failed.length > 0) {
 			continue;
 		}
 

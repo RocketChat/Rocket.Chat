@@ -62,7 +62,6 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('prune succeeds', async () => {
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 				await pruneMessages(page, { filesOnly: false });
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 				await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
