@@ -152,12 +152,10 @@ export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSettin
 export const useEditableSettingVisibilityQuery = (query?: ISetting['enableQuery'] | ISetting['displayQuery']): boolean => {
 	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 
-	return useEditableSettingsStore(
-		useShallow((state) => {
-			if (!query) {
-				return true;
-			}
-			return performSettingQuery(query, state.state);
-		}),
-	);
+	return useEditableSettingsStore((state) => {
+		if (!query) {
+			return true;
+		}
+		return performSettingQuery(query, state.state);
+	});
 };
