@@ -1356,6 +1356,36 @@ describe('LIVECHAT - rooms', () => {
 			const userLeavingMessages = messagesList.filter((m) => m.t === 'ul');
 			expect(userLeavingMessages.length).to.be.equal(1);
 		});
+
+		(IS_EE ? it : it.skip)(
+			'should stop processing when an agent forwards to a department that has no online agents and doesnt accept to receive inquiries when offline',
+			async () => {
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: false });
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				await request
+					.post(api('livechat/room.forward'))
+					.set(credentials)
+					.send({
+						roomId: newRoom._id,
+						departmentId: forwardToOfflineDepartment._id,
+						clientAction: true,
+						comment: 'test comment',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.eq('error-forwarding-chat');
+					});
+
+				await deleteDepartment(initialDepartment._id);
+				await deleteDepartment(forwardToOfflineDepartment._id);
+			},
+		);
 	});
 
 	describe('livechat/room.survey', () => {

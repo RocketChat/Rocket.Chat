@@ -648,7 +648,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		},
 		room,
 	);
-	if (!roomTaken) {
+	if (!roomTaken || roomTaken.delegateFailed) {
 		logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 		return false;
 	}

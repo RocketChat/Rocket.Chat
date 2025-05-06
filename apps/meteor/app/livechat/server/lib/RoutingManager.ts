@@ -46,7 +46,7 @@ type Routing = {
 		agent?: SelectedAgent | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room?: IOmnichannelRoom,
-	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
+	): Promise<(IOmnichannelRoom & { chatQueued?: boolean; delegateFailed?: boolean }) | null | void>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
@@ -106,7 +106,10 @@ export const RoutingManager: Routing = {
 			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
 			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
 			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
-			return LivechatRooms.findOneById(rid);
+			return {
+				...(await LivechatRooms.findOneById(rid)),
+				delegateFailed: true,
+			} as IOmnichannelRoom & { delegateFailed?: boolean };
 		}
 
 		if (!room) {
