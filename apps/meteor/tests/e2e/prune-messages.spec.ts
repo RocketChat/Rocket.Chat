@@ -21,8 +21,7 @@ test.describe('prune-messages', () => {
 
 	test.beforeEach('open chat', async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.goto(`/channel/${targetChannel}/clean-history`);
 	});
 
 	test.describe('with attached files in FileSystem', () => {
@@ -52,8 +51,8 @@ test.describe('prune-messages', () => {
 		test('should prune after changing path', async ({ page, api }) => {
 			await test.step('set path to /tmp/rc-test-ufs-local-1 and send', async () => {
 				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
-				await sendFileMessage(poHomeChannel, 'number1.png');
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
+				await sendFileMessage(poHomeChannel, 'number2.png');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
 			});
 
 			await test.step('set path to /tmp/rc-test-ufs-local-2 and prune', async () => {
@@ -63,8 +62,8 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('attempt to download with new path', async () => {
-				await page.reload();
-				const downloadPromise = page.waitForEvent('download');
+				// await page.reload();
+				const downloadPromise = page.waitForEvent('download', { predicate: (download) => download.suggestedFilename() === 'number2.png' });
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeTruthy();
@@ -72,21 +71,23 @@ test.describe('prune-messages', () => {
 
 			await test.step('set path back to /tmp/rc-test-ufs-local-1 attempt to download', async () => {
 				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
-				const downloadPromise = page.waitForEvent('download');
+				const downloadPromise = page.waitForEvent('download', { predicate: (download) => download.suggestedFilename() === 'number2.png' });
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeNull();
 			});
 
 			await test.step('attempt to prune after setting back the path', async () => {
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
 				await pruneMessages(page, { filesOnly: true });
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
 
 			await test.step('check if the message is pruned', async () => {
-				await page.reload();
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('File removed by prune');
+				const downloadPromise = page.waitForEvent('download');
+				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
+				const download = await downloadPromise;
+				expect(await download.failure()).toBeTruthy();
 			});
 		});
 	});
@@ -97,13 +98,7 @@ type PruneMessagesOptions = {
 };
 
 async function pruneMessages(page: Page, { filesOnly }: PruneMessagesOptions) {
-	if (!page.url().endsWith('/clean-history')) {
-		await page.getByRole('button', { name: 'Options' }).click();
-		await page.getByRole('menuitem', { name: 'Prune Messages' }).click();
-	}
-	if (filesOnly) {
-		await page.locator('span').filter({ hasText: 'Only remove the attached' }).locator('i').click();
-	}
+	await page.locator('span').filter({ hasText: 'Only remove the attached' }).locator('i').setChecked(filesOnly);
 	await page.getByRole('button', { name: 'Prune' }).click();
 	return page.getByRole('button', { name: 'Yes, prune them!' }).click();
 }
