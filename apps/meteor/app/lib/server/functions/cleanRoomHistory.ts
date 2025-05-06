@@ -145,10 +145,10 @@ export async function cleanRoomHistory({
 }
 
 async function deleteUploadedFiles(document: IMessage) {
-	logger.info(`Deleting files from message ${document._id}`);
+	logger.warn(`Deleting files from message ${document._id}`);
 	const files = document.files || [];
 	if (!files.length) {
-		logger.info(`No files to delete from message ${document._id}`);
+		logger.warn(`No files to delete from message ${document._id}`);
 	}
 
 	const uploadsStore = FileUpload.getStore('Uploads');
@@ -160,9 +160,10 @@ function createFileDeletionHandler<T>(deleteFile: (file: FileProp) => Promise<T>
 	return async (file: FileProp) => {
 		try {
 			const result = await deleteFile(file);
+			logger.warn('File deleted:', file);
 			return { success: true, file, result } as const;
 		} catch (error) {
-			logger.error(`Error deleting file '${file._id}' '${file.name}':`, error);
+			logger.error('File not deleted:', file, error);
 			return { success: false, file, error } as const;
 		}
 	};

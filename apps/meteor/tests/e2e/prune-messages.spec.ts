@@ -35,59 +35,80 @@ test.describe('prune-messages', () => {
 
 		test('should prune with stable path', async ({ page, api }) => {
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-0`);
-			await sendFileMessage(poHomeChannel, 'number1.png');
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 
-			await pruneMessages(page, { filesOnly: true });
-			await expect(page.getByText('1 message pruned')).toBeVisible();
-			await page.reload();
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-
-			await pruneMessages(page, { filesOnly: false });
-			await expect(page.getByText('1 message pruned')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
-		});
-
-		test('should prune after changing path', async ({ page, api }) => {
-			await test.step('set path to /tmp/rc-test-ufs-local-1 and send', async () => {
-				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
-				await sendFileMessage(poHomeChannel, 'number2.png');
-				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
+			await test.step('send file message', async () => {
+				await sendFileMessage(poHomeChannel, 'number1.png');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 			});
 
-			await test.step('set path to /tmp/rc-test-ufs-local-2 and prune', async () => {
-				await setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-2');
+			await test.step('prune filesOnly succeeds', async () => {
 				await pruneMessages(page, { filesOnly: true });
-				await expect(page.getByText('No messages found to prune')).toBeVisible();
+				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
 
-			await test.step('attempt to download with new path', async () => {
-				// await page.reload();
-				const downloadPromise = page.waitForEvent('download', { predicate: (download) => download.suggestedFilename() === 'number2.png' });
+			await test.step('download fails', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number1.png');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeTruthy();
 			});
 
-			await test.step('set path back to /tmp/rc-test-ufs-local-1 attempt to download', async () => {
-				await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
-				const downloadPromise = page.waitForEvent('download', { predicate: (download) => download.suggestedFilename() === 'number2.png' });
+			await test.step('prune succeeds', async () => {
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
+				await pruneMessages(page, { filesOnly: false });
+				await expect(page.getByText('1 message pruned')).toBeVisible();
+				await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+			});
+		});
+
+		test('should prune after changing path', async ({ page, api }) => {
+			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
+
+			await test.step('send file message', async () => {
+				await sendFileMessage(poHomeChannel, 'number2.png');
+				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
+			});
+
+			await setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-2');
+
+			await test.step('prune filesOnly fails', async () => {
+				await pruneMessages(page, { filesOnly: true });
+				await expect(page.getByText('No messages found to prune')).toBeVisible();
+			});
+
+			await test.step('download fails', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
+				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
+				const download = await downloadPromise;
+				expect(await download.failure()).toBeTruthy();
+			});
+
+			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
+
+			await test.step('download succeeds', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeNull();
 			});
 
-			await test.step('attempt to prune after setting back the path', async () => {
+			await test.step('prune filesOnly succeeds', async () => {
 				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
 				await pruneMessages(page, { filesOnly: true });
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
 
-			await test.step('check if the message is pruned', async () => {
-				const downloadPromise = page.waitForEvent('download');
+			await test.step('download fails', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeTruthy();
+			});
+
+			await test.step('prune succeeds', async () => {
+				await pruneMessages(page, { filesOnly: false });
+				await expect(page.getByText('1 message pruned')).toBeVisible();
+				await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
 			});
 		});
 	});
