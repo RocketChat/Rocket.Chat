@@ -16,7 +16,7 @@ interface MessageComposerInputProps extends ComponentProps<typeof Box> {}
 
 const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInputProps>(function MessageComposerInput(props, ref) {
 	return (
-		<Box is='div' width='full' fontSize={0}>
+		<Box width='full' fontSize={0}>
 			<Box
 				className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
 				color='default'
