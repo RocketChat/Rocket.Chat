@@ -41,16 +41,24 @@ test.describe('prune-messages', () => {
 				await expect(poHomeChannel.content.lastUserMessage).toContainText('number1.png');
 			});
 
+			let downloadUrl: string;
+
+			await test.step('download succeeds', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number1.png');
+				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
+				const download = await downloadPromise;
+				expect(await download.failure()).toBeNull();
+				downloadUrl = download.url();
+			});
+
 			await test.step('prune filesOnly succeeds', async () => {
 				await pruneMessages(page, { filesOnly: true });
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
 
-			await test.step('download fails', async () => {
-				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number1.png');
-				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
-				const download = await downloadPromise;
-				expect(await download.failure()).toBeTruthy();
+			await test.step('download fails with not found (404)', async () => {
+				const download = await fetch(downloadUrl);
+				expect(download.status).toBe(404);
 			});
 
 			await test.step('prune succeeds', async () => {
@@ -69,6 +77,15 @@ test.describe('prune-messages', () => {
 				await expect(poHomeChannel.content.lastUserMessage).toContainText('number2.png');
 			});
 
+			let downloadUrl: string;
+			await test.step('download succeeds', async () => {
+				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
+				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
+				const download = await downloadPromise;
+				expect(await download.failure()).toBeNull();
+				downloadUrl = download.url();
+			});
+
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', '/tmp/rc-test-ufs-local-2');
 
 			await test.step('prune filesOnly fails', async () => {
@@ -76,11 +93,9 @@ test.describe('prune-messages', () => {
 				await expect(page.getByText('No messages found to prune')).toBeVisible();
 			});
 
-			await test.step('download fails', async () => {
-				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
-				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
-				const download = await downloadPromise;
-				expect(await download.failure()).toBeTruthy();
+			await test.step('download fails with status 403 (forbidden)', async () => {
+				const download = await fetch(downloadUrl);
+				expect(download.status).toBe(403);
 			});
 
 			await setSettingValueById(api, 'FileUpload_FileSystemPath', `/tmp/rc-test-ufs-local-1`);
@@ -90,6 +105,7 @@ test.describe('prune-messages', () => {
 				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
 				const download = await downloadPromise;
 				expect(await download.failure()).toBeNull();
+				downloadUrl = download.url();
 			});
 
 			await test.step('prune filesOnly succeeds', async () => {
@@ -98,11 +114,9 @@ test.describe('prune-messages', () => {
 				await expect(page.getByText('1 message pruned')).toBeVisible();
 			});
 
-			await test.step('download fails', async () => {
-				const downloadPromise = page.waitForEvent('download', (d) => d.suggestedFilename() === 'number2.png');
-				await poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Download' }).click();
-				const download = await downloadPromise;
-				expect(await download.failure()).toBeTruthy();
+			await test.step('download fails with status 404 (not found)', async () => {
+				const download = await fetch(downloadUrl);
+				expect(download.status).toBe(404);
 			});
 
 			await test.step('prune succeeds', async () => {
