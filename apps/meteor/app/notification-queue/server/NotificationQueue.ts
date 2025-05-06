@@ -169,7 +169,7 @@ class NotificationClass {
 			rid,
 			mid,
 			ts: new Date(),
-			schedule,
+			...(schedule && { schedule }),
 			items,
 		});
 	}
