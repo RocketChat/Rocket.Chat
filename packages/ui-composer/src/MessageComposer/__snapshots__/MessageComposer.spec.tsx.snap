@@ -11,7 +11,7 @@ exports[`renders Default without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1drwzbn"
       >
         <textarea
-          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
           placeholder="Text"
           rows="1"
         />
@@ -432,7 +432,7 @@ exports[`renders withHints without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1drwzbn"
       >
         <textarea
-          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
           placeholder="Text"
           rows="1"
         />
@@ -642,7 +642,7 @@ exports[`renders withSubmit without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1drwzbn"
       >
         <textarea
-          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
           placeholder="Text"
           rows="1"
         />
