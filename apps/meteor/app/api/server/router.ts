@@ -191,9 +191,12 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 			req.raw.route = `${c.var.route ?? ''}${subpath}`;
+
+			const queryParams = this.parseQueryParams(req);
+
 			if (options.query) {
 				const validatorFn = options.query;
-				if (typeof options.query === 'function' && !validatorFn(req.query())) {
+				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
 					return c.json(
 						{
 							success: false,
@@ -229,7 +232,7 @@ export class Router<
 				{
 					requestIp: c.get('remoteAddress'),
 					urlParams: req.param(),
-					queryParams: this.parseQueryParams(req),
+					queryParams,
 					bodyParams,
 					request: req.raw.clone(),
 					path: req.path,
