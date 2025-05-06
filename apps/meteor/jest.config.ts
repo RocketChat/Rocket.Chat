@@ -44,4 +44,5 @@ export default {
 			],
 		},
 	],
+	coverageProvider: 'v8',
 } satisfies Config;
