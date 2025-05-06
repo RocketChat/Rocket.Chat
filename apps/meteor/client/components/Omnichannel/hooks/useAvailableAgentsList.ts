@@ -20,7 +20,7 @@ export const useAvailableAgentsList = (options: AgentsListOptions) => {
 	const { text, includeExtension, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getAgents = useEndpoint('GET', '/v1/omnichannel/agents/available');
 
-	const formatTagItem = (agent: Serialized<ILivechatAgent>): AgentOption => ({
+	const formatAgentItem = (agent: Serialized<ILivechatAgent>): AgentOption => ({
 		_id: agent._id,
 		label: agent.username ?? '',
 		value: agent._id,
@@ -39,7 +39,7 @@ export const useAvailableAgentsList = (options: AgentsListOptions) => {
 
 			return {
 				...data,
-				agents: agents.map(formatTagItem),
+				agents: agents.map(formatAgentItem),
 			};
 		},
 		select: (data) => data.pages.flatMap<AgentOption>((page) => page.agents),
