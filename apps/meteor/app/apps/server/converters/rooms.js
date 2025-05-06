@@ -129,7 +129,7 @@ export class AppRoomsConverter {
 
 		const departmentId = await this.__getDepartment(room);
 
-		const servedBy = await this.__getUserIdAndUsername(room.servedBy.id);
+		const servedBy = await this.__getUserIdAndUsername(room?.servedBy?.id);
 
 		const closedBy = await this.__getRoomCloser(room, v);
 
