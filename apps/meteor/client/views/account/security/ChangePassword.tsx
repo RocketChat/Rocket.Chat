@@ -43,6 +43,24 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		}
 	};
 
+	function getAriaDescribedbyForPassword(passwordError: boolean) {
+		let str = `${passwordVerifierId}`;
+		if (!allowPasswordChange) {
+			str += ` ${passwordId}-hint ${passwordId}-error`;
+		}
+		if (passwordError) {
+			str += ` ${passwordId}-error`;
+		}
+		return str;
+	}
+
+	function getAriaDescribedbyForPasswordVerification(verificationError: boolean) {
+		if (verificationError) {
+			return `${confirmPasswordId}-error`;
+		}
+		return undefined;
+	}
+
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
@@ -63,7 +81,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									error={errors.password?.message}
 									flexGrow={1}
 									disabled={!allowPasswordChange}
-									aria-describedby={`${passwordVerifierId} ${passwordId}-hint ${passwordId}-error`}
+									aria-describedby={getAriaDescribedbyForPassword(!!errors?.password)}
 									aria-invalid={errors.password ? 'true' : 'false'}
 								/>
 							)}
@@ -96,7 +114,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									disabled={!allowPasswordChange || !passwordIsValid}
 									aria-required={password !== '' ? 'true' : 'false'}
 									aria-invalid={errors.confirmationPassword ? 'true' : 'false'}
-									aria-describedby={`${confirmPasswordId}-error`}
+									aria-describedby={getAriaDescribedbyForPasswordVerification(!!errors.confirmationPassword)}
 								/>
 							)}
 						/>
