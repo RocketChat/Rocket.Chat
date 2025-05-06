@@ -59,12 +59,12 @@ export class AppRoomsConverter {
 		};
 	}
 
-	async __getUserIdAndUsername(uid) {
-		if (!uid) {
+	async __getUserIdAndUsername(userObj) {
+		if (!userObj?.id) {
 			return;
 		}
 
-		const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		const user = await Users.findOneById(userObj.id, { projection: { _id: 1, username: 1 } });
 		if (!user) {
 			return;
 		}
@@ -129,7 +129,7 @@ export class AppRoomsConverter {
 
 		const departmentId = await this.__getDepartment(room);
 
-		const servedBy = await this.__getUserIdAndUsername(room?.servedBy?.id);
+		const servedBy = await this.__getUserIdAndUsername(room?.servedBy);
 
 		const closedBy = await this.__getRoomCloser(room, v);
 
