@@ -28,6 +28,12 @@ const config = {
 				'react/no-multi-comp': 'off',
 			},
 		},
+		{
+			files: ['**/*.spec.ts'],
+			rules: {
+				'react-hooks/rules-of-hooks': 'off',
+			},
+		},
 	],
 };
 
