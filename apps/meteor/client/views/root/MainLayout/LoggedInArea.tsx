@@ -1,8 +1,10 @@
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
+import { useCustomEmoji } from '../../../hooks/customEmoji/useCustomEmoji';
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
+import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
@@ -23,6 +25,8 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useNotificationUserCalendar(user);
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
+	useCustomEmoji();
+	useRestrictedRoles();
 
 	return children;
 };

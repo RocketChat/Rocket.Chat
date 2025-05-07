@@ -16,7 +16,7 @@ import { Header, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../..
 
 export type RoomHeaderProps = {
 	room: IRoom;
-	slots: {
+	slots?: {
 		start?: ReactNode;
 		preContent?: ReactNode;
 		insideContent?: ReactNode;

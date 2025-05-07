@@ -83,6 +83,18 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		];
 	}
 
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+
+	async findOneById<P extends Document = IOmnichannelRoom>(_id: IOmnichannelRoom['_id'], options?: FindOptions<P>): Promise<P | null>;
+
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
+		if (options) {
+			return this.findOne(query, options);
+		}
+		return this.findOne(query);
+	}
+
 	getQueueMetrics({
 		departmentId,
 		agentId,
@@ -1276,11 +1288,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
+		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName?.endsWith(`"`);
+		const roomNameQuery = isRoomNameExactTerm ? roomName?.slice(1, -1) : roomName;
+
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
-			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
+			...(roomName && isRoomNameExactTerm
+				? { fname: roomNameQuery } // exact match
+				: roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }), // regex match
 			...(departmentId && departmentId !== 'undefined' && { departmentId: { $in: ([] as string[]).concat(departmentId) } }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
@@ -1953,14 +1970,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}, options?: FindOptions<IOmnichannelRoom>) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByVisitorIdAndAgentId(
@@ -2297,7 +2314,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.countDocuments(query);
 	}
 
-	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
@@ -2305,7 +2322,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string; ts?: Date }) {

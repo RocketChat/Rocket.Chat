@@ -52,7 +52,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
-	const messageBody = useMessageBody(parentMessage.data, message.rid);
+	const messageBody = useMessageBody(parentMessage.data);
 
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
