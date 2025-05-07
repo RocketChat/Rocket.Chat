@@ -33,7 +33,7 @@ it('should fetch agents', async () => {
 			users,
 			count,
 			offset,
-			total: data.length - 1,
+			total: data.length,
 		};
 	});
 

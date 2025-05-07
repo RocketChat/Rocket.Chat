@@ -31,7 +31,7 @@ it('should fetch available agents', async () => {
 			agents,
 			count,
 			offset,
-			total: data.length - 1,
+			total: data.length,
 		};
 	});
 
