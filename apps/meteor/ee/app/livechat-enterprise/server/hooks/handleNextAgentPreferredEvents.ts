@@ -8,9 +8,6 @@ import { checkDefaultAgentOnNewRoom } from '../../../../../app/livechat/server/l
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 
-let contactManagerPreferred = false;
-let lastChattedAgentPreferred = false;
-
 const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | undefined => {
 	if (!agent) {
 		return undefined;
@@ -43,8 +40,7 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 };
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
-	lastChattedAgentPreferred = value;
-	if (!lastChattedAgentPreferred) {
+	if (!value) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
 		return;
@@ -98,10 +94,6 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 	);
 });
 
-settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
-	contactManagerPreferred = value;
-});
-
 checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source } = {}) => {
 	if (!visitorId || !source) {
 		return defaultAgent;
@@ -111,7 +103,7 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 		projection: { lastAgent: 1, token: 1, contactManager: 1 },
 	});
 	if (!guest) {
-		return undefined;
+		return defaultAgent;
 	}
 
 	const hasDivergentContactManager = defaultAgent?.agentId !== guest?.contactManager;
@@ -122,13 +114,14 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 	const contactId = await migrateVisitorIfMissingContact(visitorId, source);
 	const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : undefined;
 
+	const contactManagerPreferred = settings.get<boolean>('Omnichannel_contact_manager_routing');
 	const guestManager = contactManagerPreferred && (await getDefaultAgent({ id: contact?.contactManager }));
 	if (guestManager) {
 		return guestManager;
 	}
 
-	if (!lastChattedAgentPreferred) {
-		return undefined;
+	if (!settings.get<boolean>('Livechat_last_chatted_agent_routing')) {
+		return defaultAgent;
 	}
 
 	const { lastAgent, token } = guest;
@@ -141,14 +134,14 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 		projection: { servedBy: 1 },
 	});
 	if (!room?.servedBy) {
-		return undefined;
+		return defaultAgent;
 	}
 
 	const {
 		servedBy: { username: usernameByRoom },
 	} = room;
 	if (!usernameByRoom) {
-		return undefined;
+		return defaultAgent;
 	}
 	const lastRoomAgent = normalizeDefaultAgent(
 		await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
