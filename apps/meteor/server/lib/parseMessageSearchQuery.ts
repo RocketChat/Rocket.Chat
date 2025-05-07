@@ -119,10 +119,8 @@ class MessageSearchQueryParser {
 	 */
 	private consumeLabel(text: string) {
 		return text.replace(/label:*"([^"]+)"|label:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
-			const tag = quoted ?? unquoted;
-			if (!tag) {
-				return '';
-			}
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
 
 			this.query['attachments.0.labels'] = {
 				$regex: escapeRegExp(tag.trim()),
@@ -138,10 +136,8 @@ class MessageSearchQueryParser {
 	 */
 	private consumeFileDescription(text: string) {
 		return text.replace(/file-desc:"([^"]+)"|file-desc:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
-			const tag = quoted ?? unquoted;
-			if (!tag) {
-				return '';
-			}
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
 
 			this.query['attachments.description'] = {
 				$regex: escapeRegExp(tag.trim()),
@@ -157,10 +153,8 @@ class MessageSearchQueryParser {
 	 */
 	private consumeFileTitle(text: string) {
 		return text.replace(/file-title:"([^"]+)"|file-title:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
-			const tag = quoted ?? unquoted;
-			if (!tag) {
-				return '';
-			}
+			const tag = (quoted ?? unquoted)?.trim();
+			if (!tag || typeof tag !== 'string') return '';
 
 			this.query['attachments.title'] = {
 				$regex: escapeRegExp(tag.trim()),
