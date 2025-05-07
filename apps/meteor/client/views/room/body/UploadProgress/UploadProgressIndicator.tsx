@@ -53,7 +53,7 @@ const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: Uploa
 			className={customClass}
 		>
 			<Box withTruncatedText zIndex={2} borderRadius={4}>
-				[{percentage}%] {name} {error && ` - ${error}`}
+				[{percentage}%] {name} {Boolean(error) && ` - ${error}`}
 			</Box>
 			<Button zIndex={3} small onClick={handleCloseClick}>
 				{t('Cancel')}
