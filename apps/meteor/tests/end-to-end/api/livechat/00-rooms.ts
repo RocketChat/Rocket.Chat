@@ -2788,7 +2788,7 @@ describe('LIVECHAT - rooms', () => {
 
 			roomWithTranscriptGenerated = roomId;
 		});
-		it('should return immediately if transcript was already requested', async () => {
+		it('should return when transcript was already requested', async () => {
 			await request
 				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)
