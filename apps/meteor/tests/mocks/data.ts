@@ -11,6 +11,7 @@ import type {
 	IUser,
 	ILivechatContactChannel,
 	Serialized,
+	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -327,6 +328,23 @@ export function createFakeContact(overrides?: Partial<Serialized<ILivechatContac
 		unknown: true,
 		channels: [createFakeContactChannel()],
 		createdAt: new Date().toISOString(),
+		...overrides,
+	};
+}
+
+export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonitor>>): Serialized<ILivechatMonitor> {
+	const firstName = faker.person.firstName();
+	const lastName = faker.person.lastName();
+	const username = faker.internet.userName({ firstName, lastName });
+
+	return {
+		_id: faker.string.uuid(),
+		username,
+		name: `${firstName} ${lastName}`,
+		type: '',
+		enabled: true,
+		numMonitors: 0,
+		visibility: 'visible',
 		...overrides,
 	};
 }
