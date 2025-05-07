@@ -48,9 +48,9 @@ export const Default: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const toolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
 
-export const withHints: StoryFn<typeof MessageComposer> = () => (
+export const WithHints: StoryFn<typeof MessageComposer> = () => (
 	<>
 		<MessageComposerHint
 			icon='pencil'
@@ -74,7 +74,7 @@ export const withHints: StoryFn<typeof MessageComposer> = () => (
 	</>
 );
 
-export const withSubmit: StoryFn<typeof MessageComposer> = () => (
+export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>

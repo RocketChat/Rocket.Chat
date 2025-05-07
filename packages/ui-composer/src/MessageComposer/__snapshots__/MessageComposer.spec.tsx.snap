@@ -215,7 +215,7 @@ exports[`renders Loading without crashing 1`] = `
 </body>
 `;
 
-exports[`renders toolbarActions without crashing 1`] = `
+exports[`renders ToolbarActions without crashing 1`] = `
 <body>
   <div>
     <div
@@ -390,7 +390,7 @@ exports[`renders toolbarActions without crashing 1`] = `
 </body>
 `;
 
-exports[`renders withHints without crashing 1`] = `
+exports[`renders WithHints without crashing 1`] = `
 <body>
   <div>
     <div
@@ -631,7 +631,7 @@ exports[`renders withHints without crashing 1`] = `
 </body>
 `;
 
-exports[`renders withSubmit without crashing 1`] = `
+exports[`renders WithSubmit without crashing 1`] = `
 <body>
   <div>
     <div
