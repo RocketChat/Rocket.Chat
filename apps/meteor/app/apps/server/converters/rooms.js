@@ -59,12 +59,12 @@ export class AppRoomsConverter {
 		};
 	}
 
-	async __getUserIdAndUsername(uid) {
-		if (!uid) {
+	async __getUserIdAndUsername(userObj) {
+		if (!userObj?.id) {
 			return;
 		}
 
-		const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		const user = await Users.findOneById(userObj.id, { projection: { _id: 1, username: 1 } });
 		if (!user) {
 			return;
 		}

@@ -163,7 +163,7 @@ describe('Router use method', () => {
 		expect(response2.headers).not.toHaveProperty('x-api-version');
 	});
 
-	it.failing('should parse nested query params into object for GET requests', async () => {
+	it('should parse nested query params into object for GET requests', async () => {
 		const ajv = new Ajv();
 		const app = express();
 
