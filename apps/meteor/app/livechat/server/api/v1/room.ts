@@ -44,7 +44,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-			const extraCheckParams = await onCheckRoomParams({
+			const extraCheckParams = onCheckRoomParams({
 				token: String,
 				rid: Match.Maybe(String),
 				agentId: Match.Maybe(String),
