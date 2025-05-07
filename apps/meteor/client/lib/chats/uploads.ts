@@ -113,23 +113,28 @@ const send = async (
 			);
 
 			xhr.onload = async () => {
-				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
-					const result = JSON.parse(xhr.responseText);
-					let content;
-					if (getContent) {
-						content = await getContent(result.file._id, result.file.url);
+				if (xhr.readyState === xhr.DONE) {
+					if (xhr.status === 400) {
+						const error = JSON.parse(xhr.responseText);
+						updateUploads((uploads) => [...uploads, { ...upload, error: new Error(error.error) }]);
+						return;
 					}
 
-					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
-						msg,
-						tmid,
-						description,
-						t,
-						content,
-					});
-				} else if (xhr.readyState === xhr.DONE && xhr.status === 400) {
-					const error = JSON.parse(xhr.responseText);
-					updateUploads((uploads) => [...uploads, { ...upload, error: new Error(error.error) }]);
+					if (xhr.status === 200) {
+						const result = JSON.parse(xhr.responseText);
+						let content;
+						if (getContent) {
+							content = await getContent(result.file._id, result.file.url);
+						}
+
+						await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
+							msg,
+							tmid,
+							description,
+							t,
+							content,
+						});
+					}
 				}
 			};
 
