@@ -12,7 +12,6 @@ import './messageObserve';
 import './messageTypes';
 import './reloadRoomAfterLogin';
 import './roles';
-import './rootUrlChange';
 import './routes';
 import './slashCommands';
 import './startup';
