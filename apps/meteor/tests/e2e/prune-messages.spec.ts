@@ -13,6 +13,7 @@ const FILE_SYSTEM_PATHS = {
 const FILE_NAMES = {
 	FILE_1: 'number1.png',
 	FILE_2: 'number2.png',
+	FILE_3: 'number3.png',
 };
 
 type SettingsFixture = {
@@ -125,6 +126,13 @@ test.describe('prune-messages', () => {
 			});
 
 			await pruneMessages(poHomeChannel, { filesOnly: false });
+		});
+
+		// FIXME: This will fail in the afterAll step when trying to delete the channel
+		test.fail('delete channel with dangling files', async ({ settings }) => {
+			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
+			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
+			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
 		});
 	});
 });
