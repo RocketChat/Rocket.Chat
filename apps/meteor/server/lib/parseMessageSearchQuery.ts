@@ -118,11 +118,17 @@ class MessageSearchQueryParser {
 	 * Filter image tags
 	 */
 	private consumeLabel(text: string) {
-		return text.replace(/label:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/label:*"([^"]+)"|label:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = quoted ?? unquoted;
+			if (!tag) {
+				return '';
+			}
+
 			this.query['attachments.0.labels'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
+
 			return '';
 		});
 	}
@@ -131,11 +137,17 @@ class MessageSearchQueryParser {
 	 * Filter on description of messages.
 	 */
 	private consumeFileDescription(text: string) {
-		return text.replace(/file-desc:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/file-desc:"([^"]+)"|file-desc:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = quoted ?? unquoted;
+			if (!tag) {
+				return '';
+			}
+
 			this.query['attachments.description'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
+
 			return '';
 		});
 	}
@@ -144,9 +156,14 @@ class MessageSearchQueryParser {
 	 * Filter on title of messages.
 	 */
 	private consumeFileTitle(text: string) {
-		return text.replace(/file-title:(\w+)/g, (_: string, tag: string) => {
+		return text.replace(/file-title:"([^"]+)"|file-title:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
+			const tag = quoted ?? unquoted;
+			if (!tag) {
+				return '';
+			}
+
 			this.query['attachments.title'] = {
-				$regex: escapeRegExp(tag),
+				$regex: escapeRegExp(tag.trim()),
 				$options: 'i',
 			};
 
