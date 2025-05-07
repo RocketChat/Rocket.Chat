@@ -64,5 +64,5 @@ Meteor.startup(function() {
 		});
 	//	redis.on('message', redisMessageHandle);
 	}
-	redisMessageHandlers['rocketchat_message'] = redisMessageHandle;
+	// redisMessageHandlers['rocketchat_message'] = redisMessageHandle;
 });

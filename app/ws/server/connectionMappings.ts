@@ -1,5 +1,6 @@
-import redis from '../redis/redis';
+import redis from '../../redis/redis';
 import { acquireLock, acquireLocks, lockUser } from './channelLocks';
+
 
 type ConnectionId = string;
 type ChannelName = string;
@@ -109,10 +110,10 @@ const addChannelOnCreate = async (channel: string, userId: string): Promise<void
 	}
 };
 
-setInterval(() => {
-	console.log('channelListeners: ', channelListeners);
-	console.log('connectionToChannels: ', connectionToChannels);
-	console.log('userConnections: ', userConnections);
-}, 5000);
+// setInterval(() => {
+// 	console.log('channelListeners: ', channelListeners);
+// 	console.log('connectionToChannels: ', connectionToChannels);
+// 	console.log('userConnections: ', userConnections);
+// }, 5000);
 
 export { addChannelOnCreate, decreaseChannelListenerCountOnUser, removeConnectionId, updateMappingsOnSub };

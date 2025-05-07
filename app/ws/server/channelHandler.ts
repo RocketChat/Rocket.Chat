@@ -1,7 +1,6 @@
-import { Subscriptions } from '../models/server';
-import { settings } from '../settings/server';
+import { Subscriptions } from '../../models/server';
+import { settings } from '../../settings/server';
 import { addChannelOnCreate, decreaseChannelListenerCountOnUser, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
-import './createRoomsTest';
 
 const onLogin = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);

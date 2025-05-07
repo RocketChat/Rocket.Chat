@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Users } from '/app/models/server';
-import ChannelHandler from '/app/ws/channelHandler';
+import ChannelHandler from '/app/ws/server/channelHandler';
 
 class LoginStream extends Meteor.Streamer {
 	_publish(publication, eventName, options) {

@@ -10,12 +10,22 @@ interface IRedisHandlers {
 	users: Function;
 }
 
+const parseRedisMessage = (msg: string) => {
+	if (msg.startsWith('{"json":')) {
+	  return superjson.parse(msg);
+	} else {
+	  return JSON.parse(msg);
+	}
+  };
+  
+
 export const redisMessageHandlers: Partial<IRedisHandlers> = {};
+
 
 redis.on('message', (channel: string, msg: string) => {
 	console.log('new message from redis');
 
-	const message = superjson.parse(msg);
+	const message = parseRedisMessage(msg) 
 	const { ns } = message as { ns: keyof IRedisHandlers};
 	const handler = redisMessageHandlers[ns];
 
