@@ -9,7 +9,7 @@ type TagsListOptions = {
 	limit?: number;
 };
 
-type TagListItem = {
+export type TagListItem = {
 	_id: string;
 	label: string;
 	value: string;
