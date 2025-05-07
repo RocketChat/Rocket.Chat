@@ -28,7 +28,7 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-monitors'] },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-monitors'], license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const { unitId } = this.urlParams;
@@ -47,7 +47,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units',
-	{ authRequired: true, permissionsRequired: { POST: ['manage-livechat-units'], GET: [] } },
+	{ authRequired: true, permissionsRequired: { POST: ['manage-livechat-units'], GET: [] }, license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const params = this.queryParams;
@@ -79,7 +79,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:id',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'], license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const { id } = this.urlParams;
@@ -105,7 +105,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:unitId/departments',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'], license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -125,7 +125,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:unitId/departments/available',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
+	{ authRequired: true, permissionsRequired: ['manage-livechat-units'], license: ['livechat-enterprise'] },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);

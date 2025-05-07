@@ -113,6 +113,6 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 			},
 		};
 
-		return this.updateMany({}, update);
+		return this.updateMany({ tags: tagId }, update);
 	}
 }

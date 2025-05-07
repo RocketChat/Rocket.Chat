@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.14",
+	"version": "0.3.18-rc.7",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -21,7 +21,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~20.17.8",
+		"@types/node": "~22.14.0",
 		"date-fns": "^2.30.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",

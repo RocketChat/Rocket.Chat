@@ -36,12 +36,11 @@ export const useLegacyThreadMessages = (
 		}, [tmid]),
 	);
 
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(messages.length === 0);
 
 	const getThreadMessages = useMethod('getThreadMessages');
 
 	useEffect(() => {
-		setLoading(true);
 		getThreadMessages({ tmid }).then((messages) => {
 			upsertMessageBulk({ msgs: messages }, Messages);
 			setLoading(false);

@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
+import { api, Federation, FederationEE, License } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -23,6 +23,7 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { VerificationStatus } from '../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import {
@@ -49,16 +50,22 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
-			method: 'deleteUser',
-		});
-	}
+		const service = (await License.hasValidLicense()) ? FederationEE : Federation;
 
-	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-	if (remoteUser) {
-		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
-			method: 'deleteUser',
-		});
+		const result = await service.verifyMatrixIds([user.username as string]);
+
+		if (result.get(user.username as string) === VerificationStatus.VERIFIED) {
+			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
+				method: 'deleteUser',
+			});
+		}
+	} else {
+		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+		if (remoteUser) {
+			throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+				method: 'deleteUser',
+			});
+		}
 	}
 
 	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);

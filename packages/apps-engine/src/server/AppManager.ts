@@ -1,5 +1,7 @@
 import { Buffer } from 'buffer';
 
+import { removeEmpty } from '@rocket.chat/tools';
+
 import type { IGetAppsFilter } from './IGetAppsFilter';
 import { ProxiedApp } from './ProxiedApp';
 import type { PersistenceBridge, UserBridge } from './bridges';
@@ -607,7 +609,7 @@ export class AppManager {
         }
 
         descriptor.signature = await this.getSignatureManager().signApp(descriptor);
-        const created = await this.appMetadataStorage.create(descriptor);
+        const created = await this.appMetadataStorage.create(removeEmpty(descriptor));
 
         if (!created) {
             aff.setStorageError('Failed to create the App, the storage did not return it.');
@@ -616,6 +618,8 @@ export class AppManager {
 
             return aff;
         }
+
+        app.getStorageItem()._id = created._id;
 
         this.apps.set(app.getID(), app);
         aff.setApp(app);
@@ -717,10 +721,15 @@ export class AppManager {
             languageContent: result.languageContent,
             settings: old.settings,
             implemented: result.implemented.getValues(),
-            marketplaceInfo: old.marketplaceInfo,
-            sourcePath: old.sourcePath,
-            permissionsGranted,
+            ...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
+            ...(old.sourcePath && { sourcePath: old.sourcePath }),
         };
+
+        if (!permissionsGranted) {
+            delete descriptor.permissionsGranted;
+        } else {
+            descriptor.permissionsGranted = permissionsGranted;
+        }
 
         try {
             descriptor.sourcePath = await this.appSourceStorage.update(descriptor, appPackage);

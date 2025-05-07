@@ -31,7 +31,6 @@ const settings: Record<string, ISetting> = {
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
-	isLoading: false,
 	querySetting: (_id) => [() => () => undefined, () => settings[_id]],
 	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,

@@ -2,13 +2,14 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
+import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
-import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
-import { useAnalytics } from '../../../app/analytics/client/loadScript';
+import { useWordPressOAuth } from './hooks/useWordPressOAuth';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
 import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
@@ -18,9 +19,11 @@ import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
+import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
-import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
 import { useCustomOAuth } from '../../sidebar/hooks/useCustomOAuth';
 import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
@@ -40,7 +43,7 @@ const AppLayout = () => {
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
-	useNotifyUser();
+	useNotificationPermission();
 	useEmojiOne();
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
@@ -51,10 +54,13 @@ const AppLayout = () => {
 	useDrupal();
 	useDolphin();
 	useTokenPassAuth();
+	useWordPressOAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
-	useOTRMessaging();
-	useUpdateVideoConfUser();
+	useAutoupdate();
+	useCodeHighlight();
+	useLoginViaQuery();
+	useLoadMissedMessages();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
