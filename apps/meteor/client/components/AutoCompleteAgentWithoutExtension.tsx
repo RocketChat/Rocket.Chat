@@ -17,7 +17,7 @@ const AutoCompleteAgentWithoutExtension = ({ value, currentExtension, onChange, 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter as string, 500);
 
 	const { data: agentsItems, fetchNextPage } = useAvailableAgentsList({
-		text: debouncedAgentsFilter,
+		filter: debouncedAgentsFilter,
 		includeExtension: currentExtension,
 	});
 

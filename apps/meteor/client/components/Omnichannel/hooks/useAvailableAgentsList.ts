@@ -3,7 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 type AgentsListOptions = {
-	text: string;
+	filter: string;
 	includeExtension?: string;
 	limit?: number;
 };
@@ -17,7 +17,7 @@ type AgentOption = {
 const DEFAULT_QUERY_LIMIT = 25;
 
 export const useAvailableAgentsList = (options: AgentsListOptions) => {
-	const { text, includeExtension, limit = DEFAULT_QUERY_LIMIT } = options;
+	const { filter, includeExtension, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getAgents = useEndpoint('GET', '/v1/omnichannel/agents/available');
 
 	const formatAgentItem = (agent: Serialized<ILivechatAgent>): AgentOption => ({
@@ -30,7 +30,7 @@ export const useAvailableAgentsList = (options: AgentsListOptions) => {
 		queryKey: ['/v1/omnichannel/agents/available', options],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { agents, ...data } = await getAgents({
-				...(text && { text }),
+				...(filter && { text: filter }),
 				...(includeExtension && { includeExtension }),
 				offset,
 				count: limit,

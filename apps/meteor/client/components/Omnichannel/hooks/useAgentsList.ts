@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 type AgentsListOptions = {
-	text: string;
+	filter: string;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
@@ -25,7 +25,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 	const { t } = useTranslation();
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 	const {
-		text,
+		filter,
 		onlyAvailable = false,
 		showIdleAgents = true,
 		excludeId,
@@ -41,10 +41,10 @@ export const useAgentsList = (options: AgentsListOptions) => {
 	});
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/livechat/users/agent', { text, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
+		queryKey: ['/v1/livechat/users/agent', { filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { users, ...data } = await getAgents({
-				...(text && { text }),
+				...(filter && { text: filter }),
 				...(excludeId && { excludeId }),
 				showIdleAgents,
 				onlyAvailable,

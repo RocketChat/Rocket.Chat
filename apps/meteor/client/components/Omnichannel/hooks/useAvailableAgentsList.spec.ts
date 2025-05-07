@@ -35,7 +35,7 @@ it('should fetch available agents', async () => {
 		};
 	});
 
-	const { result } = renderHook(() => useAvailableAgentsList({ text: '', limit }), { wrapper: appRoot.build() });
+	const { result } = renderHook(() => useAvailableAgentsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
 	expect(result.current.isFetching).toBe(true);
 	await waitFor(() => expect(result.current.isFetching).toBe(false));

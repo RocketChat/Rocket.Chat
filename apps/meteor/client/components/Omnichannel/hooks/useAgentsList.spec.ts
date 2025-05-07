@@ -37,7 +37,7 @@ it('should fetch agents', async () => {
 		};
 	});
 
-	const { result } = renderHook(() => useAgentsList({ text: '', limit }), { wrapper: appRoot.build() });
+	const { result } = renderHook(() => useAgentsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
 	expect(result.current.isFetching).toBe(true);
 	await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -65,7 +65,7 @@ it('should include "All" item if haveAll is true', async () => {
 		total: 5,
 	});
 
-	const { result } = renderHook(() => useAgentsList({ text: '', haveAll: true }), { wrapper: appRoot.build() });
+	const { result } = renderHook(() => useAgentsList({ filter: '', haveAll: true }), { wrapper: appRoot.build() });
 
 	await waitFor(() => expect(result.current.isFetching).toBe(false));
 	expect(result.current.data[0].label).toBe('All');
@@ -79,7 +79,7 @@ it('should include "Empty_no_agent_selected" item if haveNoAgentsSelectedOption 
 		total: 5,
 	});
 
-	const { result } = renderHook(() => useAgentsList({ text: '', haveNoAgentsSelectedOption: true }), { wrapper: appRoot.build() });
+	const { result } = renderHook(() => useAgentsList({ filter: '', haveNoAgentsSelectedOption: true }), { wrapper: appRoot.build() });
 
 	await waitFor(() => expect(result.current.isFetching).toBe(false));
 	expect(result.current.data[0].label).toBe('Empty, no agent selected');
