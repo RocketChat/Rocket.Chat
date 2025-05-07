@@ -8,7 +8,7 @@ exports[`renders Default without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
         placeholder="Text"
         rows="1"
       />
@@ -425,7 +425,7 @@ exports[`renders WithHints without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
         placeholder="Text"
         rows="1"
       />
@@ -631,7 +631,7 @@ exports[`renders WithSubmit without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1fl4a0j"
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
         placeholder="Text"
         rows="1"
       />
