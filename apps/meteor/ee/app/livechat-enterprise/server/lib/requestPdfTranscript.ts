@@ -5,6 +5,7 @@ import ExpiryMap from 'expiry-map';
 import { logger } from './logger';
 
 // Allow to request a transcript again after 15 seconds, assuming the first one didn't complete
+// This won't prevent multiple transcript generated for the same room in a multi-instance deployment since state is not shared, but we're ok with the drawbacks
 const LockMap = new ExpiryMap<string, boolean>(15000);
 
 const serviceName = 'omnichannel-transcript' as const;
