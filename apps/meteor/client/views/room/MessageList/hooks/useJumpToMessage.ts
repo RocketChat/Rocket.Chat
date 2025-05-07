@@ -1,12 +1,44 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
-import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
+import { setRef } from '../../composer/hooks/useMessageComposerMergedRefs';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
-// this is an arbitrary value so that there's a gap between the header and the message;
+/**
+ * That is completely messy, CustomScrollbars force us to initialize the scrollbars inside an effect
+ * all refCallbacks happen before the effect, more than that, the scrollbars also reset the scroll position
+ * so we need to check if the scrollbars are initialized and if there is any message to be highlighted
+ */
+
+export const useJumpToMessageImperative = () => {
+	const jumpToRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	const jumpToRefAction = useCallback(() => {
+		if (!jumpToRef.current || !containerRef.current) {
+			return;
+		}
+		jumpToRef.current.scrollIntoView({
+			block: 'center',
+		});
+	}, []);
+
+	return {
+		jumpToRef: useMergedRefs(jumpToRef, jumpToRefAction),
+		innerRef: useMergedRefs(containerRef, jumpToRefAction),
+	};
+};
+
+/**
+ * `listRef` is a reference to the message node in the message list.
+ * its shared between other hooks like `useLoadSurroundingMessages`, `useJumpToMessage`, `useGetMore`, `useListIsAtBottom` and `useRestoreScrollPosition`
+ * since each hook has a different concern, this ref helps each other aware if a message is being highlighted which changes the scroll position
+
+ */
 
 export const useJumpToMessage = (messageId: IMessage['_id']) => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
@@ -20,14 +52,12 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 					return;
 				}
 
-				if (listRef) {
-					listRef.current = node;
+				if (!listRef) {
+					return;
 				}
 
-				node.scrollIntoView({
-					behavior: 'smooth',
-					block: 'center',
-				});
+				setRef(listRef, node);
+
 				const handleScroll = () => {
 					const { msg: _, ...search } = router.getSearchParameters();
 					router.navigate(
@@ -60,7 +90,7 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 				return () => {
 					observer.disconnect();
 					if (listRef) {
-						listRef.current = undefined;
+						setRef(listRef, undefined);
 					}
 				};
 			},
