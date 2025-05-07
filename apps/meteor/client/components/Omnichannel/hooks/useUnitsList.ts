@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 type UnitsListOptions = {
-	text: string;
+	filter: string;
 	haveNone?: boolean;
 	limit?: number;
 };
@@ -19,7 +19,7 @@ const DEFAULT_QUERY_LIMIT = 25;
 
 export const useUnitsList = (options: UnitsListOptions) => {
 	const { t } = useTranslation();
-	const { haveNone = false, text, limit = DEFAULT_QUERY_LIMIT } = options;
+	const { haveNone = false, filter, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
 
 	const formatUnitItem = (u: Serialized<IOmnichannelBusinessUnit>): UnitOption => ({
@@ -32,7 +32,7 @@ export const useUnitsList = (options: UnitsListOptions) => {
 		queryKey: ['/v1/livechat/units', options],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { units, ...data } = await getUnits({
-				...(text && { text }),
+				...(filter && { text: filter }),
 				offset,
 				count: limit,
 				sort: `{ "name": 1 }`,

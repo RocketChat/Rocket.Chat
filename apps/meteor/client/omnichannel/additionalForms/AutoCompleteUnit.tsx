@@ -32,7 +32,7 @@ const AutoCompleteUnit = ({
 
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
-	const { data: unitsList, fetchNextPage } = useUnitsList({ text: debouncedUnitFilter, haveNone });
+	const { data: unitsList, fetchNextPage } = useUnitsList({ filter: debouncedUnitFilter, haveNone });
 
 	const handleLoadItems = useEffectEvent(onLoadItems);
 
