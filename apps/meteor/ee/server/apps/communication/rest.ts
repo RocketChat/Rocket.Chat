@@ -2,6 +2,7 @@ import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/A
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
+import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
@@ -22,6 +23,7 @@ import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
@@ -204,7 +206,14 @@ export class AppsRestApi {
 			{
 				async get() {
 					const apps = await manager.get();
-					const formatted = await Promise.all(apps.map(formatAppInstanceForRest));
+					let clusterStatus: AppStatusReport | undefined;
+
+					if (this.queryParams.includeClusterStatus === 'true') {
+						clusterStatus = await fetchAppsStatusFromCluster();
+					}
+
+					const formatted = await Promise.all(apps.map((app) => formatAppInstanceForRest(app, clusterStatus)));
+
 					return API.v1.success({ apps: formatted });
 				},
 			},
@@ -298,7 +307,7 @@ export class AppsRestApi {
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
 					const proxiedApps = await manager.get();
-					const apps = await Promise.all(proxiedApps.map(formatAppInstanceForRest));
+					const apps = await Promise.all(proxiedApps.map((app) => formatAppInstanceForRest(app)));
 
 					return API.v1.success({ apps });
 				},
@@ -1268,12 +1277,25 @@ export class AppsRestApi {
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
 				async get() {
-					const prl = manager.getOneById(this.urlParams.id);
+					const app = manager.getOneById(this.urlParams.id);
 
-					if (prl) {
-						return API.v1.success({ status: await prl.getStatus() });
+					if (!app) {
+						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+
+					const response: { status: AppStatus; clusterStatus?: AppStatusReport[string] } = { status: await app.getStatus() };
+
+					try {
+						const clusterStatus = await fetchAppsStatusFromCluster();
+
+						if (clusterStatus?.[app.getID()]) {
+							response.clusterStatus = clusterStatus[app.getID()];
+						}
+					} catch (e) {
+						orchestrator.getRocketChatLogger().warn('App status endpoint: could not fetch status across cluster', e);
+					}
+
+					return API.v1.success(response);
 				},
 				async post() {
 					const { id: appId } = this.urlParams;

@@ -5,7 +5,6 @@ License.onToggledFeature('engagement-dashboard', {
 		const { prepareAnalytics, attachCallbacks } = await import('../lib/engagementDashboard/startup');
 		await prepareAnalytics();
 		attachCallbacks();
-		await import('../api/engagementDashboard');
 	},
 	down: async () => {
 		const { detachCallbacks } = await import('../lib/engagementDashboard/startup');
