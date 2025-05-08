@@ -22,9 +22,9 @@ export const useJumpToMessageImperative = () => {
 		if (!jumpToRef.current || !containerRef.current) {
 			return;
 		}
-		jumpToRef.current.scrollIntoView({
-			block: 'center',
-		});
+
+		containerRef.current.scrollTop = jumpToRef.current.offsetTop - containerRef.current.offsetTop;
+		containerRef.current.scroll();
 	}, []);
 
 	return {
