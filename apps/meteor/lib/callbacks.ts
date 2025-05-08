@@ -131,10 +131,6 @@ type ChainedCallbackSignatures = {
 		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
 	) => IOmnichannelRoom;
 
-	'livechat.onCheckRoomApiParams': (params: Record<string, unknown>) => Record<string, unknown>;
-
-	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
-
 	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
@@ -241,8 +237,6 @@ export type Hook =
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.offlineMessage'
-	| 'livechat.onCheckRoomApiParams'
-	| 'livechat.onLoadConfigApi'
 	| 'livechat.manageDepartmentUnit'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
