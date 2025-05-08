@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -26,18 +27,15 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 async function findDepartments(
 	businessUnit?: string,
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
-	// TODO: check this function usage
-	return (
-		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
-			Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
-		>(businessUnit, {
-			_id: 1,
-			name: 1,
-			showOnRegistration: 1,
-			showOnOfflineForm: 1,
-			departmentsAllowedToForward: 1,
-		})
-	).toArray();
+	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
+		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+	>(businessUnit, {
+		_id: 1,
+		name: 1,
+		showOnRegistration: 1,
+		showOnOfflineForm: 1,
+		departmentsAllowedToForward: 1,
+	}).toArray();
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -96,12 +94,13 @@ export function normalizeHttpHeaderData(headers: Headers = new Headers()): {
 }
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
-	// Putting this ugly conversion while we type the livechat service
-	const initSettings = await getInitSettings();
-	const triggers = await findTriggers();
-	const departments = await findDepartments(businessUnit);
+	const [initSettings, triggers, departments, emojis] = await Promise.all([
+		getInitSettings(),
+		findTriggers(),
+		findDepartments(businessUnit),
+		EmojiCustom.find().toArray(),
+	]);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
-	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -178,11 +177,22 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	};
 }
 
-export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> {
-	return callbacks.run('livechat.onLoadConfigApi', { room });
-}
+export const getExtraConfigInfo = makeFunction(
+	async (options: {
+		room?: IOmnichannelRoom;
+	}): Promise<{
+		queueInfo?: unknown;
+		customFields?: {
+			options?: string[] | undefined;
+			_id: string;
+			label: string;
+			regexp: string | undefined;
+			required: boolean;
+			type: string | undefined;
+			defaultValue: string | null;
+		}[];
+		room?: IOmnichannelRoom;
+	}> => options,
+);
 
-// TODO: please forgive me for this. Still finding the good types for these callbacks
-export function onCheckRoomParams(params: any): Promise<unknown> {
-	return callbacks.run('livechat.onCheckRoomApiParams', params);
-}
+export const onCheckRoomParams = makeFunction((params: any) => params);
