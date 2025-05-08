@@ -31,13 +31,13 @@ test.describe('image-upload', () => {
 			await setSettingValueById(api, 'Message_Attachments_Strip_Exif', false);
 		});
 
-		test('should show error indicator when upload fails', async ({ page }) => {
+		test('should show error indicator when upload fails', async () => {
 			await poHomeChannel.content.sendFileMessage('bad-orientation.jpeg');
 			await poHomeChannel.content.fileNameInput.fill('bad-orientation.jpeg');
 			await poHomeChannel.content.descriptionInput.fill('bad-orientation_description');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(page.getByRole('status')).toContainText('Error:');
+			await expect(poHomeChannel.statusUploadIndicator).toContainText('Error:');
 		});
 	});
 
