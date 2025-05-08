@@ -58,6 +58,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const userId = Meteor.userId();
+		console.log({ userId, ahhaha: this})
 
 		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

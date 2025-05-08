@@ -56,6 +56,7 @@ import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
+import { MiddlewareHandler } from 'hono';
 
 const logger = new Logger('API');
 
@@ -106,7 +107,7 @@ const rateLimiterDictionary: Record<
 	}
 > = {};
 
-const generateConnection = (
+export const generateConnection = (
 	ipAddress: string,
 	httpHeaders: Record<string, any>,
 ): {
@@ -230,6 +231,12 @@ export class APIClass<
 			!process.env.TEST_MODE &&
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
+	}
+
+	public use(middleware: MiddlewareHandler): APIClass<TBasePath, TOperations> {
+		this.router.use(middleware);
+
+		return this;
 	}
 
 	public success(): SuccessResult<void>;
@@ -838,33 +845,34 @@ export class APIClass<
 								}
 							}
 
-							const invocation = new DDPCommon.MethodInvocation({
-								connection,
-								isSimulation: false,
-								userId: this.userId,
-							});
+							// const invocation = new DDPCommon.MethodInvocation({
+							// 	connection,
+							// 	isSimulation: false,
+							// 	userId: this.userId,
+							// });
 
-							Accounts._accountData[connection.id] = {
-								connection,
-							};
+							// Accounts._accountData[connection.id] = {
+							// 	connection,
+							// };
 
-							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
+							// Accounts._setAccountData(connection.id, 'loginToken', this.token!);
 
-							this.userId &&
-								(await api.processTwoFactor({
-									userId: this.userId,
-									request: this.request,
-									invocation: invocation as unknown as Record<string, any>,
-									options: _options,
-									connection: connection as unknown as IMethodConnection,
-								}));
+							// this.userId &&
+							// 	(await api.processTwoFactor({
+							// 		userId: this.userId,
+							// 		request: this.request,
+							// 		invocation: invocation as unknown as Record<string, any>,
+							// 		options: _options,
+							// 		connection: connection as unknown as IMethodConnection,
+							// 	}));
 
 							this.queryOperations = options.queryOperations;
 							(this as any).queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
 
-							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+							result = (await originalAction.apply(this)) || API.v1.success();
+							// result =
+							// 	(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -1156,6 +1164,7 @@ export const API: {
 	api: Router<'/api'>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
+	withMeteorConnection: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
 		create: {
@@ -1187,6 +1196,7 @@ export const API: {
 		useDefaultAuth: true,
 	}),
 	default: createApi({}),
+	withMeteorConnection: createApi({})
 };
 
 settings.watch<string>('Accounts_CustomFields', (value) => {
@@ -1220,7 +1230,7 @@ export const startRestAPI = () => {
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
 			.use(tracerSpanMiddleware)
-			.use(API.v1.router)
+			.use(API.v1.router.use(API.withMeteorConnection.router))
 			.use(API.default.router).router,
 	);
 };

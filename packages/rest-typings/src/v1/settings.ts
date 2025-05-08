@@ -27,6 +27,46 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
+const SettingsUpdatePropsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				value: {
+					type: 'any',
+				},
+			},
+			required: ['value'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				execute: {
+					type: 'boolean',
+				},
+			},
+			required: ['execute'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				editor: {
+					type: 'object',
+				},
+				value: {
+					type: 'any',
+				},
+			},
+			required: ['editor', 'value'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isSettingsUpdateProps = ajv.compile<SettingsUpdateProps>(SettingsUpdatePropsSchema);
+
 type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
 
 const SettingsPublicWithPaginationSchema = {

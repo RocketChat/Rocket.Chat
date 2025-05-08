@@ -13,6 +13,7 @@ import {
 	isSettingsUpdatePropsColor,
 	isSettingsPublicWithPaginationProps,
 	isSettingsGetParams,
+	isSettingsUpdateProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -27,6 +28,8 @@ import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
 import type { ResultFor } from '../definition';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { meteorConnectionMiddleware } from '../middlewares/meteorConnection';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -114,11 +117,13 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'settings.addCustomOAuth',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
+API
+	.withMeteorConnection
+	.use(meteorConnectionMiddleware)
+	.post(
+		'settings.addCustomOAuth',
+		{ authRequired: true, twoFactorRequired: true },
+		async function () {
 			if (!this.bodyParams.name?.trim()) {
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
@@ -127,8 +132,7 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'settings',
@@ -166,97 +170,254 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'settings/:_id',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
-			POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
+API
+	.withMeteorConnection
+	.use(meteorConnectionMiddleware)
+	.post(
+		'settings/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: {
+				GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
+				POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
+			},
+			twoFactorRequired: true,
+			body: isSettingsUpdateProps,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+				}),
+				400: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						status: {
+							type: 'string',
+							nullable: true,
+						},
+						message: {
+							type: 'string',
+							nullable: true,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
+				}),
+				403: ajv.compile({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						error: {
+							type: 'string',
+						},
+						status: {
+							type: 'string',
+							nullable: true,
+						},
+						message: {
+							type: 'string',
+							nullable: true,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'error'],
+				}),
+			},
 		},
-	},
-	{
-		async get() {
+		async function () {
+			if (typeof this.urlParams._id !== 'string') {
+				throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+			}
+
+			// Disable custom scripts in cloud trials to prevent phishing campaigns
+			if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
+				return API.v1.forbidden();
+			}
+
+			// allow special handling of particular setting types
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
+
 			if (!setting) {
 				return API.v1.failure();
 			}
-			return API.v1.success(_.pick(setting, '_id', 'value'));
-		},
-		post: {
-			twoFactorRequired: true,
-			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				if (typeof this.urlParams._id !== 'string') {
-					throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+
+			if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
+				// execute the configured method
+				await Meteor.callAsync(setting.value);
+				return API.v1.success();
+			}
+
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp || '',
+				useragent: this.request.headers.get('user-agent') || '',
+			});
+
+			if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
+				const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
+				const updateValuePromise = auditSettingOperation(Settings.updateValueNotHiddenById, this.urlParams._id, this.bodyParams.value);
+
+				const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
+
+				if (updateOptionsResult.modifiedCount || updateValueResult.modifiedCount) {
+					await notifyOnSettingChangedById(this.urlParams._id);
 				}
 
-				// Disable custom scripts in cloud trials to prevent phishing campaigns
-				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
-					return API.v1.forbidden();
-				}
+				return API.v1.success();
+			}
 
-				// allow special handling of particular setting types
-				const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
+			if (isSettingsUpdatePropDefault(this.bodyParams)) {
+				const { matchedCount } = await auditSettingOperation(
+					Settings.updateValueNotHiddenById,
+					this.urlParams._id,
+					this.bodyParams.value,
+				);
 
-				if (!setting) {
+				if (!matchedCount) {
 					return API.v1.failure();
 				}
 
-				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
-					// execute the configured method
-					await Meteor.callAsync(setting.value);
-					return API.v1.success();
+				const s = await Settings.findOneNotHiddenById(this.urlParams._id);
+				if (!s) {
+					return API.v1.failure();
 				}
 
-				const auditSettingOperation = updateAuditedByUser({
-					_id: this.userId,
-					username: this.user.username!,
-					ip: this.requestIp,
-					useragent: this.request.headers.get('user-agent') || '',
-				});
+				settings.set(s);
+				setValue(this.urlParams._id, this.bodyParams.value);
 
-				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
-					const updateValuePromise = auditSettingOperation(Settings.updateValueNotHiddenById, this.urlParams._id, this.bodyParams.value);
+				await notifyOnSettingChanged(s);
 
-					const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
+				return API.v1.success();
+			}
 
-					if (updateOptionsResult.modifiedCount || updateValueResult.modifiedCount) {
-						await notifyOnSettingChangedById(this.urlParams._id);
-					}
-
-					return API.v1.success();
-				}
-
-				if (isSettingsUpdatePropDefault(this.bodyParams)) {
-					const { matchedCount } = await auditSettingOperation(
-						Settings.updateValueNotHiddenById,
-						this.urlParams._id,
-						this.bodyParams.value,
-					);
-
-					if (!matchedCount) {
-						return API.v1.failure();
-					}
-
-					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
-					if (!s) {
-						return API.v1.failure();
-					}
-
-					settings.set(s);
-					setValue(this.urlParams._id, this.bodyParams.value);
-
-					await notifyOnSettingChanged(s);
-
-					return API.v1.success();
-				}
-
-				return API.v1.failure();
+			return API.v1.failure();
+		}
+	)
+	.get(
+		'settings/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: {
+				GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
 			},
-		},
-	},
-);
+			async function() {
+				const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
+				if (!setting) {
+					return API.v1.failure();
+				}
+				return API.v1.success(_.pick(setting, '_id', 'value'));
+			}
+		}
+	)
+
+// API.v1.addRoute(
+// 	'settings/:_id',
+// 	{
+// 		authRequired: true,
+// 		permissionsRequired: {
+// 			GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
+// 			POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
+// 		},
+// 	},
+// 	{
+// 		async get() {
+// 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
+// 			if (!setting) {
+// 				return API.v1.failure();
+// 			}
+// 			return API.v1.success(_.pick(setting, '_id', 'value'));
+// 		},
+// 		// post: {
+// 		// 	twoFactorRequired: true,
+// 		// 	async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
+// 		// 		if (typeof this.urlParams._id !== 'string') {
+// 		// 			throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+// 		// 		}
+
+// 		// 		// Disable custom scripts in cloud trials to prevent phishing campaigns
+// 		// 		if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
+// 		// 			return API.v1.forbidden();
+// 		// 		}
+
+// 		// 		// allow special handling of particular setting types
+// 		// 		const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
+
+// 		// 		if (!setting) {
+// 		// 			return API.v1.failure();
+// 		// 		}
+
+// 		// 		if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
+// 		// 			// execute the configured method
+// 		// 			await Meteor.callAsync(setting.value);
+// 		// 			return API.v1.success();
+// 		// 		}
+
+// 		// 		const auditSettingOperation = updateAuditedByUser({
+// 		// 			_id: this.userId,
+// 		// 			username: this.user.username!,
+// 		// 			ip: this.requestIp,
+// 		// 			useragent: this.request.headers.get('user-agent') || '',
+// 		// 		});
+
+// 		// 		if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
+// 		// 			const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
+// 		// 			const updateValuePromise = auditSettingOperation(Settings.updateValueNotHiddenById, this.urlParams._id, this.bodyParams.value);
+
+// 		// 			const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
+
+// 		// 			if (updateOptionsResult.modifiedCount || updateValueResult.modifiedCount) {
+// 		// 				await notifyOnSettingChangedById(this.urlParams._id);
+// 		// 			}
+
+// 		// 			return API.v1.success();
+// 		// 		}
+
+// 		// 		if (isSettingsUpdatePropDefault(this.bodyParams)) {
+// 		// 			const { matchedCount } = await auditSettingOperation(
+// 		// 				Settings.updateValueNotHiddenById,
+// 		// 				this.urlParams._id,
+// 		// 				this.bodyParams.value,
+// 		// 			);
+
+// 		// 			if (!matchedCount) {
+// 		// 				return API.v1.failure();
+// 		// 			}
+
+// 		// 			const s = await Settings.findOneNotHiddenById(this.urlParams._id);
+// 		// 			if (!s) {
+// 		// 				return API.v1.failure();
+// 		// 			}
+
+// 		// 			settings.set(s);
+// 		// 			setValue(this.urlParams._id, this.bodyParams.value);
+
+// 		// 			await notifyOnSettingChanged(s);
+
+// 		// 			return API.v1.success();
+// 		// 		}
+
+// 		// 		return API.v1.failure();
+// 		// 	},
+// 		// },
+// 	},
+// );
 
 API.v1.addRoute(
 	'service.configurations',

@@ -35,6 +35,7 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
+import { meteorConnectionMiddleware } from '../middlewares/meteorConnection';
 
 /**
  * @openapi
@@ -304,12 +305,11 @@ API.v1.addRoute(
 					</g>
 						${hideIcon ? '' : `<image x="5" y="3" width="14" height="14" xlink:href="${getURL('/assets/favicon.svg', { full: true })}"/>`}
 					<g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
-						${
-							name
-								? `<text x="${iconSize}" y="15" fill="#010101" fill-opacity=".3">${name}</text>
+						${name
+						? `<text x="${iconSize}" y="15" fill="#010101" fill-opacity=".3">${name}</text>
 						<text x="${iconSize}" y="14">${name}</text>`
-								: ''
-						}
+						: ''
+					}
 						<text x="${leftSize + 7}" y="15" fill="#010101" fill-opacity=".3">${text}</text>
 						<text x="${leftSize + 7}" y="14">${text}</text>
 					</g>
@@ -476,18 +476,49 @@ const mountResult = ({
 		result: result as any,
 	}),
 });
-
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 // had to create two different endpoints for authenticated and non-authenticated calls
 // because restivus does not provide 'this.userId' if 'authRequired: false'
-API.v1.addRoute(
-	'method.call/:method',
-	{
-		authRequired: true,
-		rateLimiterOptions: false,
-		validateParams: isMeteorCall,
-	},
-	{
-		async post() {
+
+API
+	.withMeteorConnection
+	.use(meteorConnectionMiddleware)
+	.post(
+		'method.call/:method',
+		{
+			authRequired: true,
+			rateLimiterOptions: false,
+			body: isMeteorCall,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['message', 'success'],
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['message', 'success'],
+				}),
+			},
+		},
+		async function () {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -537,17 +568,46 @@ API.v1.addRoute(
 				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
-	},
-);
-API.v1.addRoute(
-	'method.callAnon/:method',
-	{
-		authRequired: false,
-		rateLimiterOptions: false,
-		validateParams: isMeteorCall,
-	},
-	{
-		async post() {
+	);
+
+API
+	.withMeteorConnection
+	.use(meteorConnectionMiddleware)
+	.post('method.callAnon/:method',
+		{
+			authRequired: false,
+			rateLimiterOptions: false,
+			body: isMeteorCall,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['message', 'success'],
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['message', 'success'],
+				}),
+			},
+		},
+		async function () {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -560,7 +620,7 @@ API.v1.addRoute(
 
 			const { method, params, id } = data;
 
-			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp).digest('hex');
+			const connectionId = this.token || crypto.createHash('md5').update(this.requestIp || '').digest('hex');
 
 			const rateLimiterInput = {
 				userId: this.userId || undefined,
@@ -592,8 +652,7 @@ API.v1.addRoute(
 				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'smtp.check',
