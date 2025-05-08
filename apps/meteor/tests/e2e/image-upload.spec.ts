@@ -37,7 +37,7 @@ test.describe('image-upload', () => {
 			await poHomeChannel.content.descriptionInput.fill('bad-orientation_description');
 			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(page.getByText('bad-orientation.jpeg')).toContainText('Error:');
+			await expect(page.getByRole('status')).toContainText('Error:');
 		});
 	});
 
