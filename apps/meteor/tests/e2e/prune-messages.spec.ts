@@ -134,6 +134,20 @@ test.describe('prune-messages', () => {
 			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
 		});
+
+		// FIXME: This will fail because the chat.delete API will return 400 (ENOENT)
+		test.fail('delete message with dangling files', async ({ settings }) => {
+			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
+			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
+			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
+			await poHomeChannel.page.getByLabel('Close').click();
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.page.getByRole('menuitem', { name: 'Delete' }).click();
+			const modal = poHomeChannel.page.getByLabel('Are you sure?');
+			await modal.getByRole('button', { name: 'Yes, delete' }).click();
+			await expect(modal).not.toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+		});
 	});
 });
 
