@@ -23,6 +23,7 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
+import { beforeDelegateAgent } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
@@ -33,7 +34,6 @@ import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } fr
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
-import { beforeDelegateAgent } from './hooks';
 
 const logger = new Logger('QueueManager');
 
