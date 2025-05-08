@@ -88,7 +88,7 @@ test.describe.serial('OTR', () => {
 			await user1Page.keyboard.press('Escape');
 		});
 
-		await test.step('should allow edit normal messages when using keyboard edit action', async () => {
+		await test.step('keyboard edit action when using up arrow key should show normal messages', async () => {
 			await page.locator('[name="msg"]').focus();
 			await page.keyboard.press('ArrowUp');
 			await expect(page.locator('[name="msg"]')).toHaveValue('Normal message');
