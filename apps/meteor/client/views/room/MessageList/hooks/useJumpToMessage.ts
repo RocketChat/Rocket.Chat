@@ -23,8 +23,14 @@ export const useJumpToMessageImperative = () => {
 			return;
 		}
 
-		containerRef.current.scrollTop = jumpToRef.current.offsetTop - containerRef.current.offsetTop;
-		containerRef.current.scroll();
+		function scrollToCenter(container: HTMLElement, target: HTMLElement) {
+			const containerHeight = container.clientHeight;
+			const targetOffsetTop = target.offsetTop;
+			const targetHeight = target.offsetHeight;
+
+			return targetOffsetTop - containerHeight / 2 + targetHeight / 2;
+		}
+		containerRef.current.scrollTop = scrollToCenter(containerRef.current, jumpToRef.current);
 	}, []);
 
 	return {
