@@ -29,24 +29,24 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	// @ts-expect-error - Overriding base types :)
-	async findOne(
+	async findOne<P extends Document = IOmnichannelBusinessUnit>(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
 		options: FindOptions<IOmnichannelBusinessUnit>,
 		extra?: Record<string, any>,
-	): Promise<IOmnichannelBusinessUnit | null> {
+	): Promise<P | null> {
 		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
-		return this.col.findOne(query, options);
+		return this.col.findOne<P>(query, options);
 	}
 
-	async findOneById(
+	async findOneById<P extends Document = IOmnichannelBusinessUnit>(
 		_id: IOmnichannelBusinessUnit['_id'],
 		options: FindOptions<IOmnichannelBusinessUnit>,
 		extra?: Record<string, any>,
-	): Promise<IOmnichannelBusinessUnit | null> {
+	): Promise<P | null> {
 		if (options) {
-			return this.findOne({ _id }, options, extra);
+			return this.findOne<P>({ _id }, options, extra);
 		}
-		return this.findOne({ _id }, {}, extra);
+		return this.findOne<P>({ _id }, {}, extra);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
@@ -151,6 +151,19 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 
 		const query = { _id };
 		return this.deleteOne(query);
+	}
+
+	async removeByIdAndUnit(_id: string, unitsFromUser?: string[]): Promise<DeleteResult> {
+		const originalQuery = { _id };
+		const query = await addQueryRestrictions(originalQuery, unitsFromUser);
+		const result = await this.deleteOne(query);
+		if (result.deletedCount > 0) {
+			await LivechatUnitMonitors.removeByUnitId(_id);
+			await this.removeParentAndAncestorById(_id);
+			await LivechatRooms.removeUnitAssociationFromRooms(_id);
+		}
+
+		return result;
 	}
 
 	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null> {
