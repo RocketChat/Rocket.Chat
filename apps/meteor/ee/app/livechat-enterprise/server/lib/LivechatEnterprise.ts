@@ -1,4 +1,4 @@
-import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -12,9 +12,9 @@ import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'roles'>>(username, {
+			projection: { _id: 1, username: 1, roles: 1 },
+		});
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -30,9 +30,9 @@ export const LivechatEnterprise = {
 	},
 
 	async removeMonitor(username: string) {
-		check(username, String);
-
-		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, {
+			projection: { _id: 1 },
+		});
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -40,8 +40,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const removeRoleResult = await removeUserFromRolesAsync(user._id, ['livechat-monitor']);
-		if (!removeRoleResult) {
+		if (!(await removeUserFromRolesAsync(user._id, ['livechat-monitor']))) {
 			return false;
 		}
 
@@ -55,13 +54,13 @@ export const LivechatEnterprise = {
 		check(_id, String);
 
 		const unitsFromUser = await getUnitsFromUser(userId);
-		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } }, { unitsFromUser });
 
-		if (!unit) {
+		const result = await LivechatUnit.removeByIdAndUnit(_id, unitsFromUser);
+		if (!result.deletedCount) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
 		}
 
-		return LivechatUnit.removeById(_id);
+		return result;
 	},
 
 	async saveUnit(
@@ -98,7 +97,13 @@ export const LivechatEnterprise = {
 		let ancestors: string[] = [];
 		if (_id) {
 			const unitsFromUser = await getUnitsFromUser(userId);
-			const unit = await LivechatUnit.findOneById(_id, {}, { unitsFromUser });
+			const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(
+				_id,
+				{
+					projection: { _id: 1, ancestors: 1 },
+				},
+				{ unitsFromUser },
+			);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -116,16 +121,14 @@ export const LivechatEnterprise = {
 
 		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
 			monitorId,
-			username,
-		})) as { monitorId: string; username: string }[];
+			username: username!,
+		}));
 
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, monitors, unitDepartments);
 	},
 
 	async removeTag(_id: string) {
-		check(_id, String);
-
-		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1, name: 1 } });
+		const tag = await LivechatTag.findOneById<Pick<ILivechatTag, '_id' | 'name'>>(_id, { projection: { _id: 1, name: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
@@ -136,15 +139,6 @@ export const LivechatEnterprise = {
 	},
 
 	async saveTag(_id: string | undefined, tagData: { name: string; description?: string }, tagDepartments: string[]) {
-		check(_id, Match.Maybe(String));
-
-		check(tagData, {
-			name: String,
-			description: Match.Optional(String),
-		});
-
-		check(tagDepartments, [String]);
-
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
@@ -153,7 +147,11 @@ export const LivechatEnterprise = {
 		slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
 		executedBy: string,
 	) {
-		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const oldSLA =
+			_id &&
+			(await OmnichannelServiceLevelAgreements.findOneById<Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes'>>(_id, {
+				projection: { dueTimeInMinutes: 1 },
+			}));
 		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
 		if (exists) {
 			throw new Error('error-duplicated-sla');
@@ -175,14 +173,9 @@ export const LivechatEnterprise = {
 	},
 
 	async removeSLA(executedBy: string, _id: string) {
-		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
-		if (!sla) {
-			throw new Error(`SLA with id ${_id} not found`);
-		}
-
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
 		if (!removedResult || removedResult.deletedCount !== 1) {
-			throw new Error(`Error removing SLA with id ${_id}`);
+			throw new Error(`SLA with id ${_id} not found`);
 		}
 
 		await removeSLAFromRooms(_id, executedBy);

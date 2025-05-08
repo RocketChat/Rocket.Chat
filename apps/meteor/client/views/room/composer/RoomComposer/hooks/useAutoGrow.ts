@@ -80,7 +80,7 @@ export const useAutoGrow = (
 			...shadowStyleBase,
 			font: style?.font,
 			width: composerContentSize.inlineSize,
-			minHeight: style?.lineHeight,
+			minHeight: style?.minHeight,
 			lineHeight: style?.lineHeight,
 		},
 	};

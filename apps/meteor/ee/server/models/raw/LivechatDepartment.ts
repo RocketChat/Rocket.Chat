@@ -27,9 +27,9 @@ declare module '@rocket.chat/model-typings' {
 		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
 		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
 		findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
-			businessUnit: string,
-			projection: FindOptions<T>['projection'],
-		): Promise<FindCursor<T>>;
+			businessUnit?: string,
+			projection?: FindOptions<T>['projection'],
+		): FindCursor<T>;
 		findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 		findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }>;
 	}
@@ -72,15 +72,28 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
-		businessUnit: string,
-		projection: FindOptions<T>['projection'],
-	): Promise<FindCursor<T>> {
+	findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
+		const query = {
+			enabled: true,
+			numAgents: { $gt: 0 },
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find<T>(query, options);
+	}
+
+	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
+		businessUnit?: string,
+		projection?: FindOptions<T>['projection'],
+	): FindCursor<T> {
 		if (!businessUnit) {
 			return super.findEnabledWithAgents<T>(projection);
 		}
 
-		return super.findActiveByUnitIds<T>([businessUnit], { projection });
+		return this.findActiveByUnitIds<T>([businessUnit], { projection });
 	}
 
 	findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
