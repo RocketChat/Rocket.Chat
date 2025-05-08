@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
@@ -20,6 +21,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		check(username, String);
 		return LivechatEnterprise.removeMonitor(username);
 	},
 });

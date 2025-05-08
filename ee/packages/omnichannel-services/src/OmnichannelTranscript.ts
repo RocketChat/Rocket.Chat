@@ -18,6 +18,7 @@ import type {
 	ILivechatAgent,
 	IOmnichannelSystemMessage,
 	AtLeast,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
@@ -371,9 +372,18 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		this.currentJobNumber++;
 		try {
-			const room = await LivechatRooms.findOneById(details.rid);
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v' | 'pdfTranscriptFileId' | 'closedAt' | 'servedBy'>>(
+				details.rid,
+				{
+					projection: { v: 1, servedBy: 1, pdfTranscriptFileId: 1, closedAt: 1 },
+				},
+			);
 			if (!room) {
 				throw new Error('room-not-found');
+			}
+			if (room.pdfTranscriptFileId) {
+				this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - PDF already exists`);
+				return;
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
@@ -436,17 +446,15 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
-		const room = await LivechatRooms.findOneById(details.rid);
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(details.rid, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
-		const user = await Users.findOneById(details.userId);
+		// TODO: fix types of translate service (or deprecate, if possible)
+		const user = await Users.findOneById(details.userId, { projection: { _id: 1, language: 1 } });
 		if (!user) {
 			return;
 		}
-
-		// Remove `transcriptRequestedPdf` from room to allow another request
-		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
