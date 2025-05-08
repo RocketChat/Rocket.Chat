@@ -39,11 +39,7 @@ export class LocalCollection<T extends { _id: string }> {
 		return this.store.getState().records;
 	}
 
-	private count() {
-		return this.store.getState().records.length;
-	}
-
-	private set(doc: T) {
+	private storeDocument(doc: T) {
 		this.store.setState((state) => {
 			const records = [...state.records];
 			const index = records.findIndex((r) => r._id === doc._id);
@@ -54,16 +50,6 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 			return { records };
 		});
-	}
-
-	private delete(id: T['_id']) {
-		this.store.setState((state) => ({
-			records: state.records.filter((record) => record._id !== id),
-		}));
-	}
-
-	private clear() {
-		this.store.setState({ records: [] });
 	}
 
 	find(selector: Filter<T> | T['_id'] = {}, options?: Options<T>) {
@@ -78,7 +64,7 @@ export class LocalCollection<T extends { _id: string }> {
 		return this.find({}, options).countAsync();
 	}
 
-	findOne(selector?: Filter<T> | T['_id'], options: Options<T> = {}) {
+	findOne(selector?: Filter<T> | T['_id'], options?: Options<T>) {
 		return this.find(selector, { ...options, limit: 1 }).fetch()[0];
 	}
 
@@ -98,13 +84,9 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		this._saveOriginal(doc._id, undefined);
-		this.set(doc);
+		this.storeDocument(doc);
 
 		return doc._id;
-	}
-
-	private deferCallback<TFunction extends (...args: any) => void>(callback: TFunction | undefined | null, ...args: Parameters<TFunction>) {
-		if (callback) Meteor.defer(() => callback(...args));
 	}
 
 	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
@@ -118,11 +100,11 @@ export class LocalCollection<T extends { _id: string }> {
 			const matchResult = query.matcher.documentMatches(doc);
 
 			if (matchResult.result) {
-				if (query.cursor.skip || query.cursor.limit) {
-					queriesToRecompute.add(query);
-				} else {
-					this._insertInResultsSync(query, doc);
-				}
+				// if (query.cursor.skip || query.cursor.limit) {
+				queriesToRecompute.add(query);
+				// } else {
+				// 	this._insertInResults(query, doc);
+				// }
 			}
 		}
 
@@ -165,6 +147,58 @@ export class LocalCollection<T extends { _id: string }> {
 		return id;
 	}
 
+	private deferCallback<TFunction extends (...args: any) => void>(callback: TFunction | undefined | null, ...args: Parameters<TFunction>) {
+		if (callback) Meteor.defer(() => callback(...args));
+	}
+
+	private _insertInResults(query: Query<T>, doc: T) {
+		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
+
+		delete fields._id;
+
+		if (query.ordered) {
+			if (!(query as OrderedQuery<T>).sorter) {
+				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
+				(query as OrderedQuery<T>).results.push(doc);
+			} else {
+				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
+
+				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
+
+				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
+			}
+
+			(query as OrderedQuery<T>).added(doc._id, query.projectionFn(fields));
+		} else {
+			(query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
+			(query as UnorderedQuery<T>).results.set(doc._id, doc);
+		}
+	}
+
+	private async _insertInResultsAsync(query: Query<T>, doc: T) {
+		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
+
+		delete fields._id;
+
+		if (query.ordered) {
+			if (!(query as OrderedQuery<T>).sorter) {
+				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
+				(query as OrderedQuery<T>).results.push(doc);
+			} else {
+				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
+
+				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
+
+				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
+			}
+
+			await (query as OrderedQuery<T>).added(doc._id, (query as OrderedQuery<T>).projectionFn(fields));
+		} else {
+			await (query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
+			(query as UnorderedQuery<T>).results.set(doc._id, doc);
+		}
+	}
+
 	pauseObservers() {
 		if (this.paused) return;
 
@@ -176,9 +210,9 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private clearResultQueries(callback?: (error: Error | null, result: number) => void) {
-		const result = this.count();
+		const result = this.all().length;
 
-		this.clear();
+		this.store.setState({ records: [] });
 
 		for (const query of this.queries) {
 			if (query.ordered) {
@@ -222,7 +256,9 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 
 			this._saveOriginal(removeDoc._id, removeDoc);
-			this.delete(removeDoc._id);
+			this.store.setState((state) => ({
+				records: state.records.filter((record) => record._id !== removeDoc._id),
+			}));
 		}
 
 		return { queriesToRecompute, queryRemove, count: remove.size };
@@ -749,7 +785,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.set(doc);
+		this.storeDocument(doc);
 
 		const recomputeQueries = new Set<Query<T>>();
 
@@ -774,7 +810,7 @@ export class LocalCollection<T extends { _id: string }> {
 			} else if (before && !after) {
 				this._removeFromResultsSync(query, doc);
 			} else if (!before && after) {
-				this._insertInResultsSync(query, doc);
+				this._insertInResults(query, doc);
 			} else if (before && after) {
 				this._updateInResultsSync(query, doc, oldDoc);
 			}
@@ -787,7 +823,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.set(doc);
+		this.storeDocument(doc);
 
 		const recomputeQueries = new Set<Query<T>>();
 		for await (const query of this.queries) {
@@ -987,54 +1023,6 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		return null;
-	}
-
-	private _insertInResultsSync(query: Query<T>, doc: T) {
-		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
-
-		delete fields._id;
-
-		if (query.ordered) {
-			if (!(query as OrderedQuery<T>).sorter) {
-				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
-				(query as OrderedQuery<T>).results.push(doc);
-			} else {
-				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
-
-				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
-
-				(query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
-			}
-
-			(query as OrderedQuery<T>).added(doc._id, query.projectionFn(fields));
-		} else {
-			(query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
-			(query as UnorderedQuery<T>).results.set(doc._id, doc);
-		}
-	}
-
-	private async _insertInResultsAsync(query: Query<T>, doc: T) {
-		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
-
-		delete fields._id;
-
-		if (query.ordered) {
-			if (!(query as OrderedQuery<T>).sorter) {
-				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), null);
-				(query as OrderedQuery<T>).results.push(doc);
-			} else {
-				const i = this._insertInSortedList((query as OrderedQuery<T>).sorter.getComparator(), (query as OrderedQuery<T>).results, doc);
-
-				const next = (query as OrderedQuery<T>).results[i + 1]?._id ?? null;
-
-				await (query as OrderedQuery<T>).addedBefore(doc._id, (query as OrderedQuery<T>).projectionFn(fields), next);
-			}
-
-			await (query as OrderedQuery<T>).added(doc._id, (query as OrderedQuery<T>).projectionFn(fields));
-		} else {
-			await (query as UnorderedQuery<T>).added(doc._id, (query as UnorderedQuery<T>).projectionFn(fields));
-			(query as UnorderedQuery<T>).results.set(doc._id, doc);
-		}
 	}
 
 	private _insertInSortedList(cmp: (a: T, b: T) => number, array: T[], value: T) {
