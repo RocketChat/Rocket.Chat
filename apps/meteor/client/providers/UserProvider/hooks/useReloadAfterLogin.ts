@@ -28,6 +28,7 @@ export const useReloadAfterLogin = (user: IUser | null) => {
 				router.navigate({
 					name: routeName,
 					params: router.getRouteParameters(),
+					search: router.getSearchParameters(),
 				});
 			}
 		}
