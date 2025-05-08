@@ -1,32 +1,25 @@
 import { tracerSpan } from '@rocket.chat/tracing';
-import type { Request, Response, NextFunction } from 'express';
+import type { MiddlewareHandler } from 'hono';
 
-export const tracerSpanMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		await tracerSpan(
-			`${req.method} ${req.url}`,
-			{
-				attributes: {
-					url: req.url,
-					route: req.route?.path,
-					method: req.method,
-					userId: req.userId, // Assuming userId is attached to the request object
-				},
+export const tracerSpanMiddleware: MiddlewareHandler = async (c, next) => {
+	return tracerSpan(
+		`${c.req.method} ${c.req.url}`,
+		{
+			attributes: {
+				url: c.req.url,
+				// route: c.req.route?.path,
+				method: c.req.method,
+				userId: (c.req.raw.clone() as any).userId, // Assuming userId is attached to the request object
 			},
-			async (span) => {
-				if (span) {
-					res.setHeader('X-Trace-Id', span.spanContext().traceId);
-				}
+		},
+		async (span) => {
+			if (span) {
+				c.header('X-Trace-Id', span.spanContext().traceId);
+			}
 
-				next();
+			await next();
 
-				await new Promise((resolve) => {
-					res.once('finish', resolve);
-				});
-				span?.setAttribute('status', res.statusCode);
-			},
-		);
-	} catch (error) {
-		next(error);
-	}
+			span?.setAttribute('status', c.res.status);
+		},
+	);
 };

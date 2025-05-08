@@ -49,9 +49,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 
 	return (
 		<AdministrationLayout>
-			<SettingsProvider privileged>
-				{children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />}
-			</SettingsProvider>
+			<SettingsProvider>{children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />}</SettingsProvider>
 		</AdministrationLayout>
 	);
 };

@@ -18,7 +18,7 @@ const config: OauthConfig = {
 	},
 };
 
-const GitHubEnterprise = new CustomOAuth('github_enterprise', config);
+const GitHubEnterprise = CustomOAuth.configureOAuthService('github_enterprise', config);
 
 export const useGitHubEnterpriseAuth = () => {
 	const githubApiUrl = useSetting('API_GitHub_Enterprise_URL') as string;

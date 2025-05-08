@@ -139,6 +139,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const chatClosingTagsField = useId();
 	const allowReceiveForwardOffline = useId();
 	const unitFieldId = useId();
+	const agentsLabelId = useId();
 
 	return (
 		<Page flexDirection='row'>
@@ -444,9 +445,11 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Divider mb={16} />
 
 						<Field>
-							<FieldLabel mb={4}>{t('Agents')}</FieldLabel>
+							<FieldLabel id={agentsLabelId} mb={4}>
+								{t('Agents')}
+							</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
-								<DepartmentsAgentsTable control={control} register={register} />
+								<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
 							</Box>
 						</Field>
 					</FieldGroup>

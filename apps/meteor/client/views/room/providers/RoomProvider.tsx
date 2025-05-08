@@ -23,7 +23,6 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
 
@@ -33,8 +32,6 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
-	useRoomRolesManagement(rid);
-
 	const resultFromServer = useRoomInfoEndpoint(rid);
 
 	const resultFromLocal = useRoomQuery(rid);

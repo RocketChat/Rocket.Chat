@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react';
 
-import { VoipContext } from '../contexts/VoipContext';
 import { useVoipEffect } from './useVoipEffect';
+import { VoipContext } from '../contexts/VoipContext';
 
 export type VoipState = {
 	isEnabled: boolean;
@@ -15,6 +15,7 @@ export type VoipState = {
 	isError: boolean;
 	error?: Error | null;
 	clientError?: Error | null;
+	isReconnecting: boolean;
 };
 
 const DEFAULT_STATE = {
@@ -26,6 +27,7 @@ const DEFAULT_STATE = {
 	isOngoing: false,
 	isOutgoing: false,
 	isError: false,
+	isReconnecting: false,
 };
 
 export const useVoipState = (): VoipState => {

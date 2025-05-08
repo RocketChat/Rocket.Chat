@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle, FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,9 +33,14 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 				color='default'
 			>
 				{isMobile && (
-					<HeaderToolbar>
-						<SidebarToggler />
-					</HeaderToolbar>
+					<FeaturePreview feature='newNavigation'>
+						<FeaturePreviewOff>
+							<HeaderToolbar>
+								<SidebarToggler />
+							</HeaderToolbar>
+						</FeaturePreviewOff>
+						<FeaturePreviewOn>{null}</FeaturePreviewOn>
+					</FeaturePreview>
 				)}
 				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>

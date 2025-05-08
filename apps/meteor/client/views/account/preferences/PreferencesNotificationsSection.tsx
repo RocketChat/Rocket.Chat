@@ -7,7 +7,7 @@ import { useId, useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
+import { useNotification } from '../../../hooks/notification/useNotification';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -20,7 +20,6 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-// TODO: Test Notification Button not working
 const PreferencesNotificationsSection = () => {
 	const { t, i18n } = useTranslation();
 
@@ -39,18 +38,19 @@ const PreferencesNotificationsSection = () => {
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
 	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
 	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
+	const notify = useNotification();
 
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
 	const onSendNotification = useCallback(() => {
-		KonchatNotification.notify({
+		notify({
 			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});
-	}, [t]);
+	}, [notify, t]);
 
 	const onAskNotificationPermission = useCallback(() => {
 		window.Notification && Notification.requestPermission().then((val) => setNotificationsPermission(val));

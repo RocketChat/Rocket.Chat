@@ -126,7 +126,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const options = {
+			const users = await Users.findUsersInRoles(roleIds, null, {
 				sort: {
 					username: 1,
 				},
@@ -134,9 +134,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 					username: 1,
 					roles: 1,
 				},
-			};
-
-			const users = await Users.findUsersInRoles(roleIds, null, options).toArray();
+			}).toArray();
 
 			return users.map((user) => ({
 				...user,

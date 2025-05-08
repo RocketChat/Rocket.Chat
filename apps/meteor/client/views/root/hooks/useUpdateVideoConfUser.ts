@@ -1,10 +1,9 @@
-import { useConnectionStatus, useUserId } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { VideoConfManager } from '../../../lib/VideoConfManager';
 
-export const useUpdateVideoConfUser = () => {
-	const userId = useUserId();
+export const useUpdateVideoConfUser = (userId: string) => {
 	const { connected, isLoggingIn } = useConnectionStatus();
 
 	useEffect(() => {

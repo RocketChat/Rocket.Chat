@@ -6,8 +6,6 @@ import SettingsGroupSelector from './SettingsGroupSelector';
 import SettingsPage from './SettingsPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const omittedSettings = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
-
 export const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();
 	const groupId = useRouteParameter('group');
@@ -22,7 +20,7 @@ export const SettingsRoute = (): ReactElement => {
 	}
 
 	return (
-		<EditableSettingsProvider omit={omittedSettings}>
+		<EditableSettingsProvider>
 			<SettingsGroupSelector groupId={groupId} onClickBack={() => router.navigate('/admin/settings')} />
 		</EditableSettingsProvider>
 	);

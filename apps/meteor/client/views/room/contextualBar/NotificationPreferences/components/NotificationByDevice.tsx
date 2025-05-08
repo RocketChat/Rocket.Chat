@@ -19,7 +19,6 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 				</Box>
 			</Box>
 		}
-		data-qa-id={`${device}-notifications`}
 	>
 		<FieldGroup>{children}</FieldGroup>
 	</AccordionItem>

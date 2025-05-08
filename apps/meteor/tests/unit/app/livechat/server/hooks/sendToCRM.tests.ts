@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import p from 'proxyquire';
+import sinon from 'sinon';
 
 const resultObj = {
 	result: true,
@@ -16,10 +17,10 @@ const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMes
 			},
 		},
 		'../../../utils/server/functions/normalizeMessageFileUpload': {
-			normalizeMessageFileUpload: (data: any) => data,
+			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
 		},
 		'../lib/webhooks': {},
-		'../lib/LivechatTyped': { Livechat: {} },
+		'../lib/guests': { getLivechatRoomGuestInfo: sinon.stub() },
 	});
 
 describe('[OC] Send TO CRM', () => {

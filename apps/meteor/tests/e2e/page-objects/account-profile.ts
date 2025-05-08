@@ -145,11 +145,15 @@ export class AccountProfile {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
-	get enableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Enable two-factor authentication via Email"]');
+	get email2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via email' }) });
 	}
 
-	get disableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Disable two-factor authentication via Email"]');
+	get totp2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via TOTP' }) });
+	}
+
+	get required2faModalSetUpButton(): Locator {
+		return this.page.locator('dialog >> button');
 	}
 }

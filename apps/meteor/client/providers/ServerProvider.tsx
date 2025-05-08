@@ -75,6 +75,8 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	disconnect: () => Meteor.disconnect(),
+	reconnect: () => Meteor.reconnect(),
 };
 
 type ServerProviderProps = { children?: ReactNode };

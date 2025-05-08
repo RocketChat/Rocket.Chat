@@ -68,4 +68,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	countVerified(): Promise<number>;
 	countContactsWithoutChannels(): Promise<number>;
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }>;
+	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult>;
 }

@@ -8,13 +8,10 @@ import express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
-const apiServer = express();
-
-apiServer.disable('x-powered-by');
-
-WebApp.connectHandlers.use(apiServer);
+WebApp.rawConnectHandlers.use(apiServer);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;

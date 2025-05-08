@@ -1,6 +1,6 @@
 import type { EventSignatures } from '../events/Events';
 import type { IApiService } from '../types/IApiService';
-import type { IBroker, IBrokerNode } from '../types/IBroker';
+import type { CallingOptions, IBroker, IBrokerNode } from '../types/IBroker';
 import type { IServiceClass } from '../types/ServiceClass';
 
 export class Api implements IApiService {
@@ -37,8 +37,8 @@ export class Api implements IApiService {
 		}
 	}
 
-	async call(method: string, data?: unknown): Promise<any> {
-		return this.broker?.call(method, data);
+	async call(method: string, data?: unknown, options?: CallingOptions): Promise<any> {
+		return this.broker?.call(method, data, options);
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {

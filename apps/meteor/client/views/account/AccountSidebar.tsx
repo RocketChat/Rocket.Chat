@@ -16,7 +16,7 @@ const AccountSidebar = () => {
 
 	// TODO: uplift this provider
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<Sidebar>
 				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
 				<Sidebar.Content>

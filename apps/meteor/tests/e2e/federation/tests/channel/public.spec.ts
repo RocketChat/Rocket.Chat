@@ -889,6 +889,8 @@ test.describe.parallel('Federation - Channel Creation', () => {
 
 				await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
 				await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
+				await expect(poFederationChannelServer1.tabs.btnVideoCall).toBeDisabled();
+				await expect(poFederationChannelServer2.tabs.btnVideoCall).toBeDisabled();
 
 				await pageForServer2.close();
 			});

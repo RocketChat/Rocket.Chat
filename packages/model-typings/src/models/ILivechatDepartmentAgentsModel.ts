@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
+import type { AvailableAgentsAggregation, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -57,7 +57,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
 	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
 	getOnlineForDepartment(

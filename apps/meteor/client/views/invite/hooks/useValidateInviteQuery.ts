@@ -41,7 +41,7 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 						return;
 					}
 
-					return getInviteRoomMutation(token);
+					return getInviteRoomMutation.mutate(token);
 				};
 
 				onSuccess();

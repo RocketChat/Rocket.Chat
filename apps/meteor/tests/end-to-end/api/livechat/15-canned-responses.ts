@@ -168,6 +168,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('[POST] canned-responses', () => {
+		const dupshortcut = `shortcut-${faker.string.nanoid(6)}`;
 		it('should fail if user dont have save-canned-responses permission', async () => {
 			await updatePermission('save-canned-responses', []);
 			return request
@@ -197,7 +198,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxx', scope: 'user', tags: ['tag'], text: 'text' })
+				.send({ shortcut: dupshortcut, scope: 'user', tags: ['tag'], text: 'text' })
 				.expect(200);
 			expect(body).to.have.property('success', true);
 		});
@@ -205,7 +206,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			return request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxx', scope: 'user', tags: ['tag'], text: 'text' })
+				.send({ shortcut: dupshortcut, scope: 'user', tags: ['tag'], text: 'text' })
 				.expect(400);
 		});
 		it('should save a canned response related to an EE tag', async () => {
@@ -214,7 +215,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxx', scope: 'user', tags: [tag.name], text: 'text' })
+				.send({ shortcut: `eetag-${faker.string.nanoid(6)}`, scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);
@@ -232,7 +233,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request
 				.post(api('canned-responses'))
 				.set(credentials)
-				.send({ shortcut: 'shortcutxxxx', scope: 'user', tags: [tag.name], text: 'text' })
+				.send({ shortcut: `remove-${faker.string.nanoid(6)}`, scope: 'user', tags: [tag.name], text: 'text' })
 				.expect(200);
 
 			expect(body).to.have.property('success', true);

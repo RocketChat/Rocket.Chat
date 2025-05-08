@@ -9,6 +9,7 @@ import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
 type AutoCompleteTagsMultipleProps = {
+	id?: string;
 	value?: PaginatedMultiSelectOption[];
 	onlyMyTags?: boolean;
 	onChange?: (value: PaginatedMultiSelectOption[]) => void;
@@ -17,6 +18,7 @@ type AutoCompleteTagsMultipleProps = {
 };
 
 const AutoCompleteTagsMultiple = ({
+	id,
 	value = [],
 	onlyMyTags = false,
 	onChange = () => undefined,
@@ -44,6 +46,7 @@ const AutoCompleteTagsMultiple = ({
 
 	return (
 		<PaginatedMultiSelectFiltered
+			id={id}
 			withTitle
 			value={value}
 			onChange={onChange}

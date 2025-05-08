@@ -1,17 +1,12 @@
 import type { IRoom, ISubscription, IUser, ValueOf } from '@rocket.chat/core-typings';
 
 import * as Federation from './Federation';
-import { RoomRoles } from '../../../app/models/client';
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-
-jest.mock('../../../app/models/client', () => ({
-	RoomRoles: {
-		findOne: jest.fn(),
-	},
-}));
+import { queryClient } from '../queryClient';
+import { roomsQueryKeys } from '../queryKeys';
 
 afterEach(() => {
-	(RoomRoles.findOne as jest.Mock).mockClear();
+	queryClient.resetQueries();
 });
 
 describe('#actionAllowed()', () => {
@@ -51,8 +46,14 @@ describe('#actionAllowed()', () => {
 		describe('Seeing another owners', () => {
 			const theirRole = ['owner'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
+			});
+
 			it('should return true if the user want to remove himself as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
 					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
 						u: { _id: me },
@@ -62,7 +63,6 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return true if the user want to add himself as a moderator (Demoting himself to moderator)', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
 					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
 						u: { _id: me },
@@ -72,20 +72,22 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to remove another owners as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove another owners from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
@@ -95,31 +97,35 @@ describe('#actionAllowed()', () => {
 		describe('Seeing moderators', () => {
 			const theirRole = ['moderator'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
+			});
+
 			it('should return true if the user want to add/remove moderators as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
 			});
 
 			it('should return true if the user want to remove moderators as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
 			});
 
 			it('should return true if the user want to remove moderators from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
@@ -128,30 +134,27 @@ describe('#actionAllowed()', () => {
 
 		describe('Seeing normal users', () => {
 			it('should return true if the user want to add/remove normal users as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
 			});
 
 			it('should return true if the user want to add/remove normal users as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
 			});
 
 			it('should return true if the user want to remove normal users from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
@@ -165,8 +168,14 @@ describe('#actionAllowed()', () => {
 		describe('Seeing owners', () => {
 			const theirRole = ['owner'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
+			});
+
 			it('should return false if the user want to add/remove owners as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
 					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
 						u: { _id: me },
@@ -176,9 +185,8 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to add/remove owners as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
 						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
@@ -186,9 +194,8 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to add/remove owners as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
 						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
@@ -196,9 +203,8 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to remove owners from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.REMOVE_USER, them, {
 						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
@@ -209,20 +215,25 @@ describe('#actionAllowed()', () => {
 		describe('Seeing another moderators', () => {
 			const theirRole = ['moderator'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [
+					{ rid: 'room-id', u: { _id: me }, roles: myRole },
+					{ rid: 'room-id', u: { _id: them }, roles: theirRole },
+				]);
+			});
+
 			it('should return false if the user want to add/remove moderator as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return true if the user want to remove himself as a moderator (Demoting himself)', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
 						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
@@ -230,9 +241,8 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to promote himself as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
 						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
@@ -240,20 +250,18 @@ describe('#actionAllowed()', () => {
 			});
 
 			it('should return false if the user want to remove another moderator from their role', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove another moderator from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
@@ -262,30 +270,27 @@ describe('#actionAllowed()', () => {
 
 		describe('Seeing normal users', () => {
 			it('should return false if the user want to add/remove normal users as an owner', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return true if the user want to add/remove normal users as a moderator', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
 			});
 
 			it('should return true if the user want to remove normal users from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 						roles: myRole,
 					} as ISubscription),
 				).toBe(true);
@@ -297,29 +302,30 @@ describe('#actionAllowed()', () => {
 		describe('Seeing owners', () => {
 			const theirRole = ['owner'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [{ rid: 'room-id', u: { _id: them }, roles: theirRole }]);
+			});
+
 			it('should return false if the user want to add/remove owners as a normal user', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to add/remove moderators as a normal user', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove owners from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
@@ -328,29 +334,30 @@ describe('#actionAllowed()', () => {
 		describe('Seeing moderators', () => {
 			const theirRole = ['owner'];
 
+			beforeEach(() => {
+				queryClient.setQueryData(roomsQueryKeys.roles('room-id'), [{ rid: 'room-id', u: { _id: them }, roles: theirRole }]);
+			});
+
 			it('should return false if the user want to add/remove owner as a normal user', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove a moderator from their role', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove a moderator from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue({ roles: theirRole });
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
@@ -358,28 +365,25 @@ describe('#actionAllowed()', () => {
 
 		describe('Seeing another normal users', () => {
 			it('should return false if the user want to add/remove owner as a normal user', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to add/remove moderator as a normal user', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.SET_AS_OWNER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
 
 			it('should return false if the user want to remove normal users from the room', () => {
-				(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 				expect(
-					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, me, {
-						u: { _id: them },
+					Federation.actionAllowed({ federated: true }, RoomMemberActions.REMOVE_USER, them, {
+						u: { _id: me },
 					} as ISubscription),
 				).toBe(false);
 			});
@@ -387,7 +391,6 @@ describe('#actionAllowed()', () => {
 			it.each([[RoomMemberActions.SET_AS_MODERATOR], [RoomMemberActions.SET_AS_OWNER], [RoomMemberActions.REMOVE_USER]])(
 				'should return false if the user want to %s for himself',
 				(action) => {
-					(RoomRoles.findOne as jest.Mock).mockReturnValue(undefined);
 					expect(
 						Federation.actionAllowed({ federated: true }, action, me, {
 							u: { _id: me },

@@ -11,6 +11,35 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
+	return result.private_key && result.public_key;
+};
+
+export const setUserPublicAndPrivateKeysMethod = async (
+	userId: string,
+	keyPair: { public_key: string; private_key: string; force?: boolean },
+): Promise<void> => {
+	if (!keyPair.force) {
+		const keys = await Users.fetchKeysByUserId(userId);
+
+		if (isKeysResult(keys)) {
+			throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
+		}
+	}
+
+	await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
+		private_key: keyPair.private_key,
+		public_key: keyPair.public_key,
+	});
+
+	const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
+	await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
+
+	void notifyOnRoomChangedById(subscribedRoomIds);
+};
+
 Meteor.methods<ServerMethods>({
 	async 'e2e.setUserPublicAndPrivateKeys'(keyPair) {
 		const userId = Meteor.userId();
@@ -21,24 +50,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!keyPair.force) {
-			const keys = await Users.fetchKeysByUserId(userId);
-
-			if (keys.private_key && keys.public_key) {
-				throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
-					method: 'e2e.setUserPublicAndPrivateKeys',
-				});
-			}
+		if (!keyPair.public_key || !keyPair.private_key) {
+			throw new Meteor.Error('error-invalid-keys', 'Invalid keys', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
 		}
 
-		await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
-			private_key: keyPair.private_key,
-			public_key: keyPair.public_key,
-		});
-
-		const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
-		await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
-
-		void notifyOnRoomChangedById(subscribedRoomIds);
+		await setUserPublicAndPrivateKeysMethod(userId, keyPair);
 	},
 });

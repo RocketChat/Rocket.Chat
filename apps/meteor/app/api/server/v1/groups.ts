@@ -1,5 +1,5 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
@@ -740,7 +740,7 @@ API.v1.addRoute(
 
 			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult.rid,
-				...(status && { status: { $in: status } }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 				skip,
 				limit,
 				filter,

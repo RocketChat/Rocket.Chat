@@ -2,10 +2,10 @@ import { type ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
-import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../../../app/livechat/server/lib/departmentsLib';
+import { online } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';

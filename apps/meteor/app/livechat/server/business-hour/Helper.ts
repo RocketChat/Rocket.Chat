@@ -49,7 +49,7 @@ export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 	}
 };
 
-export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[] | null = null) {
+export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds?: string[]) {
 	const results = await Users.findAgentsAvailableWithoutBusinessHours(agentIds).toArray();
 
 	const update = await Users.updateLivechatStatusByAgentIds(
@@ -75,7 +75,7 @@ export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[
 	);
 }
 
-export async function makeOnlineAgentsAvailable(agentIds: string[] | null = null) {
+export async function makeOnlineAgentsAvailable(agentIds?: string[]) {
 	const results = await Users.findOnlineButNotAvailableAgents(agentIds).toArray();
 
 	const update = await Users.updateLivechatStatusByAgentIds(

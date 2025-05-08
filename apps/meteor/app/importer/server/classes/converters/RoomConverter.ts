@@ -1,5 +1,6 @@
 import type { IImportChannel, IImportChannelRecord, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import limax from 'limax';
 
 import { RecordConverter } from './RecordConverter';
@@ -150,7 +151,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 		const roomUpdate: { $set?: Record<string, any>; $addToSet?: Record<string, any> } = {};
 
 		if (Object.keys(set).length > 0) {
-			roomUpdate.$set = set;
+			roomUpdate.$set = removeEmpty(set);
 		}
 
 		if (roomData.importIds.length) {

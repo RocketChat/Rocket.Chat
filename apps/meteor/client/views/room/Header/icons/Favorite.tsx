@@ -33,8 +33,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room:
 			title={favoriteLabel}
 			icon={favorite ? 'star-filled' : 'star'}
 			onClick={handleFavoriteClick}
-			color={favorite ? 'status-font-on-warning' : null}
-			tiny
+			color={favorite ? 'status-font-on-warning' : undefined}
 		/>
 	);
 };

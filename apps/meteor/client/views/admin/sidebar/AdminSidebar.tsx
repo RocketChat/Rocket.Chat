@@ -15,7 +15,7 @@ const AdminSidebar = () => {
 
 	// TODO: uplift this provider
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<Sidebar>
 				<Sidebar.Header
 					onClose={sidebar.close}

@@ -6,6 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
+import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { federationSearchUsers } from '../../app/federation/server/handler';
@@ -32,7 +33,7 @@ const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 
 	}
 };
 
-const sortUsers = (field: string, direction: 'asc' | 'desc') => {
+const sortUsers = (field: string, direction: 'asc' | 'desc'): Record<string, SortDirection> => {
 	switch (field) {
 		case 'email':
 			return {
@@ -183,7 +184,7 @@ const findUsers = async ({
 	viewFullOtherUserInfo,
 }: {
 	text: string;
-	sort: Record<string, number>;
+	sort: Record<string, SortDirection>;
 	pagination: {
 		skip: number;
 		limit: number;
@@ -194,7 +195,7 @@ const findUsers = async ({
 	const searchFields =
 		workspace === 'all' ? ['username', 'name', 'emails.address'] : settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	const options = {
+	const options: FindOptions<IUser> = {
 		...pagination,
 		sort,
 		projection: {
@@ -264,7 +265,7 @@ const getUsers = async (
 	user: IUser | undefined,
 	text: string,
 	workspace: string,
-	sort: Record<string, number>,
+	sort: Record<string, SortDirection>,
 	pagination: {
 		skip: number;
 		limit: number;
@@ -289,6 +290,7 @@ const getUsers = async (
 
 			// Add the federated user to the results
 			results.unshift({
+				_id: user._id,
 				username: user.username,
 				name: user.name,
 				bio: user.bio,

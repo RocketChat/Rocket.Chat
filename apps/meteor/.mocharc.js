@@ -25,6 +25,8 @@ module.exports = {
 	exit: true,
 	spec: [
 		'lib/callbacks.spec.ts',
+		'server/lib/ldap/*.spec.ts',
+		'server/lib/ldap/**/*.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',

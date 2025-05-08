@@ -73,11 +73,11 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
 		name,
-		emails: emails?.map((address) => ({ address })),
-		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
-		contactManager,
-		channels,
-		customFields: customFieldsToUpdate,
+		...(emails && { emails: emails?.map((address) => ({ address })) }),
+		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
+		...(contactManager && { contactManager }),
+		...(channels && { channels }),
+		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 

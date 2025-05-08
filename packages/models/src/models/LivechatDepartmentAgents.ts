@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { AvailableAgentsAggregation, ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
@@ -177,7 +177,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
