@@ -8,7 +8,7 @@ import type { IDocumentMapStore } from './IDocumentMapStore';
 import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
 import type { Options } from './MinimongoCollection';
-import type { OrderedQuery, Query, UnorderedQuery } from './Query';
+import type { CompleteQuery, OrderedQuery, Query, UnorderedQuery } from './Query';
 import { Sorter } from './Sorter';
 import { SynchronousQueue } from './SynchronousQueue';
 import {
@@ -25,11 +25,11 @@ import {
 } from './common';
 
 export class LocalCollection<T extends { _id: string }> {
-	readonly _observeQueue = new SynchronousQueue();
+	readonly observeQueue = new SynchronousQueue();
 
-	readonly queries = new Set<Query<T>>();
+	readonly queries = new Set<CompleteQuery<T>>();
 
-	private _savedOriginals: Map<T['_id'], T | undefined> | null = null;
+	private savedOriginals: Map<T['_id'], T | undefined> | null = null;
 
 	paused = false;
 
@@ -92,7 +92,7 @@ export class LocalCollection<T extends { _id: string }> {
 	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
-		const queriesToRecompute = new Set<Query<T>>();
+		const queriesToRecompute = new Set<CompleteQuery<T>>();
 
 		for (const query of this.queries) {
 			if (query.dirty) continue;
@@ -100,11 +100,11 @@ export class LocalCollection<T extends { _id: string }> {
 			const matchResult = query.matcher.documentMatches(doc);
 
 			if (matchResult.result) {
-				// if (query.cursor.skip || query.cursor.limit) {
-				queriesToRecompute.add(query);
-				// } else {
-				// 	this._insertInResults(query, doc);
-				// }
+				if (query.cursor.skip || query.cursor.limit) {
+					queriesToRecompute.add(query);
+				} else {
+					this._insertInResults(query, doc);
+				}
 			}
 		}
 
@@ -112,7 +112,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query);
 		}
 
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 		this.deferCallback(callback, null, id);
 
 		return id;
@@ -141,7 +141,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query);
 		}
 
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 		this.deferCallback(callback, null, id);
 
 		return id;
@@ -268,7 +268,7 @@ export class LocalCollection<T extends { _id: string }> {
 		// Easy special case: if we're not calling observeChanges callbacks and
 		// we're not saving originals and we got asked to remove everything, then
 		// just empty everything directly.
-		if (this.paused && !this._savedOriginals && JSON.stringify(selector) === '{}') {
+		if (this.paused && !this.savedOriginals && JSON.stringify(selector) === '{}') {
 			return this.clearResultQueries(callback);
 		}
 
@@ -282,7 +282,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query);
 		}
 
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 
 		this.deferCallback(callback, null, count);
 
@@ -293,7 +293,7 @@ export class LocalCollection<T extends { _id: string }> {
 		// Easy special case: if we're not calling observeChanges callbacks and
 		// we're not saving originals and we got asked to remove everything, then
 		// just empty everything directly.
-		if (this.paused && !this._savedOriginals && JSON.stringify(selector) === '{}') {
+		if (this.paused && !this.savedOriginals && JSON.stringify(selector) === '{}') {
 			return this.clearResultQueries(callback);
 		}
 
@@ -306,7 +306,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query);
 		}
 
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 
 		this.deferCallback(callback, null, count);
 
@@ -348,22 +348,22 @@ export class LocalCollection<T extends { _id: string }> {
 
 	async resumeObserversServer() {
 		this._resumeObservers();
-		await this._observeQueue.drain();
+		await this.observeQueue.drain();
 	}
 
 	resumeObserversClient() {
 		this._resumeObservers();
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 	}
 
 	retrieveOriginals() {
-		if (!this._savedOriginals) {
+		if (!this.savedOriginals) {
 			throw new Error('Called retrieveOriginals without saveOriginals');
 		}
 
-		const originals = this._savedOriginals;
+		const originals = this.savedOriginals;
 
-		this._savedOriginals = null;
+		this.savedOriginals = null;
 
 		return originals;
 	}
@@ -376,11 +376,11 @@ export class LocalCollection<T extends { _id: string }> {
 	// of an inserted document, undefined is the value.) You must alternate
 	// between calls to saveOriginals() and retrieveOriginals().
 	saveOriginals() {
-		if (this._savedOriginals) {
+		if (this.savedOriginals) {
 			throw new Error('Called saveOriginals twice without retrieveOriginals');
 		}
 
-		this._savedOriginals = new Map<T['_id'], T>();
+		this.savedOriginals = new Map<T['_id'], T>();
 	}
 
 	private prepareUpdate(selector: Filter<T>) {
@@ -530,7 +530,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query, queriesToOriginalResults.get(query));
 		}
 
-		await this._observeQueue.drain();
+		await this.observeQueue.drain();
 
 		// If we are doing an upsert, and we didn't modify any documents yet, then
 		// it's time to do an insert. Figure out what document we are inserting, and
@@ -625,7 +625,7 @@ export class LocalCollection<T extends { _id: string }> {
 			this._recomputeResults(query, queriesToOriginalResults.get(query));
 		}
 
-		this._observeQueue.drain();
+		this.observeQueue.drain();
 
 		// If we are doing an upsert, and we didn't modify any documents yet, then
 		// it's time to do an insert. Figure out what document we are inserting, and
@@ -894,18 +894,18 @@ export class LocalCollection<T extends { _id: string }> {
 
 	private _saveOriginal(id: T['_id'], doc: T | undefined) {
 		// Are we even trying to save originals?
-		if (!this._savedOriginals) {
+		if (!this.savedOriginals) {
 			return;
 		}
 
 		// Have we previously mutated the original (and so 'doc' is not actually
 		// original)?  (Note the 'has' check rather than truth: we store undefined
 		// here for inserted docs!)
-		if (this._savedOriginals.has(id)) {
+		if (this.savedOriginals.has(id)) {
 			return;
 		}
 
-		this._savedOriginals.set(id, clone(doc));
+		this.savedOriginals.set(id, clone(doc));
 	}
 
 	// This binary search puts a value between any equal values, and the first

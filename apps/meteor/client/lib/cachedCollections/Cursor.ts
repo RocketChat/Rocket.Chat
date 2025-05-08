@@ -8,7 +8,7 @@ import { Matcher } from './Matcher';
 import type { FieldSpecifier, Options, Transform } from './MinimongoCollection';
 import { ObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
-import type { Query } from './Query';
+import type { CompleteQuery, Query } from './Query';
 import { Sorter } from './Sorter';
 import { _isPlainObject, clone, createMinimongoError, hasOwn, isEqual, isPromiseLike } from './common';
 
@@ -574,12 +574,6 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					sorter: null,
 				};
 
-		// Non-reactive queries call added[Before] and then never call anything
-		// else.
-		if (this.reactive) {
-			this.collection.queries.add(query);
-		}
-
 		query.results = this._getRawObjects({ ordered });
 
 		if (this.collection.paused) {
@@ -607,7 +601,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					return;
 				}
 
-				self.collection._observeQueue.queueTask(() => {
+				self.collection.observeQueue.queueTask(() => {
 					fn.apply(this, args);
 				});
 			};
@@ -620,6 +614,12 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		if (query.ordered) {
 			query.addedBefore = wrapCallback(options.addedBefore);
 			query.movedBefore = wrapCallback(options.movedBefore);
+		}
+
+		// Non-reactive queries call added[Before] and then never call anything
+		// else.
+		if (this.reactive) {
+			this.collection.queries.add(query as CompleteQuery<T, TOptions, TProjection>);
 		}
 
 		if (!options._suppress_initial && !this.collection.paused) {
@@ -650,7 +650,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			collection: this.collection,
 			stop: () => {
 				if (this.reactive) {
-					this.collection.queries.delete(query);
+					this.collection.queries.delete(query as CompleteQuery<T, TOptions, TProjection>);
 				}
 			},
 			isReady: false,
@@ -670,7 +670,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 		// run the observe callbacks resulting from the initial contents
 		// before we leave the observe.
-		this.collection._observeQueue.drain();
+		this.collection.observeQueue.drain();
 
 		handle.isReady = true;
 		handle.isReadyPromise = Promise.resolve();

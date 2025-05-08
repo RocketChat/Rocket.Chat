@@ -12,6 +12,16 @@ export interface BaseQuery<T extends { _id: string }, TOptions extends Options<T
 	projectionFn: (doc: T | Omit<T, '_id'>) => TProjection;
 }
 
+type AddedCallback<T extends { _id: string }, TProjection> = (id: T['_id'], fields: TProjection) => void | Promise<void>;
+type ChangedCallback<T extends { _id: string }, TProjection> = (id: T['_id'], fields: TProjection) => void | Promise<void>;
+type RemovedCallback<T extends { _id: string }> = (id: T['_id']) => void | Promise<void>;
+type AddedBeforeCallback<T extends { _id: string }, TProjection> = (
+	id: T['_id'],
+	fields: TProjection,
+	before: T['_id'] | null,
+) => void | Promise<void>;
+type MovedBeforeCallback<T extends { _id: string }> = (id: T['_id'], before: T['_id'] | null) => void | Promise<void>;
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface IncompleteUnorderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends BaseQuery<T, TOptions, TProjection> {
@@ -19,9 +29,9 @@ export interface IncompleteUnorderedQuery<T extends { _id: string }, TOptions ex
 	ordered: false;
 	results?: IdMap<T['_id'], T>;
 	resultsSnapshot?: IdMap<T['_id'], T> | null;
-	added?: (id: T['_id'], fields: TProjection) => void;
-	changed?: (id: T['_id'], fields: TProjection) => void;
-	removed?: (id: T['_id']) => void;
+	added?: AddedCallback<T, TProjection>;
+	changed?: ChangedCallback<T, TProjection>;
+	removed?: RemovedCallback<T>;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -29,9 +39,9 @@ export interface UnorderedQuery<T extends { _id: string }, TOptions extends Opti
 	extends IncompleteUnorderedQuery<T, TOptions, TProjection> {
 	results: IdMap<T['_id'], T>;
 	resultsSnapshot: IdMap<T['_id'], T> | null;
-	added: (id: T['_id'], fields: TProjection) => void;
-	changed: (id: T['_id'], fields: TProjection) => void;
-	removed: (id: T['_id']) => void;
+	added: AddedCallback<T, TProjection>;
+	changed: ChangedCallback<T, TProjection>;
+	removed: RemovedCallback<T>;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -41,11 +51,11 @@ export interface IncompleteOrderedQuery<T extends { _id: string }, TOptions exte
 	sorter: Sorter<T>;
 	results?: T[];
 	resultsSnapshot?: T[] | null;
-	added?: (id: T['_id'], fields: TProjection) => void;
-	changed?: (id: T['_id'], fields: TProjection) => void;
-	removed?: (id: T['_id']) => void;
-	addedBefore?: (id: T['_id'], fields: TProjection, before: T['_id'] | null) => void;
-	movedBefore?: (id: T['_id'], before: T['_id'] | null) => void;
+	added?: AddedCallback<T, TProjection>;
+	changed?: ChangedCallback<T, TProjection>;
+	removed?: RemovedCallback<T>;
+	addedBefore?: AddedBeforeCallback<T, TProjection>;
+	movedBefore?: MovedBeforeCallback<T>;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,15 +63,19 @@ export interface OrderedQuery<T extends { _id: string }, TOptions extends Option
 	extends IncompleteOrderedQuery<T, TOptions, TProjection> {
 	results: T[];
 	resultsSnapshot: T[] | null;
-	added: (id: T['_id'], fields: TProjection) => void;
-	changed: (id: T['_id'], fields: TProjection) => void;
-	removed: (id: T['_id']) => void;
-	addedBefore: (id: T['_id'], fields: TProjection, before: T['_id'] | null) => void;
-	movedBefore: (id: T['_id'], before: T['_id'] | null) => void;
+	added: AddedCallback<T, TProjection>;
+	changed: ChangedCallback<T, TProjection>;
+	removed: RemovedCallback<T>;
+	addedBefore: AddedBeforeCallback<T, TProjection>;
+	movedBefore: MovedBeforeCallback<T>;
 }
 
 export type Query<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> =
 	| IncompleteUnorderedQuery<T, TOptions, TProjection>
 	| UnorderedQuery<T, TOptions, TProjection>
 	| IncompleteOrderedQuery<T, TOptions, TProjection>
+	| OrderedQuery<T, TOptions, TProjection>;
+
+export type CompleteQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> =
+	| UnorderedQuery<T, TOptions, TProjection>
 	| OrderedQuery<T, TOptions, TProjection>;
