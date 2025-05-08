@@ -94,7 +94,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(unit._id).to.not.be.equal(unit2._id);
 		});
 
-		it.skip('should sort the result set based on provided fields', async () => {
+		it('should sort the result set based on provided fields', async () => {
 			const user = await createUser();
 			await createMonitor(user.username);
 			const department = await createDepartment();

@@ -1,6 +1,6 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import { LivechatUnit, LivechatDepartmentRaw } from '@rocket.chat/models';
+import { LivechatDepartmentRaw } from '@rocket.chat/models';
 import type {
 	Collection,
 	DeleteResult,
@@ -13,8 +13,6 @@ import type {
 	Db,
 	AggregationCursor,
 } from 'mongodb';
-
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/methods/getUnitsFromUserRoles';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatDepartmentModel {
@@ -77,15 +75,9 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		businessUnit: string,
 		projection: FindOptions<T>['projection'],
-		extra?: Record<string, any>,
 	): Promise<FindCursor<T>> {
 		if (!businessUnit) {
 			return super.findEnabledWithAgents<T>(projection);
-		}
-		const unitsFromUser = await getUnitsFromUser(extra?.userId);
-		const unit = await LivechatUnit.findOneById(businessUnit, { projection: { _id: 1 } }, { unitsFromUser });
-		if (!unit) {
-			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
 		}
 
 		return super.findActiveByUnitIds<T>([businessUnit], { projection });

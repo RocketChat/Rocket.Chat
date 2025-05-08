@@ -44,7 +44,6 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
 		projection: FindOptions<T>['projection'],
-		extra?: Record<string, any>,
 	): Promise<FindCursor<T>>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;

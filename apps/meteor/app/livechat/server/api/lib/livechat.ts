@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -23,25 +24,30 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 		}));
 }
 
+export type CheckUnitsFromUser = {
+	userId?: string;
+	businessUnit?: string;
+};
+
+export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUser): Promise<void> => undefined);
+
 async function findDepartments(
 	businessUnit?: string,
 	userId?: string,
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
 	// TODO: check this function usage
+	await checkUnitsFromUser({ userId, businessUnit });
+
 	return (
 		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
 			Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
-		>(
-			businessUnit,
-			{
-				_id: 1,
-				name: 1,
-				showOnRegistration: 1,
-				showOnOfflineForm: 1,
-				departmentsAllowedToForward: 1,
-			},
-			{ userId },
-		)
+		>(businessUnit, {
+			_id: 1,
+			name: 1,
+			showOnRegistration: 1,
+			showOnOfflineForm: 1,
+			departmentsAllowedToForward: 1,
+		})
 	).toArray();
 }
 
