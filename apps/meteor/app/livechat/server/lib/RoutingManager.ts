@@ -31,6 +31,7 @@ import {
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { beforeDelegateAgent } from './hooks';
 
 const logger = new Logger('RoutingManager');
 
@@ -301,7 +302,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await beforeDelegateAgent(agent, {
 			department: inquiry?.department,
 		});
 

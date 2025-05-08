@@ -33,6 +33,7 @@ import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } fr
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
+import { beforeDelegateAgent } from './hooks';
 
 const logger = new Logger('QueueManager');
 
@@ -295,7 +296,7 @@ export class QueueManager {
 		);
 
 		const defaultAgent =
-			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
 
