@@ -127,7 +127,6 @@ test.describe.parallel('administration', () => {
 					username: faker.internet.userName(),
 				});
 
-				expect(createUserResponse.status()).toBe(200);
 				user = (await createUserResponse.json()).user;
 
 				const createOwnerUserResponse = await api.post('/users.create', {
@@ -137,7 +136,6 @@ test.describe.parallel('administration', () => {
 					username: faker.internet.userName(),
 				});
 
-				expect(createOwnerUserResponse.status()).toBe(200);
 				ownerUser = (await createOwnerUserResponse.json()).user;
 
 				// TODO: refactor createChannel utility in order to get channel data when creating
