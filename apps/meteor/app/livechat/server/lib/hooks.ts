@@ -1,6 +1,7 @@
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { AtLeast, ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, ILivechatDepartment, IOmnichannelSource, IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { setUserStatusLivechat } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
@@ -38,3 +39,7 @@ export async function afterDepartmentUnarchived(department: AtLeast<ILivechatDep
 
 	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(department._id);
 }
+
+export const checkDefaultAgentOnNewRoom = makeFunction(
+	async (defaultAgent?: SelectedAgent, _params?: { visitorId?: string; source?: IOmnichannelSource }) => defaultAgent,
+);
