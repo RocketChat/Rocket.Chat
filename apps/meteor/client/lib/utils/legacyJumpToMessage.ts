@@ -15,7 +15,6 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 		if (tab === 'thread' && (context === message.tmid || context === message._id)) {
 			return;
 		}
-
 		router.navigate(
 			{
 				name: router.getRouteName()!,
@@ -32,6 +31,8 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			},
 			{ replace: false },
 		);
+		await RoomHistoryManager.getSurroundingMessages(message);
+
 		return;
 	}
 
