@@ -24,7 +24,7 @@ export const PasswordVerifier = ({ password, id, vertical }: PasswordVerifierPro
 	const passwordVerifications: PasswordVerificationProps = useVerifyPassword(password || '');
 
 	if (!passwordVerifications?.length) {
-		return null;
+		return <span id={id} hidden></span>;
 	}
 
 	return (
