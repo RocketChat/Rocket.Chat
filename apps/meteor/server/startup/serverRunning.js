@@ -1,17 +1,17 @@
 import fs from 'fs';
 import path from 'path';
 
-import { Users } from '@rocket.chat/models';
+// import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
 import { settings } from '../../app/settings/server';
 import { Info } from '../../app/utils/rocketchat.info';
 import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
-import { i18n } from '../lib/i18n';
+// import { i18n } from '../lib/i18n';
 import { isRunningMs } from '../lib/isRunningMs';
-import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
-import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
+import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
+// import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -21,8 +21,8 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
-const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
-const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
+// const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+// const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
 Meteor.startup(async () => {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
