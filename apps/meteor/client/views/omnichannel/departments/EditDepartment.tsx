@@ -379,7 +379,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 													onChange={onChange}
 													onLoadItems={(list) => {
 														// NOTE: list.itemCount > 1 to account for the "None" option
-														setUnitRequired(!canManageUnits && list.itemCount > 1);
+														setUnitRequired(!canManageUnits && list.length > 1);
 													}}
 												/>
 											)}
