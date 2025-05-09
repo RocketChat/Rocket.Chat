@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageBubble } from '.';
@@ -20,7 +20,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageBubble>>;
 
-const Template: Story<ComponentProps<typeof MessageBubble>> = (args) => <MessageBubble {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageBubble>> = (args) => <MessageBubble {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

@@ -14,8 +14,7 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -23,12 +22,15 @@ import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
-const CloseChatModal = ({
-	department,
-	visitorEmail,
-	onCancel,
-	onConfirm,
-}: {
+type CloseChatModalFormData = {
+	comment: string;
+	tags: string[];
+	transcriptPDF: boolean;
+	transcriptEmail: boolean;
+	subject: string;
+};
+
+type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
@@ -38,7 +40,9 @@ const CloseChatModal = ({
 		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 		requestData?: { email: string; subject: string },
 	) => Promise<void>;
-}): ReactElement => {
+};
+
+const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps) => {
 	const t = useTranslation();
 
 	const {
@@ -49,11 +53,11 @@ const CloseChatModal = ({
 		setFocus,
 		setValue,
 		watch,
-	} = useForm();
+	} = useForm<CloseChatModalFormData>();
 
-	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
-	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
-	const customSubject = useSetting<string>('Livechat_transcript_email_subject');
+	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
+	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
+	const customSubject = useSetting('Livechat_transcript_email_subject', '');
 	const [tagRequired, setTagRequired] = useState(false);
 
 	const tags = watch('tags');
@@ -76,7 +80,7 @@ const CloseChatModal = ({
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
 				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
@@ -84,11 +88,11 @@ const CloseChatModal = ({
 			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
 			if (!comment?.trim() && commentRequired) {
-				setError('comment', { type: 'custom', message: t('The_field_is_required', t('Comment')) });
+				setError('comment', { type: 'custom', message: t('Required_field', { field: t('Comment') }) });
 			}
 
 			if (transcriptEmail && !subject) {
-				setError('subject', { type: 'custom', message: t('The_field_is_required', t('Subject')) });
+				setError('subject', { type: 'custom', message: t('Required_field', { field: t('Subject') }) });
 			}
 
 			if (!tags?.length && tagRequired) {
@@ -154,12 +158,7 @@ const CloseChatModal = ({
 							<FieldRow>
 								<TextInput
 									{...register('comment')}
-									error={
-										errors.comment &&
-										t('error-the-field-is-required', {
-											field: t('Comment'),
-										})
-									}
+									error={errors.comment && t('Required_field', { field: t('Comment') })}
 									flexGrow={1}
 									placeholder={t('Please_add_a_comment')}
 								/>
@@ -206,12 +205,7 @@ const CloseChatModal = ({
 														<TextInput
 															{...register('subject', { required: true })}
 															className='active'
-															error={
-																errors.subject &&
-																t('error-the-field-is-required', {
-																	field: t('Subject'),
-																})
-															}
+															error={errors.subject && t('Required_field', { field: t('Subject') })}
 															flexGrow={1}
 														/>
 													</FieldRow>

@@ -1,14 +1,14 @@
+import DOMPurify from 'dompurify';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
 import { OmnichannelRoomIconContext } from '../context/OmnichannelRoomIconContext';
-import OmnichannelRoomIcon from '../lib/OmnichannelRoomIcon';
+import OmnichannelRoomIconManager from '../lib/OmnichannelRoomIconManager';
 
-let icons = Array.from(OmnichannelRoomIcon.icons.values());
+let icons = Array.from(OmnichannelRoomIconManager.icons.values());
 
 type OmnichannelRoomIconProviderProps = {
 	children?: ReactNode;
@@ -18,8 +18,8 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 	const svgIcons = useSyncExternalStore(
 		useCallback(
 			(callback): (() => void) =>
-				OmnichannelRoomIcon.on('change', () => {
-					icons = Array.from(OmnichannelRoomIcon.icons.values());
+				OmnichannelRoomIconManager.on('change', () => {
+					icons = Array.from(OmnichannelRoomIconManager.icons.values());
 					callback();
 				}),
 			[],
@@ -31,7 +31,7 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 		<OmnichannelRoomIconContext.Provider
 			value={useMemo(() => {
 				const extractSnapshot = (app: string, iconName: string): AsyncState<string> => {
-					const icon = OmnichannelRoomIcon.get(app, iconName);
+					const icon = OmnichannelRoomIconManager.get(app, iconName);
 
 					if (icon) {
 						return {
@@ -57,7 +57,7 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 						iconName: string,
 					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
 						(callback): (() => void) =>
-							OmnichannelRoomIcon.on(`${app}-${iconName}`, () => {
+							OmnichannelRoomIconManager.on(`${app}-${iconName}`, () => {
 								snapshots.set(`${app}-${iconName}`, extractSnapshot(app, iconName));
 
 								// Then we call the callback (onStoreChange), signaling React to re-render
@@ -84,7 +84,11 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 					xmlns='http://www.w3.org/2000/svg'
 					xmlnsXlink='http://www.w3.org/1999/xlink'
 					style={{ display: 'none' }}
-					dangerouslySetInnerHTML={{ __html: svgIcons.join('') }}
+					dangerouslySetInnerHTML={{
+						__html: DOMPurify.sanitize(`<svg>${svgIcons.join('')}</svg>`, {
+							USE_PROFILES: { svg: true, svgFilters: true },
+						}).slice(5, -6),
+					}}
 				/>,
 				document.body,
 				'custom-icons',

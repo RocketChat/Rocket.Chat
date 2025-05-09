@@ -1,5 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -8,7 +8,6 @@ import {
 	isPOSTLivechatRoomTransferParams,
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
-	isPUTLivechatRoomVisitorParams,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
@@ -18,76 +17,95 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import type { CloseRoomParams } from '../../lib/LivechatTyped';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { closeRoom } from '../../lib/closeRoom';
+import { saveGuest } from '../../lib/guests';
+import type { CloseRoomParams } from '../../lib/localTypes';
+import { livechatLogger } from '../../lib/logger';
+import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
-import { findVisitorInfo } from '../lib/visitors';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
-API.v1.addRoute('livechat/room', {
-	async get() {
-		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-		const extraCheckParams = await onCheckRoomParams({
-			token: String,
-			rid: Match.Maybe(String),
-			agentId: Match.Maybe(String),
-		});
-
-		check(this.queryParams, extraCheckParams as any);
-
-		const { token, rid, agentId, ...extraParams } = this.queryParams;
-
-		const guest = token && (await findGuest(token));
-		if (!guest) {
-			throw new Error('invalid-token');
-		}
-
-		if (!rid) {
-			const room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
-			if (room) {
-				return API.v1.success({ room, newRoom: false });
-			}
-
-			let agent: SelectedAgent | undefined;
-			const agentObj = agentId && (await findAgent(agentId));
-			if (agentObj) {
-				if (isAgentWithInfo(agentObj)) {
-					const { username = undefined } = agentObj;
-					agent = { agentId, username };
-				} else {
-					agent = { agentId };
-				}
-			}
-
-			const roomInfo = {
-				source: {
-					type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
-				},
-			};
-
-			const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
-
-			return API.v1.success({
-				room: newRoom,
-				newRoom: true,
-			});
-		}
-
-		const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});
-		if (!froom) {
-			throw new Error('invalid-room');
-		}
-
-		return API.v1.success({ room: froom, newRoom: false });
+API.v1.addRoute(
+	'livechat/room',
+	{
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
 	},
-});
+	{
+		async get() {
+			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
+			const extraCheckParams = onCheckRoomParams({
+				token: String,
+				rid: Match.Maybe(String),
+				agentId: Match.Maybe(String),
+			});
+
+			check(this.queryParams, extraCheckParams as any);
+
+			const { token, rid, agentId, ...extraParams } = this.queryParams;
+
+			const guest = token && (await findGuest(token));
+			if (!guest) {
+				throw new Error('invalid-token');
+			}
+
+			if (!rid) {
+				const room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
+				if (room) {
+					return API.v1.success({ room, newRoom: false });
+				}
+
+				let agent: SelectedAgent | undefined;
+				const agentObj = agentId && (await findAgent(agentId));
+				if (agentObj) {
+					if (isAgentWithInfo(agentObj)) {
+						const { username = undefined } = agentObj;
+						agent = { agentId, username };
+					} else {
+						agent = { agentId };
+					}
+				}
+
+				const roomInfo = {
+					source: {
+						...(isWidget(this.request.headers)
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
+							: { type: OmnichannelSourceType.API }),
+					},
+				};
+
+				const newRoom = await createRoom({
+					visitor: guest,
+					roomInfo,
+					agent,
+					extraData: extraParams as IOmnichannelInquiryExtraData,
+				});
+
+				return API.v1.success({
+					room: newRoom,
+					newRoom: true,
+				});
+			}
+
+			const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});
+			if (!froom) {
+				throw new Error('invalid-room');
+			}
+
+			return API.v1.success({ room: froom, newRoom: false });
+		},
+	},
+);
 
 // Note: use this route if a visitor is closing a room
 // If a RC user(like eg agent) is closing a room, use the `livechat/room.closeByUser` route
@@ -97,6 +115,10 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, token } = this.bodyParams;
+
+			if (!rcSettings.get('Omnichannel_allow_visitors_to_close_conversation')) {
+				throw new Error('error-not-allowed-to-close-conversation');
+			}
 
 			const visitor = await findGuest(token);
 			if (!visitor) {
@@ -146,7 +168,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => i18n.t(s, { lng: language });
+					const t = i18n.getFixedT(language);
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {
@@ -161,7 +183,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await LivechatTyped.closeRoom({ visitor, room, comment, options });
+			await closeRoom({ visitor, room, comment, options });
 
 			return API.v1.success({ rid, comment });
 		},
@@ -177,9 +199,22 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail, forceClose } = this.bodyParams;
 
-			await closeLivechatRoom(this.user, rid, { comment, tags, generateTranscriptPdf, transcriptEmail });
+			const allowForceClose = rcSettings.get<boolean>('Omnichannel_allow_force_close_conversations');
+			const isForceClosing = allowForceClose && forceClose;
+
+			if (isForceClosing) {
+				livechatLogger.warn({ msg: 'Force closing a conversation', user: this.userId, room: rid });
+			}
+
+			await closeLivechatRoom(this.user, rid, {
+				comment,
+				tags,
+				generateTranscriptPdf,
+				transcriptEmail,
+				forceClose: isForceClosing,
+			});
 
 			return API.v1.success();
 		},
@@ -209,7 +244,7 @@ API.v1.addRoute(
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!(await LivechatTyped.transfer(room, guest, { departmentId: department, transferredBy }))) {
+			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -305,53 +340,12 @@ API.v1.addRoute(
 				}
 			}
 
-			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
+			const chatForwardedResult = await transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
 			}
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/room.visitor',
-	{
-		authRequired: true,
-		permissionsRequired: ['change-livechat-room-visitor'],
-		validateParams: isPUTLivechatRoomVisitorParams,
-		deprecation: {
-			version: '7.0.0',
-		},
-	},
-	{
-		async put() {
-			// This endpoint is deprecated and will be removed in future versions.
-			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
-
-			const { visitor } = await findVisitorInfo({ visitorId: newVisitorId });
-			if (!visitor) {
-				throw new Error('invalid-visitor');
-			}
-
-			const room = await LivechatRooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1, v: 1 } }); // TODO: check _id
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			const { v: { _id: roomVisitorId = undefined } = {} } = room; // TODO: v it will be undefined
-			if (roomVisitorId !== oldVisitorId) {
-				throw new Error('invalid-room-visitor');
-			}
-
-			const roomAfterChange = await LivechatTyped.changeRoomVisitor(this.userId, room, visitor);
-
-			if (!roomAfterChange) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ room: roomAfterChange });
 		},
 	},
 );
@@ -409,7 +403,7 @@ API.v1.addRoute(
 				(!room.servedBy || room.servedBy._id !== this.userId) &&
 				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (room.sms) {
@@ -417,7 +411,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

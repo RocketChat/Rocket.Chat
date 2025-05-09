@@ -4,6 +4,7 @@ import path from 'path';
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
+import semver from 'semver';
 
 import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
@@ -87,12 +88,19 @@ export async function publishRelease({
 
 	await pushChanges();
 
+	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({
+		...github.context.repo,
+	});
+
+	core.info(`latest release tag: ${latestRelease.tag_name}`);
+
 	core.info('create release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: releaseBody,
 		prerelease: newVersion.includes('-'),
+		make_latest: semver.gt(newVersion, latestRelease.tag_name) ? 'true' : 'false',
 		...github.context.repo,
 	});
 }

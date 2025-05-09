@@ -15,7 +15,7 @@ import {
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
-import { updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updateSetting } from '../../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../../data/rooms.helper';
 
 describe('LIVECHAT - messages', () => {
@@ -26,6 +26,7 @@ describe('LIVECHAT - messages', () => {
 		agent = await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 	});
 
 	after(() => Promise.all([updateSetting('Livechat_Routing_Method', 'Auto_Selection'), removeAgent(agent._id)]));

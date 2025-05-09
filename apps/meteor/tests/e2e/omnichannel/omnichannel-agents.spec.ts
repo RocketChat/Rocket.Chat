@@ -105,4 +105,40 @@ test.describe.serial('OC - Manage Agents', () => {
 			await poOmnichannelAgents.btnSave.click();
 		});
 	});
+
+	test('OC - Edit agent  - Manage departments', async ({ page }) => {
+		await poOmnichannelAgents.selectUsername('user1');
+		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.findRowByUsername('user1').click();
+
+		await poOmnichannelAgents.btnEdit.click();
+		await poOmnichannelAgents.selectDepartment(department.data.name);
+		const reg = new RegExp(`/api/v1/method.call/${encodeURIComponent('livechat:saveAgentInfo')}`);
+		const response = page.waitForResponse(reg);
+		await poOmnichannelAgents.btnSave.click();
+
+		/**
+		 * between saving and opening the agent info again it is necessary to
+		 * wait for the agent to be saved, since after successfully saving
+		 * the contextual bar is closed
+		 * otherwise content will be closed even if the current one is not the editing one
+		 */
+
+		await response;
+
+		await expect(poOmnichannelAgents.editCtxBar).not.toBeVisible();
+
+		await test.step('expect the selected department is visible', async () => {
+			await poOmnichannelAgents.findRowByUsername('user1').click();
+
+			// mock the endpoint to use the one without pagination
+			await page.route('/api/v1/livechat/department?showArchived=true', async (route) => {
+				await route.fulfill({ json: { departments: [] } });
+			});
+
+			await poOmnichannelAgents.btnEdit.click();
+			await expect(poOmnichannelAgents.findSelectedDepartment(department.data.name)).toBeVisible();
+		});
+	});
 });

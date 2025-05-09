@@ -5,7 +5,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/LivechatTyped';
+import { returnRoomAsInquiry } from '../lib/rooms';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -38,6 +38,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
-		return Livechat.returnRoomAsInquiry(room, departmentId);
+		return returnRoomAsInquiry(room, departmentId);
 	},
 });

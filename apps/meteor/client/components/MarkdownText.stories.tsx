@@ -1,6 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import outdent from 'outdent';
-import React from 'react';
 
 import MarkdownText from './MarkdownText';
 
@@ -11,9 +10,9 @@ export default {
 		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof MarkdownText>;
+} satisfies Meta<typeof MarkdownText>;
 
-export const Example: ComponentStory<typeof MarkdownText> = () => (
+export const Example: StoryFn<typeof MarkdownText> = () => (
 	<MarkdownText
 		content={outdent`
 			# h1 Heading
@@ -46,7 +45,7 @@ export const Example: ComponentStory<typeof MarkdownText> = () => (
 	/>
 );
 
-const Template: ComponentStory<typeof MarkdownText> = (args) => <MarkdownText {...args} />;
+const Template: StoryFn<typeof MarkdownText> = (args) => <MarkdownText {...args} />;
 
 export const Document = Template.bind({});
 Document.args = {

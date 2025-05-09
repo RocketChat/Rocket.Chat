@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+// import type { Key } from 'react';
 
 import { useEndpoint } from './useEndpoint';
 import { useRouter } from './useRouter';
@@ -8,7 +9,7 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 	const router = useRouter();
 	const getRoomById = useEndpoint('GET', '/v1/rooms.info');
 
-	return useEffectEvent(async (roomId) => {
+	return useEffectEvent(async (roomId: string) => {
 		const { room } = await getRoomById({ roomId });
 
 		if (!room) {

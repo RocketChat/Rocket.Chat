@@ -1,9 +1,10 @@
 import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import DeviceManagementInfo from './DeviceManagementInfo';
 import {
 	Contextualbar,
 	ContextualbarSkeleton,
@@ -14,7 +15,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import DeviceManagementInfo from './DeviceManagementInfo';
 
 const convertSessionFromAPI = ({
 	loginAt,
@@ -27,7 +27,7 @@ const convertSessionFromAPI = ({
 });
 
 const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const {
 		value: data,

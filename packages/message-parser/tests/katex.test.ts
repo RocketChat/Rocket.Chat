@@ -28,6 +28,6 @@ test.each([
   ],
 ])('parses %p', (input, output) => {
   expect(parse(input, { katex: { parenthesisSyntax: true } })).toMatchObject(
-    output
+    output,
   );
 });

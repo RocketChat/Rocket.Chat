@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 type DateListContextValue = {
 	list: Set<HTMLElement>;
@@ -12,7 +13,7 @@ const useDateRef = () => {
 	return useMemo(() => context.dateRef(), [context]);
 };
 
-const DateListProvider = ({ children }: { children: React.ReactNode }) => {
+const DateListProvider = ({ children }: { children: ReactNode }) => {
 	const [list] = useState<Set<HTMLElement>>(new Set<HTMLElement>());
 
 	const addToList = (value: HTMLElement) => {

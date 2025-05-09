@@ -1,3 +1,6 @@
+import type { BlockElementRenderer } from './BlockElementRenderer';
+import type { LayoutBlockRenderer } from './LayoutBlockRenderer';
+import type { TextObjectRenderer } from './TextObjectRenderer';
 import type { BlockElement } from '../blocks/BlockElement';
 import type { RenderableLayoutBlock } from '../blocks/RenderableLayoutBlock';
 import type { TextObject } from '../blocks/TextObject';
@@ -7,9 +10,6 @@ import type { MultiStaticSelectElement } from '../blocks/elements/MultiStaticSel
 import type { PlainTextInputElement } from '../blocks/elements/PlainTextInputElement';
 import type { StaticSelectElement } from '../blocks/elements/StaticSelectElement';
 import type { PlainText } from '../blocks/text/PlainText';
-import type { BlockElementRenderer } from './BlockElementRenderer';
-import type { LayoutBlockRenderer } from './LayoutBlockRenderer';
-import type { TextObjectRenderer } from './TextObjectRenderer';
 
 export type BlockRenderers<T> = {
 	[B in RenderableLayoutBlock as B['type']]?: LayoutBlockRenderer<T, B>;

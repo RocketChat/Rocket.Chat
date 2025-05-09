@@ -5,7 +5,7 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
+	(message, { room, roomUpdater }) => {
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
@@ -21,7 +21,7 @@ callbacks.add(
 			return message;
 		}
 
-		await LivechatRooms.setNotResponseByRoomId(room._id);
+		LivechatRooms.getNotResponseByRoomIdUpdateQuery(roomUpdater);
 
 		return message;
 	},

@@ -1,9 +1,9 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
+import { validateUserRoles } from './validateUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { validateUserRoles } from './validateUserRoles';
 
 License.onInstall(() => {
 	callbacks.add(

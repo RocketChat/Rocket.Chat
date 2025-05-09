@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useDocumentTitle } from './useDocumentTitle';
 
@@ -19,8 +19,10 @@ it('should return the default title and empty key value if refocus param is fals
 });
 
 it('should return the default title and the example title concatenated', () => {
-	renderHook(() => useDocumentTitle(DEFAULT_TITLE));
-	const { result } = renderHook(() => useDocumentTitle(EXAMPLE_TITLE));
+	const { result } = renderHook(() => {
+		useDocumentTitle(DEFAULT_TITLE);
+		return useDocumentTitle(EXAMPLE_TITLE);
+	});
 
 	expect(result.current.title).toBe(`${EXAMPLE_TITLE} - ${DEFAULT_TITLE}`);
 });

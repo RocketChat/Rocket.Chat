@@ -2,16 +2,17 @@ import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 function ServersSection(): ReactElement | null {
 	const getFederationServers = useMethod('federation:getServers');
 
-	const result = useQuery(['admin/federation-dashboard/servers'], async () => getFederationServers(), {
+	const result = useQuery({
+		queryKey: ['admin/federation-dashboard/servers'],
+		queryFn: async () => getFederationServers(),
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading) {
+	if (result.isPending) {
 		return <Throbber alignItems='center' />;
 	}
 

@@ -6,20 +6,22 @@ import {
 	isIntegrationsRemoveProps,
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
+	isIntegrationsListProps,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addIncomingIntegration } from '../../../integrations/server/methods/incoming/addIncomingIntegration';
 import { deleteIncomingIntegration } from '../../../integrations/server/methods/incoming/deleteIncomingIntegration';
+import { updateIncomingIntegration } from '../../../integrations/server/methods/incoming/updateIncomingIntegration';
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
+import { updateOutgoingIntegration } from '../../../integrations/server/methods/outgoing/updateOutgoingIntegration';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
@@ -43,14 +45,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.history',
-	{ authRequired: true, validateParams: isIntegrationsHistoryProps },
+	{
+		authRequired: true,
+		validateParams: isIntegrationsHistoryProps,
+		permissionsRequired: {
+			GET: { permissions: ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'], operation: 'hasAny' },
+		},
+	},
 	{
 		async get() {
 			const { userId, queryParams } = this;
-
-			if (!(await hasAtLeastOnePermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']))) {
-				return API.v1.unauthorized();
-			}
 
 			if (!queryParams.id || queryParams.id.trim() === '') {
 				return API.v1.failure('Invalid integration id.');
@@ -83,30 +87,40 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.list',
-	{ authRequired: true },
 	{
-		async get() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		validateParams: isIntegrationsListProps,
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
+			const { sort, fields, query } = await this.parseJsonQuery();
+			const { name, type } = this.queryParams;
 
-			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+			const filter = {
+				...query,
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(type ? { type } : {}),
+			};
+
+			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), filter) as Filter<IIntegration>;
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				projection,
+				projection: fields,
 			});
 
 			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -124,20 +138,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'integrations.remove',
-	{ authRequired: true, validateParams: isIntegrationsRemoveProps },
 	{
-		async post() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		validateParams: isIntegrationsRemoveProps,
+		permissionsRequired: {
+			POST: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async post() {
 			const { bodyParams } = this;
 
 			let integration: IIntegration | null = null;
@@ -232,7 +249,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					await Meteor.callAsync('updateOutgoingIntegration', integration._id, bodyParams);
+					await updateOutgoingIntegration(this.userId, integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),
@@ -244,7 +261,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					await Meteor.callAsync('updateIncomingIntegration', integration._id, bodyParams);
+					await updateIncomingIntegration(this.userId, integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),

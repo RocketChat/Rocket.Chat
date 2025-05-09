@@ -15,7 +15,7 @@ import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -64,20 +64,20 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			return;
 		}
 
-		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
-			projection: { 'u.username': 1 },
-		});
-
 		try {
 			const APIsettings = settings.get<number>('API_User_Limit');
 			if (!APIsettings) {
 				return;
 			}
-			if ((await cursor.count()) > APIsettings) {
+			if ((await Subscriptions.countByRoomIdWhenUsernameExists(baseChannel._id)) > APIsettings) {
 				throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 					method: 'addAllToRoom',
 				});
 			}
+
+			const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
+				projection: { 'u.username': 1 },
+			});
 			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {

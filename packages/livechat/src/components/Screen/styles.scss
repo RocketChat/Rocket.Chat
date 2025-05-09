@@ -1,6 +1,5 @@
 @use 'sass:math';
-
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 $screen-padding: 16px;
 $screen-box-shadow: 0 (math.div($screen-padding, 2) - 1) $screen-padding 0 rgba(0, 0, 0, 0.1);
@@ -93,7 +92,7 @@ $max-lines: 12;
 	width: 100%;
 
 	border-radius: 4px;
-	background-color: $bg-color-white;
+	background-color: colors.$bg-color-white;
 	align-items: stretch;
 
 	&--fitTextSize {

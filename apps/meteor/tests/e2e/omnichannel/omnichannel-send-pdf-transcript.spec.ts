@@ -76,7 +76,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			await agent.poHomeChannel.transcript.contactCenterSearch.type(newVisitor.name);
 			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.transcript.firstRow.click();
-			await agent.poHomeChannel.transcript.viewFullConversation.click();
+			await agent.poHomeChannel.transcript.btnOpenChat.click();
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'false');
 			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.click();

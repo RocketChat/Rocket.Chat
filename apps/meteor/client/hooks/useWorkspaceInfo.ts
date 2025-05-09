@@ -1,7 +1,7 @@
 import type { IStats, IWorkspaceInfo, Serialized } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
 
 export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: boolean } = {}) => {
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
@@ -28,14 +28,15 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 					return data as IWorkspaceInfo;
 				},
 				staleTime: Infinity,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 			{
 				queryKey: ['info', 'instances'],
 				queryFn: () => getInstances(),
 				staleTime: Infinity,
-				keepPreviousData: true,
-				select({ instances }: Serialized<{ instances: IInstance[] }>) {
+				placeholderData: keepPreviousData,
+				select(data: unknown) {
+					const { instances } = data as Serialized<{ instances: IInstance[] }>;
 					return instances.map((instance) => ({
 						...instance,
 						...(instance.instanceRecord && {
@@ -51,11 +52,14 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 				queryKey: ['info', 'statistics'],
 				queryFn: () => getStatistics({ refresh: refreshStatistics ? 'true' : 'false' }),
 				staleTime: Infinity,
-				keepPreviousData: true,
-				select: (data: Serialized<IStats>) => ({
-					...data,
-					lastMessageSentAt: data.lastMessageSentAt ? new Date(data.lastMessageSentAt) : undefined,
-				}),
+				placeholderData: keepPreviousData,
+				select: (data: unknown) => {
+					const statsData = data as Serialized<IStats>;
+					return {
+						...statsData,
+						lastMessageSentAt: statsData.lastMessageSentAt ? new Date(statsData.lastMessageSentAt) : undefined,
+					};
+				},
 			},
 		],
 	});
@@ -64,6 +68,9 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 export const useRefreshStatistics = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: () => queryClient.invalidateQueries(['info', 'statistics']),
+		mutationFn: () =>
+			queryClient.invalidateQueries({
+				queryKey: ['info', 'statistics'],
+			}),
 	});
 };

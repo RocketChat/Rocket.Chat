@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVoipOutboundStates } from '../../../../../contexts/CallContext';
 import { useDialModal } from '../../../../../hooks/useDialModal';
@@ -14,7 +13,7 @@ type VoipInfoCallButtonProps = Exclude<
 };
 
 export const VoipInfoCallButton = ({ phoneNumber, ...props }: VoipInfoCallButtonProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { openDialModal } = useDialModal();
 

@@ -1,18 +1,14 @@
 import { Box, IconButton, Badge } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import * as Status from '../../components/UserStatus';
 import Extended from './Extended';
+import * as Status from '../../components/UserStatus';
 
 export default {
-	title: 'Sidebar/Extended',
+	title: 'SidebarV2/Extended',
 	component: Extended,
-	args: {
-		clickable: true,
-	},
 	decorators: [
 		(fn) => (
 			<Box maxWidth='x300' bg='dark' borderRadius='x4'>
@@ -20,19 +16,12 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof Extended>;
+} satisfies Meta<typeof Extended>;
 
-const Template: ComponentStory<typeof Extended> = (args) => (
+const Template: StoryFn<typeof Extended> = (args) => (
 	<Extended
 		{...args}
-		title={
-			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
-				<Box flexGrow='1' withTruncatedText>
-					John Doe
-				</Box>
-				<Box fontScale='micro'>15:38</Box>
-			</Box>
-		}
+		title='John Doe'
 		subtitle={
 			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
 				<Box flexGrow='1' withTruncatedText>

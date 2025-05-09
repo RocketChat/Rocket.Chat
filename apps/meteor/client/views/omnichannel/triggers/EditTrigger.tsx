@@ -1,11 +1,13 @@
 import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { ConditionForm } from './ConditionForm';
+import { ActionForm } from './actions/ActionForm';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarTitle,
@@ -14,8 +16,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import { ConditionForm } from './ConditionForm';
-import { ActionForm } from './actions/ActionForm';
 
 export type TriggersPayload = {
 	name: string;
@@ -66,7 +66,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 	name: triggerData?.name ?? '',
 	description: triggerData?.description || '',
 	enabled: triggerData?.enabled ?? true,
-	runOnce: !!triggerData?.runOnce ?? false,
+	runOnce: !!triggerData?.runOnce || false,
 	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) ?? [
 		DEFAULT_PAGE_URL_CONDITION,
 	],
@@ -74,7 +74,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 });
 
 const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigger> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -82,11 +82,11 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 	const saveTrigger = useEndpoint('POST', '/v1/livechat/triggers');
 	const initValues = getInitialValues(triggerData);
 
-	const formId = useUniqueId();
-	const enabledField = useUniqueId();
-	const runOnceField = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
+	const formId = useId();
+	const enabledField = useId();
+	const runOnceField = useId();
+	const nameField = useId();
+	const descriptionField = useId();
 
 	const {
 		control,
@@ -113,8 +113,12 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		mutationFn: saveTrigger,
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-getTriggersById']);
-			queryClient.invalidateQueries(['livechat-triggers']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-getTriggersById'],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-triggers'],
+			});
 			router.navigate('/omnichannel/triggers');
 		},
 		onError: (error) => {
@@ -169,7 +173,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Name')) }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => (
 										<TextInput
 											{...field}

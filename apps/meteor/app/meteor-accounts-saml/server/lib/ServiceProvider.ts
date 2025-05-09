@@ -5,11 +5,11 @@ import zlib from 'zlib';
 
 import { Meteor } from 'meteor/meteor';
 
+import { SAMLUtils } from './Utils';
 import type { ILogoutResponse } from '../definition/ILogoutResponse';
 import type { ISAMLRequest } from '../definition/ISAMLRequest';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
-import { SAMLUtils } from './Utils';
 import { AuthorizeRequest } from './generators/AuthorizeRequest';
 import { LogoutRequest } from './generators/LogoutRequest';
 import { LogoutResponse } from './generators/LogoutResponse';
@@ -35,8 +35,8 @@ export class SAMLServiceProvider {
 		return signer.sign(this.serviceProviderOptions.privateKey, 'base64');
 	}
 
-	public generateAuthorizeRequest(): string {
-		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions);
+	public generateAuthorizeRequest(credentialToken: string): string {
+		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions, credentialToken);
 		return identifiedRequest.request;
 	}
 
@@ -151,8 +151,8 @@ export class SAMLServiceProvider {
 		}
 	}
 
-	public async getAuthorizeUrl(): Promise<string | undefined> {
-		const request = this.generateAuthorizeRequest();
+	public async getAuthorizeUrl(credentialToken: string): Promise<string | undefined> {
+		const request = this.generateAuthorizeRequest(credentialToken);
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
 

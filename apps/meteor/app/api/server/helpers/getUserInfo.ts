@@ -1,4 +1,4 @@
-import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser, type IUserEmail } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
@@ -50,5 +50,18 @@ export async function getUserInfo(me: IUser): Promise<
 			},
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
+		isOAuthUser: isOAuthUser(me),
+		...(me.services && {
+			services: {
+				...(me.services.github && { github: me.services.github }),
+				...(me.services.gitlab && { gitlab: me.services.gitlab }),
+				...(me.services.email2fa?.enabled && { email2fa: { enabled: me.services.email2fa.enabled } }),
+				...(me.services.totp?.enabled && { totp: { enabled: me.services.totp.enabled } }),
+				password: {
+					// The password hash shouldn't be leaked but the client may need to know if it exists.
+					exists: Boolean(me.services?.password?.bcrypt),
+				},
+			},
+		}),
 	};
 }

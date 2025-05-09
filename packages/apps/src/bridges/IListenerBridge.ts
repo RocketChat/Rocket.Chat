@@ -19,7 +19,7 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 			int: 'IPreMessageSentExtend' | 'IPreMessageSentModify' | 'IPreMessageUpdatedExtend' | 'IPreMessageUpdatedModify',
 			message: IMessage,
 		): Promise<IMessage>;
-		messageEvent(int: 'IPostMessageSent' | 'IPostMessageUpdated', message: IMessage): Promise<void>;
+		messageEvent(int: 'IPostMessageSent' | 'IPostMessageUpdated' | 'IPostSystemMessageSent', message: IMessage): Promise<void>;
 
 		roomEvent(int: 'IPreRoomUserJoined' | 'IPostRoomUserJoined', room: IRoom, joiningUser: IUser, invitingUser?: IUser): Promise<void>;
 		roomEvent(int: 'IPreRoomUserLeave' | 'IPostRoomUserLeave', room: IRoom, leavingUser: IUser): Promise<void>;
@@ -29,7 +29,11 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 		roomEvent(int: 'IPostRoomCreate' | 'IPostRoomDeleted', room: IRoom): Promise<void>;
 
 		livechatEvent(
-			int: 'IPostLivechatAgentAssigned' | 'IPostLivechatAgentUnassigned',
+			int:
+				| 'IPostLivechatAgentAssigned'
+				| 'IPostLivechatAgentUnassigned'
+				| 'IPostLivechatDepartmentRemoved'
+				| 'IPostLivechatDepartmentDisabled',
 			data: { user: IUser; room: IOmnichannelRoom },
 		): Promise<void>;
 		livechatEvent(
@@ -42,7 +46,10 @@ declare module '@rocket.chat/apps-engine/server/bridges' {
 		): Promise<void>;
 		livechatEvent(int: 'IPostLivechatGuestSaved', data: ILivechatVisitor['_id']): Promise<void>;
 		livechatEvent(int: 'IPostLivechatRoomSaved', data: IRoom['_id']): Promise<void>;
-		livechatEvent(int: 'ILivechatRoomClosedHandler' | 'IPostLivechatRoomStarted' | 'IPostLivechatRoomClosed', data: IRoom): Promise<void>;
+		livechatEvent(
+			int: 'ILivechatRoomClosedHandler' | 'IPostLivechatRoomStarted' | 'IPostLivechatRoomClosed' | 'IPreLivechatRoomCreatePrevent',
+			data: IRoom,
+		): Promise<void>;
 		livechatEvent(int: AppEvents | AppEvents[keyof AppEvents], data: any): Promise<void>;
 	}
 }

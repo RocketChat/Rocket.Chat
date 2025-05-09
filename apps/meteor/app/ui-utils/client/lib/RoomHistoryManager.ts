@@ -11,8 +11,10 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { ChatMessage, ChatSubscription } from '../../../models/client';
+import { Messages, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
+
+const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
 
 export async function upsertMessage(
 	{
@@ -22,7 +24,7 @@ export async function upsertMessage(
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
 	},
-	collection: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const userId = msg.u?._id;
 
@@ -40,23 +42,25 @@ export async function upsertMessage(
 	return collection.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk(
+export async function upsertMessageBulk(
 	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const { queries } = collection;
 	collection.queries = [];
-	msgs.forEach((msg, index) => {
-		if (index === msgs.length - 1) {
-			collection.queries = queries;
-		}
-		void upsertMessage({ msg, subscription }, collection);
-	});
+	const lastMessage = msgs.pop();
+
+	for await (const msg of msgs) {
+		await upsertMessage({ msg, subscription }, collection);
+	}
+
+	if (lastMessage) {
+		collection.queries = queries;
+		await upsertMessage({ msg: lastMessage, subscription }, collection);
+	}
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
-
-const waitAfterFlush = (fn: () => void) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
 class RoomHistoryManagerClass extends Emitter {
 	private lastRequest?: Date;
@@ -71,6 +75,10 @@ class RoomHistoryManagerClass extends Emitter {
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
 			oldestTs?: Date;
+			scroll?: {
+				scrollHeight: number;
+				scrollTop: number;
+			};
 		}
 	> = {};
 
@@ -114,6 +122,11 @@ class RoomHistoryManagerClass extends Emitter {
 		return setTimeout(fn, 500 - difference);
 	}
 
+	public isLoaded(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.loaded !== undefined;
+	}
+
 	private unqueue() {
 		const requestId = this.requestsList.pop();
 		if (!requestId) {
@@ -135,7 +148,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		let ls = undefined;
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		if (subscription) {
 			({ ls } = subscription);
 		}
@@ -156,8 +169,6 @@ class RoomHistoryManagerClass extends Emitter {
 
 		this.unqueue();
 
-		let previousHeight: number | undefined;
-		let scroll: number | undefined;
 		const { messages = [] } = result;
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
@@ -166,17 +177,19 @@ class RoomHistoryManagerClass extends Emitter {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
-		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
+		const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
 
-		if (wrapper) {
-			previousHeight = wrapper.scrollHeight;
-			scroll = wrapper.scrollTop;
-		}
+		room.scroll = {
+			scrollHeight: wrapper.scrollHeight,
+			scrollTop: wrapper.scrollTop,
+		};
 
-		upsertMessageBulk({
+		await upsertMessageBulk({
 			msgs: messages.filter((msg) => msg.t !== 'command'),
 			subscription,
 		});
+
+		this.emit('loaded-messages');
 
 		if (!room.loaded) {
 			room.loaded = 0;
@@ -194,13 +207,27 @@ class RoomHistoryManagerClass extends Emitter {
 			return this.getMore(rid);
 		}
 
-		waitAfterFlush(() => {
-			this.emit('loaded-messages');
-			const heightDiff = wrapper.scrollHeight - (previousHeight ?? NaN);
-			wrapper.scrollTop = (scroll ?? NaN) + heightDiff;
-		});
+		this.emit('loaded-messages');
 
 		room.isLoading.set(false);
+		await waitAfterFlush();
+	}
+
+	public restoreScroll(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+		if (room.scroll === undefined) {
+			return;
+		}
+
+		if (!wrapper) {
+			return;
+		}
+
+		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
+		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
+		room.scroll = undefined;
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
@@ -214,17 +241,19 @@ class RoomHistoryManagerClass extends Emitter {
 
 		room.isLoading.set(true);
 
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
+		const lastMessage = Messages.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
 			const result = await callWithErrorHandling('loadNextMessages', rid, ts, defaultLimit);
-			upsertMessageBulk({
+			await upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
 			});
+
+			this.emit('loaded-messages');
 
 			room.isLoading.set(false);
 			if (!room.loaded) {
@@ -262,10 +291,15 @@ class RoomHistoryManagerClass extends Emitter {
 		return room.isLoading.get();
 	}
 
-	public async clear(rid: IRoom['_id']) {
+	public close(rid: IRoom['_id']) {
+		Messages.remove({ rid });
+		delete this.histories[rid];
+	}
+
+	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		ChatMessage.remove({ rid });
-		room.isLoading.set(true);
+		Messages.remove({ rid });
+		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
 		room.oldestTs = undefined;
@@ -277,24 +311,30 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
+		const messageAlreadyLoaded = Boolean(Messages.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
 		if (messageAlreadyLoaded) {
 			return;
 		}
 
 		const room = this.getRoom(message.rid);
-		void this.clear(message.rid);
 
-		const subscription = ChatSubscription.findOne({ rid: message.rid });
+		const subscription = Subscriptions.findOne({ rid: message.rid });
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
+
+		this.clear(message.rid);
 
 		if (!result) {
 			return;
 		}
+		const { messages = [] } = result;
 
-		upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
+		}
+
+		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 
 		Tracker.afterFlush(async () => {
 			this.emit('loaded-messages');

@@ -6,7 +6,7 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 
 const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const { value: parentMessage } = await Messages.refreshDiscussionMetadata(room);
+	const parentMessage = await Messages.refreshDiscussionMetadata(room);
 	if (!parentMessage) {
 		return;
 	}
@@ -22,7 +22,7 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
  */
 callbacks.add(
 	'afterSaveMessage',
-	async (message, { _id, prid }) => {
+	async (message, { room: { _id, prid } }) => {
 		if (!prid) {
 			return message;
 		}

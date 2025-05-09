@@ -1,7 +1,6 @@
 import { Box, Card, CardBody, CardControls, CardTitle, FramedIcon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PRICING_LINK } from '../../utils/links';
@@ -44,7 +43,7 @@ const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] =
 		},
 		{
 			success: modules.includes('scalability'),
-			title: 'High_scalabaility',
+			title: 'High_scalability',
 		},
 		{
 			success: modules.includes('custom-roles'),

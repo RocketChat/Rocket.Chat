@@ -1,9 +1,8 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { ContextualbarScrollableContent } from '../../components/Contextualbar';
@@ -37,7 +36,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const { field: nameField } = useController({
 		control,
 		name: 'name',
-		rules: { required: t('The_field_is_required', t('Name')) },
+		rules: { required: t('Required_field', { field: t('Name') }) },
 	});
 
 	const { field: dueTimeField } = useController({
@@ -45,18 +44,18 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		name: 'dueTimeInMinutes',
 		rules: {
 			validate(value) {
-				return Number(value || 0) <= 0 ? t('The_field_is_required', t('Estimated_wait_time_in_minutes')) : true;
+				return Number(value || 0) <= 0 ? t('Required_field', { field: t('Estimated_wait_time_in_minutes') }) : true;
 			},
 		},
 	});
 
 	const { field: descField } = useController({ control, name: 'description' });
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		const { name, description, dueTimeInMinutes } = getValues();
 
 		if (!isValid || !name || dueTimeInMinutes === undefined) {
-			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
+			return dispatchToastMessage({ type: 'error', message: t('Required_field') });
 		}
 
 		try {

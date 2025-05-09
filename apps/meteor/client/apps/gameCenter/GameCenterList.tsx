@@ -1,12 +1,13 @@
 import { Avatar, Icon, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarContent } from '../../components/Contextualbar';
-import { FormSkeleton } from '../../components/Skeleton';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarContent } from '../../components/Contextualbar';
+import { FormSkeleton } from '../../components/Skeleton';
 
 interface IGameCenterListProps {
 	handleClose: (e: any) => void;
@@ -16,14 +17,14 @@ interface IGameCenterListProps {
 }
 
 const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGameCenterListProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const handleInvitePlayer = useCallback(
-		(game) => {
+		(game: IGame) => {
 			const handleClose = (): void => {
 				setModal(null);
 			};
-			setModal(() => <GameCenterInvitePlayersModal onClose={handleClose} game={game} />);
+			setModal(<GameCenterInvitePlayersModal onClose={handleClose} game={game} />);
 		},
 		[setModal],
 	);

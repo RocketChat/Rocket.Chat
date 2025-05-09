@@ -62,8 +62,9 @@ export class HomeFlextabMembers {
 	}
 
 	async showAllUsers() {
-		await this.page.locator('.rcx-select >> text=Online').first().click();
-		await this.page.locator('.rcx-option:has-text("All")').first().click();
+		const selectInput = this.page.getByRole('button', { name: 'Online' });
+		await selectInput.click();
+		await this.page.getByRole('listbox').getByRole('option', { name: 'All' }).click();
 	}
 
 	private async ignoreUserAction(action: string, username: string) {
@@ -78,5 +79,13 @@ export class HomeFlextabMembers {
 
 	async unignoreUser(username: string) {
 		await this.ignoreUserAction('Unignore', username);
+	}
+
+	get confirmRemoveUserModal() {
+		return this.page.getByRole('dialog', { name: 'Confirmation', exact: true });
+	}
+
+	async confirmRemoveUser() {
+		return this.confirmRemoveUserModal.getByRole('button', { name: 'Remove', exact: true }).click();
 	}
 }

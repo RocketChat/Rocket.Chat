@@ -1,8 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeFlextabChannels } from './home-flextab-channels';
+import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
+import { HomeFlextabOtr } from './home-flextab-otr';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -16,12 +18,18 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
+	readonly otr: HomeFlextabOtr;
+
+	readonly exportMessages: HomeFlextabExportMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
+		this.otr = new HomeFlextabOtr(page);
+		this.exportMessages = new HomeFlextabExportMessages(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -36,12 +44,20 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
+	get btnTeamMembers(): Locator {
+		return this.page.locator('role=menuitem[name="Teams Members"]');
+	}
+
 	get kebab(): Locator {
 		return this.page.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
+	}
+
+	get btnExportMessages(): Locator {
+		return this.page.locator('role=menuitem[name="Export messages"]');
 	}
 
 	get btnE2EERoomSetupDisableE2E(): Locator {

@@ -1,5 +1,4 @@
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 
 import { BarChart, ReportCard } from '../components';
 import { useTagsSection } from '../hooks';

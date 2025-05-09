@@ -45,6 +45,12 @@ export interface VoIPUserConfiguration {
 	 * @defaultValue undefined
 	 */
 	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
+
+	/**
+	 * Time to wait for Ice Gathering to complete
+	 * @defaultValue 5000
+	 */
+	iceGatheringTimeout?: number;
 }
 
 export interface IMediaStreamRenderer {

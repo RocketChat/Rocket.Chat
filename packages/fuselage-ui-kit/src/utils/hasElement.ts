@@ -6,5 +6,5 @@ type LayoutBlockWithElement = Extract<
 >;
 
 export const hasElement = (
-  block: UiKit.LayoutBlock
+  block: UiKit.LayoutBlock,
 ): block is LayoutBlockWithElement => 'element' in block;

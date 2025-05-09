@@ -8,7 +8,7 @@ export const useToggleAutoJoin = (room: IRoom, { reload, mainRoom }: { reload?: 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const updateRoomEndpoint = useEndpoint('POST', '/v1/teams.updateRoom');
 	const canEditTeamChannel = usePermission('edit-team-channel', room._id);
-	const maxNumberOfAutoJoinMembers = useSetting<number>('API_User_Limit');
+	const maxNumberOfAutoJoinMembers = useSetting('API_User_Limit', 500);
 
 	const handleToggleAutoJoin = async () => {
 		// Sanity check, the setting has a default value, therefore it should always be defined

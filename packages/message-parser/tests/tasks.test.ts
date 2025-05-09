@@ -7,6 +7,7 @@ import {
   mentionChannel,
   link,
   bold,
+  emoji,
 } from '../src/utils';
 
 test.each([
@@ -16,6 +17,7 @@ test.each([
 - [x] this is a complete item
 - [x] @mentions, #refs, [links](http://localhost), **formatting**
 - [x] list syntax required (any unordered or ordered list supported)
+- [ ] :smile:
 `.trim(),
     [
       tasks([
@@ -31,16 +33,17 @@ test.each([
             plain(', '),
             bold([plain('formatting')]),
           ],
-          true
+          true,
         ),
         task(
           [
             plain(
-              'list syntax required (any unordered or ordered list supported)'
+              'list syntax required (any unordered or ordered list supported)',
             ),
           ],
-          true
+          true,
         ),
+        task([emoji('smile')], false),
       ]),
     ],
   ],

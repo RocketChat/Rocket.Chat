@@ -10,18 +10,19 @@ import URL from 'url';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import type { IUpload } from '@rocket.chat/core-typings';
+import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Cookies } from 'meteor/ostrio:cookies';
-import type { OptionalId } from 'mongodb';
+import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { streamToBuffer } from './streamToBuffer';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -33,7 +34,6 @@ import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
-import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -170,7 +170,18 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file?.type)) {
+		if (!settings.get('E2E_Enable_Encrypt_Files') && isE2EEUpload(file)) {
+			const reason = i18n.t('Encrypted_file_not_allowed', { lng: language });
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		// E2EE files should be of type application/octet-stream. no information about them should be disclosed on upload if they are encrypted
+		if (isE2EEUpload(file)) {
+			file.type = 'application/octet-stream';
+		}
+
+		// E2EE files are of type application/octet-stream, which is whitelisted for E2EE files
+		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -217,7 +228,7 @@ export const FileUpload = {
 
 	defaults,
 
-	async avatarsOnValidate(this: Store, file: IUpload) {
+	async avatarsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
@@ -266,6 +277,7 @@ export const FileUpload = {
 					...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
 				},
 			},
+			options,
 		);
 	},
 
@@ -348,7 +360,7 @@ export const FileUpload = {
 		return store.insert(details, buffer);
 	},
 
-	async uploadsOnValidate(this: Store, file: IUpload) {
+	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
@@ -373,7 +385,7 @@ export const FileUpload = {
 					? {
 							width,
 							height,
-					  }
+						}
 					: undefined,
 		};
 
@@ -398,6 +410,7 @@ export const FileUpload = {
 			{
 				$set: { size, identify },
 			},
+			options,
 		);
 	},
 
@@ -627,20 +640,20 @@ export const FileUpload = {
 		const cursor = Messages.find(
 			{
 				rid,
-				'file._id': {
+				'files._id': {
 					$exists: true,
 				},
 			},
 			{
 				projection: {
-					'file._id': 1,
+					'files._id': 1,
 				},
 			},
 		);
 
 		for await (const document of cursor) {
-			if (document.file) {
-				await FileUpload.getStore('Uploads').deleteById(document.file._id);
+			if (document.files) {
+				await Promise.all(document.files.map((file) => FileUpload.getStore('Uploads').deleteById(file._id)));
 			}
 		}
 	},
@@ -710,13 +723,13 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	async delete(fileId: string) {
+	async delete(fileId: string, options?: { session?: ClientSession }) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			await this.store.delete(fileId);
+			await this.store.delete(fileId, { session: options?.session });
 		}
 
-		return this.model.deleteFile(fileId);
+		return this.model.deleteFile(fileId, { session: options?.session });
 	}
 
 	async deleteById(fileId: string) {
@@ -731,8 +744,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async deleteByName(fileName: string) {
-		const file = await this.model.findOneByName(fileName);
+	async deleteByName(fileName: string, options?: { session?: ClientSession }) {
+		const file = await this.model.findOneByName(fileName, { session: options?.session });
 
 		if (!file) {
 			return;
@@ -755,8 +768,12 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer): Promise<IUpload> {
-		const fileId = await this.store.create(fileData);
+	async _doInsert(
+		fileData: OptionalId<IUpload>,
+		streamOrBuffer: ReadableStream | stream | Buffer,
+		options?: { session?: ClientSession },
+	): Promise<IUpload> {
+		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
@@ -768,7 +785,7 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name);
+			const file = await ufsComplete(fileId, this.name, { session: options?.session });
 
 			return file;
 		} catch (e: any) {
@@ -776,7 +793,11 @@ export class FileUploadClass {
 		}
 	}
 
-	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream.Readable | Buffer) {
+	async insert(
+		fileData: OptionalId<IUpload>,
+		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		options?: { session?: ClientSession },
+	) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
@@ -792,6 +813,6 @@ export class FileUploadClass {
 			await filter.check(fileData, streamOrBuffer);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer);
+		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
 	}
 }

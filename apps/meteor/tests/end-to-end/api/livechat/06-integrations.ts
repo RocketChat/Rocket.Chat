@@ -1,9 +1,10 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { deleteVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
@@ -49,9 +50,17 @@ describe('LIVECHAT - Integrations', () => {
 	});
 
 	describe('Incoming SMS', () => {
+		const visitorTokens: string[] = [];
+
 		before(async () => {
 			await updateSetting('SMS_Enabled', true);
 			await updateSetting('SMS_Service', '');
+		});
+
+		after(async () => {
+			await updateSetting('SMS_Default_Omnichannel_Department', '');
+			await updateSetting('SMS_Service', 'twilio');
+			return Promise.all(visitorTokens.map((token) => deleteVisitor(token)));
 		});
 
 		describe('POST livechat/sms-incoming/:service', () => {

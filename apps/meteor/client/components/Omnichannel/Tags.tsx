@@ -1,12 +1,13 @@
 import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 import { useLivechatTags } from './hooks/useLivechatTags';
+import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 
 type TagsProps = {
 	tags?: string[];
@@ -17,9 +18,10 @@ type TagsProps = {
 };
 
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const tagsFieldId = useId();
 
-	const { data: tagsResult, isInitialLoading } = useLivechatTags({
+	const { data: tagsResult, isLoading } = useLivechatTags({
 		department,
 		viewAll: !department,
 	});
@@ -40,7 +42,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 		handler(tags.filter((tag) => tag !== tagToRemove));
 	};
 
-	const handleTagTextSubmit = useMutableCallback(() => {
+	const handleTagTextSubmit = useEffectEvent(() => {
 		if (!tags) {
 			return;
 		}
@@ -59,19 +61,20 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 		handleTagValue('');
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 
 	return (
 		<>
-			<FieldLabel required={tagRequired} mb={4}>
+			<FieldLabel htmlFor={tagsFieldId} required={tagRequired} mb={4}>
 				{t('Tags')}
 			</FieldLabel>
 
 			{tagsResult?.tags && tagsResult?.tags.length ? (
 				<FieldRow>
 					<CurrentChatTags
+						id={tagsFieldId}
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
@@ -86,6 +89,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						<TextInput
 							error={error}
 							value={tagValue}
+							id={tagsFieldId}
 							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}

@@ -1,5 +1,5 @@
-@import '../../../styles/colors';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
 $message-text-font-size: 0.875rem;
 
@@ -32,7 +32,7 @@ $message-text-font-size: 0.875rem;
 	&--system {
 		width: 200px;
 
-		color: $color-text-grey-system;
+		color: colors.$color-text-grey-system;
 
 		font-size: 0.75rem;
 

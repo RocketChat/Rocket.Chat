@@ -90,12 +90,12 @@ test.describe.serial('Omnichannel Reports', () => {
 				await route.fulfill({ response, json: mock });
 			});
 
-			await poReports.statusSection.selectPeriod('last year');
+			await poReports.statusSection.selectPeriod('this year');
 			await expect(poReports.statusSection.legendItem(`Closed 25 (25%)`)).toBeVisible();
 			await expect(poReports.statusSection.legendItem(`Open 25 (25%)`)).toBeVisible();
 			await expect(poReports.statusSection.legendItem(`Queued 25 (25%)`)).toBeVisible();
 			await expect(poReports.statusSection.legendItem(`On hold 25 (25%)`)).toBeVisible();
-			await expect(poReports.statusSection.txtSummary).toHaveText('100 conversations, last year');
+			await expect(poReports.statusSection.txtSummary).toHaveText('100 conversations, this year');
 		});
 	});
 
@@ -145,10 +145,10 @@ test.describe.serial('Omnichannel Reports', () => {
 				await route.fulfill({ response, json: mock });
 			});
 
-			await poReports.channelsSection.selectPeriod('last year');
+			await poReports.channelsSection.selectPeriod('this year');
 			await expect(poReports.channelsSection.legendItem(`Channel 1 50 (50%)`)).toBeVisible();
 			await expect(poReports.channelsSection.legendItem(`Channel 2 50 (50%)`)).toBeVisible();
-			await expect(poReports.channelsSection.txtSummary).toHaveText('100 conversations, last year');
+			await expect(poReports.channelsSection.txtSummary).toHaveText('100 conversations, this year');
 		});
 
 		await test.step('More than 5 channels', async () => {

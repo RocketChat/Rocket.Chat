@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 import { createRef } from 'preact';
 
@@ -26,7 +26,6 @@ export default {
 	title: 'Components/FilesDropTarget',
 	component: FilesDropTarget,
 	args: {
-		children: <DummyContent />,
 		overlayed: false,
 		overlayText: '',
 		accept: '',
@@ -38,7 +37,11 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof FilesDropTarget>>;
 
-const Template: Story<ComponentProps<typeof FilesDropTarget>> = (args) => <FilesDropTarget {...args} />;
+const Template: StoryFn<ComponentProps<typeof FilesDropTarget>> = (args) => (
+	<FilesDropTarget {...args}>
+		<DummyContent />
+	</FilesDropTarget>
+);
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

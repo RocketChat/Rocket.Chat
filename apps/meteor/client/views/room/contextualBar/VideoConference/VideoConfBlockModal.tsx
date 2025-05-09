@@ -1,7 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -23,6 +23,7 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 
 	return (
 		<GenericModal
+			open
 			icon={null}
 			variant='warning'
 			title={t('Open_call_in_new_tab')}

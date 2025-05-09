@@ -119,11 +119,17 @@ export class MentionsParser {
 			return this.roomTemplate({ prefix, reference, channel, mention });
 		});
 
-	getUserMentions(str: string) {
+	getUserMentions(msg: string) {
+		// First remove the text inside md links
+		const str = msg.replace(/\[[^\]]*\]\([^)]+\)/g, '');
+		// Then do the match
 		return (str.match(this.userMentionRegex) || []).map((match) => match.trim());
 	}
 
-	getChannelMentions(str: string) {
+	getChannelMentions(msg: string) {
+		// First remove the text inside md links
+		const str = msg.replace(/\[[^\]]*\]\([^)]+\)/g, '');
+		// Then do the match
 		return (str.match(this.channelMentionRegex) || []).map((match) => match.trim());
 	}
 

@@ -1,33 +1,16 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useUser } from '@rocket.chat/ui-contexts';
-import type { ScrollValues } from 'rc-scrollbars';
-import { useCallback, useEffect, useRef } from 'react';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
+import { useListIsAtBottom } from '../../../body/hooks/useListIsAtBottom';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
-	const listWrapperRef = useRef<HTMLDivElement>(null);
-	const listRef = useRef<HTMLElement>(null);
-
-	const atBottomRef = useRef(true);
-
-	const onScroll = useCallback(({ scrollHeight, scrollTop, clientHeight }: ScrollValues) => {
-		atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
-	}, []);
-
-	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			const listWrapper = listWrapperRef.current;
-
-			listWrapper?.scrollTo(30, listWrapper.scrollHeight);
-		}
-	}, []);
-
+	const { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef } = useListIsAtBottom();
 	const room = useRoom();
-	const user = useUser();
-
+	const uid = useUserId();
 	useEffect(() => {
 		callbacks.add(
 			'streamNewMessage',
@@ -36,7 +19,7 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 					return;
 				}
 
-				if (msg.u._id === user?._id) {
+				if (msg.u._id === uid) {
 					atBottomRef.current = true;
 					sendToBottomIfNecessary();
 				}
@@ -48,20 +31,7 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 		return () => {
 			callbacks.remove('streamNewMessage', `thread-scroll-${room._id}`);
 		};
-	}, [room._id, sendToBottomIfNecessary, user?._id, mainMessage._id]);
+	}, [room._id, atBottomRef, sendToBottomIfNecessary, uid, mainMessage._id]);
 
-	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
-
-		if (listWrapperRef.current) observer.observe(listWrapperRef.current);
-		if (listRef.current) observer.observe(listRef.current);
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
-
-	return { listWrapperRef, listRef, requestScrollToBottom: sendToBottomIfNecessary, onScroll };
+	return { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef };
 };

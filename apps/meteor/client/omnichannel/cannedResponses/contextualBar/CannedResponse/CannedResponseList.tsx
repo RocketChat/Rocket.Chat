@@ -1,11 +1,13 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import Item from './Item';
+import WrapCannedResponse from './WrapCannedResponse';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -14,10 +16,8 @@ import {
 	ContextualbarInnerContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
-import Item from './Item';
-import WrapCannedResponse from './WrapCannedResponse';
 
 type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;
@@ -27,11 +27,11 @@ type CannedResponseListProps = {
 	loading: boolean;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLOrSVGElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
-	onClickItem: (data: any) => void;
+	onClickItem: (data: any) => void; // FIXME: fix typings
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
@@ -54,7 +54,7 @@ const CannedResponseList = ({
 	onClickUse,
 	reload,
 }: CannedResponseListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { context: cannedId } = useRoomToolbox();
@@ -92,26 +92,25 @@ const CannedResponseList = ({
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							style={{ width: inlineSize }}
-							totalCount={itemCount}
-							endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
-							overscan={25}
-							data={cannedItems}
-							components={{
-								Scroller: VirtuosoScrollbars,
-							}}
-							itemContent={(_index, data): ReactElement => (
-								<Item
-									data={data}
-									allowUse={!isRoomOverMacLimit}
-									onClickItem={(): void => {
-										onClickItem(data);
-									}}
-									onClickUse={onClickUse}
-								/>
-							)}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{ width: inlineSize }}
+								totalCount={itemCount}
+								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								overscan={25}
+								data={cannedItems}
+								itemContent={(_index, data): ReactElement => (
+									<Item
+										data={data}
+										allowUse={!isRoomOverMacLimit}
+										onClickItem={(): void => {
+											onClickItem(data);
+										}}
+										onClickUse={onClickUse}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>

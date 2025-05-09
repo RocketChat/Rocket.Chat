@@ -1,10 +1,9 @@
 import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { useId, type ReactElement } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,7 +13,6 @@ import {
 	ContextualbarClose,
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 
 type PruneMessagesProps = {
 	callOutText?: string;
@@ -25,14 +23,14 @@ type PruneMessagesProps = {
 };
 
 const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { control, register } = useFormContext();
 
-	const inclusiveCheckboxId = useUniqueId();
-	const pinnedCheckboxId = useUniqueId();
-	const discussionCheckboxId = useUniqueId();
-	const threadsCheckboxId = useUniqueId();
-	const attachedCheckboxId = useUniqueId();
+	const inclusiveCheckboxId = useId();
+	const pinnedCheckboxId = useId();
+	const discussionCheckboxId = useId();
+	const threadsCheckboxId = useId();
+	const attachedCheckboxId = useId();
 
 	return (
 		<>

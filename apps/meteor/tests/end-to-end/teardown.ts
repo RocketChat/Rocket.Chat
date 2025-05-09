@@ -11,10 +11,10 @@ let lastResponse: Response;
 
 methods.forEach((method) => {
 	const original = request[method];
-	request[method] = function (url, fn) {
+	request[method] = function (url) {
 		lastUrl = url;
 		lastMethod = method;
-		return original(url, fn).expect((res) => {
+		return original(url).expect((res) => {
 			lastResponse = res;
 		});
 	};

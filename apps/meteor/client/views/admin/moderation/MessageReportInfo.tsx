@@ -1,34 +1,32 @@
+import type { IModerationReport } from '@rocket.chat/core-typings';
 import { Box, Message } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ReportReason from './helpers/ReportReason';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
-	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reports`);
 
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const {
 		data: reportsByMessage,
 		isLoading: isLoadingReportsByMessage,
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
-	} = useQuery(
-		['moderation', 'msgReports', 'fetchReasons', { msgId }],
-		async () => {
+	} = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchReasons', { msgId }],
+		queryFn: async () => {
 			const reports = await getReportsByMessage({ msgId });
 			return reports;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
 	if (isLoadingReportsByMessage) {
 		return (
@@ -46,13 +44,13 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 		);
 	}
 
-	const { reports } = reportsByMessage;
+	const { reports } = reportsByMessage as unknown as { reports: IModerationReport[] };
 
 	return (
 		<>
 			{isSuccessReportsByMessage && reportsByMessage?.reports && (
 				<Box display='flex' flexDirection='column' width='full' height='full' overflowX='hidden' overflowY='auto'>
-					{reports.map((report, index) => (
+					{reports.map((report: IModerationReport, index: number) => (
 						<ReportReason
 							key={report._id}
 							ind={index + 1}

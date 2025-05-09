@@ -3,10 +3,10 @@ import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { logger } from './logger';
 import { settings } from '../../../../settings/server';
 import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { API } from '../../api';
-import { logger } from './logger';
 
 // Get the connector version and type
 API.v1.addRoute(
@@ -95,7 +95,7 @@ API.v1.addRoute(
 			const { id } = this.queryParams;
 
 			if (id !== this.userId) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { extension } =

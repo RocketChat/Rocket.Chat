@@ -1,8 +1,11 @@
+import { Emitter } from '@rocket.chat/emitter';
 import emojione from 'emojione';
 
 import type { EmojiPackages } from '../lib/rocketchat';
 
-export const emoji: EmojiPackages = {
+export const emojiEmitter = new Emitter<{ updated: void }>();
+
+export const emoji: EmojiPackages & { dispatchUpdate: () => void } = {
 	packages: {
 		base: {
 			emojiCategories: [{ key: 'recent', i18n: 'Frequently_Used' }],
@@ -23,4 +26,7 @@ export const emoji: EmojiPackages = {
 		},
 	},
 	list: {},
+	dispatchUpdate() {
+		emojiEmitter.emit('updated');
+	},
 };

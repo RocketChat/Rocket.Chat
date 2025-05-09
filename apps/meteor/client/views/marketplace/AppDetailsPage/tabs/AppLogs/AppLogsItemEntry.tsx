@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
 
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
@@ -12,7 +12,7 @@ type AppLogsItemEntryProps = {
 };
 
 const AppLogsItemEntry = ({ severity, timestamp, caller, args }: AppLogsItemEntryProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box color='default'>
@@ -23,7 +23,7 @@ const AppLogsItemEntry = ({ severity, timestamp, caller, args }: AppLogsItemEntr
 				<pre>
 					<code
 						dangerouslySetInnerHTML={{
-							__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
+							__html: DOMPurify.sanitize(useHighlightedCode('json', JSON.stringify(args, null, 2))),
 						}}
 					/>
 				</pre>

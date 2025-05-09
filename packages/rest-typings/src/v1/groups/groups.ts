@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
 
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { GroupsAddAllProps } from './GroupsAddAllProps';
 import type { GroupsAddLeaderProps } from './GroupsAddLeaderProps';
 import type { GroupsAddModeratorProps } from './GroupsAddModeratorProps';
@@ -20,7 +19,7 @@ import type { GroupsKickProps } from './GroupsKickProps';
 import type { GroupsLeaveProps } from './GroupsLeaveProps';
 import type { GroupsListProps } from './GroupsListProps';
 import type { GroupsMembersProps } from './GroupsMembersProps';
-import type { GroupsMessageProps } from './GroupsMessageProps';
+import type { GroupsMessagesProps } from './GroupsMessagesProps';
 import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
 import type { GroupsOnlineProps } from './GroupsOnlineProps';
 import type { GroupsOpenProps } from './GroupsOpenProps';
@@ -38,6 +37,7 @@ import type { GroupsSetReadOnlyProps } from './GroupsSetReadOnlyProps';
 import type { GroupsSetTopicProps } from './GroupsSetTopicProps';
 import type { GroupsSetTypeProps } from './GroupsSetTypeProps';
 import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
@@ -99,7 +99,7 @@ export type GroupsEndpoints = {
 		GET: (params: GroupsRolesProps) => { roles: IGetRoomRoles[] };
 	};
 	'/v1/groups.messages': {
-		GET: (params: GroupsMessageProps) => PaginatedResult<{
+		GET: (params: GroupsMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};

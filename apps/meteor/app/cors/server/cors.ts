@@ -4,6 +4,7 @@ import type { UrlWithParsedQuery } from 'url';
 import url from 'url';
 
 import { Logger } from '@rocket.chat/logger';
+import { OAuthApps } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
@@ -15,8 +16,6 @@ type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
-let templatePromise: Promise<void> | void;
-
 declare module 'meteor/webapp' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace WebApp {
@@ -24,12 +23,10 @@ declare module 'meteor/webapp' {
 	}
 }
 
-settings.watch<boolean>(
-	'Enable_CSP',
-	Meteor.bindEnvironment(async (enabled) => {
-		templatePromise = WebAppInternals.setInlineScriptsAllowed(!enabled);
-	}),
-);
+let templatePromise: Promise<void> | void;
+export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
+	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
+}
 
 WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	if (templatePromise) {
@@ -48,10 +45,13 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	}
 
 	if (settings.get<boolean>('Enable_CSP')) {
+		const legacyZapierAvailable = Boolean(await OAuthApps.findOneById('zapier'));
+
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const cdn_prefixes = [
 			settings.get<string>('CDN_PREFIX'),
 			settings.get<string>('CDN_PREFIX_ALL') ? null : settings.get<string>('CDN_JSCSS_PREFIX'),
+			legacyZapierAvailable && 'https://cdn.zapier.com',
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -68,6 +68,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 			settings.get<boolean>('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com',
 			settings.get<boolean>('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'),
 			settings.get<boolean>('GoogleAnalytics_enabled') && 'https://www.google-analytics.com',
+			legacyZapierAvailable && 'https://zapier.com',
 			...settings
 				.get<string>('Extra_CSP_Domains')
 				.split(/[ \n\,]/gim)
@@ -104,9 +105,9 @@ declare module 'meteor/webapp' {
 }
 
 let cachingVersion = '';
-settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
-	cachingVersion = String(value).trim();
-});
+export function setCachingVersion(value: string): void {
+	cachingVersion = value.trim();
+}
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (

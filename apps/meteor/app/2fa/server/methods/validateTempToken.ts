@@ -2,7 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ddp-client' {
@@ -56,13 +56,18 @@ Meteor.methods<ServerMethods>({
 					if (!this.userId) {
 						return;
 					}
-					const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+					const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.totp': 1 } });
 					return {
 						clientAction: 'updated',
 						id: this.userId,
-						diff: { 'services.resume.loginTokens': userTokens?.services?.resume?.loginTokens },
+						diff: {
+							'services.resume.loginTokens': user?.services?.resume?.loginTokens,
+							...(user?.services?.totp && { 'services.totp.enabled': user.services.totp.enabled }),
+						},
 					};
 				});
+			} else {
+				void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { 'services.totp.enabled': true } });
 			}
 		}
 

@@ -14,16 +14,16 @@ export const useLivechatTags = (options: Props) => {
 	const { isEnterprise } = useOmnichannel();
 
 	const { department, text, viewAll } = options;
-	return useQuery(
-		['/v1/livechat/tags', text, department],
-		() =>
+	return useQuery({
+		queryKey: ['/v1/livechat/tags', text, department],
+
+		queryFn: () =>
 			getTags({
 				text: text || '',
 				...(department && { department }),
 				viewAll: viewAll ? 'true' : 'false',
 			}),
-		{
-			enabled: isEnterprise,
-		},
-	);
+
+		enabled: isEnterprise,
+	});
 };

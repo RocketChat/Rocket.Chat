@@ -1,16 +1,16 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SidebarTogglerBadge from './SidebarTogglerBadge';
 
 type SideBarTogglerButtonProps = {
-	badge?: number | unknown;
+	badge?: ReactNode;
 	onClick: () => void;
 };
 
 const SideBarTogglerButton = ({ badge, onClick }: SideBarTogglerButtonProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box position='relative'>

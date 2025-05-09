@@ -1,10 +1,13 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ModerationConsoleTableRow from './ModerationConsoleTableRow';
+import ModerationFilter from './helpers/ModerationFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -15,8 +18,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import ModerationFilter from './helpers/ModerationFilter';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {
@@ -53,16 +54,16 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, isSuccess } = useQuery(['moderation', 'msgReports', 'fetchAll', query], async () => getReports(query), {
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
+		queryFn: async () => getReports(query),
+		meta: {
+			apiErrorToastMessage: true,
 		},
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useMutableCallback((id): void => {
+	const handleClick = useEffectEvent((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: {
@@ -100,7 +101,7 @@ const ModerationConsoleTable = () => {
 
 	return (
 		<>
-			<ModerationFilter setText={setText} setDateRange={setDateRange} />
+			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import type { BlockProps } from '../../utils/BlockProps';
 import { ContextElementItem } from './ContextElementItem';
+import type { BlockProps } from '../../utils/BlockProps';
 
 type ContextElementProps = BlockProps<UiKit.ContextBlock>;
 

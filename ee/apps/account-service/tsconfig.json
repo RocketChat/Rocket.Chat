@@ -12,7 +12,7 @@
 		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": false,
 
-		"outDir": "./dist"
+		"outDir": "./dist/ee/apps/account-service/src",
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],

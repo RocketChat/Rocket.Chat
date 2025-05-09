@@ -1,6 +1,5 @@
 import type { IModerationAudit, IModerationReport, IUser, MessageReport, UserReport } from '@rocket.chat/core-typings';
 
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportPropsPOST } from './ArchiveReportProps';
 import type { GetUserReportsParamsGET } from './GetUserReportsParams';
 import type { ModerationDeleteMsgHistoryParamsPOST } from './ModerationDeleteMsgHistoryParams';
@@ -8,6 +7,7 @@ import type { ModerationReportUserPOST } from './ModerationReportUserPOST';
 import type { ReportHistoryPropsGET } from './ReportHistoryProps';
 import type { ReportInfoParams } from './ReportInfoParams';
 import type { ReportsByMsgIdParamsGET } from './ReportsByMsgIdParams';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages

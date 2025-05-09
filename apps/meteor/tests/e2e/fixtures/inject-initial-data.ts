@@ -12,6 +12,7 @@ export default async function injectInitialData() {
 		createUserFixture(Users.user2),
 		createUserFixture(Users.user3),
 		createUserFixture(Users.userE2EE),
+		createUserFixture(Users.userNotAllowedByApp),
 	];
 
 	await Promise.all(
@@ -66,11 +67,15 @@ export default async function injectInitialData() {
 				_id: 'Accounts_OAuth_Google',
 				value: false,
 			},
+			{
+				_id: 'Livechat_Require_Contact_Verification',
+				value: 'never',
+			},
 		].map((setting) =>
 			connection
 				.db()
 				.collection('rocketchat_settings')
-				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
+				.updateOne({ _id: setting._id as any }, { $set: { value: setting.value } }),
 		),
 	);
 

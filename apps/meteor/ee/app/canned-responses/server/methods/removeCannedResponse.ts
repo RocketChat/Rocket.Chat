@@ -13,27 +13,37 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const removeCannedResponse = async (uid: string, _id: string): Promise<void> => {
+	if (!(await hasPermissionAsync(uid, 'remove-canned-responses'))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'removeCannedResponse',
+		});
+	}
+
+	check(_id, String);
+
+	const cannedResponse = await CannedResponse.findOneById(_id);
+	if (!cannedResponse) {
+		throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', {
+			method: 'removeCannedResponse',
+		});
+	}
+
+	notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id });
+
+	await CannedResponse.removeById(_id);
+};
+
 Meteor.methods<ServerMethods>({
 	async removeCannedResponse(_id) {
 		const uid = Meteor.userId();
 
-		if (!uid || !(await hasPermissionAsync(uid, 'remove-canned-responses'))) {
+		if (!uid) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeCannedResponse',
 			});
 		}
 
-		check(_id, String);
-
-		const cannedResponse = await CannedResponse.findOneById(_id);
-		if (!cannedResponse) {
-			throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', {
-				method: 'removeCannedResponse',
-			});
-		}
-
-		notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id });
-
-		await CannedResponse.removeById(_id);
+		return removeCannedResponse(uid, _id);
 	},
 });

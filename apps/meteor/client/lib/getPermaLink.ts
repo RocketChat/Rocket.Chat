@@ -16,13 +16,13 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 		throw new Error('invalid-parameter');
 	}
 
-	const { ChatMessage, ChatRoom, ChatSubscription } = await import('../../app/models/client');
+	const { Messages, Rooms, Subscriptions } = await import('../../app/models/client');
 
-	const msg = ChatMessage.findOne(msgId) || (await getMessage(msgId));
+	const msg = Messages.findOne(msgId) || (await getMessage(msgId));
 	if (!msg) {
 		throw new Error('message-not-found');
 	}
-	const roomData = ChatRoom.findOne({
+	const roomData = Rooms.findOne({
 		_id: msg.rid,
 	});
 
@@ -30,7 +30,7 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 		throw new Error('room-not-found');
 	}
 
-	const subData = ChatSubscription.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
+	const subData = Subscriptions.findOne({ 'rid': roomData._id, 'u._id': Meteor.userId() });
 
 	const { roomCoordinator } = await import('./rooms/roomCoordinator');
 

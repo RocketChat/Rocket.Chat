@@ -25,7 +25,7 @@ const OverflowElement = ({
   const fireChange = useCallback(
     ([value]: [UiKit.ActionOf<UiKit.OverflowElement>, string]) =>
       action({ target: { value } }),
-    [action]
+    [action],
   );
 
   const options = useMemo<OptionType[]>(
@@ -38,7 +38,7 @@ const OverflowElement = ({
         undefined,
         url,
       ]),
-    [block.options, fromTextObjectToString]
+    [block.options, fromTextObjectToString],
   );
 
   const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] =
@@ -63,7 +63,7 @@ const OverflowElement = ({
       reset();
       hide();
     },
-    [action, hide, reset]
+    [action, hide, reset],
   );
 
   return (

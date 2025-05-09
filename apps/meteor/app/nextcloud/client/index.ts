@@ -1,1 +1,1 @@
-import './lib';
+import './useNextcloud';

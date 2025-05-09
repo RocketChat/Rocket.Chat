@@ -3,6 +3,8 @@ import { useMethod } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { subscriptionsQueryKeys } from '../../../../../../lib/queryKeys';
+
 export const useReturnChatToQueueMutation = (
 	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,
 ): UseMutationResult<void, Error, IRoom['_id']> => {
@@ -10,19 +12,17 @@ export const useReturnChatToQueueMutation = (
 
 	const queryClient = useQueryClient();
 
-	return useMutation(
-		async (rid) => {
+	return useMutation({
+		mutationFn: async (rid) => {
 			await returnChatToQueue(rid);
 		},
-		{
-			...options,
-			onSuccess: async (data, rid, context) => {
-				await queryClient.invalidateQueries(['current-chats']);
-				await queryClient.removeQueries(['rooms', rid]);
-				await queryClient.removeQueries(['/v1/rooms.info', rid]);
-				await queryClient.removeQueries(['subscriptions', { rid }]);
-				return options?.onSuccess?.(data, rid, context);
-			},
+		...options,
+		onSuccess: async (data, rid, context) => {
+			await queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+			queryClient.removeQueries({ queryKey: ['rooms', rid] });
+			queryClient.removeQueries({ queryKey: ['/v1/rooms.info', rid] });
+			queryClient.removeQueries({ queryKey: subscriptionsQueryKeys.subscription(rid) });
+			return options?.onSuccess?.(data, rid, context);
 		},
-	);
+	});
 };

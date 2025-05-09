@@ -1,11 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { Suspense } from 'react';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
-import MarkdownText from '../../../components/MarkdownText';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
@@ -14,27 +13,29 @@ import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
+import MarkdownText from '../../../components/MarkdownText';
 
 export type RoomHeaderProps = {
 	room: IRoom;
 	topic?: string;
 	slots: {
-		start?: unknown;
-		preContent?: unknown;
-		insideContent?: unknown;
-		posContent?: unknown;
-		end?: unknown;
+		start?: ReactNode;
+		preContent?: ReactNode;
+		insideContent?: ReactNode;
+		posContent?: ReactNode;
+		end?: ReactNode;
 		toolbox?: {
-			pre?: unknown;
-			content?: unknown;
-			pos?: unknown;
+			pre?: ReactNode;
+			content?: ReactNode;
+			pos?: ReactNode;
 		};
 	};
 	roomToolbox?: JSX.Element;
 };
 
 const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Header>

@@ -35,6 +35,7 @@ export function storeQueryFunction(
 				version: installedApp.version,
 				licenseValidation: installedApp.licenseValidation,
 				migrated: installedApp.migrated,
+				installedAddon: installedApp.addon,
 			}),
 			bundledIn: app.bundledIn,
 			marketplaceVersion: app.version,

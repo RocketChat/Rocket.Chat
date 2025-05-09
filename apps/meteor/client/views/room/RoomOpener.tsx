@@ -1,16 +1,21 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import NotSubscribedRoom from './NotSubscribedRoom';
+import RoomSkeleton from './RoomSkeleton';
+import RoomSidepanel from './Sidepanel/RoomSidepanel';
+import { useOpenRoom } from './hooks/useOpenRoom';
+import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
+import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
-import RoomSkeleton from './RoomSkeleton';
-import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
@@ -23,46 +28,63 @@ type RoomOpenerProps = {
 	reference: string;
 };
 
+const isDirectOrOmnichannelRoom = (type: RoomType) => type === 'd' || type === 'l';
+
 const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const { t } = useTranslation();
 
 	return (
-		<Suspense fallback={<RoomSkeleton />}>
-			{isLoading && <RoomSkeleton />}
-			{isSuccess && (
-				<RoomProvider rid={data.rid}>
-					<Room />
-				</RoomProvider>
+		<Box display='flex' w='full' h='full'>
+			{!isDirectOrOmnichannelRoom(type) && (
+				<FeaturePreviewSidePanelNavigation>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+					<FeaturePreviewOn>
+						<RoomSidepanel />
+					</FeaturePreviewOn>
+				</FeaturePreviewSidePanelNavigation>
 			)}
-			{isError &&
-				(() => {
-					if (error instanceof OldUrlRoomError) {
-						return <RoomSkeleton />;
-					}
 
-					if (error instanceof RoomNotFoundError) {
-						return <RoomNotFound />;
-					}
+			<Suspense fallback={<RoomSkeleton />}>
+				{isLoading && <RoomSkeleton />}
+				{isSuccess && (
+					<RoomProvider rid={data.rid}>
+						<Room />
+					</RoomProvider>
+				)}
+				{isError &&
+					(() => {
+						if (error instanceof OldUrlRoomError) {
+							return <RoomSkeleton />;
+						}
 
-					if (error instanceof NotAuthorizedError) {
-						return <NotAuthorizedPage />;
-					}
+						if (error instanceof RoomNotFoundError) {
+							return <RoomNotFound />;
+						}
 
-					return (
-						<RoomLayout
-							header={<Header />}
-							body={
-								<States>
-									<StatesIcon name='circle-exclamation' variation='danger' />
-									<StatesTitle>{t('core.Error')}</StatesTitle>
-									<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
-								</States>
-							}
-						/>
-					);
-				})()}
-		</Suspense>
+						if (error instanceof NotSubscribedToRoomError) {
+							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
+						}
+
+						if (error instanceof NotAuthorizedError) {
+							return <NotAuthorizedPage />;
+						}
+
+						return (
+							<RoomLayout
+								header={<Header />}
+								body={
+									<States>
+										<StatesIcon name='circle-exclamation' variation='danger' />
+										<StatesTitle>{t('core.Error')}</StatesTitle>
+										<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
+									</States>
+								}
+							/>
+						);
+					})()}
+			</Suspense>
+		</Box>
 	);
 };
 

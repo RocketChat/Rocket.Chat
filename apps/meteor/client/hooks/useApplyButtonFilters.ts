@@ -32,15 +32,26 @@ const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean => {
 	return !roomTypes || roomTypes.some((filter): boolean => enumToFilter[filter]?.(room));
 };
 
-export const useApplyButtonFilters = (): ((button: IUIActionButton) => boolean) => {
+const applyCategoryFilter = (button: IUIActionButton, category: string): boolean => {
+	const { category: buttonCategory } = button;
+
+	if (category === 'default') {
+		return !buttonCategory || buttonCategory === 'default';
+	}
+
+	return buttonCategory === category;
+};
+
+export const useApplyButtonFilters = (category = 'default'): ((button: IUIActionButton) => boolean) => {
 	const room = useRoom();
 	if (!room) {
 		throw new Error('useApplyButtonFilters must be used inside a room context');
 	}
 	const applyAuthFilter = useApplyButtonAuthFilter();
 	return useCallback(
-		(button: IUIActionButton) => applyAuthFilter(button) && (!room || applyRoomFilter(button, room)),
-		[applyAuthFilter, room],
+		(button: IUIActionButton) =>
+			applyAuthFilter(button) && (!room || applyRoomFilter(button, room)) && applyCategoryFilter(button, category),
+		[applyAuthFilter, category, room],
 	);
 };
 

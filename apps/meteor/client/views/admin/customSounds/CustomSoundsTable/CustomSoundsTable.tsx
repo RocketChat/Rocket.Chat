@@ -1,11 +1,11 @@
 import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
+import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -17,7 +17,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import CustomSoundRow from './CustomSoundRow';
 
 type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
@@ -29,12 +28,12 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const [text, setParams] = useState('');
+	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' } }),
+				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				...(itemsPerPage && { count: itemsPerPage }),
 				...(current && { offset: current }),
@@ -45,7 +44,9 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	);
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery(['custom-sounds', query], async () => getSounds(query), {
+	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
+		queryKey: ['custom-sounds', query],
+		queryFn: async () => getSounds(query),
 		refetchOnMount: false,
 	});
 
@@ -64,7 +65,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setParams(text)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

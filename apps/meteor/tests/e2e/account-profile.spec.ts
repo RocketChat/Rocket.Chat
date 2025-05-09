@@ -69,11 +69,27 @@ test.describe.serial('settings-account-profile', () => {
 	});
 
 	test.describe('Security', () => {
+		test.beforeEach(async ({ page }) => {
+			await page.goto('account/security');
+			await page.waitForSelector('.main-content');
+		});
+
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/account/security');
 
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
+		});
+
+		test('should disable and enable email 2FA', async () => {
+			await poAccountProfile.security2FASection.click();
+			await expect(poAccountProfile.email2FASwitch).toBeVisible();
+			await poAccountProfile.email2FASwitch.click();
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.dismissToast();
+
+			await poAccountProfile.email2FASwitch.click();
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
 		});
 	});
 
@@ -82,35 +98,35 @@ test.describe.serial('settings-account-profile', () => {
 		await page.goto('/account/tokens');
 		await response;
 
-		await test.step('expect show empty personal access tokens table', async () => {
+		await test.step('should show empty personal access tokens table', async () => {
 			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
 			await expect(poAccountProfile.inputToken).toBeVisible();
 		});
 
-		await test.step('expect show new personal token', async () => {
-			await poAccountProfile.inputToken.type(token);
+		await test.step('should show new personal token', async () => {
+			await poAccountProfile.inputToken.fill(token);
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('role=button[name=Ok]').click();
+			await poAccountProfile.btnTokenAddedOk.click();
 		});
 
-		await test.step('expect not allow add new personal token with same name', async () => {
-			await poAccountProfile.inputToken.type(token);
+		await test.step('should not allow add new personal token with same name', async () => {
+			await poAccountProfile.inputToken.fill(token);
 			await poAccountProfile.btnTokensAdd.click();
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+			await expect(poAccountProfile.tokensRows).toHaveCount(1);
 		});
 
-		await test.step('expect regenerate personal token', async () => {
+		await test.step('should regenerate personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=0').click();
 			await poAccountProfile.btnRegenerateTokenModal.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
-			await page.locator('role=button[name=Ok]').click();
+			await poAccountProfile.btnTokenAddedOk.click();
 		});
 
-		await test.step('expect delete personal token', async () => {
+		await test.step('should delete personal token', async () => {
 			await poAccountProfile.tokenInTable(token).locator('button >> nth=1').click();
 			await poAccountProfile.btnRemoveTokenModal.click();
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--success')).toBeVisible();
+			await expect(poAccountProfile.tokensTableEmpty).toBeVisible();
 		});
 	});
 

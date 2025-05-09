@@ -1,5 +1,5 @@
 import type { IUpload } from '@rocket.chat/core-typings';
-import type { DeleteResult, UpdateResult, Document, InsertOneResult, WithId, FindCursor, FindOptions } from 'mongodb';
+import type { DeleteResult, UpdateResult, ClientSession, Document, InsertOneResult, WithId, FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -10,7 +10,7 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined;
 
-	findOneByName(name: string): Promise<T | null>;
+	findOneByName(name: string, options?: { session?: ClientSession }): Promise<T | null>;
 
 	findOneByRoomId(rid: string): Promise<T | null>;
 
@@ -18,5 +18,5 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
 
-	deleteFile(fileId: string): Promise<DeleteResult>;
+	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
 }

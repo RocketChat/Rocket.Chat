@@ -3,9 +3,9 @@ import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 
+import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { settings } from '../../../settings/server';
-import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 

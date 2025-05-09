@@ -1,8 +1,7 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -15,13 +14,15 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 
 	const deleteAction = useEndpoint('DELETE', '/v1/livechat/users/agent/:_id', { _id: uid });
 
-	const handleDelete = useMutableCallback(() => {
+	const handleDelete = useEffectEvent(() => {
 		const onDeleteAgent = async () => {
 			try {
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 				router.navigate('/omnichannel/agents');
-				queryClient.invalidateQueries(['livechat-agents']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-agents'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

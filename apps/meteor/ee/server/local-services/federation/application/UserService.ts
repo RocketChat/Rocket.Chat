@@ -1,8 +1,8 @@
+import { AbstractFederationApplicationServiceEE } from './AbstractFederationApplicationServiceEE';
 import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationServiceEE } from './AbstractFederationApplicationServiceEE';
 
 const DEFAULT_SERVERS = [
 	{

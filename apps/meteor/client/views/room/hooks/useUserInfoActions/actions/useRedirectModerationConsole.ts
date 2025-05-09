@@ -1,10 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
 export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const hasPermissionToView = usePermission('view-moderation-console');
 	const router = useRoute('moderation-console');
 

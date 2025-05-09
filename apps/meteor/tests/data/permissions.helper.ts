@@ -1,9 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
+import { api, credentials, request } from './api-data';
 import { permissions } from '../../app/authorization/server/constant/permissions';
 import { omnichannelEEPermissions } from '../../ee/app/livechat-enterprise/server/permissions';
 import { IS_EE } from '../e2e/config/constants';
-import { api, credentials, request } from './api-data';
 
 export const updatePermission = (permission: string, roles: string[]): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ const updateManyPermissions = (permissions: { [key: string]: string[] }): Promis
 			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
 	});
 
-export const updateSetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
+export const updateSetting = (setting: string, value: ISetting['value'], debounce = true): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
 		void request
 			.post(`/api/v1/settings/${setting}`)
@@ -38,7 +38,18 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 			.send({ value })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
+			.end((err?: Error) => {
+				if (err) {
+					return reject(err);
+				}
+
+				if (debounce) {
+					setTimeout(resolve, 100);
+					return;
+				}
+
+				resolve();
+			});
 	});
 
 export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
@@ -57,7 +68,7 @@ export const updateEESetting = (setting: string, value: ISetting['value']): Prom
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
-		  })
+			})
 		: Promise.resolve();
 
 export const removePermissions = async (perms: string[]) => {

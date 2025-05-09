@@ -1,8 +1,7 @@
 // import { Menu, Option } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
@@ -10,13 +9,14 @@ import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { userId: uid, isUserDeleted } = report;
 
 	return (
 		<>
 			<GenericMenu
 				title={t('Options')}
+				detached
 				sections={[
 					{
 						items: [

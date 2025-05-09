@@ -12,7 +12,7 @@ export class AdminFlextabUsers {
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('role=button[name="Save"]');
+		return this.page.locator('role=button[name="Add user"]');
 	}
 
 	get btnInvite(): Locator {
@@ -31,12 +31,20 @@ export class AdminFlextabUsers {
 		return this.page.locator('//label[text()="Email"]/following-sibling::span//input').first();
 	}
 
+	get inputSetManually(): Locator {
+		return this.page.locator('//label[text()="Set manually"]');
+	}
+
 	get inputPassword(): Locator {
-		return this.page.locator('//label[text()="Password"]/following-sibling::span//input');
+		return this.page.locator('input[placeholder="Password"]');
+	}
+
+	get inputConfirmPassword(): Locator {
+		return this.page.locator('input[placeholder="Confirm password"]');
 	}
 
 	get checkboxVerified(): Locator {
-		return this.page.locator('//label[text()="Verified"]');
+		return this.page.locator('//label[text()="Mark email as verified"]');
 	}
 
 	get joinDefaultChannels(): Locator {
@@ -54,5 +62,9 @@ export class AdminFlextabUsers {
 
 	get setupSmtpLink(): Locator {
 		return this.page.locator('role=link[name="Set up SMTP"]');
+	}
+
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('button[data-qa="ContextualbarActionClose"]');
 	}
 }

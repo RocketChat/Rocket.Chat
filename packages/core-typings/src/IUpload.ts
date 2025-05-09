@@ -62,3 +62,12 @@ export interface IUpload {
 }
 
 export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };
+
+export type IE2EEUpload = IUpload & {
+	content: {
+		algorithm: string; // 'rc.v1.aes-sha2'
+		ciphertext: string; // Encrypted subset JSON of IUpload
+	};
+};
+
+export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);

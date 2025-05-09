@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
 import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
@@ -12,10 +11,8 @@ import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesL
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
 type AppsFiltersProps = {
-	setText: React.Dispatch<React.SetStateAction<string>> & {
-		flush: () => void;
-		cancel: () => void;
-	};
+	text: string;
+	setText: (text: string) => void;
 	freePaidFilterStructure: RadioDropDownGroup;
 	freePaidFilterOnSelected: RadioDropDownOnSelected;
 	categories: CategoryDropDownListProps['categories'];
@@ -30,6 +27,7 @@ type AppsFiltersProps = {
 };
 
 const AppsFilters = ({
+	text,
 	setText,
 	freePaidFilterStructure,
 	freePaidFilterOnSelected,
@@ -43,7 +41,7 @@ const AppsFilters = ({
 	statusFilterOnSelected,
 	context,
 }: AppsFiltersProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
@@ -60,7 +58,7 @@ const AppsFilters = ({
 
 	return (
 		<Box pi={24}>
-			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={({ text }): void => setText(text)}>
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
 				)}

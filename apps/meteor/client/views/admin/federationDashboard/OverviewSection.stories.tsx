@@ -1,5 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import OverviewSection from './OverviewSection';
 
@@ -10,9 +9,9 @@ export default {
 		layout: 'centered',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof OverviewSection>;
+} satisfies Meta<typeof OverviewSection>;
 
-const Template: ComponentStory<typeof OverviewSection> = () => <OverviewSection />;
+const Template: StoryFn<typeof OverviewSection> = () => <OverviewSection />;
 
 export const Example = Template.bind({});
 Example.parameters = {

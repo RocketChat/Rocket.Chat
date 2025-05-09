@@ -1,6 +1,7 @@
 import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import {
 	Accordion,
+	AccordionItem,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -17,19 +18,44 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { PageScrollableContentWithShadow } from '../../../components/Page';
 
-const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): ReactElement => {
-	const t = useTranslation();
+type EmailInboxFormData = {
+	active: boolean;
+	name: string;
+	email: string;
+	description?: string;
+	senderInfo?: string;
+	department?: string;
+	smtpServer: string;
+	smtpPort: string;
+	smtpUsername: string;
+	smtpPassword: string;
+	smtpSecure: boolean;
+	imapServer: string;
+	imapPort: string;
+	imapUsername: string;
+	imapPassword: string;
+	imapSecure: boolean;
+	imapRetries: string;
+};
+
+type EmailInboxFormProps = {
+	inboxData?: IEmailInboxPayload;
+};
+
+const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const router = useRoute('admin-email-inboxes');
@@ -44,31 +70,32 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		control,
 		handleSubmit,
 		formState: { errors, isDirty },
-	} = useForm({
-		defaultValues: {
+	} = useForm<EmailInboxFormData>({
+		values: {
 			active: inboxData?.active ?? true,
-			name: inboxData?.name,
-			email: inboxData?.email,
+			name: inboxData?.name ?? '',
+			email: inboxData?.email ?? '',
 			description: inboxData?.description,
 			senderInfo: inboxData?.senderInfo,
-			department: inboxData?.department || '',
+			department: inboxData?.department,
 			// SMTP
-			smtpServer: inboxData?.smtp.server,
-			smtpPort: inboxData?.smtp.port ?? 587,
-			smtpUsername: inboxData?.smtp.username,
-			smtpPassword: inboxData?.smtp.password,
+			smtpServer: inboxData?.smtp.server ?? '',
+			smtpPort: String(inboxData?.smtp.port ?? 587),
+			smtpUsername: inboxData?.smtp.username ?? '',
+			smtpPassword: inboxData?.smtp.password ?? '',
 			smtpSecure: inboxData?.smtp.secure ?? false,
 			// IMAP
-			imapServer: inboxData?.imap.server,
-			imapPort: inboxData?.imap.port ?? 993,
-			imapUsername: inboxData?.imap.username,
-			imapPassword: inboxData?.imap.password,
+			imapServer: inboxData?.imap.server ?? '',
+			imapPort: String(inboxData?.imap.port ?? 993),
+			imapUsername: inboxData?.imap.username ?? '',
+			imapPassword: inboxData?.imap.password ?? '',
 			imapSecure: inboxData?.imap.secure ?? false,
-			imapRetries: inboxData?.imap.maxRetries ?? 10,
+			imapRetries: String(inboxData?.imap.maxRetries ?? 10),
 		},
+		mode: 'all',
 	});
 
-	const handleDelete = useMutableCallback(() => {
+	const handleDelete = useEffectEvent(() => {
 		const deleteInbox = async (): Promise<void> => {
 			try {
 				await deleteInboxAction();
@@ -88,7 +115,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		);
 	});
 
-	const handleSave = useMutableCallback(
+	const handleSave = useEffectEvent(
 		async ({
 			active,
 			name,
@@ -107,10 +134,10 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 			imapPassword,
 			imapSecure,
 			imapRetries,
-		}) => {
+		}: EmailInboxFormData) => {
 			const smtp = {
 				server: smtpServer,
-				port: parseInt(smtpPort),
+				port: parseInt(smtpPort, 10),
 				username: smtpUsername,
 				password: smtpPassword,
 				secure: smtpSecure,
@@ -118,11 +145,11 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 
 			const imap = {
 				server: imapServer,
-				port: parseInt(imapPort),
+				port: parseInt(imapPort, 10),
 				username: imapUsername,
 				password: imapPassword,
 				secure: imapSecure,
-				maxRetries: parseInt(imapRetries),
+				maxRetries: parseInt(imapRetries, 10),
 			};
 
 			const payload = {
@@ -132,7 +159,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 				email,
 				description,
 				senderInfo,
-				...(department && { department: typeof department === 'string' ? department : department.value }),
+				...(department && { department }),
 				smtp,
 				imap,
 			};
@@ -147,13 +174,13 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		},
 	);
 
-	const checkEmailExists = useMutableCallback(async (email) => {
+	const checkEmailExists = useEffectEvent(async (email: string) => {
 		if (!email) {
 			return;
 		}
 
 		if (!validateEmail(email)) {
-			return t('Validate_email_address');
+			return t('error-invalid-email-address');
 		}
 
 		const { emailInbox } = await emailAlreadyExistsAction({ email });
@@ -165,31 +192,31 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		return t('Email_already_exists');
 	});
 
-	const activeField = useUniqueId();
-	const nameField = useUniqueId();
-	const emailField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const senderInfoField = useUniqueId();
-	const departmentField = useUniqueId();
+	const activeField = useId();
+	const nameField = useId();
+	const emailField = useId();
+	const descriptionField = useId();
+	const senderInfoField = useId();
+	const departmentField = useId();
 
-	const smtpServerField = useUniqueId();
-	const smtpPortField = useUniqueId();
-	const smtpUsernameField = useUniqueId();
-	const smtpPasswordField = useUniqueId();
-	const smtpSecureField = useUniqueId();
+	const smtpServerField = useId();
+	const smtpPortField = useId();
+	const smtpUsernameField = useId();
+	const smtpPasswordField = useId();
+	const smtpSecureField = useId();
 
-	const imapServerField = useUniqueId();
-	const imapPortField = useUniqueId();
-	const imapUsernameField = useUniqueId();
-	const imapPasswordField = useUniqueId();
-	const imapRetriesField = useUniqueId();
-	const imapSecureField = useUniqueId();
+	const imapServerField = useId();
+	const imapPortField = useId();
+	const imapUsernameField = useId();
+	const imapPasswordField = useId();
+	const imapRetriesField = useId();
+	const imapSecureField = useId();
 
 	return (
 		<PageScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<Accordion>
-					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
+					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
 							<Field>
 								<FieldRow>
@@ -211,7 +238,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='name'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Name') }) }}
+										rules={{ required: t('Required_field', { field: t('Name') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={nameField}
@@ -239,7 +266,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 										name='email'
 										control={control}
 										rules={{
-											required: t('error-the-field-is-required', { field: t('Email') }),
+											required: t('Required_field', { field: t('Email') }),
 											validate: (value) => checkEmailExists(value),
 										}}
 										render={({ field }) => (
@@ -302,8 +329,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								<FieldHint id={`${departmentField}-hint`}>{t('Only_Members_Selected_Department_Can_View_Channel')}</FieldHint>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
-					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
+					</AccordionItem>
+					<AccordionItem defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor={smtpServerField} required>
@@ -313,7 +340,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='smtpServer'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Server') }) }}
+										rules={{ required: t('Required_field', { field: t('Server') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={smtpServerField}
@@ -340,7 +367,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='smtpPort'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Port') }) }}
+										rules={{ required: t('Required_field', { field: t('Port') }) }}
 										render={({ field }) => (
 											<NumberInput
 												id={smtpPortField}
@@ -367,7 +394,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='smtpUsername'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Username') }) }}
+										rules={{ required: t('Required_field', { field: t('Username') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={smtpUsernameField}
@@ -394,7 +421,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='smtpPassword'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Password') }) }}
+										rules={{ required: t('Required_field', { field: t('Password') }) }}
 										render={({ field }) => (
 											<PasswordInput
 												id={smtpPasswordField}
@@ -424,8 +451,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								</FieldRow>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
-					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
+					</AccordionItem>
+					<AccordionItem defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor={imapServerField} required>
@@ -435,7 +462,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='imapServer'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Server') }) }}
+										rules={{ required: t('Required_field', { field: t('Server') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={imapServerField}
@@ -462,7 +489,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='imapPort'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Port') }) }}
+										rules={{ required: t('Required_field', { field: t('Port') }) }}
 										render={({ field }) => (
 											<NumberInput
 												id={imapPortField}
@@ -489,7 +516,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='imapUsername'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Username') }) }}
+										rules={{ required: t('Required_field', { field: t('Username') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={imapUsernameField}
@@ -516,7 +543,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='imapPassword'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Password') }) }}
+										rules={{ required: t('Required_field', { field: t('Password') }) }}
 										render={({ field }) => (
 											<PasswordInput
 												id={imapPasswordField}
@@ -543,7 +570,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 									<Controller
 										name='imapRetries'
 										control={control}
-										rules={{ required: t('error-the-field-is-required', { field: t('Max_Retry') }) }}
+										rules={{ required: t('Required_field', { field: t('Max_Retry') }) }}
 										render={({ field }) => (
 											<NumberInput
 												id={imapRetriesField}
@@ -573,7 +600,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								</FieldRow>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
+					</AccordionItem>
 					<Field>
 						<FieldRow>
 							<ButtonGroup stretch>

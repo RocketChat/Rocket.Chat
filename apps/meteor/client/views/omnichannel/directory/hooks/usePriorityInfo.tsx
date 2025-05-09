@@ -12,8 +12,10 @@ type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 export const usePriorityInfo = (priorityId: string) => {
 	const { enabled } = useOmnichannelPriorities();
 	const getPriority = useEndpoint('GET', `/v1/livechat/priorities/:priorityId`, { priorityId });
-	return useQuery(['/v1/livechat/priorities', priorityId], () => getPriority() as Promise<ILivechatClientPriority>, {
-		cacheTime: 0,
+	return useQuery({
+		queryKey: ['/v1/livechat/priorities', priorityId],
+		queryFn: () => getPriority() as Promise<ILivechatClientPriority>,
+		gcTime: 0,
 		enabled,
 	});
 };

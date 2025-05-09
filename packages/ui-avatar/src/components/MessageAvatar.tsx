@@ -1,5 +1,5 @@
 import { AvatarContainer } from '@rocket.chat/fuselage';
-import type { ComponentProps, HTMLAttributes, ReactElement, VFC } from 'react';
+import type { ComponentProps, HTMLAttributes, ReactElement } from 'react';
 
 import UserAvatar from './UserAvatar';
 
@@ -10,7 +10,7 @@ type MessageAvatarProps = {
 	size?: ComponentProps<typeof UserAvatar>['size'];
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, size = 'x36', ...props }) => {
+const MessageAvatar = ({ emoji, avatarUrl, username, size = 'x36', ...props }: MessageAvatarProps) => {
 	if (emoji) {
 		return (
 			<AvatarContainer size={size} {...props}>

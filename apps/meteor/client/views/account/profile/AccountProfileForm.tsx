@@ -12,7 +12,6 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -24,17 +23,17 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import type { AccountProfileFormValues } from './getProfileInitialValues';
+import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import type { AccountProfileFormValues } from './getProfileInitialValues';
-import { useAccountProfileSettings } from './useAccountProfileSettings';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -64,7 +63,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username } = watch();
+	const { email, avatar, username, name: userFullName } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -132,12 +131,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const nameId = useUniqueId();
-	const usernameId = useUniqueId();
-	const nicknameId = useUniqueId();
-	const statusTextId = useUniqueId();
-	const bioId = useUniqueId();
-	const emailId = useUniqueId();
+	const nameId = useId();
+	const usernameId = useId();
+	const nicknameId = useId();
+	const statusTextId = useId();
+	const bioId = useId();
+	const emailId = useId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -150,6 +149,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
+								name={userFullName}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
@@ -166,7 +166,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<Controller
 								control={control}
 								name='name'
-								rules={{ validate: (name) => (requireName && name === '' ? t('error-the-field-is-required', { field: t('Name') }) : true) }}
+								rules={{
+									required: requireName && t('Required_field', { field: t('Name') }),
+								}}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -196,7 +198,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								control={control}
 								name='username'
 								rules={{
-									required: t('error-the-field-is-required', { field: t('Username') }),
+									required: t('Required_field', { field: t('Username') }),
 									validate: (username) => validateUsername(username),
 								}}
 								render={({ field }) => (
@@ -305,7 +307,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='email'
-							rules={{ validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) } }}
+							rules={{
+								required: t('Required_field', { field: t('Email') }),
+								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}

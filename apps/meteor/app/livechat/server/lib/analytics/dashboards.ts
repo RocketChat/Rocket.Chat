@@ -247,11 +247,11 @@ const getConversationsMetricsAsync = async ({
 			language: user.language || settings.get('Language') || 'en',
 		})) || [];
 	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
-	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({
+	const visitorsCount = await LivechatVisitors.countVisitorsBetweenDate({
 		start: new Date(start),
 		end: new Date(end),
 		department: departmentId,
-	}).count();
+	});
 	return {
 		totalizers: [
 			...totalizers.filter((metric: { title: string }) => metrics.includes(metric.title)),

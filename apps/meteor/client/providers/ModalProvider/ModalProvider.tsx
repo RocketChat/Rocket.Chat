@@ -1,8 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo, memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useMemo, memo, useSyncExternalStore } from 'react';
 
 import { modalStore } from './ModalStore';
 

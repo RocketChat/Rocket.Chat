@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { TextInput, ButtonGroup, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { VerticalWizardLayout, Form } from '@rocket.chat/layout';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -14,12 +13,11 @@ import {
 	useMethod,
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { queryClient } from '../../../lib/queryClient';
 
 type RegisterUsernamePayload = {
 	username: Exclude<IUser['username'], undefined>;
@@ -29,8 +27,8 @@ const RegisterUsername = () => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const logout = useLogout();
-	const formLabelId = useUniqueId();
-	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const formLabelId = useId();
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -43,7 +41,10 @@ const RegisterUsername = () => {
 	const setUsername = useMethod('setUsername');
 	const saveCustomFields = useMethod('saveCustomFields');
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
-	const { data, isLoading } = useQuery(['suggestion'], async () => usernameSuggestion());
+	const { data, isLoading } = useQuery({
+		queryKey: ['suggestion'],
+		queryFn: async () => usernameSuggestion(),
+	});
 
 	const {
 		register,
@@ -63,6 +64,8 @@ const RegisterUsername = () => {
 		}
 	});
 
+	const queryClient = useQueryClient();
+
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
@@ -70,7 +73,7 @@ const RegisterUsername = () => {
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
-			queryClient.invalidateQueries(['users.info']);
+			queryClient.invalidateQueries({ queryKey: ['users.info'] });
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {
@@ -105,7 +108,10 @@ const RegisterUsername = () => {
 							<Field>
 								<FieldLabel id='username-label'>{t('Username')}</FieldLabel>
 								<FieldRow>
-									<TextInput aria-labelledby='username-label' {...register('username', { required: t('Username_cant_be_empty') })} />
+									<TextInput
+										aria-labelledby='username-label'
+										{...register('username', { required: t('Required_field', { field: t('Username') }) })}
+									/>
 								</FieldRow>
 								{errors.username && (
 									<FieldError>

@@ -82,11 +82,11 @@ declare module '@rocket.chat/rest-typings' {
 
 API.v1.addRoute(
 	'sessions/list',
-	{ authRequired: true, validateParams: isSessionsPaginateProps },
+	{ authRequired: true, validateParams: isSessionsPaginateProps, license: ['device-management'] },
 	{
 		async get() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -105,11 +105,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/info',
-	{ authRequired: true, validateParams: isSessionsProps },
+	{ authRequired: true, validateParams: isSessionsProps, license: ['device-management'] },
 	{
 		async get() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { sessionId } = this.queryParams;
@@ -124,11 +124,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout.me',
-	{ authRequired: true, validateParams: isSessionsProps },
+	{ authRequired: true, validateParams: isSessionsProps, license: ['device-management'] },
 	{
 		async post() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { sessionId } = this.bodyParams;
@@ -150,11 +150,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/list.all',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsPaginateProps, permissionsRequired: ['view-device-management'] },
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		validateParams: isSessionsPaginateProps,
+		permissionsRequired: ['view-device-management'],
+		license: ['device-management'],
+	},
 	{
 		async get() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -190,11 +196,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/info.admin',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['view-device-management'] },
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		validateParams: isSessionsProps,
+		permissionsRequired: ['view-device-management'],
+		license: ['device-management'],
+	},
 	{
 		async get() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const sessionId = this.queryParams?.sessionId as string;
@@ -209,11 +221,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'sessions/logout',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isSessionsProps, permissionsRequired: ['logout-device-management'] },
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		validateParams: isSessionsProps,
+		permissionsRequired: ['logout-device-management'],
+		license: ['device-management'],
+	},
 	{
 		async post() {
 			if (!License.hasModule('device-management')) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { sessionId } = this.bodyParams;

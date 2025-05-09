@@ -1,13 +1,12 @@
 import { Users } from '@rocket.chat/models';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
-import { Livechat } from '../../../server/lib/LivechatTyped';
+import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
 
 const emptyStringArray: string[] = [];
 
@@ -35,7 +34,7 @@ API.v1.addRoute(
 
 			if (this.urlParams.type === 'agent') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { onlyAvailable, excludeId, showIdleAgents } = this.queryParams;
@@ -55,7 +54,7 @@ API.v1.addRoute(
 			}
 			if (this.urlParams.type === 'manager') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				return API.v1.success(
@@ -73,12 +72,12 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
-				const user = await Livechat.addAgent(this.bodyParams.username);
+				const user = await addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = await Livechat.addManager(this.bodyParams.username);
+				const user = await addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
@@ -96,45 +95,25 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const user = await Users.findOneById(this.urlParams._id);
-
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			let role;
-
-			if (this.urlParams.type === 'agent') {
-				role = 'livechat-agent';
-			} else if (this.urlParams.type === 'manager') {
-				role = 'livechat-manager';
-			} else {
+			if (!['agent', 'manager'].includes(this.urlParams.type)) {
 				throw new Error('Invalid type');
 			}
+			const role = this.urlParams.type === 'agent' ? 'livechat-agent' : 'livechat-manager';
 
-			if (user.roles.indexOf(role) !== -1) {
-				return API.v1.success({
-					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
-				});
-			}
-
-			return API.v1.success({
-				user: null,
+			const user = await Users.findOneByIdAndRole(this.urlParams._id, role, {
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusLivechat: 1, emails: 1, livechat: 1 },
 			});
+
+			// TODO: throw error instead of returning null
+			return API.v1.success({ user });
 		},
 		async delete() {
-			const user = await Users.findOneById(this.urlParams._id);
-
-			if (!user?.username) {
-				return API.v1.failure();
-			}
-
 			if (this.urlParams.type === 'agent') {
-				if (await Livechat.removeAgent(user.username)) {
+				if (await removeAgent(this.urlParams._id)) {
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
-				if (await Livechat.removeManager(user.username)) {
+				if (await removeManager(this.urlParams._id)) {
 					return API.v1.success();
 				}
 			} else {

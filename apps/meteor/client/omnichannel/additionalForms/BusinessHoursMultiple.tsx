@@ -1,24 +1,24 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { ComponentProps } from 'react';
-import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import type { BusinessHoursFormData } from '../../views/omnichannel/businessHours/BusinessHoursForm';
 
 const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		control,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<BusinessHoursFormData>();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const departmentsField = useUniqueId();
+	const enabledField = useId();
+	const nameField = useId();
+	const departmentsField = useId();
 
 	if (!hasLicense) {
 		return null;
@@ -44,7 +44,7 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 					<Controller
 						name='name'
 						control={control}
-						rules={{ required: t('error-the-field-is-required', { field: t('Name') }) }}
+						rules={{ required: t('Required_field', { field: t('Name') }) }}
 						render={({ field }) => <TextInput id={nameField} {...field} aria-describedby={`${departmentsField}-error`} />}
 					/>
 				</FieldRow>

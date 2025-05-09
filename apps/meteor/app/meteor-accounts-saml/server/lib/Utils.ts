@@ -3,12 +3,12 @@ import zlib from 'zlib';
 
 import type { Logger } from '@rocket.chat/logger';
 
+import { StatusCode } from './constants';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { StatusCode } from './constants';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -131,10 +131,9 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	public static getValidationActionRedirectPath(credentialToken: string, redirectUrl?: string): string {
-		const redirectUrlParam = redirectUrl ? `&redirectUrl=${encodeURIComponent(redirectUrl)}` : '';
+	public static getValidationActionRedirectPath(credentialToken: string): string {
 		// the saml_idp_credentialToken param is needed by the mobile app
-		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}${redirectUrlParam}`;
+		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
 	}
 
 	public static log(obj: any, ...args: Array<any>): void {
@@ -398,7 +397,7 @@ export class SAMLUtils {
 		return mainValue;
 	}
 
-	public static convertArrayBufferToString(buffer: ArrayBuffer, encoding: BufferEncoding = 'utf8'): string {
+	public static convertArrayBufferToString(buffer: Buffer<ArrayBufferLike>, encoding: BufferEncoding = 'utf8'): string {
 		return Buffer.from(buffer).toString(encoding);
 	}
 

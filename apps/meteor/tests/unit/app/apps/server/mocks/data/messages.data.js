@@ -56,6 +56,14 @@ export const appMessageMock = {
 	},
 };
 
+export const appPartialMessageMock = {
+	id: 'appPartialMessageMock',
+	text: 'rocket.cat',
+	groupable: false,
+	emoji: ':smirk:',
+	alias: 'rocket.feline',
+};
+
 export const appMessageInvalidRoomMock = {
 	id: 'appMessageInvalidRoomMock',
 	text: 'rocket.cat',

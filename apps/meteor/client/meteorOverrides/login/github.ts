@@ -4,9 +4,9 @@ import { Github } from 'meteor/github-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
+import { createOAuthTotpLoginMethod } from './oauth';
 import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
-import { createOAuthTotpLoginMethod } from './oauth';
 
 const { loginWithGithub } = Meteor;
 const loginWithGithubAndTOTP = createOAuthTotpLoginMethod(Github);

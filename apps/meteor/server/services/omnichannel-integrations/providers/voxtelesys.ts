@@ -162,6 +162,10 @@ export class Voxtelesys implements ISMSProvider {
 		};
 	}
 
+	async validateRequest(_request: Request): Promise<boolean> {
+		return true;
+	}
+
 	error(error: Error & { reason?: string }): SMSProviderResponse {
 		let message = '';
 		if (error.reason) {

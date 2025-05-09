@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from './GenericModal';
 
@@ -16,7 +16,7 @@ const FingerprintChangeModalConfirmation = ({
 	onCancel,
 	newWorkspace,
 }: FingerprintChangeModalConfirmationProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<GenericModal
 			variant='warning'
@@ -30,14 +30,19 @@ const FingerprintChangeModalConfirmation = ({
 				is='p'
 				mbe={16}
 				dangerouslySetInnerHTML={{
-					__html: newWorkspace ? t('Confirm_new_workspace_description') : t('Confirm_configuration_update_description'),
+					__html: newWorkspace
+						? DOMPurify.sanitize(t('Confirm_new_workspace_description'))
+						: DOMPurify.sanitize(t('Confirm_configuration_update_description')),
 				}}
 			/>
 			<Box
 				is='p'
 				mbe={16}
 				dangerouslySetInnerHTML={{
-					__html: t('Unique_ID_change_detected_learn_more_link'),
+					__html: DOMPurify.sanitize(t('Unique_ID_change_detected_learn_more_link'), {
+						ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
+						ALLOWED_ATTR: ['href', 'title'],
+					}),
 				}}
 			/>
 		</GenericModal>

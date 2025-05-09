@@ -29,7 +29,6 @@ const models = {
 		unlockAll: Sinon.stub(),
 		findNextAndLock: Sinon.stub(),
 		getDistinctQueuedDepartments: Sinon.stub(),
-		unlockAndQueue: Sinon.stub(),
 		unlock: Sinon.stub(),
 		removeByRoomId: Sinon.stub(),
 		takeInquiry: Sinon.stub(),
@@ -93,47 +92,23 @@ describe('Omnichannel Queue processor', () => {
 		after(() => {
 			models.LivechatInquiry.getDistinctQueuedDepartments.reset();
 		});
-		it('should return [undefined] when there is no other queues', async () => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.returns([]);
+		it('should return empty array when there are no active queues', async () => {
+			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([]);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.getActiveQueues()).to.be.eql([undefined]);
+			expect(await queue.getActiveQueues()).to.be.eql([]);
 		});
-		it('should return [undefined, department1] when department1 is an active queue', async () => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.returns(['department1']);
+		it('should return [department1] when department1 is an active queue', async () => {
+			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([{ _id: 'department1' }]);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.getActiveQueues()).to.be.eql([undefined, 'department1']);
+			expect(await queue.getActiveQueues()).to.be.eql(['department1']);
 		});
-	});
-	describe('nextQueue', () => {
-		after(() => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.reset();
-		});
-		it('should return undefined when thats the only queue', async () => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.returns([]);
+		it('should return [null, department1] when department1 is an active queue and there are elements on public queue', async () => {
+			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([{ _id: 'department1' }, { _id: null }]);
 
 			const queue = new OmnichannelQueue();
-			queue.getActiveQueues = Sinon.stub().returns([undefined]);
-			expect(await queue.nextQueue()).to.be.undefined;
-		});
-		it('should return undefined, and then the following queue', async () => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.returns(['department1']);
-
-			const queue = new OmnichannelQueue();
-			queue.getActiveQueues = Sinon.stub().returns([undefined, 'department1']);
-			expect(await queue.nextQueue()).to.be.undefined;
-			expect(await queue.nextQueue()).to.be.equal('department1');
-		});
-		it('should not call getActiveQueues if there are still queues to process', async () => {
-			models.LivechatInquiry.getDistinctQueuedDepartments.returns(['department1']);
-
-			const queue = new OmnichannelQueue();
-			queue.queues = ['department1'];
-			queue.getActiveQueues = Sinon.stub();
-
-			expect(await queue.nextQueue()).to.be.equal('department1');
-			expect(queue.getActiveQueues.notCalled).to.be.true;
+			expect(await queue.getActiveQueues()).to.be.eql(['department1', null]);
 		});
 	});
 	describe('checkQueue', () => {
@@ -141,7 +116,6 @@ describe('Omnichannel Queue processor', () => {
 		beforeEach(() => {
 			models.LivechatInquiry.findNextAndLock.resetHistory();
 			models.LivechatInquiry.takeInquiry.resetHistory();
-			models.LivechatInquiry.unlockAndQueue.resetHistory();
 			models.LivechatInquiry.unlock.resetHistory();
 			queueLogger.error.resetHistory();
 			queueLogger.info.resetHistory();
@@ -153,7 +127,6 @@ describe('Omnichannel Queue processor', () => {
 		after(() => {
 			models.LivechatInquiry.findNextAndLock.reset();
 			models.LivechatInquiry.takeInquiry.reset();
-			models.LivechatInquiry.unlockAndQueue.reset();
 			models.LivechatInquiry.unlock.reset();
 			queueLogger.error.reset();
 			queueLogger.info.reset();
@@ -178,7 +151,7 @@ describe('Omnichannel Queue processor', () => {
 			expect(models.LivechatInquiry.findNextAndLock.calledOnce).to.be.true;
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
 		});
-		it('should call unlockAndRequeue when the inquiry could not be processed', async () => {
+		it('should call unlock when the inquiry could not be processed', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
 
 			const queue = new OmnichannelQueue();
@@ -187,7 +160,7 @@ describe('Omnichannel Queue processor', () => {
 			await queue.checkQueue();
 
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
-			expect(models.LivechatInquiry.unlockAndQueue.calledOnce).to.be.true;
+			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should unlock the inquiry when it was processed succesfully', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
@@ -208,21 +181,6 @@ describe('Omnichannel Queue processor', () => {
 			await queue.checkQueue();
 
 			expect(queueLogger.error.calledOnce).to.be.true;
-		});
-		it('should call execute after finishing', async () => {
-			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
-
-			const queue = new OmnichannelQueue();
-			queue.processWaitingQueue = Sinon.stub().returns(true);
-			queue.execute = Sinon.stub();
-			queue.delay = Sinon.stub().returns(100);
-			await queue.checkQueue();
-			clock.tick(100);
-
-			expect(queue.execute.calledOnce).to.be.true;
-			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
-			expect(queue.execute.calledAfter(models.LivechatInquiry.unlock)).to.be.true;
-			expect(queue.execute.calledOnce).to.be.true;
 		});
 	});
 	describe('shouldStart', () => {
@@ -414,11 +372,11 @@ describe('Omnichannel Queue processor', () => {
 
 			const queue = new OmnichannelQueue();
 			queue.running = true;
-			queue.nextQueue = Sinon.stub();
+			queue.getActiveQueues = Sinon.stub().resolves([null]);
 			await queue.execute();
 
-			expect(queue.nextQueue.calledOnce).to.be.true;
-			expect(queueLogger.debug.calledWith('Executing queue Public with timeout of 5000')).to.be.true;
+			expect(queue.getActiveQueues.calledOnce).to.be.true;
+			expect(queueLogger.debug.calledWith('Processing items for queue Public')).to.be.true;
 		});
 	});
 	describe('start', () => {

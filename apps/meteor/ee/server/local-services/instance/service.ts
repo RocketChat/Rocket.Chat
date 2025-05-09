@@ -1,16 +1,17 @@
 import os from 'os';
 
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
-import { InstanceStatus } from '@rocket.chat/instance-status';
+import type { AppStatusReport } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
-import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
-import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 
@@ -33,36 +34,12 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private transporter: Transporters.TCP | Transporters.NATS;
 
-	private isTransporterTCP = true;
-
 	private broker: ServiceBroker;
 
 	private troubleshootDisableInstanceBroadcast = false;
 
 	constructor() {
 		super();
-
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
-		if (typeof tx === 'string') {
-			this.transporter = new Transporters.NATS({ url: tx });
-			this.isTransporterTCP = false;
-		} else {
-			this.transporter = new Transporters.TCP(tx);
-		}
-
-		if (this.isTransporterTCP) {
-			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
-				if (clientAction === 'removed') {
-					(this.broker.transit?.tx as any).nodes.disconnected(data?._id, false);
-					(this.broker.transit?.tx as any).nodes.nodes.delete(data?._id);
-					return;
-				}
-
-				if (clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
-					this.connectNode(data);
-				}
-			});
-		}
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
@@ -93,16 +70,27 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
+		const transporter = getTransporter({
+			transporter: process.env.TRANSPORTER,
+			port: process.env.TCP_PORT,
+			extra: process.env.TRANSPORTER_EXTRA,
+		});
+
+		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress();
+
+		this.transporter =
+			typeof transporter !== 'string'
+				? new Transporters.TCP({ ...transporter, urls: activeInstances })
+				: new Transporters.NATS({ url: transporter });
+
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
 			serializer: new EJSONSerializer(),
+			heartbeatInterval: defaultPingInterval,
+			heartbeatTimeout: indexExpire,
 			...getLogger(process.env),
 		});
-
-		if ((this.broker.transit?.tx as any)?.nodes?.localNode) {
-			(this.broker.transit?.tx as any).nodes.localNode.ipList = [hostIP];
-		}
 
 		this.broker.createService({
 			name: 'matrix',
@@ -128,6 +116,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 						// @ts-expect-error not sure why it thinks _emit needs an extra argument
 						StreamerCentral.instances[streamName]._emit(eventName, args);
 					}
+				},
+			},
+			actions: {
+				getAppsStatus(_ctx) {
+					return Apps.getAppsStatusLocal();
 				},
 			},
 		});
@@ -176,31 +169,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broadcastStarted = true;
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
-
-		if (this.isTransporterTCP) {
-			await InstanceStatusRaw.find(
-				{
-					'extraInformation.tcpPort': {
-						$exists: true,
-					},
-				},
-				{
-					sort: {
-						_createdAt: -1,
-					},
-				},
-			).forEach(this.connectNode.bind(this));
-		}
-	}
-
-	private connectNode(record: any) {
-		if (record._id === InstanceStatus.id()) {
-			return;
-		}
-
-		const { host, tcpPort } = record.extraInformation;
-
-		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
@@ -213,5 +181,46 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	async getInstances(): Promise<BrokerNode[]> {
 		return this.broker.call('$node.list', { onlyAvailable: true });
+	}
+
+	async getAppsStatusInInstances(): Promise<AppStatusReport> {
+		const instances = await this.getInstances();
+
+		const control: Promise<void>[] = [];
+		const statusByApp: AppStatusReport = {};
+
+		instances.forEach((instance) => {
+			if (instance.local) {
+				return;
+			}
+
+			const { id: instanceId } = instance;
+
+			control.push(
+				(async () => {
+					const appsStatus = await this.broker.call<Awaited<ReturnType<(typeof Apps)['getAppsStatusLocal']>>, null>(
+						'matrix.getAppsStatus',
+						null,
+						{ nodeID: instanceId },
+					);
+
+					if (!appsStatus) {
+						throw new Error(`Failed to get apps status from instance ${instanceId}`);
+					}
+
+					appsStatus.forEach(({ status, appId }) => {
+						if (!statusByApp[appId]) {
+							statusByApp[appId] = [];
+						}
+
+						statusByApp[appId].push({ instanceId, status });
+					});
+				})(),
+			);
+		});
+
+		await Promise.all(control);
+
+		return statusByApp;
 	}
 }

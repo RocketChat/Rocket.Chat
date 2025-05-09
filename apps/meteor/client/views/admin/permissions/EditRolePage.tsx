@@ -1,17 +1,25 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import RoleForm from './RoleForm';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import RoleForm from './RoleForm';
+
+export type EditRolePageFormData = {
+	roleId: string;
+	name: string;
+	description: string;
+	scope: 'Users' | 'Subscriptions';
+	mandatory2fa: boolean;
+};
 
 const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const usersInRoleRouter = useRoute('admin-permissions');
@@ -21,7 +29,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 	const updateRole = useEndpoint('POST', '/v1/roles.update');
 	const deleteRole = useEndpoint('POST', '/v1/roles.delete');
 
-	const methods = useForm({
+	const methods = useForm<EditRolePageFormData>({
 		defaultValues: {
 			roleId: role?._id,
 			name: role?.name,
@@ -31,7 +39,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		},
 	});
 
-	const handleManageUsers = useMutableCallback(() => {
+	const handleManageUsers = useEffectEvent(() => {
 		if (role?._id) {
 			usersInRoleRouter.push({
 				context: 'users-in-role',
@@ -40,7 +48,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
+	const handleSave = useEffectEvent(async (data: EditRolePageFormData) => {
 		try {
 			if (data.roleId) {
 				await updateRole(data);
@@ -56,7 +64,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleDelete = useMutableCallback(async () => {
+	const handleDelete = useEffectEvent(async () => {
 		if (!role?._id) {
 			return;
 		}

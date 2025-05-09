@@ -6,7 +6,7 @@ import {
 	HeaderTitleButton as HeaderTitleButtonComponent,
 } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const HeaderTitleButton = (props: ComponentProps<typeof HeaderTitleButtonComponent>) => (
 	<FeaturePreview feature='newNavigation'>

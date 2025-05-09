@@ -8,7 +8,7 @@ import { API } from '../../../../api/server';
 import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
 import { notifyOnRoomChangedById, notifyOnSettingChanged } from '../../../../lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../../../settings/server';
-import { Livechat } from '../../lib/LivechatTyped';
+import { updateCallStatus } from '../../lib/utils';
 import { settings } from '../lib/livechat';
 
 API.v1.addRoute(
@@ -46,7 +46,7 @@ API.v1.addRoute(
 			let { callStatus } = room;
 
 			if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
-				const { value } = await Settings.incrementValueById('WebRTC_Calls_Count', 1, { returnDocument: 'after' });
+				const value = await Settings.incrementValueById('WebRTC_Calls_Count', 1, { returnDocument: 'after' });
 				if (value) {
 					void notifyOnSettingChanged(value);
 				}
@@ -70,6 +70,7 @@ API.v1.addRoute(
 	},
 );
 
+// TODO: investigate if we can deprecate this functionality
 API.v1.addRoute(
 	'livechat/webrtc.call/:callId',
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTWebRTCCallId },
@@ -100,7 +101,7 @@ API.v1.addRoute(
 				throw new Error('invalid-callId');
 			}
 
-			await Livechat.updateCallStatus(callId, rid, status, this.user);
+			await updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		},

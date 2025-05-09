@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
+import { escapeExternalFederationEventId } from './federation-id-escape-helper';
 import { deleteMessage } from '../../../../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../../../../app/lib/server/functions/updateMessage';
@@ -11,7 +12,6 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
-import { escapeExternalFederationEventId } from './federation-id-escape-helper';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 

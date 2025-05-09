@@ -62,7 +62,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 							marketplace: 'true',
 							update: 'true',
 							appVersion: appId,
-					  })
+						})
 							.then(({ app }: any) => {
 								(appResult as App).tosLink = app.tosLink;
 								(appResult as App).privacyLink = app.privacyLink;

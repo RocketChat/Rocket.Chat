@@ -181,11 +181,11 @@ const createExternalRolesChangesActions = (
 			? [
 					{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER },
 					{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR },
-			  ]
+				]
 			: [
 					{ action: 'add', role: ROCKET_CHAT_FEDERATION_ROLES.MODERATOR },
 					{ action: 'remove', role: ROCKET_CHAT_FEDERATION_ROLES.OWNER },
-			  ];
+				];
 
 		return externalRolesChangesByUser;
 	}, {} as IExternalRolesChangesToApplyInputDto);
@@ -291,10 +291,10 @@ export class MatrixRoomReceiverConverter {
 						replyToEventId: !externalEvent.content?.['m.relates_to']?.is_falling_back
 							? externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id
 							: undefined,
-				  }
+					}
 				: {
 						replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
-				  }),
+					}),
 		});
 	}
 
@@ -343,10 +343,10 @@ export class MatrixRoomReceiverConverter {
 						replyToEventId: !externalEvent.content?.['m.relates_to']?.is_falling_back
 							? externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id
 							: undefined,
-				  }
+					}
 				: {
 						replyToEventId: externalEvent.content?.['m.relates_to']?.['m.in_reply_to']?.event_id,
-				  }),
+					}),
 		});
 	}
 

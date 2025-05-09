@@ -6,8 +6,8 @@ import { OmnichannelSlaPolicies } from '../page-objects/omnichannel-sla-policies
 import { test, expect } from '../utils/test';
 
 const ERROR = {
-	nameRequired: 'The field Name is required.',
-	estimatedWaitTimeRequired: 'The field Estimated wait time (time in minutes) is required.',
+	nameRequired: 'Name required',
+	estimatedWaitTimeRequired: 'Estimated wait time (time in minutes) required',
 };
 
 const INITIAL_SLA = {

@@ -6,6 +6,6 @@ type LayoutBlockWithElements = Extract<
 >;
 
 export const hasElements = (
-  block: UiKit.LayoutBlock
+  block: UiKit.LayoutBlock,
 ): block is LayoutBlockWithElements =>
   'elements' in block && Array.isArray(block.elements);

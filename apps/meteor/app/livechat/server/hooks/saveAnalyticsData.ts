@@ -1,9 +1,11 @@
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
+import { isMessageFromBot } from '../lib/isMessageFromBot';
 
 const getMetricValue = <T>(metric: T | undefined, defaultValue: T): T => metric ?? defaultValue;
 const calculateTimeDifference = <T extends Date | number>(startTime: T, now: Date): number =>
@@ -61,8 +63,8 @@ const getAnalyticsData = (room: IOmnichannelRoom, now: Date): Record<string, str
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
-		if (!message || isEditedMessage(message)) {
+	async (message, { room, roomUpdater }) => {
+		if (!message || isEditedMessage(message) || isSystemMessage(message)) {
 			return message;
 		}
 
@@ -70,13 +72,15 @@ callbacks.add(
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
-		const analyticsData = getAnalyticsData(room, new Date());
-		const updater = await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
+		if (isMessageFromVisitor(message)) {
+			LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
+		} else {
+			if (settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message))) {
+				return message;
+			}
 
-		if (updater.hasChanges()) {
-			await updater.persist({
-				_id: room._id,
-			});
+			const analyticsData = getAnalyticsData(room, new Date());
+			LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
 		}
 
 		return message;

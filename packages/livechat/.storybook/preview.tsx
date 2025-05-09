@@ -1,4 +1,4 @@
-import { type Parameters } from '@storybook/addons';
+import type { Parameters } from '@storybook/preact';
 import { themes } from '@storybook/theming';
 
 import manifest from '../package.json';
@@ -7,7 +7,6 @@ import 'emoji-mart/css/emoji-mart.css';
 import '../src/styles/index.scss';
 
 export const parameters: Parameters = {
-	actions: { argTypesRegex: '^on[A-Z].*' },
 	backgrounds: {
 		grid: {
 			cellSize: 4,
@@ -16,7 +15,9 @@ export const parameters: Parameters = {
 		},
 	},
 	options: {
-		storySort: ([, a], [, b]) => a.kind.localeCompare(b.kind),
+		storySort: {
+			method: 'alphabetical',
+		},
 	},
 	layout: 'fullscreen',
 	darkMode: {
@@ -34,3 +35,5 @@ export const parameters: Parameters = {
 		},
 	},
 };
+
+export const tags = [];

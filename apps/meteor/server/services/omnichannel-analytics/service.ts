@@ -9,14 +9,14 @@ import type {
 import { LivechatRooms } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 
-import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
-import { callbacks } from '../../../lib/callbacks';
-import { i18n } from '../../lib/i18n';
 import { AgentOverviewData } from './AgentData';
 import { ChartData } from './ChartData';
 import { OverviewData } from './OverviewData';
 import { serviceLogger } from './logger';
 import { dayIterator } from './utils';
+import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
+import { callbacks } from '../../../lib/callbacks';
+import { i18n } from '../../lib/i18n';
 
 const HOURS_IN_DAY = 24;
 
@@ -111,13 +111,13 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 				const hour = parseInt(m.add(currentHour ? 1 : 0, 'hour').format('H'));
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
-					to: moment.utc().set({ hour }).add(1, 'hour').tz(timezone).format('hA'),
+					to: moment.utc().set({ hour }).endOf('hour').tz(timezone).format('hA'),
 				};
 				data.dataLabels.push(`${label.from}-${label.to}`);
 
 				const date = {
 					gte: m.toDate(),
-					lt: moment(m).add(1, 'hours').toDate(),
+					lte: moment(m).endOf('hour').toDate(),
 				};
 
 				data.dataPoints.push(await this.chart.callAction(chartLabel, date, departmentId, extraQuery));
@@ -128,7 +128,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 				const date = {
 					gte: m.toDate(),
-					lt: moment(m).add(1, 'days').toDate(),
+					lte: moment(m).endOf('day').toDate(),
 				};
 
 				data.dataPoints.push(await this.chart.callAction(chartLabel, date, departmentId, extraQuery));
@@ -160,7 +160,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			return;
 		}
 
-		const t = (s: string) => i18n.t(s, { lng: language });
+		const t = i18n.getFixedT(language);
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		return this.overview.callAction(name, from, to, departmentId, timezone, t, extraQuery);

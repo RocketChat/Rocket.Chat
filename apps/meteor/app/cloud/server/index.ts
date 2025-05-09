@@ -1,12 +1,12 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../../server/lib/logger/system';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';

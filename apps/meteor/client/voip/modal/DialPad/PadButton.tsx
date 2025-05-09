@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import type { PadDigit } from './Pad';
 import { useLongPress } from './hooks/useLongPress';

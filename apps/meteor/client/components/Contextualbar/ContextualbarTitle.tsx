@@ -1,7 +1,6 @@
 import { ContextualbarV2Title, ContextualbarTitle as ContextualbarTitleComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 const ContextualbarTitle = (props: ComponentProps<typeof ContextualbarTitleComponent>) => (
 	<FeaturePreview feature='newNavigation'>

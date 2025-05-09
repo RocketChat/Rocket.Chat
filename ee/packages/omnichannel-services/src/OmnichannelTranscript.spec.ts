@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 
@@ -25,9 +24,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		createDirectMessage: jest.fn().mockResolvedValue({ rid: 'roomId' }),
 	},
-	QueueWorker: {
-		queueWork: jest.fn(),
-	},
 	Translation: {
 		translate: jest.fn().mockResolvedValue('translated message'),
 		translateToServerLanguage: jest.fn().mockResolvedValue('translated server message'),
@@ -41,9 +37,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 jest.mock('@rocket.chat/models', () => ({
 	LivechatRooms: {
 		findOneById: jest.fn().mockResolvedValue({}),
-		setTranscriptRequestedPdfById: jest.fn(),
-		unsetTranscriptRequestedPdfById: jest.fn(),
-		setPdfTranscriptFileIdById: jest.fn(),
 	},
 	Messages: {
 		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({

@@ -15,18 +15,16 @@ const pathAllowConf = {
 
 export async function parseJsonQuery(api: PartialThis): Promise<{
 	sort: Record<string, 1 | -1>;
+	/**
+	 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+	 */
 	fields: Record<string, 0 | 1>;
+	/**
+	 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+	 */
 	query: Record<string, unknown>;
 }> {
-	const {
-		request: { route },
-		userId,
-		queryParams: params,
-		logger,
-		queryFields,
-		queryOperations,
-		response,
-	} = api;
+	const { userId, queryParams: params, logger, queryFields, queryOperations, response, path } = api;
 
 	let sort;
 	if (params.sort) {
@@ -47,12 +45,15 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		}
 	}
 
-	let fields: Record<string, 0 | 1> | undefined;
-	if (params.fields) {
-		apiDeprecationLogger.parameter(route, 'fields', '7.0.0', response);
-		try {
-			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
+	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
+	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
+		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
 
+	let fields: Record<string, 0 | 1> | undefined;
+	if (params.fields && isUnsafeQueryParamsAllowed) {
+		try {
+			apiDeprecationLogger.parameter(api.path, 'fields', '8.0.0', response, messageGenerator);
+			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
 					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid fields parameter: ${key}`, {
@@ -71,7 +72,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	// Verify the user's selected fields only contains ones which their role allows
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
-		if (route.includes('/v1/users.')) {
+		if (path.includes('/v1/users.')) {
 			nonSelectableFields = nonSelectableFields.concat(
 				Object.keys(
 					(await hasPermissionAsync(userId, 'view-full-other-user-info'))
@@ -90,7 +91,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 
 	// Limit the fields by default
 	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
-	if (route.includes('/v1/users.')) {
+	if (path.includes('/v1/users.')) {
 		if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
@@ -99,9 +100,8 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	}
 
 	let query: Record<string, any> = {};
-	if (params.query) {
-		apiDeprecationLogger.parameter(route, 'query', '7.0.0', response);
-
+	if (params.query && isUnsafeQueryParamsAllowed) {
+		apiDeprecationLogger.parameter(api.path, 'query', '8.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);
 			query = clean(query, pathAllowConf.def);
@@ -117,7 +117,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	if (typeof query === 'object') {
 		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 
-		if (route.includes('/v1/users.')) {
+		if (api.path.includes('/v1/users.')) {
 			if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {

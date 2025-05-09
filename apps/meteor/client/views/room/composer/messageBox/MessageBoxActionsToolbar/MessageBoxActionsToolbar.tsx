@@ -1,24 +1,24 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
-import { messageBox } from '../../../../../../app/ui-utils/client';
-import { isTruthy } from '../../../../../../lib/isTruthy';
-import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
-import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
-import { useChat } from '../../../contexts/ChatContext';
-import { useRoom } from '../../../contexts/RoomContext';
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
+import { messageBox } from '../../../../../../app/ui-utils/client';
+import { isTruthy } from '../../../../../../lib/isTruthy';
+import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
+import { useChat } from '../../../contexts/ChatContext';
+import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
@@ -81,8 +81,8 @@ const MessageBoxActionsToolbar = ({
 	createNew.push(allActions.createDiscussionAction);
 
 	if (variant === 'small') {
-		featured.push(allActions.audioMessageAction);
-		createNew.push(allActions.videoMessageAction, allActions.fileUploadAction);
+		featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
+		createNew.push(allActions.videoMessageAction);
 	} else {
 		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
 	}

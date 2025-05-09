@@ -1,10 +1,12 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { useMemo, useState } from 'react';
 
+import ChannelsTableRow from './ChannelsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
@@ -17,14 +19,11 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
-import ChannelsTableRow from './ChannelsTableRow';
 
 const ChannelsTable = () => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
-
 	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
@@ -82,12 +81,15 @@ const ChannelsTable = () => {
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
+	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
+	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+		queryKey: ['getDirectoryData', query],
+		queryFn: () => getDirectoryData(query),
+	});
 
 	const onClick = useMemo(
-		() => (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (name && (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter')) {
+		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
+			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
 				type === 'c' ? channelRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
@@ -96,7 +98,7 @@ const ChannelsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Channels')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Channels')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -111,7 +113,7 @@ const ChannelsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((room) => (
-								<ChannelsTableRow key={room._id} room={room as unknown as IRoom} onClick={onClick} mediaQuery={mediaQuery} />
+								<ChannelsTableRow key={room._id} room={room as Serialized<IRoom>} onClick={onClick} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

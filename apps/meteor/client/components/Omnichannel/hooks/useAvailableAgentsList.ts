@@ -29,7 +29,7 @@ export const useAvailableAgentsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { agents, total } = await getAgents({
 				...(options.text && { text: options.text }),
 				...(options.includeExtension && { includeExtension: options.includeExtension }),

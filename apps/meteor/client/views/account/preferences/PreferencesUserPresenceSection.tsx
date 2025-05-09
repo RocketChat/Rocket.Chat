@@ -1,18 +1,17 @@
-import { Accordion, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { AccordionItem, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 const PreferencesUserPresenceSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { register, control } = useFormContext();
 
-	const enableAutoAwayId = useUniqueId();
-	const idleTimeLimit = useUniqueId();
+	const enableAutoAwayId = useId();
+	const idleTimeLimit = useId();
 
 	return (
-		<Accordion.Item title={t('User_Presence')}>
+		<AccordionItem title={t('User_Presence')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -33,7 +32,7 @@ const PreferencesUserPresenceSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

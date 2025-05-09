@@ -1,8 +1,8 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, IRole } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-import { ajv } from './Ajv';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -357,6 +357,12 @@ type RoomsSaveRoomSettingsProps = {
 		defaultValue?: boolean;
 		favorite?: boolean;
 	};
+	retentionEnabled?: boolean;
+	retentionMaxAge?: number;
+	retentionExcludePinned?: boolean;
+	retentionFilesOnly?: boolean;
+	retentionIgnoreThreads?: boolean;
+	retentionOverrideGlobal?: boolean;
 };
 
 const RoomsSaveRoomSettingsSchema = {
@@ -423,6 +429,12 @@ const RoomsSaveRoomSettingsSchema = {
 			},
 			nullable: true,
 		},
+		retentionEnabled: { type: 'boolean', nullable: true },
+		retentionMaxAge: { type: 'number', nullable: true },
+		retentionExcludePinned: { type: 'boolean', nullable: true },
+		retentionFilesOnly: { type: 'boolean', nullable: true },
+		retentionIgnoreThreads: { type: 'boolean', nullable: true },
+		retentionOverrideGlobal: { type: 'boolean', nullable: true },
 	},
 	required: ['rid'],
 	additionalProperties: false,
@@ -446,6 +458,21 @@ const GETRoomsNameExistsSchema = {
 };
 
 export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+
+type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
+
+const RoomsIsMemberPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', minLength: 1 },
+		userId: { type: 'string', minLength: 1 },
+		username: { type: 'string', minLength: 1 },
+	},
+	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
+	additionalProperties: false,
+};
+
+export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
 	disableNotifications: string;
@@ -527,6 +554,140 @@ const roomsImagesPropsSchema = {
 
 export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
+export type RoomsCleanHistoryProps = {
+	roomId: IRoom['_id'];
+	latest: string;
+	oldest: string;
+	inclusive?: boolean;
+	excludePinned?: boolean;
+	filesOnly?: boolean;
+	users?: IUser['username'][];
+	limit?: number;
+	ignoreDiscussion?: boolean;
+	ignoreThreads?: boolean;
+};
+
+const roomsCleanHistorySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		latest: {
+			type: 'string',
+		},
+		oldest: {
+			type: 'string',
+		},
+		inclusive: {
+			type: 'boolean',
+		},
+		excludePinned: {
+			type: 'boolean',
+		},
+		filesOnly: {
+			type: 'boolean',
+		},
+		users: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		limit: {
+			type: 'number',
+		},
+		ignoreDiscussion: {
+			type: 'boolean',
+		},
+		ignoreThreads: {
+			type: 'boolean',
+		},
+	},
+	required: ['roomId', 'latest', 'oldest'],
+	additionalProperties: false,
+};
+
+export const isRoomsCleanHistoryProps = ajv.compile<RoomsCleanHistoryProps>(roomsCleanHistorySchema);
+
+type RoomsOpenProps = {
+	roomId: string;
+};
+
+const roomsOpenSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
+
+type MembersOrderedByRoleProps = {
+	roomId?: IRoom['_id'];
+	roomName?: IRoom['name'];
+	status?: string[];
+	filter?: string;
+};
+
+export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
+
+const membersOrderedByRoleRolePropsSchema = {
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		roomName: {
+			type: 'string',
+		},
+		status: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		filter: {
+			type: 'string',
+		},
+		count: {
+			type: 'integer',
+		},
+		offset: {
+			type: 'integer',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+};
+
+export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
+
+type RoomsHideProps = {
+	roomId: string;
+};
+
+const roomsHideSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -555,22 +716,13 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u' | 'sidepanel'>;
+			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		};
 	};
 
 	'/v1/rooms.cleanHistory': {
-		POST: (params: {
-			roomId: IRoom['_id'];
-			latest: string;
-			oldest: string;
-			inclusive?: boolean;
-			excludePinned?: boolean;
-			filesOnly?: boolean;
-			users?: IUser['username'][];
-			limit?: number;
-			ignoreDiscussion?: boolean;
-			ignoreThreads?: boolean;
-		}) => { _id: IRoom['_id']; count: number; success: boolean };
+		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
 
 	'/v1/rooms.createDiscussion': {
@@ -685,6 +837,10 @@ export type RoomsEndpoints = {
 		}>;
 	};
 
+	'/v1/rooms.isMember': {
+		GET: (params: RoomsIsMemberProps) => { isMember: boolean };
+	};
+
 	'/v1/rooms.muteUser': {
 		POST: (params: RoomsMuteUnmuteUser) => void;
 	};
@@ -697,5 +853,19 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
+	};
+
+	'/v1/rooms.open': {
+		POST: (params: RoomsOpenProps) => void;
+	};
+
+	'/v1/rooms.membersOrderedByRole': {
+		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
+			members: (IUser & { roles?: IRole['_id'][] })[];
+		}>;
+	};
+
+	'/v1/rooms.hide': {
+		POST: (params: RoomsHideProps) => void;
 	};
 };

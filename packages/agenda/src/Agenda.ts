@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
 import { MongoClient } from 'mongodb';
-import type { MongoClientOptions, Db, Document, Collection, ModifyResult, InsertOneResult } from 'mongodb';
+import type { MongoClientOptions, Db, Document, Collection, InsertOneResult } from 'mongodb';
 
 import { Job } from './Job';
 import { JobProcessingQueue } from './JobProcessingQueue';
@@ -428,21 +428,21 @@ export class Agenda extends EventEmitter {
 		return record !== null;
 	}
 
-	private async _processDbResult(job: Job, result: ModifyResult | InsertOneResult): Promise<void> {
+	private async _processDbResult(job: Job, result: Document | InsertOneResult | null): Promise<void> {
+		if (!result) {
+			return;
+		}
+
 		debug('processDbResult() called with success, checking whether to process job immediately or not');
 
 		// We have a result from the above calls
 		// findOneAndUpdate() returns different results than insertOne() so check for that
 		const res = await (async (): Promise<Document | null> => {
-			if ('value' in result) {
-				return result.value;
-			}
-
 			if ('insertedId' in result) {
 				return this.getCollection().findOne({ _id: result.insertedId });
 			}
 
-			return null;
+			return result;
 		})();
 
 		if (!res) {
@@ -468,9 +468,9 @@ export class Agenda extends EventEmitter {
 
 		// Update the job and process the resulting data'
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
-		const result = await this.getCollection().findOneAndUpdate({ _id: id }, update, { returnDocument: 'after' });
+		const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
 
-		return this._processDbResult(job, result);
+		result && this._processDbResult(job, result);
 	}
 
 	private async _saveSingleJob(job: Job, props: Record<string, any>, now: Date): Promise<void> {
@@ -595,7 +595,7 @@ export class Agenda extends EventEmitter {
 		}
 
 		debug('about to unlock jobs with ids: %O', jobIds);
-		await this.getCollection().updateMany({ _id: { $in: jobIds } }, { $set: { lockedAt: null } });
+		await this.getCollection().updateMany({ _id: { $in: jobIds } } as any, { $set: { lockedAt: null } });
 		this._lockedJobs = [];
 	}
 
@@ -662,9 +662,9 @@ export class Agenda extends EventEmitter {
 			});
 
 			let job;
-			if (result.value) {
-				debug('found a job available to lock, creating a new job on Agenda with id [%s]', result.value._id);
-				job = createJob(this, result.value as unknown as IJob);
+			if (result) {
+				debug('found a job available to lock, creating a new job on Agenda with id [%s]', result._id);
+				job = createJob(this, result as unknown as IJob);
 			}
 
 			return job;
@@ -748,10 +748,10 @@ export class Agenda extends EventEmitter {
 		const update = { $set: { lockedAt: now } };
 
 		// Lock the job in MongoDB!
-		const resp = await this.getCollection().findOneAndUpdate(criteria, update, { returnDocument: 'after' });
+		const resp = await this.getCollection().findOneAndUpdate(criteria as any, update, { returnDocument: 'after' });
 
-		if (resp.value) {
-			const job = createJob(this, resp.value as unknown as IJob);
+		if (resp) {
+			const job = createJob(this, resp as unknown as IJob);
 			debug('found job [%s] that can be locked on the fly', job.attrs.name);
 			this._lockedJobs.push(job);
 			this._definitions[job.attrs.name].locked++;

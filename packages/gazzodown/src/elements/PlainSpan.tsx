@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { Fragment, memo, ReactElement, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -8,7 +8,7 @@ type PlainSpanProps = {
 };
 
 const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { highlightRegex, markRegex } = useContext(MarkupInteractionContext);
 
 	const content = useMemo(() => {

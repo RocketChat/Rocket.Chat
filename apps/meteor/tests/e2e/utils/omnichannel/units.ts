@@ -26,7 +26,7 @@ export const createOrUpdateUnit = async (
 			msg: 'method',
 			id: '34',
 			method: 'livechat:saveUnit',
-			params: [id, { name: name || faker.commerce.department(), visibility: visibility || 'public' }, monitors, departments],
+			params: [id, { name: name || faker.string.uuid(), visibility: visibility || 'public' }, monitors, departments],
 		}),
 	});
 

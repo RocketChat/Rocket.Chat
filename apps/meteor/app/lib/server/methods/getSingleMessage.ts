@@ -13,6 +13,20 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const getSingleMessage = async (userId: string, mid: IMessage['_id']): Promise<IMessage | null> => {
+	const msg = await Messages.findOneById(mid);
+
+	if (!msg?.rid) {
+		return null;
+	}
+
+	if (!(await canAccessRoomIdAsync(msg.rid, userId))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
+	}
+
+	return msg;
+};
+
 Meteor.methods<ServerMethods>({
 	async getSingleMessage(mid) {
 		check(mid, String);
@@ -23,16 +37,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSingleMessage' });
 		}
 
-		const msg = await Messages.findOneById(mid);
-
-		if (!msg?.rid) {
-			return null;
-		}
-
-		if (!(await canAccessRoomIdAsync(msg.rid, uid))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
-		}
-
-		return msg;
+		return getSingleMessage(uid, mid);
 	},
 });

@@ -1,6 +1,5 @@
 import { AnimatedVisibility, Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 type PageFooterProps = { isDirty: boolean } & ComponentProps<typeof Box>;
 

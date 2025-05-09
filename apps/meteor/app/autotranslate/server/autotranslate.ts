@@ -79,7 +79,7 @@ export class TranslationProviderRegistry {
 			return null;
 		}
 
-		return provider.translateMessage(message, room, targetLanguage);
+		return provider.translateMessage(message, { room, targetLanguage });
 	}
 
 	static getProviders(): AutoTranslate[] {
@@ -113,7 +113,12 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
+		callbacks.add(
+			'afterSaveMessage',
+			(message, { room }) => provider.translateMessage(message, { room }),
+			callbacks.priority.MEDIUM,
+			'autotranslate',
+		);
 	}
 }
 
@@ -290,7 +295,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
+	async translateMessage(message: IMessage, { room, targetLanguage }: { room: IRoom; targetLanguage?: string }): Promise<IMessage | null> {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];

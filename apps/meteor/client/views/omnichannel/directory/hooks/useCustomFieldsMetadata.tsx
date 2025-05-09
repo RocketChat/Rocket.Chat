@@ -10,12 +10,14 @@ type UseCustomFieldsMetadataOptions = {
 
 export const useCustomFieldsMetadata = ({ enabled = true, scope }: UseCustomFieldsMetadataOptions) => {
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	return useQuery(
-		['/v1/livechat/custom-fields', scope],
-		async () => {
+	return useQuery({
+		queryKey: ['/v1/livechat/custom-fields', scope],
+
+		queryFn: async () => {
 			const { customFields } = (await getCustomFields()) ?? {};
 			return formatCustomFieldsMetadata(customFields, scope);
 		},
-		{ enabled },
-	);
+
+		enabled,
+	});
 };

@@ -40,10 +40,7 @@ export async function findPriority({
 	};
 }
 
-export async function updatePriority(
-	_id: string,
-	data: Pick<ILivechatPriority, 'name'> & { reset?: boolean },
-): Promise<ILivechatPriority | null> {
+export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 'name'> & { reset?: boolean }): Promise<ILivechatPriority> {
 	if (data.name) {
 		// If we want to enforce translated duplicates we need to change this
 		const priority = await LivechatPriority.findOneNameUsingRegex(data.name, { projection: { name: 1 } });
@@ -54,12 +51,12 @@ export async function updatePriority(
 
 	const createdResult = await LivechatPriority.updatePriority(_id, data.reset || false, data.name);
 
-	if (!createdResult.ok || !createdResult.value) {
+	if (!createdResult) {
 		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
 		throw Error('error-unable-to-update-priority');
 	}
 
-	return createdResult.value;
+	return createdResult;
 }
 
 export const updateRoomPriority = async (

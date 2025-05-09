@@ -19,9 +19,9 @@ describe('Community Restrictions', () => {
 		it('should respect the default if there is no license applied', async () => {
 			const license = new LicenseImp();
 
-			license.setLicenseLimitCounter('privateApps', () => 1);
+			license.setLicenseLimitCounter('privateApps', () => 0);
 
-			await expect(await license.shouldPreventAction('privateApps')).toBe(false);
+			await expect(await license.shouldPreventAction('privateApps')).toBe(true);
 
 			license.setLicenseLimitCounter('privateApps', () => 10);
 

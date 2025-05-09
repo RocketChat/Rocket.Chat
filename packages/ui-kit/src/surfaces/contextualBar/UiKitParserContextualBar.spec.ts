@@ -1,8 +1,8 @@
+import { UiKitParserContextualBar } from './UiKitParserContextualBar';
+import { uiKitContextualBar } from './uiKitContextualBar';
 import type { OverflowElement } from '../../blocks/elements/OverflowElement';
 import type { PlainText } from '../../blocks/text/PlainText';
 import { BlockContext } from '../../rendering/BlockContext';
-import { UiKitParserContextualBar } from './UiKitParserContextualBar';
-import { uiKitContextualBar } from './uiKitContextualBar';
 
 class TestParser extends UiKitParserContextualBar<unknown> {
 	plain_text = (element: any, context: any, index: any): any => ({

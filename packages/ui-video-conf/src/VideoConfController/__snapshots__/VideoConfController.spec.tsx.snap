@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="info"
+      aria-live="assertive"
+      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;

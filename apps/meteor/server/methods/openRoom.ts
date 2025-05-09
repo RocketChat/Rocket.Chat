@@ -1,8 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+
+import { openRoom } from '../lib/openRoom';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -23,6 +24,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return (await Subscriptions.openByRoomIdAndUserId(rid, uid)).modifiedCount;
+		return openRoom(uid, rid);
 	},
 });

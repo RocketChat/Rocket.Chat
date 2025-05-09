@@ -1,10 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import WarningModal from './WarningModal';
-
-import '@testing-library/jest-dom';
 
 it('should look good', async () => {
 	render(<WarningModal text='text' confirmText='confirm' cancelText='cancel' confirm={() => undefined} close={() => undefined} />, {

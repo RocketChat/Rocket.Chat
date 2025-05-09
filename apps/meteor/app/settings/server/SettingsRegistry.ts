@@ -4,12 +4,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
 import { isEqual } from 'underscore';
 
-import { SystemLogger } from '../../../server/lib/logger/system';
 import type { ICachedSettings } from './CachedSettings';
 import { getSettingDefaults } from './functions/getSettingDefaults';
 import { overrideSetting } from './functions/overrideSetting';
 import { overwriteSetting } from './functions/overwriteSetting';
 import { validateSetting } from './functions/validateSetting';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -139,6 +139,7 @@ export class SettingsRegistry {
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
 		const settingStored = this.store.getSetting(_id);
+
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
@@ -166,7 +167,10 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-			this.store.set(settingFromCodeOverwritten);
+			if ('value' in updatedProps) {
+				this.store.set(updatedProps as ISetting);
+			}
+
 			return;
 		}
 

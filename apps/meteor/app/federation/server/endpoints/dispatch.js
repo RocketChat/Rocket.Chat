@@ -1,12 +1,20 @@
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { notifyOnMessageChange, notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import {
+	notifyOnMessageChange,
+	notifyOnRoomChanged,
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChanged,
+	notifyOnSubscriptionChangedById,
+} from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
@@ -113,8 +121,8 @@ const eventHandlers = {
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
-				if (!persistedUser.federation) {
-					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+				if (!persistedUser.federation && user.federation) {
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: removeEmpty(user.federation) } });
 					federationAltered = true;
 				}
 			} else {
@@ -132,8 +140,11 @@ const eventHandlers = {
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
-					if (!persistedSubscription.federation) {
-						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+					if (!persistedSubscription.federation && subscription.federation) {
+						await Subscriptions.updateOne(
+							{ _id: persistedSubscription._id },
+							{ $set: { federation: removeEmpty(subscription.federation) } },
+						);
 						federationAltered = true;
 					}
 				} else {
@@ -141,7 +152,10 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(removeEmpty(denormalizedSubscription));
+					if (insertedId) {
+						void notifyOnSubscriptionChangedById(insertedId);
+					}
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -176,7 +190,10 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -204,7 +221,10 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -293,8 +313,12 @@ const eventHandlers = {
 
 					await processThreads(denormalizedMessage, room);
 
-					// Notify users
-					await notifyUsersOnMessage(denormalizedMessage, room);
+					const roomUpdater = Rooms.getUpdater();
+					await notifyUsersOnMessage(denormalizedMessage, room, roomUpdater);
+					if (roomUpdater.hasChanges()) {
+						await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
+					}
+
 					sendAllNotifications(denormalizedMessage, room);
 					messageForNotification = denormalizedMessage;
 				} catch (err) {
@@ -532,6 +556,18 @@ API.v1.addRoute(
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
 		async post() {
+			/*
+			The legacy federation has been deprecated for over a year
+			and no longer receives any updates. This feature also has
+			relevant security issues that weren't addressed.
+			Workspaces should migrate to the newer matrix federation.
+			*/
+			apiDeprecationLogger.endpoint(this.request.route, '8.0.0', this.response, 'Use Matrix Federation instead.');
+
+			if (!process.env.ENABLE_INSECURE_LEGACY_FEDERATION) {
+				return API.v1.failure('Deprecated. ENABLE_INSECURE_LEGACY_FEDERATION environment variable is needed to enable it.');
+			}
+
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}

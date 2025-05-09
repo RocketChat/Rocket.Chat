@@ -1,9 +1,10 @@
 import type { IImportChannel } from './IImportChannel';
+import type { IImportContact } from './IImportContact';
 import type { IImportMessage } from './IImportMessage';
 import type { IImportUser } from './IImportUser';
 
-export type IImportRecordType = 'user' | 'channel' | 'message';
-export type IImportData = IImportUser | IImportChannel | IImportMessage;
+export type IImportRecordType = 'user' | 'channel' | 'message' | 'contact';
+export type IImportData = IImportUser | IImportChannel | IImportMessage | IImportContact;
 
 export interface IImportRecord {
 	data: IImportData;
@@ -33,4 +34,9 @@ export interface IImportMessageRecord extends IImportRecord {
 	options: {
 		useQuickInsert?: boolean;
 	};
+}
+
+export interface IImportContactRecord extends IImportRecord {
+	data: IImportContact;
+	dataType: 'contact';
 }

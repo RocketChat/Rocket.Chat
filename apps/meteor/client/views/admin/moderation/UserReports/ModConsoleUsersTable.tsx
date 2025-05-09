@@ -1,10 +1,12 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,7 +18,6 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModerationFilter from '../helpers/ModerationFilter';
-import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
 const ModConsoleUsersTable = () => {
 	const [text, setText] = useState('');
@@ -35,28 +36,30 @@ const ModConsoleUsersTable = () => {
 	});
 	const { start, end } = dateRange;
 
-	const debouncedText = useDebouncedValue(text, 500);
-
-	const query = {
-		selector: debouncedText,
-		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		count: itemsPerPage,
-		offset: current,
-		latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
-		oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
-	};
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				selector: text,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				count: itemsPerPage,
+				offset: current,
+				latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
+				oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
+			}),
+			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+		),
+		500,
+	);
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(
-		['moderation', 'userReports', 'fetchAll', query],
-		() => getReports(query),
-		{
-			keepPreviousData: true,
-		},
-	);
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchAll', query],
+		queryFn: () => getReports(query),
+		placeholderData: keepPreviousData,
+	});
 
-	const handleClick = useMutableCallback((id): void => {
+	const handleClick = useEffectEvent((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: { tab: 'users', context: 'info', id },
@@ -98,8 +101,7 @@ const ModConsoleUsersTable = () => {
 
 	return (
 		<>
-			<ModerationFilter setText={setText} setDateRange={setDateRange} />
-
+			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

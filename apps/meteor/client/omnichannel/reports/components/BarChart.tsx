@@ -1,8 +1,8 @@
 import type { BarCustomLayerProps, BarDatum } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Palette, Tooltip } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import React, { useMemo } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
+import { useMemo } from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
 
@@ -14,7 +14,7 @@ type axisItem = {
 	tickRotation?: number;
 	format?: string | ((v: string | number) => string | number);
 	renderTick?: (props: any) => JSX.Element;
-	legend?: React.ReactNode;
+	legend?: ReactNode;
 	legendPosition?: 'start' | 'middle' | 'end';
 	legendOffset?: number;
 	ariaHidden?: boolean;

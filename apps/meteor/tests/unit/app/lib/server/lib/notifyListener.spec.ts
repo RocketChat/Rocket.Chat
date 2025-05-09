@@ -23,7 +23,7 @@ describe('Message Broadcast Tests', () => {
 		_updatedAt: new Date(),
 	};
 
-	const modelsStubs = () => ({
+	const modelsStubs = (dbWatchersDisabled: boolean) => ({
 		Messages: {
 			findOneById: messagesFindOneStub,
 		},
@@ -33,13 +33,13 @@ describe('Message Broadcast Tests', () => {
 		Settings: {
 			getValueById: getSettingValueByIdStub,
 		},
+		dbWatchersDisabled,
 	});
 
-	const coreStubs = (dbWatchersDisabled: boolean) => ({
+	const coreStubs = () => ({
 		api: {
 			broadcast: broadcastStub,
 		},
-		dbWatchersDisabled,
 	});
 
 	beforeEach(() => {
@@ -50,8 +50,8 @@ describe('Message Broadcast Tests', () => {
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
 		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
-			'@rocket.chat/models': modelsStubs(),
-			'@rocket.chat/core-services': coreStubs(false),
+			'@rocket.chat/models': modelsStubs(false),
+			'@rocket.chat/core-services': coreStubs(),
 			'mem': memStub,
 		});
 
@@ -203,8 +203,8 @@ describe('Message Broadcast Tests', () => {
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = (dbWatchersDisabled: boolean) => {
 			const proxyMock = proxyquire.noCallThru().load('../../../../../../app/lib/server/lib/notifyListener', {
-				'@rocket.chat/models': modelsStubs(),
-				'@rocket.chat/core-services': coreStubs(dbWatchersDisabled),
+				'@rocket.chat/models': modelsStubs(dbWatchersDisabled),
+				'@rocket.chat/core-services': coreStubs(),
 				'mem': memStub,
 			});
 			notifyOnMessageChange = proxyMock.notifyOnMessageChange;

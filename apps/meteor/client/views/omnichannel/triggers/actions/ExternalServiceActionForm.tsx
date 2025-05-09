@@ -1,10 +1,8 @@
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FocusEvent } from 'react';
-import React from 'react';
+import { useId, type ComponentProps, type FocusEvent } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
@@ -19,13 +17,13 @@ type SendMessageActionFormType = ComponentProps<typeof Field> & {
 };
 
 export const ExternalServiceActionForm = ({ control, trigger, index, ...props }: SendMessageActionFormType) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const timeoutFieldId = useUniqueId();
+	const timeoutFieldId = useId();
 	const timeoutFieldName = `actions.${index}.params.serviceTimeout` as const;
-	const fallbackMessageFieldId = useUniqueId();
+	const fallbackMessageFieldId = useId();
 	const fallbackMessageFieldName = `actions.${index}.params.serviceFallbackMessage` as const;
 
 	const [timeoutError, fallbackMessageError] = useFieldError({ control, name: [timeoutFieldName, fallbackMessageFieldName] });
@@ -46,7 +44,7 @@ export const ExternalServiceActionForm = ({ control, trigger, index, ...props }:
 						name={timeoutFieldName}
 						defaultValue={10000}
 						rules={{
-							required: t('The_field_is_required', t('Timeout_in_miliseconds')),
+							required: t('Required_field', { field: t('Timeout_in_miliseconds') }),
 							min: { value: 0, message: t('Timeout_in_miliseconds_cant_be_negative_number') },
 						}}
 						render={({ field }) => {

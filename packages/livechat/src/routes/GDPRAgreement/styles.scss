@@ -1,4 +1,4 @@
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 .gdpr {
 	&__consent-text {
@@ -6,7 +6,7 @@
 
 		letter-spacing: 0;
 
-		color: $color-text-grey;
+		color: colors.$color-text-grey;
 
 		font-size: 1rem;
 		font-weight: normal;
@@ -18,7 +18,7 @@
 
 		letter-spacing: 0;
 
-		color: $color-text-grey;
+		color: colors.$color-text-grey;
 
 		font-size: 0.75rem;
 		font-weight: normal;

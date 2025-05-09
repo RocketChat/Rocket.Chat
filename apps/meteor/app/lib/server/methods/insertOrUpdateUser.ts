@@ -19,12 +19,14 @@ Meteor.methods<ServerMethods>({
 
 		check(userData, Object);
 
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'insertOrUpdateUser',
 			});
 		}
 
-		return saveUser(Meteor.userId(), userData);
+		return saveUser(userId, userData);
 	}),
 });

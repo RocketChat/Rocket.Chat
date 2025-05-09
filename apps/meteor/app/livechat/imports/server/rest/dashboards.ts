@@ -166,9 +166,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			const endDate = new Date(end);
-			const result = (await findAllChatMetricsByAgentAsyncCached({ start: startDate, end: endDate, departmentId })) as {
-				[k: string]: { open: number; closed: number; onhold: number };
-			};
+			const result = await findAllChatMetricsByAgentAsyncCached({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},

@@ -1,14 +1,20 @@
-import { Messages, Roles, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 
-import { FileUpload } from '../../../file-upload/server';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
+import { FileUpload } from '../../../file-upload/server';
+import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
 	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
 	return Promise.all([
-		Subscriptions.removeByRoomIds(rids),
+		Subscriptions.removeByRoomIds(rids, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		}),
 		Messages.removeByRoomIds(rids),
 		ReadReceipts.removeByRoomIds(rids),
 		Rooms.removeByIds(rids),
@@ -24,7 +30,7 @@ export const relinquishRoomOwnerships = async function (
 	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
 
 	for await (const { newOwner, rid } of changeOwner) {
-		newOwner && (await Roles.addUserRoles(newOwner, ['owner'], rid));
+		newOwner && (await addUserRolesAsync(newOwner, ['owner'], rid));
 	}
 
 	const roomIdsToRemove: string[] = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);

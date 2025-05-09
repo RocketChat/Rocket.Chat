@@ -1,5 +1,4 @@
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import { ChatContext } from '../../../client/views/room/contexts/ChatContext';
 import { createFakeSubscription } from '../data';

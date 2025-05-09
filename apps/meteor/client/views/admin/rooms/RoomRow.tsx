@@ -1,12 +1,14 @@
 import { isDiscussion } from '@rocket.chat/core-typings';
-import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IRoom, RoomAdminFieldsType, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 const roomTypeI18nMap = {
@@ -16,32 +18,33 @@ const roomTypeI18nMap = {
 	p: 'Private_Channel',
 } as const;
 
-const getRoomDisplayName = (room: Pick<IRoom, RoomAdminFieldsType>): string | undefined =>
-	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
+const getRoomDisplayName = (room: Pick<Serialized<IRoom>, RoomAdminFieldsType>): string | undefined =>
+	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room as IRoom);
 
-const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
-	const t = useTranslation();
+const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> }) => {
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
+	const formatDate = useFormatDate();
 
-	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
-	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
+	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
+	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room as IRoom);
 	const roomName = getRoomDisplayName(room);
 
 	const getRoomType = (
-		room: Pick<IRoom, RoomAdminFieldsType>,
+		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
 	): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
 		if (room.teamMain) {
 			return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 		}
-		if (isDiscussion(room)) {
+		if (isDiscussion(room as IRoom)) {
 			return 'Discussion';
 		}
 		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
 	};
 
 	const onClick = useCallback(
-		(rid) => (): void =>
+		(rid: string) => (): void =>
 			router.navigate({
 				name: 'admin-rooms',
 				params: {
@@ -83,6 +86,7 @@ const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
 			{mediaQuery && <GenericTableCell withTruncatedText>{msgs}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}
 		</GenericTableRow>
 	);
 };

@@ -75,11 +75,12 @@ test.describe.parallel('administration', () => {
 
 		test('expect create a user', async () => {
 			await poAdmin.tabs.users.btnNewUser.click();
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
-			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputSetManually.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await poAdmin.tabs.users.inputConfirmPassword.type('any_password');
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
@@ -97,8 +98,9 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(username);
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputSetManually.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await poAdmin.tabs.users.inputConfirmPassword.type('any_password');
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await expect(poAdmin.tabs.users.joinDefaultChannels).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
@@ -173,6 +175,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.favoriteLabel.click();
 				await poAdmin.btnSave.click();
+				await expect(poAdmin.btnSave).not.toBeVisible();
 
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
@@ -274,6 +277,66 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
+	test.describe.serial('Third party login', () => {
+		const appName = faker.string.uuid();
+		const appRedirectURI = faker.internet.url();
+
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/third-party-login');
+		});
+
+		test('should show Third-party login page', async ({ page }) => {
+			await page.goto('/admin/third-party-login');
+
+			await expect(page.locator('h1 >> text="Third-party login"')).toBeVisible();
+		});
+
+		test('should not be able to create a new application without application name', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputRedirectURI.fill(appRedirectURI);
+			await poAdmin.btnSave.click();
+
+			await expect(page.getByText('Name required')).toBeVisible();
+		});
+
+		test('should not be able to create a new application without redirect URI', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputApplicationName.fill(appName);
+			await poAdmin.btnSave.click();
+
+			await expect(page.getByText('Redirect URI required')).toBeVisible();
+		});
+
+		test('should be able to create a new application', async ({ page }) => {
+			await poAdmin.btnNewApplication.click();
+			await poAdmin.inputApplicationName.fill(appName);
+			await poAdmin.inputRedirectURI.fill(appRedirectURI);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.getThirdPartyAppByName(appName)).toBeVisible();
+			await expect(page.getByText('Application added')).toBeVisible();
+		});
+
+		test('should be able see aplication fields', async () => {
+			await poAdmin.getThirdPartyAppByName(appName).click();
+			await expect(poAdmin.inputApplicationName).toBeVisible();
+			await expect(poAdmin.inputRedirectURI).toBeVisible();
+			await expect(poAdmin.inputClientId).toBeVisible();
+			await expect(poAdmin.inputClientSecret).toBeVisible();
+			await expect(poAdmin.inputAuthUrl).toBeVisible();
+			await expect(poAdmin.inputTokenUrl).toBeVisible();
+		});
+
+		test('should be able to delete an application', async ({ page }) => {
+			await poAdmin.getThirdPartyAppByName(appName).click();
+			await poAdmin.btnDelete.click();
+			await poUtils.btnModalConfirmDelete.click();
+
+			await expect(page.getByText('Your entry has been deleted.')).toBeVisible();
+			await expect(poAdmin.getIntegrationByName(appName)).not.toBeVisible();
+		});
+	});
+
 	test.describe('Integrations', () => {
 		const messageCodeHighlightDefault =
 			'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';
@@ -317,36 +380,6 @@ test.describe.parallel('administration', () => {
 			await poUtils.btnModalConfirmDelete.click();
 
 			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).not.toBeVisible();
-		});
-	});
-
-	test.describe('Settings', () => {
-		test.describe('General', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/General');
-			});
-
-			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en');
-			});
-
-			test('expect be able to reset a setting after a change', async () => {
-				await poAdmin.inputSiteURL.type('any_text');
-				await poAdmin.btnResetSiteURL.click();
-			});
-		});
-
-		test.describe('Layout', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/Layout');
-			});
-
-			test('should code mirror full screen be displayed correctly', async ({ page }) => {
-				await poAdmin.getAccordionBtnByName('Custom CSS').click();
-				await poAdmin.btnFullScreen.click();
-
-				await expect(page.getByRole('code')).toHaveCSS('width', '920px');
-			});
 		});
 	});
 });

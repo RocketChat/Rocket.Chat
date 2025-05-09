@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 
@@ -22,7 +22,7 @@ type DocumentTitleWrapperProps = {
 };
 
 const DocumentTitleWrapper = ({ children }: DocumentTitleWrapperProps) => {
-	useDocumentTitle(useSetting<string>('Site_Name') || '', false);
+	useDocumentTitle(useSetting('Site_Name', ''), false);
 	const { title, key } = useDocumentTitle(useUnreadMessages(), false);
 
 	const refocusRef = useRouteTitleFocus();

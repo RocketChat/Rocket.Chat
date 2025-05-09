@@ -3,6 +3,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { SystemLogger } from '../../lib/logger/system';
 import { addMigration } from '../../lib/migrations';
+import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
 
 addMigration({
 	version: 295,
@@ -20,8 +21,12 @@ addMigration({
 		const crowdSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('CROWD_Sync_Interval', { projection: { value: 1 } });
 
 		// update setting values
-		await Settings.updateOne({ _id: 'LDAP_Background_Sync_Interval' }, { $set: { value: newLdapDefault } });
-		await Settings.updateOne({ _id: 'CROWD_Sync_Interval' }, { $set: { value: newCrowdDefault } });
+		await updateAuditedBySystem({
+			reason: 'Migration 295',
+		})(Settings.updateValueById, 'LDAP_Background_Sync_Interval', newLdapDefault);
+		await updateAuditedBySystem({
+			reason: 'Migration 295',
+		})(Settings.updateValueById, 'CROWD_Sync_Interval', newCrowdDefault);
 
 		// notify user about the changes if the value was different from the default
 

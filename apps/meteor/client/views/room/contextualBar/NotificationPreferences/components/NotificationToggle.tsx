@@ -1,7 +1,6 @@
 import { Field, FieldLabel, FieldDescription, FieldGroup, ToggleSwitch, FieldRow } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo, useId } from 'react';
 
 type NotificationToggleProps = {
 	label: string;
@@ -11,7 +10,7 @@ type NotificationToggleProps = {
 };
 
 const NotificationToggle = ({ label, description, onChange, defaultChecked }: NotificationToggleProps): ReactElement => {
-	const fieldId = useUniqueId();
+	const fieldId = useId();
 
 	return (
 		<FieldGroup>

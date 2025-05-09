@@ -32,7 +32,7 @@ import UsersSelectElement from '../elements/UsersSelectElement/UsersSelectElemen
 type TextObjectRenderers = {
   [TTextObject in UiKit.TextObject as TTextObject['type']]: (
     textObject: TTextObject,
-    index: number
+    index: number,
   ) => ReactElement | null;
 };
 
@@ -48,7 +48,7 @@ const textObjectRenderers: TextObjectRenderers = {
 export const renderTextObject = (
   textObject: UiKit.TextObject,
   context: UiKit.BlockContext,
-  index: number
+  index: number,
 ) => {
   if (context === UiKit.BlockContext.BLOCK) {
     return null;
@@ -65,7 +65,7 @@ export const renderTextObject = (
 
 const isImageBlock = (
   _elementOrBlock: UiKit.ImageBlock | UiKit.ImageElement,
-  context: UiKit.BlockContext
+  context: UiKit.BlockContext,
 ): _elementOrBlock is UiKit.ImageBlock => {
   return context === UiKit.BlockContext.BLOCK;
 };
@@ -85,14 +85,14 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
         'input',
         'section',
         'preview',
-      ]
+      ],
     );
   }
 
   public plain_text(
     textObject: UiKit.PlainText,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -104,7 +104,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   public mrkdwn(
     textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -116,7 +116,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   public text(
     textObject: UiKit.TextObject,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (textObject.type === 'mrkdwn') {
       return this.mrkdwn(textObject, context, index);
@@ -128,7 +128,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   actions(
     block: UiKit.ActionsBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -149,7 +149,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   preview(
     block: UiKit.PreviewBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context !== UiKit.BlockContext.BLOCK) {
       return null;
@@ -168,7 +168,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   context(
     block: UiKit.ContextBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -189,7 +189,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   divider(
     block: UiKit.DividerBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -210,7 +210,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   image(
     block: UiKit.ImageBlock | UiKit.ImageElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (isImageBlock(block, context)) {
       return (
@@ -239,7 +239,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   input(
     block: UiKit.InputBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -263,7 +263,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   section(
     block: UiKit.SectionBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -284,7 +284,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   button(
     block: UiKit.ButtonElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -305,7 +305,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   datepicker(
     block: UiKit.DatePickerElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -326,7 +326,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   static_select(
     block: UiKit.StaticSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -347,7 +347,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   multi_static_select(
     block: UiKit.MultiStaticSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -368,7 +368,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   overflow(
     block: UiKit.OverflowElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -389,7 +389,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   plain_text_input(
     block: UiKit.PlainTextInputElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -410,7 +410,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   linear_scale(
     block: UiKit.LinearScaleElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -431,7 +431,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   toggle_switch(
     block: UiKit.ToggleSwitchElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -452,7 +452,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   radio_button(
     block: UiKit.RadioButtonElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -473,7 +473,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   checkbox(
     block: UiKit.CheckboxElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -494,7 +494,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   callout(
     block: UiKit.CalloutBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
@@ -515,7 +515,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   time_picker(
     block: UiKit.TimePickerElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return null;
@@ -536,7 +536,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   users_select(
     block: UiKit.UsersSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.FORM) {
       return (
@@ -555,7 +555,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   channels_select(
     block: UiKit.ChannelsSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.FORM) {
       return (
@@ -574,7 +574,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   multi_users_select(
     block: UiKit.MultiUsersSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.FORM) {
       return (
@@ -593,7 +593,7 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
   multi_channels_select(
     block: UiKit.MultiChannelsSelectElement,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.FORM) {
       return (

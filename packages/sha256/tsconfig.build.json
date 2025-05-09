@@ -2,7 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"target": "ES2015",
-		"module": "ESNext",
+		"module": "commonjs",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,

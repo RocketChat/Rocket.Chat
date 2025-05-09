@@ -338,7 +338,7 @@ export class SlackImporter extends Importer {
 			}
 
 			if (userCount) {
-				const { value } = await Settings.incrementValueById('Slack_Importer_Count', userCount, { returnDocument: 'after' });
+				const value = await Settings.incrementValueById('Slack_Importer_Count', userCount, { returnDocument: 'after' });
 				if (value) {
 					void notifyOnSettingChanged(value);
 				}
@@ -545,13 +545,16 @@ export class SlackImporter extends Importer {
 
 		// Process the reactions
 		if (message.reactions && message.reactions.length > 0) {
-			newMessage.reactions = message.reactions.reduce((newReactions, reaction) => {
-				const name = `:${reaction.name}:`;
-				return {
-					...newReactions,
-					...(reaction.users?.length ? { name: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
-				};
-			}, {} as Required<IImportMessage>['reactions']);
+			newMessage.reactions = message.reactions.reduce(
+				(newReactions, reaction) => {
+					const name = `:${reaction.name}:`;
+					return {
+						...newReactions,
+						...(reaction.users?.length ? { name: { name, users: this._replaceSlackUserIds(reaction.users) } } : {}),
+					};
+				},
+				{} as Required<IImportMessage>['reactions'],
+			);
 		}
 
 		if (message.type === 'message') {

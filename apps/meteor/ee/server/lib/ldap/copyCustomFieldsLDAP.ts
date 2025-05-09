@@ -1,9 +1,9 @@
 import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 
+import { replacesNestedValues } from './replacesNestedValues';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { getNestedProp } from '../../../../server/lib/getNestedProp';
-import { replacesNestedValues } from './replacesNestedValues';
 
 export const copyCustomFieldsLDAP = (
 	{

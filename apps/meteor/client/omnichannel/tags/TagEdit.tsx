@@ -1,11 +1,13 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
+import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { useRemoveTag } from './useRemoveTag';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarScrollableContent,
@@ -15,7 +17,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
-import { useRemoveTag } from './useRemoveTag';
 
 type TagEditPayload = {
 	name: string;
@@ -29,7 +30,7 @@ type TagEditProps = {
 };
 
 const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const handleDeleteTag = useRemoveTag();
@@ -52,13 +53,15 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		},
 	});
 
-	const handleSave = useMutableCallback(async ({ name, description, departments }: TagEditPayload) => {
+	const handleSave = useEffectEvent(async ({ name, description, departments }: TagEditPayload) => {
 		const departmentsId = departments?.map((dep) => dep.value) || [''];
 
 		try {
 			await saveTag(_id as unknown as string, { name, description }, departmentsId);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-tags']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-tags'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
@@ -66,10 +69,10 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		}
 	});
 
-	const formId = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const departmentsField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const descriptionField = useId();
+	const departmentsField = useId();
 
 	return (
 		<Contextualbar>
@@ -88,7 +91,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', 'name') }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => <TextInput {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />}
 								/>
 							</FieldRow>

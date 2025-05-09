@@ -21,7 +21,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 					dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 					return;
 				}
-				await chat.data.deleteMessage(message._id);
+				await chat.data.deleteMessage(message);
 
 				imperativeModal.close();
 

@@ -1,12 +1,11 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
-import type { Control, FieldValues } from 'react-hook-form';
+import { useCallback, useId, useMemo } from 'react';
+import type { Control, FieldValues, FieldError as RHFFieldError } from 'react-hook-form';
 import { Controller, useFormState, get } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
@@ -34,9 +33,9 @@ const CustomField = <T extends FieldValues>({
 	options = [],
 	...props
 }: CustomFieldProps<T>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { errors } = useFormState({ control });
-	const fieldId = useUniqueId();
+	const fieldId = useId();
 
 	const Component = FIELD_TYPES[type] ?? null;
 
@@ -46,17 +45,17 @@ const CustomField = <T extends FieldValues>({
 		[defaultValue, options],
 	);
 
-	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
+	const validateRequired = useCallback((value: string) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
 	const getErrorMessage = useCallback(
-		(error) => {
+		(error: RHFFieldError) => {
 			switch (error?.type) {
 				case 'required':
-					return t('The_field_is_required', label || name);
+					return t('Required_field', { field: label || name });
 				case 'minLength':
-					return t('Min_length_is', props?.minLength);
+					return t('Min_length_is', { postProcess: 'sprintf', sprintf: [props?.minLength] });
 				case 'maxLength':
-					return t('Max_length_is', props?.maxLength);
+					return t('Max_length_is', { postProcess: 'sprintf', sprintf: [props?.maxLength] });
 			}
 		},
 		[label, name, props?.maxLength, props?.minLength, t],

@@ -1,9 +1,10 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
+import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
@@ -17,38 +18,42 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { useRemoveTag } from './useRemoveTag';
 
 const TagsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
 	const router = useRouter();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
-	const onRowClick = useMutableCallback((id) => router.navigate(`/omnichannel/tags/edit/${id}`));
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/tags/new'));
+	const onRowClick = useEffectEvent((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 
-	const query = useMemo(
-		() => ({
-			viewAll: 'true' as const,
-			fields: JSON.stringify({ name: 1 }),
-			text: debouncedFilter,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				viewAll: 'true' as const,
+				text: filter,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[filter, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query), { refetchOnWindowFocus: false });
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-tags', query],
+		queryFn: async () => getTags(query),
+		refetchOnWindowFocus: false,
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
@@ -70,7 +75,9 @@ const TagsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
+			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && (
+				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

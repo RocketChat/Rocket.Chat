@@ -1,6 +1,5 @@
 import { Option, OptionColumn, OptionContent, OptionIcon, OptionInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 type ListItemCommonProps = {
 	text: ReactNode;

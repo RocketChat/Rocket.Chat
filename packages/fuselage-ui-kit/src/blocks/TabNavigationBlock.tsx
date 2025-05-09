@@ -9,7 +9,7 @@ import type { BlockProps } from '../utils/BlockProps';
 type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
 
 const TabNavigationBlock = (
-  blockProps: TabNavigationBlockProps
+  blockProps: TabNavigationBlockProps,
 ): ReactElement => {
   const {
     block: { tabs },

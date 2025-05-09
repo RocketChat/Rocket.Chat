@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { FormField } from '.';
@@ -9,7 +9,6 @@ export default {
 	title: 'Forms/FormField',
 	component: FormField,
 	args: {
-		children: <TextInput value={loremIpsum({ count: 3, units: 'words' })} />,
 		required: false,
 		label: 'Label',
 		description: 'Description',
@@ -21,7 +20,11 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof FormField>>;
 
-const Template: Story<ComponentProps<typeof FormField>> = (args) => <FormField {...args} />;
+const Template: StoryFn<ComponentProps<typeof FormField>> = (args) => (
+	<FormField {...args}>
+		<TextInput value={loremIpsum({ count: 3, units: 'words' })} />
+	</FormField>
+);
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

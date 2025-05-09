@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { callWithErrorHandling } from '../../../client/lib/utils/callWithErrorHandling';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { ChatMessage } from '../../models/client';
+import { Messages } from '../../models/client';
 
 export const findParentMessage = (() => {
 	const waiting: string[] = [];
@@ -27,7 +27,7 @@ export const findParentMessage = (() => {
 	};
 
 	return async (tmid: IMessage['_id']) => {
-		const message = ChatMessage.findOne({ _id: tmid });
+		const message = Messages.findOne({ _id: tmid });
 
 		if (message) {
 			return message;

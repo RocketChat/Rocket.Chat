@@ -1,13 +1,13 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import type { AriaAttributes, ReactElement } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-type AutoCompleteAgentProps = {
+type AutoCompleteAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	value: string;
 	error?: string;
 	placeholder?: string;
@@ -31,6 +31,7 @@ const AutoCompleteAgent = ({
 	onlyAvailable = false,
 	withTitle = false,
 	onChange,
+	'aria-labelledby': ariaLabelledBy,
 }: AutoCompleteAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
@@ -57,6 +58,7 @@ const AutoCompleteAgent = ({
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
 			data-qa='autocomplete-agent'
+			aria-labelledby={ariaLabelledBy}
 			endReached={
 				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start, Math.min(50, agentsTotal))
 			}

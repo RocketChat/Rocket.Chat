@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
-import React from 'react';
 
 const className = css`
 	white-space: normal;

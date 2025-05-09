@@ -1,15 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useLogout } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
 
 export const useUserMenu = (user: IUser) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
@@ -42,5 +42,5 @@ export const useUserMenu = (user: IUser) => {
 		{
 			items: [logoutItem],
 		},
-	];
+	].filter((section) => section !== undefined);
 };

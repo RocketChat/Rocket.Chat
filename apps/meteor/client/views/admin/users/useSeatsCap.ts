@@ -11,7 +11,10 @@ export const useSeatsCap = (): SeatCapProps | undefined => {
 	// #TODO: Stop using this endpoint
 	const fetch = useEndpoint('GET', '/v1/licenses.maxActiveUsers');
 
-	const result = useQuery(['/v1/licenses.maxActiveUsers'], () => fetch());
+	const result = useQuery({
+		queryKey: ['/v1/licenses.maxActiveUsers'],
+		queryFn: () => fetch(),
+	});
 
 	if (!result.isSuccess) {
 		return undefined;

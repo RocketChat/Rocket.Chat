@@ -1,5 +1,6 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import React, { useCallback, useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import { useCallback, useEffect } from 'react';
 
 import type { LegacyBannerPayload } from '../../lib/banners';
 import * as banners from '../../lib/banners';
@@ -50,7 +51,9 @@ const LegacyBanner = ({ config }: LegacyBannerProps) => {
 			onClose={handleClose}
 		>
 			{typeof text === 'function' ? text() : text}
-			{html && <div dangerouslySetInnerHTML={{ __html: typeof html === 'function' ? html() : html }} />}
+			{html && (
+				<div dangerouslySetInnerHTML={{ __html: typeof html === 'function' ? DOMPurify.sanitize(html()) : DOMPurify.sanitize(html) }} />
+			)}
 		</Banner>
 	);
 };

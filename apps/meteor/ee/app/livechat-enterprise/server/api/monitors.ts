@@ -1,14 +1,15 @@
 import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
+import { findMonitors, findMonitorByUsername } from './lib/monitors';
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { findMonitors, findMonitorByUsername } from './lib/monitors';
 
 API.v1.addRoute(
 	'livechat/monitors',
 	{
 		authRequired: true,
 		permissionsRequired: ['manage-livechat-monitors'],
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -35,6 +36,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['manage-livechat-monitors'],
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {

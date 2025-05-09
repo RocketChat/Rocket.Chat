@@ -1,10 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import NotificationPreferencesForm from './NotificationPreferencesForm';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -13,7 +13,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
-import NotificationPreferencesForm from './NotificationPreferencesForm';
 
 type NotificationPreferencesProps = {
 	handleClose: () => void;
@@ -30,7 +29,7 @@ const NotificationPreferences = ({
 	notificationOptions,
 	handlePlaySound,
 }: NotificationPreferencesProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },
 	} = useFormContext();

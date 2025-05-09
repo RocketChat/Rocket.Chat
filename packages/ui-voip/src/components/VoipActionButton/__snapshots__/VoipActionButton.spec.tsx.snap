@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders DangerButton without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="Danger Button"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+      title="Danger Button"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`renders NeutralButton without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="Neutral Button"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+      title="Neutral Button"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
+
+exports[`renders SuccessButton without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="Success Button"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-success rcx-button--square rcx-button--icon rcx-button"
+      title="Success Button"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;

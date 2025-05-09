@@ -13,10 +13,10 @@ import type {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
+import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 
 const proApiEndpoint = 'https://api.deepl.com/v2/translate';
 const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';

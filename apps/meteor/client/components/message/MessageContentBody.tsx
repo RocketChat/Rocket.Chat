@@ -1,7 +1,7 @@
 import { MessageBody, Skeleton } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
 import type { ComponentProps } from 'react';
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import GazzodownText from '../GazzodownText';

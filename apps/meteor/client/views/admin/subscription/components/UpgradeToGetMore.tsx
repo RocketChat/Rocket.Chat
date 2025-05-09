@@ -1,5 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import type { ReactNode } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard } from '../../../../components/GenericCard';
@@ -9,7 +10,7 @@ import { PRICING_LINK } from '../utils/links';
 type UpgradeToGetMoreProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
-	children: React.ReactNode;
+	children: ReactNode;
 };
 
 const enterpriseModules = [

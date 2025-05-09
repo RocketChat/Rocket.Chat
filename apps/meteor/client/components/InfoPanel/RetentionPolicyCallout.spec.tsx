@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 
+import RetentionPolicyCallout from './RetentionPolicyCallout';
 import { createRenteionPolicySettingsMock as createMock } from '../../../tests/mocks/client/mockRetentionPolicySettings';
 import { createFakeRoom } from '../../../tests/mocks/data';
-import RetentionPolicyCallout from './RetentionPolicyCallout';
 
 jest.useFakeTimers();
 
@@ -15,8 +13,10 @@ beforeEach(() => {
 describe('RetentionPolicyCallout', () => {
 	it('Should render callout if settings are valid', () => {
 		const fakeRoom = createFakeRoom({ t: 'c' });
-		render(<RetentionPolicyCallout room={fakeRoom} />, { wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000 }) });
-		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024, 12:30 AM');
+		render(<RetentionPolicyCallout room={fakeRoom} />, {
+			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000 }),
+		});
+		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024 at 12:30 AM');
 	});
 
 	it('Should not render callout if settings are invalid', () => {

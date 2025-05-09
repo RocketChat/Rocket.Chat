@@ -204,7 +204,7 @@ export class Twilio implements ISMSProvider {
 		let persistentAction;
 		if (extraData?.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
-			persistentAction = `geo:${latitude},${longitude}`;
+			persistentAction = [`geo:${latitude},${longitude}`];
 			body = i18n.t('Location', { lng: defaultLanguage });
 		}
 
@@ -242,6 +242,39 @@ export class Twilio implements ISMSProvider {
 			},
 			body: '<Response></Response>',
 		};
+	}
+
+	async isRequestFromTwilio(signature: string, request: Request): Promise<boolean> {
+		const authToken = settings.get<string>('SMS_Twilio_authToken');
+		let siteUrl = settings.get<string>('Site_Url');
+		if (siteUrl.endsWith('/')) {
+			siteUrl = siteUrl.replace(/.$/, '');
+		}
+
+		if (!authToken || !siteUrl) {
+			SystemLogger.error(`(Twilio) -> URL or Twilio token not configured.`);
+			return false;
+		}
+
+		const twilioUrl = request.url ? `${siteUrl}${request.url}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+
+		let body = {};
+		try {
+			body = await request.json();
+			// eslint-disable-next-line no-empty
+		} catch {}
+
+		return twilio.validateRequest(authToken, signature, twilioUrl, body);
+	}
+
+	async validateRequest(request: Request): Promise<boolean> {
+		// We're not getting original twilio requests on CI :p
+		if (process.env.TEST_MODE === 'true') {
+			return true;
+		}
+		const twilioHeader = request.headers.get('x-twilio-signature') || '';
+		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
+		return this.isRequestFromTwilio(twilioSignature, request);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {

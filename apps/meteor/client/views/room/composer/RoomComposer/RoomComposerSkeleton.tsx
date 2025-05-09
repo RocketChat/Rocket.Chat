@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import ComposerSkeleton from '../ComposerSkeleton';
 import RoomComposer from './RoomComposer';

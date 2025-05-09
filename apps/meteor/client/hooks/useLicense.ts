@@ -2,7 +2,7 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { QueryClient, UseQueryResult } from '@tanstack/react-query';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 type LicenseDataType = Serialized<Awaited<OperationResult<'GET', '/v1/licenses.info'>>>;
@@ -18,7 +18,9 @@ const invalidateQueryClientLicenses = (() => {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => {
 			timeout = undefined;
-			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries({
+				queryKey: ['licenses'],
+			});
 		}, milliseconds);
 	};
 })();
@@ -40,16 +42,31 @@ export const useLicenseBase = <TData = LicenseDataType>({
 
 	useEffect(() => notify('license', () => invalidateQueries()), [notify, invalidateQueries]);
 
-	return useQuery(['licenses', 'getLicenses', params], () => getLicenses({ ...params }), {
+	return useQuery({
+		queryKey: ['licenses', 'getLicenses', params],
+		queryFn: () => getLicenses({ ...params }),
 		staleTime: Infinity,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		select,
 		enabled: !!uid,
 	});
 };
 
 export const useLicense = (params?: LicenseParams) => {
-	return useLicenseBase({ params, select: (data) => data.license });
+	return useLicenseBase({
+		params,
+		select: (data) => data.license,
+	});
+};
+
+export const useLicenseWithCloudAnnouncement = (params?: LicenseParams) => {
+	return useLicenseBase({
+		params,
+		select: ({ license, cloudSyncAnnouncement }) => ({
+			...license,
+			cloudSyncAnnouncement,
+		}),
+	});
 };
 
 export const useHasLicense = (): UseQueryResult<boolean> => {

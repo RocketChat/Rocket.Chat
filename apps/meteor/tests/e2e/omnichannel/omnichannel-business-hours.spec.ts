@@ -19,6 +19,9 @@ test.describe('OC - Business Hours', () => {
 	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
+	const BHid = faker.string.uuid();
+	const BHName = 'TEST Business Hours';
+
 	test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
@@ -40,8 +43,6 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
-		const BHName = faker.string.uuid();
-
 		await page.goto('/omnichannel');
 		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
 
@@ -86,11 +87,9 @@ test.describe('OC - Business Hours', () => {
 	});
 
 	test('OC - Business hours - Edit BH departments', async ({ api, page }) => {
-		const BHName = faker.string.uuid();
-
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
-				id: '33',
+				id: BHid,
 				name: BHName,
 				departments: [department.data._id],
 			});
@@ -134,6 +133,51 @@ test.describe('OC - Business Hours', () => {
 			await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
 			await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
 			await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
+		});
+	});
+
+	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+		await test.step('expect to create new businessHours', async () => {
+			const createBH = await createBusinessHour(api, {
+				id: BHid,
+				name: BHName,
+				departments: [department.data._id],
+			});
+
+			expect(createBH.status()).toBe(200);
+		});
+
+		await page.goto('/omnichannel');
+		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
+		await test.step('expect to disable business hours', async () => {
+			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+
+			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
+			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).not.toBeChecked();
+
+			await poOmnichannelBusinessHours.btnSave.click();
+		});
+
+		await test.step('expect to enable business hours', async () => {
+			await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
+
+			await poOmnichannelBusinessHours.search(BHName);
+			await poOmnichannelBusinessHours.findRowByName(BHName).click();
+
+			await poOmnichannelBusinessHours.getCheckboxByLabel('Enabled').click();
+			await expect(poOmnichannelBusinessHours.getCheckboxByLabel('Enabled')).toBeChecked();
+
+			await poOmnichannelBusinessHours.btnSave.click();
+		});
+
+		await test.step('expect delete business hours', async () => {
+			await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
+			await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();
+			await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
 		});
 	});
 });

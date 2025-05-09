@@ -6,5 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 export const useLogs = (appId: string): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
-	return useQuery(['marketplace', 'apps', appId, 'logs'], () => logs());
+	return useQuery({
+		queryKey: ['marketplace', 'apps', appId, 'logs'],
+		queryFn: () => logs(),
+	});
 };

@@ -5,8 +5,16 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({ coerceTypes: true });
 
-// query: { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
-export type ChannelsMessagesProps = PaginatedRequest<{ roomId: IRoom['_id'] }, 'ts'>;
+export type ChannelsMessagesProps = PaginatedRequest<
+	{
+		roomId: IRoom['_id'];
+		mentionIds?: string;
+		starredIds?: string;
+		pinned?: boolean;
+		query?: Record<string, any>;
+	},
+	'ts'
+>;
 
 const channelsMessagesPropsSchema = {
 	type: 'object',
@@ -14,9 +22,17 @@ const channelsMessagesPropsSchema = {
 		roomId: {
 			type: 'string',
 		},
+		mentionIds: {
+			type: 'string',
+		},
+		starredIds: {
+			type: 'string',
+		},
+		pinned: {
+			type: 'string',
+		},
 		query: {
 			type: 'string',
-			nullable: true,
 		},
 		count: {
 			type: 'number',

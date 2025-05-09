@@ -8,15 +8,12 @@ import {
 	isQuoteAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options } from '@rocket.chat/message-parser';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
-import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
-import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
-import { useSubscriptionFromMessageQuery } from './useSubscriptionFromMessageQuery';
+import { useMessageListAutoTranslate, useMessageListKatex, useMessageListShowColors } from '../list/MessageListContext';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
 	if (name) {
@@ -61,11 +58,11 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 };
 
 export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessage): MessageWithMdEnforced => {
-	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+	const katex = useMessageListKatex();
+	const katexEnabled = !!katex;
 	const customDomains = useAutoLinkDomains();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
-	const autoTranslateOptions = useAutoTranslate(subscription);
-	const showColors = useSetting<boolean>('HexColorPreview_Enabled');
+	const autoTranslateOptions = useMessageListAutoTranslate();
+	const showColors = useMessageListShowColors();
 
 	return useMemo(() => {
 		const parseOptions: Options = {
@@ -74,8 +71,8 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 			customDomains,
 			...(katexEnabled && {
 				katex: {
-					dollarSyntax: katexDollarSyntaxEnabled,
-					parenthesisSyntax: katexParenthesisSyntaxEnabled,
+					dollarSyntax: katex.dollarSyntaxEnabled,
+					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
 				},
 			}),
 		};
@@ -91,5 +88,5 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 		}
 
 		return normalizedMessage;
-	}, [showColors, customDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, message, autoTranslateOptions]);
+	}, [showColors, customDomains, katexEnabled, katex?.dollarSyntaxEnabled, katex?.parenthesisSyntaxEnabled, message, autoTranslateOptions]);
 };

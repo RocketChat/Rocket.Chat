@@ -21,6 +21,9 @@ export interface IPersonalAccessToken extends ILoginToken {
 	bypassTwoFactor?: boolean;
 }
 
+export const isPersonalAccessToken = (token: LoginToken): token is IPersonalAccessToken =>
+	'type' in token && token.type === 'personalAccessToken';
+
 export interface IUserEmailVerificationToken {
 	token: string;
 	address: string;
@@ -45,40 +48,13 @@ export type ILoginUsername =
 	  };
 export type LoginUsername = string | ILoginUsername;
 
-export interface IUserServices {
-	password?: {
-		exists?: boolean;
-		bcrypt?: string;
-	};
-	passwordHistory?: string[];
-	email?: {
-		verificationTokens?: IUserEmailVerificationToken[];
-	};
-	resume?: {
-		loginTokens?: LoginToken[];
-	};
-	cloud?: {
-		accessToken: string;
-		refreshToken: string;
-		expiresAt: Date;
-	};
+export interface IOAuthUserServices {
 	google?: any;
 	facebook?: any;
 	github?: any;
 	linkedin?: any;
 	twitter?: any;
 	gitlab?: any;
-	totp?: {
-		enabled: boolean;
-		hashedBackup: string[];
-		secret: string;
-		tempSecret?: string;
-	};
-	email2fa?: {
-		enabled: boolean;
-		changedAt: Date;
-	};
-	emailCode?: IUserEmailCode;
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -100,13 +76,72 @@ export interface IUserServices {
 	};
 }
 
+export interface IUserServices extends IOAuthUserServices {
+	password?: {
+		exists?: boolean;
+		bcrypt?: string;
+	};
+	passwordHistory?: string[];
+	email?: {
+		verificationTokens?: IUserEmailVerificationToken[];
+	};
+	resume?: {
+		loginTokens?: LoginToken[];
+	};
+	cloud?: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	};
+	totp?: {
+		enabled: boolean;
+		hashedBackup: string[];
+		secret: string;
+		tempSecret?: string;
+	};
+	email2fa?: {
+		enabled: boolean;
+		changedAt: Date;
+	};
+	emailCode?: IUserEmailCode;
+}
+
+type IUserService = keyof IUserServices;
+type IOAuthService = keyof IOAuthUserServices;
+
+const defaultOAuthKeys = [
+	'google',
+	'dolphin',
+	'facebook',
+	'github',
+	'gitlab',
+	'google',
+	'ldap',
+	'linkedin',
+	'nextcloud',
+	'saml',
+	'twitter',
+] as IOAuthService[];
+const userServiceKeys = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'] as IUserService[];
+
+export const isUserServiceKey = (key: string): key is IUserService =>
+	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
+
+export const isDefaultOAuthUser = (user: IUser): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
+
+export const isCustomOAuthUser = (user: IUser): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
+
+export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
+
 export interface IUserEmail {
 	address: string;
 	verified?: boolean;
 }
 
 export interface IUserSettings {
-	profile: any;
+	profile?: any;
 	preferences?: {
 		[key: string]: any;
 	};
@@ -152,19 +187,19 @@ export interface IUser extends IRocketChatRecord {
 		private_key: string;
 		public_key: string;
 	};
-	customFields?: {
-		[key: string]: any;
-	};
+	customFields?: Record<string, any>;
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
+	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
+	// @deprecated
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
@@ -185,6 +220,9 @@ export interface IUser extends IRocketChatRecord {
 	_pendingAvatarUrl?: string;
 	requirePasswordChange?: boolean;
 	requirePasswordChangeReason?: string;
+	roomRolePriorities?: Record<string, number>;
+	isOAuthUser?: boolean; // client only field
+	__rooms?: string[];
 }
 
 export interface IRegisterUser extends IUser {
@@ -217,6 +255,10 @@ export type IUserInRole = Pick<
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
 >;
 
+export type UserPresence = Readonly<
+	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+>;
+
 export type AvatarUrlObj = {
 	avatarUrl: string;
 };
@@ -231,3 +273,6 @@ export type AvatarServiceObject = {
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
+
+export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
+	useRealName ? name || username : username;

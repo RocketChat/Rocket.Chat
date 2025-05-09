@@ -26,4 +26,10 @@ export class Utils {
 	get btnModalConfirmDelete() {
 		return this.page.locator('.rcx-modal >> button >> text="Delete"');
 	}
+
+	getAlertByText(text: string): Locator {
+		return this.page.locator('[role="alert"]', {
+			hasText: text,
+		});
+	}
 }

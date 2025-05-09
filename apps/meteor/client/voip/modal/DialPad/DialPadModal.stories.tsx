@@ -1,12 +1,11 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import DialPadModal from './DialPadModal';
 
 export default {
 	title: 'Components/VoIP/Modal/DialPadModal',
 	component: DialPadModal,
-} as ComponentMeta<typeof DialPadModal>;
+} satisfies Meta<typeof DialPadModal>;
 
-export const Default: ComponentStory<typeof DialPadModal> = () => <DialPadModal handleClose={(): void => undefined} />;
+export const Default: StoryFn<typeof DialPadModal> = () => <DialPadModal handleClose={(): void => undefined} />;
 Default.storyName = 'DialPadModal';

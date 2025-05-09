@@ -1,27 +1,33 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { handleAPIError } from '../helpers/handleAPIError';
-import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import { handleAPIError } from '../helpers/handleAPIError';
+import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
-const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
+type AppDetailsPageFormData = Record<string, SettingValue>;
+
+type AppDetailsPageProps = {
+	id: App['id'];
+};
+
+const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -31,7 +37,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const context = useRouteParameter('context');
 	const appData = useAppInfo(id, context || '');
 
-	const handleReturn = useMutableCallback((): void => {
+	const handleReturn = useEffectEvent((): void => {
 		if (!context) {
 			return;
 		}
@@ -45,8 +51,22 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
+	const reducedSettings = useMemo((): AppDetailsPageFormData => {
+		return Object.values(settings || {}).reduce(
+			(ret: AppDetailsPageFormData, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }),
+			{},
+		);
+	}, [settings]);
+
+	const methods = useForm<AppDetailsPageFormData>({ values: reducedSettings });
+	const {
+		handleSubmit,
+		reset,
+		formState: { isDirty, isSubmitting },
+	} = methods;
+
 	const saveAppSettings = useCallback(
-		async (data) => {
+		async (data: AppDetailsPageFormData) => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
@@ -55,25 +75,14 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 						value: data[setting.id],
 					})),
 				);
-
-				dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
+				reset(data);
+				dispatchToastMessage({ type: 'success', message: t('App_Settings_Saved_Successfully', { appName: name }) });
 			} catch (e: any) {
 				handleAPIError(e);
 			}
 		},
-		[dispatchToastMessage, id, name, settings],
+		[dispatchToastMessage, id, name, settings, reset],
 	);
-
-	const reducedSettings = useMemo(() => {
-		return Object.values(settings || {}).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
-	}, [settings]);
-
-	const methods = useForm({ values: reducedSettings });
-	const {
-		handleSubmit,
-		reset,
-		formState: { isDirty, isSubmitting, isSubmitted },
-	} = methods;
 
 	return (
 		<Page flexDirection='column' h='full'>
@@ -116,7 +125,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
 					{installed && isAdminUser && (
-						<Button primary loading={isSubmitting || isSubmitted} onClick={handleSubmit(saveAppSettings)}>
+						<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 							{t('Save_changes')}
 						</Button>
 					)}

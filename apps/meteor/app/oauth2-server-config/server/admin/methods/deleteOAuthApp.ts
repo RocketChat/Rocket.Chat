@@ -12,28 +12,32 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const deleteOAuthApp = async (userId: string, applicationId: IOAuthApps['_id']): Promise<boolean> => {
+	if (!(await hasPermissionAsync(userId, 'manage-oauth-apps'))) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
+	}
+
+	const application = await OAuthApps.findOneById(applicationId);
+	if (!application) {
+		throw new Meteor.Error('error-application-not-found', 'Application not found', {
+			method: 'deleteOAuthApp',
+		});
+	}
+
+	await OAuthApps.deleteOne({ _id: applicationId });
+
+	await OAuthAccessTokens.deleteMany({ clientId: application.clientId });
+	await OAuthAuthCodes.deleteMany({ clientId: application.clientId });
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async deleteOAuthApp(applicationId) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'deleteOAuthApp' });
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
-		}
-
-		const application = await OAuthApps.findOneById(applicationId);
-		if (!application) {
-			throw new Meteor.Error('error-application-not-found', 'Application not found', {
-				method: 'deleteOAuthApp',
-			});
-		}
-
-		await OAuthApps.deleteOne({ _id: applicationId });
-
-		await OAuthAccessTokens.deleteMany({ clientId: application.clientId });
-		await OAuthAuthCodes.deleteMany({ clientId: application.clientId });
-
-		return true;
+		return deleteOAuthApp(this.userId, applicationId);
 	},
 });

@@ -13,10 +13,10 @@ export const TriggerMessageContainer: FunctionalComponent<{ path: string }> = ({
 	const { messages, agent, unread } = useContext(StoreContext);
 	const { theme, onRestore } = useContext(ScreenContext);
 
-	const handleStart = () => {
+	const handleStart = async () => {
 		parentCall('setFullScreenDocumentMobile');
 		parentCall('openWidget');
-		onRestore();
+		await onRestore();
 		route('/');
 	};
 

@@ -1,9 +1,9 @@
 import POP3Lib from '@rocket.chat/poplib';
 import { simpleParser } from 'mailparser';
 
+import { processDirectEmail } from './processDirectEmail';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
 import { settings } from '../../../settings/server';
-import { processDirectEmail } from './processDirectEmail';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 	constructor(imapConfig, options = {}) {
@@ -21,7 +21,7 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 
 		super(imapConfig, options);
 
-		this.on('email', (email) => Promise.await(processDirectEmail(email)));
+		this.on('email', (email) => processDirectEmail(email));
 	}
 }
 
@@ -127,10 +127,13 @@ export class POP3Helper {
 
 	start() {
 		this.log('POP3 started');
-		this.running = setInterval(() => {
-			// get new emails and process
-			this.POP3 = new POP3Intercepter();
-		}, Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000));
+		this.running = setInterval(
+			() => {
+				// get new emails and process
+				this.POP3 = new POP3Intercepter();
+			},
+			Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000),
+		);
 	}
 
 	log(...args) {
