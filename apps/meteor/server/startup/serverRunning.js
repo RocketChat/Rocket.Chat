@@ -78,8 +78,8 @@ Meteor.startup(async () => {
 			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (semver.satisfies(semver.coerce(mongoVersion), '<5.0.0')) {
-			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 5.0 OR LATER'].join('\n');
+		if (semver.satisfies(semver.coerce(mongoVersion), '<7.0.0')) {
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 7.0 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
@@ -88,42 +88,42 @@ Meteor.startup(async () => {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion), '<6.0.0')) {
-			msg = [
-				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
-				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 8.0.0 AND GREATER,',
-				'PLEASE UPGRADE MONGODB TO VERSION 6.0 OR GREATER',
-			].join('\n');
-			showWarningBox('DEPRECATION', msg);
+		// if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion), '<7.0.0')) {
+		// 	msg = [
+		// 		`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
+		// 		'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 8.0.0 AND GREATER,',
+		// 		'PLEASE UPGRADE MONGODB TO VERSION 6.0 OR GREATER',
+		// 	].join('\n');
+		// 	showWarningBox('DEPRECATION', msg);
 
-			const id = `mongodbDeprecation_${mongoVersion.replace(/[^0-9]/g, '_')}`;
-			const title = 'MongoDB_Deprecated';
-			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
-			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
+		// 	const id = `mongodbDeprecation_${mongoVersion.replace(/[^0-9]/g, '_')}`;
+		// 	const title = 'MongoDB_Deprecated';
+		// 	const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
+		// 	const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
-			if (!(await Users.bannerExistsById(id))) {
-				if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
-					return;
-				}
-				sendMessagesToAdmins({
-					msgs: async ({ adminUser }) => [
-						{
-							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
-						},
-					],
-					banners: [
-						{
-							id,
-							priority: 100,
-							title,
-							text,
-							textArguments: [mongoVersion],
-							modifiers: ['danger'],
-							link,
-						},
-					],
-				});
-			}
-		}
+		// 	if (!(await Users.bannerExistsById(id))) {
+		// 		if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
+		// 			return;
+		// 		}
+		// 		sendMessagesToAdmins({
+		// 			msgs: async ({ adminUser }) => [
+		// 				{
+		// 					msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
+		// 				},
+		// 			],
+		// 			banners: [
+		// 				{
+		// 					id,
+		// 					priority: 100,
+		// 					title,
+		// 					text,
+		// 					textArguments: [mongoVersion],
+		// 					modifiers: ['danger'],
+		// 					link,
+		// 				},
+		// 			],
+		// 		});
+		// 	}
+		// }
 	}, 100);
 });
