@@ -123,14 +123,9 @@ export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
 
-const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
-
-export const dbWatchersDisabled =
-	(process.env.NODE_ENV === 'production' && ['yes', 'true'].includes(disabledEnvVar)) ||
-	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
+export const dbWatchersDisabled = true;
 
 export * from './modelClasses';
-export * from './DatabaseWatcher';
 
 export * from './dummy/ReadReceipts';
 
