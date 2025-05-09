@@ -5064,7 +5064,7 @@
   "__agents__agents_and__count__conversations__period__": "{{agents}} agentes y {{count}} conversaciones, {{period}}",
   "__count__conversations__period__": "{{count}} conversaciones, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salas vacías se eliminarán automáticamente.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} salas vacías se eliminarán automáticamente.<br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> salas vacías se eliminarán automáticamente.<br/> {{rooms}}.",
   "__count__message_pruned_one": "{{count}} mensaje borrado",
   "__count__message_pruned_other": "{{count}} mensajes borrados",
   "__count__message_pruned_many": "{{count}} mensajes borrados",

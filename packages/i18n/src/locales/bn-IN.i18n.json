@@ -42,5 +42,5 @@
   "access-setting-permissions_description": "সেটিং-ভিত্তিক অনুমতিগুলি সংশোধন করার অনুমতি",
   "add-user": "ব্যবহারকারী যুক্ত করুন",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} খালি ঘরগুলি স্বয়ংক্রিয়ভাবে সরানো হবে।",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} খালি ঘরগুলি স্বয়ংক্রিয়ভাবে সরানো হবে: <br/> {{rooms}}।"
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> খালি ঘরগুলি স্বয়ংক্রিয়ভাবে সরানো হবে: <br/> {{rooms}}।"
 }

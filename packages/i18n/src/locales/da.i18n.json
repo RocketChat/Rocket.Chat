@@ -4076,7 +4076,7 @@
   "__agents__agents_and__count__conversations__period__": "{{agents}} agenter og {{count}} samtaler, {{period}} ",
   "__count__conversations__period__": "{{count}} samtaler, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tomme rum fjernes automatisk.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} tomme rum vil blive fjernet automatisk: <br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tomme rum vil blive fjernet automatisk: <br/> {{rooms}}.",
   "__count__message_pruned_one": "{{count}} besked er beskåret",
   "__count__message_pruned_other": "{{count}} beskeder er beskåret",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is no longer {{role}} by {{user_by}}",

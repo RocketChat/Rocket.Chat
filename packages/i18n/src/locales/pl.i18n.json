@@ -5388,7 +5388,7 @@
   "__agents__agents_and__count__conversations__period__": "{{agents}} agentów i {{count}} rozmów, {{period}}",
   "__count__conversations__period__": "{{count}} rozmowy, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "Liczba pokojów do automatycznego usunięcia: {{count}}.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "Puste pokoje ({{count}}) zostaną automatycznie usunięte:<br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "Puste pokoje (<bold>{{count}}</bold>) zostaną automatycznie usunięte:<br/> {{rooms}}.",
   "__count__message_pruned_one": "{{count}} wiadomość(i) usuniętych",
   "__count__message_pruned_other": "{{count}} wiadomość(i) usuniętych",
   "__count__message_pruned_many": "{{count}} wiadomość(i) usuniętych",
