@@ -38,7 +38,7 @@ test.describe.serial('OTR', () => {
 		await poHomeChannel.content.sendMessage('hello OTR');
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await poHomeChannel.content.getMessageByText('hello OTR').click();
+		await poHomeChannel.content.getOTRMessageByText('hello OTR').click();
 		await expect(poHomeChannel.content.btnClearSelection).toBeDisabled();
 
 		await user1Page.close();
