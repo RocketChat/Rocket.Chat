@@ -1,5 +1,14 @@
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { AtLeast, ILivechatDepartment, IOmnichannelSource, IUser, SelectedAgent } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ILivechatDepartment,
+	IOmnichannelRoom,
+	IOmnichannelRoomExtraData,
+	IOmnichannelRoomInfo,
+	IOmnichannelSource,
+	IUser,
+	SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
@@ -63,3 +72,7 @@ export const beforeDelegateAgent = async (
 
 	return Users.getNextBotAgent();
 };
+
+export const beforeNewRoom = makeFunction(
+	async (roomInfo: IOmnichannelRoomInfo, _extraData?: IOmnichannelRoomExtraData): Promise<Partial<IOmnichannelRoom>> => roomInfo,
+);

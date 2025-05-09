@@ -20,9 +20,7 @@ import type {
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
-	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
-	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -109,7 +107,6 @@ interface EventLikeCallbackSignatures {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
-	'livechat.beforeRoom': (roomInfo: IOmnichannelRoomInfo, extraData?: IOmnichannelRoomExtraData) => Partial<IOmnichannelRoom>;
 	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
