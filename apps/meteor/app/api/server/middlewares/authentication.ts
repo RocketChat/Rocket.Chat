@@ -46,7 +46,7 @@ export function hasPermissionMiddleware(
 	{ rejectUnauthorized } = {
 		rejectUnauthorized: true,
 	},
-) {
+){
 	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		if (!req.userId) {
 			if (rejectUnauthorized) {
