@@ -31,7 +31,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 		});
 	}
 
-	emojiData.name = limax(emojiData.name, { replacement: '_' });
+	emojiData.name = limax(emojiData.name, { replacement: ' ' });
 
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
@@ -62,7 +62,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 		aliases = emojiData.aliases
 			.split(/\s*,\s*/)
 			.filter(Boolean)
-			.map((alias) => limax(alias, { replacement: '_' }))
+			.map((alias) => limax(alias, { replacement: ' ' }))
 			.filter((alias) => alias !== emojiData.name);
 	}
 
