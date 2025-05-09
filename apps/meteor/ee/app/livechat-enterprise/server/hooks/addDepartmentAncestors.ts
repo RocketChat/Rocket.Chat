@@ -4,7 +4,6 @@ import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { onNewRoom } from '../../../../../app/livechat/server/lib/hooks';
 
 onNewRoom.patch(async (originalFn, room) => {
-	// Call the CE effects first, then EE ones
 	await originalFn(room);
 	if (!room.departmentId) {
 		return;
