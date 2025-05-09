@@ -13,7 +13,7 @@ const configDefault: OauthConfig = {
 	accessTokenParam: 'access_token',
 };
 
-const WordPress = CustomOAuth.configureOAuthService('wordpress', configDefault);
+const WordPress = new CustomOAuth('wordpress', configDefault);
 
 const configureServerType = (
 	serverType: string,

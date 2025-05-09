@@ -22,11 +22,9 @@ export const useJumpToMessageImperative = () => {
 		if (!jumpToRef.current || !containerRef.current) {
 			return;
 		}
-
-		// calculate the scroll position to center the message
-		// avoiding scrollIntoView because it will can scroll parent elements
-		containerRef.current.scrollTop =
-			jumpToRef.current.offsetTop - containerRef.current.clientHeight / 2 + jumpToRef.current.offsetHeight / 2;
+		jumpToRef.current.scrollIntoView({
+			block: 'center',
+		});
 	}, []);
 
 	return {

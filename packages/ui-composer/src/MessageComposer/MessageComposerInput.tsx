@@ -11,25 +11,28 @@ const messageComposerInputStyle = css`
 	}
 `;
 
-type MessageComposerInputProps = ComponentProps<typeof Box>;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface MessageComposerInputProps extends ComponentProps<typeof Box> {}
 
 const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInputProps>(function MessageComposerInput(props, ref) {
 	return (
-		<Box
-			className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
-			color='default'
-			width='full'
-			minHeight={52}
-			maxHeight={155}
-			rows={1}
-			fontScale='p2'
-			ref={ref}
-			pi={12}
-			pb={16}
-			borderWidth={0}
-			is='textarea'
-			{...props}
-		/>
+		<Box width='full' fontSize={0}>
+			<Box
+				className={[messageComposerInputStyle, 'rc-message-box__textarea js-input-message']}
+				color='default'
+				width='full'
+				minHeight='20px'
+				maxHeight='155px'
+				rows={1}
+				fontScale='p2'
+				ref={ref}
+				pi={12}
+				mb={16}
+				borderWidth={0}
+				is='textarea'
+				{...props}
+			/>
+		</Box>
 	);
 });
 

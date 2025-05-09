@@ -16,7 +16,7 @@ const config: OauthConfig = {
 	accessTokenParam: 'access_token',
 };
 
-const Gitlab = CustomOAuth.configureOAuthService('gitlab', config);
+const Gitlab = new CustomOAuth('gitlab', config);
 
 export const useGitLabAuth = () => {
 	const gitlabApiUrl = useSetting('API_Gitlab_URL') as string;

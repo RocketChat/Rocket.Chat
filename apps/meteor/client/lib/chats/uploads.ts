@@ -49,13 +49,14 @@ const send = async (
 ): Promise<void> => {
 	const id = Random.id();
 
-	const upload: Upload = {
-		id,
-		name: fileContent?.raw.name || file.name,
-		percentage: 0,
-	};
-
-	updateUploads((uploads) => [...uploads, upload]);
+	updateUploads((uploads) => [
+		...uploads,
+		{
+			id,
+			name: fileContent?.raw.name || file.name,
+			percentage: 0,
+		},
+	]);
 
 	try {
 		await new Promise((resolve, reject) => {
@@ -113,28 +114,20 @@ const send = async (
 			);
 
 			xhr.onload = async () => {
-				if (xhr.readyState === xhr.DONE) {
-					if (xhr.status === 400) {
-						const error = JSON.parse(xhr.responseText);
-						updateUploads((uploads) => [...uploads, { ...upload, error: new Error(error.error) }]);
-						return;
+				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+					const result = JSON.parse(xhr.responseText);
+					let content;
+					if (getContent) {
+						content = await getContent(result.file._id, result.file.url);
 					}
 
-					if (xhr.status === 200) {
-						const result = JSON.parse(xhr.responseText);
-						let content;
-						if (getContent) {
-							content = await getContent(result.file._id, result.file.url);
-						}
-
-						await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
-							msg,
-							tmid,
-							description,
-							t,
-							content,
-						});
-					}
+					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
+						msg,
+						tmid,
+						description,
+						t,
+						content,
+					});
 				}
 			};
 

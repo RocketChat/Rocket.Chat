@@ -17,7 +17,7 @@ const config: OauthConfig = {
 	},
 };
 
-const Nextcloud = CustomOAuth.configureOAuthService('nextcloud', config);
+const Nextcloud = new CustomOAuth('nextcloud', config);
 
 export const useNextcloud = (): void => {
 	const nextcloudURL = useSetting('Accounts_OAuth_Nextcloud_URL') as string;

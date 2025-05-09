@@ -7,11 +7,15 @@ exports[`renders Default without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
       role="group"
     >
-      <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
-        placeholder="Text"
-        rows="1"
-      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-1drwzbn"
+      >
+        <textarea
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
+          placeholder="Text"
+          rows="1"
+        />
+      </div>
       <div
         class="rcx-box rcx-box--full rcx-css-jyts6z"
       >
@@ -424,11 +428,15 @@ exports[`renders WithHints without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
       role="group"
     >
-      <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
-        placeholder="Text"
-        rows="1"
-      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-1drwzbn"
+      >
+        <textarea
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
+          placeholder="Text"
+          rows="1"
+        />
+      </div>
       <div
         class="rcx-box rcx-box--full rcx-css-jyts6z"
       >
@@ -630,11 +638,15 @@ exports[`renders WithSubmit without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
       role="group"
     >
-      <textarea
-        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
-        placeholder="Text"
-        rows="1"
-      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-1drwzbn"
+      >
+        <textarea
+          class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-1hzjarz"
+          placeholder="Text"
+          rows="1"
+        />
+      </div>
       <div
         class="rcx-box rcx-box--full rcx-css-jyts6z"
       >

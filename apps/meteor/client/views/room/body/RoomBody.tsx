@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
@@ -15,7 +16,6 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
@@ -110,7 +110,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
-	const jumpToRef = useMergedRefsV2(
+	const jumpToRef = useMergedRefs(
 		jumpToRefGetMore,
 		jumpToRefIsAtBottom,
 		jumpToRefRestoreScrollPosition,
@@ -135,7 +135,7 @@ const RoomBody = (): ReactElement => {
 			isAtBottom,
 		});
 
-	const innerRef = useMergedRefsV2(
+	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
@@ -147,7 +147,7 @@ const RoomBody = (): ReactElement => {
 		jumpToRefGetMoreImperativeInnerRef,
 	);
 
-	const wrapperBoxRefs = useMergedRefsV2(unreadBarWrapperRef);
+	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();

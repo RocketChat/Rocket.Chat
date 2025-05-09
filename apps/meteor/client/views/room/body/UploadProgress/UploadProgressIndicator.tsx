@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../../lib/chats/Upload';
@@ -34,14 +34,6 @@ const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: Uploa
 		onClose?.(id);
 	}, [id, onClose]);
 
-	const uploadProgressTitle = useMemo(() => {
-		if (error) {
-			return `${error} ${name}`;
-		}
-
-		return `[${percentage}%] ${t('Uploading_file__fileName__', { fileName: name })}`;
-	}, [error, name, percentage, t]);
-
 	return (
 		<Box
 			pb={4}
@@ -60,8 +52,8 @@ const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: Uploa
 			bg='surface-tint'
 			className={customClass}
 		>
-			<Box role='status' withTruncatedText zIndex={2} borderRadius={4}>
-				{uploadProgressTitle}
+			<Box withTruncatedText zIndex={2} borderRadius={4}>
+				[{percentage}%] {name}
 			</Box>
 			<Button zIndex={3} small onClick={handleCloseClick}>
 				{t('Cancel')}

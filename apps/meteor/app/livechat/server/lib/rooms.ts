@@ -24,7 +24,6 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Visitors } from './Visitors';
 import { getRequiredDepartment } from './departmentsLib';
-import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
@@ -99,7 +98,7 @@ export async function createRoom({
 		throw new Error('error-contact-channel-blocked');
 	}
 
-	const defaultAgent = await checkDefaultAgentOnNewRoom(agent, {
+	const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, {
 		visitorId: visitor._id,
 		source: roomInfo.source,
 	});

@@ -49,11 +49,7 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 
 		if (state === 'loaded') {
 			this.retries = 0;
-			try {
-				this.emit('loaded', services);
-			} catch (e) {
-				console.error('Failed to apply loaded listed of login services.', e);
-			}
+			this.emit('loaded', services);
 		}
 	}
 
@@ -117,15 +113,13 @@ class LoginServices extends Emitter<LoginServicesEvents> {
 		return this.serviceButtons;
 	}
 
-	public onLoad(callback: (services: LoginServiceConfiguration[]) => void): () => void {
+	public onLoad(callback: (services: LoginServiceConfiguration[]) => void) {
 		if (this.ready) {
-			callback(this.services);
-			return () => undefined;
+			return callback(this.services);
 		}
 
 		void this.loadServices();
 		this.once('loaded', callback);
-		return () => this.off('loaded', callback);
 	}
 
 	public async loadServices(): Promise<void> {
