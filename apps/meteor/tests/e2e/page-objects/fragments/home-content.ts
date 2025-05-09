@@ -197,7 +197,7 @@ export class HomeContent {
 	}
 
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('[data-qa-id="edit-message"]');
+		return this.page.locator('role=menu[name="More"] >> role=menuitem[name="Edit"]');
 	}
 
 	get btnOptionDeleteMessage(): Locator {
@@ -444,6 +444,10 @@ export class HomeContent {
 
 	getMessageByText(text: string): Locator {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
+	}
+
+	getOTRMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="OTR message"]', { hasText: text });
 	}
 
 	getMessageById(id: string): Locator {

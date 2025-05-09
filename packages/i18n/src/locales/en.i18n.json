@@ -3690,7 +3690,7 @@
   "OTR_Enable_Description": "Enable option to use off-the-record (OTR) messages in direct messages between 2 users. OTR messages are not recorded on the server and exchanged directly and encrypted between the 2 users.",
   "OTR_Session_ended_other_user_went_offline": "OTR Session has ended. User {{username}} went offline",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
-  "OTR_message": "OTR Message",
+  "OTR_message": "OTR message",
   "OTR_messages_cannot_be_exported": "OTR messages cannot be exported",
   "OTR_not_available": "OTR not available",
   "OTR_not_available_e2ee": "This room has E2E encryption enabled, OTR cannot work with encrypted messages.",
