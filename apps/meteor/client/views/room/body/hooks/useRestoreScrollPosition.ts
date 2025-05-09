@@ -19,10 +19,12 @@ export function useRestoreScrollPosition(rid: string, wait = 100) {
 					node.scrollLeft = 30;
 				}
 				const handleWrapperScroll = withThrottling({ wait })((event) => {
+					const store = RoomManager.getStore(rid);
 					store?.update({ scroll: event.target.scrollTop, atBottom: isAtBottom(event.target, 50) });
 				});
 				node.addEventListener('scroll', handleWrapperScroll, { passive: true });
 				return () => {
+					handleWrapperScroll.cancel();
 					node.removeEventListener('scroll', handleWrapperScroll);
 				};
 			},
