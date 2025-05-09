@@ -722,7 +722,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.cleanHistory': {
-		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
+		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean; filesOnly?: true };
 	};
 
 	'/v1/rooms.createDiscussion': {

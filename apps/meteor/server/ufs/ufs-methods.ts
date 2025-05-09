@@ -52,7 +52,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 			// Clean upload if error occurs
 			rs.on('error', (err) => {
 				console.error(err);
-				void store.removeById(fileId, { session: options?.session });
+				void store.deleteById(fileId, { session: options?.session });
 				reject(err);
 			});
 
@@ -75,7 +75,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 			);
 		} catch (err: any) {
 			// If write failed, remove the file
-			await store.removeById(fileId, { session: options?.session });
+			await store.deleteById(fileId, { session: options?.session });
 			// removeTempFile(); // todo remove temp file on error or try again ?
 			reject(new Meteor.Error('ufs: cannot upload file', err));
 		}
