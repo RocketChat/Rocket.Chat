@@ -8,6 +8,7 @@ import { removeSLAFromRooms } from './SlaHelper';
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
+import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {
@@ -49,8 +50,12 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	async removeUnit(_id: string) {
-		const result = await LivechatUnit.removeById(_id);
+	async removeUnit(_id: string, userId: string) {
+		check(_id, String);
+
+		const unitsFromUser = await getUnitsFromUser(userId);
+
+		const result = await LivechatUnit.removeByIdAndUnit(_id, unitsFromUser);
 		if (!result.deletedCount) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
 		}
@@ -63,6 +68,7 @@ export const LivechatEnterprise = {
 		unitData: Omit<IOmnichannelBusinessUnit, '_id'>,
 		unitMonitors: { monitorId: string; username: string },
 		unitDepartments: { departmentId: string }[],
+		userId: string,
 	) {
 		check(_id, Match.Maybe(String));
 
@@ -90,9 +96,14 @@ export const LivechatEnterprise = {
 
 		let ancestors: string[] = [];
 		if (_id) {
-			const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(_id, {
-				projection: { _id: 1, ancestors: 1 },
-			});
+			const unitsFromUser = await getUnitsFromUser(userId);
+			const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(
+				_id,
+				{
+					projection: { _id: 1, ancestors: 1 },
+				},
+				{ unitsFromUser },
+			);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -131,7 +142,11 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	async saveSLA(_id: string | null, slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>) {
+	async saveSLA(
+		_id: string | null,
+		slaData: Pick<IOmnichannelServiceLevelAgreements, 'name' | 'description' | 'dueTimeInMinutes'>,
+		executedBy: string,
+	) {
 		const oldSLA =
 			_id &&
 			(await OmnichannelServiceLevelAgreements.findOneById<Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes'>>(_id, {
@@ -151,18 +166,18 @@ export const LivechatEnterprise = {
 		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			await updateSLAInquiries(sla);
+			await updateSLAInquiries(executedBy, sla);
 		}
 
 		return sla;
 	},
 
-	async removeSLA(_id: string) {
+	async removeSLA(executedBy: string, _id: string) {
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
 		if (!removedResult || removedResult.deletedCount !== 1) {
 			throw new Error(`SLA with id ${_id} not found`);
 		}
 
-		await removeSLAFromRooms(_id);
+		await removeSLAFromRooms(_id, executedBy);
 	},
 };
