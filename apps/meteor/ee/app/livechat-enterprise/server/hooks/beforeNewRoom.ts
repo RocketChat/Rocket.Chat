@@ -5,9 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { beforeNewRoom } from '../../../../../app/livechat/server/lib/hooks';
 import { isPlainObject } from '../../../../../lib/utils/isPlainObject';
 
-// Since we have tests...
-// Other alternative would be to run the tests on CE and "patch" for the testing
-// But this was simpler for now
 export const beforeNewRoomPatched = async (
 	_next: any,
 	roomInfo: IOmnichannelRoomInfo,
