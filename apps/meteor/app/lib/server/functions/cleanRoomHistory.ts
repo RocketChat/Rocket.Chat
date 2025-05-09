@@ -51,7 +51,22 @@ export async function cleanRoomHistory({
 
 		fileCount++;
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			await Messages.updateOne({ _id: document._id }, [
+				{
+					$set: {
+						attachments: {
+							$map: {
+								input: '$attachments',
+								as: 'att',
+								in: {
+									$cond: [{ $eq: ['$$att.type', 'file'] }, { color: '#FD745E', text }, '$$att'],
+								},
+							},
+						},
+						file: '$$REMOVE',
+					},
+				},
+			]);
 		}
 	}
 
