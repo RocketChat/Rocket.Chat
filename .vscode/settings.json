@@ -34,5 +34,6 @@
 		"searchbox",
 		"tmid",
 		"tshow"
-	]
+	],
+	"deno.enablePaths": ["./packages/apps-engine/deno-runtime/"],
 }
