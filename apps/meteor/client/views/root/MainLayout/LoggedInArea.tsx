@@ -4,7 +4,9 @@ import type { ReactNode } from 'react';
 import { useCustomEmoji } from '../../../hooks/customEmoji/useCustomEmoji';
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
+import { useFingerprintChange } from '../../../hooks/useFingerprintChange';
 import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
+import { useRootUrlChange } from '../../../hooks/useRootUrlChange';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
@@ -27,6 +29,8 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
 	useRestrictedRoles();
+	useRootUrlChange(user._id);
+	useFingerprintChange(user._id);
 
 	return children;
 };
