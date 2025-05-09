@@ -73,6 +73,7 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import { meteorConnectionMiddleware } from '../middlewares/meteorConnection';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -106,7 +107,10 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API
+	.withMeteorConnection
+	.use(meteorConnectionMiddleware)
+	.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{

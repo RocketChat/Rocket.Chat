@@ -33,7 +33,6 @@ const SettingsUpdatePropsSchema = {
 			type: 'object',
 			properties: {
 				value: {
-					type: 'any',
 				},
 			},
 			required: ['value'],
@@ -56,7 +55,6 @@ const SettingsUpdatePropsSchema = {
 					type: 'object',
 				},
 				value: {
-					type: 'any',
 				},
 			},
 			required: ['editor', 'value'],

@@ -1,4 +1,5 @@
 import type { MiddlewareHandler } from 'hono';
+import { Accounts } from 'meteor/accounts-base';
 
 import { getRestPayload } from '../../../../server/lib/logger/logPayloads';
 import { generateConnection } from '../api';

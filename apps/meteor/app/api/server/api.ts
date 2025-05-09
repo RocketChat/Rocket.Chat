@@ -473,21 +473,24 @@ export class APIClass<
 	public async processTwoFactor({
 		userId,
 		request,
-		invocation,
+		// invocation,
 		options,
 		connection,
 	}: {
 		userId: string;
 		request: Request;
-		invocation: { twoFactorChecked?: boolean };
+		// invocation: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
 	}): Promise<void> {
+		console.log({ options })
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
 		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
+		console.log({ code })
 		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
+		console.log({ method })
 
 		await checkCodeForUser({
 			user: userId,
@@ -497,7 +500,7 @@ export class APIClass<
 			connection,
 		});
 
-		invocation.twoFactorChecked = true;
+		// invocation.twoFactorChecked = true;
 	}
 
 	protected getFullRouteName(route: string, method: string): string {
@@ -857,14 +860,14 @@ export class APIClass<
 
 							// Accounts._setAccountData(connection.id, 'loginToken', this.token!);
 
-							// this.userId &&
-							// 	(await api.processTwoFactor({
-							// 		userId: this.userId,
-							// 		request: this.request,
-							// 		invocation: invocation as unknown as Record<string, any>,
-							// 		options: _options,
-							// 		connection: connection as unknown as IMethodConnection,
-							// 	}));
+							this.userId &&
+								(await api.processTwoFactor({
+									userId: this.userId,
+									request: this.request,
+									// invocation: invocation as unknown as Record<string, any>,
+									options: _options,
+									connection: connection as unknown as IMethodConnection,
+								}));
 
 							this.queryOperations = options.queryOperations;
 							(this as any).queryFields = options.queryFields;
