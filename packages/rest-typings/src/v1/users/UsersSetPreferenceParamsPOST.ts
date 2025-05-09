@@ -14,6 +14,7 @@ export type UsersSetPreferencesParamsPOST = {
 		clockMode?: number;
 		useEmojis?: boolean;
 		convertAsciiEmoji?: boolean;
+		toggleFormatting?: boolean;
 		saveMobileBandwidth?: boolean;
 		collapseMediaByDefault?: boolean;
 		autoImageLoad?: boolean;
@@ -84,6 +85,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				convertAsciiEmoji: {
+					type: 'boolean',
+					nullable: true,
+				},
+				toggleFormatting: {
 					type: 'boolean',
 					nullable: true,
 				},
