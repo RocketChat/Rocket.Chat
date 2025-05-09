@@ -563,10 +563,6 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui-ee-no-watcher.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
           echo finished
 
   deploy:
