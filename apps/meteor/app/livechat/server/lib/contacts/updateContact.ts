@@ -61,7 +61,6 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		validateCustomFields(workspaceAllowedCustomFields, receivedCustomFields, {
 			ignoreAdditionalFields: !!notRegisteredCustomFields.length,
 		});
-
 	if (receivedCustomFields && customFieldsToUpdate && notRegisteredCustomFields.length) {
 		const allowedCustomFields = [...workspaceAllowedCustomFields, ...notRegisteredCustomFields];
 		validateCustomFields(allowedCustomFields, receivedCustomFields);
@@ -72,12 +71,12 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
-		name,
+		...(name && { name }),
 		...(emails && { emails: emails?.map((address) => ({ address })) }),
 		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
 		...(contactManager && { contactManager }),
 		...(channels && { channels }),
-		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
+		...(customFieldsToUpdate && { customFields: { ...contact.customFields, ...customFieldsToUpdate } }),
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 
