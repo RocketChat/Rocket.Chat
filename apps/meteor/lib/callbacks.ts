@@ -24,7 +24,6 @@ import type {
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
-	IOmnichannelSource,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -119,10 +118,6 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (
-		defaultAgent?: SelectedAgent,
-		params?: { visitorId?: string; source?: IOmnichannelSource },
-	) => SelectedAgent | undefined;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
@@ -130,10 +125,6 @@ type ChainedCallbackSignatures = {
 		newRoom: IOmnichannelRoom,
 		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
 	) => IOmnichannelRoom;
-
-	'livechat.onCheckRoomApiParams': (params: Record<string, unknown>) => Record<string, unknown>;
-
-	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
 
 	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
@@ -241,8 +232,6 @@ export type Hook =
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.offlineMessage'
-	| 'livechat.onCheckRoomApiParams'
-	| 'livechat.onLoadConfigApi'
 	| 'livechat.manageDepartmentUnit'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
