@@ -424,7 +424,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = await cleanRoomHistoryMethod(this.userId, {
+			const params = {
 				roomId: _id,
 				latest: new Date(latest),
 				oldest: new Date(oldest),
@@ -435,7 +435,13 @@ API.v1.addRoute(
 				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
 				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
 				fromUsers: users?.filter(isTruthy) || [],
-			});
+			};
+
+			const count = await cleanRoomHistoryMethod(this.userId, params);
+
+			if (params.filesOnly) {
+				return API.v1.success({ _id, count, filesOnly: true });
+			}
 
 			return API.v1.success({ _id, count });
 		},

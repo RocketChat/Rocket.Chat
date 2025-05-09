@@ -251,8 +251,25 @@ export class Store {
 		await this.removeById(fileId, options);
 	}
 
+	async tryDeleteById(fileId: string, options?: { session?: ClientSession }) {
+		const result = await this.tryDelete(fileId, options);
+		if (result.success) {
+			await this.removeById(fileId, options);
+		}
+		return result;
+	}
+
 	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {
 		throw new Error('delete is not implemented');
+	}
+
+	async tryDelete(fileId: string, options?: { session?: ClientSession }): Promise<{ success: false; error: unknown } | { success: true }> {
+		try {
+			await this.delete(fileId, options);
+			return { success: true };
+		} catch (error) {
+			return { success: false, error };
+		}
 	}
 
 	generateToken(pattern?: string) {

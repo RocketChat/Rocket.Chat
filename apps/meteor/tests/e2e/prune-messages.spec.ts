@@ -77,14 +77,16 @@ test.describe('prune-messages', () => {
 				downloadUrl = download.url();
 			});
 
-			await pruneMessages(poHomeChannel, { filesOnly: true });
+			await pruneMessages(poHomeChannel, { filesOnly: true }, '2 files pruned');
+			await pruneMessages(poHomeChannel, { filesOnly: true }, 'No files found to prune');
 
 			await test.step('download fails with not found (404)', async () => {
 				const download = await fetch(downloadUrl);
 				expect(download.status).toBe(404);
 			});
 
-			await pruneMessages(poHomeChannel, { filesOnly: false });
+			await pruneMessages(poHomeChannel, { filesOnly: false }, '1 message pruned');
+			await pruneMessages(poHomeChannel, { filesOnly: false }, 'No messages found to prune');
 		});
 
 		test('should prune after changing path', async ({ settings }) => {
@@ -101,7 +103,7 @@ test.describe('prune-messages', () => {
 			});
 
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
-			await pruneMessages(poHomeChannel, { filesOnly: true });
+			await pruneMessages(poHomeChannel, { filesOnly: true }, 'No files found to prune');
 
 			await test.step('download fails with status 403 (forbidden)', async () => {
 				const download = await fetch(downloadUrl);
@@ -118,35 +120,39 @@ test.describe('prune-messages', () => {
 				downloadUrl = download.url();
 			});
 
-			await pruneMessages(poHomeChannel, { filesOnly: true });
+			await pruneMessages(poHomeChannel, { filesOnly: true }, '2 files pruned');
 
 			await test.step('download fails with status 404 (not found)', async () => {
 				const download = await fetch(downloadUrl);
 				expect(download.status).toBe(404);
 			});
 
-			await pruneMessages(poHomeChannel, { filesOnly: false });
+			await pruneMessages(poHomeChannel, { filesOnly: false }, '1 message pruned');
 		});
 
 		// FIXME: This will fail in the afterAll step when trying to delete the channel
-		test.fail('delete channel with dangling files', async ({ settings }) => {
+		test('delete channel with dangling files', async ({ settings, page }) => {
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
 			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
+			await page.getByRole('button', { name: 'Room Information' }).click();
+			await page.getByTitle('More', { exact: true }).click();
+			await page.getByRole('menuitem', { name: 'Delete' }).click();
+			const modal = page.getByLabel('Delete channel');
+			await modal.getByRole('button', { name: 'Yes, delete' }).click();
+			await expect(modal).not.toBeVisible();
 		});
 
 		// FIXME: This will fail because the chat.delete API will return 400 (ENOENT)
-		test.fail('delete message with dangling files', async ({ settings }) => {
+		test('delete message with dangling files', async ({ settings }) => {
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
 			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
-			await poHomeChannel.page.getByLabel('Close').click();
-			await poHomeChannel.content.openLastMessageMenu();
-			await poHomeChannel.page.getByRole('menuitem', { name: 'Delete' }).click();
-			const modal = poHomeChannel.page.getByLabel('Are you sure?');
-			await modal.getByRole('button', { name: 'Yes, delete' }).click();
-			await expect(modal).not.toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+			await deleteMessage(poHomeChannel);
+			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
+			await pruneMessages(poHomeChannel, { filesOnly: true }, '2 files pruned');
+			await pruneMessages(poHomeChannel, { filesOnly: true }, 'No files found to prune');
+			await pruneMessages(poHomeChannel, { filesOnly: false }, '1 message pruned');
 		});
 	});
 });
@@ -155,21 +161,37 @@ type PruneMessagesOptions = {
 	filesOnly: boolean;
 };
 
-async function pruneMessages(poHomeChannel: HomeChannel, { filesOnly }: PruneMessagesOptions) {
+async function deleteMessage({ content, page }: HomeChannel) {
+	await test.step('delete message', async () => {
+		await content.openLastMessageMenu();
+		await page.getByRole('menuitem', { name: 'Delete' }).click();
+		const modal = page.getByLabel('Are you sure?');
+		await modal.getByRole('button', { name: 'Yes, delete' }).click();
+		await expect(modal).not.toBeVisible();
+		await expect(content.lastUserMessage).not.toBeVisible();
+	});
+}
+
+async function pruneMessages(poHomeChannel: HomeChannel, { filesOnly }: PruneMessagesOptions, message: string) {
 	await test.step(
 		`prune messages with filesOnly=${filesOnly}`,
 		async () => {
 			const { page, content, toast } = poHomeChannel;
-
+			// await page.goto(`/channel/${targetChannel}/clean-history`);
 			const form = page.getByLabel('Prune Messages');
-			await form.getByRole('checkbox', { name: 'Only remove the attached files, keep messages' }).setChecked(filesOnly, { force: true });
+			const checkboxes = {
+				filesOnly: form.getByRole('checkbox', { name: 'Only remove the attached files, keep messages' }).locator('i'),
+			};
+			if (filesOnly) {
+				await checkboxes.filesOnly.uncheck({ force: true });
+				await checkboxes.filesOnly.check({ force: true });
+			}
 			await form.getByRole('button', { name: 'Prune' }).click();
 
 			const modal = page.getByLabel('Are you sure?');
 			await modal.getByRole('button', { name: 'Yes, prune them!' }).click();
 
-			await expect(toast.getByText(/1 message pruned|messages pruned|No messages found to prune/)).toBeVisible();
-			await toast.getByLabel('Dismiss alert').click();
+			await expect(toast.getByRole('alert').first()).toHaveText(message);
 
 			await expect(content.lastUserMessage).toBeVisible({ visible: filesOnly });
 		},

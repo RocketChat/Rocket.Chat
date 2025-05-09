@@ -1,7 +1,8 @@
 import { api } from '@rocket.chat/core-services';
-import type { FileProp, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
+import type { Condition } from 'mongodb';
 
 import { deleteRoom } from './deleteRoom';
 import { i18n } from '../../../../server/lib/i18n';
@@ -50,14 +51,29 @@ export async function cleanRoomHistory({
 	for await (const document of cursor) {
 		const res = await deleteUploadedFiles(document);
 
+		fileCount += res.succeeded.length;
+
 		if (res.failed.length > 0) {
 			continue;
 		}
 
-		fileCount++;
-
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			await Messages.updateOne({ _id: document._id }, [
+				{
+					$set: {
+						attachments: {
+							$map: {
+								input: '$attachments',
+								as: 'att',
+								in: {
+									$cond: [{ $eq: ['$$att.type', 'file'] }, { color: '#FD745E', text }, '$$att'] as Condition<IMessage['attachments']>,
+								},
+							},
+						},
+						file: '$$REMOVE',
+					},
+				} as const,
+			]);
 		}
 	}
 
@@ -152,19 +168,11 @@ async function deleteUploadedFiles(document: IMessage) {
 	}
 
 	const uploadsStore = FileUpload.getStore('Uploads');
-	const results = await Promise.all(files.map(createFileDeletionHandler((file) => uploadsStore.deleteById(file._id))));
+	const results = await Promise.all(
+		files.map(async (file) => ({
+			file,
+			...(await uploadsStore.tryDeleteById(file._id)),
+		})),
+	);
 	return { failed: results.filter((res) => !res.success), succeeded: results.filter((res) => res.success) };
-}
-
-function createFileDeletionHandler<T>(deleteFile: (file: FileProp) => Promise<T>) {
-	return async (file: FileProp) => {
-		try {
-			const result = await deleteFile(file);
-			logger.warn('File deleted:', file);
-			return { success: true, file, result } as const;
-		} catch (error) {
-			logger.error('File not deleted:', file, error);
-			return { success: false, file, error } as const;
-		}
-	};
 }
