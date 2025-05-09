@@ -1,12 +1,9 @@
 import { api } from '@rocket.chat/core-services';
 import { WebdavAccounts } from '@rocket.chat/models';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { API } from '../api';
 import { findWebdavAccountsByUserId } from '../lib/webdav';
-
-// TO-DO: remove this AJV instance and import one from the core-typings
-const ajv = new Ajv({ coerceTypes: true });
 
 type POSTRemoveWebdavAccount = {
 	accountId: string;
@@ -25,26 +22,133 @@ const POSTRemoveWebdavAccountSchema = {
 
 const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
-API.v1.addRoute(
-	'webdav.getMyAccounts',
-	{ authRequired: true },
-	{
-		async get() {
-			return API.v1.success({
-				accounts: await findWebdavAccountsByUserId({ uid: this.userId }),
-			});
+const commonUnauthorizedErrorSchema = {
+	type: 'object',
+	properties: {
+		message: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
 		},
 	},
-);
+	required: ['success', 'message'],
+	additionalProperties: false,
+};
 
-API.v1.addRoute(
-	'webdav.removeWebdavAccount',
-	{
-		authRequired: true,
-		validateParams: isPOSTRemoveWebdavAccount,
+const commonBadRequestErrorSchema = {
+	type: 'object',
+	properties: {
+		errorType: {
+			type: 'string',
+		},
+		error: {
+			type: 'string',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
 	},
-	{
-		async post() {
+	required: ['success', 'errorType', 'error'],
+	additionalProperties: false,
+};
+
+API.v1
+	.get(
+		'webdav.getMyAccounts',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						accounts: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									userId: {
+										type: 'string',
+									},
+									serverURL: {
+										type: 'string',
+									},
+									username: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+									},
+								},
+								required: ['userId', 'serverURL', 'username', 'name'],
+								additionalProperties: false,
+							},
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success', 'accounts'],
+					additionalProperties: false,
+				}),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+			},
+		},
+		async function () {
+			const userAccounts = await findWebdavAccountsByUserId({ uid: this.userId });
+
+			// Explicitly map to the desired structure, ensuring only allowed fields are returned
+			const accountsForResponse = userAccounts.map(({ userId, serverURL, username, name }) => ({
+				userId,
+				serverURL,
+				username,
+				name,
+			}));
+
+			return API.v1.success({
+				accounts: accountsForResponse,
+			});
+		},
+	)
+	.post(
+		'webdav.removeWebdavAccount',
+		{
+			authRequired: true,
+			validateParams: isPOSTRemoveWebdavAccount,
+			body: isPOSTRemoveWebdavAccount,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						result: {
+							type: 'object',
+							properties: {
+								acknowledged: {
+									type: 'boolean',
+								},
+								deletedCount: {
+									type: 'integer',
+								},
+							},
+							required: ['acknowledged', 'deletedCount'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: ajv.compile(commonBadRequestErrorSchema),
+				401: ajv.compile(commonUnauthorizedErrorSchema),
+			},
+		},
+		async function () {
 			const { accountId } = this.bodyParams;
 
 			const removed = await WebdavAccounts.removeByUserAndId(accountId, this.userId);
@@ -57,5 +161,4 @@ API.v1.addRoute(
 
 			return API.v1.success({ result: removed });
 		},
-	},
-);
+	);
