@@ -27,4 +27,97 @@ export class OmnichannelContacts {
 	findRowByName(contactName: string) {
 		return this.page.locator(`td >> text="${contactName}"`);
 	}
+
+	get btnFilters(): Locator {
+		return this.page.getByText('Filters');
+	}
+
+	get btnCloseChip(): Locator {
+		return this.page.locator('button.rcx-chip i');
+	}
+
+	get inputServedBy(): Locator {
+		return this.page.locator('[data-qa="autocomplete-multiple-agent"] div input');
+	}
+
+	get inputDepartment(): Locator {
+		return this.page.locator('//*[label="Department"]//input');
+	}
+
+	get btnApply(): Locator {
+		return this.page.getByRole('button', { name: 'Apply' });
+	}
+
+	get tabChats(): Locator {
+		return this.page.getByRole('tab', { name: 'Chats' });
+	}
+
+	get selectStatusContainer(): Locator {
+		return this.page.getByTestId('hidden-select-container');
+	}
+
+	get inputTags(): Locator {
+		return this.page.getByRole('listbox').nth(2);
+	}
+
+	get inputFromDate(): Locator {
+		return this.page.locator('[type="date"] [placeholder="From"]');
+	}
+
+	get btnClearFilters(): Locator {
+		return this.page.getByRole('button', { name: 'Clear filters' });
+	}
+
+	get btnClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
+	}
+
+	get chipServedBy(): Locator {
+		return this.page.getByRole('button', { name: 'Served By:' });
+	}
+
+	get chipStatus(): Locator {
+		return this.page.getByRole('button', { name: 'Status:' });
+	}
+
+	get chipDepartment(): Locator {
+		return this.page.getByRole('button', { name: 'Department:' });
+	}
+
+	get chipSearch(): Locator {
+		return this.page.getByRole('button', { name: 'Text:' });
+	}
+
+	async selectServedBy(option: string) {
+		await this.inputServedBy.click();
+		await this.inputServedBy.fill(option);
+		await this.page.locator(`[role='option'][value='${option}']`).click();
+		await this.page.getByRole('button', { name: 'Apply' }).click();
+	}
+
+	async selectStatus(option: string) {
+		await this.selectStatusContainer.click();
+		await this.page.locator(`[role='option'][data-key='${option}']`).click();
+		await this.page.getByRole('button', { name: 'Apply' }).click();
+	}
+
+	async selectDepartment(option: string) {
+		await this.inputDepartment.click();
+		await this.inputDepartment.fill(option);
+		await this.page.locator(`role=option[name='${option}']`).click();
+		await this.inputDepartment.click();
+		await this.page.getByRole('button', { name: 'Apply' }).click();
+	}
+
+	async addTag(option: string) {
+		await this.inputTags.click();
+		await this.page.locator(`[role='option'][value='${option}']`).click();
+		await this.inputTags.click();
+		await this.page.getByRole('button', { name: 'Apply' }).click();
+	}
+
+	async removeTag(option: string) {
+		await this.page.locator(`role=option[name='${option}']`).click();
+		await this.page.getByRole('button', { name: 'Apply' }).click();
+	}
 }
