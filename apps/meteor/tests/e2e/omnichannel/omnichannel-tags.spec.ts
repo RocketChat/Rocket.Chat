@@ -57,7 +57,7 @@ test.describe('OC - Manage Tags', () => {
 		await test.step('expect to create new tag', async () => {
 			await poOmnichannelTags.btnCreateTag.click();
 			await poOmnichannelTags.inputName.fill(tagName);
-			await poOmnichannelTags.selectDepartment(department.data);
+			await poOmnichannelTags.selectDepartment(department.data.name);
 			await poOmnichannelTags.btnSave.click();
 			await expect(poOmnichannelTags.contextualBar).not.toBeVisible();
 
@@ -102,7 +102,7 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.search(tag.name);
 			await poOmnichannelTags.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.contextualBar).toBeVisible();
-			await poOmnichannelTags.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelTags.selectDepartment(department2.data.name);
 			await poOmnichannelTags.btnSave.click();
 		});
 
@@ -118,7 +118,7 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.search(tag.name);
 			await poOmnichannelTags.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.contextualBar).toBeVisible();
-			await poOmnichannelTags.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelTags.selectDepartment(department2.data.name);
 			await poOmnichannelTags.btnSave.click();
 		});
 
