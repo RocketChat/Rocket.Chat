@@ -1,0 +1,12 @@
+{
+  "license": "ISC",
+  "devDependencies": {
+    "@ohos/hypium": "1.0.6"
+  },
+  "author": "hihope",
+  "name": "rocketchat",
+  "description": "Application interface for server methods and message stream subscriptions.Using this package third party apps can control and query a Rocket.Chat server instance, via REST APIs. Designed especially for chat automation, this library makes it easy for application developers to provide the best solutions and experience for their community.",
+  "main": "",
+  "version": "2.0.0",
+  "dependencies": {}
+}
