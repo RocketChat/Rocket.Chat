@@ -1,9 +1,55 @@
-import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '../../definition/accessors';
-import { RequestMethod } from '../../definition/accessors';
+import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse, IHttpRetryConfig } from '../../definition/accessors';
+import { HttpStatusCode, RequestMethod } from '../../definition/accessors';
 import type { AppBridges } from '../bridges/AppBridges';
 import type { AppAccessorManager } from '../managers/AppAccessorManager';
 
+const withRetry = async (makeRequest: () => Promise<IHttpResponse>, retryConfig: IHttpRetryConfig, processResponse: (response: IHttpResponse) => Promise<IHttpResponse>): Promise<IHttpResponse> => {
+    let attempt = 0;
+    let error: any;
+
+    while (attempt < retryConfig.maxAttempts) {
+        try {
+            const response = await makeRequest();
+
+            if (retryConfig.enabled && 
+                retryConfig.statusCodesToRetry?.includes(response.statusCode) &&
+                attempt < retryConfig.maxAttempts - 1) {
+                attempt++;
+                const delay = retryConfig.initialDelay * Math.pow(2, attempt);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+            }
+
+            return processResponse(response);
+        } catch (err) {
+            error = err;
+            if (!retryConfig.enabled || attempt === retryConfig.maxAttempts - 1) {
+                throw error;
+            }
+
+            attempt++;
+            const delay = retryConfig.initialDelay * Math.pow(2, attempt);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+
+    throw error;
+};
+
 export class Http implements IHttp {
+    private static readonly DEFAULT_RETRY_CONFIG: IHttpRetryConfig = {
+        enabled: false,
+        maxAttempts: 3,
+        initialDelay: 1000,
+        statusCodesToRetry: [
+            HttpStatusCode.SERVICE_UNAVAILABLE,
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+            HttpStatusCode.TOO_MANY_REQUESTS,
+            HttpStatusCode.GATEWAY_TIMEOUT,
+            HttpStatusCode.BAD_GATEWAY
+        ],
+    };
+
     constructor(
         private readonly accessManager: AppAccessorManager,
         private readonly bridges: AppBridges,
@@ -32,6 +78,11 @@ export class Http implements IHttp {
     }
 
     private async _processHandler(url: string, method: RequestMethod, options?: IHttpRequest): Promise<IHttpResponse> {
+        const retryConfig = {
+            ...Http.DEFAULT_RETRY_CONFIG,
+            ...options?.retry
+        };
+
         let request = options || {};
 
         if (typeof request.headers === 'undefined') {
@@ -61,17 +112,21 @@ export class Http implements IHttp {
             request = await handler.executePreHttpRequest(url, request, reader, persis);
         }
 
-        let response = await this.bridges.getHttpBridge().doCall({
+        const makeRequest = () => this.bridges.getHttpBridge().doCall({
             appId: this.appId,
             method,
             url,
             request,
         });
-
-        for (const handler of this.httpExtender.getPreResponseHandlers()) {
-            response = await handler.executePreHttpResponse(response, reader, persis);
-        }
-
-        return response;
-    }
+    
+        const processResponse = async (response: IHttpResponse) => {
+            let processedResponse = response;
+            for (const handler of this.httpExtender.getPreResponseHandlers()) {
+                processedResponse = await handler.executePreHttpResponse(processedResponse, reader, persis);
+            }
+            return processedResponse;
+        };
+    
+        return withRetry(makeRequest, retryConfig, processResponse);
+    }    
 }

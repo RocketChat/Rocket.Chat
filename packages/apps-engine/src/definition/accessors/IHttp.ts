@@ -40,6 +40,10 @@ export interface IHttpRequest {
     };
     timeout?: number;
     /**
+     * Retry configuration for the request
+     */
+    retry?: IHttpRetryConfig;
+    /**
      * The encoding to be used on response data.
      *
      * If null, the body is returned as a Buffer. Anything else (including the default value of undefined)
@@ -199,4 +203,18 @@ export enum HttpStatusCode {
     SERVICE_UNAVAILABLE = 503,
     GATEWAY_TIMEOUT = 504,
     HTTP_VERSION_NOT_SUPPORTED = 505,
+}
+
+/**
+ * Configuration options for HTTP request retry behavior
+ */
+export interface IHttpRetryConfig {
+    /** Whether retry functionality is enabled */
+    enabled?: boolean;
+    /** Maximum number of retry attempts */
+    maxAttempts?: number;
+    /** Initial delay in milliseconds before first retry */
+    initialDelay?: number;
+    /** Status codes that trigger a retry */
+    statusCodesToRetry?: HttpStatusCode[];
 }
