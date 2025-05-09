@@ -89,7 +89,6 @@ test.describe.serial('OTR', () => {
 		});
 
 		await test.step('keyboard edit action when using up arrow key should show normal messages', async () => {
-			// await page.waitForTimeout(100000);
 			await poHomeChannel.composer.focus();
 			await page.keyboard.press('ArrowUp');
 			await expect(poHomeChannel.composer).toHaveValue('Normal message');
