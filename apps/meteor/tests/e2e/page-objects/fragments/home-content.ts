@@ -197,7 +197,7 @@ export class HomeContent {
 	}
 
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('[data-qa-id="edit-message"]');
+		return this.page.locator('role=menu[name="More"] >> role=menuitem[name="Edit"]');
 	}
 
 	get btnOptionDeleteMessage(): Locator {

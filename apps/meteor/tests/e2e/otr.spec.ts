@@ -71,37 +71,38 @@ test.describe.serial('OTR', () => {
 
 		await test.step('send OTR messages', async () => {
 			await poHomeChannel.content.sendMessage('hello user1');
-			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-stopwatch')).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).toHaveAttribute('aria-roledescription', 'OTR message');
 
 			await user1Channel.content.sendMessage('hello admin');
-			await expect(user1Channel.content.lastUserMessage.locator('.rcx-icon--name-stopwatch')).toBeVisible();
+			await expect(user1Channel.content.lastUserMessage).toHaveAttribute('aria-roledescription', 'OTR message');
 		});
 
 		await test.step('not show edit message action', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
-			await expect(page.locator('role=menuitem[name="Edit"]')).not.toBeVisible();
+			await expect(poHomeChannel.content.btnOptionEditMessage).not.toBeVisible();
 
 			await user1Channel.content.openLastMessageMenu();
-			await expect(user1Channel.content.lastUserMessage.locator('role=menuitem[name="Edit"]')).not.toBeVisible();
+			await expect(user1Channel.content.btnOptionEditMessage).not.toBeVisible();
 
 			await page.keyboard.press('Escape');
 			await user1Page.keyboard.press('Escape');
 		});
 
 		await test.step('keyboard edit action when using up arrow key should show normal messages', async () => {
-			await page.locator('[name="msg"]').focus();
+			// await page.waitForTimeout(100000);
+			await poHomeChannel.composer.focus();
 			await page.keyboard.press('ArrowUp');
-			await expect(page.locator('[name="msg"]')).toHaveValue('Normal message');
-			await page.locator('[name="msg"]').fill('Normal message edited');
+			await expect(poHomeChannel.composer).toHaveValue('Normal message');
+			await poHomeChannel.composer.fill('Normal message edited');
 			await page.keyboard.press('Enter');
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+			await expect(poHomeChannel.content.nthMessage(0)).toContainText('Normal message edited');
 
-			await user1Page.locator('[name="msg"]').focus();
+			await user1Channel.composer.focus();
 			await user1Page.keyboard.press('ArrowUp');
-			await expect(user1Page.locator('[name="msg"]')).toHaveValue('Normal message');
-			await user1Page.locator('[name="msg"]').fill('Normal message edited');
+			await expect(user1Channel.composer).toHaveValue('Normal message');
+			await user1Channel.composer.fill('Normal message edited');
 			await user1Page.keyboard.press('Enter');
-			await expect(user1Page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+			await expect(user1Channel.content.nthMessage(0)).toContainText('Normal message edited');
 		});
 
 		await user1Page.close();
