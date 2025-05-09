@@ -14,6 +14,14 @@ test.describe.serial('sidebar', () => {
 		await page.waitForSelector('main');
 	});
 
+	test('should sidebar`s toolbar buttons not be disabled in tablet view', async ({ page }) => {
+		await page.setViewportSize({ width: 1023, height: 767 });
+
+		await expect(poHomeChannel.sidenav.btnDisplay).not.toBeDisabled();
+		await expect(poHomeChannel.sidenav.btnCreateNew).not.toBeDisabled();
+		await expect(poHomeChannel.sidenav.btnAdministration).not.toBeDisabled();
+	});
+
 	test('should navigate on sidebar toolbar using arrow keys', async ({ page }) => {
 		await poHomeChannel.sidenav.userProfileMenu.focus();
 		await page.keyboard.press('Tab');

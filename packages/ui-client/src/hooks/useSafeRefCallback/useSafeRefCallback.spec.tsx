@@ -2,12 +2,6 @@ import { render } from '@testing-library/react';
 
 import { useSafeRefCallback } from './useSafeRefCallback';
 
-// const TestComponent = (callback: () => () => void) => {
-// 	const cbRef = useSafeRefCallback(callback);
-
-// 	return <div ref={cbRef}></div>;
-// };
-
 const TestComponent = ({ callback, renderSpan }: { callback: any; renderSpan?: boolean }) => {
 	const cbRef = useSafeRefCallback(callback);
 

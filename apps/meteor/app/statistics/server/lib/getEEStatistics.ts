@@ -93,13 +93,8 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 		}),
 	);
 
-	// Number of PDF transcript requested
-	statsPms.push(
-		LivechatRooms.countRoomsWithPdfTranscriptRequested().then((count) => {
-			statistics.omnichannelPdfTranscriptRequested = count;
-		}),
-	);
-
+	// NOTE: keeping this for compatibility with current stats. Will be removed next major
+	statistics.omnichannelPdfTranscriptRequested = 0;
 	// Number of PDF transcript that succeeded
 	statsPms.push(
 		LivechatRooms.countRoomsWithTranscriptSent().then((count) => {

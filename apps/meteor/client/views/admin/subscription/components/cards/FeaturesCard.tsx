@@ -43,7 +43,7 @@ const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] =
 		},
 		{
 			success: modules.includes('scalability'),
-			title: 'High_scalabaility',
+			title: 'High_scalability',
 		},
 		{
 			success: modules.includes('custom-roles'),

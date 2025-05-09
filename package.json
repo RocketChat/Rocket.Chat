@@ -42,7 +42,7 @@
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
 		"yarn": "4.7.0",
-		"node": "22.13.1",
+		"node": "22.14.0",
 		"npm": "Use yarn instead"
 	},
 	"packageManager": "yarn@4.7.0",
@@ -54,7 +54,7 @@
 		]
 	},
 	"volta": {
-		"node": "22.13.1",
+		"node": "22.14.0",
 		"yarn": "1.22.18"
 	},
 	"resolutions": {

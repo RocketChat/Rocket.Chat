@@ -2,6 +2,7 @@
 import type { ConversationData } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type moment from 'moment';
 import type { Filter } from 'mongodb';
 
 import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

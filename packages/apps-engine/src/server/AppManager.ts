@@ -619,6 +619,8 @@ export class AppManager {
             return aff;
         }
 
+        app.getStorageItem()._id = created._id;
+
         this.apps.set(app.getID(), app);
         aff.setApp(app);
 

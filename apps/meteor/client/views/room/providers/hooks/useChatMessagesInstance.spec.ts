@@ -35,6 +35,7 @@ jest.mock('../../../../../app/ui/client/lib/ChatMessages', () => {
 				release: jest.fn(),
 				readStateManager: {
 					updateSubscription: updateSubscriptionMock,
+					subscribeToMessages: jest.fn(),
 				},
 			};
 		}),

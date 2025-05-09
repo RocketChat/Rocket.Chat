@@ -9,7 +9,7 @@ import MessageComposerIcon from '../MessageComposer/MessageComposerIcon';
 import '@rocket.chat/icons/dist/rocketchat.css';
 
 export default {
-	title: 'Components/MessageComposer/Locked',
+	title: 'Components/MessageComposerCallout',
 	component: MessageComposer,
 } satisfies Meta<typeof MessageComposer>;
 

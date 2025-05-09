@@ -11,8 +11,6 @@ import './beforeNewInquiry';
 import './beforeNewRoom';
 import './beforeRoutingChat';
 import './checkAgentBeforeTakeInquiry';
-import './onCheckRoomParamsApi';
-import './onLoadConfigApi';
 import './onCloseLivechat';
 import './onSaveVisitorInfo';
 import './onBusinessHourStart';

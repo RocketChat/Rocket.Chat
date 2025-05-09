@@ -1,9 +1,20 @@
+import type {
+	IIntegrationHistory,
+	IMessage,
+	IOutgoingIntegration,
+	IUser,
+	OutgoingIntegrationEvent,
+	IRoom,
+	RequiredField,
+	AtLeast,
+} from '@rocket.chat/core-typings';
 import { Integrations, Users, Rooms, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import type { OutgoingRequestData } from './ScriptEngine';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { notifyOnIntegrationChangedById } from '../../../lib/server/lib/notifyListener';
@@ -13,17 +24,53 @@ import { outgoingLogger } from '../logger';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
 
+type Trigger = Record<string, Record<string, any>>;
+
+type MessageWithEditedAt = IMessage & { editedAt?: Date };
+type ArgumentsObject = {
+	event?: OutgoingIntegrationEvent;
+	message?: MessageWithEditedAt;
+	room?: IRoom;
+	owner?: IUser;
+	user?: IUser;
+};
+type IntegrationData = {
+	token: string;
+	bot: boolean;
+	trigger_word?: string;
+	channel_id?: string;
+	channel_name?: string;
+	message_id?: string;
+	timestamp?: Date;
+	user_id?: string;
+	user_name?: string;
+	text?: string;
+	siteUrl?: string;
+	alias?: string;
+	isEdited?: boolean;
+	tmid?: string;
+	user?: Partial<IUser>;
+	room?: IRoom;
+	message?: IMessage;
+	owner?: Partial<IUser>;
+};
+
 class RocketChatIntegrationHandler {
+	private successResults: number[];
+
+	private triggers: Trigger;
+
+	private ivmEngine: IsolatedVMScriptEngine<false>;
+
 	constructor() {
 		this.successResults = [200, 201, 202];
-		this.compiledScripts = {};
 		this.triggers = {};
 		this.ivmEngine = new IsolatedVMScriptEngine(false);
 	}
 
-	addIntegration(record) {
+	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
-		let channels;
+		let channels = [];
 		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
@@ -33,7 +80,7 @@ class RocketChatIntegrationHandler {
 			channels = ['all_public_channels'];
 		} else {
 			outgoingLogger.debug('The integration is going on these channels:', record.channel);
-			channels = [].concat(record.channel);
+			channels = ([] as string[]).concat(record.channel);
 		}
 
 		for (const channel of channels) {
@@ -46,17 +93,17 @@ class RocketChatIntegrationHandler {
 	}
 
 	// eslint-disable-next-line no-unused-vars
-	getEngine(_integration) {
+	getEngine(_integration: any): IsolatedVMScriptEngine<false> {
 		return this.ivmEngine;
 	}
 
-	removeIntegration(record) {
+	removeIntegration(record: AtLeast<IOutgoingIntegration, '_id'>): void {
 		for (const trigger of Object.values(this.triggers)) {
 			delete trigger[record._id];
 		}
 	}
 
-	isTriggerEnabled(trigger) {
+	isTriggerEnabled(trigger: IOutgoingIntegration): boolean {
 		for (const trig of Object.values(this.triggers)) {
 			if (trig[trigger._id]) {
 				return trig[trigger._id].enabled;
@@ -67,8 +114,20 @@ class RocketChatIntegrationHandler {
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
-	async sendMessage({ trigger, nameOrId = '', room, message, data }) {
-		let user;
+	async sendMessage({
+		trigger,
+		nameOrId = '',
+		room,
+		message,
+		data,
+	}: {
+		trigger: IOutgoingIntegration;
+		nameOrId?: string;
+		room?: IRoom;
+		message: { channel: string; bot?: Record<string, any>; message: Partial<IMessage> };
+		data: IntegrationData;
+	}): Promise<{ channel: string; message: Partial<IMessage> } | undefined> {
+		let user: IUser | null = null;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
 			user = await Users.findOneByUsernameIgnoringCase(data.user_name);
@@ -80,12 +139,17 @@ class RocketChatIntegrationHandler {
 			user = await Users.findOneByUsernameIgnoringCase(trigger.username);
 		}
 
+		if (!user) {
+			outgoingLogger.error(`The user "${trigger.username}" doesn't exist, so we can't send the message.`);
+			return;
+		}
+
 		let tmpRoom;
 		if (nameOrId || trigger.targetRoom || message.channel) {
 			tmpRoom =
 				(await getRoomByNameOrIdWithOptionToJoin({
 					user,
-					nameOrId: nameOrId || message.channel || trigger.targetRoom,
+					nameOrId: nameOrId || message.channel || trigger.targetRoom || '',
 					errorOnEmpty: false,
 				})) || room;
 		} else {
@@ -104,64 +168,68 @@ class RocketChatIntegrationHandler {
 
 		message.bot = { i: trigger._id };
 
-		const defaultValues = {
-			alias: trigger.alias,
-			avatar: trigger.avatar,
-			emoji: trigger.emoji,
+		const defaultValues: {
+			alias: string;
+			avatar: string;
+			emoji: string;
+			channel: string;
+		} = {
+			alias: trigger.alias || '',
+			avatar: trigger.avatar || '',
+			emoji: trigger.emoji || '',
+			channel: tmpRoom.t === 'd' ? `@${tmpRoom._id}` : `#${tmpRoom._id}`,
 		};
 
-		if (tmpRoom.t === 'd') {
-			message.channel = `@${tmpRoom._id}`;
-		} else {
-			message.channel = `#${tmpRoom._id}`;
-		}
-
-		message = await processWebhookMessage(message, user, defaultValues);
+		message = (await processWebhookMessage(
+			message as any,
+			user as IUser & { username: RequiredField<IUser, 'username'> },
+			defaultValues,
+		)) as unknown as { channel: string; message: Partial<IMessage> };
 		return message;
 	}
 
-	eventNameArgumentsToObject(...args) {
-		const argObject = {
-			event: args[0],
+	eventNameArgumentsToObject(...args: unknown[]) {
+		const argObject: ArgumentsObject = {
+			event: args[0] as OutgoingIntegrationEvent | undefined,
 		};
 
 		switch (argObject.event) {
 			case 'sendMessage':
 				if (args.length >= 3) {
-					argObject.message = args[1];
-					argObject.room = args[2];
+					argObject.message = args[1] as IMessage;
+					argObject.room = args[2] as IRoom;
 				}
 				break;
 			case 'fileUploaded':
 				if (args.length >= 2) {
-					const arghhh = args[1];
-					argObject.user = arghhh.user;
-					argObject.room = arghhh.room;
-					argObject.message = arghhh.message;
+					const arghhh: Record<string, any> = args[1] as Record<string, any>;
+					argObject.user = arghhh.user as IUser;
+					argObject.room = arghhh.room as IRoom;
+					argObject.message = arghhh.message as IMessage;
 				}
 				break;
 			case 'roomArchived':
 				if (args.length >= 3) {
-					argObject.room = args[1];
-					argObject.user = args[2];
+					argObject.room = args[1] as IRoom;
+					argObject.user = args[2] as IUser;
 				}
 				break;
 			case 'roomCreated':
 				if (args.length >= 3) {
-					argObject.owner = args[1];
-					argObject.room = args[2];
+					argObject.owner = args[1] as IUser;
+					argObject.room = args[2] as IRoom;
 				}
 				break;
 			case 'roomJoined':
 			case 'roomLeft':
 				if (args.length >= 3) {
-					argObject.user = args[1];
-					argObject.room = args[2];
+					argObject.user = args[1] as IUser;
+					argObject.room = args[2] as IRoom;
 				}
 				break;
 			case 'userCreated':
 				if (args.length >= 2) {
-					argObject.user = args[1];
+					argObject.user = args[1] as IUser;
 				}
 				break;
 			default:
@@ -178,20 +246,25 @@ class RocketChatIntegrationHandler {
 		return argObject;
 	}
 
-	mapEventArgsToData(data, { event, message, room, owner, user }) {
+	mapEventArgsToData(data: IntegrationData, { event, message, room, owner, user }: ArgumentsObject) {
 		/* The "services" field contains sensitive information such as
 		the user's password hash. To prevent this information from being
 		sent to the webhook, we're checking and removing it by destructuring
 		the user and owner objects while discarding the "services" field.
 		*/
 
-		const omitServicesField = (object) => {
+		const omitServicesField = (object: IUser) => {
 			const { services, ...objectWithoutServicesField } = object;
 			return objectWithoutServicesField;
 		};
 
 		const userWithoutServicesField = user?.services ? omitServicesField(user) : user;
 		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
+
+		if (!room || !message) {
+			outgoingLogger.warn(`The integration ${event} was called but the room or message was not defined.`);
+			return;
+		}
 
 		switch (event) {
 			case 'sendMessage':
@@ -209,7 +282,7 @@ class RocketChatIntegrationHandler {
 				}
 
 				if (message.bot) {
-					data.bot = message.bot;
+					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
 				}
 
 				if (message.editedAt) {
@@ -237,10 +310,14 @@ class RocketChatIntegrationHandler {
 				}
 
 				if (message.bot) {
-					data.bot = message.bot;
+					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
 				}
 				break;
 			case 'roomCreated':
+				if (!owner) {
+					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					return;
+				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.timestamp = room.ts;
@@ -252,6 +329,10 @@ class RocketChatIntegrationHandler {
 			case 'roomArchived':
 			case 'roomJoined':
 			case 'roomLeft':
+				if (!user) {
+					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					return;
+				}
 				data.timestamp = new Date();
 				data.channel_id = room._id;
 				data.channel_name = room.name;
@@ -265,6 +346,10 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'userCreated':
+				if (!user) {
+					outgoingLogger.warn(`The integration ${event} was called but the owner was not defined.`);
+					return;
+				}
 				data.timestamp = user.createdAt;
 				data.user_id = user._id;
 				data.user_name = user.username;
@@ -279,8 +364,8 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	getTriggersToExecute(room, message) {
-		const triggersToExecute = new Set();
+	getTriggersToExecute(room?: IRoom, message?: MessageWithEditedAt) {
+		const triggersToExecute = new Set<IOutgoingIntegration>();
 		if (room) {
 			switch (room.t) {
 				case 'd':
@@ -291,7 +376,7 @@ class RocketChatIntegrationHandler {
 					}
 
 					room.uids
-						.filter((uid) => this.triggers[`@${uid}`])
+						?.filter((uid) => this.triggers[`@${uid}`])
 						.forEach((uid) => {
 							for (const trigger of Object.values(this.triggers[`@${uid}`])) {
 								triggersToExecute.add(trigger);
@@ -299,7 +384,7 @@ class RocketChatIntegrationHandler {
 						});
 
 					room.usernames
-						.filter((username) => username !== message?.u?.username && this.triggers[`@${username}`])
+						?.filter((username) => username !== message?.u?.username && this.triggers[`@${username}`])
 						.forEach((username) => {
 							for (const trigger of Object.values(this.triggers[`@${username}`])) {
 								triggersToExecute.add(trigger);
@@ -350,7 +435,7 @@ class RocketChatIntegrationHandler {
 		return [...triggersToExecute];
 	}
 
-	async executeTriggers(...args) {
+	async executeTriggers(...args: unknown[]) {
 		outgoingLogger.debug({ msg: 'Execute Trigger:', arg: args[0] });
 
 		const argObject = this.eventNameArgumentsToObject(...args);
@@ -386,14 +471,17 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	async executeTrigger(trigger, argObject) {
+	async executeTrigger(trigger: IOutgoingIntegration, argObject: ArgumentsObject) {
+		if (!trigger.urls) {
+			return;
+		}
 		for await (const url of trigger.urls) {
 			await this.executeTriggerUrl(url, trigger, argObject, 0);
 		}
 	}
 
 	// Ensure that any errors thrown by the script engine will contibue to be compatible with Meteor.Error
-	async wrapScriptEngineCall(getter) {
+	async wrapScriptEngineCall(getter: () => Promise<any>) {
 		return wrapExceptions(getter).catch((error) => {
 			if (error instanceof Error) {
 				throw new Meteor.Error(error.message);
@@ -403,7 +491,7 @@ class RocketChatIntegrationHandler {
 		});
 	}
 
-	async executeTriggerUrl(url, trigger, { event, message, room, owner, user }, theHistoryId, tries = 0) {
+	async executeTriggerUrl(url: string, trigger: IOutgoingIntegration, { event, message, room, owner, user }: ArgumentsObject, tries = 0) {
 		if (!this.isTriggerEnabled(trigger)) {
 			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
 			return;
@@ -413,13 +501,13 @@ class RocketChatIntegrationHandler {
 
 		let word;
 		// Not all triggers/events support triggerWords
-		if (outgoingEvents[event].use.triggerWords) {
+		if (event && outgoingEvents[event].use.triggerWords) {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
-					if (!trigger.triggerWordAnywhere && message.msg.indexOf(triggerWord) === 0) {
+					if (!trigger.triggerWordAnywhere && message?.msg.indexOf(triggerWord) === 0) {
 						word = triggerWord;
 						break;
-					} else if (trigger.triggerWordAnywhere && message.msg.includes(triggerWord)) {
+					} else if (trigger.triggerWordAnywhere && message?.msg.includes(triggerWord)) {
 						word = triggerWord;
 						break;
 					}
@@ -442,9 +530,10 @@ class RocketChatIntegrationHandler {
 			step: 'start-execute-trigger-url',
 			integration: trigger,
 			event,
+			historyId: '',
 		});
 
-		const data = {
+		const data: IntegrationData = {
 			token: trigger.token,
 			bot: false,
 		};
@@ -453,7 +542,7 @@ class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		this.mapEventArgsToData(data, { trigger, event, message, room, owner, user });
+		this.mapEventArgsToData(data, { event, message, room, owner, user });
 		await updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		outgoingLogger.info(`Will be executing the Integration "${trigger.name}" to the url: ${url}`);
@@ -464,7 +553,7 @@ class RocketChatIntegrationHandler {
 		const opts = await this.wrapScriptEngineCall(() =>
 			scriptEngine.prepareOutgoingRequest({
 				integration: trigger,
-				data,
+				data: data as OutgoingRequestData,
 				url,
 				historyId,
 			}),
@@ -479,10 +568,14 @@ class RocketChatIntegrationHandler {
 
 		if (opts.message) {
 			const prepareMessage = await this.sendMessage({ trigger, room, message: opts.message, data });
+			if (!prepareMessage) {
+				await updateHistory({ historyId, step: 'after-prepare-send-message-failed', finished: true });
+				return;
+			}
 			await updateHistory({
 				historyId,
 				step: 'after-prepare-send-message',
-				prepareSentMessage: prepareMessage,
+				prepareSentMessage: [prepareMessage],
 			});
 		}
 
@@ -567,10 +660,16 @@ class RocketChatIntegrationHandler {
 						message: responseContent,
 						data,
 					});
+
+					if (!resultMessage) {
+						await updateHistory({ historyId, step: 'after-process-send-message-failed', finished: true });
+						return;
+					}
+
 					await updateHistory({
 						historyId,
 						step: 'after-process-send-message',
-						processSentMessage: resultMessage,
+						processSentMessage: [resultMessage],
 						finished: true,
 					});
 					return;
@@ -607,7 +706,7 @@ class RocketChatIntegrationHandler {
 						}
 					}
 
-					if (trigger.retryFailedCalls) {
+					if (trigger.retryFailedCalls && trigger.retryCount) {
 						if (tries < trigger.retryCount && trigger.retryDelay) {
 							await updateHistory({ historyId, error: true, step: `going-to-retry-${tries + 1}` });
 
@@ -639,7 +738,7 @@ class RocketChatIntegrationHandler {
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 							setTimeout(() => {
-								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
+								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, tries + 1);
 							}, waitTime);
 						} else {
 							await updateHistory({ historyId, step: 'too-many-retries', error: true });
@@ -659,10 +758,14 @@ class RocketChatIntegrationHandler {
 				if (content && this.successResults.includes(res.status)) {
 					if (data?.text || data?.attachments) {
 						const resultMsg = await this.sendMessage({ trigger, room, message: data, data });
+						if (!resultMsg) {
+							await updateHistory({ historyId, step: 'after-http-call-send-message-failed', finished: true });
+							return;
+						}
 						await updateHistory({
 							historyId,
 							step: 'url-response-sent-message',
-							resultMessage: resultMsg,
+							resultMessage: [resultMsg],
 							finished: true,
 						});
 					}
@@ -679,7 +782,7 @@ class RocketChatIntegrationHandler {
 			});
 	}
 
-	async replay(integration, history) {
+	async replay(integration: IOutgoingIntegration, history: IIntegrationHistory) {
 		if (!integration || integration.type !== 'webhook-outgoing') {
 			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
@@ -689,16 +792,35 @@ class RocketChatIntegrationHandler {
 		}
 
 		const { event } = history;
-		const message = await Messages.findOneById(history.data.message_id);
-		const room = await Rooms.findOneById(history.data.channel_id);
-		const user = await Users.findOneById(history.data.user_id);
 		let owner;
+		let message;
+		let room;
+		let user;
 
 		if (history.data.owner && history.data.owner._id) {
 			owner = await Users.findOneById(history.data.owner._id);
 		}
+		if (history.data.message_id) {
+			message = await Messages.findOneById(history.data.message_id);
+		}
+		if (history.data.channel_id) {
+			room = await Rooms.findOneById(history.data.channel_id);
+		}
+		if (history.data.user_id) {
+			user = await Users.findOneById(history.data.user_id);
+		}
 
-		return this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
+		if (!history.url) {
+			return;
+		}
+
+		return this.executeTriggerUrl(history.url, integration, {
+			event,
+			message: message || undefined,
+			room: room || undefined,
+			owner: owner || undefined,
+			user: user || undefined,
+		});
 	}
 }
 const triggerHandler = new RocketChatIntegrationHandler();
