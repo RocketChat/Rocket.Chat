@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Example without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-card__vertical rcx-card rcx-css-1ichk9z"
+      data-qa-id="deployment-card"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-card__body rcx-css-1uyg2tb"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-cs9uip"
+          >
+            Deployment
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            Version
+          </div>
+          1.0.0
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            Deployment_ID
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            Node_version
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            DB_Migration
+          </div>
+          272 (Invalid date)
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            MongoDB
+          </div>
+           /  (oplog Disabled)
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            Commit_details
+          </div>
+          github_HEAD
+          : (
+          ) 
+          <br />
+          Branch
+          : 
+           
+          <br />
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-rwaa9d"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-ppdiz2"
+          >
+            PID
+          </div>
+          0
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
