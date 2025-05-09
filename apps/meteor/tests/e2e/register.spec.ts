@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import injectInitialData from './fixtures/inject-initial-data';
 import { Utils, Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
@@ -133,6 +134,33 @@ test.describe.parallel('register', () => {
 			const results = await makeAxeBuilder().analyze();
 
 			expect(results.violations).toEqual([]);
+		});
+	});
+
+	test.describe('Registration form validation - username', async () => {
+		test.beforeEach(async ({ page }) => {
+			poRegistration = new Registration(page);
+			poUtils = new Utils(page);
+		});
+		test('should not allow registration with existing username', async ({ page }) => {
+			const { username } = (await injectInitialData()).usersFixtures[0];
+			await test.step('Attempt registration with the same username', async () => {
+				await page.goto('/home');
+				await poRegistration.goToRegister.click();
+				await poRegistration.inputName.fill(faker.person.firstName());
+				await poRegistration.inputEmail.fill(faker.internet.email());
+				await poRegistration.username.fill(username);
+				await poRegistration.inputPassword.fill('any_password');
+				await poRegistration.inputPasswordConfirm.fill('any_password');
+
+				await poRegistration.btnRegister.click();
+
+				const errorMessageLocator = page
+					.locator('span.rcx-field__error')
+					.filter({ hasText: 'Username already exists. Please try another username.' });
+				await expect(errorMessageLocator).toBeVisible();
+				await expect(errorMessageLocator).toHaveText('Username already exists. Please try another username.');
+			});
 		});
 	});
 
