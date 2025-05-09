@@ -1,11 +1,11 @@
 name: Close inactive issues
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: '0 */6 * * *'
 
 jobs:
   close-issues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       issues: write
     steps:
@@ -14,7 +14,7 @@ jobs:
           days-before-issue-stale: 14
           days-before-issue-close: 14
           any-of-labels: 'stat: need more info,stat: waiting response'
-          stale-issue-label: "stat: no response"
-          stale-issue-message: "This issue has been marked as stale because there has been no further activity in the last 10 days. If the issue remains stale for the next 4 days (a total of 14 days with no activity), then it will be assumed that the question has been resolved and the issue will be automatically closed."
-          close-issue-message: "This issue was closed because it has been inactive for 14 days since being marked as stale."
+          stale-issue-label: 'stat: no response'
+          stale-issue-message: 'This issue has been marked as stale because there has been no further activity in the last 10 days. If the issue remains stale for the next 4 days (a total of 14 days with no activity), then it will be assumed that the question has been resolved and the issue will be automatically closed.'
+          close-issue-message: 'This issue was closed because it has been inactive for 14 days since being marked as stale.'
           repo-token: ${{ secrets.GITHUB_TOKEN }}

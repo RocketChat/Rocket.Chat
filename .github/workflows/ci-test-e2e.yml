@@ -75,7 +75,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
       RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
@@ -98,7 +98,7 @@ jobs:
 
       - name: Setup kernel limits
         run: |
-          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
           sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
 
           echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
