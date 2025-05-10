@@ -1,7 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import type { Filter } from 'mongodb';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
@@ -147,7 +147,7 @@ const computation = Tracker.autorun(() => {
 						'notify-room',
 						[`${record.rid}/deleteMessageBulk`],
 						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-							const query: Mongo.Selector<IMessage> = { rid };
+							const query: Filter<IMessage> = { rid };
 
 							if (ids) {
 								query._id = { $in: ids };
