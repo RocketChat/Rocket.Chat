@@ -2,37 +2,53 @@ import { Accounts } from "meteor/accounts-base";
 import { Meteor } from "meteor/meteor";
 import { io } from "socket.io-client";
 
-const connectToWebSocket = (url : string, options = {}) => {
-	const socket = io(url, options);
+const webSokcetUrl =
+  process.env.WEB_SOCKET_SERVICE_URL || "http://localhost:3002";
 
-	socket.on("connect", () => {
-		console.log("WebSocket connected:", socket.id);
-		socket.emit("new connection", {
-			userId: Meteor.userId(),
-			token: Accounts._storedLoginToken(),
-		});
-	});
+const connectToWebSocket = (url: string, options = {}) => {
+  const socket = io(url, options);
 
-	socket.on("disconnect", () => {
-		console.log("WebSocket disconnected");
-	});
+  socket.on("connect", () => {
+    console.log("WebSocket connected:", socket.id);
+    socket.emit("new connection", {
+      userId: Meteor.userId(),
+      token: Accounts._storedLoginToken(),
+    });
+  });
 
-	socket.on("connect_error", (error) => {
-		console.error("WebSocket connection error:", error);
-	});
+  socket.on("disconnect", () => {
+    console.log("WebSocket disconnected");
+  });
 
-	return socket;
+  socket.on("connect_error", (error) => {
+    console.error("WebSocket connection error:", error);
+  });
+
+  return socket;
 };
 
-const socket = connectToWebSocket("http://localhost:3002");
+const socket = connectToWebSocket(webSokcetUrl, {
+  auth: {
+    userId: Meteor.userId(),
+    token: Accounts._storedLoginToken(),
+  },
+});
 
-export const emitWebSocketEvent = (event: string, data: any) => {
-	socket.emit(event, data);
+const emitToServer = (event: string, data: any) => {
+  socket.emit(event, data);
 };
 
-export const registerWebSocketListener = (event: string, callback: ()=> void) =>
-	socket.on(event, callback);
+const registerListener = (event: string, callback: () => void) =>
+  socket.on(event, callback);
 
-export const removeWebSokcetListener = (event: string) => {
-	socket.off(event);
-}
+const removeListener = (event: string) => {
+  socket.off(event);
+};
+
+const webSocketHandler = {
+  emitToServer,
+  registerListener,
+  removeListener,
+};
+
+export default webSocketHandler;

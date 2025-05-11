@@ -123,9 +123,9 @@ export const RoomManager = new (function () {
 
 							if (record.streamActive !== true) {
 								record.streamActive = true;
-								webSocketHandler.emitToServer("stream-messages", { rid: room._id });
+								webSocketHandler.emitToServer("streamMessages", { rid: room._id });
 								webSocketHandler.registerListener(
-									`stream-messages-${room._id}`,
+									`streamMessages-${room._id}`,
 									 handleMessage
 								);
 								Notifications.onRoom(
@@ -178,7 +178,7 @@ export const RoomManager = new (function () {
 		close(typeName) {
 			if (openedRooms[typeName]) {
 				if (openedRooms[typeName].rid != null) {
-					webSocketHandler.removeListener(`stream-messages-${openedRooms[typeName].rid}`);
+					webSocketHandler.removeListener(`streamMessages-${openedRooms[typeName].rid}`);
 					msgStream.removeAllListeners(openedRooms[typeName].rid);
 					Notifications.unRoom(
 						openedRooms[typeName].rid,

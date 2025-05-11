@@ -13,7 +13,7 @@ const getSubscriptions = (id) => {
 	return Subscriptions.trashFind({ rid: id }, { fields });
 };
 
-const handleRoom = (clientAction, id, data) => {
+const handleRoom = ({clientAction, data, id} ) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -45,7 +45,6 @@ const handleRoom = (clientAction, id, data) => {
 	emitRoomDataEvent(id, data);
 };
 
-const redisRoomHandle = (data) => handleRoom(data.clientAction, data._id, data);
 if (settings.get('Use_Oplog_As_Real_Time')) {
 	Rooms.on('change', ({ clientAction, id, data }) => {
 		handleRoom(clientAction, id, data);
@@ -62,4 +61,4 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 	});
 }
 
-redisMessageHandlers.rocketchat_room = redisRoomHandle;
+redisMessageHandlers.rocketchat_room = handleRoom;
