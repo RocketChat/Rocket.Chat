@@ -1785,6 +1785,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
 		const setAttachments = replaceWith
 			? {
 					$map: {

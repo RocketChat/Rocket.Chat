@@ -1,11 +1,27 @@
 import { api } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+
+const FILE_CLEANUP_BATCH_SIZE = 1000;
+async function performFileAttachmentCleanupBatch(idsSet: Set<string>, replaceWith?: MessageAttachment) {
+	if (idsSet.size === 0) return;
+
+	const ids = [...idsSet];
+	await Messages.removeFileAttachmentsByMessageIds(ids, replaceWith);
+	await Messages.updateMany(
+		{ _id: { $in: ids } },
+		{
+			$unset: { file: '' },
+			$set: { files: [] },
+		},
+	);
+	idsSet.clear();
+}
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -45,6 +61,7 @@ export async function cleanRoomHistory({
 	});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
+
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
@@ -54,16 +71,15 @@ export async function cleanRoomHistory({
 		if (filesOnly) {
 			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}
+
+		if (targetMessageIdsForAttachmentRemoval.size >= FILE_CLEANUP_BATCH_SIZE) {
+			await performFileAttachmentCleanupBatch(targetMessageIdsForAttachmentRemoval, { color: '#FD745E', text });
+		}
 	}
 
-	await Messages.removeFileAttachmentsByMessageIds([...targetMessageIdsForAttachmentRemoval], { color: '#FD745E', text });
-	await Messages.updateMany(
-		{ _id: { $in: [...targetMessageIdsForAttachmentRemoval] } },
-		{
-			$unset: { file: '' },
-			$set: { files: [] },
-		},
-	);
+	if (targetMessageIdsForAttachmentRemoval.size > 0) {
+		await performFileAttachmentCleanupBatch(targetMessageIdsForAttachmentRemoval, { color: '#FD745E', text });
+	}
 
 	if (filesOnly) {
 		return fileCount;
