@@ -28,6 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -301,7 +302,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await beforeDelegateAgent(agent, {
 			department: inquiry?.department,
 		});
 

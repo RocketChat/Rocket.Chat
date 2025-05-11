@@ -23,6 +23,7 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
+import { beforeDelegateAgent } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
@@ -295,7 +296,7 @@ export class QueueManager {
 		);
 
 		const defaultAgent =
-			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
 
