@@ -53,7 +53,7 @@ API.v1
 							items: {
 								type: 'object',
 								properties: {
-									userId: {
+									_id: {
 										type: 'string',
 									},
 									serverURL: {
@@ -66,7 +66,7 @@ API.v1
 										type: 'string',
 									},
 								},
-								required: ['userId', 'serverURL', 'username', 'name'],
+								required: ['_id', 'serverURL', 'username', 'name'],
 								additionalProperties: false,
 							},
 						},
@@ -85,8 +85,8 @@ API.v1
 			const userAccounts = await findWebdavAccountsByUserId({ uid: this.userId });
 
 			// Explicitly map to the desired structure, ensuring only allowed fields are returned
-			const accountsForResponse = userAccounts.map(({ userId, serverURL, username, name }) => ({
-				userId,
+			const accountsForResponse = userAccounts.map(({ _id, serverURL, username, name }) => ({
+				_id,
 				serverURL,
 				username,
 				name,
