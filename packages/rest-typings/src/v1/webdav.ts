@@ -11,6 +11,7 @@ const POSTRemoveWebdavAccountSchema = {
 	properties: {
 		accountId: {
 			type: 'string',
+			description: 'The WebDAV account ID that you want to remove',
 		},
 	},
 	required: ['accountId'],
