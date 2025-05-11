@@ -1783,4 +1783,32 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
+
+	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment) {
+		const setAttachments = replaceWith
+			? {
+					$map: {
+						input: '$attachments',
+						as: 'att',
+						in: {
+							$cond: [{ $eq: ['$$att.type', 'file'] }, replaceWith, '$$att'],
+						},
+					},
+				}
+			: {
+					$filter: {
+						input: '$attachments',
+						as: 'att',
+						cond: { $ne: ['$$att.type', 'file'] },
+					},
+				};
+
+		return this.updateMany({ _id: { $in: _ids } }, [
+			{
+				$set: {
+					attachments: setAttachments,
+				},
+			},
+		]);
+	}
 }

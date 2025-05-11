@@ -44,6 +44,7 @@ export async function cleanRoomHistory({
 		limit,
 	});
 
+	const targetMessageIdsForAttachmentRemoval = new Set<string>();
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
@@ -51,24 +52,18 @@ export async function cleanRoomHistory({
 
 		fileCount++;
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, [
-				{
-					$set: {
-						attachments: {
-							$map: {
-								input: '$attachments',
-								as: 'att',
-								in: {
-									$cond: [{ $eq: ['$$att.type', 'file'] }, { color: '#FD745E', text }, '$$att'],
-								},
-							},
-						},
-						file: '$$REMOVE',
-					},
-				},
-			]);
+			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}
 	}
+
+	await Messages.removeFileAttachmentsByMessageIds([...targetMessageIdsForAttachmentRemoval], { color: '#FD745E', text });
+	await Messages.updateMany(
+		{ _id: { $in: [...targetMessageIdsForAttachmentRemoval] } },
+		{
+			$unset: { file: '' },
+			$set: { files: [] },
+		},
+	);
 
 	if (filesOnly) {
 		return fileCount;
