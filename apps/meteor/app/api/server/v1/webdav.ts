@@ -1,26 +1,10 @@
 import { api } from '@rocket.chat/core-services';
 import { WebdavAccounts } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { isPOSTRemoveWebdavAccount } from '@rocket.chat/rest-typings/src/v1/webdav';
 
 import { API } from '../api';
 import { findWebdavAccountsByUserId } from '../lib/webdav';
-
-type POSTRemoveWebdavAccount = {
-	accountId: string;
-};
-
-const POSTRemoveWebdavAccountSchema = {
-	type: 'object',
-	properties: {
-		accountId: {
-			type: 'string',
-		},
-	},
-	required: ['accountId'],
-	additionalProperties: false,
-};
-
-const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
 const commonUnauthorizedErrorSchema = {
 	type: 'object',
