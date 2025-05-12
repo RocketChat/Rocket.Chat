@@ -23,6 +23,7 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
+import { beforeDelegateAgent, onNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
@@ -295,7 +296,7 @@ export class QueueManager {
 		);
 
 		const defaultAgent =
-			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
 
@@ -352,7 +353,7 @@ export class QueueManager {
 		// All the actions that happened inside createLivechatRoom are now outside this transaction
 		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		await callbacks.run('livechat.newRoom', room);
+		await onNewRoom(room);
 		await Message.saveSystemMessageAndNotifyUser(
 			'livechat-started',
 			rid,

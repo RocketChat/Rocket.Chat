@@ -26,7 +26,7 @@ const getRemoteAddress = (c: Context) => {
 		return remoteAddress;
 	}
 
-	const forwardedForIPs = forwardedFor.trim().split(/\s*,\s*/);
+	const forwardedForIPs = forwardedFor.split(',').map((ip) => ip.trim());
 	if (httpForwardedCount > forwardedForIPs.length) {
 		return remoteAddress;
 	}

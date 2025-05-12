@@ -1,5 +1,38 @@
 # @rocket.chat/core-services
 
+## 0.9.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.8
+  - @rocket.chat/rest-typings@7.6.0-rc.8
+  - @rocket.chat/models@1.5.0-rc.8
+  </details>
+
+## 0.9.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.7
+  - @rocket.chat/rest-typings@7.6.0-rc.7
+  - @rocket.chat/models@1.5.0-rc.7
+  </details>
+
+## 0.9.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.6
+  - @rocket.chat/rest-typings@7.6.0-rc.6
+  - @rocket.chat/models@1.5.0-rc.6
+  </details>
+
 ## 0.9.0-rc.5
 
 ### Patch Changes

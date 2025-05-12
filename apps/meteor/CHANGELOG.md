@@ -1,5 +1,114 @@
 # @rocket.chat/meteor
 
+## 7.6.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35864](https://github.com/RocketChat/Rocket.Chat/pull/35864)) Fixes an issue where OAuth login buttons were not showing up on the login page
+
+- ([#35852](https://github.com/RocketChat/Rocket.Chat/pull/35852)) Fixes an issue where rocket.chat would not properly log OAuth errors nor remove the credential with the error from the internal list
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.8
+  - @rocket.chat/rest-typings@7.6.0-rc.8
+  - @rocket.chat/license@1.0.12-rc.8
+  - @rocket.chat/omnichannel-services@0.3.18-rc.8
+  - @rocket.chat/pdf-worker@0.3.0-rc.8
+  - @rocket.chat/presence@0.2.21-rc.8
+  - @rocket.chat/api-client@0.2.21-rc.8
+  - @rocket.chat/apps@0.5.0-rc.8
+  - @rocket.chat/core-services@0.9.0-rc.8
+  - @rocket.chat/cron@0.1.21-rc.8
+  - @rocket.chat/freeswitch@1.2.8-rc.8
+  - @rocket.chat/fuselage-ui-kit@18.0.0-rc.8
+  - @rocket.chat/gazzodown@18.0.0-rc.8
+  - @rocket.chat/model-typings@1.6.0-rc.8
+  - @rocket.chat/ui-contexts@18.0.0-rc.8
+  - @rocket.chat/models@1.5.0-rc.8
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.0-rc.8
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@14.0.0-rc.8
+  - @rocket.chat/ui-client@18.0.0-rc.8
+  - @rocket.chat/ui-video-conf@18.0.0-rc.8
+  - @rocket.chat/ui-voip@8.0.0-rc.8
+  - @rocket.chat/web-ui-registration@18.0.0-rc.8
+  - @rocket.chat/instance-status@0.1.21-rc.8
+  </details>
+
+## 7.6.0-rc.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.7
+  - @rocket.chat/rest-typings@7.6.0-rc.7
+  - @rocket.chat/license@1.0.12-rc.7
+  - @rocket.chat/omnichannel-services@0.3.18-rc.7
+  - @rocket.chat/pdf-worker@0.3.0-rc.7
+  - @rocket.chat/presence@0.2.21-rc.7
+  - @rocket.chat/api-client@0.2.21-rc.7
+  - @rocket.chat/apps@0.5.0-rc.7
+  - @rocket.chat/core-services@0.9.0-rc.7
+  - @rocket.chat/cron@0.1.21-rc.7
+  - @rocket.chat/freeswitch@1.2.8-rc.7
+  - @rocket.chat/fuselage-ui-kit@18.0.0-rc.7
+  - @rocket.chat/gazzodown@18.0.0-rc.7
+  - @rocket.chat/model-typings@1.6.0-rc.7
+  - @rocket.chat/ui-contexts@18.0.0-rc.7
+  - @rocket.chat/models@1.5.0-rc.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.0-rc.7
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@14.0.0-rc.7
+  - @rocket.chat/ui-client@18.0.0-rc.7
+  - @rocket.chat/ui-video-conf@18.0.0-rc.7
+  - @rocket.chat/ui-voip@8.0.0-rc.7
+  - @rocket.chat/web-ui-registration@18.0.0-rc.7
+  - @rocket.chat/instance-status@0.1.21-rc.7
+  </details>
+
+## 7.6.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.6
+  - @rocket.chat/rest-typings@7.6.0-rc.6
+  - @rocket.chat/license@1.0.12-rc.6
+  - @rocket.chat/omnichannel-services@0.3.18-rc.6
+  - @rocket.chat/pdf-worker@0.3.0-rc.6
+  - @rocket.chat/presence@0.2.21-rc.6
+  - @rocket.chat/api-client@0.2.21-rc.6
+  - @rocket.chat/apps@0.5.0-rc.6
+  - @rocket.chat/core-services@0.9.0-rc.6
+  - @rocket.chat/cron@0.1.21-rc.6
+  - @rocket.chat/freeswitch@1.2.8-rc.6
+  - @rocket.chat/fuselage-ui-kit@18.0.0-rc.6
+  - @rocket.chat/gazzodown@18.0.0-rc.6
+  - @rocket.chat/model-typings@1.6.0-rc.6
+  - @rocket.chat/ui-contexts@18.0.0-rc.6
+  - @rocket.chat/models@1.5.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.0-rc.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@14.0.0-rc.6
+  - @rocket.chat/ui-client@18.0.0-rc.6
+  - @rocket.chat/ui-video-conf@18.0.0-rc.6
+  - @rocket.chat/ui-voip@8.0.0-rc.6
+  - @rocket.chat/web-ui-registration@18.0.0-rc.6
+  - @rocket.chat/instance-status@0.1.21-rc.6
+  </details>
+
 ## 7.6.0-rc.5
 
 ### Patch Changes
