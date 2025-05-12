@@ -43,7 +43,7 @@ API.v1.addRoute(
 				}),
 			});
 
-			const contact = await registerContact(this.bodyParams);
+			const contact = await registerContact(this.bodyParams, this.userId);
 
 			return API.v1.success({ contact });
 		},

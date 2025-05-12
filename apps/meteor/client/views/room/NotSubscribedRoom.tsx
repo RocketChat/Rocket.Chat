@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
-import { SidebarTogglerV2 } from '../../components/SidebarTogglerV2';
+import SidebarToggler from '../../components/SidebarToggler';
 import { useJoinRoom } from '../../hooks/useJoinRoom';
 
 type NotSubscribedRoomProps = {
@@ -30,7 +30,7 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 						<FeaturePreviewOff>
 							<Header justifyContent='start'>
 								<HeaderToolbar>
-									<SidebarTogglerV2 />
+									<SidebarToggler />
 								</HeaderToolbar>
 							</Header>
 						</FeaturePreviewOff>

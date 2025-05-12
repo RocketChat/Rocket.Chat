@@ -35,6 +35,7 @@ import type {
 	UnauthorizedResult,
 	RedirectStatusCodes,
 	RedirectResult,
+	UnavailableResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -320,12 +321,12 @@ export class APIClass<
 		};
 	}
 
-	public unavailableResult<T>(msg?: T): InternalError<T, 503, 'Service unavailable'> {
+	public unavailable<T>(msg?: T): UnavailableResult<T> {
 		return {
 			statusCode: 503,
 			body: {
 				success: false,
-				error: msg || 'Service unavailable',
+				error: msg || 'Service Unavailable',
 			},
 		};
 	}

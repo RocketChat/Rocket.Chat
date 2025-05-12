@@ -1,7 +1,7 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoginPage from '../root/MainLayout/LoginPage';
@@ -15,8 +15,9 @@ const InvitePage = (): ReactElement => {
 
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
-	const { isPending, data: isValidInvite } = useValidateInviteQuery(userId, token);
+	const validateInvite = useValidateInviteQuery(token);
 	const [, setToken] = useSamlInviteToken();
+	const tokenRef = useRef('');
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 
@@ -26,16 +27,17 @@ const InvitePage = (): ReactElement => {
 	}, [setToken, token]);
 
 	useEffect(() => {
-		if (userId && token && !getInviteRoomMutation.submittedAt) {
+		if (userId && token && !getInviteRoomMutation.submittedAt && tokenRef.current !== token) {
+			tokenRef.current = token;
 			getInviteRoomMutation.mutate(token);
 		}
 	}, [getInviteRoomMutation, setToken, token, userId]);
 
-	if (isPending) {
+	if (validateInvite.isPending) {
 		return <PageLoading />;
 	}
 
-	if (isValidInvite) {
+	if (validateInvite.isSuccess && validateInvite.data) {
 		return <LoginPage />;
 	}
 

@@ -17,6 +17,7 @@ export async function findRooms({
 	queued,
 	units,
 	options: { offset, count, fields, sort },
+	callerId,
 }: {
 	agents?: Array<string>;
 	roomName?: string;
@@ -36,8 +37,9 @@ export async function findRooms({
 	queued?: string | boolean;
 	units?: Array<string>;
 	options: { offset: number; count: number; fields: Record<string, number>; sort: Record<string, number> };
+	callerId: string;
 }): Promise<PaginatedResult<{ rooms: Array<IOmnichannelRoom> }>> {
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, units);
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { unitsFilter: units, userId: callerId });
 	const { cursor, totalCount } = LivechatRooms.findRoomsWithCriteria({
 		agents,
 		roomName,

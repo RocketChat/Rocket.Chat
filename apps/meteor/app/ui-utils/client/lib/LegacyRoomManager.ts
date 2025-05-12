@@ -50,7 +50,7 @@ function close(typeName: string) {
 
 		if (rid) {
 			RoomManager.close(rid);
-			return RoomHistoryManager.clear(rid);
+			return RoomHistoryManager.close(rid);
 		}
 	}
 }
@@ -92,8 +92,6 @@ const computation = Tracker.autorun(() => {
 			const name = typeName.slice(1);
 
 			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
-
-			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
 				if (record.streamActive !== true) {

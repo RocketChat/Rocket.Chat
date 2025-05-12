@@ -85,7 +85,7 @@ OAuth._retrievePendingCredential = async function (key, ...args): Promise<string
 	}
 
 	if (isCredentialWithError(pendingCredential.credential)) {
-		OAuth._pendingCredentials.remove({
+		await OAuth._pendingCredentials.removeAsync({
 			_id: pendingCredential._id,
 		});
 		return recreateError(pendingCredential.credential.error);

@@ -20,18 +20,20 @@ API.v1.addRoute(
 			}
 
 			const { token, department, businessUnit } = this.queryParams;
+			const [config, status, guest] = await Promise.all([
+				cachedSettings({ businessUnit }),
+				online(department),
+				token ? findGuestWithoutActivity(token) : null,
+			]);
 
-			const config = await cachedSettings({ businessUnit });
+			const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
+			const agentPromise = room?.servedBy ? findAgent(room.servedBy._id) : null;
+			const extraInfoPromise = getExtraConfigInfo({ room });
 
-			const status = await online(department);
-			const guest = token ? await findGuestWithoutActivity(token) : null;
+			const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
 
-			const room = guest ? await findOpenRoom(guest.token) : undefined;
-			const agent = guest && room && room.servedBy && (await findAgent(room.servedBy._id));
-
-			const extra = await getExtraConfigInfo(room);
 			return API.v1.success({
-				config: { ...config, online: status, ...extra, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
+				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
 			});
 		},
 	},

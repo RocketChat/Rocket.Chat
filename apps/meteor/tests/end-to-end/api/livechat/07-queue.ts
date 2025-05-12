@@ -400,6 +400,7 @@ describe('LIVECHAT - Queue', () => {
 			updateSetting('Omnichannel_enable_department_removal', true),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', true),
+			updateSetting('Omnichannel_queue_delay_timeout', 3),
 		]),
 	);
 
@@ -430,6 +431,7 @@ describe('LIVECHAT - Queue', () => {
 			deleteUser(testUser.user),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', false),
+			updateSetting('Omnichannel_queue_delay_timeout', 5),
 			deleteDepartment(testDepartment._id),
 			deleteDepartment(testDepartment2._id),
 		]);
@@ -627,6 +629,7 @@ describe('LIVECHAT - Queue', () => {
 			updateSetting('Livechat_Routing_Method', 'Load_Balancing'),
 			updateSetting('Omnichannel_enable_department_removal', true),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
+			updateSetting('Omnichannel_queue_delay_timeout', 3),
 			updateEESetting('Livechat_waiting_queue', true),
 		]),
 	);
@@ -681,6 +684,7 @@ describe('LIVECHAT - Queue', () => {
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', false),
 			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
+			updateSetting('Omnichannel_queue_delay_timeout', 5),
 			deleteDepartment(testDepartment._id),
 			deleteDepartment(testDepartment2._id),
 			deleteDepartment(testDepartment3._id),

@@ -850,7 +850,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should throw an error if the user doesnt have the permission to manage the departments', async () => {
 			await updatePermission('manage-livechat-departments', []);
 			await updatePermission('add-livechat-department-agents', []);
-			await request.post(api('livechat/department/test/agents')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+			await request
+				.post(api('livechat/department/test/agents'))
+				.set(credentials)
+				.send({ upsert: [], remove: [] })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
 
 		it('should throw an error if the departmentId is not valid', async () => {
@@ -877,7 +882,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.set(credentials)
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', "Match error: Missing key 'upsert'");
+			expect(res.body).to.have.property('error', "must have required property 'upsert' [invalid-params]");
 			await deleteDepartment(dep._id);
 		});
 
@@ -891,7 +896,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.send({ upsert: [{}], remove: [] })
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', "Match error: Missing key 'agentId' in field upsert[0]");
+			expect(res.body).to.have.property('error', "must have required property 'agentId' [invalid-params]");
 			await deleteDepartment(dep._id);
 		});
 
