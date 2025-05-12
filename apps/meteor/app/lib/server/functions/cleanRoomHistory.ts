@@ -50,12 +50,34 @@ export async function cleanRoomHistory({
 		if (!document.files || document.files.length === 0) {
 			continue;
 		}
-		await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id)));
+		const result = await Promise.all(
+			document.files.map(async (file) => {
+				try {
+					await uploadsStore.deleteById(file._id);
+					return { success: true, file } as const;
+				} catch (error) {
+					return { success: false, error, file } as const;
+				}
+			}),
+		);
 
-		fileCount += document.files.length;
+		const deletedFiles = result.filter(({ success }) => success);
+		const failedFiles = result.filter(({ success }) => !success);
+
+		fileCount += deletedFiles.length;
 
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			if (failedFiles.length > 0) {
+				await Messages.updateOne(
+					{ _id: document._id },
+					{ $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }], files: failedFiles.map(({ file }) => file) } },
+				);
+			} else {
+				await Messages.updateOne(
+					{ _id: document._id },
+					{ $unset: { file: 1, files: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } },
+				);
+			}
 		}
 	}
 

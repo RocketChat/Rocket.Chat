@@ -1,6 +1,5 @@
 import fs from 'fs';
 import { unlink } from 'fs/promises';
-import { isNativeError } from 'util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';
@@ -75,11 +74,7 @@ export class LocalStore extends Store {
 				await unlink(path);
 				success = true;
 			} catch (err) {
-				if (!isNativeError(err) || !('code' in err) || err.code !== 'ENOENT') {
-					success = true;
-				} else {
-					console.error(`LocalStore: cannot delete file "${path}" (${err.message})`);
-				}
+				throw err;
 			} finally {
 				this.deleteTempFile(fileId);
 				if (success) {
