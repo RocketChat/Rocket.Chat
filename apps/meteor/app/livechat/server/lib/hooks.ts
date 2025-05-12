@@ -8,6 +8,7 @@ import type {
 	IOmnichannelSource,
 	IUser,
 	SelectedAgent,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -109,3 +110,11 @@ export const onNewRoom = makeFunction(async (room: IOmnichannelRoom) => {
 		await sendToCRM('LivechatSessionStart', room);
 	}
 });
+
+export const afterTakeInquiry = makeFunction(
+	async (params: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom }, _agent: { agentId: string; username: string }) => {
+		if (settings.get('Livechat_webhook_on_chat_taken')) {
+			await sendToCRM('LivechatSessionTaken', params.room);
+		}
+	},
+);
