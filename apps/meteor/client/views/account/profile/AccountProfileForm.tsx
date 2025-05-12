@@ -1,29 +1,29 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import {
+	Box,
+	Button,
 	Field,
+	FieldError,
 	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	Box,
 	Icon,
-	Button,
+	TextAreaInput,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
+	useEndpoint,
+	useMethod,
 	useToastMessageDispatch,
 	useTranslation,
-	useEndpoint,
 	useUser,
-	useMethod,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import { useId, useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -33,7 +33,18 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
-import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { BIO_TEXT_MAX_LENGTH, USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
+
+function getAriaDescribedbyForName(nameError: boolean, allowRealNameChange: boolean, nameId: string) {
+	const errors = [];
+	if (nameError) {
+		errors.push(`${nameId}-error`);
+	}
+	if (!allowRealNameChange) {
+		errors.push(`${nameId}-hint`);
+	}
+	return errors.length ? errors.join(' ') : undefined;
+}
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
@@ -177,7 +188,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 										disabled={!allowRealNameChange}
 										aria-required='true'
 										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${nameId}-error ${nameId}-hint`}
+										aria-describedby={getAriaDescribedbyForName(!!errors.name, allowRealNameChange, nameId)}
 									/>
 								)}
 							/>
@@ -229,7 +240,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='statusText'
-							rules={{ maxLength: { value: USER_STATUS_TEXT_MAX_LENGTH, message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH) } }}
+							rules={{
+								maxLength: {
+									value: USER_STATUS_TEXT_MAX_LENGTH,
+									message: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
+								},
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}
