@@ -256,7 +256,7 @@ API.v1.addRoute(
 			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken, {}, extraQuery).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
