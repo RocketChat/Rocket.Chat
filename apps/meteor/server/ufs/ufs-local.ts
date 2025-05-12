@@ -1,12 +1,12 @@
 import fs from 'fs';
 import { unlink } from 'fs/promises';
+import { isNativeError } from 'util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
-import type { StoreOptions } from './ufs-store';
-import { Store } from './ufs-store';
+import { Store, type StoreOptions } from './ufs-store';
 
 type LocalStoreOptions = StoreOptions & {
 	mode?: string;
@@ -68,8 +68,24 @@ export class LocalStore extends Store {
 
 		this.delete = async (fileId, options) => {
 			const path = await this.getFilePath(fileId);
-			await unlink(path);
-			await this.removeById(fileId, { session: options?.session });
+
+			let success = false;
+
+			try {
+				await unlink(path);
+				success = true;
+			} catch (err) {
+				if (!isNativeError(err) || !('code' in err) || err.code !== 'ENOENT') {
+					success = true;
+				} else {
+					console.error(`LocalStore: cannot delete file "${path}" (${err.message})`);
+				}
+			} finally {
+				this.deleteTempFile(fileId);
+				if (success) {
+					await this.getCollection().removeById(fileId, { session: options?.session });
+				}
+			}
 		};
 
 		this.getReadStream = async (fileId: string, file: IUpload, options?: { start?: number; end?: number }) => {

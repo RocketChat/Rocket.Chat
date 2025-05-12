@@ -1,15 +1,11 @@
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
-import type { Condition } from 'mongodb';
 
 import { deleteRoom } from './deleteRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
-
-const logger = new Logger('cleanRoomHistory');
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -49,31 +45,17 @@ export async function cleanRoomHistory({
 	});
 
 	for await (const document of cursor) {
-		const res = await deleteUploadedFiles(document);
+		const uploadsStore = FileUpload.getStore('Uploads');
 
-		fileCount += res.succeeded.length;
-
-		if (res.failed.length > 0) {
+		if (!document.files || document.files.length === 0) {
 			continue;
 		}
+		await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id)));
+
+		fileCount += document.files.length;
 
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, [
-				{
-					$set: {
-						attachments: {
-							$map: {
-								input: '$attachments',
-								as: 'att',
-								in: {
-									$cond: [{ $eq: ['$$att.type', 'file'] }, { color: '#FD745E', text }, '$$att'] as Condition<IMessage['attachments']>,
-								},
-							},
-						},
-						file: '$$REMOVE',
-					},
-				} as const,
-			]);
+			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
 		}
 	}
 
@@ -158,21 +140,4 @@ export async function cleanRoomHistory({
 	}
 
 	return count;
-}
-
-async function deleteUploadedFiles(document: IMessage) {
-	logger.warn(`Deleting files from message ${document._id}`);
-	const files = document.files || [];
-	if (!files.length) {
-		logger.warn(`No files to delete from message ${document._id}`);
-	}
-
-	const uploadsStore = FileUpload.getStore('Uploads');
-	const results = await Promise.all(
-		files.map(async (file) => ({
-			file,
-			...(await uploadsStore.tryDeleteById(file._id)),
-		})),
-	);
-	return { failed: results.filter((res) => !res.success), succeeded: results.filter((res) => res.success) };
 }

@@ -139,7 +139,7 @@ export class Store {
 			// Copy file data
 			await store.write(rs, copyId, (err) => {
 				if (err) {
-					void this.deleteById(copyId);
+					void this.removeById(copyId);
 					this.onCopyError.call(this, err, fileId, file);
 				}
 				if (typeof callback === 'function') {
@@ -230,6 +230,13 @@ export class Store {
 	}
 
 	async removeById(fileId: string, options?: { session?: ClientSession }) {
+		// Delete the physical file in the store
+		await this.delete(fileId);
+		this.deleteTempFile(fileId);
+		await this.getCollection().removeById(fileId, { session: options?.session });
+	}
+
+	protected deleteTempFile(fileId: string) {
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		// Delete the temp file
@@ -239,37 +246,10 @@ export class Store {
 					err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
 				});
 		});
-
-		await this.getCollection().removeById(fileId, { session: options?.session });
-	}
-
-	async deleteById(fileId: string, options?: { session?: ClientSession }) {
-		// Delete the physical file in the store
-		await this.delete(fileId);
-
-		// Remove the file from the database
-		await this.removeById(fileId, options);
-	}
-
-	async tryDeleteById(fileId: string, options?: { session?: ClientSession }) {
-		const result = await this.tryDelete(fileId, options);
-		if (result.success) {
-			await this.removeById(fileId, options);
-		}
-		return result;
 	}
 
 	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {
 		throw new Error('delete is not implemented');
-	}
-
-	async tryDelete(fileId: string, options?: { session?: ClientSession }): Promise<{ success: false; error: unknown } | { success: true }> {
-		try {
-			await this.delete(fileId, options);
-			return { success: true };
-		} catch (error) {
-			return { success: false, error };
-		}
 	}
 
 	generateToken(pattern?: string) {

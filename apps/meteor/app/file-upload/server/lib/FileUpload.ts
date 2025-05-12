@@ -653,17 +653,7 @@ export const FileUpload = {
 
 		for await (const document of cursor) {
 			if (document.files) {
-				await Promise.all(
-					document.files.map(async (file) => {
-						const result = await FileUpload.getStore('Uploads').tryDeleteById(file._id);
-						if (!result.success) {
-							SystemLogger.error(`FileUpload: Failed to delete file ${file._id} (${result.error})`);
-						} else {
-							SystemLogger.warn(`FileUpload: Deleted file ${file._id}`);
-						}
-						return { file, result };
-					}),
-				);
+				await Promise.all(document.files.map((file) => FileUpload.getStore('Uploads').deleteById(file._id)));
 			}
 		}
 	},
@@ -740,30 +730,6 @@ export class FileUploadClass {
 		}
 
 		return this.model.deleteFile(fileId, { session: options?.session });
-	}
-
-	async tryDelete(fileId: string, options?: { session?: ClientSession }) {
-		const result = await this.store.tryDelete(fileId, { session: options?.session });
-		if (result.success) {
-			await this.model.deleteFile(fileId, { session: options?.session });
-			SystemLogger.warn(`FileUpload: Deleted file ${fileId}`);
-		} else {
-			SystemLogger.error(`FileUpload: Failed to delete file ${fileId} (${result.error})`);
-		}
-		return result;
-	}
-
-	async tryDeleteById(fileId: string, options?: { session?: ClientSession }) {
-		const file = await this.model.findOneById(fileId, { session: options?.session });
-
-		if (!file) {
-			SystemLogger.warn(`FileUpload: File not found ${fileId}`);
-			return { success: false, error: null };
-		}
-
-		const store = FileUpload.getStoreByName(file.store);
-
-		return store.tryDelete(file._id, { session: options?.session });
 	}
 
 	async deleteById(fileId: string) {

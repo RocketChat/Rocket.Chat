@@ -28,7 +28,7 @@ export class HomeChannel {
 	}
 
 	get toast(): Locator {
-		return this.page.locator('.rcx-toastbar');
+		return this.page.locator('.rcx-toastbar').first();
 	}
 
 	get toastSuccess(): Locator {

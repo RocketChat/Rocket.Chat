@@ -54,7 +54,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		await deleteThreadMessage(deletedMsg, user, room);
 	}
 
-	const files = (message.files || [message.file]).filter((value) => value !== undefined); // Keep compatibility with old messages
+	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
@@ -68,22 +68,13 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			file?._id && (await Uploads.updateOne({ _id: file._id }, { $set: { _hidden: true } }));
 		}
 	} else {
+		if (!showDeletedStatus) {
+			await Messages.removeById(message._id);
+		}
 		await ReadReceipts.removeByMessageId(message._id);
 
-		const results = await Promise.all(
-			files.map(async (file) => ({
-				file,
-				...(await FileUpload.getStore('Uploads').tryDeleteById(file._id)),
-			})),
-		);
-
-		const failed = results.filter((res) => !res.success);
-
-		if (failed.length) {
-			const failedFiles = failed.map((res) => res.file);
-			await Messages.updateOne({ _id: message._id }, { $set: { files: failedFiles } });
-		} else {
-			await Messages.removeById(message._id);
+		for await (const file of files) {
+			file?._id && (await FileUpload.getStore('Uploads').deleteById(file._id));
 		}
 	}
 	if (showDeletedStatus) {

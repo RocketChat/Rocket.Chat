@@ -31,7 +31,7 @@ const test = baseTest.extend<SettingsFixture>({
 			};
 			await use({ set });
 		},
-		{},
+		{ box: true },
 	],
 });
 
@@ -51,7 +51,7 @@ test.describe('prune-messages', () => {
 
 	test.beforeEach('open chat', async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto(`/channel/${targetChannel}/clean-history`);
+		await page.goto(`/channel/${targetChannel}`);
 	});
 
 	test.describe('with attached files in FileSystem', () => {
@@ -77,7 +77,7 @@ test.describe('prune-messages', () => {
 				downloadUrl = download.url();
 			});
 
-			await pruneMessages(poHomeChannel, { filesOnly: true }, '2 files pruned');
+			await pruneMessages(poHomeChannel, { filesOnly: true }, '1 file pruned');
 			await pruneMessages(poHomeChannel, { filesOnly: true }, 'No files found to prune');
 
 			await test.step('download fails with not found (404)', async () => {
@@ -131,7 +131,7 @@ test.describe('prune-messages', () => {
 		});
 
 		// FIXME: This will fail in the afterAll step when trying to delete the channel
-		test('delete channel with dangling files', async ({ settings, page }) => {
+		test.fail('delete channel with dangling files', async ({ settings, page }) => {
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.CHANGED);
 			await sendFileMessage(poHomeChannel, FILE_NAMES.FILE_3);
 			await settings.set('FileUpload_FileSystemPath', FILE_SYSTEM_PATHS.TEMPORARY);
@@ -153,6 +153,7 @@ test.describe('prune-messages', () => {
 			await pruneMessages(poHomeChannel, { filesOnly: true }, '2 files pruned');
 			await pruneMessages(poHomeChannel, { filesOnly: true }, 'No files found to prune');
 			await pruneMessages(poHomeChannel, { filesOnly: false }, '1 message pruned');
+			await pruneMessages(poHomeChannel, { filesOnly: false }, 'No messages found to prune');
 		});
 	});
 });
@@ -162,38 +163,37 @@ type PruneMessagesOptions = {
 };
 
 async function deleteMessage({ content, page }: HomeChannel) {
-	await test.step('delete message', async () => {
-		await content.openLastMessageMenu();
-		await page.getByRole('menuitem', { name: 'Delete' }).click();
-		const modal = page.getByLabel('Are you sure?');
-		await modal.getByRole('button', { name: 'Yes, delete' }).click();
-		await expect(modal).not.toBeVisible();
-		await expect(content.lastUserMessage).not.toBeVisible();
-	});
+	await test.step(
+		'delete message',
+		async () => {
+			await content.openLastMessageMenu();
+			await page.getByRole('menuitem', { name: 'Delete' }).click();
+			const modal = page.getByLabel('Are you sure?');
+			await modal.getByRole('button', { name: 'Yes, delete' }).click();
+			await expect(modal).not.toBeVisible();
+			await expect(content.lastUserMessage).not.toBeVisible();
+		},
+		{ box: true },
+	);
 }
 
-async function pruneMessages(poHomeChannel: HomeChannel, { filesOnly }: PruneMessagesOptions, message: string) {
+async function pruneMessages({ page, toast }: HomeChannel, { filesOnly }: PruneMessagesOptions, message: string) {
 	await test.step(
 		`prune messages with filesOnly=${filesOnly}`,
 		async () => {
-			const { page, content, toast } = poHomeChannel;
-			// await page.goto(`/channel/${targetChannel}/clean-history`);
+			await page.getByRole('button', { name: 'Options' }).click();
+			await page.getByRole('menuitem', { name: 'Prune messages' }).click();
 			const form = page.getByLabel('Prune Messages');
-			const checkboxes = {
-				filesOnly: form.getByRole('checkbox', { name: 'Only remove the attached files, keep messages' }).locator('i'),
-			};
-			if (filesOnly) {
-				await checkboxes.filesOnly.uncheck({ force: true });
-				await checkboxes.filesOnly.check({ force: true });
-			}
+			await form.locator('span').filter({ hasText: 'Only remove the attached' }).locator('i').setChecked(filesOnly);
 			await form.getByRole('button', { name: 'Prune' }).click();
 
 			const modal = page.getByLabel('Are you sure?');
 			await modal.getByRole('button', { name: 'Yes, prune them!' }).click();
 
-			await expect(toast.getByRole('alert').first()).toHaveText(message);
+			await expect(toast.getByRole('alert')).toHaveText(message);
+			await toast.getByLabel('Dismiss alert').click();
 
-			await expect(content.lastUserMessage).toBeVisible({ visible: filesOnly });
+			await form.getByRole('button', { name: 'Close' }).click();
 		},
 		{ box: true },
 	);
