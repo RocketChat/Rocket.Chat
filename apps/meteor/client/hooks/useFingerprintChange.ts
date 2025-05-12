@@ -1,6 +1,6 @@
 import { useEndpoint, useRole, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Roles } from '../../app/models/client';
@@ -13,6 +13,7 @@ export const useFingerprintChange = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdmin = useRole('admin');
+	const firstRun = useRef<boolean>(true);
 
 	const deploymentFingerPrintVerified = useSetting('Deployment_FingerPrint_Verified', true);
 	const fingerprintEndpoint = useEndpoint('POST', '/v1/fingerprint');
@@ -39,6 +40,11 @@ export const useFingerprintChange = () => {
 			return;
 		}
 
+		if (!firstRun.current) {
+			return;
+		}
+		firstRun.current = false;
+
 		if (!isAdmin) {
 			return;
 		}
@@ -56,8 +62,8 @@ export const useFingerprintChange = () => {
 			imperativeModal.close();
 			fingerPrintMutation.mutate('new-workspace');
 		};
-		const openModal = (): void => {
-			imperativeModal.open({
+		const openModal = () => {
+			return imperativeModal.open({
 				component: FingerprintChangeModal,
 				props: {
 					onConfirm: () => {
@@ -89,12 +95,8 @@ export const useFingerprintChange = () => {
 			});
 		};
 
-		openModal();
-
 		return () => {
-			if (deploymentFingerPrintVerified) {
-				imperativeModal.close();
-			}
+			openModal();
 		};
 	}, [deploymentFingerPrintVerified, fingerPrintMutation, isAdmin]);
 };
