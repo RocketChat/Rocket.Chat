@@ -29,7 +29,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
 	useRestrictedRoles();
-	useRootUrlChange(user._id);
+	useRootUrlChange();
 	useFingerprintChange();
 
 	return children;
