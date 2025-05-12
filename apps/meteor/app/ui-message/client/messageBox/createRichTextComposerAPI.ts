@@ -1,24 +1,18 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { RefObject } from 'react';
+import type { Options } from '@rocket.chat/message-parser';
+import { Accounts } from 'meteor/accounts-base';
 
-import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import { escapeHTML } from './messageParser';
+import { resolveComposerBox } from './messageStateHandler';
+import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import { settings } from '../../../../client/lib/settings';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (
-	input: HTMLTextAreaElement,
-	persistDraft: (value: string) => void,
-	initialDraft: string,
-	quoteChainLimit: number,
-	composerRef: RefObject<HTMLElement | null>,
-	{ rid, tmid }: { rid: string; tmid?: string },
-): ComposerAPI => {
-	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
+export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string, parseOptions: Options): ComposerAPI => {
+	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;
@@ -40,12 +34,23 @@ export const createComposerAPI = (
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		persistDraft(input.value);
+		// Store the value entirely as HTML with the DOM structure intact
+		if (input.innerHTML !== '<br>') {
+			Accounts.storageLocation.setItem(storageID, input.innerHTML);
+			return;
+		}
+
+		Accounts.storageLocation.removeItem(storageID);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
 		emitter.emit('quotedMessagesUpdate');
 	};
+
+	input.addEventListener('input', persist);
+	input.addEventListener('input', (event: Event) => {
+		resolveComposerBox(event, parseOptions);
+	});
 
 	const setText = (
 		text: string,
@@ -61,8 +66,10 @@ export const createComposerAPI = (
 	): void => {
 		!skipFocus && focus();
 
-		const { selectionStart, selectionEnd } = input;
-		const textAreaTxt = input.value;
+		// Use innerHTML to set the value in RichTextComposer instead of innerText
+		// Here, text is the variable holding the text to be inserted to the composer
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const textAreaTxt = input.innerHTML;
 
 		if (typeof selection === 'function') {
 			selection = selection({ start: selectionStart, end: selectionEnd });
@@ -70,14 +77,14 @@ export const createComposerAPI = (
 
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
-				input.value = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
+				input.innerHTML = escapeHTML(textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart));
 				!skipFocus && focus();
 			}
-			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
+			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		}
 
 		if (!selection) {
-			input.value = text;
+			input.innerHTML = escapeHTML(text);
 		}
 
 		triggerEvent(input, 'input');
@@ -105,13 +112,13 @@ export const createComposerAPI = (
 
 	const replyWith = async (text: string): Promise<void> => {
 		if (input) {
-			input.value = text;
+			input.innerText = text;
 			input.focus();
 		}
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -195,152 +202,175 @@ export const createComposerAPI = (
 		setEditing(editing);
 	};
 
-	const [formatters, stopFormatterSubscription] = (() => {
+	const [formatters, stopFormatterTracker] = (() => {
 		let actions: FormattingButton[] = [];
 
-		const recompute = (): void => {
+		const c = Tracker.autorun(() => {
 			actions = formattingButtons.filter(({ condition }) => !condition || condition());
 			emitter.emit('formatting');
-		};
-		recompute();
-		// Coarse-grained: fires on every setting change, but the only condition()
-		// today is Katex_Enabled and the recompute is a cheap zustand read, so the
-		// extra work per unrelated setting change is negligible.
-		const stop = settings.observe('*', recompute);
+		});
 
 		return [
 			{
 				get: () => actions,
 				subscribe: (callback: () => void) => emitter.on('formatting', callback),
 			},
-			stop,
+			c,
 		];
 	})();
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		stopFormatterSubscription();
+		input.removeEventListener('input', (event: Event) => {
+			resolveComposerBox(event, parseOptions);
+		});
+		stopFormatterTracker.stop();
 	};
 
-	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
-		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-		const initText = input.value.slice(0, selectionStart);
-		const selectedText = input.value.slice(selectionStart, selectionEnd);
-		const finalText = input.value.slice(selectionEnd, input.value.length);
+	const wrapSelection = (pattern: string): void => {
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		// Sanitize the innerText by reducing multiple instances of linebreaks
+		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+
+		const initText = cleanedInitText.slice(0, selectionStart);
+		const selectedText = cleanedInitText.slice(selectionStart, selectionEnd);
+		const finalText = cleanedInitText.slice(selectionEnd, input.innerText.length);
 
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const startPatternFound = [...startPattern]
+			.reverse()
+			.every((char, index) => input.innerText.slice(selectionStart - index - 1, 1) === char);
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
+			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selectionEnd + index, 1) === char);
 
 			if (endPatternFound) {
 				insertText(selectedText);
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length;
+
+				/* Get current selection range */
+				const { selectionStart } = getSelectionRange(input);
 
 				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
+					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 				}
 
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length;
+				const newStart = selectionStart - startPattern.length;
+				const newEnd = newStart + selectedText.length;
+
+				setSelectionRange(input, newStart, newEnd);
+
 				triggerEvent(input, 'input');
 				triggerEvent(input, 'change');
 
 				focus();
-				return {
-					selectionStart: input.selectionStart,
-					selectionEnd: input.selectionEnd,
-					value: input.value,
-				};
+				return;
 			}
 		}
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
-		}
+		// Explictly set the selection range and send focus back to the editor again
+		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
+		setSelectionRange(input, selectionStart, selectionEnd);
+		focus();
 
-		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-		input.selectionEnd = input.selectionStart + selectedText.length;
-		triggerEvent(input, 'input');
-		triggerEvent(input, 'change');
+		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
+			input.innerText = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		}
 
 		focus();
 
-		return {
-			selectionStart: input.selectionStart,
-			selectionEnd: input.selectionEnd,
-			value: input.value,
-		};
+		const newStart = selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + selectedText.length;
+
+		setSelectionRange(input, newStart, newEnd);
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
 	};
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(initialDraft, {
+	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
 		skipFocus: true,
 	});
 
-	input.addEventListener('input', persist);
-
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+
 		// Selects the text that is connected to the cursor
-		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
-		const textAreaTxt = input.value;
+		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
+		const textAreaTxt = input.innerText;
 
 		if (!document.execCommand?.('insertText', false, text)) {
-			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
+			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selection.start + text.length;
-		input.selectionEnd = selection.start + text.length;
+		focus();
+
+		// Check if the text starts and ends with a colon symbol (:) - Used for emoji detection
+		const emoji = /^:.*:$/.test(text.trim());
+
+		let newStart;
+		let newEnd;
+
+		// selectionStart is the current cursor position whereas
+		// selection.start is cursor starting position from where replaceText takes into consideration
+		// if emoji is true then increment cursor position by 1
+		// else increment by the length of the text
+		if (emoji) {
+			newStart = selection.start + 1;
+			newEnd = selection.start + 1;
+		} else {
+			newStart = selectionStart + text.length;
+			newEnd = selectionStart + text.length;
+		}
 
 		if (selectionStart !== selectionEnd) {
-			input.selectionStart = selectionStart;
+			setSelectionRange(input, selectionStart, selectionStart);
+		} else {
+			setSelectionRange(input, newStart, newEnd);
 		}
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
-
-		focus();
 	};
 
 	return {
-		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),
 
 		substring: (start: number, end?: number) => {
-			return input.value.substring(start, end);
+			// Sanitize the innerText by reducing multiple instances of linebreaks
+			const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+			return cleanedInitText.substring(start, end);
 		},
 
 		getCursorPosition: () => {
-			return input.selectionStart;
+			return getSelectionRange(input).selectionStart;
 		},
 		setCursorToEnd: () => {
-			input.selectionEnd = input.value.length;
-			input.selectionStart = input.selectionEnd;
+			const end = input.innerText.length;
 			focus();
+			setSelectionRange(input, end, end);
 		},
 		setCursorToStart: () => {
-			input.selectionStart = 0;
-			input.selectionEnd = input.selectionStart;
 			focus();
+			setSelectionRange(input, 0, 0);
 		},
 		release,
 		wrapSelection,
 		get text(): string {
-			return input.value;
+			return input.innerText;
 		},
 		get selection(): { start: number; end: number } {
+			const { selectionStart, selectionEnd } = getSelectionRange(input);
 			return {
-				start: input.selectionStart,
-				end: input.selectionEnd,
+				start: selectionStart,
+				end: selectionEnd,
 			};
 		},
 
@@ -362,6 +392,5 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
-		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

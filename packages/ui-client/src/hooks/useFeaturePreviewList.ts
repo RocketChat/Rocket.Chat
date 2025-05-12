@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'aiSearch';
+export type FeaturesAvailable = 'secondarySidebar' | 'realtimeMessageComposer' | 'aiSearch';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -33,6 +33,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Intelligent_Search',
 		description: 'Intelligent_Search_upsell_description',
 		group: 'AI',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'realtimeMessageComposer',
+		i18n: 'Realtime_message_composer',
+		description: 'Realtime_message_composer_description',
+		group: 'Message',
 		value: false,
 		enabled: true,
 	},
