@@ -1,4 +1,5 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, useState, useEffect } from 'react';
@@ -20,6 +21,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
+	const enhancedNavigationEnabled = useFeaturePreview('newNavigation');
 
 	const router = useRouter();
 	// Once the layout is embedded, it can't be changed
@@ -28,7 +30,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isMobile = !breakpoints.includes('md');
 	const isTablet = !breakpoints.includes('lg');
 
-	const shouldToggle = isTablet || isMobile;
+	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);

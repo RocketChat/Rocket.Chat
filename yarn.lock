@@ -8397,15 +8397,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@npm:~0.32.0":
-  version: 0.32.0
-  resolution: "@rocket.chat/layout@npm:0.32.0"
+"@rocket.chat/layout@npm:^0.32.1":
+  version: 0.32.1
+  resolution: "@rocket.chat/layout@npm:0.32.1"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/73b2aece24f974bc6ed339c5f3910824f7aa18d85be6f16ce48dcda2360b938c67a316100682850994bb4e046a20ace655e1d9615946e04bcbe1708fdb3038a9
+  checksum: 10/fccf3c862a053945eaabf56e87658f4b5f0f4a99141365195e175af47d49af68d9569e6dbe63e12b73eb0f8dcd2e7d641852374f5bcf458a43ca69bf56960bc2
   languageName: node
   linkType: hard
 
@@ -8656,7 +8656,7 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "npm:~0.32.0"
+    "@rocket.chat/layout": "npm:^0.32.1"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/log-format": "workspace:^"
@@ -8857,7 +8857,6 @@ __metadata:
     gravatar: "npm:^1.8.2"
     he: "npm:^1.2.0"
     highlight.js: "npm:11.8.0"
-    hljs9: "npm:highlight.js@^9.18.5"
     hono: "npm:^4.6.19"
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
@@ -9655,6 +9654,8 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": "npm:~0.62.0"
     "@rocket.chat/icons": "npm:^0.42.0"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@storybook/addon-a11y": "npm:^8.6.4"
     "@storybook/addon-actions": "npm:^8.6.4"
     "@storybook/addon-docs": "npm:^8.6.4"
     "@storybook/addon-essentials": "npm:^8.6.4"
@@ -9662,12 +9663,14 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.5"
     "@storybook/react": "npm:^8.6.4"
     "@storybook/react-webpack5": "npm:^8.6.4"
+    "@types/jest": "npm:~29.5.14"
     "@types/react": "npm:~18.3.17"
     "@types/react-dom": "npm:~18.3.5"
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.37.2"
     eslint-plugin-react-hooks: "npm:~5.0.0"
     eslint-plugin-storybook: "npm:^0.11.4"
+    jest: "npm:~29.7.0"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     storybook: "npm:^8.6.4"
@@ -9929,7 +9932,7 @@ __metadata:
     "@babel/preset-react": "npm:~7.25.9"
     "@babel/preset-typescript": "npm:~7.26.0"
     "@rocket.chat/i18n": "workspace:~"
-    "@rocket.chat/layout": "npm:~0.32.0"
+    "@rocket.chat/layout": "npm:^0.32.1"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-client": "workspace:^"
@@ -22694,13 +22697,6 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.7.6"
   checksum: 10/52ba685b842ca6438ff11ef459951eb13d413ae715866a8dc5f7c3b1ea0cdeb8db6aabf7254551b85f56abc205e6e2d7e1d5afb36b711b401cdaff4f2cf187e9
-  languageName: node
-  linkType: hard
-
-"hljs9@npm:highlight.js@^9.18.5":
-  version: 9.18.5
-  resolution: "highlight.js@npm:9.18.5"
-  checksum: 10/56ddbd562ece7da84847770d96e8e52bd0e6151f69efb95e249d8e1fde2b5ed78cdaa2c0d33e4c838caa434cb0fe1aeeca4edca9c2c3343daf23dcf2ffbd3dc9
   languageName: node
   linkType: hard
 

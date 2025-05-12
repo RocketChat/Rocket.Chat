@@ -184,6 +184,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
 
+	removeNonLoginTokensExcept(userId: any, authToken: any): any;
+
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
@@ -302,8 +304,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
-	closeOffice(): Promise<void>;
-	openOffice(): Promise<void>;
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail?: boolean,

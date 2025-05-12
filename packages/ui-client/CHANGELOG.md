@@ -1,5 +1,65 @@
 # @rocket.chat/ui-client
 
+## 18.0.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.8
+  - @rocket.chat/ui-avatar@14.0.0-rc.8
+  </details>
+
+## 18.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.7
+  - @rocket.chat/ui-avatar@14.0.0-rc.7
+  </details>
+
+## 18.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.6
+  - @rocket.chat/ui-avatar@14.0.0-rc.6
+  </details>
+
+## 18.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.5
+  - @rocket.chat/ui-avatar@14.0.0-rc.5
+  </details>
+
+## 18.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.4
+  - @rocket.chat/ui-avatar@14.0.0-rc.4
+  </details>
+
+## 18.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.0-rc.3
+  - @rocket.chat/ui-avatar@14.0.0-rc.3
+  </details>
+
 ## 18.0.0-rc.2
 
 ### Patch Changes
