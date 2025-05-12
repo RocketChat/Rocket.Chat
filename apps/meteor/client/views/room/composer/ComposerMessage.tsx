@@ -27,6 +27,9 @@ export type ComposerMessageProps = {
 };
 
 const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
+	// true: enables contenteditable <div>; false: uses classic <textarea> composer
+	const featurePreviewComposer = true;
+
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -90,7 +93,11 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBoxNew key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return featurePreviewComposer ? (
+		<MessageBoxNew key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	) : (
+		<MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	);
 };
 
 export default memo(ComposerMessage);
