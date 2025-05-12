@@ -47,10 +47,10 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
 	const target = event.target as HTMLInputElement;
 
-	return Boolean(target.value.trim());
+	return Boolean(target.innerText.trim());
 };
 
 const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
@@ -414,7 +414,7 @@ const MessageBoxNew = ({
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
-					onChange={setTyping}
+					onInput={setTyping}
 					/* style={textAreaStyle} */
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
