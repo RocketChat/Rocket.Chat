@@ -1,6 +1,6 @@
 import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 const GRAB_DOM_EVENTS = ['pointerdown' /* , 'touchstart' */] as const;
 const RELEASE_DOM_EVENTS = ['pointerup', 'pointercancel', 'lostpointercapture'] as const;
@@ -11,28 +11,96 @@ interface PointCoordinates {
 	y: number;
 }
 
-interface GenericRect extends PointCoordinates {
+interface IGenericRect extends PointCoordinates {
 	width: number;
 	height: number;
 }
 
+class GenericRect {
+	private rect: IGenericRect;
+
+	constructor(rect: IGenericRect) {
+		this.rect = rect;
+	}
+
+	get x(): number {
+		return this.rect.x;
+	}
+
+	get y(): number {
+		return this.rect.y;
+	}
+
+	get width(): number {
+		return this.rect.width;
+	}
+
+	get height(): number {
+		return this.rect.height;
+	}
+
+	get top(): number {
+		return this.rect.y;
+	}
+
+	get left(): number {
+		return this.rect.x;
+	}
+
+	get right(): number {
+		return this.rect.x + this.rect.width;
+	}
+
+	get bottom(): number {
+		return this.rect.y + this.rect.height;
+	}
+}
+
 type DraggableElementEvents = {
-	grab: GenericRect;
+	grab: IGenericRect;
 	move: PointCoordinates;
-	release: GenericRect;
+	release: IGenericRect;
 };
 
-class DraggableElement extends Emitter<DraggableElementEvents> {
+class Draggable extends Emitter<DraggableElementEvents> {
+	private _element: IDraggableElement;
+
 	private isDragging = false;
 
 	private pointerCoordinates: PointCoordinates = { x: 0, y: 0 };
 
 	private elementPositionOffset: PointCoordinates = { x: 0, y: 0 };
 
-	private lastKnownElementPosition: GenericRect = { x: 0, y: 0, width: 0, height: 0 };
+	// private lastKnownElementPosition: GenericRect = { x: 0, y: 0, width: 0, height: 0 };
 
-	private setPointerCoordinates(mouseOffset: PointCoordinates): void {
-		this.pointerCoordinates = mouseOffset;
+	constructor(element: IDraggableElement) {
+		console.count('constructor');
+		super();
+		this._element = element;
+		this._element.onMove((pointerCoordinates) => {
+			this.handleMove(pointerCoordinates);
+		});
+
+		this._element.onRelease((pointerCoordinates) => {
+			this.handleRelease(pointerCoordinates);
+		});
+	}
+
+	get element(): IDraggableElement {
+		return this._element;
+	}
+
+	public onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler {
+		console.count('release1');
+		return this.on('release', cb);
+	}
+
+	public onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler {
+		return this.on('move', cb);
+	}
+
+	private setPointerCoordinates(pointerCoordinates: PointCoordinates): void {
+		this.pointerCoordinates = pointerCoordinates;
 	}
 
 	private addElementPositionOffset(x: number, y: number): void {
@@ -42,33 +110,21 @@ class DraggableElement extends Emitter<DraggableElementEvents> {
 
 	private setElementPositionOffset(x: number, y: number): void {
 		this.elementPositionOffset = { x, y };
+		this.element.setElementPositionOffset(this.elementPositionOffset);
 	}
 
-	public setLastKnownElementPosition(rect: GenericRect): void {
-		console.log('setLastKnownElementPosition', rect);
-		this.lastKnownElementPosition = rect;
-	}
-
-	public getLastKnownElementPosition(): GenericRect {
-		console.log('getLastKnownElementPosition', this.lastKnownElementPosition);
-		return this.lastKnownElementPosition;
-	}
-
-	public moveToCoordinates(startingElementCoordinates: PointCoordinates, targetElementCoordinates: PointCoordinates): void {
+	public moveToCoordinates(targetElementCoordinates: PointCoordinates): void {
+		const initialPosition = this._element.getElementRect();
 		this.moveByOffset({
-			x: targetElementCoordinates.x - startingElementCoordinates.x,
-			y: targetElementCoordinates.y - startingElementCoordinates.y,
+			x: targetElementCoordinates.x - initialPosition.x,
+			y: targetElementCoordinates.y - initialPosition.y,
 		});
 	}
 
-	public moveToLastKnownPosition(startingElementCoordinates: PointCoordinates): void {
-		this.moveToCoordinates(startingElementCoordinates, this.getLastKnownElementPosition());
-	}
-
-	public handleGrab(startingPointerCoordinates: PointCoordinates, startingElementPosition: GenericRect): void {
+	public handleGrab(startingPointerCoordinates: PointCoordinates): void {
 		this.isDragging = true;
 		this.setPointerCoordinates(startingPointerCoordinates);
-		this.emit('grab', startingElementPosition);
+		this.emit('grab', this._element.getElementRect());
 	}
 
 	public handleMove(currentPointerCoordinates: PointCoordinates): void {
@@ -77,14 +133,14 @@ class DraggableElement extends Emitter<DraggableElementEvents> {
 		const xDelta = currentPointerCoordinates.x - this.pointerCoordinates.x;
 		const yDelta = currentPointerCoordinates.y - this.pointerCoordinates.y;
 
-		this.emit('move', this.getCurrentOffset());
-
 		this.addElementPositionOffset(xDelta, yDelta);
 		this.setPointerCoordinates(currentPointerCoordinates);
-		console.log('moveHandle inside DraggableElement last', currentPointerCoordinates);
+
+		this.emit('move', this.getCurrentOffset());
+		this.element.setElementPositionOffset(this.getCurrentOffset());
 	}
 
-	public handleRelease(finalElementPosition: GenericRect): void {
+	public handleRelease(finalElementPosition: IGenericRect): void {
 		this.isDragging = false;
 		this.setPointerCoordinates({ x: 0, y: 0 });
 		this.emit('release', finalElementPosition);
@@ -101,96 +157,97 @@ class DraggableElement extends Emitter<DraggableElementEvents> {
 }
 
 class BoundingElement extends Emitter<{
-	resize: GenericRect;
+	resize: IGenericRect;
 }> {
-	private lastKnownBounds: GenericRect = { x: 0, y: 0, width: 0, height: 0 };
+	private _element: IBoundingElement;
 
-	// private timeout: NodeJS.Timeout | null = null;
+	private draggableInstance: Draggable;
 
-	public setLastKnownBounds(rect: GenericRect): void {
-		this.lastKnownBounds = rect;
+	constructor(element: IBoundingElement, draggableInstance: Draggable) {
+		super();
+		this._element = element;
+		this.draggableInstance = draggableInstance;
+
+		this.draggableInstance.onRelease(() => {
+			const offset = this.calculateBoundsOffset();
+			this.draggableInstance.moveByOffset(offset);
+		});
+
+		this.element.onResize(() => {
+			const offset = this.calculateBoundsOffset();
+			this.draggableInstance.moveByOffset(offset);
+		});
 	}
 
-	public getLastKnownBounds(): GenericRect {
-		return this.lastKnownBounds;
+	get element(): IBoundingElement {
+		return this._element;
 	}
 
-	public resize(rect: GenericRect): void {
-		this.setLastKnownBounds(rect);
-		this.emit('resize', rect);
-	}
+	private calculateBoundsOffset(): PointCoordinates {
+		const draggableRect = new GenericRect(this.draggableInstance.element.getElementRect());
+		const boundsRect = new GenericRect(this.element.getElementRect());
+		// If the draggable element's top/left position is less than
+		// the bounding element's top/left position, the difference will be positive
+		// This means we can just add this value to the draggable element's offset
+		// to bring it back into bounds
+		const topLeftPoint = {
+			x: boundsRect.left - draggableRect.left,
+			y: boundsRect.top - draggableRect.top,
+		};
 
-	public onResize(cb: (rect: GenericRect) => void): OffCallbackHandler {
-		return this.on('resize', cb);
+		// If the draggable element's bottom/right position is greater than
+		// the bounding element's bottom/right position, the difference will be negative
+		// This means we can just add this value to the draggable element's offset
+		// to bring it back into bounds
+		const bottomRightPoint = {
+			x: boundsRect.right - draggableRect.right,
+			y: boundsRect.bottom - draggableRect.bottom,
+		};
+
+		console.log('calculateBoundsOffset', draggableRect, boundsRect);
+		console.log('calculateBoundsOffset', topLeftPoint, bottomRightPoint);
+		const offset = {
+			x: 0,
+			y: 0,
+		};
+
+		if (topLeftPoint.x > 0) {
+			offset.x += topLeftPoint.x;
+		}
+		if (topLeftPoint.y > 0) {
+			offset.y += topLeftPoint.y;
+		}
+		if (bottomRightPoint.x < 0) {
+			offset.x += bottomRightPoint.x;
+		}
+		if (bottomRightPoint.y < 0) {
+			offset.y += bottomRightPoint.y;
+		}
+
+		return offset;
 	}
 }
 
 class HandleElement extends Emitter<{
 	grab: PointCoordinates;
 }> {
-	constructor() {
+	private draggableInstance: Draggable;
+
+	private _element: IHandleElement;
+
+	constructor(element: IHandleElement, draggableInstance: Draggable) {
 		super();
+		this.draggableInstance = draggableInstance;
+		this._element = element;
+
+		this._element.onGrab((mousePosition) => {
+			this.draggableInstance.handleGrab(mousePosition);
+		});
 	}
 
-	public handleGrab(mousePosition: PointCoordinates): void {
-		this.emit('grab', mousePosition);
+	get element(): IHandleElement {
+		return this._element;
 	}
-
-	public onGrab(cb: (mousePosition: PointCoordinates) => void): OffCallbackHandler {
-		return this.on('grab', cb);
-	}
-}
-
-const inferDOMRectFromGenericRect = (rect: GenericRect): DOMRect => {
-	return new DOMRect(rect.x, rect.y, rect.width, rect.height);
-};
-
-function calculateBoundsOffset(draggableElement: GenericRect, bounds: GenericRect): PointCoordinates {
-	const draggableRect = inferDOMRectFromGenericRect(draggableElement);
-	const boundsRect = inferDOMRectFromGenericRect(bounds);
-
-	// If the draggable element's top/left position is less than
-	// the bounding element's top/left position, the difference will be positive
-	// This means we can just add this value to the draggable element's offset
-	// to bring it back into bounds
-	const topLeftPoint = {
-		x: boundsRect.left - draggableRect.left,
-		y: boundsRect.top - draggableRect.top,
-	};
-
-	// If the draggable element's bottom/right position is greater than
-	// the bounding element's bottom/right position, the difference will be negative
-	// This means we can just add this value to the draggable element's offset
-	// to bring it back into bounds
-	const bottomRightPoint = {
-		x: boundsRect.right - draggableRect.right,
-		y: boundsRect.bottom - draggableRect.bottom,
-	};
-
-	const offset = {
-		x: 0,
-		y: 0,
-	};
-
-	// console.log('topLeftPoint', topLeftPoint);
-	// console.log('bottomRightPoint', bottomRightPoint);
-
-	if (topLeftPoint.x > 0) {
-		offset.x += topLeftPoint.x;
-	}
-	if (topLeftPoint.y > 0) {
-		offset.y += topLeftPoint.y;
-	}
-	if (bottomRightPoint.x < 0) {
-		offset.x += bottomRightPoint.x;
-	}
-	if (bottomRightPoint.y < 0) {
-		offset.y += bottomRightPoint.y;
-	}
-
-	// console.log('offset', offset);
-
-	return offset;
 }
 
 const getPointerEventCoordinates = (e: PointerEvent): PointCoordinates => ({
@@ -198,11 +255,161 @@ const getPointerEventCoordinates = (e: PointerEvent): PointCoordinates => ({
 	y: e.clientY,
 });
 
+interface IDraggableElement {
+	onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler;
+	onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler;
+	getElementRect(): IGenericRect;
+	setElementPositionOffset(offset: PointCoordinates): void;
+	setElement(element: unknown): OffCallbackHandler;
+}
+
+interface IBoundingElement {
+	onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler;
+	getElementRect(): IGenericRect;
+	setElement(element: unknown): OffCallbackHandler;
+}
+
+interface IHandleElement {
+	onGrab(cb: (pointerCoordinates: PointCoordinates) => void): OffCallbackHandler;
+	setElement(element: unknown): OffCallbackHandler;
+}
+
+class HandleDomElement
+	extends Emitter<{
+		grab: PointCoordinates;
+	}>
+	implements IHandleElement
+{
+	public setElement(element: HTMLElement) {
+		const onGrab = (event: PointerEvent) => {
+			this.emit('grab', getPointerEventCoordinates(event));
+		};
+
+		const unsubArray: OffCallbackHandler[] = [];
+
+		unsubArray.push(
+			...GRAB_DOM_EVENTS.map((event) => {
+				element.addEventListener(event, onGrab);
+				return () => element.removeEventListener(event, onGrab);
+			}),
+		);
+
+		return () => unsubArray.forEach((unsub) => unsub());
+	}
+
+	public onGrab = (cb: (mousePosition: PointCoordinates) => void): OffCallbackHandler => {
+		return this.on('grab', cb);
+	};
+}
+
+class BoundingDomElement
+	extends Emitter<{
+		resize: IGenericRect;
+	}>
+	implements IBoundingElement
+{
+	private _element: HTMLElement | null = null;
+
+	public setElement(element: HTMLElement) {
+		this._element = element;
+
+		const onResize = (entries: ResizeObserverEntry[]) => {
+			const firstEntry = entries[0];
+			if (!firstEntry) {
+				return;
+			}
+
+			this.emit('resize', firstEntry.contentRect);
+		};
+
+		const observer = new ResizeObserver(onResize);
+		observer.observe(element);
+
+		return () => observer.disconnect();
+	}
+
+	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
+		return this.on('resize', cb);
+	};
+
+	public getElementRect(): DOMRect {
+		if (!this._element) {
+			return new DOMRect();
+		}
+
+		return this._element.getBoundingClientRect();
+	}
+}
+
+class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDraggableElement {
+	private element: HTMLElement | null = null;
+
+	public setElement(element: HTMLElement) {
+		this.element = element;
+
+		const onEnd = () => {
+			this.emit('release', this.getElementRect());
+		};
+
+		const onMove = (event: PointerEvent) => {
+			this.emit('move', getPointerEventCoordinates(event));
+		};
+
+		const unsubArray: OffCallbackHandler[] = [];
+
+		// Attach MOVE DOM listeners
+		unsubArray.push(
+			...MOVE_DOM_EVENTS.map((event) => {
+				window.addEventListener(event, onMove);
+				return () => window.removeEventListener(event, onMove);
+			}),
+		);
+
+		// Attach RELEASE DOM listeners
+		unsubArray.push(
+			...RELEASE_DOM_EVENTS.map((event) => {
+				window.addEventListener(event, onEnd);
+				return () => window.removeEventListener(event, onEnd);
+			}),
+		);
+
+		return () => unsubArray.forEach((unsub) => unsub());
+	}
+
+	public onMove = (cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler => {
+		return this.on('move', cb);
+	};
+
+	public onRelease = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
+		console.count('release2');
+		return this.on('release', cb);
+	};
+
+	public getElementRect(): DOMRect {
+		if (!this.element) {
+			return new DOMRect();
+		}
+
+		return this.element.getBoundingClientRect();
+	}
+
+	public setElementPositionOffset(offset: PointCoordinates): void {
+		if (!this.element) {
+			return;
+		}
+
+		console.trace('setElementPositionOffset', offset);
+
+		this.element.style.transform = `translate(${offset.x}px, ${offset.y}px)`;
+	}
+}
+
 export const useDraggable = () => {
-	const draggableElementRef = useRef<DraggableElement>(new DraggableElement());
-	const boundingElementRef = useRef<BoundingElement>(new BoundingElement());
-	const handleElementRef = useRef<HandleElement>(new HandleElement());
-	// const restorePositionRef = useRef<GenericRect | null>(null);
+	// TODO these classes are being instantiated more than once.
+	const draggableElementRef = useRef<Draggable>(new Draggable(new DraggableDomElement()));
+	const boundingElementRef = useRef<BoundingElement>(new BoundingElement(new BoundingDomElement(), draggableElementRef.current));
+	const handleElementRef = useRef<HandleElement>(new HandleElement(new HandleDomElement(), draggableElementRef.current));
+	const restorePositionRef = useRef<IGenericRect | null>(null);
 
 	const handleElementCallbackRef = useSafeRefCallback(
 		useCallback((node: HTMLElement | null) => {
@@ -210,16 +417,7 @@ export const useDraggable = () => {
 				return;
 			}
 
-			const onGrab = (event: PointerEvent) => {
-				handleElementRef.current.handleGrab(getPointerEventCoordinates(event));
-			};
-
-			const unsubArray = GRAB_DOM_EVENTS.map((event) => {
-				node.addEventListener(event, onGrab);
-				return () => node.removeEventListener(event, onGrab);
-			});
-
-			return () => unsubArray.forEach((unsub) => unsub());
+			return handleElementRef.current.element.setElement(node);
 		}, []),
 	);
 
@@ -229,43 +427,19 @@ export const useDraggable = () => {
 				return;
 			}
 
-			const unsubArray: OffCallbackHandler[] = [];
+			const offDomEvents = draggableElementRef.current.element.setElement(node);
+			// const offMove = draggableElementRef.current.onMove(() => {
+			// 	restorePositionRef.current = node.getBoundingClientRect();
+			// });
 
-			const onMove = (event: PointerEvent) => {
-				console.log('onMove', event);
-				draggableElementRef.current.handleMove(getPointerEventCoordinates(event));
+			if (restorePositionRef.current) {
+				// draggableElementRef.current.moveToCoordinates(restorePositionRef.current);
+			}
+
+			return () => {
+				offDomEvents();
+				// offMove();
 			};
-
-			const onEnd = () => {
-				draggableElementRef.current.handleRelease(node.getBoundingClientRect());
-			};
-
-			// Attach MOVE DOM listeners
-			unsubArray.push(
-				...MOVE_DOM_EVENTS.map((event) => {
-					window.addEventListener(event, onMove);
-					return () => window.removeEventListener(event, onMove);
-				}),
-			);
-
-			// Attach RELEASE DOM listeners
-			unsubArray.push(
-				...RELEASE_DOM_EVENTS.map((event) => {
-					window.addEventListener(event, onEnd);
-					return () => window.removeEventListener(event, onEnd);
-				}),
-			);
-
-			// Actually move the element
-			unsubArray.push(
-				draggableElementRef.current.on('move', (offset) => {
-					node.style.transform = `translate(${offset.x}px, ${offset.y}px)`;
-					console.log('move', node.getBoundingClientRect());
-					draggableElementRef.current.setLastKnownElementPosition(node.getBoundingClientRect());
-				}),
-			);
-
-			return () => unsubArray.forEach((unsub) => unsub());
 		}, []),
 	);
 
@@ -275,53 +449,9 @@ export const useDraggable = () => {
 				return;
 			}
 
-			boundingElementRef.current.setLastKnownBounds(node.getBoundingClientRect());
-
-			const onResize = (entries: ResizeObserverEntry[]) => {
-				const firstEntry = entries[0];
-				if (!firstEntry) {
-					return;
-				}
-
-				boundingElementRef.current.resize(firstEntry.contentRect);
-			};
-
-			const observer = new ResizeObserver(onResize);
-			observer.observe(node);
-
-			return () => observer.disconnect();
+			return boundingElementRef.current.element.setElement(node);
 		}, []),
 	);
-
-	useEffect(() => {
-		const unsubArray: OffCallbackHandler[] = [];
-
-		unsubArray.push(
-			handleElementRef.current.onGrab((mousePosition) => {
-				console.log('grab', mousePosition);
-				draggableElementRef.current.handleGrab(mousePosition, draggableElementRef.current.getLastKnownElementPosition());
-			}),
-		);
-
-		unsubArray.push(
-			draggableElementRef.current.on('release', (rect) => {
-				console.log('release', rect);
-				const offset = calculateBoundsOffset(rect, boundingElementRef.current.getLastKnownBounds());
-				console.log(rect, boundingElementRef.current.getLastKnownBounds(), offset);
-				draggableElementRef.current.moveByOffset(offset);
-			}),
-		);
-
-		unsubArray.push(
-			boundingElementRef.current.onResize((rect) => {
-				console.log('resize', rect);
-				const offset = calculateBoundsOffset(draggableElementRef.current.getLastKnownElementPosition(), rect);
-				draggableElementRef.current.moveByOffset(offset);
-			}),
-		);
-
-		return () => unsubArray.forEach((unsub) => unsub());
-	}, []);
 
 	return [draggableCallbackRef, boundingCallbackRef, handleElementCallbackRef];
 };
