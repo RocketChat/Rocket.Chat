@@ -17,6 +17,7 @@ import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAc
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
+import { useMultiDeleteMessagesRoomAction } from './hooks/roomActions/useMultiDeleteMessagesRoomAction';
 import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
@@ -52,6 +53,7 @@ export const roomActionHooks = [
 	useDiscussionsRoomAction,
 	useE2EERoomAction,
 	useExportMessagesRoomAction,
+	useMultiDeleteMessagesRoomAction,
 	useGameCenterRoomAction,
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
