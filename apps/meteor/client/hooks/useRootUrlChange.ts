@@ -1,6 +1,6 @@
 import { useRole, useSetting, useSettingSetValue, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Roles } from '../../app/models/client';
@@ -12,6 +12,7 @@ export const useRootUrlChange = (userId: string) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdmin = useRole('admin');
+	const firstRun = useRef<boolean>(true);
 
 	const currentUrl = location.origin + window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	const siteUrl = useSetting('Site_Url', '');
@@ -31,6 +32,10 @@ export const useRootUrlChange = (userId: string) => {
 		if (!Roles.ready.get() || !isSyncReady.get()) {
 			return;
 		}
+		if (!firstRun.current) {
+			return;
+		}
+		firstRun.current = false;
 
 		if (!isAdmin) {
 			return;
@@ -43,7 +48,7 @@ export const useRootUrlChange = (userId: string) => {
 		if (window.__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
 			const confirm = (): void => {
 				imperativeModal.close();
-				siteUrlMutation.mutateAsync(currentUrl);
+				siteUrlMutation.mutate(currentUrl);
 			};
 			imperativeModal.open({
 				component: UrlChangeModal,

@@ -9,7 +9,7 @@ import FingerprintChangeModalConfirmation from '../components/FingerprintChangeM
 import { imperativeModal } from '../lib/imperativeModal';
 import { isSyncReady } from '../lib/userData';
 
-export const useFingerprintChange = (userId: string) => {
+export const useFingerprintChange = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isAdmin = useRole('admin');
@@ -49,18 +49,20 @@ export const useFingerprintChange = (userId: string) => {
 
 		const updateWorkspace = (): void => {
 			imperativeModal.close();
-			fingerPrintMutation.mutateAsync('updated-configuration');
+			fingerPrintMutation.mutate('updated-configuration');
 		};
 
 		const setNewWorkspace = (): void => {
 			imperativeModal.close();
-			fingerPrintMutation.mutateAsync('new-workspace');
+			fingerPrintMutation.mutate('new-workspace');
 		};
 		const openModal = (): void => {
 			imperativeModal.open({
 				component: FingerprintChangeModal,
 				props: {
 					onConfirm: () => {
+						imperativeModal.close();
+
 						imperativeModal.open({
 							component: FingerprintChangeModalConfirmation,
 							props: {
@@ -71,6 +73,8 @@ export const useFingerprintChange = (userId: string) => {
 						});
 					},
 					onCancel: () => {
+						imperativeModal.close();
+
 						imperativeModal.open({
 							component: FingerprintChangeModalConfirmation,
 							props: {
@@ -92,5 +96,5 @@ export const useFingerprintChange = (userId: string) => {
 				imperativeModal.close();
 			}
 		};
-	}, [deploymentFingerPrintVerified, fingerPrintMutation, isAdmin, userId]);
+	}, [deploymentFingerPrintVerified, fingerPrintMutation, isAdmin]);
 };

@@ -30,7 +30,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useCustomEmoji();
 	useRestrictedRoles();
 	useRootUrlChange(user._id);
-	useFingerprintChange(user._id);
+	useFingerprintChange();
 
 	return children;
 };
