@@ -9,6 +9,7 @@ import type {
 	IUser,
 	SelectedAgent,
 	InquiryWithAgentInfo,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -119,3 +120,6 @@ export const afterTakeInquiry = makeFunction(
 		await sendToCRM('LivechatSessionTaken', room);
 	},
 );
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const afterInquiryQueued = makeFunction(async (_inquiry: ILivechatInquiryRecord) => {});
