@@ -984,31 +984,25 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
-			const user = await Meteor.users.findOneAsync({ 'emails.address': email });
-
-			if (!user) {
-				return API.v1.failure('User not found');
+      
+      try {
+				const user = await Meteor.users.findOneAsync({ 'emails.address': email });
+				if (!user) {
+					return API.v1.failure('User not found');
+				}
+				const now = Date.now();
+				const lastSent = user?.services?.email?.lastConfirmationSent || 0;
+				if (now - lastSent < 1 * 60 * 1000) {
+					return API.v1.failure('Please wait before requesting another confirmation email.');
+				}
+				if (await sendConfirmationEmail(email)) {
+					await Meteor.users.updateAsync(user._id, { $set: { 'services.email.lastConfirmationSent': now } });
+					return API.v1.success();
+				}
+				return API.v1.failure();
+			} catch (error) {
+				return API.v1.failure('Database operation failed');
 			}
-
-			const now = Date.now();
-			const lastSent = user?.services?.email?.lastConfirmationSent || 0;
-
-			// Only allow once per 1 minutes
-			if (now - lastSent < 1 * 60 * 1000) {
-				return API.v1.failure('Please wait before requesting another confirmation email.');
-			}
-
-			if (await sendConfirmationEmail(email)) {
-				// Store the timestamp of this send
-				await Meteor.users.updateAsync(user._id, {
-					$set: {
-						'services.email.lastConfirmationSent': now,
-					},
-				});
-				return API.v1.success();
-			}
-
-			return API.v1.failure();
 		},
 	},
 );
