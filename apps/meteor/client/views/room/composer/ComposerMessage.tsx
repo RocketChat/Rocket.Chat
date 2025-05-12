@@ -9,6 +9,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
+import MessageBoxNew from './messageBox/MessageBoxNew';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
@@ -89,7 +90,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return <MessageBoxNew key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);
