@@ -73,7 +73,6 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import { RateLimiter } from '/app/lib/server';
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
@@ -975,11 +974,7 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		return API.v1.success();
 	},
 });
-RateLimiter.limitMethod('users.sendConfirmationEmail', 5, 60000, {
-	userId() {
-		return true; // Apply to all authenticated users
-	},
-});
+
 API.v1.addRoute(
 	'users.sendConfirmationEmail',
 	{
