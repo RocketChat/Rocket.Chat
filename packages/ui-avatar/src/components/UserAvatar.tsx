@@ -28,7 +28,7 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 	}
 	if (username) {
 		const { url = getUserAvatarPath({ username, etag }), ...props } = rest;
-		return <BaseAvatar url={url} data-username={username} title={username} {...props} />;
+		return <BaseAvatar url={url} data-username={username} title={username} alt={username} {...props} />;
 	}
 
 	// TODO: We should throw an Error after fixing the issue in Composer passing the username undefined
