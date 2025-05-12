@@ -34,20 +34,21 @@ afterTakeInquiry.patch(
 			const { v: { token } = {} } = inquiry;
 			if (token) {
 				await LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() });
+				cbLogger.info({
+					msg: 'Updated last agent of visitor',
+					token,
+					newAgent: { _id: agent.agentId, username: agent.username },
+				});
 			}
 		}
 
-		if (settings.get('Livechat_auto_transfer_chat_timeout') && !(room?.autoTransferredAt || room?.autoTransferOngoing)) {
-			const autoTransferTimeout = settings.get<number>('Livechat_auto_transfer_chat_timeout');
+		const autoTransferTimeout = settings.get<number>('Livechat_auto_transfer_chat_timeout');
+		if (autoTransferTimeout && !(room?.autoTransferredAt || room?.autoTransferOngoing)) {
 			await AutoTransferChatScheduler.scheduleRoom(inquiry.rid, autoTransferTimeout);
-			cbLogger.info({
-				msg: 'Auto transfer setup',
-				roomId: inquiry.rid,
-				after: autoTransferTimeout,
-			});
 		}
 
-		if (settings.get('Livechat_max_queue_wait_time')) {
+		const maxQueueWaitTime = settings.get<number>('Livechat_max_queue_wait_time');
+		if (!maxQueueWaitTime || maxQueueWaitTime < 0) {
 			await OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 		}
 	},
