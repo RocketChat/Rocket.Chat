@@ -73,6 +73,7 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
@@ -984,7 +985,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
-      
+
       try {
 				const user = await Meteor.users.findOneAsync({ 'emails.address': email });
 				if (!user) {
