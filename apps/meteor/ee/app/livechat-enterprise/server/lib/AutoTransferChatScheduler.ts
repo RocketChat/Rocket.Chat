@@ -94,7 +94,7 @@ export class AutoTransferChatSchedulerClass {
 			await returnRoomAsInquiry(room, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
-				transferredBy: await this.getSchedulerUser(),
+				transferredBy: { ...(await this.getSchedulerUser()), userType: 'user' },
 			});
 			return;
 		}

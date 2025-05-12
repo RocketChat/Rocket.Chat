@@ -37,7 +37,7 @@ afterTakeInquiry.patch(
 			}
 		}
 
-		if (!room?.autoTransferredAt && !room?.autoTransferOngoing) {
+		if (settings.get('Livechat_auto_transfer_chat_timeout') && !(room?.autoTransferredAt || room?.autoTransferOngoing)) {
 			const autoTransferTimeout = settings.get<number>('Livechat_auto_transfer_chat_timeout');
 			await AutoTransferChatScheduler.scheduleRoom(inquiry.rid, autoTransferTimeout);
 			cbLogger.info({
