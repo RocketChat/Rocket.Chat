@@ -24,15 +24,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	 */
 	query: Record<string, unknown>;
 }> {
-	const {
-		userId,
-		queryParams: params,
-		logger,
-		queryFields,
-		queryOperations,
-		response,
-		request: { route },
-	} = api;
+	const { userId, queryParams: params, logger, queryFields, queryOperations, response, path } = api;
 
 	let sort;
 	if (params.sort) {
@@ -80,7 +72,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	// Verify the user's selected fields only contains ones which their role allows
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
-		if (route.includes('/v1/users.')) {
+		if (path.includes('/v1/users.')) {
 			nonSelectableFields = nonSelectableFields.concat(
 				Object.keys(
 					(await hasPermissionAsync(userId, 'view-full-other-user-info'))
@@ -99,7 +91,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 
 	// Limit the fields by default
 	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
-	if (api.path.includes('/v1/users.')) {
+	if (path.includes('/v1/users.')) {
 		if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
