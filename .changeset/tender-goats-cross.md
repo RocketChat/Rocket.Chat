@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fixes an issue with arigapped restrictions ignoring the warning period.
+Fixes an issue with airgapped restrictions ignoring the warning period.
