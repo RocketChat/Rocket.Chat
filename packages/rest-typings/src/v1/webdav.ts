@@ -1,6 +1,7 @@
 import type { IWebdavAccount, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
-import type { DeleteResult } from 'mongodb';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import type { DeleteResult } from 'mongodb';
+
 
 type POSTRemoveWebdavAccount = {
 	accountId: string;
