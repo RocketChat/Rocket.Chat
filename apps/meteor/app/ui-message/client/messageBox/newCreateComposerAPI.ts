@@ -58,7 +58,6 @@ export const newCreateComposerAPI = (input: HTMLDivElement, storageID: string): 
 		sel?.addRange(range);
 	};
 
-
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
