@@ -132,20 +132,23 @@ const MarkdownText = ({
 
 		// Add a hook to make all external links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if (isLinkElement(node)) {
-				const href = node.getAttribute('href') || '';
+			if (!isLinkElement(node)) {
+				return;
+			}
 
-				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+			const href = node.getAttribute('href') || '';
+
+			node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
+
+			if (isExternal(href)) {
+				node.setAttribute('target', '_blank');
 				node.setAttribute('rel', 'nofollow noopener noreferrer');
-				if (isExternal(node.getAttribute('href') || '')) {
-					node.setAttribute('target', '_blank');
-					node.setAttribute('title', href);
-				}
+				node.setAttribute('title', href);
 			}
 		});
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t, schemes]);
 
 	return __html ? (
 		<Box
