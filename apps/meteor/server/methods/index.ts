@@ -7,7 +7,6 @@ import './addRoomModerator';
 import './addRoomOwner';
 import './afterVerifyEmail';
 import './browseChannels';
-import './canAccessRoom';
 import './channelsList';
 import './createDirectMessage';
 import './deleteFileMessage';
