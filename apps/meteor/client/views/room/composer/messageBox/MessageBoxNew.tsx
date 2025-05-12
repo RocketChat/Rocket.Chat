@@ -12,6 +12,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
+	MessageComposerHint,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -400,6 +401,9 @@ const MessageBoxNew = ({
 					suspended={popup.suspended}
 				/>
 			)}
+			<MessageComposerHint icon='flask' helperText=''>
+				Experiment: Real Time Composer
+			</MessageComposerHint>
 			<MessageBoxHint
 				isEditing={isEditing}
 				e2eEnabled={e2eEnabled}
