@@ -294,4 +294,5 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	countPinned(options?: CountDocumentsOptions): Promise<number>;
 	countStarred(options?: CountDocumentsOptions): Promise<number>;
 	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment): Promise<Document | UpdateResult>;
+	clearFilesByMessageIds(_ids: string[]): Promise<Document | UpdateResult>;
 }

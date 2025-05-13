@@ -1814,4 +1814,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		]);
 	}
+
+	clearFilesByMessageIds(_ids: string[]) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
+		return this.updateMany(
+			{ _id: { $in: _ids } },
+			{
+				$set: { files: [] },
+				$unset: { file: 1 },
+			},
+		);
+	}
 }

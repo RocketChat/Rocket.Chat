@@ -13,13 +13,7 @@ async function performFileAttachmentCleanupBatch(idsSet: Set<string>, replaceWit
 
 	const ids = [...idsSet];
 	await Messages.removeFileAttachmentsByMessageIds(ids, replaceWith);
-	await Messages.updateMany(
-		{ _id: { $in: ids } },
-		{
-			$unset: { file: '' },
-			$set: { files: [] },
-		},
-	);
+	await Messages.clearFilesByMessageIds(ids);
 	idsSet.clear();
 }
 
