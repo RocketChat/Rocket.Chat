@@ -249,12 +249,22 @@ export const createSDK = (rest: RestClientInterface) => {
 		return Meteor.callAsync(method, ...args);
 	};
 
+	const disconnect = () => {
+		Meteor.disconnect();
+	};
+
+	const reconnect = () => {
+		Meteor.reconnect();
+	};
+
 	return {
 		rest,
 		stop: stopAll,
 		stream,
 		publish,
 		call,
+		disconnect,
+		reconnect,
 	};
 };
 

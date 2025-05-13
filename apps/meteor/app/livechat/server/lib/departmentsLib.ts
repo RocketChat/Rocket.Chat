@@ -1,3 +1,4 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -133,6 +134,10 @@ export async function saveDepartment(
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+		void Apps.self
+			?.getBridges()
+			?.getListenerBridge()
+			.livechatEvent(AppEvents.IPostLivechatDepartmentDisabled, { department: departmentDB });
 	}
 
 	if (departmentUnit) {
@@ -269,7 +274,7 @@ export async function removeDepartment(departmentId: string) {
 		}
 	});
 
-	const { deletedCount } = await removeByDept;
+	const { deletedCount } = promiseResponses[0].status === 'fulfilled' ? promiseResponses[0].value : { deletedCount: 0 };
 
 	if (deletedCount > 0) {
 		removedAgents.forEach(({ _id: docId, agentId }) => {
@@ -285,6 +290,7 @@ export async function removeDepartment(departmentId: string) {
 	}
 
 	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
+	void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatDepartmentRemoved, { department });
 
 	return ret;
 }

@@ -6,10 +6,12 @@ import type {
 	ILDAPCallback,
 	ILDAPPageCallback,
 } from '@rocket.chat/core-typings';
+import { wrapExceptions } from '@rocket.chat/tools';
 import ldapjs from 'ldapjs';
 
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { processLdapVariables, type LDAPVariableMap } from './processLdapVariables';
 import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
 
@@ -50,6 +52,8 @@ export class LDAPConnection {
 
 	private usingAuthentication: boolean;
 
+	private _variableMap: LDAPVariableMap;
+
 	constructor() {
 		this.ldapjs = ldapjs;
 
@@ -83,8 +87,17 @@ export class LDAPConnection {
 			authentication: settings.get<boolean>('LDAP_Authentication') ?? false,
 			authenticationUserDN: settings.get<string>('LDAP_Authentication_UserDN') ?? '',
 			authenticationPassword: settings.get<string>('LDAP_Authentication_Password') ?? '',
+			useVariables: settings.get<boolean>('LDAP_DataSync_UseVariables') ?? false,
+			variableMap: settings.get<string>('LDAP_DataSync_VariableMap') ?? '{}',
 			attributesToQuery: this.parseAttributeList(settings.get<string>('LDAP_User_Search_AttributesToQuery')),
 		};
+
+		this._variableMap =
+			(this.options.useVariables &&
+				wrapExceptions(() => JSON.parse(this.options.variableMap)).suppress(() => {
+					mapLogger.error({ msg: 'Failed to parse LDAP Variable Map', map: this.options.variableMap });
+				})) ||
+			{};
 
 		if (!this.options.host) {
 			logger.warn('LDAP Host is not configured.');
@@ -322,7 +335,7 @@ export class LDAPConnection {
 			mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, value: values[key] });
 		});
 
-		return values;
+		return processLdapVariables(values, this._variableMap);
 	}
 
 	public async doCustomSearch<T>(baseDN: string, searchOptions: ldapjs.SearchOptions, entryCallback: ILDAPEntryCallback<T>): Promise<T[]> {
@@ -359,7 +372,6 @@ export class LDAPConnection {
 						realEntries++;
 					} catch (e) {
 						searchLogger.error(e);
-						throw e;
 					}
 				});
 
@@ -531,7 +543,6 @@ export class LDAPConnection {
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
-					throw e;
 				}
 			});
 
@@ -609,7 +620,6 @@ export class LDAPConnection {
 					}
 				} catch (e) {
 					searchLogger.error(e);
-					throw e;
 				}
 			});
 
