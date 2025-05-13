@@ -80,7 +80,6 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 
 		const onCallTerminated = (): void => {
 			voipSounds.playCallEnded();
-			voipSounds.stopCallEnded();
 			voipSounds.stopDialer();
 			voipSounds.stopRinger();
 			window.removeEventListener('beforeunload', onBeforeUnload);
@@ -89,6 +88,16 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		const onRegistrationError = () => {
 			setStorageRegistered(false);
 			dispatchToastMessage({ type: 'error', message: t('Voice_calling_registration_failed') });
+		};
+
+		const onIncomingCallError = (reason: string) => {
+			console.error('incoming call canceled', reason);
+			if (reason === 'USER_NOT_REGISTERED') {
+				dispatchToastMessage({ type: 'error', message: t('Incoming_voice_call_canceled_user_not_registered') });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Incoming_voice_call_canceled_suddenly') });
 		};
 
 		const onRegistered = () => {
@@ -106,11 +115,13 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		voipClient.on('registrationerror', onRegistrationError);
 		voipClient.on('registered', onRegistered);
 		voipClient.on('unregistered', onUnregister);
+		voipClient.on('incomingcallerror', onIncomingCallError);
 		voipClient.networkEmitter.on('disconnected', onNetworkDisconnected);
 		voipClient.networkEmitter.on('connectionerror', onNetworkDisconnected);
 		voipClient.networkEmitter.on('localnetworkoffline', onNetworkDisconnected);
 
 		return (): void => {
+			voipSounds.stopCallEnded();
 			voipClient.off('incomingcall', onIncomingCallRinging);
 			voipClient.off('outgoingcall', onOutgoingCallRinging);
 			voipClient.off('callestablished', onCallEstablished);
@@ -118,6 +129,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			voipClient.off('registrationerror', onRegistrationError);
 			voipClient.off('registered', onRegistered);
 			voipClient.off('unregistered', onUnregister);
+			voipClient.off('incomingcallerror', onIncomingCallError);
 			voipClient.networkEmitter.off('disconnected', onNetworkDisconnected);
 			voipClient.networkEmitter.off('connectionerror', onNetworkDisconnected);
 			voipClient.networkEmitter.off('localnetworkoffline', onNetworkDisconnected);

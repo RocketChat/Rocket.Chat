@@ -374,4 +374,8 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 		);
 	}
+
+	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult> {
+		return this.updateOne({ 'channels.visitor.visitorId': visitorId }, update, options);
+	}
 }

@@ -1,4 +1,5 @@
 import type {
+	AvailableAgentsAggregation,
 	IUser,
 	IRole,
 	ILivechatAgent,
@@ -100,12 +101,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number }>;
 	getLastAvailableAgentRouted(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
-	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }>;
+		ignoreUsernames?: string[],
+	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date }>;
 
 	setLastRoutingTime(userId: IUser['_id']): Promise<WithId<IUser> | null>;
 
@@ -181,6 +184,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
 
+	removeNonLoginTokensExcept(userId: any, authToken: any): any;
+
 	removeRoomsByRoomIdsAndUserId(rids: any, userId: any): any;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
@@ -251,7 +256,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): FindCursor<T>;
 	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
-	getUnavailableAgents(departmentId?: string, extraQuery?: Document): Promise<{ username: string }[]>;
+	getUnavailableAgents(
+		departmentId?: string,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
+	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,
 		options?: FindOptions<IUser>,
@@ -276,7 +284,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
 	}): Promise<UpdateResult>;
 	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }: { userId: IUser['_id']; tokenName: string }): Promise<IUser | null>;
-	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId?: string, isLivechatEnabledWhenIdle?: boolean): Promise<boolean>;
 	findOnlineAgents<T extends Document = ILivechatAgent>(agentId?: IUser['_id'], isLivechatEnabledWhenIdle?: boolean): FindCursor<T>;
 	countOnlineAgents(agentId: string): Promise<number>;
@@ -290,15 +297,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countAgents(): Promise<number>;
 	getNextAgent(
 		ignoreAgentId?: string,
-		extraQuery?: Filter<IUser>,
+		extraQuery?: Filter<AvailableAgentsAggregation>,
 		enabledWhenAgentIdle?: boolean,
 	): Promise<{ agentId: string; username?: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username?: string } | null>;
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
-	closeOffice(): Promise<void>;
-	openOffice(): Promise<void>;
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail?: boolean,
@@ -436,4 +441,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findUsersWithAssignedFreeSwitchExtensions<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
+	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
 }

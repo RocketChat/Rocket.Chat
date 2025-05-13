@@ -56,7 +56,7 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 			await expect(page).toHaveURL(`/group/${targetChannel2}`);
 		});
 		await test.step('receive notify message', async () => {
-			await adminPage.content.sendMessage('@all ');
+			await adminPage.content.sendMessage('@all ', false);
 			await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
 		});
 	});
@@ -98,7 +98,7 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 			await expect(page).toHaveURL(`/group/${targetChannel2}`);
 		});
 		await test.step('receive notify message', async () => {
-			await adminPage.content.sendMessage('@here ');
+			await adminPage.content.sendMessage('@here ', false);
 			await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
 		});
 	});

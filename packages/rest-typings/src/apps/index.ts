@@ -123,6 +123,7 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		GET: () => {
 			status: string;
+			clusterStatus: App['clusterStatus'];
 		};
 		POST: (params: { status: AppStatus }) => {
 			status: AppStatus;
@@ -173,7 +174,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/installed': {
-		GET: () => { apps: App[] };
+		GET: (params: { includeClusterStatus?: 'true' | 'false' }) => { success: true; apps: App[] } | { success: false; error: string };
 	};
 
 	'/apps/buildExternalAppRequest': {

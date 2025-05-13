@@ -68,7 +68,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			{ key: { pdfTranscriptRequested: 1 }, sparse: true },
+			// TODO: Remove index on next major
+			// { key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
@@ -80,6 +81,18 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 			{ key: { contactId: 1 }, partialFilterExpression: { contactId: { $exists: true }, t: 'l' } },
 		];
+	}
+
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+
+	async findOneById<P extends Document = IOmnichannelRoom>(_id: IOmnichannelRoom['_id'], options?: FindOptions<P>): Promise<P | null>;
+
+	async findOneById(_id: IOmnichannelRoom['_id'], options?: any): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = { _id, t: 'l' } as Filter<IOmnichannelRoom>;
+		if (options) {
+			return this.findOne(query, options);
+		}
+		return this.findOne(query);
 	}
 
 	getQueueMetrics({
@@ -1565,30 +1578,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		]);
 	}
 
-	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
-	// And refactoring it could take time
-	setTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$set: { pdfTranscriptRequested: true },
-			},
-		);
-	}
-
-	unsetTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$unset: { pdfTranscriptRequested: 1 },
-			},
-		);
-	}
-
 	setPdfTranscriptFileIdById(rid: string, fileId: string) {
 		return this.updateOne(
 			{
@@ -1981,14 +1970,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findByVisitorToken(visitorToken: string, extraQuery: Filter<IOmnichannelRoom> = {}, options?: FindOptions<IOmnichannelRoom>) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'v.token': visitorToken,
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findByVisitorIdAndAgentId(
@@ -2325,7 +2314,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.countDocuments(query);
 	}
 
-	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	findOpenByAgent(userId: string, extraQuery: Filter<IOmnichannelRoom> = {}, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
@@ -2333,7 +2322,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...extraQuery,
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string; ts?: Date }) {
@@ -2693,10 +2682,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countRoomsWithSla(): Promise<number> {
-		throw new Error('Method not implemented.');
-	}
-
-	countRoomsWithPdfTranscriptRequested(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 
