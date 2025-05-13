@@ -73,6 +73,8 @@ declare module 'meteor/accounts-base' {
 			): (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
 
 			function registerService(name: string): void;
+
+			function serviceNames(): string[];
 		}
 	}
 }

@@ -42,33 +42,8 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 	if (!value) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
-		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
 		return;
 	}
-
-	callbacks.add(
-		'livechat.afterTakeInquiry',
-		async ({ inquiry }, agent) => {
-			if (!inquiry || !agent) {
-				return inquiry;
-			}
-
-			if (!RoutingManager.getConfig()?.autoAssignAgent) {
-				return inquiry;
-			}
-
-			const { v: { token } = {} } = inquiry;
-			if (!token) {
-				return inquiry;
-			}
-
-			await LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() });
-
-			return inquiry;
-		},
-		callbacks.priority.MEDIUM,
-		'livechat-save-default-agent-after-take-inquiry',
-	);
 
 	callbacks.add(
 		'livechat.onMaxNumberSimultaneousChatsReached',
