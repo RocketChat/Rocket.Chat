@@ -5042,6 +5042,7 @@
   "This_monitor_was_already_selected": "Este monitor já foi selecionado",
   "This_month": "Este mês",
   "This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel": "Essa opção afeta apenas essa conversa. Para definir a seleção padrão, vá para Minha Conta > Omnichannel.",
+  "This_page_is_deprecated_will_be_removed_soon": "Está página foi descontinuada e será removida em breve",
   "This_room_encryption_has_been_disabled_by__username_": "A criptografia desta sala foi desativada por {{username}}",
   "This_room_encryption_has_been_enabled_by__username_": "A criptografia desta sala foi ativada por {{username}}",
   "This_room_has_been_archived": "sala arquivada",
