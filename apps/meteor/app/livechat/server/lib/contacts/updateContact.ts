@@ -56,15 +56,17 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		.filter((customFieldId) => !workspaceAllowedCustomFieldsIds.includes(customFieldId))
 		.map((customFieldId) => ({ _id: customFieldId }));
 
+	const isResolvingConflicts = !!(wipeConflicts && contact.conflictingFields?.length);
+
 	const customFieldsToUpdate =
 		receivedCustomFields &&
 		validateCustomFields(workspaceAllowedCustomFields, receivedCustomFields, {
 			ignoreAdditionalFields: !!notRegisteredCustomFields.length,
+			ignoreValidationErrors: isResolvingConflicts,
 		});
-
 	if (receivedCustomFields && customFieldsToUpdate && notRegisteredCustomFields.length) {
 		const allowedCustomFields = [...workspaceAllowedCustomFields, ...notRegisteredCustomFields];
-		validateCustomFields(allowedCustomFields, receivedCustomFields);
+		validateCustomFields(allowedCustomFields, receivedCustomFields, { ignoreValidationErrors: isResolvingConflicts });
 
 		notRegisteredCustomFields.forEach((notRegisteredCustomField) => {
 			customFieldsToUpdate[notRegisteredCustomField._id] = contact.customFields?.[notRegisteredCustomField._id] as string;
@@ -72,12 +74,12 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
-		name,
+		...(name && { name }),
 		...(emails && { emails: emails?.map((address) => ({ address })) }),
 		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
 		...(contactManager && { contactManager }),
 		...(channels && { channels }),
-		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
+		...(customFieldsToUpdate && { customFields: { ...contact.customFields, ...customFieldsToUpdate } }),
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 
