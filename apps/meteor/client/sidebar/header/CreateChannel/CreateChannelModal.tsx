@@ -323,7 +323,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 												disabled={e2eDisabled || federated}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
-												aria-labelledby='Encrypted_channel_Label'
 											/>
 										)}
 									/>
@@ -360,7 +359,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 										name='broadcast'
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
-												aria-describedby={`${broadcastId}-hint`}
+												aria-describedby={broadcast ? `${broadcastId}-hint` : undefined}
 												id={broadcastId}
 												ref={ref}
 												checked={value}

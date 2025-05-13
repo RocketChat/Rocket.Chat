@@ -13,7 +13,6 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
-	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 	TransferData,
 	AtLeast,
@@ -58,10 +57,6 @@ interface EventLikeCallbackSignatures {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: UserStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
-	'livechat.afterTakeInquiry': (
-		params: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom },
-		agent: { agentId: string; username: string },
-	) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: {
@@ -107,8 +102,6 @@ interface EventLikeCallbackSignatures {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
-	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
-
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
 	) => Promise<T>;

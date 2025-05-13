@@ -8,14 +8,16 @@ import type {
 	IOmnichannelSource,
 	IUser,
 	SelectedAgent,
+	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { setUserStatusLivechat } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { sendToCRM } from '../hooks/sendToCRM';
 
 export async function afterAgentUserActivated(user: IUser) {
 	if (!user.roles.includes('livechat-agent')) {
@@ -75,4 +77,45 @@ export const beforeDelegateAgent = async (
 
 export const beforeNewRoom = makeFunction(
 	async (roomInfo: IOmnichannelRoomInfo, _extraData?: IOmnichannelRoomExtraData): Promise<Partial<IOmnichannelRoom>> => roomInfo,
+);
+
+export const onNewRoom = makeFunction(async (room: IOmnichannelRoom) => {
+	const {
+		_id,
+		v: { _id: guestId },
+		source,
+		contactId,
+	} = room;
+
+	const lastChat = {
+		_id,
+		ts: new Date(),
+	};
+
+	await Promise.all([
+		LivechatVisitors.setLastChatById(guestId, lastChat),
+		contactId
+			? LivechatContacts.updateLastChatById(
+					contactId,
+					{
+						visitorId: guestId,
+						source,
+					},
+					lastChat,
+				)
+			: undefined,
+	]);
+
+	if (settings.get('Livechat_webhook_on_start')) {
+		await sendToCRM('LivechatSessionStart', room);
+	}
+});
+
+export const afterTakeInquiry = makeFunction(
+	async ({ room }: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom; agent: { agentId: string; username: string } }) => {
+		if (settings.get('Livechat_webhook_on_chat_taken')) {
+			return;
+		}
+		await sendToCRM('LivechatSessionTaken', room);
+	},
 );
