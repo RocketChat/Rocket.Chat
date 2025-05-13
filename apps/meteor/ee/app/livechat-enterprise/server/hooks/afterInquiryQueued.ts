@@ -8,7 +8,7 @@ import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor
 export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) => {
 	const timer = settings.get<number>('Livechat_max_queue_wait_time');
 	if (!inquiry?._id || !inquiry?._updatedAt || timer <= 0) {
-		return;
+		return void 0;
 	}
 
 	// schedule individual jobs instead of property for close inactivty
@@ -16,6 +16,7 @@ export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) =>
 	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
-afterInquiryQueued.patch((_originalFn: any, inquiry: ILivechatInquiryRecord) => {
+afterInquiryQueued.patch(async (originalFn: any, inquiry: ILivechatInquiryRecord) => {
+	await originalFn();
 	return afterInquiryQueuedFunc(inquiry);
 });

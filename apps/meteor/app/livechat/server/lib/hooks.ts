@@ -121,5 +121,6 @@ export const afterTakeInquiry = makeFunction(
 	},
 );
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export const afterInquiryQueued = makeFunction(async (_inquiry: ILivechatInquiryRecord) => {});
+export const afterInquiryQueued = makeFunction(async (_inquiry: ILivechatInquiryRecord) => {
+	return void 0;
+});
