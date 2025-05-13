@@ -335,7 +335,7 @@ jobs:
         if: inputs.type == 'api' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: /tmp/coverage
           include-hidden-files: true
 
@@ -343,6 +343,6 @@ jobs:
         if: inputs.type == 'ui' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/coverage*
           include-hidden-files: true
