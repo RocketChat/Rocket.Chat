@@ -107,16 +107,16 @@ export async function createRoom({
 	// if no department selected verify if there is at least one active and pick the first
 	if (!defaultAgent && !visitor.department) {
 		const department = await getRequiredDepartment();
-		livechatLogger.debug(`No department or default agent selected for ${visitor._id}`);
 
 		if (department) {
-			livechatLogger.debug(`Assigning ${visitor._id} to department ${department._id}`);
+			livechatLogger.debug({
+				msg: 'Assigning visitor to random department',
+				visitorId: visitor._id,
+				departmentId: department._id,
+			});
 			visitor.department = department._id;
 		}
 	}
-
-	// delegate room creation to QueueManager
-	livechatLogger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
 	const room = await QueueManager.requestRoom({
 		guest: visitor,
@@ -127,7 +127,11 @@ export async function createRoom({
 		extraData,
 	});
 
-	livechatLogger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
+	livechatLogger.debug({
+		msg: 'Room created',
+		roomId: room._id,
+		visitorId: visitor._id,
+	});
 
 	await Messages.setRoomIdByToken(visitor.token, room._id);
 

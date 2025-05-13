@@ -96,15 +96,25 @@ export const RoutingManager: Routing = {
 
 	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
-		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
-			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
+		logger.debug({ msg: 'Delegating inquiry', inquiry, agent, options });
+
+		const isAgentAvailable =
+			agent?.username && (await Users.findOneOnlineAgentByUserList(agent.username)) && (await allowAgentSkipQueue(agent));
+		if (!agent || !isAgentAvailable) {
+			const originalAgent = agent;
 			agent = await this.getNextAgent(department);
-			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
+			logger.debug({
+				msg: 'Invalid agent received. Obtained new agent via Routing',
+				originalAgent,
+				isAgentAvailable,
+				inquiry: { _id: inquiry._id },
+				department,
+				selectedAgent: agent,
+			});
 		}
 
 		if (!agent) {
-			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
+			logger.debug({ msg: 'No agent available', inquiry: { _id: inquiry._id }, department });
 			// When an inqury reaches here on CE, it will stay here as 'ready' since on CE there's no mechanism to re queue it.
 			// When reaching this point, managers have to manually transfer the inquiry to another room. This is expected.
 			return LivechatRooms.findOneById(rid);
@@ -114,7 +124,6 @@ export const RoutingManager: Routing = {
 			throw new Meteor.Error('error-invalid-room');
 		}
 
-		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
 		return this.takeInquiry(inquiry, agent, options, room);
 	},
 
@@ -127,11 +136,11 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		logger.debug(`Assigning agent ${agent.agentId} to inquiry ${inquiry._id}`);
+		logger.debug({ msg: 'Assigning agent', inquiry, agent });
 
 		const { rid, name, v, department } = inquiry;
 		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
-			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Cannot create subscription`);
+			logger.debug({ msg: 'Agent assignment failed', inquiry, agent, reason: 'createLivechatSubscription failed' });
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
@@ -147,7 +156,7 @@ export const RoutingManager: Routing = {
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 
-		logger.debug(`Agent ${agent.agentId} assigned to inquiry ${inquiry._id}. Instances notified`);
+		logger.debug({ msg: 'Agent assigned', inquiry, agent });
 
 		return { inquiry, user };
 	},
@@ -216,16 +225,16 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
+		logger.debug({ msg: 'Taking inquiry', inquiry, agent, options });
 
 		const { _id, rid } = inquiry;
 		if (!room?.open) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
+			logger.debug({ msg: 'Inquiry take failed', inquiry, agent, options, reason: 'room is closed' });
 			return room;
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
+			logger.debug({ msg: 'Inquiry take failed', inquiry, agent, options, reason: 'already taken by the same agent' });
 			return room;
 		}
 
@@ -235,27 +244,28 @@ export const RoutingManager: Routing = {
 				inquiry,
 				options,
 			});
-		} catch (e) {
+		} catch (err) {
 			if (options.clientAction && !options.forwardingToDepartment) {
-				throw e;
+				throw err;
 			}
 			agent = null;
+			logger.debug({ msg: 'Inquiry take failed', reason: 'precondition failed for agent', err });
 		}
 
 		if (!agent) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Precondition failed for agent`);
-			const cbRoom = await callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', room, {
+			return callbacks.run<'livechat.onAgentAssignmentFailed'>('livechat.onAgentAssignmentFailed', room, {
 				inquiry,
 				options,
 			});
-			return cbRoom;
 		}
 
+		// TODO: taking the inquiry and assigning the agent should be a transaction
 		await LivechatInquiry.takeInquiry(_id);
 
-		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
+		logger.info({ msg: 'Inquiry taken', inquiry, agent });
 
 		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
+		// TODO: assignAgent to return updated room to avoid finding it again here
 		const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		const roomAfterUpdate = await LivechatRooms.findOneById(rid);
 

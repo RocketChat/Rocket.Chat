@@ -107,11 +107,6 @@ export const prepareLivechatRoom = async (
 	const verified = Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
 
 	const activity = guest.activity || contact.activity;
-	logger.debug({
-		msg: `Creating livechat room for visitor ${_id}`,
-		visitor: { _id, username, departmentId, status, activity },
-	});
-
 	// TODO: Solve `u` missing issue
 	return {
 		_id: rid,
@@ -207,11 +202,6 @@ export const createLivechatInquiry = async ({
 
 	const ts = new Date();
 
-	logger.debug({
-		msg: `Creating livechat inquiry for visitor`,
-		visitor: { _id, username, department, status, activity },
-	});
-
 	const result = await LivechatInquiry.findOneAndUpdate(
 		removeEmpty({
 			rid,
@@ -244,7 +234,11 @@ export const createLivechatInquiry = async ({
 			session,
 		},
 	);
-	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
+	logger.debug({
+		msg: `Inquiry created`,
+		inquiry: result,
+		visitor: { _id, username, department, status, activity },
+	});
 
 	if (!result) {
 		throw new Error('Inquiry not created');

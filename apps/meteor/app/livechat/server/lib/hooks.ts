@@ -18,6 +18,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { sendToCRM } from '../hooks/sendToCRM';
+import { livechatLogger } from './logger';
 
 export async function afterAgentUserActivated(user: IUser) {
 	if (!user.roles.includes('livechat-agent')) {
@@ -68,6 +69,7 @@ export const beforeDelegateAgent = async (
 		return null;
 	}
 
+	livechatLogger.debug({ msg: 'System will use bots', department });
 	if (department) {
 		return LivechatDepartmentAgents.getNextBotForDepartment(department);
 	}

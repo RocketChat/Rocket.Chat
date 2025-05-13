@@ -125,31 +125,38 @@ export class QueueManager {
 		const needVerification = ['once', 'always'].includes(settings.get<string>('Livechat_Require_Contact_Verification'));
 
 		if (needVerification && !(await this.isRoomContactVerified(room))) {
+			logger.debug('Workspace has contact verification enabled. Inquiry is waiting for verification');
 			return LivechatInquiryStatus.VERIFYING;
 		}
 
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			logger.debug('Workspace is out of MAC. Inquiry will be queued');
 			return LivechatInquiryStatus.QUEUED;
 		}
 
 		// bots should be able to skip the queue and the routing check
 		if (agent && (await allowAgentSkipQueue(agent))) {
+			logger.debug({ msg: 'Selected agent can skip the queue. Inquiry is ready', agent });
 			return LivechatInquiryStatus.READY;
 		}
 
 		if (settings.get('Livechat_waiting_queue')) {
+			logger.debug('Workspace has waiting queue enabled. Inquiry will be queued');
 			return LivechatInquiryStatus.QUEUED;
 		}
 
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			logger.debug('Workspace uses auto assignment routing. Inquiry is ready');
 			return LivechatInquiryStatus.READY;
 		}
 
 		if (settings.get('Livechat_Routing_Method') === 'Manual_Selection' && agent) {
+			logger.debug('Workspace uses manual selection routing. An agent is selected. Inquiry will be queued', agent);
 			return LivechatInquiryStatus.QUEUED;
 		}
 
 		if (!agent) {
+			logger.debug('Workspace uses manual selection routing. Inquiry will be queued');
 			return LivechatInquiryStatus.QUEUED;
 		}
 
@@ -157,9 +164,8 @@ export class QueueManager {
 	}
 
 	static async processNewInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+		logger.debug({ msg: 'Processing inquiry', inquiry, defaultAgent });
 		if (inquiry.status === LivechatInquiryStatus.VERIFYING) {
-			logger.debug({ msg: 'Inquiry is waiting for contact verification. Ignoring it', inquiry, defaultAgent });
-
 			if (defaultAgent) {
 				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 			}
@@ -167,7 +173,6 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.READY) {
-			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
@@ -176,7 +181,6 @@ export class QueueManager {
 			await callbacks.run('livechat.chatQueued', room);
 
 			if (defaultAgent) {
-				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
 				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 			}
 
@@ -240,7 +244,6 @@ export class QueueManager {
 		try {
 			session.startTransaction();
 			const room = await createLivechatRoom(insertionRoom, session);
-			logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 			const inquiry = await createLivechatInquiry({
 				rid,
 				name: room.fname,
@@ -251,6 +254,8 @@ export class QueueManager {
 				session,
 			});
 			await session.commitTransaction();
+
+			logger.debug({ msg: 'New conversation started', room });
 			return { room, inquiry };
 		} catch (e) {
 			await session.abortTransaction();
@@ -282,7 +287,8 @@ export class QueueManager {
 		agent?: SelectedAgent;
 		extraData?: IOmnichannelRoomExtraData;
 	}) {
-		logger.debug(`Requesting a room for guest ${guest._id}`);
+		logger.debug({ msg: 'Requesting room for guest', guest });
+
 		check(
 			guest,
 			Match.ObjectIncluding({
@@ -299,6 +305,12 @@ export class QueueManager {
 			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
+
+		logger.debug({
+			msg: 'Default agent of new conversation',
+			department: guest.department,
+			defaultAgent: defaultAgent ?? 'No default agent',
+		});
 
 		const department = guest.department && (await getDepartment(guest.department));
 
@@ -367,7 +379,6 @@ export class QueueManager {
 		const newRoom = await LivechatRooms.findOneById(rid);
 
 		if (!newRoom) {
-			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 
