@@ -6795,8 +6795,6 @@
   "view-user-voip-extension_description": "Permission to allow users to use the voice call feature",
   "view-voip-extension-details": "View Voice Call Extensions",
   "view-voip-extension-details_description": "Permission to view which user is calling and their extension info",
-  "Voip_draggable": "Draggable VoIP popup",
-  "Voip_draggable_description": "Allows the VoIP popup to be dragged around the screen",
   "webdav-account-saved": "WebDAV account saved",
   "webdav-account-updated": "WebDAV account updated",
   "webdav-server-not-found": "WebDAV server not found",

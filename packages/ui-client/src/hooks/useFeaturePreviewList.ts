@@ -5,8 +5,7 @@ export type FeaturesAvailable =
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
-	| 'sidepanelNavigation'
-	| 'voip-draggable';
+	| 'sidepanelNavigation';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -72,14 +71,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 			name: 'newNavigation',
 			value: true,
 		},
-	},
-	{
-		name: 'voip-draggable',
-		i18n: 'Voip_draggable',
-		description: 'Voip_draggable_description',
-		group: 'Navigation',
-		value: false,
-		enabled: true,
 	},
 ];
 
