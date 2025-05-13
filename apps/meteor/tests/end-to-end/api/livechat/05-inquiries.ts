@@ -569,6 +569,8 @@ describe('LIVECHAT - inquiries', () => {
 
 			expect(room).to.not.have.property('servedBy');
 			expect(inquiry).to.have.property('status', 'queued');
+
+			await closeOmnichannelRoom(testRoom._id);
 		});
 	});
 });
