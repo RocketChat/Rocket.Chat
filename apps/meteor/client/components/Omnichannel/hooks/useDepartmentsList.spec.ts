@@ -43,17 +43,11 @@ it('should fetch departments', async () => {
 
 	const { result } = renderHook(() => useDepartmentsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetDepartments).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatDepartmentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatDepartmentItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetDepartments).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatDepartmentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatDepartmentItem)));
 
 	await act(() => result.current.fetchNextPage());
 
@@ -73,12 +67,11 @@ it('should fetch unit departments when unitId is provided', async () => {
 
 	const { result } = renderHook(() => useDepartmentsList({ filter: '', unitId: '123' }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
+	await waitFor(() => expect(result.current.data).toEqual(departmentItems));
+
 	expect(mockGetDepartment).not.toHaveBeenCalled();
 	expect(mockGetDepartments).not.toHaveBeenCalled();
 	expect(mockGetUnitDepartments).toHaveBeenCalled();
-
-	expect(result.current.data).toEqual(departmentItems);
 });
 
 it('should format archived departments correctly', async () => {
@@ -91,8 +84,7 @@ it('should format archived departments correctly', async () => {
 
 	const { result } = renderHook(() => useDepartmentsList({ filter: '' }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-	expect(result.current.data.length).toBe(1);
+	await waitFor(() => expect(result.current.data.length).toBe(1));
 	expect(result.current.data[0].label).toBe('Test Department [Archived]');
 });
 
@@ -106,8 +98,7 @@ it('should include "All" item if haveAll is true', async () => {
 
 	const { result } = renderHook(() => useDepartmentsList({ filter: '', haveAll: true }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-	expect(result.current.data[0].label).toBe('All');
+	await waitFor(() => expect(result.current.data[0].label).toBe('All'));
 });
 
 it('should include "None" item if haveNone is true', async () => {
@@ -120,8 +111,7 @@ it('should include "None" item if haveNone is true', async () => {
 
 	const { result } = renderHook(() => useDepartmentsList({ filter: '', haveNone: true }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-	expect(result.current.data[0].label).toBe('None');
+	await waitFor(() => expect(result.current.data[0].label).toBe('None'));
 });
 
 it('should fetch the selected department if selectedDepartmentId is provided', async () => {
@@ -143,9 +133,8 @@ it('should fetch the selected department if selectedDepartmentId is provided', a
 		wrapper: appRoot.build(),
 	});
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
+	await waitFor(() => expect(result.current.data).toEqual([...departmentItems, selectedDepartmentItem]));
+
 	expect(mockGetDepartments).toHaveBeenCalled();
 	expect(mockGetDepartment).toHaveBeenCalled();
-	expect(result.current.data.length).toBe(11);
-	expect(result.current.data).toEqual([...departmentItems, selectedDepartmentItem]);
 });
