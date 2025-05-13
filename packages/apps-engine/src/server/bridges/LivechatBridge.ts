@@ -143,6 +143,12 @@ export abstract class LivechatBridge extends BaseBridge {
         }
     }
 
+    public async doFindInquiry(roomId: string, appId: string): Promise<any> {
+        if (this.hasReadPermission(appId, 'livechat-room')) {
+            return this.getInquiry(roomId, appId);
+        }
+    }
+
     public async do_fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
         if (this.hasMultiplePermission(appId, 'livechat-message')) {
             return this._fetchLivechatRoomMessages(appId, roomId);
@@ -207,6 +213,8 @@ export abstract class LivechatBridge extends BaseBridge {
     protected abstract findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined>;
 
     protected abstract findDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>>;
+
+    protected abstract getInquiry(roomId: string, appId: string): Promise<any>;
 
     protected abstract _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>>;
 
