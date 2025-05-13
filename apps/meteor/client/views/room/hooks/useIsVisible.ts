@@ -1,6 +1,7 @@
 import { useDebouncedState, useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback } from 'react';
+
+import { useSafeRefCallback } from '../../../hooks/useSafeRefCallback';
 
 export const useIsVisible = () => {
 	const [menuVisibility, setMenuVisibility] = useSafely(useDebouncedState(!!window.DISABLE_ANIMATION, 100));
