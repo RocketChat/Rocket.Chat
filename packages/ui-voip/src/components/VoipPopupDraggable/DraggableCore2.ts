@@ -1,6 +1,6 @@
 import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 const GRAB_DOM_EVENTS = ['pointerdown' /* , 'touchstart' */] as const;
 const RELEASE_DOM_EVENTS = ['pointerup', 'pointercancel', 'lostpointercapture'] as const;
@@ -71,10 +71,7 @@ class Draggable extends Emitter<DraggableElementEvents> {
 
 	private elementPositionOffset: PointCoordinates = { x: 0, y: 0 };
 
-	// private lastKnownElementPosition: GenericRect = { x: 0, y: 0, width: 0, height: 0 };
-
 	constructor(element: IDraggableElement) {
-		console.count('constructor');
 		super();
 		this._element = element;
 		this._element.onMove((pointerCoordinates) => {
@@ -91,7 +88,6 @@ class Draggable extends Emitter<DraggableElementEvents> {
 	}
 
 	public onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler {
-		console.count('release1');
 		return this.on('release', cb);
 	}
 
@@ -115,10 +111,8 @@ class Draggable extends Emitter<DraggableElementEvents> {
 
 	public moveToCoordinates(targetElementCoordinates: PointCoordinates): void {
 		const initialPosition = this._element.getElementRect();
-		this.moveByOffset({
-			x: targetElementCoordinates.x - initialPosition.x,
-			y: targetElementCoordinates.y - initialPosition.y,
-		});
+		this.setElementPositionOffset(targetElementCoordinates.x - initialPosition.x, targetElementCoordinates.y - initialPosition.y);
+		this.emit('move', this.getCurrentOffset());
 	}
 
 	public handleGrab(startingPointerCoordinates: PointCoordinates): void {
@@ -156,6 +150,14 @@ class Draggable extends Emitter<DraggableElementEvents> {
 	}
 }
 
+type BoundingElementOptions = {
+	resizeDebounce: number; // debounce time in ms
+};
+
+const DEFAULT_BOUNDING_ELEMENT_OPTIONS: BoundingElementOptions = {
+	resizeDebounce: 300,
+};
+
 class BoundingElement extends Emitter<{
 	resize: IGenericRect;
 }> {
@@ -163,10 +165,15 @@ class BoundingElement extends Emitter<{
 
 	private draggableInstance: Draggable;
 
-	constructor(element: IBoundingElement, draggableInstance: Draggable) {
+	private resizeDebounce: number;
+
+	private timeout: NodeJS.Timeout | null = null;
+
+	constructor(element: IBoundingElement, draggableInstance: Draggable, options = DEFAULT_BOUNDING_ELEMENT_OPTIONS) {
 		super();
 		this._element = element;
 		this.draggableInstance = draggableInstance;
+		this.resizeDebounce = options.resizeDebounce;
 
 		this.draggableInstance.onRelease(() => {
 			const offset = this.calculateBoundsOffset();
@@ -174,8 +181,14 @@ class BoundingElement extends Emitter<{
 		});
 
 		this.element.onResize(() => {
-			const offset = this.calculateBoundsOffset();
-			this.draggableInstance.moveByOffset(offset);
+			if (this.timeout) {
+				clearTimeout(this.timeout);
+			}
+
+			this.timeout = setTimeout(() => {
+				const offset = this.calculateBoundsOffset();
+				this.draggableInstance.moveByOffset(offset);
+			}, this.resizeDebounce);
 		});
 	}
 
@@ -204,8 +217,6 @@ class BoundingElement extends Emitter<{
 			y: boundsRect.bottom - draggableRect.bottom,
 		};
 
-		console.log('calculateBoundsOffset', draggableRect, boundsRect);
-		console.log('calculateBoundsOffset', topLeftPoint, bottomRightPoint);
 		const offset = {
 			x: 0,
 			y: 0,
@@ -381,7 +392,6 @@ class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDr
 	};
 
 	public onRelease = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
-		console.count('release2');
 		return this.on('release', cb);
 	};
 
@@ -398,59 +408,65 @@ class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDr
 			return;
 		}
 
-		console.trace('setElementPositionOffset', offset);
-
 		this.element.style.transform = `translate(${offset.x}px, ${offset.y}px)`;
 	}
 }
 
 export const useDraggable = () => {
-	// TODO these classes are being instantiated more than once.
-	const draggableElementRef = useRef<Draggable>(new Draggable(new DraggableDomElement()));
-	const boundingElementRef = useRef<BoundingElement>(new BoundingElement(new BoundingDomElement(), draggableElementRef.current));
-	const handleElementRef = useRef<HandleElement>(new HandleElement(new HandleDomElement(), draggableElementRef.current));
+	const [draggableElement] = useState<Draggable>(() => new Draggable(new DraggableDomElement()));
+	const [boundingElement] = useState<BoundingElement>(() => new BoundingElement(new BoundingDomElement(), draggableElement));
+	const [handleElement] = useState<HandleElement>(() => new HandleElement(new HandleDomElement(), draggableElement));
 	const restorePositionRef = useRef<IGenericRect | null>(null);
 
 	const handleElementCallbackRef = useSafeRefCallback(
-		useCallback((node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
+				}
 
-			return handleElementRef.current.element.setElement(node);
-		}, []),
+				return handleElement.element.setElement(node);
+			},
+			[handleElement],
+		),
 	);
 
 	const draggableCallbackRef = useSafeRefCallback(
-		useCallback((node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
+				}
 
-			const offDomEvents = draggableElementRef.current.element.setElement(node);
-			// const offMove = draggableElementRef.current.onMove(() => {
-			// 	restorePositionRef.current = node.getBoundingClientRect();
-			// });
+				const offDomEvents = draggableElement.element.setElement(node);
+				const offMove = draggableElement.onMove(() => {
+					restorePositionRef.current = node.getBoundingClientRect();
+				});
 
-			if (restorePositionRef.current) {
-				// draggableElementRef.current.moveToCoordinates(restorePositionRef.current);
-			}
+				if (restorePositionRef.current) {
+					draggableElement.moveToCoordinates(restorePositionRef.current);
+				}
 
-			return () => {
-				offDomEvents();
-				// offMove();
-			};
-		}, []),
+				return () => {
+					offDomEvents();
+					offMove();
+				};
+			},
+			[draggableElement],
+		),
 	);
 
 	const boundingCallbackRef = useSafeRefCallback(
-		useCallback((node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
+		useCallback(
+			(node: HTMLElement | null) => {
+				if (!node) {
+					return;
+				}
 
-			return boundingElementRef.current.element.setElement(node);
-		}, []),
+				return boundingElement.element.setElement(node);
+			},
+			[boundingElement],
+		),
 	);
 
 	return [draggableCallbackRef, boundingCallbackRef, handleElementCallbackRef];
