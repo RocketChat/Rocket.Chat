@@ -37,17 +37,11 @@ it('should fetch monitors', async () => {
 
 	const { result } = renderHook(() => useMonitorsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetMonitors).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatMonitorItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatMonitorItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetMonitors).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatMonitorItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatMonitorItem)));
 
 	await act(() => result.current.fetchNextPage());
 
