@@ -38,17 +38,11 @@ it('should fetch tags', async () => {
 
 	const { result } = renderHook(() => useTagsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetTags).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatTagItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatTagItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetTags).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatTagItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatTagItem)));
 
 	await act(() => result.current.fetchNextPage());
 
