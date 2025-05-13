@@ -1,10 +1,17 @@
+import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
+import type express from 'express';
+import type { Context, Next } from 'hono';
 import { Meteor } from 'meteor/meteor';
+import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
+import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
@@ -15,11 +22,30 @@ import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingInt
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
 // eslint-disable-next-line no-unused-vars
-function getEngine(_integration) {
+function getEngine(_integration: IIntegration): IsolatedVMScriptEngine<true> {
 	return ivmEngine;
 }
 
-async function createIntegration(options, user) {
+type IntegrationOptions = {
+	event: string;
+	name: string;
+	target_url: string;
+	data?: {
+		channel_name?: string;
+		trigger_words?: string[];
+		username?: string;
+	};
+};
+
+type IntegrationThis = Omit<PartialThis, 'user'> & {
+	request: Request & {
+		integration: IIncomingIntegration;
+	};
+	urlParams: Record<string, string>;
+	user: IUser & { username: RequiredField<IUser, 'username'> };
+};
+
+async function createIntegration(options: IntegrationOptions, user: IUser): Promise<IOutgoingIntegration | undefined> {
 	incomingLogger.info({ msg: 'Add integration', integration: options.name });
 	incomingLogger.debug({ options });
 
@@ -37,24 +63,42 @@ async function createIntegration(options, user) {
 				name: options.name,
 				channel: options.data.channel_name,
 				triggerWords: options.data.trigger_words,
+				type: 'webhook-outgoing',
+				event: 'sendMessage',
+				token: Random.id(24),
+				scriptEnabled: false,
+				script: '',
+				enabled: true,
+				_id: Random.id(),
+				_updatedAt: new Date(),
 			});
 		case 'newMessageToUser':
-			if (options.data.username.indexOf('@') === -1) {
+			if (options.data?.username?.indexOf('@') === -1) {
 				options.data.username = `@${options.data.username}`;
 			}
+			if (!options.data?.username) {
+				throw new Error('username-required');
+			}
+
 			return addOutgoingIntegration(user._id, {
 				username: 'rocket.cat',
 				urls: [options.target_url],
 				name: options.name,
 				channel: options.data.username,
 				triggerWords: options.data.trigger_words,
+				_id: '',
+				type: 'webhook-outgoing',
+				token: '',
+				scriptEnabled: false,
+				script: '',
+				enabled: false,
+				_updatedAt: new Date(),
+				event: 'sendMessage',
 			});
 	}
-
-	return API.v1.success();
 }
 
-async function removeIntegration(options, user) {
+async function removeIntegration(options: { target_url: string }, user: IUser): Promise<SuccessResult<void> | FailureResult<string>> {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug({ options });
 
@@ -68,31 +112,36 @@ async function removeIntegration(options, user) {
 	return API.v1.success();
 }
 
-async function executeIntegrationRest() {
+async function executeIntegrationRest(
+	this: IntegrationThis,
+): Promise<SuccessResult<Record<string, string> | undefined | void> | FailureResult<string> | UnavailableResult<string>> {
 	incomingLogger.info({ msg: 'Post integration:', integration: this.request.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
 	if (this.request.integration.enabled !== true) {
-		return {
-			statusCode: 503,
-			body: 'Service Unavailable',
-		};
+		return API.v1.unavailable('Service Unavailable');
 	}
 
 	const defaultValues = {
 		channel: this.request.integration.channel,
-		alias: this.request.integration.alias,
-		avatar: this.request.integration.avatar,
-		emoji: this.request.integration.emoji,
+		alias: this.request.integration.alias || '',
+		avatar: this.request.integration.avatar || '',
+		emoji: this.request.integration.emoji || '',
 	};
 
 	const scriptEngine = getEngine(this.request.integration);
-	if (scriptEngine.integrationHasValidScript(this.request.integration)) {
+
+	let { bodyParams } = this;
+	let scriptResponse: Record<string, any> | undefined;
+
+	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
 		const buffers = [];
-		for await (const chunk of this.request.body) {
-			buffers.push(chunk);
+		const reader = this.request.body.getReader();
+		// eslint-disable-next-line no-await-in-loop
+		for (let result = await reader.read(); !result.done; result = await reader.read()) {
+			buffers.push(result.value);
 		}
-		const content_raw = Buffer.concat(buffers).toString('utf8');
+		const contentRaw = Buffer.concat(buffers).toString('utf8');
 		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
 		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
 
@@ -102,17 +151,17 @@ async function executeIntegrationRest() {
 				search: url.search,
 				query: this.queryParams,
 				pathname: url.pathname,
-				path: url.path,
+				path: this.request.url,
 			},
 			url_raw: this.request.url,
 			url_params: this.urlParams,
 			content: this.bodyParams,
-			content_raw,
+			content_raw: contentRaw,
 			headers: Object.fromEntries(this.request.headers.entries()),
 			body: this.bodyParams,
 			user: {
 				_id: this.user._id,
-				name: this.user.name,
+				name: this.user.name || '',
 				username: this.user.username,
 			},
 		};
@@ -134,8 +183,8 @@ async function executeIntegrationRest() {
 				return API.v1.failure(result.error);
 			}
 
-			this.bodyParams = result && result.content;
-			this.scriptResponse = result.response;
+			bodyParams = result && result.content;
+			scriptResponse = result.response;
 			if (result.user) {
 				this.user = result.user;
 			}
@@ -143,7 +192,7 @@ async function executeIntegrationRest() {
 			incomingLogger.debug({
 				msg: 'Process Incoming Request result of Trigger',
 				integration: this.request.integration.name,
-				result: this.bodyParams,
+				result: bodyParams,
 			});
 		} catch (err) {
 			incomingLogger.error({
@@ -156,44 +205,44 @@ async function executeIntegrationRest() {
 		}
 	}
 
-	// TODO: Turn this into an option on the integrations - no body means a success
-	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
-	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.request.integration.scriptEnabled)) {
-		// return RocketChat.API.v1.failure('body-empty');
+	if (!bodyParams || (_.isEmpty(bodyParams) && !this.request.integration.scriptEnabled)) {
 		return API.v1.success();
 	}
 
-	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.request.integration.overrideDestinationChannelEnabled) {
+	if ((bodyParams.channel || bodyParams.roomId) && !this.request.integration.overrideDestinationChannelEnabled) {
 		return API.v1.failure('overriding destination channel is disabled for this integration');
 	}
 
-	this.bodyParams.bot = { i: this.request.integration._id };
+	bodyParams.bot = { i: this.request.integration._id };
 
 	try {
-		const message = await processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = await processWebhookMessage(bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
 
-		if (this.scriptResponse) {
-			incomingLogger.debug({ msg: 'response', response: this.scriptResponse });
+		if (scriptResponse) {
+			incomingLogger.debug({ msg: 'response', response: scriptResponse });
 		}
 
-		return API.v1.success(this.scriptResponse);
-	} catch ({ error, message }) {
+		return API.v1.success(scriptResponse);
+	} catch ({ error, message }: any) {
 		return API.v1.failure(error || message);
 	}
 }
 
-function addIntegrationRest() {
-	return createIntegration(this.bodyParams, this.user);
-}
+type IntegrationSampleBody = {
+	token: string;
+	channel_id: string;
+	channel_name: string;
+	timestamp: Date;
+	user_id: string;
+	user_name: string;
+	text: string;
+	trigger_word: string;
+};
 
-async function removeIntegrationRest() {
-	return removeIntegration(this.bodyParams, this.user);
-}
-
-function integrationSampleRest() {
+function integrationSampleRest(): { statusCode: number; body: IntegrationSampleBody[] } {
 	incomingLogger.info('Sample Integration');
 	return {
 		statusCode: 200,
@@ -232,7 +281,7 @@ function integrationSampleRest() {
 	};
 }
 
-function integrationInfoRest() {
+function integrationInfoRest(): { statusCode: number; body: { success: boolean } } {
 	incomingLogger.info('Info integration');
 	return {
 		statusCode: 200,
@@ -242,33 +291,23 @@ function integrationInfoRest() {
 	};
 }
 
-class WebHookAPI extends APIClass {
-	async authenticatedRoute() {
+class WebHookAPI extends APIClass<'/hooks'> {
+	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = this.urlParams;
-		this.request.integration = await Integrations.findOne({
-			_id: integrationId,
-			token: decodeURIComponent(token),
-		});
+		const integration = await Integrations.findOneById<IIncomingIntegration>(integrationId);
 
-		if (!this.request.integration) {
+		if (!integration) {
 			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
 
-			return {
-				error: {
-					statusCode: 404,
-					body: {
-						success: false,
-						error: 'Invalid integration id or token provided.',
-					},
-				},
-			};
+			throw new Error('Invalid integration id or token provided.');
 		}
+
+		this.request.integration = integration;
 
 		return Users.findOneById(this.request.integration.userId);
 	}
 
-	/* Webhooks are not versioned, so we must not validate we know a version before adding a rate limiter */
-	shouldAddRateLimitToRoute(options) {
+	shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
@@ -277,31 +316,29 @@ class WebHookAPI extends APIClass {
 		);
 	}
 
-	async shouldVerifyRateLimit(/* route */) {
+	async shouldVerifyRateLimit(): Promise<boolean> {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 
-	/*
-	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
-	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
-	*/
-	async enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+	async enforceRateLimit(
+		objectForRateLimitMatch: RateLimiterOptionsToCheck,
+		request: Request,
+		response: Response,
+		userId: string,
+	): Promise<void> {
 		const { method, url } = request;
 		const route = url.replace(`/${this.apiPath}`, '');
-		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
-		// We'll be creating rate limiters on demand (when validating for the first time).
-		// This is possible since *all* integration hooks should be rate limited the same way.
-		// This way, we'll not have to add new limiters as new integrations are added
+		const nameRoute = this.getFullRouteName(route, method.toLowerCase());
 		if (!this.getRateLimiter(nameRoute)) {
 			this.addRateLimiterRuleForRoutes({
 				routes: [route],
 				rateLimiterOptions: defaultRateLimiterOptions,
 				endpoints: {
-					post: executeIntegrationRest,
-					get: executeIntegrationRest,
+					post: 'executeIntegrationRest',
+					get: 'executeIntegrationRest',
 				},
 			});
 		}
@@ -309,16 +346,18 @@ class WebHookAPI extends APIClass {
 		const integrationForRateLimitMatch = objectForRateLimitMatch;
 		integrationForRateLimitMatch.route = nameRoute;
 
-		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
+		await super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
 	}
 }
 
 const Api = new WebHookAPI({
 	enableCors: true,
 	apiPath: 'hooks/',
+	useDefaultAuth: false,
+	prettyJson: process.env.NODE_ENV === 'development',
 });
 
-const middleware = async (c, next) => {
+const middleware = async (c: Context, next: Next): Promise<void> => {
 	const { req } = c;
 	if (req.raw.headers.get('content-type') !== 'application/x-www-form-urlencoded') {
 		return next();
@@ -341,14 +380,13 @@ const middleware = async (c, next) => {
 			content,
 		});
 		c.set('bodyParams-override', JSON.parse(content));
-	} catch (e) {
+	} catch (e: any) {
 		c.body(JSON.stringify({ success: false, error: e.message }), 400);
 	}
 
 	return next();
 };
 
-// middleware for special requests that are urlencoded but have a json payload (like GitHub webhooks)
 Api.router.use(middleware);
 
 Api.addRoute(
@@ -403,36 +441,52 @@ Api.addRoute(
 
 Api.addRoute(
 	'add/:integrationId/:userId/:token',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsHooksAddSchema },
 	{
-		post: addIntegrationRest,
+		async post() {
+			const result = await createIntegration(this.bodyParams, this.user);
+
+			return API.v1.success(result || {});
+		},
 	},
 );
 
 Api.addRoute(
 	'add/:integrationId/:token',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsHooksAddSchema },
 	{
-		post: addIntegrationRest,
+		async post() {
+			const result = await createIntegration(this.bodyParams, this.user);
+
+			return API.v1.success(result || {});
+		},
 	},
 );
 
 Api.addRoute(
 	'remove/:integrationId/:userId/:token',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsHooksRemoveSchema },
 	{
-		post: removeIntegrationRest,
+		async post() {
+			const result = await removeIntegration(this.bodyParams, this.user);
+
+			return API.v1.success(result || {});
+		},
 	},
 );
 
 Api.addRoute(
 	'remove/:integrationId/:token',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isIntegrationsHooksRemoveSchema },
 	{
-		post: removeIntegrationRest,
+		async post() {
+			const result = await removeIntegration(this.bodyParams, this.user);
+
+			return API.v1.success(result || {});
+		},
 	},
 );
 
 Meteor.startup(() => {
-	WebApp.rawConnectHandlers.use(Api.router.router);
+	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(Api.router.router);
 });

@@ -25,7 +25,6 @@ import type {
 	UpdateOptions,
 	FindCursor,
 	SortDirection,
-	UpdateResult,
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
@@ -1354,6 +1353,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	removeNonLoginTokensExcept(userId: IUser['_id'], authToken: string) {
+		return this.col.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						hashedToken: { $ne: authToken },
+					},
+				},
+			},
+		);
+	}
+
 	removeRoomsByRoomIdsAndUserId(rids: IRoom['_id'][], userId: IUser['_id']) {
 		return this.updateMany(
 			{
@@ -2042,27 +2056,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.updateOne(query, update);
-	}
-
-	// TODO: why this needs to be one by one instead of an updateMany?
-	async closeOffice() {
-		// TODO: Create class Agent
-		const promises: Promise<UpdateResult<Document>>[] = [];
-		// TODO: limit the data returned by findAgents
-		await this.findAgents().forEach((agent) => {
-			promises.push(this.setLivechatStatus(agent._id, ILivechatAgentStatus.NOT_AVAILABLE));
-		});
-		await Promise.all(promises);
-	}
-
-	// Same todo's as the above
-	async openOffice() {
-		// TODO: Create class Agent
-		const promises: Promise<UpdateResult<Document>>[] = [];
-		await this.findAgents().forEach((agent) => {
-			promises.push(this.setLivechatStatus(agent._id, ILivechatAgentStatus.AVAILABLE));
-		});
-		await Promise.all(promises);
 	}
 
 	getAgentInfo(

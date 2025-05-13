@@ -61,6 +61,18 @@ export class HomeSidenav {
 		return this.sidebarToolbar.getByRole('button', { name: 'Home' });
 	}
 
+	get btnDisplay(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Display' });
+	}
+
+	get btnCreateNew(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Create new' });
+	}
+
+	get btnAdministration(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Administration' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
