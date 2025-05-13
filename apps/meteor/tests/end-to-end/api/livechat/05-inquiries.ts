@@ -560,7 +560,7 @@ describe('LIVECHAT - inquiries', () => {
 		after(async () => {
 			await deleteDepartment(testDepartment._id);
 			await Promise.all([
-				updateSetting('Livechat_auto_transfer_chat_timeout', -1),
+				updateSetting('Livechat_auto_transfer_chat_timeout', 0),
 				updateSetting('Omnichannel_enable_department_removal', false),
 			]);
 		});
