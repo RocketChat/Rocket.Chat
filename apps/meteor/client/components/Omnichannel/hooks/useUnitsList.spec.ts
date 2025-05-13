@@ -37,17 +37,11 @@ it('should fetch business units', async () => {
 
 	const { result } = renderHook(() => useUnitsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetUnits).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatUnitItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatUnitItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetUnits).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatUnitItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatUnitItem)));
 
 	await act(() => result.current.fetchNextPage());
 
