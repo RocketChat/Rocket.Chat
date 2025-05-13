@@ -3,13 +3,13 @@ import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 
+import Store from './Store';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
-import Store from './Store';
 
 export type LivechatHiddenSytemMessageType =
 	| 'uj' // User joined
@@ -31,12 +31,6 @@ export type StoreState = {
 			position: 'left' | 'right';
 			background?: string;
 			actionLinks?: {
-				webrtc: {
-					actionLinksAlignment: string;
-					i18nLabel: string;
-					label: string;
-					method_id: string;
-				}[];
 				jitsi: {
 					icon: string;
 					i18nLabel: string;
@@ -103,8 +97,6 @@ export type StoreState = {
 	visible: boolean;
 	minimized: boolean;
 	unread: any;
-	incomingCallAlert: any;
-	ongoingCall: any;
 	businessUnit: any;
 	openSessionIds?: string[];
 	triggered?: boolean;
@@ -160,24 +152,13 @@ export const initialState = (): StoreState => ({
 	visible: true,
 	minimized: true,
 	unread: null,
-	incomingCallAlert: null,
-	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 	renderedTriggers: [],
 });
 
-const dontPersist = [
-	'messages',
-	'typing',
-	'loading',
-	'alerts',
-	'unread',
-	'noMoreMessages',
-	'modal',
-	'incomingCallAlert',
-	'ongoingCall',
-	'parentUrl',
-] as Array<keyof StoreState>;
+const dontPersist = ['messages', 'typing', 'loading', 'alerts', 'unread', 'noMoreMessages', 'modal', 'parentUrl'] as Array<
+	keyof StoreState
+>;
 
 export const store = new Store(initialState(), { dontPersist });
 
