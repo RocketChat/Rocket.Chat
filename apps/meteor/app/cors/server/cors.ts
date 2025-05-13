@@ -136,12 +136,9 @@ WebAppInternals.staticFilesMiddleware = function (
 		const [siteUrl] = program?.meteorRuntimeConfigHash?.split(' ') ?? [];
 
 		if (siteUrl !== __meteor_runtime_config__.ROOT_URL) {
-			program.meteorRuntimeConfigHash =
-				__meteor_runtime_config__.ROOT_URL +
-				' ' +
-				createHash('sha1')
-					.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
-					.digest('hex');
+			program.meteorRuntimeConfigHash = `${__meteor_runtime_config__.ROOT_URL} ${createHash('sha1')
+				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
+				.digest('hex')}`;
 		}
 
 		const [, hash] = program?.meteorRuntimeConfigHash?.split(' ') ?? [];
