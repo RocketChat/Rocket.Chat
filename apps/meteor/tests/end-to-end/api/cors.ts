@@ -8,7 +8,7 @@ const getHash = () =>
 	request
 		.get('/')
 		.expect(200)
-		.expect('Content-Type', 'text/html')
+		.expect('Content-Type', 'text/html; charset=utf-8')
 		.then((res) => {
 			const hashMatch = res.text.match(/meteor_runtime_config\.js\?hash=([^"']+)/);
 			expect(hashMatch).to.not.be.null;
@@ -36,7 +36,15 @@ describe('[CORS]', () => {
 			const hash = await getHash();
 
 			// Now request with the extracted hash
-			await request.get('/meteor_runtime_config.js').query({ hash }).expect(200).expect('Content-Type', 'application/javascript');
+			await request
+				.get('/meteor_runtime_config.js')
+				.query({ hash })
+				.expect(200)
+				.expect('Content-Type', 'application/javascript; charset=UTF-8')
+				.expect((res) => {
+					expect(res.text).to.include('__meteor_runtime_config__');
+					expect(res.text).to.include('http://localhost:3000');
+				});
 		});
 
 		it('should return 404 when hash does not match', (done) => {
@@ -50,7 +58,15 @@ describe('[CORS]', () => {
 			const newHash = await getHash();
 			expect(newHash).to.not.equal(originalHash);
 			// it should return if the new hash is valid
-			await request.get('/meteor_runtime_config.js').query({ hash: newHash }).expect(200).expect('Content-Type', 'application/javascript');
+			await request
+				.get('/meteor_runtime_config.js')
+				.query({ hash: newHash })
+				.expect(200)
+				.expect('Content-Type', 'application/javascript; charset=UTF-8')
+				.expect((res) => {
+					expect(res.text).to.include('__meteor_runtime_config__');
+					expect(res.text).to.include('http://new-url:3000');
+				});
 		});
 	});
 });
