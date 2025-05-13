@@ -167,19 +167,6 @@ callbacks.add(
 );
 
 callbacks.add(
-	'livechat.afterTakeInquiry',
-	async ({ inquiry, room }) => {
-		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		return sendToCRM('LivechatSessionTaken', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-taken',
-);
-
-callbacks.add(
 	'livechat.chatQueued',
 	(room) => {
 		if (!settings.get('Livechat_webhook_on_chat_queued')) {
