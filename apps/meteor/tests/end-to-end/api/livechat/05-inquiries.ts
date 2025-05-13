@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
@@ -29,6 +29,7 @@ import {
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { deleteDepartment } from '../../../data/livechat/department';
 
 describe('LIVECHAT - inquiries', () => {
 	before((done) => getCredentials(done));
@@ -545,17 +546,27 @@ describe('LIVECHAT - inquiries', () => {
 
 	(IS_EE ? describe : describe.skip)('Auto Transfer Scheduler - Manual_Selection', () => {
 		let testRoom: IOmnichannelRoom;
+		let testDepartment: ILivechatDepartment;
 		before(async () => {
 			// seconds
-			await Promise.all([updateSetting('Livechat_auto_transfer_chat_timeout', 3), createAgent()]);
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', 3),
+				createAgent(),
+				updateSetting('Omnichannel_enable_department_removal', true),
+			]);
+			testDepartment = await createDepartment([{ agentId: 'rocketchat.internal.admin.test' }]);
 		});
 
 		after(async () => {
-			await Promise.all([updateSetting('Livechat_auto_transfer_chat_timeout', -1)]);
+			await deleteDepartment(testDepartment._id);
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', -1),
+				updateSetting('Omnichannel_enable_department_removal', false),
+			]);
 		});
 
 		it('should create a room and schedule it for transfer', async () => {
-			const { room } = await startANewLivechatRoomAndTakeIt();
+			const { room } = await startANewLivechatRoomAndTakeIt({ departmentId: testDepartment._id });
 			// The room returned is not updated :(
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 
