@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatInquiryRecord, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
@@ -15,9 +15,10 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	makeAgentAvailable,
+	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
-import { parseMethodResponse } from '../../../data/livechat/utils';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
@@ -539,6 +540,35 @@ describe('LIVECHAT - inquiries', () => {
 			expect(inquiry).to.have.property('rid', room._id);
 			expect(inquiry).to.have.property('lastMessage');
 			expect(inquiry.lastMessage).to.have.property('msg', msgText);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('Auto Transfer Scheduler - Manual_Selection', () => {
+		let testRoom: IOmnichannelRoom;
+		before(async () => {
+			// seconds
+			await Promise.all([updateSetting('Livechat_auto_transfer_chat_timeout', 3), createAgent()]);
+		});
+
+		after(async () => {
+			await Promise.all([updateSetting('Livechat_auto_transfer_chat_timeout', -1)]);
+		});
+
+		it('should create a room and schedule it for transfer', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt();
+			// The room returned is not updated :(
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			expect(updatedRoom).to.have.property('servedBy').that.is.an('object');
+			testRoom = updatedRoom;
+		});
+		it('should return a chat to the queue when not answered after 3 seconds', async () => {
+			await sleep(3000);
+			const inquiry = await fetchInquiry(testRoom._id);
+			const room = await getLivechatRoomInfo(testRoom._id);
+
+			expect(room).to.not.have.property('servedBy');
+			expect(inquiry).to.have.property('status', 'queued');
 		});
 	});
 });
