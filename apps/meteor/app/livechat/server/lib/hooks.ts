@@ -112,9 +112,10 @@ export const onNewRoom = makeFunction(async (room: IOmnichannelRoom) => {
 });
 
 export const afterTakeInquiry = makeFunction(
-	async (params: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom }, _agent: { agentId: string; username: string }) => {
+	async ({ room }: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom; agent: { agentId: string; username: string } }) => {
 		if (settings.get('Livechat_webhook_on_chat_taken')) {
-			await sendToCRM('LivechatSessionTaken', params.room);
+			return;
 		}
+		await sendToCRM('LivechatSessionTaken', room);
 	},
 );

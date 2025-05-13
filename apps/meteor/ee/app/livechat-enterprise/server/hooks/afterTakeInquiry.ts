@@ -12,10 +12,9 @@ import { cbLogger } from '../lib/logger';
 afterTakeInquiry.patch(
 	async (
 		originalFn,
-		{ inquiry, room }: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom },
-		agent: { agentId: string; username: string },
+		{ inquiry, room, agent }: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom; agent: { agentId: string; username: string } },
 	) => {
-		await originalFn({ inquiry, room }, agent);
+		await originalFn({ inquiry, room, agent });
 
 		if (!inquiry) {
 			return;
@@ -43,7 +42,7 @@ afterTakeInquiry.patch(
 		}
 
 		const autoTransferTimeout = settings.get<number>('Livechat_auto_transfer_chat_timeout');
-		if (autoTransferTimeout && !(room?.autoTransferredAt || room?.autoTransferOngoing)) {
+		if (autoTransferTimeout && !room?.autoTransferredAt && !room?.autoTransferOngoing) {
 			await AutoTransferChatScheduler.scheduleRoom(inquiry.rid, autoTransferTimeout);
 		}
 
