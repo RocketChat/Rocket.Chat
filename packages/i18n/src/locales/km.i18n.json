@@ -62,9 +62,9 @@
   "API_Upper_Count_Limit_Description": "តើចំនួនអតិបរមានៃការកត់ត្រា API REST គួរតែត្រឡប់មកវិញ (នៅពេលមិនកំណត់គ្មានដែនកំណត់)?",
   "API_User_Limit": "កំណត់អ្នកប្រើអ្នកប្រើទាំងអស់សម្រាប់ការដែលលោកបានបន្ថែមទៅឆានែល",
   "API_Wordpress_URL": "តំណភ្ជាប់ URL របស់ WordPress",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់តាំងដោយស្វ័យប្រវត្តិទៅបន្ទប់ <span style=\"font-weight: bold;\">{{count}}</span> ។",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់តាំងដោយស្វ័យប្រវត្តិទៅក្នុងបន្ទប់ <span style=\"font-weight: bold;\">{{roomName}}</span> ។",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់ចែងដោយស្វ័យប្រវត្តិទៅបន្ទប់ទាំងនោះ <span style=\"font-weight: bold;\">{{count}}</span> បន្ទប់៖ <br/> {{rooms}} ។",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់តាំងដោយស្វ័យប្រវត្តិទៅបន្ទប់ <bold>{{count}}</bold> ។",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់តាំងដោយស្វ័យប្រវត្តិទៅក្នុងបន្ទប់ <bold>{{roomName}}</bold> ។",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "ម្ចាស់ថ្មីនឹងត្រូវបានចាត់ចែងដោយស្វ័យប្រវត្តិទៅបន្ទប់ទាំងនោះ <bold>{{count}}</bold> បន្ទប់៖ <br/> {{rooms}} ។",
   "Accept": "ទទួលយក",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "ទទួលយកសំណើ livechat មកដល់ទោះបីជាគ្មានភ្នាក់ងារអនឡាញក៏ដោយ",
   "Accept_new_livechats_when_agent_is_idle": "ទទួលយកការស្នើសុំ Livechat ថ្មីនៅពេលភ្នាក់ងារទំនេរ",
@@ -3114,7 +3114,7 @@
   "your_message": "សារ​របស់​អ្នក",
   "your_message_optional": "សាររបស់អ្នក (ស្រេចចិត្ត)",
   "__count__empty_rooms_will_be_removed_automatically": "ចំនួនបន្ទប់ដែលនៅសល់នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ។",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> {{rooms}} ។",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> {{rooms}} ។",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}}  មិនមាន {{role}}by {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} ត្រូវបានកំណត់តួនាទីជា {{role}} ដោយ {{user_by}}"
 }
