@@ -21,6 +21,7 @@ import { online } from '../../../livechat/server/lib/service-status';
 import { transfer } from '../../../livechat/server/lib/transfer';
 import { settings } from '../../../settings/server';
 import { findOneInquiryByRoomId } from '/app/livechat/server/api/lib/inquiries';
+import { takeInquiry } from '/app/livechat/server/methods/takeInquiry';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
 	export interface IAppMessagesConverter {
@@ -357,6 +358,12 @@ export class AppLivechatBridge extends LivechatBridge {
 		this.orch.debugLog(`The App ${appId} is looking for the inquiry of the room id: ${roomId}.`);
 
 		return await findOneInquiryByRoomId ({roomId});
+	}
+
+	protected async takeInquiry(agentId: string, inquiryId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is taking the inquiry ${inquiryId} for the agent ${agentId}.`);
+
+		return await takeInquiry (agentId, inquiryId);
 	}
 
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMessage>> {
