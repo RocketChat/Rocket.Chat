@@ -1,8 +1,8 @@
-import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentPropsWithoutRef } from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import type { ReactElement, ComponentPropsWithoutRef, FormEvent } from 'react';
+import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
@@ -51,7 +51,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		updateCodesRemaining();
 	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
 
-	const handleEnableTotp = useCallback(async () => {
+	const enableTotp = useEffectEvent(async () => {
 		try {
 			const result = await enableTotpFn();
 
@@ -62,26 +62,46 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, enableTotpFn, setQrCode, setRegisteringTotp, setTotpSecret]);
+	});
 
-	const handleDisableTotp = useCallback(async () => {
+	const disableTotp = useEffectEvent(async () => {
+		if (!totpEnabled) {
+			setRegisteringTotp(false);
+
+			return;
+		}
+
 		const onDisable = async (authCode: string): Promise<void> => {
 			try {
 				const result = await disableTotpFn(authCode);
 
 				if (!result) {
-					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+					dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+
+					return;
 				}
 
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+
 			closeModal();
 		};
 
 		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
-	}, [closeModal, disableTotpFn, dispatchToastMessage, setModal, t]);
+	});
+
+	const handleToggleTotp = useEffectEvent(async (e: FormEvent<HTMLInputElement>) => {
+		if (e.currentTarget?.checked) {
+			void enableTotp();
+		} else {
+			void disableTotp();
+		}
+	});
+
+	const totpId = useId();
+	const totpCodeId = useId();
 
 	const handleVerifyCode = useCallback(
 		async ({ authCode }: TwoFactorTOTPFormData) => {
@@ -94,6 +114,8 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 
 				setRegisteringTotp(false);
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
+
+				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_enabled') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -121,38 +143,35 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
 			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('Two-factor_authentication_via_TOTP')}</Box>
-				{!totpEnabled && !registeringTotp && (
-					<>
-						<Box>{t('Two-factor_authentication_is_currently_disabled')}</Box>
-						<Button primary onClick={handleEnableTotp}>
-							{t('Enable_two-factor_authentication')}
-						</Button>
-					</>
-				)}
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={totpId}>{t('Two-factor_authentication_via_TOTP')}</FieldLabel>
+						<ToggleSwitch id={totpId} checked={registeringTotp || totpEnabled} onChange={handleToggleTotp} />
+					</FieldRow>
+				</Field>
 				{!totpEnabled && registeringTotp && (
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
 						<TextCopy text={totpSecret || ''} />
-						<Box is='img' size='x200' src={qrCode} aria-hidden='true' />
-						<Box display='flex' flexDirection='row' w='full'>
-							<TextInput placeholder={t('Enter_authentication_code')} {...register('authCode')} />
-							<Button primary onClick={handleSubmit(handleVerifyCode)}>
-								{t('Verify')}
-							</Button>
-						</Box>
+						<Box mis='-16px' mb='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
+						<Field>
+							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
+							<FieldRow>
+								<TextInput id={totpCodeId} mie='8px' {...register('authCode')} />
+								<Button primary onClick={handleSubmit(handleVerifyCode)}>
+									{t('Verify')}
+								</Button>
+							</FieldRow>
+						</Field>
 					</>
 				)}
 				{totpEnabled && (
 					<>
-						<Button danger onClick={handleDisableTotp}>
-							{t('Disable_two-factor_authentication')}
-						</Button>
 						<Box fontScale='p2m' mbs={8}>
 							{t('Backup_codes')}
 						</Box>
-						<Box>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>
+						<Box color='font-secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>
 						<Button onClick={handleRegenerateCodes}>{t('Regenerate_codes')}</Button>
 					</>
 				)}

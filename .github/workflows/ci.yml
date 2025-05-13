@@ -173,7 +173,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Build Rocket.Chat Packages
         run: yarn build
@@ -192,14 +192,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
         if: github.event.action != 'closed'
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         if: github.event.action != 'closed'
         with:
-          node-version: 22.13.1
+          node-version: 22.14.0
           deno-version: 1.43.5
           cache-modules: true
           install: true
@@ -306,7 +306,7 @@ jobs:
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '22.13.1'
+          node-version: '22.14.0'
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions-rust-lang/setup-rust-toolchain@v1

@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { getUserPreference } from '../../app/utils/client';
-import 'hljs9/styles/github.css';
+import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';

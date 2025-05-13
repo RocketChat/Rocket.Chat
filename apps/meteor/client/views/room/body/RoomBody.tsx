@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -16,6 +15,7 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
@@ -36,6 +36,8 @@ import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
+import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -81,7 +83,9 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const innerBoxRef = useRef<HTMLDivElement | null>(null);
+	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
+
+	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
 
 	const {
 		wrapperRef: unreadBarWrapperRef,
@@ -93,9 +97,26 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
+	const {
+		innerRef: isAtBottomInnerRef,
+		atBottomRef,
+		sendToBottom,
+		sendToBottomIfNecessary,
+		isAtBottom,
+		jumpToRef: jumpToRefIsAtBottom,
+	} = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
+
+	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
+
+	const jumpToRef = useMergedRefsV2(
+		jumpToRefGetMore,
+		jumpToRefIsAtBottom,
+		jumpToRefRestoreScrollPosition,
+		surroundingMessagesJumpTpRef,
+		jumpToRefGetMoreImperative,
+	);
 
 	const {
 		uploads,
@@ -103,8 +124,6 @@ const RoomBody = (): ReactElement => {
 		handleUploadProgressClose,
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
-
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -116,9 +135,8 @@ const RoomBody = (): ReactElement => {
 			isAtBottom,
 		});
 
-	const innerRef = useMergedRefs(
+	const innerRef = useMergedRefsV2(
 		dateScrollInnerRef,
-		innerBoxRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
@@ -126,9 +144,10 @@ const RoomBody = (): ReactElement => {
 		getMoreInnerRef,
 		selectAndScrollRef,
 		messageListRef,
+		jumpToRefGetMoreImperativeInnerRef,
 	);
 
-	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
+	const wrapperBoxRefs = useMergedRefsV2(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -231,7 +250,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef}>
+										<CustomScrollbars ref={innerRef} key={room._id}>
 											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
@@ -245,7 +264,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={innerBoxRef} />
+												<MessageList rid={room._id} messageListRef={jumpToRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
