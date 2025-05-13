@@ -5,6 +5,7 @@ import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	createAgent,
@@ -29,7 +30,6 @@ import {
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { deleteDepartment } from '../../../data/livechat/department';
 
 describe('LIVECHAT - inquiries', () => {
 	before((done) => getCredentials(done));
