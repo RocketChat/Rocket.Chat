@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+// TODO: CRITICAL fix the race condition between the room composer and thread composer
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
