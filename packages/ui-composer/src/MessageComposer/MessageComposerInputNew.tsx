@@ -18,11 +18,11 @@ const MessageComposerInputNew = forwardRef<HTMLTextAreaElement, MessageComposerI
 	return (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
-				className={[messageComposerInputNewStyle, 'rc-message-box__textarea js-input-message']}
+				className={[messageComposerInputNewStyle, 'rc-message-box__divcontenteditable js-input-message']}
 				color='default'
 				width='full'
-				minHeight='20px'
-				maxHeight='155px'
+				minHeight={20}
+				maxHeight={155}
 				rows={1}
 				fontScale='p2'
 				ref={ref}
