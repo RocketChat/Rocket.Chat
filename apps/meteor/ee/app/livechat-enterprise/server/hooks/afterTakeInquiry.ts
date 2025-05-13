@@ -48,7 +48,7 @@ afterTakeInquiry.patch(
 		}
 
 		const maxQueueWaitTime = settings.get<number>('Livechat_max_queue_wait_time');
-		if (!maxQueueWaitTime || maxQueueWaitTime < 0) {
+		if (maxQueueWaitTime > 0) {
 			await OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 		}
 	},
