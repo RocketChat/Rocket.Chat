@@ -38,6 +38,10 @@ export class ReadStateManager extends Emitter {
 		return this.firstUnreadRecordId;
 	};
 
+	public subscribeToMessages() {
+		return RoomHistoryManager.on('loaded-messages', () => this.updateFirstUnreadRecordId());
+	}
+
 	public updateSubscription(subscription?: ISubscription) {
 		if (!subscription) {
 			return;
@@ -88,8 +92,6 @@ export class ReadStateManager extends Emitter {
 		);
 
 		this.setFirstUnreadRecordId(firstUnreadRecord?._id);
-
-		RoomHistoryManager.once('loaded-messages', () => this.updateFirstUnreadRecordId());
 	}
 
 	private setFirstUnreadRecordId(firstUnreadRecordId: string | undefined) {

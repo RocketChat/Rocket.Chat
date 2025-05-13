@@ -7,6 +7,7 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
@@ -202,12 +203,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		this.onEvent('watch.integrations', async ({ clientAction, id, data }) => {
 			switch (clientAction) {
 				case 'inserted':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.removeIntegration(data);
 						triggerHandler.addIntegration(data);
 					}

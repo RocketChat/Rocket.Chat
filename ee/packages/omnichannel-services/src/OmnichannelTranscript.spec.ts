@@ -37,8 +37,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 jest.mock('@rocket.chat/models', () => ({
 	LivechatRooms: {
 		findOneById: jest.fn().mockResolvedValue({}),
-		unsetTranscriptRequestedPdfById: jest.fn(),
-		setPdfTranscriptFileIdById: jest.fn(),
 	},
 	Messages: {
 		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({

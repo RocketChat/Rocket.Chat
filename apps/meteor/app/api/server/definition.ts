@@ -63,6 +63,14 @@ export type InternalError<T, StatusCode extends ErrorStatusCodes = 500, D = 'Int
 	};
 };
 
+export type UnavailableResult<T, StatusCode = 503> = {
+	statusCode: StatusCode;
+	body: {
+		error: T | 'Service Unavailable';
+		success: false;
+	};
+};
+
 export type NotFoundResult<T = string> = {
 	statusCode: 404;
 	body: {
@@ -132,6 +140,7 @@ export type Options = (
 };
 
 export type PartialThis = {
+	user(bodyParams: Record<string, unknown>, user: any): Promise<any>;
 	readonly request: Request & { query: Record<string, string> };
 	readonly response: Response;
 	readonly userId: string;

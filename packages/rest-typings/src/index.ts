@@ -26,6 +26,7 @@ import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
 import type { InstancesEndpoints } from './v1/instances';
 import type { IntegrationsEndpoints } from './v1/integrations';
+import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -84,6 +85,7 @@ export interface Endpoints
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
+		IntegrationHooksEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,

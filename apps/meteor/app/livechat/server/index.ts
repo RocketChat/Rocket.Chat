@@ -1,7 +1,6 @@
 import './livechat';
 import './startup';
 import '../lib/messageTypes';
-import './hooks/beforeDelegateAgent';
 import './hooks/leadCapture';
 import './hooks/markRoomResponded';
 import './hooks/offlineMessage';
@@ -12,7 +11,6 @@ import './hooks/processRoomAbandonment';
 import './hooks/saveLastVisitorMessageTs';
 import './hooks/markRoomNotResponded';
 import './hooks/sendEmailTranscriptOnClose';
-import './hooks/saveContactLastChat';
 import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
 import './hooks/afterAgentRemoved';

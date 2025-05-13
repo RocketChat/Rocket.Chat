@@ -1,36 +1,13 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import { useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { create } from 'zustand';
 
 import type { EditableSetting, IEditableSettingsState } from '../EditableSettingsContext';
-import { EditableSettingsContext } from '../EditableSettingsContext';
+import { EditableSettingsContext, performSettingQuery } from '../EditableSettingsContext';
 
 const defaultOmit: Array<ISetting['_id']> = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
-
-const performSettingQuery = (
-	query:
-		| string
-		| {
-				_id: string;
-				value: unknown;
-		  }
-		| {
-				_id: string;
-				value: unknown;
-		  }[]
-		| undefined,
-	settings: ISetting[],
-) => {
-	if (!query) {
-		return true;
-	}
-
-	const queries = [].concat(typeof query === 'string' ? JSON.parse(query) : query);
-	return queries.every((query) => settings.some(createFilterFromQuery(query)));
-};
 
 type EditableSettingsProviderProps = {
 	children?: ReactNode;
@@ -48,6 +25,8 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 					(persisted): EditableSetting => ({
 						...persisted,
 						changed: false,
+						// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
+						// This was left here to avoid unexpected breaking changes
 						disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, persistedSettings),
 						invisible: !performSettingQuery(persisted.displayQuery, persistedSettings),
 					}),
@@ -62,6 +41,8 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 								...state.find(({ _id }) => _id === persisted._id),
 								...persisted,
 								changed: false,
+								// TODO: This might not be needed anymore due to implementation of useEditableSettingVisibilityQuery
+								// This was left here to avoid unexpected breaking changes
 								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
 								invisible: !performSettingQuery(persisted.displayQuery, state),
 							}),
@@ -85,8 +66,6 @@ const EditableSettingsProvider = ({ children }: EditableSettingsProviderProps) =
 							return {
 								...current,
 								...change,
-								disabled: persisted.blocked || !performSettingQuery(persisted.enableQuery, state),
-								invisible: !performSettingQuery(persisted.displayQuery, state),
 							};
 						}),
 				}));

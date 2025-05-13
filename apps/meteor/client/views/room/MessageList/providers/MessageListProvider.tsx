@@ -1,6 +1,6 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject, ReactNode } from 'react';
+import type { ReactNode, RefCallback } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -14,11 +14,10 @@ import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
-import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages';
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: MutableRefObject<HTMLElement | undefined>;
+	messageListRef?: RefCallback<HTMLElement | undefined>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
@@ -61,8 +60,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const formatDate = useFormatDate();
 	const hasSubscription = Boolean(subscription);
 	const msgParameter = useSearchParameter('msg');
-
-	useLoadSurroundingMessages(msgParameter);
 
 	const chat = useChat();
 
