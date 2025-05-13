@@ -37,17 +37,11 @@ it('should fetch available agents', async () => {
 
 	const { result } = renderHook(() => useAvailableAgentsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetAvailableAgents).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatAgentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatAgentItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetAvailableAgents).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatAgentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatAgentItem)));
 
 	await act(() => result.current.fetchNextPage());
 

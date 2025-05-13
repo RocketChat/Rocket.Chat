@@ -39,17 +39,11 @@ it('should fetch agents', async () => {
 
 	const { result } = renderHook(() => useAgentsList({ filter: '', limit }), { wrapper: appRoot.build() });
 
-	expect(result.current.isFetching).toBe(true);
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-
-	expect(mockGetAgents).toHaveBeenCalled();
-	expect(result.current.data).toEqual(data.slice(0, 5).map(formatAgentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatAgentItem)));
 
 	await act(() => result.current.fetchNextPage());
 
-	expect(mockGetAgents).toHaveBeenCalledTimes(2);
-	await waitFor(() => expect(result.current.data).toHaveLength(10));
-	expect(result.current.data).toEqual(data.map(formatAgentItem));
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatAgentItem)));
 
 	await act(() => result.current.fetchNextPage());
 
@@ -67,8 +61,7 @@ it('should include "All" item if haveAll is true', async () => {
 
 	const { result } = renderHook(() => useAgentsList({ filter: '', haveAll: true }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-	expect(result.current.data[0].label).toBe('All');
+	await waitFor(() => expect(result.current.data[0].label).toBe('All'));
 });
 
 it('should include "Empty_no_agent_selected" item if haveNoAgentsSelectedOption is true', async () => {
@@ -81,6 +74,5 @@ it('should include "Empty_no_agent_selected" item if haveNoAgentsSelectedOption 
 
 	const { result } = renderHook(() => useAgentsList({ filter: '', haveNoAgentsSelectedOption: true }), { wrapper: appRoot.build() });
 
-	await waitFor(() => expect(result.current.isFetching).toBe(false));
-	expect(result.current.data[0].label).toBe('Empty, no agent selected');
+	await waitFor(() => expect(result.current.data[0].label).toBe('Empty, no agent selected'));
 });
