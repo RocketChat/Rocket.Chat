@@ -279,8 +279,6 @@ export const newCreateComposerAPI = (input: HTMLDivElement, storageID: string): 
 				/* input.selectionStart = selectionStart - startPattern.length;
 				input.selectionEnd = input.selectionStart + selectedText.length; */
 
-				focus();
-
 				const newStart = selectionStart - startPattern.length;
 				const newEnd = newStart + selectedText.length;
 
@@ -289,6 +287,7 @@ export const newCreateComposerAPI = (input: HTMLDivElement, storageID: string): 
 				triggerEvent(input, 'input');
 				triggerEvent(input, 'change');
 
+				focus();
 				return;
 			}
 		}
