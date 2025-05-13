@@ -133,13 +133,20 @@ WebAppInternals.staticFilesMiddleware = function (
 			meteorRuntimeConfig: string;
 		};
 
-		if (!program?.meteorRuntimeConfigHash) {
-			program.meteorRuntimeConfigHash = createHash('sha1')
-				.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
-				.digest('hex');
+		const [siteUrl] = program?.meteorRuntimeConfigHash?.split(' ') ?? [];
+
+		if (siteUrl !== __meteor_runtime_config__.ROOT_URL) {
+			program.meteorRuntimeConfigHash =
+				__meteor_runtime_config__.ROOT_URL +
+				' ' +
+				createHash('sha1')
+					.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
+					.digest('hex');
 		}
 
-		if (program.meteorRuntimeConfigHash !== url.query.hash) {
+		const [, hash] = program?.meteorRuntimeConfigHash?.split(' ') ?? [];
+
+		if (!hash || hash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}
