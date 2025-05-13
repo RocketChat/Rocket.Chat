@@ -145,7 +145,6 @@ type ChainedCallbackSignatures = {
 		newDepartmentId: ILivechatDepartmentRecord['_id'];
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
-	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'livechat.afterRemoveDepartment': (params: {
 		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
 		agentsId: ILivechatAgent['_id'][];
