@@ -13,17 +13,13 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
-	SelectedAgent,
-	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 	TransferData,
 	AtLeast,
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
-	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
-	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -61,10 +57,6 @@ interface EventLikeCallbackSignatures {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: UserStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
-	'livechat.afterTakeInquiry': (
-		params: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom },
-		agent: { agentId: string; username: string },
-	) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: {
@@ -110,9 +102,6 @@ interface EventLikeCallbackSignatures {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
-	'livechat.beforeRoom': (roomInfo: IOmnichannelRoomInfo, extraData?: IOmnichannelRoomExtraData) => Partial<IOmnichannelRoom>;
-	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
-
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
 	) => Promise<T>;
@@ -165,12 +154,17 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (agent: SelectedAgent | undefined, params?: { department?: string }) => SelectedAgent | null | undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
 	) => FilterOperators<ILivechatDepartmentRecord>;
-	'livechat.applyRoomRestrictions': (query: FilterOperators<IOmnichannelRoom>, unitsFilter?: string[]) => FilterOperators<IOmnichannelRoom>;
+	'livechat.applyRoomRestrictions': (
+		query: FilterOperators<IOmnichannelRoom>,
+		params?: {
+			unitsFilter?: string[];
+			userId?: string;
+		},
+	) => FilterOperators<IOmnichannelRoom>;
 	'livechat.onMaxNumberSimultaneousChatsReached': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
