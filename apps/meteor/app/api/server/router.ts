@@ -191,9 +191,12 @@ export class Router<
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
 			req.raw.route = `${c.var.route ?? ''}${subpath}`;
+
+			const queryParams = this.parseQueryParams(req);
+
 			if (options.query) {
 				const validatorFn = options.query;
-				if (typeof options.query === 'function' && !validatorFn(req.query())) {
+				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
 					return c.json(
 						{
 							success: false,
@@ -229,7 +232,7 @@ export class Router<
 				{
 					requestIp: c.get('remoteAddress'),
 					urlParams: req.param(),
-					queryParams: this.parseQueryParams(req),
+					queryParams,
 					bodyParams,
 					request: req.raw.clone(),
 					path: req.path,
@@ -239,12 +242,18 @@ export class Router<
 			);
 			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
 				const responseValidatorFn = options?.response?.[statusCode];
+				/* c8 ignore next 3 */
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-				if (responseValidatorFn && !responseValidatorFn(body) && options.typed) {
-					throw new Error(
-						`Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+				if (responseValidatorFn && !responseValidatorFn(body)) {
+					return c.json(
+						{
+							success: false,
+							errorType: 'error-invalid-body',
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+						},
+						400,
 					);
 				}
 			}

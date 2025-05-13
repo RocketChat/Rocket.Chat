@@ -42,7 +42,10 @@ export const createUnit = async (
 					method: 'livechat:saveUnit',
 					params: [
 						null,
-						{ name: name || faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) },
+						{
+							name: name || `${faker.person.firstName()} ${faker.string.uuid()}`,
+							visibility: faker.helpers.arrayElement(['public', 'private']),
+						},
 						[{ monitorId, username }, ...extraMonitor],
 						departmentIds.map((departmentId) => ({ departmentId })),
 					],

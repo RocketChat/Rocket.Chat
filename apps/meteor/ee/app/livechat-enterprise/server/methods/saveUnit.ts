@@ -19,6 +19,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveUnit' });
 		}
 
-		return LivechatEnterprise.saveUnit(_id, unitData, unitMonitors, unitDepartments);
+		return LivechatEnterprise.saveUnit(_id, unitData, unitMonitors, unitDepartments, uid);
 	},
 });

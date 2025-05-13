@@ -4,6 +4,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
 	before((done) => getCredentials(done));
@@ -274,7 +275,7 @@ describe('[Settings]', () => {
 		});
 	});
 
-	describe('/audit.settings', () => {
+	(IS_EE ? describe : describe.skip)('/audit.settings', () => {
 		const formatDate = (date: Date) => date.toISOString().slice(0, 10).replace(/-/g, '/');
 
 		it('should return list of settings changed (no filters)', async () => {

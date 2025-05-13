@@ -63,7 +63,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	useDeleteUser();
 	useUpdateAvatar();
-	useIdleConnection();
+	useIdleConnection(userId);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
