@@ -265,7 +265,7 @@ export const RoutingManager: Routing = {
 		}
 
 		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate }, agent);
+		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
