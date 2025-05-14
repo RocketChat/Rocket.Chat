@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": minor
 ---
 
-feat: differentiate between pruning messages and files
+Improves the alert shown after pruning messages to reflect that files have been pruned when the "files only" option was selected.
