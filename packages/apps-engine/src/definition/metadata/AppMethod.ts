@@ -50,6 +50,7 @@ export enum AppMethod {
     EXECUTE_POST_MESSAGE_FOLLOWED = 'executePostMessageFollowed',
     EXECUTE_POST_MESSAGE_PINNED = 'executePostMessagePinned',
     EXECUTE_POST_MESSAGE_STARRED = 'executePostMessageStarred',
+    EXECUTE_POST_MESSAGE_SAVED = 'executePostMessageSaved',
     EXECUTE_POST_MESSAGE_REPORTED = 'executePostMessageReported',
     // Room handlers
     CHECKPREROOMCREATEPREVENT = 'checkPreRoomCreatePrevent',

@@ -18,6 +18,7 @@ export enum AppInterface {
     IPostMessageFollowed = 'IPostMessageFollowed',
     IPostMessagePinned = 'IPostMessagePinned',
     IPostMessageStarred = 'IPostMessageStarred',
+    IPostMessageSaved = 'IPostMessageSaved',
     IPostMessageReported = 'IPostMessageReported',
     // Rooms
     IPreRoomCreatePrevent = 'IPreRoomCreatePrevent',

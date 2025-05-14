@@ -25,6 +25,7 @@ export class AppListenerBridge {
 				case AppInterface.IPostMessageFollowed:
 				case AppInterface.IPostMessagePinned:
 				case AppInterface.IPostMessageStarred:
+				case AppInterface.IPostMessageSaved:
 				case AppInterface.IPostMessageReported:
 					return 'messageEvent';
 				case AppInterface.IPreRoomCreatePrevent:

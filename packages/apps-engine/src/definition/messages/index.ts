@@ -20,6 +20,7 @@ import { IPostMessageReacted } from './IPostMessageReacted';
 import { IPostMessageReported } from './IPostMessageReported';
 import { IPostMessageSent } from './IPostMessageSent';
 import { IPostMessageStarred } from './IPostMessageStarred';
+import { IPostMessageSaved } from './IPostMessageSaved';
 import { IPostMessageUpdated } from './IPostMessageUpdated';
 import { IPostSystemMessageSent } from './IPostSystemMessageSent';
 import { IPreMessageDeletePrevent } from './IPreMessageDeletePrevent';
@@ -62,6 +63,7 @@ export {
     IPostMessagePinned,
     IMessagePinContext,
     IPostMessageStarred,
+    IPostMessageSaved,
     IMessageStarContext,
     IPostMessageReported,
     IMessageReportContext,
