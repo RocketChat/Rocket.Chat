@@ -150,14 +150,14 @@ const MarkdownText = ({
 			}
 
 			// Set appropriate title based on link type
-			if (isExternalLink) {
-				// For external links, set an empty title to prevent tooltips
-				// This reduces visual clutter and lets users see the URL in the browser's status bar instead
-				node.setAttribute('title', '');
-			} else if (isMailto) {
+			if (isMailto) {
 				// For mailto links, use the email address as the title for better user experience
 				// Example: for href "mailto:user@example.com" the title would be "mailto:user@example.com"
 				node.setAttribute('title', href);
+			} else if (isExternalLink) {
+				// For external links, set an empty title to prevent tooltips
+				// This reduces visual clutter and lets users see the URL in the browser's status bar instead
+				node.setAttribute('title', '');
 			} else {
 				// For internal links, add a translated title with the relative path
 				// Example: for href "https://my-server.rocket.chat/channel/general" the title would be "Go to #general"
