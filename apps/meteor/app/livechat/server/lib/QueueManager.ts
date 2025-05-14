@@ -23,7 +23,7 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
-import { beforeDelegateAgent } from './hooks';
+import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, onNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
@@ -43,7 +43,7 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 		return;
 	}
 
-	await callbacks.run('livechat.afterInquiryQueued', queuedInquiry);
+	await afterInquiryQueued(queuedInquiry);
 
 	void notifyOnLivechatInquiryChanged(queuedInquiry, 'updated', {
 		status: LivechatInquiryStatus.QUEUED,
@@ -172,8 +172,7 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
-			await callbacks.run('livechat.afterInquiryQueued', inquiry);
-			await callbacks.run('livechat.chatQueued', room);
+			await Promise.all([afterInquiryQueued(inquiry), afterRoomQueued(room)]);
 
 			if (defaultAgent) {
 				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
@@ -353,7 +352,7 @@ export class QueueManager {
 		// All the actions that happened inside createLivechatRoom are now outside this transaction
 		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		await callbacks.run('livechat.newRoom', room);
+		await onNewRoom(room);
 		await Message.saveSystemMessageAndNotifyUser(
 			'livechat-started',
 			rid,
