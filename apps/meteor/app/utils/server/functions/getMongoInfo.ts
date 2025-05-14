@@ -7,7 +7,6 @@ function getOplogInfo(): { mongo: MongoConnection } {
 }
 
 async function fallbackMongoInfo(): Promise<{
-	oplogEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine?: string;
 	mongo: MongoConnection;

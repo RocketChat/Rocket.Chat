@@ -9,9 +9,9 @@ import { settings } from '../../app/settings/server';
 import { Info } from '../../app/utils/rocketchat.info';
 import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
-import { isRunningMs } from '../lib/isRunningMs';
-import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
+// import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
+import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
