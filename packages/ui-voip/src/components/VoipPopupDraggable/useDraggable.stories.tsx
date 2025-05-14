@@ -131,24 +131,11 @@ const DraggableBoxWrapper = () => {
 		setWidth((prevWidth) => getSize(prevWidth));
 	};
 
-	if (view === 'initial') {
-		return (
-			<DraggableBase
-				key={view}
-				boundingRef={boundingRef}
-				draggableRef={draggableRef}
-				handleRef={handleRef}
-				onClick={onClick}
-				onClickResize={onClickResize}
-				height={height}
-				width={width}
-			/>
-		);
-	}
+	const bgColor = view === 'initial' ? undefined : 'green';
 
 	return (
 		<DraggableBase
-			backgroundColor='green'
+			backgroundColor={bgColor}
 			key={view}
 			boundingRef={boundingRef}
 			draggableRef={draggableRef}
@@ -161,7 +148,8 @@ const DraggableBoxWrapper = () => {
 	);
 };
 
-export const DraggableBoxWithControle: Story = {
+// Story for manual testing
+export const DraggableBoxWithControls: Story = {
 	render: () => <DraggableBoxWrapper />,
 };
 
