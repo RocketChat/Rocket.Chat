@@ -97,22 +97,6 @@ services:
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
       traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
 
-  stream-hub-service:
-    platform: linux/amd64
-    build:
-      dockerfile: ee/apps/stream-hub-service/Dockerfile
-      args:
-        SERVICE: stream-hub-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/stream-hub-service:${DOCKER_TAG}
-    environment:
-      - MONGO_URL=${MONGO_URL}
-      - 'TRANSPORTER=${TRANSPORTER}'
-      - MOLECULER_LOG_LEVEL=info
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    depends_on:
-      - nats
-
   queue-worker-service:
     platform: linux/amd64
     build:
