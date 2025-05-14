@@ -44,11 +44,11 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	btnDeleteByName(name: string): Locator {
-		return this.page.locator(`role=link[name="${name} Remove"] >> role=button`);
+		return this.page.getByRole('link', { name }).getByRole('button');
 	}
 
 	findRowByName(name: string): Locator {
-		return this.page.locator(`tr:has-text("${name}")`);
+		return this.page.getByRole('link', { name });
 	}
 
 	get inputDepartments(): Locator {

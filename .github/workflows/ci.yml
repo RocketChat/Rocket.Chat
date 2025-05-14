@@ -23,7 +23,7 @@ env:
 jobs:
   release-versions:
     name: ⚙️ Variables Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
@@ -31,11 +31,10 @@ jobs:
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       rc-dockerfile: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}.official'
-      rc-dockerfile-debian: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.debian'
-      rc-docker-tag-debian: '${{ steps.docker.outputs.gh-docker-tag }}.debian'
+      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}'
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
+      official-platform: 'alpine'
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2025-06-31
       enterprise-license: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
@@ -94,7 +93,7 @@ jobs:
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [release-versions]
     steps:
       - uses: actions/checkout@v4
@@ -137,7 +136,7 @@ jobs:
   packages-build:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Github Info
         run: |
@@ -167,7 +166,7 @@ jobs:
           HARDENED_MODE: '1'
 
       - name: Cache vite
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./node_modules/.vite
           key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
@@ -188,7 +187,7 @@ jobs:
           include-hidden-files: true
 
   deploy-preview:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [release-versions, packages-build]
     steps:
       - uses: actions/checkout@v3
@@ -226,7 +225,7 @@ jobs:
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Collect Workflow Telemetry
@@ -257,7 +256,7 @@ jobs:
     name: 📦 Meteor Build - official
     needs: [tests-done, release-versions, packages-build]
     if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Collect Workflow Telemetry
@@ -287,11 +286,11 @@ jobs:
   # TODO: this should go away once upstream builds are fixed
   build-matrix-rust-bindings-for-alpine:
     name: Builds matrix rust bindings against alpine
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: check cache for matrix-rust-sdk-crypto-nodejs
         id: matrix-rust-sdk-crypto-nodejs
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
           key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
@@ -307,7 +306,7 @@ jobs:
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.18.0'
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: dtolnay/rust-toolchain@stable
@@ -332,18 +331,18 @@ jobs:
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-dockerfile-debian || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-docker-tag-debian || needs.release-versions.outputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'debian']
+        platform: ['alpine']
 
     steps:
       - uses: actions/checkout@v4
@@ -357,7 +356,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == 'debian' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
@@ -368,18 +367,18 @@ jobs:
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
     needs: [build-prod, release-versions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-dockerfile-debian || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-docker-tag-debian || needs.release-versions.outputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'debian']
+        platform: ['alpine']
 
     steps:
       - uses: actions/checkout@v4
@@ -391,17 +390,21 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == 'debian' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == 'official'
+        if: matrix.platform == needs.release-versions.outputs.official-platform
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} $IMAGE_NAME_BASE
           docker push $IMAGE_NAME_BASE
+
+          echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
+          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
+          docker push ${IMAGE_NAME_BASE}.official
 
   checks:
     needs: [release-versions, packages-build]
@@ -437,8 +440,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -461,8 +462,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -489,8 +488,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -514,8 +511,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -545,8 +540,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
       db-watcher-disabled: 'true'
@@ -561,7 +554,7 @@ jobs:
 
   tests-done:
     name: ✅ Tests Done
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-no-watcher]
     if: always()
     steps:
@@ -599,7 +592,7 @@ jobs:
 
   deploy:
     name: 🚀 Publish build assets
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker, release-versions]
 
@@ -651,47 +644,15 @@ jobs:
 
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-  build-docker-preview:
-    name: 🚢 Build Docker Image (preview)
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Restore build
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Build Docker image
-        id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: preview
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)
-    runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions]
+    runs-on: ubuntu-24.04
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
         # this is currently a mix of variants and different images
-        release: ['official', 'preview', 'debian']
+        release: ['alpine', 'preview', 'debian']
 
     env:
       IMAGE_NAME: 'rocketchat/rocket.chat'
@@ -796,7 +757,7 @@ jobs:
 
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [deploy, release-versions]
 
     strategy:
@@ -885,7 +846,7 @@ jobs:
 
   notify-services:
     name: 🚀 Notify external services
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - services-docker-image-publish
       - docker-image-publish

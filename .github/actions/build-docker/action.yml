@@ -16,7 +16,7 @@ inputs:
   platform:
     required: false
     description: 'Platform'
-    type: string
+    default: 'alpine'
   build-containers:
     required: false
     description: 'Containers to build along with Rocket.Chat'
@@ -84,8 +84,8 @@ runs:
     - run: yarn build
       if: inputs.setup == 'true'
       shell: bash
-    - if: ${{ inputs.platform == 'official' }}
-      uses: actions/cache@v3
+    - if: ${{ inputs.platform == 'alpine' }}
+      uses: actions/cache@v4
       with:
         path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
         key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
