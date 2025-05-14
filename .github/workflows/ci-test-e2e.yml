@@ -20,7 +20,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['5.0', '8.2']"
+        default: "['8.2']"
         required: false
         type: string
       release:
@@ -284,7 +284,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
@@ -322,7 +322,7 @@ jobs:
         if: inputs.type == 'api' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: /tmp/coverage
           include-hidden-files: true
 
@@ -330,6 +330,6 @@ jobs:
         if: inputs.type == 'ui' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/coverage*
           include-hidden-files: true
