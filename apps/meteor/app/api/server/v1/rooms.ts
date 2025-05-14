@@ -410,7 +410,7 @@ API.v1.post(
 					errorType: { type: 'string' },
 					success: {
 						type: 'boolean',
-						enum: ['false'],
+						enum: [false],
 						description: 'Indicates if the request was successful.',
 					},
 				},
@@ -424,7 +424,7 @@ API.v1.post(
 					message: { type: 'string' },
 					success: {
 						type: 'boolean',
-						enum: ['false'],
+						enum: [false],
 						description: 'Indicates if the request was successful.',
 					},
 				},
