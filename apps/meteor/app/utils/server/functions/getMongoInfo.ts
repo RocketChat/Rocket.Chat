@@ -1,9 +1,9 @@
 import { MongoInternals } from 'meteor/mongo';
 
-function getOplogInfo(): { oplogEnabled: boolean; mongo: MongoConnection } {
+function getOplogInfo(): { mongo: MongoConnection } {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-	return { oplogEnabled: true, mongo };
+	return { mongo };
 }
 
 async function fallbackMongoInfo(): Promise<{
@@ -15,7 +15,7 @@ async function fallbackMongoInfo(): Promise<{
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { oplogEnabled, mongo } = getOplogInfo();
+	const { mongo } = getOplogInfo();
 
 	try {
 		const { version } = await mongo.db.command({ buildinfo: 1 });
@@ -36,11 +36,10 @@ async function fallbackMongoInfo(): Promise<{
 		console.error('==================================');
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
+	return { mongoVersion, mongoStorageEngine, mongo };
 }
 
 export async function getMongoInfo(): Promise<{
-	oplogEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine?: string;
 	mongo: MongoConnection;
@@ -48,7 +47,7 @@ export async function getMongoInfo(): Promise<{
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { oplogEnabled, mongo } = getOplogInfo();
+	const { mongo } = getOplogInfo();
 
 	try {
 		const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
@@ -59,5 +58,5 @@ export async function getMongoInfo(): Promise<{
 		return fallbackMongoInfo();
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
+	return { mongoVersion, mongoStorageEngine, mongo };
 }
