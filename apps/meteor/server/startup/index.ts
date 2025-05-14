@@ -21,6 +21,5 @@ export const startup = async () => {
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
 		require('./localServices');
-		require('./watchDb');
 	}
 };
