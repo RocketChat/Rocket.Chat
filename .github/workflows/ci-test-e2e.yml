@@ -47,10 +47,6 @@ on:
       type:
         required: true
         type: string
-      db-watcher-disabled:
-        default: 'true'
-        required: false
-        type: string
     secrets:
       CR_USER:
         required: true
@@ -86,7 +82,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -194,7 +190,6 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcov'
-          DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
 

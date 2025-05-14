@@ -9,9 +9,9 @@ import { settings } from '../../app/settings/server';
 import { Info } from '../../app/utils/rocketchat.info';
 import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
-import { isRunningMs } from '../lib/isRunningMs';
-import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
+// import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
+import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -25,14 +25,12 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
 Meteor.startup(async () => {
-	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
+	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
 	return setTimeout(async () => {
-		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
-
 		let msg = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
@@ -41,7 +39,6 @@ Meteor.startup(async () => {
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get('Site_Url')}`,
-			`   ReplicaSet OpLog: ${replicaSet}`,
 		];
 
 		if (Info.commit && Info.commit.hash) {
@@ -53,18 +50,6 @@ Meteor.startup(async () => {
 		}
 
 		msg = msg.join('\n');
-
-		if (!isRunningMs() && !oplogEnabled) {
-			msg += [
-				'',
-				'',
-				'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:',
-				'https://go.rocket.chat/i/oplog-required',
-			].join('\n');
-			showErrorBox('SERVER ERROR', msg);
-
-			exitIfNotBypassed(process.env.BYPASS_OPLOG_VALIDATION);
-		}
 
 		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
 			msg += [

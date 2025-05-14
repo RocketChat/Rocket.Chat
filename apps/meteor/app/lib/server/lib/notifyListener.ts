@@ -24,7 +24,6 @@ import type {
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import {
-	dbWatchersDisabled,
 	Rooms,
 	LivechatRooms,
 	Permissions,
@@ -47,346 +46,325 @@ import { shouldHideSystemMessage } from '../../../../server/lib/systemMessage/hi
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
-function withDbWatcherCheck<T extends (...args: any[]) => Promise<void>>(fn: T): T {
-	return dbWatchersDisabled ? fn : ((() => Promise.resolve()) as T);
-}
+export const notifyOnLivechatPriorityChanged = async (
+	data: Pick<ILivechatPriority, 'name' | '_id'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const { _id, ...rest } = data;
+	void api.broadcast('watch.priorities', { clientAction, id: _id, diff: { ...rest } });
+};
 
-export const notifyOnLivechatPriorityChanged = withDbWatcherCheck(
-	async (data: Pick<ILivechatPriority, 'name' | '_id'>, clientAction: ClientAction = 'updated'): Promise<void> => {
-		const { _id, ...rest } = data;
-		void api.broadcast('watch.priorities', { clientAction, id: _id, diff: { ...rest } });
-	},
-);
+export const notifyOnRoomChanged = async <T extends IRocketChatRecord>(
+	data: T | T[],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const items = Array.isArray(data) ? data : [data];
+	for (const item of items) {
+		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+};
 
-export const notifyOnRoomChanged = withDbWatcherCheck(
-	async <T extends IRocketChatRecord>(data: T | T[], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const items = Array.isArray(data) ? data : [data];
-		for (const item of items) {
-			void api.broadcast('watch.rooms', { clientAction, room: item });
-		}
-	},
-);
+export const notifyOnRoomChangedById = async <T extends IRocketChatRecord>(
+	ids: T['_id'] | T['_id'][],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const eligibleIds = Array.isArray(ids) ? ids : [ids];
+	const items = Rooms.findByIds(eligibleIds);
+	for await (const item of items) {
+		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+};
 
-export const notifyOnRoomChangedById = withDbWatcherCheck(
-	async <T extends IRocketChatRecord>(ids: T['_id'] | T['_id'][], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const eligibleIds = Array.isArray(ids) ? ids : [ids];
-		const items = Rooms.findByIds(eligibleIds);
-		for await (const item of items) {
-			void api.broadcast('watch.rooms', { clientAction, room: item });
-		}
-	},
-);
+export const notifyOnRoomChangedByUsernamesOrUids = async <T extends IRoom>(
+	uids: T['u']['_id'][],
+	usernames: T['u']['username'][],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const items = Rooms.findByUsernamesOrUids(uids, usernames);
+	for await (const item of items) {
+		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+};
 
-export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
-	async <T extends IRoom>(
-		uids: T['u']['_id'][],
-		usernames: T['u']['username'][],
-		clientAction: ClientAction = 'updated',
-	): Promise<void> => {
-		const items = Rooms.findByUsernamesOrUids(uids, usernames);
-		for await (const item of items) {
-			void api.broadcast('watch.rooms', { clientAction, room: item });
-		}
-	},
-);
+export const notifyOnRoomChangedByContactId = async <T extends ILivechatContact>(
+	contactId: T['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const cursor = LivechatRooms.findOpenByContactId(contactId);
 
-export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
-	async <T extends ILivechatContact>(contactId: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const cursor = LivechatRooms.findOpenByContactId(contactId);
+	void cursor.forEach((room) => {
+		void api.broadcast('watch.rooms', { clientAction, room });
+	});
+};
 
-		void cursor.forEach((room) => {
-			void api.broadcast('watch.rooms', { clientAction, room });
-		});
-	},
-);
+export const notifyOnRoomChangedByUserDM = async <T extends IRoom>(
+	userId: T['u']['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const items = Rooms.findDMsByUids([userId]);
+	for await (const item of items) {
+		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+};
 
-export const notifyOnRoomChangedByUserDM = withDbWatcherCheck(
-	async <T extends IRoom>(userId: T['u']['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const items = Rooms.findDMsByUids([userId]);
-		for await (const item of items) {
-			void api.broadcast('watch.rooms', { clientAction, room: item });
-		}
-	},
-);
+export const notifyOnPermissionChanged = async (permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> => {
+	void api.broadcast('permission.changed', { clientAction, data: permission });
 
-export const notifyOnPermissionChanged = withDbWatcherCheck(
-	async (permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> => {
-		void api.broadcast('permission.changed', { clientAction, data: permission });
-
-		if (permission.level === 'settings' && permission.settingId) {
-			const setting = await Settings.findOneNotHiddenById(permission.settingId);
-			if (!setting) {
-				return;
-			}
-			void notifyOnSettingChanged(setting, 'updated');
-		}
-	},
-);
-
-export const notifyOnPermissionChangedById = withDbWatcherCheck(
-	async (pid: IPermission['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const permission = await Permissions.findOneById(pid);
-		if (!permission) {
+	if (permission.level === 'settings' && permission.settingId) {
+		const setting = await Settings.findOneNotHiddenById(permission.settingId);
+		if (!setting) {
 			return;
 		}
+		void notifyOnSettingChanged(setting, 'updated');
+	}
+};
 
-		return notifyOnPermissionChanged(permission, clientAction);
-	},
-);
+export const notifyOnPermissionChangedById = async (pid: IPermission['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
+	const permission = await Permissions.findOneById(pid);
+	if (!permission) {
+		return;
+	}
 
-export const notifyOnPbxEventChangedById = withDbWatcherCheck(
-	async <T extends IPbxEvent>(id: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const item = await PbxEvents.findOneById(id);
-		if (!item) {
-			return;
-		}
+	return notifyOnPermissionChanged(permission, clientAction);
+};
 
-		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
-	},
-);
+export const notifyOnPbxEventChangedById = async <T extends IPbxEvent>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const item = await PbxEvents.findOneById(id);
+	if (!item) {
+		return;
+	}
 
-export const notifyOnRoleChanged = withDbWatcherCheck(
-	async <T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> => {
-		void api.broadcast('watch.roles', { clientAction, role });
-	},
-);
+	void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
+};
 
-export const notifyOnRoleChangedById = withDbWatcherCheck(
-	async <T extends IRole>(id: T['_id'], clientAction: 'removed' | 'changed' = 'changed'): Promise<void> => {
-		const role = await Roles.findOneById(id);
-		if (!role) {
-			return;
-		}
+export const notifyOnRoleChanged = async <T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> => {
+	void api.broadcast('watch.roles', { clientAction, role });
+};
 
-		void notifyOnRoleChanged(role, clientAction);
-	},
-);
+export const notifyOnRoleChangedById = async <T extends IRole>(
+	id: T['_id'],
+	clientAction: 'removed' | 'changed' = 'changed',
+): Promise<void> => {
+	const role = await Roles.findOneById(id);
+	if (!role) {
+		return;
+	}
 
-export const notifyOnLoginServiceConfigurationChanged = withDbWatcherCheck(
-	async <T extends ILoginServiceConfiguration>(
-		service: Partial<T> & Pick<T, '_id'>,
-		clientAction: ClientAction = 'updated',
-	): Promise<void> => {
-		void api.broadcast('watch.loginServiceConfiguration', {
-			clientAction,
-			id: service._id,
-			data: service,
-		});
-	},
-);
+	void notifyOnRoleChanged(role, clientAction);
+};
 
-export const notifyOnLoginServiceConfigurationChangedByService = withDbWatcherCheck(
-	async <T extends ILoginServiceConfiguration>(service: T['service'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const item = await LoginServiceConfiguration.findOneByService<Omit<LoginServiceConfigurationData, 'secret'>>(service, {
-			projection: { secret: 0 },
-		});
-		if (!item) {
-			return;
-		}
+export const notifyOnLoginServiceConfigurationChanged = async <T extends ILoginServiceConfiguration>(
+	service: Partial<T> & Pick<T, '_id'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	void api.broadcast('watch.loginServiceConfiguration', {
+		clientAction,
+		id: service._id,
+		data: service,
+	});
+};
 
-		void notifyOnLoginServiceConfigurationChanged(item, clientAction);
-	},
-);
+export const notifyOnLoginServiceConfigurationChangedByService = async <T extends ILoginServiceConfiguration>(
+	service: T['service'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const item = await LoginServiceConfiguration.findOneByService<Omit<LoginServiceConfigurationData, 'secret'>>(service, {
+		projection: { secret: 0 },
+	});
+	if (!item) {
+		return;
+	}
 
-export const notifyOnIntegrationChanged = withDbWatcherCheck(
-	async <T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> => {
-		void api.broadcast('watch.integrations', { clientAction, id: data._id, data });
-	},
-);
+	void notifyOnLoginServiceConfigurationChanged(item, clientAction);
+};
 
-export const notifyOnIntegrationChangedById = withDbWatcherCheck(
-	async <T extends IIntegration>(id: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const item = await Integrations.findOneById(id);
-		if (!item) {
-			return;
-		}
+export const notifyOnIntegrationChanged = async <T extends IIntegration>(
+	data: T,
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	void api.broadcast('watch.integrations', { clientAction, id: data._id, data });
+};
 
+export const notifyOnIntegrationChangedById = async <T extends IIntegration>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const item = await Integrations.findOneById(id);
+	if (!item) {
+		return;
+	}
+
+	void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+};
+
+export const notifyOnIntegrationChangedByUserId = async <T extends IIntegration>(
+	id: T['userId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const items = Integrations.findByUserId(id);
+
+	for await (const item of items) {
 		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
-	},
-);
+	}
+};
 
-export const notifyOnIntegrationChangedByUserId = withDbWatcherCheck(
-	async <T extends IIntegration>(id: T['userId'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const items = Integrations.findByUserId(id);
+export const notifyOnIntegrationChangedByChannels = async <T extends IIntegration>(
+	channels: T['channel'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	const items = Integrations.findByChannels(channels);
 
-		for await (const item of items) {
-			void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
-		}
-	},
-);
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+};
 
-export const notifyOnIntegrationChangedByChannels = withDbWatcherCheck(
-	async <T extends IIntegration>(channels: T['channel'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const items = Integrations.findByChannels(channels);
+export const notifyOnEmailInboxChanged = async <T extends IEmailInbox>(
+	data: Pick<T, '_id'> | T, // TODO: improve typing
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
+};
 
-		for await (const item of items) {
-			void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
-		}
-	},
-);
+export const notifyOnLivechatInquiryChanged = async (
+	data: ILivechatInquiryRecord | ILivechatInquiryRecord[],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> => {
+	const items = Array.isArray(data) ? data : [data];
 
-export const notifyOnEmailInboxChanged = withDbWatcherCheck(
-	async <T extends IEmailInbox>(
-		data: Pick<T, '_id'> | T, // TODO: improve typing
-		clientAction: ClientAction = 'updated',
-	): Promise<void> => {
-		void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
-	},
-);
+	for (const item of items) {
+		void api.broadcast('watch.inquiries', { clientAction, inquiry: item, diff });
+	}
+};
 
-export const notifyOnLivechatInquiryChanged = withDbWatcherCheck(
-	async (
-		data: ILivechatInquiryRecord | ILivechatInquiryRecord[],
-		clientAction: ClientAction = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
-	): Promise<void> => {
-		const items = Array.isArray(data) ? data : [data];
+export const notifyOnLivechatInquiryChangedById = async (
+	id: ILivechatInquiryRecord['_id'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> => {
+	const inquiry = clientAction === 'removed' ? await LivechatInquiry.trashFindOneById(id) : await LivechatInquiry.findOneById(id);
 
-		for (const item of items) {
-			void api.broadcast('watch.inquiries', { clientAction, inquiry: item, diff });
-		}
-	},
-);
+	if (!inquiry) {
+		return;
+	}
 
-export const notifyOnLivechatInquiryChangedById = withDbWatcherCheck(
-	async (
-		id: ILivechatInquiryRecord['_id'],
-		clientAction: ClientAction = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
-	): Promise<void> => {
-		const inquiry = clientAction === 'removed' ? await LivechatInquiry.trashFindOneById(id) : await LivechatInquiry.findOneById(id);
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+};
 
-		if (!inquiry) {
-			return;
-		}
+export const notifyOnLivechatInquiryChangedByVisitorIds = async (
+	visitorIds: ILivechatInquiryRecord['v']['_id'][],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: Date; takenAt: Date }>,
+): Promise<void> => {
+	const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
 
+	void cursor.forEach((inquiry) => {
 		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
-	},
-);
+	});
+};
 
-export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
-	async (
-		visitorIds: ILivechatInquiryRecord['v']['_id'][],
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: Date; takenAt: Date }>,
-	): Promise<void> => {
-		const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
+export const notifyOnLivechatInquiryChangedByRoom = async (
+	rid: ILivechatInquiryRecord['rid'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> => {
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
 
-		void cursor.forEach((inquiry) => {
-			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
-		});
-	},
-);
+	if (!inquiry) {
+		return;
+	}
 
-export const notifyOnLivechatInquiryChangedByRoom = withDbWatcherCheck(
-	async (
-		rid: ILivechatInquiryRecord['rid'],
-		clientAction: ClientAction = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
-	): Promise<void> => {
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+};
 
-		if (!inquiry) {
-			return;
-		}
+export const notifyOnLivechatInquiryChangedByToken = async (
+	token: ILivechatInquiryRecord['v']['token'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> => {
+	const inquiry = await LivechatInquiry.findOneByToken(token);
 
-		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
-	},
-);
+	if (!inquiry) {
+		return;
+	}
 
-export const notifyOnLivechatInquiryChangedByToken = withDbWatcherCheck(
-	async (
-		token: ILivechatInquiryRecord['v']['token'],
-		clientAction: ClientAction = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
-	): Promise<void> => {
-		const inquiry = await LivechatInquiry.findOneByToken(token);
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+};
 
-		if (!inquiry) {
-			return;
-		}
+export const notifyOnIntegrationHistoryChanged = async <T extends IIntegrationHistory>(
+	data: AtLeast<T, '_id'>,
+	clientAction: ClientAction = 'updated',
+	diff: Partial<T> = {},
+): Promise<void> => {
+	void api.broadcast('watch.integrationHistory', { clientAction, id: data._id, data, diff });
+};
 
-		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
-	},
-);
+export const notifyOnIntegrationHistoryChangedById = async <T extends IIntegrationHistory>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+	diff: Partial<T> = {},
+): Promise<void> => {
+	const item = await IntegrationHistory.findOneById(id);
 
-export const notifyOnIntegrationHistoryChanged = withDbWatcherCheck(
-	async <T extends IIntegrationHistory>(
-		data: AtLeast<T, '_id'>,
-		clientAction: ClientAction = 'updated',
-		diff: Partial<T> = {},
-	): Promise<void> => {
-		void api.broadcast('watch.integrationHistory', { clientAction, id: data._id, data, diff });
-	},
-);
+	if (!item) {
+		return;
+	}
 
-export const notifyOnIntegrationHistoryChangedById = withDbWatcherCheck(
-	async <T extends IIntegrationHistory>(id: T['_id'], clientAction: ClientAction = 'updated', diff: Partial<T> = {}): Promise<void> => {
-		const item = await IntegrationHistory.findOneById(id);
+	void api.broadcast('watch.integrationHistory', { clientAction, id: item._id, data: item, diff });
+};
 
-		if (!item) {
-			return;
-		}
+export const notifyOnLivechatDepartmentAgentChanged = async <T extends ILivechatDepartmentAgents>(
+	data: Partial<T> & Pick<T, '_id' | 'agentId' | 'departmentId'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: data._id, data });
+};
 
-		void api.broadcast('watch.integrationHistory', { clientAction, id: item._id, data: item, diff });
-	},
-);
+export const notifyOnLivechatDepartmentAgentChangedByDepartmentId = async <T extends ILivechatDepartmentAgents>(
+	departmentId: T['departmentId'],
+	clientAction: 'inserted' | 'updated' = 'updated',
+): Promise<void> => {
+	const items = LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { _id: 1, agentId: 1, departmentId: 1 } });
 
-export const notifyOnLivechatDepartmentAgentChanged = withDbWatcherCheck(
-	async <T extends ILivechatDepartmentAgents>(
-		data: Partial<T> & Pick<T, '_id' | 'agentId' | 'departmentId'>,
-		clientAction: ClientAction = 'updated',
-	): Promise<void> => {
-		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: data._id, data });
-	},
-);
+	for await (const item of items) {
+		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
+	}
+};
 
-export const notifyOnLivechatDepartmentAgentChangedByDepartmentId = withDbWatcherCheck(
-	async <T extends ILivechatDepartmentAgents>(
-		departmentId: T['departmentId'],
-		clientAction: 'inserted' | 'updated' = 'updated',
-	): Promise<void> => {
-		const items = LivechatDepartmentAgents.findByDepartmentId(departmentId, { projection: { _id: 1, agentId: 1, departmentId: 1 } });
+export const notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId = async <T extends ILivechatDepartmentAgents>(
+	agentsIds: T['agentId'][],
+	departmentId: T['departmentId'],
+	clientAction: 'inserted' | 'updated' = 'updated',
+): Promise<void> => {
+	const items = LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsIds, departmentId, {
+		projection: { _id: 1, agentId: 1, departmentId: 1 },
+	});
 
-		for await (const item of items) {
-			void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
-		}
-	},
-);
+	for await (const item of items) {
+		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
+	}
+};
 
-export const notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId = withDbWatcherCheck(
-	async <T extends ILivechatDepartmentAgents>(
-		agentsIds: T['agentId'][],
-		departmentId: T['departmentId'],
-		clientAction: 'inserted' | 'updated' = 'updated',
-	): Promise<void> => {
-		const items = LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsIds, departmentId, {
-			projection: { _id: 1, agentId: 1, departmentId: 1 },
-		});
+export const notifyOnSettingChanged = async (
+	setting: ISetting & { editor?: ISettingColor['editor'] },
+	clientAction: ClientAction = 'updated',
+): Promise<void> => {
+	void api.broadcast('watch.settings', { clientAction, setting });
+};
 
-		for await (const item of items) {
-			void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
-		}
-	},
-);
+export const notifyOnSettingChangedById = async (id: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
+	const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
 
-export const notifyOnSettingChanged = withDbWatcherCheck(
-	async (setting: ISetting & { editor?: ISettingColor['editor'] }, clientAction: ClientAction = 'updated'): Promise<void> => {
-		void api.broadcast('watch.settings', { clientAction, setting });
-	},
-);
+	if (!item) {
+		return;
+	}
 
-export const notifyOnSettingChangedById = withDbWatcherCheck(
-	async (id: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
-
-		if (!item) {
-			return;
-		}
-
-		void api.broadcast('watch.settings', { clientAction, setting: item });
-	},
-);
+	void api.broadcast('watch.settings', { clientAction, setting: item });
+};
 
 type NotifyUserChange = {
 	id: IUser['_id'];
@@ -396,7 +374,7 @@ type NotifyUserChange = {
 	unset?: Record<string, number>;
 };
 
-export const notifyOnUserChange = withDbWatcherCheck(async ({ clientAction, id, data, diff, unset }: NotifyUserChange) => {
+export const notifyOnUserChange = async ({ clientAction, id, data, diff, unset }: NotifyUserChange) => {
 	if (clientAction === 'removed') {
 		void api.broadcast('watch.users', { clientAction, id });
 		return;
@@ -408,12 +386,12 @@ export const notifyOnUserChange = withDbWatcherCheck(async ({ clientAction, id, 
 	}
 
 	void api.broadcast('watch.users', { clientAction, diff: diff!, unset: unset || {}, id });
-});
+};
 
 /**
  * Calls the callback only if DB Watchers are disabled
  */
-export const notifyOnUserChangeAsync = withDbWatcherCheck(async (cb: () => Promise<NotifyUserChange | NotifyUserChange[] | void>) => {
+export const notifyOnUserChangeAsync = async (cb: () => Promise<NotifyUserChange | NotifyUserChange[] | void>) => {
 	const result = await cb();
 	if (!result) {
 		return;
@@ -425,19 +403,23 @@ export const notifyOnUserChangeAsync = withDbWatcherCheck(async (cb: () => Promi
 	}
 
 	return notifyOnUserChange(result);
-});
+};
 
 // TODO this may be only useful on 'inserted'
-export const notifyOnUserChangeById = withDbWatcherCheck(
-	async ({ clientAction, id }: { id: IUser['_id']; clientAction: 'inserted' | 'removed' | 'updated' }) => {
-		const user = await Users.findOneById(id);
-		if (!user) {
-			return;
-		}
+export const notifyOnUserChangeById = async ({
+	clientAction,
+	id,
+}: {
+	id: IUser['_id'];
+	clientAction: 'inserted' | 'removed' | 'updated';
+}) => {
+	const user = await Users.findOneById(id);
+	if (!user) {
+		return;
+	}
 
-		void notifyOnUserChange({ id, clientAction, data: user });
-	},
-);
+	void notifyOnUserChange({ id, clientAction, data: user });
+};
 
 const getUserNameCached = mem(
 	async (userId: string): Promise<string | undefined> => {
@@ -490,139 +472,132 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 	return message;
 }
 
-export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
+export const notifyOnMessageChange = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
 	const message = await getMessageToBroadcast({ id, data });
 	if (!message) {
 		return;
 	}
 	void api.broadcast('watch.messages', { message });
-});
+};
 
-export const notifyOnSubscriptionChanged = withDbWatcherCheck(
-	async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
+export const notifyOnSubscriptionChanged = async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
+	void api.broadcast('watch.subscriptions', { clientAction, subscription });
+};
+
+export const notifyOnSubscriptionChangedByRoomIdAndUserId = async (
+	rid: ISubscription['rid'],
+	uid: ISubscription['u']['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
+
+	void cursor.forEach((subscription) => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
-	},
-);
+	});
+};
 
-export const notifyOnSubscriptionChangedByRoomIdAndUserId = withDbWatcherCheck(
-	async (
-		rid: ISubscription['rid'],
-		uid: ISubscription['u']['_id'],
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-	): Promise<void> => {
-		const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedById = async (
+	id: ISubscription['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const subscription = await Subscriptions.findOneById(id);
+	if (!subscription) {
+		return;
+	}
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void api.broadcast('watch.subscriptions', { clientAction, subscription });
+};
 
-export const notifyOnSubscriptionChangedById = withDbWatcherCheck(
-	async (id: ISubscription['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const subscription = await Subscriptions.findOneById(id);
-		if (!subscription) {
-			return;
-		}
+export const notifyOnSubscriptionChangedByUserPreferences = async (
+	uid: ISubscription['u']['_id'],
+	notificationOriginField: keyof ISubscription,
+	originFieldNotEqualValue: 'user' | 'subscription',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserPreferences(uid, notificationOriginField, originFieldNotEqualValue, {
+		projection: subscriptionFields,
+	});
 
+	void cursor.forEach((subscription) => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
-	},
-);
+	});
+};
 
-export const notifyOnSubscriptionChangedByUserPreferences = withDbWatcherCheck(
-	async (
-		uid: ISubscription['u']['_id'],
-		notificationOriginField: keyof ISubscription,
-		originFieldNotEqualValue: 'user' | 'subscription',
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-	): Promise<void> => {
-		const cursor = Subscriptions.findByUserPreferences(uid, notificationOriginField, originFieldNotEqualValue, {
-			projection: subscriptionFields,
-		});
+export const notifyOnSubscriptionChangedByRoomId = async (
+	rid: ISubscription['rid'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByRoomId = withDbWatcherCheck(
-	async (rid: ISubscription['rid'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const cursor = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByAutoTranslateAndUserId = async (
+	uid: ISubscription['u']['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByAutoTranslateAndUserId(uid, true, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByAutoTranslateAndUserId = withDbWatcherCheck(
-	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const cursor = Subscriptions.findByAutoTranslateAndUserId(uid, true, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByUserIdAndRoomType = async (
+	uid: ISubscription['u']['_id'],
+	t: ISubscription['t'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByUserIdAndRoomType = withDbWatcherCheck(
-	async (
-		uid: ISubscription['u']['_id'],
-		t: ISubscription['t'],
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-	): Promise<void> => {
-		const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByVisitorIds = async (
+	visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findOpenByVisitorIds(visitorIds, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByVisitorIds = withDbWatcherCheck(
-	async (
-		visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-	): Promise<void> => {
-		const cursor = Subscriptions.findOpenByVisitorIds(visitorIds, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByNameAndRoomType = async (
+	filter: Partial<Pick<ISubscription, 'name' | 't'>>,
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByNameAndRoomType = withDbWatcherCheck(
-	async (filter: Partial<Pick<ISubscription, 'name' | 't'>>, clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const cursor = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByUserId = async (
+	uid: ISubscription['u']['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};
 
-export const notifyOnSubscriptionChangedByUserId = withDbWatcherCheck(
-	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const cursor = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
+export const notifyOnSubscriptionChangedByRoomIdAndUserIds = async (
+	rid: ISubscription['rid'],
+	uids: ISubscription['u']['_id'][],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> => {
+	const cursor = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
 
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
-
-export const notifyOnSubscriptionChangedByRoomIdAndUserIds = withDbWatcherCheck(
-	async (
-		rid: ISubscription['rid'],
-		uids: ISubscription['u']['_id'][],
-		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-	): Promise<void> => {
-		const cursor = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
-
-		void cursor.forEach((subscription) => {
-			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		});
-	},
-);
+	void cursor.forEach((subscription) => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	});
+};

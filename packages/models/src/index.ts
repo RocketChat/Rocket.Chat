@@ -123,12 +123,7 @@ export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
 
-const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
-
-export const dbWatchersDisabled = !['no', 'false'].includes(disabledEnvVar);
-
 export * from './modelClasses';
-export * from './DatabaseWatcher';
 
 export * from './dummy/ReadReceipts';
 
@@ -254,10 +249,4 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
-}
-
-if (!dbWatchersDisabled) {
-	console.warn(
-		`Database watchers is enabled and this is not the default option.\nRocket.Chat deprecated the usage of \`oplog/change streams\` and are going to remove it the next major version (8.0.0).`,
-	);
 }
