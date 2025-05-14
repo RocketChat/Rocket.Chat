@@ -282,7 +282,7 @@ jobs:
         service:
           [
             [authorization-service, queue-worker-service, ddp-streamer-service],
-            [account-service, presence-service, stream-hub-service, omnichannel-transcript-service],
+            [account-service, presence-service, omnichannel-transcript-service],
             [rocketchat],
           ]
         type:
@@ -556,92 +556,10 @@ jobs:
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-
-  test-ui-ee-watcher:
-    name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-publish, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: ui
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
-      mongodb-version: "['8.2']"
-      coverage: '8.2'
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-      db-watcher-disabled: 'false'
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-
-  report-coverage:
-    name: 📊 Report Coverage
-    runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-ui-ee, test-ui-ee-watcher]
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6.0.0
-        with:
-          node-version: ${{ needs.release-versions.outputs.node-version }}
-
-      - name: Restore coverage folder
-        uses: actions/download-artifact@v6
-        with:
-          pattern: coverage-*
-          path: /tmp/coverage
-          merge-multiple: true
-
-      - name: Generate lcov report
-        run: |
-          set -o xtrace
-
-          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/api --temp-dir=/tmp/coverage/api
-          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
-
-      - name: Store coverage-reports
-        uses: actions/upload-artifact@v5
-        with:
-          name: reports-coverage
-          path: /tmp/coverage_report
-          include-hidden-files: true
-
-      - name: Report API coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: /tmp/coverage_report/api/lcov.info
-          working-directory: .
-          flags: e2e-api
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Report UI coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: /tmp/coverage_report/ui/lcov.info
-          working-directory: .
-          flags: e2e
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   tests-done:
     name: ✅ Tests Done
-    runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    runs-on: ubuntu-24.04
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -667,10 +585,6 @@ jobs:
           fi
 
           if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
             exit 1
           fi
 
