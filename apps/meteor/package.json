@@ -277,6 +277,8 @@
 		"@rocket.chat/mongo-adapter": "workspace:^",
 		"@rocket.chat/mp3-encoder": "^0.31.26",
 		"@rocket.chat/network-broker": "workspace:^",
+		"@rocket.chat/omni-lib": "workspace:^",
+		"@rocket.chat/omni-lib-ee": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/onboarding-ui": "^0.35.2",
 		"@rocket.chat/password-policies": "workspace:^",

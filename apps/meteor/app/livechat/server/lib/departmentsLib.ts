@@ -1,12 +1,12 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
+import { isDepartmentCreationAvailable } from '@rocket.chat/omni-lib';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
-import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import { livechatLogger } from './logger';
 import { callbacks } from '../../../../lib/callbacks';
 import {

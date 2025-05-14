@@ -7867,6 +7867,8 @@ __metadata:
     "@rocket.chat/mongo-adapter": "workspace:^"
     "@rocket.chat/mp3-encoder": "npm:^0.31.26"
     "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/omni-lib": "workspace:^"
+    "@rocket.chat/omni-lib-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/onboarding-ui": "npm:^0.35.2"
     "@rocket.chat/password-policies": "workspace:^"
@@ -8296,6 +8298,37 @@ __metadata:
     pino: "npm:^8.21.0"
     sinon: "npm:^19.0.5"
     typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/omni-lib-ee@workspace:^, @rocket.chat/omni-lib-ee@workspace:ee/packages/omni-lib-ee":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omni-lib-ee@workspace:ee/packages/omni-lib-ee"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/omni-lib": "workspace:^"
+    "@rocket.chat/patch-injection": "workspace:^"
+    "@types/jest": "npm:~29.5.14"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
+    typescript: "npm:~5.7.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/omni-lib@workspace:^, @rocket.chat/omni-lib@workspace:packages/omni-lib":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omni-lib@workspace:packages/omni-lib"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/patch-injection": "workspace:^"
+    "@types/jest": "npm:~29.5.14"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
+    typescript: "npm:~5.7.2"
   languageName: unknown
   linkType: soft
 
