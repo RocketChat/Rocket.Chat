@@ -7,7 +7,7 @@ import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const newCreateComposerAPI = (input: HTMLDivElement, storageID: string): ComposerAPI => {
+export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange

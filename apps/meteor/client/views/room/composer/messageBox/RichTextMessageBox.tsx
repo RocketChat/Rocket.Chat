@@ -8,12 +8,12 @@ import {
 	MessageComposerToolbarActions,
 	MessageComposer,
 	/* MessageComposerInput, */
-	MessageComposerInputNew,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 	MessageComposerButton,
 	MessageComposerHint,
+	RichTextComposerInput,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -25,9 +25,11 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 // import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { newCreateComposerAPI } from '../../../../../app/ui-message/client/messageBox/newCreateComposerAPI';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -46,8 +48,6 @@ import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
 const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -97,7 +97,7 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 };
 
-const MessageBoxNew = ({
+const RichTextMessageBox = ({
 	tmid,
 	onSend,
 	onJoin,
@@ -146,7 +146,7 @@ const MessageBoxNew = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(newCreateComposerAPI(node, storageID));
+			chat.setComposerAPI(createRichTextComposerAPI(node, storageID));
 		},
 		[chat, storageID],
 	);
@@ -414,7 +414,7 @@ const MessageBoxNew = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
-				<MessageComposerInputNew
+				<RichTextComposerInput
 					ref={newMergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
@@ -480,4 +480,4 @@ const MessageBoxNew = ({
 	);
 };
 
-export default memo(MessageBoxNew);
+export default memo(RichTextMessageBox);
