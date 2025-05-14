@@ -2,9 +2,9 @@ import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef, useState } from 'react';
 
-const GRAB_DOM_EVENTS = ['pointerdown' /* , 'touchstart' */] as const;
+const GRAB_DOM_EVENTS = ['pointerdown'] as const;
 const RELEASE_DOM_EVENTS = ['pointerup', 'pointercancel', 'lostpointercapture'] as const;
-const MOVE_DOM_EVENTS = ['pointermove' /* , 'touchmove' */] as const;
+const MOVE_DOM_EVENTS = ['pointermove'] as const;
 
 interface PointCoordinates {
 	x: number;
@@ -60,6 +60,8 @@ type DraggableElementEvents = {
 	grab: IGenericRect;
 	move: PointCoordinates;
 	release: IGenericRect;
+	changeView: IDraggableElement;
+	resize: IGenericRect;
 };
 
 class Draggable extends Emitter<DraggableElementEvents> {
@@ -69,7 +71,7 @@ class Draggable extends Emitter<DraggableElementEvents> {
 
 	private pointerCoordinates: PointCoordinates = { x: 0, y: 0 };
 
-	private elementPositionOffset: PointCoordinates = { x: 0, y: 0 };
+	private storedPositionOffset: PointCoordinates = { x: 0, y: 0 };
 
 	constructor(element: IDraggableElement) {
 		super();
@@ -78,8 +80,16 @@ class Draggable extends Emitter<DraggableElementEvents> {
 			this.handleMove(pointerCoordinates);
 		});
 
-		this._element.onRelease((pointerCoordinates) => {
-			this.handleRelease(pointerCoordinates);
+		this._element.onRelease((rect) => {
+			this.handleRelease(rect);
+		});
+
+		this._element.onChangeView((draggableElement) => {
+			this.emit('changeView', draggableElement);
+		});
+
+		this._element.onResize((rect) => {
+			this.emit('resize', rect);
 		});
 	}
 
@@ -95,30 +105,37 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		return this.on('move', cb);
 	}
 
+	public onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler {
+		return this.on('resize', cb);
+	}
+
+	public onChangeView(cb: (element: IDraggableElement) => void): OffCallbackHandler {
+		return this.on('changeView', cb);
+	}
+
 	private setPointerCoordinates(pointerCoordinates: PointCoordinates): void {
 		this.pointerCoordinates = pointerCoordinates;
 	}
 
 	private addElementPositionOffset(x: number, y: number): void {
-		const currentOffset = this.getCurrentOffset();
-		this.setElementPositionOffset(currentOffset.x + x, currentOffset.y + y);
+		const currentOffset = this.getStoredOffset();
+		this.setStoredPositionOffset(currentOffset.x + x, currentOffset.y + y);
 	}
 
-	private setElementPositionOffset(x: number, y: number): void {
-		this.elementPositionOffset = { x, y };
-		this.element.setElementPositionOffset(this.elementPositionOffset);
+	private setStoredPositionOffset(x: number, y: number): void {
+		this.storedPositionOffset = { x, y };
+		this.element.setElementPositionOffset(this.storedPositionOffset);
 	}
 
-	public moveToCoordinates(targetElementCoordinates: PointCoordinates): void {
-		const initialPosition = this._element.getElementRect();
-		this.setElementPositionOffset(targetElementCoordinates.x - initialPosition.x, targetElementCoordinates.y - initialPosition.y);
-		this.emit('move', this.getCurrentOffset());
+	public moveToCoordinates(targetElementCoordinates: PointCoordinates, initialPosition: IGenericRect): void {
+		this.setStoredPositionOffset(targetElementCoordinates.x - initialPosition.x, targetElementCoordinates.y - initialPosition.y);
+		this.emit('move', this.getStoredOffset());
 	}
 
-	public handleGrab(startingPointerCoordinates: PointCoordinates): void {
+	public handleGrab(startingPointerCoordinates: PointCoordinates, elementRect: IGenericRect): void {
 		this.isDragging = true;
 		this.setPointerCoordinates(startingPointerCoordinates);
-		this.emit('grab', this._element.getElementRect());
+		this.emit('grab', elementRect);
 	}
 
 	public handleMove(currentPointerCoordinates: PointCoordinates): void {
@@ -130,11 +147,16 @@ class Draggable extends Emitter<DraggableElementEvents> {
 		this.addElementPositionOffset(xDelta, yDelta);
 		this.setPointerCoordinates(currentPointerCoordinates);
 
-		this.emit('move', this.getCurrentOffset());
-		this.element.setElementPositionOffset(this.getCurrentOffset());
+		const storedOffset = this.getStoredOffset();
+		this.element.setElementPositionOffset(storedOffset);
+		this.emit('move', storedOffset);
 	}
 
 	public handleRelease(finalElementPosition: IGenericRect): void {
+		if (!this.isDragging) {
+			return;
+		}
+
 		this.isDragging = false;
 		this.setPointerCoordinates({ x: 0, y: 0 });
 		this.emit('release', finalElementPosition);
@@ -142,11 +164,11 @@ class Draggable extends Emitter<DraggableElementEvents> {
 
 	public moveByOffset(offset: PointCoordinates): void {
 		this.addElementPositionOffset(offset.x, offset.y);
-		this.emit('move', this.getCurrentOffset());
+		this.emit('move', this.getStoredOffset());
 	}
 
-	public getCurrentOffset(): { x: number; y: number } {
-		return this.elementPositionOffset;
+	public getStoredOffset(): PointCoordinates {
+		return this.storedPositionOffset;
 	}
 }
 
@@ -154,8 +176,8 @@ type BoundingElementOptions = {
 	resizeDebounce: number; // debounce time in ms
 };
 
-const DEFAULT_BOUNDING_ELEMENT_OPTIONS: BoundingElementOptions = {
-	resizeDebounce: 300,
+export const DEFAULT_BOUNDING_ELEMENT_OPTIONS: BoundingElementOptions = {
+	resizeDebounce: 150,
 };
 
 class BoundingElement extends Emitter<{
@@ -176,19 +198,23 @@ class BoundingElement extends Emitter<{
 		this.resizeDebounce = options.resizeDebounce;
 
 		this.draggableInstance.onRelease(() => {
-			const offset = this.calculateBoundsOffset();
-			this.draggableInstance.moveByOffset(offset);
+			this.tryMoveToBounds();
 		});
 
 		this.element.onResize(() => {
-			if (this.timeout) {
-				clearTimeout(this.timeout);
-			}
+			this.tryMoveToBounds();
+		});
 
-			this.timeout = setTimeout(() => {
-				const offset = this.calculateBoundsOffset();
-				this.draggableInstance.moveByOffset(offset);
-			}, this.resizeDebounce);
+		this.draggableInstance.onResize(() => {
+			this.tryMoveToBounds();
+		});
+
+		this.draggableInstance.onChangeView(() => {
+			this.tryMoveToBounds();
+		});
+
+		this.element.onChangeView(() => {
+			this.tryMoveToBounds();
 		});
 	}
 
@@ -196,9 +222,30 @@ class BoundingElement extends Emitter<{
 		return this._element;
 	}
 
-	private calculateBoundsOffset(): PointCoordinates {
-		const draggableRect = new GenericRect(this.draggableInstance.element.getElementRect());
-		const boundsRect = new GenericRect(this.element.getElementRect());
+	private _tryMoveToBounds(): void {
+		const draggableRect = this.draggableInstance.element.getElementRect();
+		const boundsRect = this.element.getElementRect();
+		if (!draggableRect || !boundsRect) {
+			return;
+		}
+
+		const offset = this.calculateBoundsOffset(draggableRect, boundsRect);
+		this.draggableInstance.moveByOffset(offset);
+	}
+
+	private tryMoveToBounds(): void {
+		if (this.timeout) {
+			clearTimeout(this.timeout);
+		}
+
+		this.timeout = setTimeout(() => {
+			this._tryMoveToBounds();
+		}, this.resizeDebounce);
+	}
+
+	private calculateBoundsOffset(_draggableRect: IGenericRect, _boundsRect: IGenericRect): PointCoordinates {
+		const draggableRect = new GenericRect(_draggableRect);
+		const boundsRect = new GenericRect(_boundsRect);
 		// If the draggable element's top/left position is less than
 		// the bounding element's top/left position, the difference will be positive
 		// This means we can just add this value to the draggable element's offset
@@ -251,8 +298,8 @@ class HandleElement extends Emitter<{
 		this.draggableInstance = draggableInstance;
 		this._element = element;
 
-		this._element.onGrab((mousePosition) => {
-			this.draggableInstance.handleGrab(mousePosition);
+		this._element.onGrab(([mousePosition, elementRect]) => {
+			this.draggableInstance.handleGrab(mousePosition, elementRect);
 		});
 	}
 
@@ -266,34 +313,48 @@ const getPointerEventCoordinates = (e: PointerEvent): PointCoordinates => ({
 	y: e.clientY,
 });
 
+type GetElementRect = () => IGenericRect | null;
+type OnChangeView<TElement> = (cb: (element: TElement) => void) => OffCallbackHandler;
+
 interface IDraggableElement {
-	onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler;
-	onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler;
-	getElementRect(): IGenericRect;
-	setElementPositionOffset(offset: PointCoordinates): void;
 	setElement(element: unknown): OffCallbackHandler;
+	setElementPositionOffset(offset: PointCoordinates): void;
+	getElementRect: GetElementRect;
+	// events
+	onMove(cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler;
+	onChangeView: OnChangeView<IDraggableElement>;
+	onRelease(cb: (rect: IGenericRect) => void): OffCallbackHandler;
+	onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler;
 }
 
 interface IBoundingElement {
-	onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler;
-	getElementRect(): IGenericRect;
 	setElement(element: unknown): OffCallbackHandler;
+	getElementRect: GetElementRect;
+	// events
+	onResize(cb: (rect: IGenericRect) => void): OffCallbackHandler;
+	onChangeView: OnChangeView<IBoundingElement>;
 }
 
 interface IHandleElement {
-	onGrab(cb: (pointerCoordinates: PointCoordinates) => void): OffCallbackHandler;
 	setElement(element: unknown): OffCallbackHandler;
+	// events
+	onGrab(cb: (event: [mousePosition: PointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler;
 }
 
 class HandleDomElement
 	extends Emitter<{
-		grab: PointCoordinates;
+		grab: [PointCoordinates, IGenericRect];
 	}>
 	implements IHandleElement
 {
 	public setElement(element: HTMLElement) {
 		const onGrab = (event: PointerEvent) => {
-			this.emit('grab', getPointerEventCoordinates(event));
+			const element = event.currentTarget as HTMLElement;
+			if (!element) {
+				return;
+			}
+
+			this.emit('grab', [getPointerEventCoordinates(event), element.getBoundingClientRect()]);
 		};
 
 		const unsubArray: OffCallbackHandler[] = [];
@@ -308,7 +369,7 @@ class HandleDomElement
 		return () => unsubArray.forEach((unsub) => unsub());
 	}
 
-	public onGrab = (cb: (mousePosition: PointCoordinates) => void): OffCallbackHandler => {
+	public onGrab = (cb: (event: [mousePosition: PointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler => {
 		return this.on('grab', cb);
 	};
 }
@@ -316,6 +377,7 @@ class HandleDomElement
 class BoundingDomElement
 	extends Emitter<{
 		resize: IGenericRect;
+		changeView: IBoundingElement;
 	}>
 	implements IBoundingElement
 {
@@ -336,34 +398,60 @@ class BoundingDomElement
 		const observer = new ResizeObserver(onResize);
 		observer.observe(element);
 
-		return () => observer.disconnect();
+		this.emit('changeView', this);
+		return () => {
+			observer.disconnect();
+			this._element = null;
+		};
 	}
 
 	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
 		return this.on('resize', cb);
 	};
 
-	public getElementRect(): DOMRect {
+	public onChangeView = (cb: (element: IBoundingElement) => void): OffCallbackHandler => {
+		return this.on('changeView', cb);
+	};
+
+	public getElementRect(): DOMRect | null {
 		if (!this._element) {
-			return new DOMRect();
+			return null;
 		}
 
 		return this._element.getBoundingClientRect();
 	}
 }
 
-class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDraggableElement {
+type DraggableDomElementEvents = {
+	changeView: IDraggableElement;
+} & Pick<DraggableElementEvents, 'move' | 'release' | 'resize'>;
+
+class DraggableDomElement extends Emitter<DraggableDomElementEvents> implements IDraggableElement {
 	private element: HTMLElement | null = null;
 
 	public setElement(element: HTMLElement) {
 		this.element = element;
 
 		const onEnd = () => {
-			this.emit('release', this.getElementRect());
+			const elementRect = this.getElementRect();
+			if (!elementRect) {
+				return;
+			}
+
+			this.emit('release', elementRect);
 		};
 
 		const onMove = (event: PointerEvent) => {
 			this.emit('move', getPointerEventCoordinates(event));
+		};
+
+		const onResize = (entries: ResizeObserverEntry[]) => {
+			const firstEntry = entries[0];
+			if (!firstEntry) {
+				return;
+			}
+
+			this.emit('resize', firstEntry.contentRect);
 		};
 
 		const unsubArray: OffCallbackHandler[] = [];
@@ -384,8 +472,26 @@ class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDr
 			}),
 		);
 
-		return () => unsubArray.forEach((unsub) => unsub());
+		const observer = new ResizeObserver(onResize);
+		observer.observe(element);
+
+		unsubArray.push(() => observer.disconnect());
+
+		this.emit('changeView', this);
+
+		return () => {
+			this.element = null;
+			unsubArray.forEach((unsub) => unsub());
+		};
 	}
+
+	public onResize = (cb: (rect: IGenericRect) => void): OffCallbackHandler => {
+		return this.on('resize', cb);
+	};
+
+	public onChangeView = (cb: (element: IDraggableElement) => void): OffCallbackHandler => {
+		return this.on('changeView', cb);
+	};
 
 	public onMove = (cb: (pointerPosition: PointCoordinates) => void): OffCallbackHandler => {
 		return this.on('move', cb);
@@ -395,9 +501,9 @@ class DraggableDomElement extends Emitter<DraggableElementEvents> implements IDr
 		return this.on('release', cb);
 	};
 
-	public getElementRect(): DOMRect {
+	public getElementRect(): DOMRect | null {
 		if (!this.element) {
-			return new DOMRect();
+			return null;
 		}
 
 		return this.element.getBoundingClientRect();
@@ -438,13 +544,14 @@ export const useDraggable = () => {
 					return;
 				}
 
-				const offDomEvents = draggableElement.element.setElement(node);
 				const offMove = draggableElement.onMove(() => {
 					restorePositionRef.current = node.getBoundingClientRect();
 				});
 
+				const offDomEvents = draggableElement.element.setElement(node);
+
 				if (restorePositionRef.current) {
-					draggableElement.moveToCoordinates(restorePositionRef.current);
+					draggableElement.moveToCoordinates(restorePositionRef.current, node.getBoundingClientRect());
 				}
 
 				return () => {
