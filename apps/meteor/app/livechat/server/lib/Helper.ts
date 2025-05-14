@@ -41,7 +41,7 @@ import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { beforeNewRoom } from './hooks';
+import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
@@ -413,7 +413,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	setImmediate(() => callbacks.run('livechat.chatQueued', room));
+	void afterRoomQueued(room);
 
 	if (RoutingManager.getConfig()?.autoAssignAgent) {
 		return;
