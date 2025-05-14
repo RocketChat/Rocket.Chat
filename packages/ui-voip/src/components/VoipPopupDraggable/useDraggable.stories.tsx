@@ -161,6 +161,10 @@ const DraggableBoxWrapper = () => {
 	);
 };
 
+export const DraggableBoxWithControle: Story = {
+	render: () => <DraggableBoxWrapper />,
+};
+
 const meta = {
 	title: 'hooks/useDraggable',
 	component: DraggableBox,
