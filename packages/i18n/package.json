@@ -11,7 +11,7 @@
 		"typescript": "~5.7.2"
 	},
 	"scripts": {
-		"build": "node ./src/scripts/index.mjs && run .:build:esm && run .:build:cjs",
+		"build": "node ./src/scripts/build.mjs && run .:build:esm && run .:build:cjs",
 		".:build:esm": "tsc -p tsconfig.esm.json",
 		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",

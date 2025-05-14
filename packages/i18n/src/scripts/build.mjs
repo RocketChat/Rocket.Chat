@@ -26,12 +26,13 @@ export async function build() {
 		nullValues: 0,
 	};
 
-	const languageLength = resources.reduce((max, resource) => Math.max(max, resource.language.length), 0);
-	const statKeyLength = Object.keys(countsByNormalization).reduce((max, key) => Math.max(max, key.length), 0);
+	// Uncomment these lines for verbose output
+	// const languageLength = resources.reduce((max, resource) => Math.max(max, resource.language.length), 0);
+	// const statKeyLength = Object.keys(countsByNormalization).reduce((max, key) => Math.max(max, key.length), 0);
 	for (const resource of resources) {
-		resource.content = normalizeI18nInterpolations(resource.content, resource.language, (statName, record) => {
+		resource.content = normalizeI18nInterpolations(resource.content, resource.language, (statName) => {
 			countsByNormalization[statName]++;
-			console.log(`${statName.padEnd(statKeyLength)} ${resource.language.padStart(languageLength)} ${JSON.stringify(record.key)}`);
+			// console.log(`${statName.padEnd(statKeyLength)} ${resource.language.padStart(languageLength)} ${JSON.stringify(record.key)}`);
 		});
 	}
 
