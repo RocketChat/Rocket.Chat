@@ -123,8 +123,6 @@ export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
 
-export const dbWatchersDisabled = true;
-
 export * from './modelClasses';
 
 export * from './dummy/ReadReceipts';
