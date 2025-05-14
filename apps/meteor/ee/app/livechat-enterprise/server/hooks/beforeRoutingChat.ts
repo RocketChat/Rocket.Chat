@@ -1,23 +1,27 @@
-import { type ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, SelectedAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../../../app/livechat/server/lib/departmentsLib';
+import { beforeRouteChat } from '../../../../../app/livechat/server/lib/hooks';
 import { online } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-callbacks.add(
-	'livechat.beforeRouteChat',
-	async (inquiry, agent) => {
+beforeRouteChat.patch(
+	async (
+		originalFn: (inquiry: ILivechatInquiryRecord, _agent?: SelectedAgent | null) => Promise<ILivechatInquiryRecord | null | undefined>,
+		inquiry: ILivechatInquiryRecord,
+		agent?: SelectedAgent | null,
+	) => {
+		await originalFn(inquiry, agent);
+
 		if (!inquiry) {
 			return inquiry;
 		}
 
-		// check here if department has fallback before queueing
 		if (inquiry?.department && !(await online(inquiry.department, true, true))) {
 			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
 				inquiry.department,
@@ -30,9 +34,12 @@ callbacks.add(
 				return inquiry;
 			}
 			if (department.fallbackForwardDepartment) {
-				cbLogger.info(
-					`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
-				);
+				cbLogger.info({
+					msg: 'Moving inquiry to fallback department',
+					originalDepartment: inquiry.department,
+					fallbackDepartment: department.fallbackForwardDepartment,
+					inquiryId: inquiry._id,
+				});
 
 				const [, updatedLivechatInquiry] = await Promise.all([
 					setDepartmentForGuest({
@@ -59,10 +66,6 @@ callbacks.add(
 			return inquiry;
 		}
 
-		await saveQueueInquiry(inquiry);
-
-		return LivechatInquiry.findOneById(inquiry._id);
+		return saveQueueInquiry(inquiry);
 	},
-	callbacks.priority.HIGH,
-	'livechat-before-routing-chat',
 );
