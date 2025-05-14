@@ -167,19 +167,6 @@ callbacks.add(
 );
 
 callbacks.add(
-	'livechat.chatQueued',
-	(room) => {
-		if (!settings.get('Livechat_webhook_on_chat_queued')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionQueued', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-queued',
-);
-
-callbacks.add(
 	'livechat.afterForwardChatToAgent',
 	async (params) => {
 		const { rid, oldServedBy } = params;

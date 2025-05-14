@@ -23,7 +23,7 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
-import { afterInquiryQueued, beforeDelegateAgent, onNewRoom } from './hooks';
+import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, onNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
@@ -172,8 +172,7 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
-			await afterInquiryQueued(inquiry);
-			await callbacks.run('livechat.chatQueued', room);
+			await Promise.all([afterInquiryQueued(inquiry), afterRoomQueued(room)]);
 
 			if (defaultAgent) {
 				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
