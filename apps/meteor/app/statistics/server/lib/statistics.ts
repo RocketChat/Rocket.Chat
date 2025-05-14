@@ -415,9 +415,9 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
+		const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
-		statistics.oplogEnabled = oplogEnabled;
+		statistics.oplogEnabled = false;
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
