@@ -15,7 +15,9 @@ import {
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
+import Ajv from 'ajv';
 import { Meteor } from 'meteor/meteor';
+
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
