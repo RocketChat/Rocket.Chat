@@ -207,7 +207,7 @@ jobs:
           key: playwright-1.52.0
 
       - name: Install Playwright
-        if: inputs.type == 'ui' # && steps.cache-playwright.outputs.cache-hit != 'true'
+        if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
