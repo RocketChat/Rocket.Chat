@@ -356,7 +356,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
@@ -399,7 +399,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
@@ -542,40 +542,10 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
-  test-ui-ee-watcher:
-    name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: ui
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
-      mongodb-version: "['7.0']"
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-      db-watcher-disabled: 'false'
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
-      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -601,10 +571,6 @@ jobs:
           fi
 
           if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
-            exit 1
-          fi
-
-          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
             exit 1
           fi
 
