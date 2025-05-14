@@ -20,6 +20,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		check(id, String);
-		return (await LivechatEnterprise.removeUnit(id)).deletedCount > 0;
+		return (await LivechatEnterprise.removeUnit(id, uid)).deletedCount > 0;
 	},
 });

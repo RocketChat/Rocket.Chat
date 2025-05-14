@@ -1,5 +1,13 @@
 # @rocket.chat/apps-engine
 
+## 1.51.0
+
+### Minor Changes
+
+-   ([#35280](https://github.com/RocketChat/Rocket.Chat/pull/35280)) Allows apps to react to department status changes.
+
+-   ([#35644](https://github.com/RocketChat/Rocket.Chat/pull/35644)) Adds the ability to dynamically add and remove options from select/multi-select settings in the Apps Engine to support more flexible configuration scenarios by exposing two new methods on the settings API.
+
 ## 1.51.0-rc.0
 
 ### Minor Changes

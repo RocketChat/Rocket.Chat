@@ -88,7 +88,7 @@ export const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoo
 	}
 };
 
-async function sendToCRM(
+export async function sendToCRM(
 	type: CRMActions,
 	room: OmnichannelRoomWithExtraFields,
 	includeMessages: boolean | IOmnichannelSystemMessage[] = true,
@@ -164,45 +164,6 @@ callbacks.add(
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-close-room',
-);
-
-callbacks.add(
-	'livechat.newRoom',
-	async (room) => {
-		if (!settings.get('Livechat_webhook_on_start')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionStart', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-start-room',
-);
-
-callbacks.add(
-	'livechat.afterTakeInquiry',
-	async ({ inquiry, room }) => {
-		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		return sendToCRM('LivechatSessionTaken', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-taken',
-);
-
-callbacks.add(
-	'livechat.chatQueued',
-	(room) => {
-		if (!settings.get('Livechat_webhook_on_chat_queued')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionQueued', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-queued',
 );
 
 callbacks.add(

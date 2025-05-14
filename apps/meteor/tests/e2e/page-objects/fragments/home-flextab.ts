@@ -5,6 +5,7 @@ import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabOtr } from './home-flextab-otr';
+import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -22,6 +23,8 @@ export class HomeFlextab {
 
 	readonly exportMessages: HomeFlextabExportMessages;
 
+	readonly pruneMessages: HomeFlextabPruneMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
@@ -30,6 +33,7 @@ export class HomeFlextab {
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 		this.otr = new HomeFlextabOtr(page);
 		this.exportMessages = new HomeFlextabExportMessages(page);
+		this.pruneMessages = new HomeFlextabPruneMessages(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -58,6 +62,10 @@ export class HomeFlextab {
 
 	get btnExportMessages(): Locator {
 		return this.page.locator('role=menuitem[name="Export messages"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
 	}
 
 	get btnE2EERoomSetupDisableE2E(): Locator {

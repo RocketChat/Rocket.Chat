@@ -37,7 +37,7 @@ API.v1.addRoute(
 			}
 
 			if ('appId' in this.queryParams) {
-				apiDeprecationLogger.parameter(this.request.route, 'appId', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
 			}
 
 			return API.v1.success({

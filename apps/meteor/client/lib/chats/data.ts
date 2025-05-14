@@ -1,4 +1,11 @@
-import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import {
+	isOTRAckMessage,
+	isOTRMessage,
+	type IEditedMessage,
+	type IMessage,
+	type IRoom,
+	type ISubscription,
+} from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
@@ -57,31 +64,12 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return message;
 	};
 
-	const findLastOwnMessage = async (): Promise<IMessage | undefined> => {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			return undefined;
-		}
-
-		return Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true } },
-			{ sort: { ts: -1 }, reactive: false },
-		);
-	};
-
-	const getLastOwnMessage = async (): Promise<IMessage> => {
-		const message = await findLastOwnMessage();
-
-		if (!message) {
-			throw new Error('Message not found');
-		}
-
-		return message;
-	};
-
 	const canUpdateMessage = async (message: IMessage): Promise<boolean> => {
 		if (MessageTypes.isSystemMessage(message)) {
+			return false;
+		}
+
+		if (isOTRMessage(message) || isOTRAckMessage(message)) {
 			return false;
 		}
 
@@ -104,7 +92,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return true;
 	};
 
-	const findPreviousOwnMessage = async (message: IMessage): Promise<IMessage | undefined> => {
+	const findPreviousOwnMessage = async (message?: IMessage): Promise<IMessage | undefined> => {
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -112,7 +100,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const msg = Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $lt: message.ts } },
+			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { ...(message && { $lt: message.ts }) } },
 			{ sort: { ts: -1 }, reactive: false },
 		);
 
@@ -308,8 +296,6 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		getMessageByID,
 		findLastMessage,
 		getLastMessage,
-		findLastOwnMessage,
-		getLastOwnMessage,
 		findPreviousOwnMessage,
 		getPreviousOwnMessage,
 		findNextOwnMessage,

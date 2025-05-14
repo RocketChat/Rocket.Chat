@@ -26,7 +26,7 @@ API.v1.addRoute(
 				token ? findGuestWithoutActivity(token) : null,
 			]);
 
-			const room = guest ? await findOpenRoom(guest.token) : undefined;
+			const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
 			const agentPromise = room?.servedBy ? findAgent(room.servedBy._id) : null;
 			const extraInfoPromise = getExtraConfigInfo({ room });
 

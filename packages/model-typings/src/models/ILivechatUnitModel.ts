@@ -10,19 +10,16 @@ export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit>
 		query: Filter<IOmnichannelBusinessUnit>,
 		options?: FindOptions<IOmnichannelBusinessUnit>,
 	): FindPaginated<FindCursor<IOmnichannelBusinessUnit>>;
-	find(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		options: FindOptions<IOmnichannelBusinessUnit>,
-	): FindCursor<IOmnichannelBusinessUnit>;
 	findOne(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
 		options: FindOptions<IOmnichannelBusinessUnit>,
+		extra?: Record<string, any>,
 	): Promise<IOmnichannelBusinessUnit | null>;
-	update(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
-		update: Filter<IOmnichannelBusinessUnit>,
+	findOneById<P extends Document = IOmnichannelBusinessUnit>(
+		_id: IOmnichannelBusinessUnit['_id'],
 		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<UpdateResult>;
+		extra?: Record<string, any>,
+	): Promise<P | null>;
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult>;
 	createOrUpdateUnit(
 		_id: string | null,
@@ -35,6 +32,7 @@ export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit>
 	incrementDepartmentsCount(_id: string): Promise<UpdateResult | Document>;
 	decrementDepartmentsCount(_id: string): Promise<UpdateResult | Document>;
 	removeById(_id: string): Promise<DeleteResult>;
+	removeByIdAndUnit(_id: string, unitsFromUser?: string[]): Promise<DeleteResult>;
 	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null>;
 	findByMonitorId(monitorId: string): Promise<string[]>;
 	findMonitoredDepartmentsByMonitorId(monitorId: string, includeDisabled: boolean): Promise<ILivechatDepartment[]>;
