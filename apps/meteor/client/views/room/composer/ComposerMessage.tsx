@@ -8,7 +8,7 @@ import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
-import MessageBoxNew from './messageBox/MessageBoxNew';
+import RichTextMessageBox from './messageBox/RichTextMessageBox';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
@@ -92,7 +92,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 	}
 
 	return featurePreviewComposer ? (
-		<MessageBoxNew key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+		<RichTextMessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
 	) : (
 		<MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
 	);

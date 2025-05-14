@@ -6,11 +6,11 @@ import MessageComposerHint from './MessageComposerHint';
 import MessageComposerIcon from './MessageComposerIcon';
 import MessageComposerInput from './MessageComposerInput';
 import MessageComposerInputExpandable from './MessageComposerInputExpandable';
-import MessageComposerInputNew from './MessageComposerInputNew';
 import MessageComposerSkeleton from './MessageComposerSkeleton';
 import MessageComposerToolbar from './MessageComposerToolbar';
 import MessageComposerToolbarActions from './MessageComposerToolbarActions';
 import MessageComposerToolbarSubmit from './MessageComposerToolbarSubmit';
+import RichTextComposerInput from './RichTextComposerInput';
 
 export {
 	MessageComposer,
@@ -25,7 +25,7 @@ export {
 	MessageComposerIcon,
 	MessageComposerHint,
 	MessageComposerButton,
-	MessageComposerInputNew,
+	RichTextComposerInput,
 };
 
 export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader, MessageComposerFileGroup } from './MessageComposerFile';

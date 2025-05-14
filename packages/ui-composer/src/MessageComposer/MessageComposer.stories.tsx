@@ -8,7 +8,7 @@ import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposerInput,
-	MessageComposerInputNew,
+	RichTextComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
@@ -76,7 +76,7 @@ export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () 
 export const _MessageComposerNew: StoryFn<typeof MessageComposer> = (args) => (
 	<MessageComposer>
 		<MessageComposerInput placeholder={args.placeholder || 'Placeholder text'} />
-		<MessageComposerInputNew placeholder='RealTimeEditor' />
+		<RichTextComposerInput placeholder='RealTimeEditor' />
 		<MessageComposerToolbar>
 			<MessageToolbarActions />
 			<MessageComposerToolbarSubmit>

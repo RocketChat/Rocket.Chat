@@ -3,7 +3,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-const messageComposerInputNewStyle = css`
+const RichTextComposerInputStyle = css`
 	resize: none;
 
 	&::placeholder {
@@ -11,13 +11,13 @@ const messageComposerInputNewStyle = css`
 	}
 `;
 
-type MessageComposerInputNewProps = ComponentProps<typeof Box>;
+type RichTextComposerInputProps = ComponentProps<typeof Box>;
 
-const MessageComposerInputNew = forwardRef<HTMLTextAreaElement, MessageComposerInputNewProps>(function MessageComposerInputNew(props, ref) {
+const RichTextComposerInput = forwardRef<HTMLTextAreaElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
 	return (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
-				className={[messageComposerInputNewStyle, 'rc-message-box__divcontenteditable js-input-message']}
+				className={[RichTextComposerInputStyle, 'rc-message-box__divcontenteditable js-input-message']}
 				color='default'
 				width='full'
 				minHeight={20}
@@ -37,4 +37,4 @@ const MessageComposerInputNew = forwardRef<HTMLTextAreaElement, MessageComposerI
 	);
 });
 
-export default MessageComposerInputNew;
+export default RichTextComposerInput;
