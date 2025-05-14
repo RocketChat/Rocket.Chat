@@ -196,15 +196,15 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
-      # - name: Cache Playwright binaries
-      #  if: inputs.type == 'ui'
-      #  uses: actions/cache@v4
-      #  id: cache-playwright
-      #  with:
-      #    path: |
-      #      ~/.cache/ms-playwright
+       - name: Cache Playwright binaries
+        if: inputs.type == 'ui'
+        uses: actions/cache@v4
+        id: cache-playwright
+        with:
+          path: |
+            ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-      #    key: playwright-1.48.2
+          key: playwright-1.52.0
 
       - name: Install Playwright
         if: inputs.type == 'ui' # && steps.cache-playwright.outputs.cache-hit != 'true'
