@@ -3,7 +3,7 @@
 "@rocket.chat/models": patch
 ---
 
-Deprecates the use of `oplog/change streams`.
+Deprecates the use of MongoDB oplog or Change Streams to receive real time data updates.
 
 The previous behavior can still be enabled using the environment flag `DISABLE_DB_WATCHERS=false`.
 
