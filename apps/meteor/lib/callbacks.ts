@@ -145,7 +145,6 @@ type ChainedCallbackSignatures = {
 		newDepartmentId: ILivechatDepartmentRecord['_id'];
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
-	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'livechat.afterRemoveDepartment': (params: {
 		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
 		agentsId: ILivechatAgent['_id'][];
@@ -182,7 +181,6 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
-	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
 	'livechat.onAgentAssignmentFailed': (
@@ -221,7 +219,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
