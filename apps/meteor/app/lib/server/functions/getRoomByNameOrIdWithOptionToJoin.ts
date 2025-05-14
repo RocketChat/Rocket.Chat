@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { isObject } from '../../../../lib/utils/isObject';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { addUserToRoom } from './addUserToRoom';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
 	user,
