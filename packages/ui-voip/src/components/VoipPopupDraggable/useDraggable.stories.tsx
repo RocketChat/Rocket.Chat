@@ -67,6 +67,7 @@ const DraggableBase = ({
 		<Box
 			display='block'
 			ref={boundingRef}
+			backgroundColor='gray'
 			id='bounding-box'
 			position='fixed'
 			width={boundingSize?.width ?? 'full'}
@@ -173,6 +174,25 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+const moveHelper = async (handle: HTMLElement, offset: { x: number; y: number }) => {
+	const handleRect = handle.getBoundingClientRect();
+	// Grab the middle of the handle
+	const startX = handleRect.left + handleRect.width / 2;
+	const startY = handleRect.top + handleRect.height / 2;
+
+	await fireEvent.pointerDown(handle, {
+		clientX: startX,
+		clientY: startY,
+	});
+
+	await fireEvent.pointerMove(document.documentElement, {
+		clientX: startX + offset.x,
+		clientY: startY + offset.y,
+	});
+
+	await fireEvent.pointerUp(document.documentElement);
+};
+
 export const DraggingBehavior: Story = {
 	...Default,
 	play: async ({ canvasElement, step }) => {
@@ -186,21 +206,8 @@ export const DraggingBehavior: Story = {
 			await expect(draggable).toBeInTheDocument();
 
 			const initialRect = draggable.getBoundingClientRect();
-			const handleRect = handle.getBoundingClientRect();
-			const startX = handleRect.left + handleRect.width / 2;
-			const startY = handleRect.top + handleRect.height / 2;
 
-			await fireEvent.pointerDown(handle, {
-				clientX: startX,
-				clientY: startY,
-			});
-
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: startX + 100,
-				clientY: startY + 100,
-			});
-
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: 100, y: 100 });
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
@@ -211,21 +218,10 @@ export const DraggingBehavior: Story = {
 
 		await step('should only allow dragging when using the handle element', async () => {
 			const draggable = await canvas.findByTestId('draggable-box');
+
 			const initialRect = draggable.getBoundingClientRect();
 
-			const draggableRect = draggable.getBoundingClientRect();
-			const startX = draggableRect.left + draggableRect.width / 2;
-			const startY = draggableRect.top + draggableRect.height / 2;
-
-			await fireEvent.pointerDown(draggable, {
-				clientX: startX,
-				clientY: startY,
-			});
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: startX + 100,
-				clientY: startY + 100,
-			});
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(draggable, { x: 100, y: 100 });
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
@@ -246,17 +242,7 @@ export const BoundingBehavior: Story = {
 			const draggable = await canvas.findByTestId('draggable-box');
 			const boundingBox = await canvas.findByTestId('bounding-box');
 
-			const handleRect = handle.getBoundingClientRect();
-			await fireEvent.pointerDown(handle, {
-				clientX: handleRect.left + handleRect.width / 2,
-				clientY: handleRect.top + handleRect.height / 2,
-			});
-
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: 0,
-				clientY: 0,
-			});
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: -500, y: -500 });
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
@@ -271,18 +257,7 @@ export const BoundingBehavior: Story = {
 			const draggable = await canvas.findByTestId('draggable-box');
 			const boundingBox = await canvas.findByTestId('bounding-box');
 
-			const handleRect = handle.getBoundingClientRect();
-			await fireEvent.pointerDown(handle, {
-				clientX: handleRect.left + handleRect.width / 2,
-				clientY: handleRect.top + handleRect.height / 2,
-			});
-
-			const boundingBoxRect = boundingBox.getBoundingClientRect();
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: boundingBoxRect.right + 200,
-				clientY: boundingBoxRect.bottom + 200,
-			});
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: BOUNDING_SIZE + 500, y: BOUNDING_SIZE + 500 });
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
@@ -297,24 +272,14 @@ export const BoundingBehavior: Story = {
 			const draggable = await canvas.findByTestId('draggable-box');
 			const boundingBox = (await canvas.findByTestId('bounding-box')) as HTMLElement;
 
-			const initialBoundingBoxRect = boundingBox.getBoundingClientRect();
-			const draggableInitialRect = draggable.getBoundingClientRect();
+			const initialRect = boundingBox.getBoundingClientRect();
 
-			const targetX = initialBoundingBoxRect.right - draggableInitialRect.width / 2;
-			const targetY = initialBoundingBoxRect.bottom - draggableInitialRect.height / 2;
-
-			const handleRect = handle.getBoundingClientRect();
-			await fireEvent.pointerDown(handle, {
-				clientX: handleRect.left + handleRect.width / 2,
-				clientY: handleRect.top + handleRect.height / 2,
-			});
-			await fireEvent.pointerMove(document.documentElement, { clientX: targetX, clientY: targetY });
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: BOUNDING_SIZE - initialRect.width, y: BOUNDING_SIZE - initialRect.height });
 
 			await waitFor(() => {
 				const rect = draggable.getBoundingClientRect();
-				expect(rect.right).toBeCloseTo(initialBoundingBoxRect.right, 0);
-				expect(rect.bottom).toBeCloseTo(initialBoundingBoxRect.bottom, 0);
+				expect(rect.right).toBeCloseTo(initialRect.right, 0);
+				expect(rect.bottom).toBeCloseTo(initialRect.bottom, 0);
 			});
 
 			window.dispatchEvent(new BoundingBoxResizeEvent(500, 500));
@@ -326,10 +291,8 @@ export const BoundingBehavior: Story = {
 				expect(newBoundingBoxRect.width).toBeCloseTo(500, 0);
 				expect(newBoundingBoxRect.height).toBeCloseTo(500, 0);
 
-				expect(finalRect.right).toBeLessThanOrEqual(newBoundingBoxRect.right + 1);
-				expect(finalRect.bottom).toBeLessThanOrEqual(newBoundingBoxRect.bottom + 1);
-				expect(finalRect.left).toBeGreaterThanOrEqual(newBoundingBoxRect.left - 1);
-				expect(finalRect.top).toBeGreaterThanOrEqual(newBoundingBoxRect.top - 1);
+				expect(finalRect.right).toBeCloseTo(newBoundingBoxRect.right, 0);
+				expect(finalRect.bottom).toBeCloseTo(newBoundingBoxRect.bottom, 0);
 			});
 		});
 	},
@@ -345,20 +308,8 @@ export const ElementUpdates: Story = {
 			const draggable = await canvas.findByTestId('draggable-box');
 
 			const initialRect = draggable.getBoundingClientRect();
-			const handleRect = handle.getBoundingClientRect();
 
-			const startX = handleRect.left + handleRect.width / 2;
-			const startY = handleRect.top + handleRect.height / 2;
-
-			await fireEvent.pointerDown(handle, {
-				clientX: startX,
-				clientY: startY,
-			});
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: startX + 50,
-				clientY: startY + 50,
-			});
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: 50, y: 50 });
 
 			let positionBeforeRerender: DOMRect = new DOMRect(0, 0, 0, 0);
 			await waitFor(() => {
@@ -376,7 +327,6 @@ export const ElementUpdates: Story = {
 			expect(positionAfterDrag.y).toBeCloseTo(positionBeforeRerender.y, 0);
 		});
 
-		// TODO: Fix positioning when draggable element resizes
 		await step("should maintain position but keep element within bounds if it's size changes", async () => {
 			const handle = await canvas.findByTestId('drag-handle');
 			const draggable = await canvas.findByTestId('draggable-box');
@@ -385,21 +335,8 @@ export const ElementUpdates: Story = {
 			await waitFor(() => new Promise((resolve) => setTimeout(resolve, DEFAULT_BOUNDING_ELEMENT_OPTIONS.resizeDebounce)));
 
 			const initialRect = draggable.getBoundingClientRect();
-			const handleRect = handle.getBoundingClientRect();
-			const startX = handleRect.left + handleRect.width / 2;
-			const startY = handleRect.top + handleRect.height / 2;
 
-			await fireEvent.pointerDown(handle, {
-				clientX: startX,
-				clientY: startY,
-			});
-
-			// move the elemnt to the edge of the bounding box
-			await fireEvent.pointerMove(document.documentElement, {
-				clientX: startX + (BOUNDING_SIZE - initialRect.width),
-				clientY: startY + (BOUNDING_SIZE - initialRect.height),
-			});
-			await fireEvent.pointerUp(document.documentElement);
+			await moveHelper(handle, { x: BOUNDING_SIZE - initialRect.width, y: BOUNDING_SIZE - initialRect.height });
 
 			let positionBeforeRerender: DOMRect = new DOMRect(0, 0, 0, 0);
 			await waitFor(() => {
