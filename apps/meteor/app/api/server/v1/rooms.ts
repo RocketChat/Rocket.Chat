@@ -15,9 +15,8 @@ import {
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { Meteor } from 'meteor/meteor';
-
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
@@ -374,23 +373,78 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.favorite',
-	{ authRequired: true },
 	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{
+			favorite: boolean;
+			roomId?: string;
+			roomName?: string;
+		}>({
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+				roomName: { type: 'string' },
+			},
+			required: ['favorite'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: ['false'],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'errorType', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					status: { type: 'string' },
+					message: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: ['false'],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['message', 'status', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function () {
+		const { favorite } = this.bodyParams;
+
+		if (!this.bodyParams.hasOwnProperty('favorite')) {
+			return API.v1.failure("The 'favorite' param is required");
+		}
+
+		const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+		await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+		return API.v1.success();
 	},
 );
 
