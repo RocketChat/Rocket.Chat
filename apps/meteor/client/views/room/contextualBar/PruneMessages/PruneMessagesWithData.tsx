@@ -99,7 +99,7 @@ const PruneMessagesWithData = (): ReactElement => {
 
 				dispatchToastMessage({
 					type: 'success',
-					message: attached ? t('__count__message_pruned', { count }) : t('__count__message_pruned', { count }),
+					message: attached ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
 				});
 				methods.reset();
 			} catch (error: unknown) {
