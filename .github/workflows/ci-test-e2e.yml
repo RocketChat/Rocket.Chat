@@ -253,7 +253,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
