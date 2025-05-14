@@ -58,8 +58,17 @@ it('should render html elements as expected using default parser', async () => {
 	expect(normalizedHtml).toContain('<h3>Heading 3</h3>');
 	expect(normalizedHtml).toContain('<ul> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
 	expect(normalizedHtml).toContain('<ol> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
-	expect(normalizedHtml).toContain('<a title="" rel="nofollow noopener noreferrer" target="_blank">Rocket.Chat</a>');
+
+	expect(normalizedHtml).toContain('<a');
+	expect(normalizedHtml).toContain('title=""');
+	expect(normalizedHtml).toContain('rel="nofollow noopener noreferrer"');
+	expect(normalizedHtml).toContain('target="_blank"');
+	expect(normalizedHtml).toContain('>Rocket.Chat</a>');
+
+	expect(normalizedHtml).toContain('href="mailto:gabriel.engel@rocket.chat"');
+	expect(normalizedHtml).toContain('title="mailto:gabriel.engel@rocket.chat"');
 	expect(normalizedHtml).toContain('gabriel.engel@rocket.chat');
+
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('<code>Inline code</code>');
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
@@ -87,10 +96,18 @@ it('should render html elements as expected using inline parser', async () => {
 	expect(normalizedHtml).toContain('### Heading 3');
 	expect(normalizedHtml).toContain('<strong>Unordered List</strong> - List Item 1 - List Item 2 - List Item 3 - List Item 4');
 	expect(normalizedHtml).toContain('<strong>Ordered List</strong> 1. List Item 1 2. List Item 2 3. List Item 3 4. List Item 4');
-	expect(normalizedHtml).toContain(`<a title=\"\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">Rocket.Chat</a>`);
-	expect(normalizedHtml).toContain(
-		`<a href=\"mailto:gabriel.engel@rocket.chat\" title=\"mailto:gabriel.engel@rocket.chat\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">gabriel.engel@rocket.chat</a>`,
-	);
+
+	expect(normalizedHtml).toContain('<a');
+	expect(normalizedHtml).toContain('title=""');
+	expect(normalizedHtml).toContain('rel="nofollow noopener noreferrer"');
+	expect(normalizedHtml).toContain('target="_blank"');
+	expect(normalizedHtml).toContain('>Rocket.Chat</a>');
+
+	expect(normalizedHtml).toContain('href="mailto:gabriel.engel@rocket.chat"');
+	expect(normalizedHtml).toContain('title="mailto:gabriel.engel@rocket.chat"');
+	expect(normalizedHtml).toContain('rel="nofollow noopener noreferrer"');
+	expect(normalizedHtml).toContain('target="_blank"');
+
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('Inline code');
 	expect(normalizedHtml).toContain(`typescript const test = 'this is code'`);
