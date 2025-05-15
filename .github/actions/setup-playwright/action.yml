@@ -7,6 +7,7 @@ runs:
     - name: Cache Playwright binaries
       uses: actions/cache@v4
       id: cache-playwright
+      shell: bash
       with:
         path: |
           ~/.cache/ms-playwright
@@ -14,6 +15,7 @@ runs:
         key: playwright-1.48.2
 
     - name: Install Playwright
+      shell: bash
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       working-directory: ./apps/meteor
       run: npx playwright install --with-deps
