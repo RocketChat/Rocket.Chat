@@ -42,6 +42,8 @@ jobs:
           name: turbo-build
           path: .turbo/cache
 
+      - uses: ./.github/actions/setup-playwright
+
       - name: Run tests
         run: yarn test-storybook
 
