@@ -14,10 +14,8 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]
 		},
-		"serve-storybook-ci": {
-			"dependsOn": ["build"]
-		},
-		"test-storybook-ci": {
+		"test-storybook": {
+			"dependsOn": ["build"],
 			"outputs": ["coverage/**"]
 		},
 		"testunit": {

@@ -42,19 +42,8 @@ jobs:
           name: turbo-build
           path: .turbo/cache
 
-      - name: Serve Storybook
-        run: yarn serve-storybook-ci
-
-      - name: Wait for Storybook to start up
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'http://localhost:6006/'
-          responseCode: '200'
-          timeout: 60000
-          interval: 1000
-
       - name: Run tests
-        run: yarn test-storybook-ci
+        run: yarn test-storybook
 
       - uses: codecov/codecov-action@v3
         with:
