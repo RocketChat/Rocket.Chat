@@ -28,6 +28,8 @@ import webSocketHandler from "../../../ws/client";
 
 const maxRoomsOpen = parseInt(getConfig("maxRoomsOpen")) || 5;
 
+const getSocketRoom = (rid) =>
+	rid.length === 34 ? `${rid}-${Meteor.userId()}` : rid;
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
 
@@ -87,7 +89,7 @@ export const RoomManager = new (function () {
 						const room = roomTypes.findRoom(type, name, user);
 
 						if (room != null) {
-							const handleMessage = (msg) => {						
+							const handleMessage = (msg) => {
 								// msgStream.on(record.rid, async (msg) => {
 								// Should not send message to room if room has not loaded all the current messages
 								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
@@ -99,9 +101,12 @@ export const RoomManager = new (function () {
 										{ rid: record.rid },
 										{ reactive: false }
 									);
-									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+									const isNew = !ChatMessage.findOne({
+										_id: msg._id,
+										temp: { $ne: true },
+									});
 									upsertMessage({ msg, subscription });
-						
+
 									msg.room = {
 										type,
 										name,
@@ -111,11 +116,13 @@ export const RoomManager = new (function () {
 										callbacks.run("streamNewMessage", msg);
 									}
 								}
-						
+
 								msg.name = room.name;
-								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+								Tracker.afterFlush(() =>
+									RoomManager.updateMentionsMarksOfRoom(typeName)
+								);
 								callbacks.run("streamMessage", msg);
-						
+
 								return fireGlobalEvent("new-message", msg);
 							};
 							record.rid = room._id;
@@ -123,10 +130,12 @@ export const RoomManager = new (function () {
 
 							if (record.streamActive !== true) {
 								record.streamActive = true;
-								webSocketHandler.emitToServer("streamMessages", { rid: room._id });
+								const socketRoom = getSocketRoom(room._id);
+
+								webSocketHandler.emitToServer("streamMessages", { socketRoom });
 								webSocketHandler.registerListener(
 									`streamMessages-${room._id}`,
-									 handleMessage
+									handleMessage
 								);
 								Notifications.onRoom(
 									record.rid,
@@ -178,8 +187,11 @@ export const RoomManager = new (function () {
 		close(typeName) {
 			if (openedRooms[typeName]) {
 				if (openedRooms[typeName].rid != null) {
-					webSocketHandler.removeListener(`streamMessages-${openedRooms[typeName].rid}`);
-					msgStream.removeAllListeners(openedRooms[typeName].rid);
+					const socketRoom = getSocketRoom(openedRooms[typeName].rid);
+					webSocketHandler.emitToServer("unStreamMessages", { socketRoom });
+					webSocketHandler.removeListener(`streamMessages-${openedRooms[typeName].rid }`);
+					
+					// msgStream.removeAllListeners(rid);
 					Notifications.unRoom(
 						openedRooms[typeName].rid,
 						"deleteMessage",
