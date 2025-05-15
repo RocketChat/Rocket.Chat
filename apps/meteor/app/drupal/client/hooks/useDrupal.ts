@@ -23,7 +23,7 @@ const config: OauthConfig = {
 	accessTokenParam: 'access_token',
 };
 
-const Drupal = new CustomOAuth('drupal', config);
+const Drupal = CustomOAuth.configureOAuthService('drupal', config);
 
 export const useDrupal = () => {
 	const drupalUrl = useSetting('API_Drupal_URL') as string;
