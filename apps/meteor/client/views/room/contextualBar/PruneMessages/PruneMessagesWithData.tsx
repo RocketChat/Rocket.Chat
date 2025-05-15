@@ -78,7 +78,7 @@ const PruneMessagesWithData = (): ReactElement => {
 					return;
 				}
 
-				const { count, filesOnly } = await pruneMessagesAction({
+				const { count } = await pruneMessagesAction({
 					roomId: room._id,
 					latest: toDate.toISOString(),
 					oldest: fromDate.toISOString(),
@@ -94,14 +94,13 @@ const PruneMessagesWithData = (): ReactElement => {
 				setCounter(count);
 
 				if (count < 1) {
-					throw new Error(filesOnly ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
+					throw new Error(attached ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
 				}
 
-				if (filesOnly) {
-					dispatchToastMessage({ type: 'success', message: t('__count__file_pruned', { count }) });
-				} else {
-					dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
-				}
+				dispatchToastMessage({
+					type: 'success',
+					message: attached ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
+				});
 				methods.reset();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
