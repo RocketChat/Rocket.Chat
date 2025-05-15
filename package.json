@@ -9,6 +9,8 @@
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"build:ci": "turbo run build:ci",
 		"testunit": "turbo run testunit",
+		"test-storybook-ci": "turbo run test-storybook-ci",
+		"serve-storybook-ci": "turbo run serve-storybook-ci",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
