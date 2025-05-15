@@ -318,8 +318,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await poHomeChannel.dismissToast();
-
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world');
@@ -362,8 +360,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await poHomeChannel.dismissToast();
-
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
 		await poHomeChannel.content.sendMessage('This is the thread main message.');
@@ -395,8 +391,6 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -449,8 +443,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await poHomeChannel.dismissToast();
-
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello @user1');
@@ -468,8 +460,6 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -492,8 +482,6 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -710,8 +698,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
-		await poHomeChannel.dismissToast();
-
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
 		await poHomeChannel.content.sendMessage('This is an encrypted message.');
@@ -752,8 +738,6 @@ test.describe.serial('e2e-encryption', () => {
 			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
-
-			await poHomeChannel.dismissToast();
 
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -820,8 +804,6 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -1114,8 +1096,6 @@ test.describe('e2ee support legacy formats', () => {
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
