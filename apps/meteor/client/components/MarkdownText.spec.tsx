@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { isExternal } from '@rocket.chat/ui-client';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import MarkdownText from './MarkdownText';
 
@@ -126,7 +126,6 @@ it('should render html elements as expected using inline parser', async () => {
 });
 
 describe('MarkdownText scheme handling', () => {
-	// Initial data describing each scheme and its specific properties
 	const schemesData = [
 		{ schemeName: 'http-ext', link: 'http://example.com' },
 		{ schemeName: 'https-ext', link: 'https://example.com' },
@@ -143,20 +142,32 @@ describe('MarkdownText scheme handling', () => {
 		{ schemeName: 'javascript-uri', link: "javascript:alert('XSS')", isRemoved: true },
 	];
 
-	// Process schemesData to pre-calculate all expected attributes
 	const testCases = schemesData.map(({ schemeName, link, explicitTitle, isRemoved }) => {
-		const isActuallyExternal = isExternal(link); // Uses mocked getBaseURI
+		const isActuallyExternal = isExternal(link);
 
 		let expectedTitleAttr: string | undefined = explicitTitle;
 		if (expectedTitleAttr === undefined) {
 			if (isRemoved) {
-				expectedTitleAttr = ''; // Removed/neutralized links get an empty title
+				expectedTitleAttr = '';
+			} else if (isActuallyExternal) {
+				expectedTitleAttr = '';
 			} else {
-				expectedTitleAttr = isActuallyExternal ? '' : 'Go_to_href';
+				expectedTitleAttr = 'Go_to_href';
 			}
 		}
 
 		const shouldHaveExternalRelTarget = isRemoved || isActuallyExternal || link.startsWith('mailto:');
+
+		let queryStrategy: { method: 'getByRole'; name: string | RegExp } | { method: 'getByText'; text: string | RegExp };
+
+		if (expectedTitleAttr && expectedTitleAttr !== '') {
+			queryStrategy = { method: 'getByRole', name: expectedTitleAttr };
+		} else if (link.startsWith('mailto:') && !expectedTitleAttr) {
+			queryStrategy = { method: 'getByRole', name: link };
+		} else {
+			// For links with empty titles or no specific title attribute, target by text content.
+			queryStrategy = { method: 'getByText', text: 'Test Link' };
+		}
 
 		return {
 			schemeName,
@@ -167,64 +178,83 @@ describe('MarkdownText scheme handling', () => {
 			expectedRel: shouldHaveExternalRelTarget ? 'nofollow noopener noreferrer' : undefined,
 			expectedTarget: shouldHaveExternalRelTarget ? '_blank' : undefined,
 			expectedTitleAttribute: expectedTitleAttr,
+			queryStrategy,
 		};
 	});
 
 	testCases.forEach((tc) => {
-		it(`should ${tc.isRemoved ? 'handle' : 'correctly process'} ${tc.schemeName} links (isExternal returned: ${
-			tc.isActuallyExternal
-		})`, () => {
+		it(`should ${tc.isRemoved ? 'handle' : 'correctly process'} ${tc.schemeName} links (isExternal returned: ${tc.isActuallyExternal})`, () => {
 			const markdownContent = `[Test Link](${tc.link})`;
-			const { container } = render(<MarkdownText content={markdownContent} variant='document' />, {
+			render(<MarkdownText content={markdownContent} variant='document' />, {
 				wrapper: mockAppRoot().build(),
 			});
 
-			const anchor = container.querySelector('a');
-			expect(anchor).not.toBeNull();
-			if (!anchor) return; // Type guard
+			let anchorElement: HTMLElement;
+			if (tc.queryStrategy.method === 'getByRole') {
+				anchorElement = screen.getByRole('link', { name: tc.queryStrategy.name });
+			} else {
+				// tc.queryStrategy.method === 'getByText'
+				const elementWithText = screen.getByText(tc.queryStrategy.text);
+				if (elementWithText.tagName === 'A') {
+					anchorElement = elementWithText;
+				} else {
+					const parentAnchor = elementWithText.closest('a');
+					if (!parentAnchor) {
+						// This case should ideally not happen if markdown `[Text](link)` is parsed correctly to an anchor.
+						// If it does, it indicates a deeper issue or a test case where text isn't in an anchor.
+						throw new Error(`Query by text found "${tc.queryStrategy.text}", but it is not within an anchor tag.`);
+					}
+					anchorElement = parentAnchor;
+				}
+			}
+
+			expect(anchorElement).toBeInTheDocument();
+			expect(anchorElement.tagName).toBe('A');
 
 			// Assert href
 			if (tc.isRemoved) {
-				const hrefAttr = anchor.getAttribute('href');
+				// eslint-disable-next-line testing-library/no-node-access -- Need to check href value against multiple possibilities for sanitized links
+				const currentHref = anchorElement.getAttribute('href');
 				if (tc.link.startsWith('javascript:')) {
-					expect(hrefAttr === null || hrefAttr === '#' || !hrefAttr.startsWith('javascript:')).toBe(true);
+					// For JS links, ensure href is neutralized (null, '#', or non-JS)
+					expect(
+						currentHref === null || // Stripped completely
+							currentHref === '#' || // Commonly neutralized to #
+							!currentHref.startsWith('javascript:'), // Original but non-functional due to other attributes or browser measures
+					).toBe(true);
+				} else if (tc.schemeName === 'internal-relative') {
+					// Internal relative links are expected to have their href attribute removed by DOMPurify
+					expect(anchorElement).not.toHaveAttribute('href');
 				} else {
-					// For other 'invalid' or neutralized (like internal-relative) schemes.
-					// Expect href to be null (absent), '#', or the original link if DOMPurify didn't strip it.
-					expect(hrefAttr === null || hrefAttr === '#' || hrefAttr === tc.link).toBe(true);
+					// For other removed links (e.g., invalid-scheme), href might be original, '#', or null.
+					expect(
+						currentHref === tc.link || // Left as is
+							currentHref === '#' || // Neutralized to #
+							currentHref === null, // Stripped
+					).toBe(true);
 				}
 			} else {
-				// This 'else' block is for links that are not 'isRemoved'
-				expect(anchor.getAttribute('href')).toBe(tc.expectedHref);
+				expect(anchorElement).toHaveAttribute('href', tc.expectedHref);
 			}
 
 			// Assert rel
 			if (tc.expectedRel) {
-				expect(anchor.getAttribute('rel')).toBe(tc.expectedRel);
+				expect(anchorElement).toHaveAttribute('rel', tc.expectedRel);
 			} else {
-				expect(anchor.hasAttribute('rel')).toBe(false);
+				expect(anchorElement).not.toHaveAttribute('rel');
 			}
 
 			// Assert target
 			if (tc.expectedTarget) {
-				expect(anchor.getAttribute('target')).toBe(tc.expectedTarget);
+				expect(anchorElement).toHaveAttribute('target', tc.expectedTarget);
 			} else {
-				expect(anchor.hasAttribute('target')).toBe(false);
+				expect(anchorElement).not.toHaveAttribute('target');
 			}
 
-			// Assert title
-			if (tc.expectedTitleAttribute === 'Go_to_href') {
-				// For internal links where title is a translation key
-				expect(anchor.hasAttribute('title')).toBe(true);
-				expect(anchor.getAttribute('title')).toBe('Go_to_href');
-			} else if (tc.expectedTitleAttribute !== undefined) {
-				expect(anchor.getAttribute('title')).toBe(tc.expectedTitleAttribute);
-			} else {
-				// This case should ideally not be hit if expectedTitleAttribute is always defined by the mapping logic
-				expect(anchor.hasAttribute('title')).toBe(false);
-			}
+			// Assert title - tc.expectedTitleAttribute is always a string ('' or a specific title)
+			expect(anchorElement).toHaveAttribute('title', tc.expectedTitleAttribute);
 
-			expect(anchor.textContent).toBe('Test Link');
+			expect(anchorElement).toHaveTextContent('Test Link');
 		});
 	});
 });
