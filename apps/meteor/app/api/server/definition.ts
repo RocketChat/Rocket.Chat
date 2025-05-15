@@ -150,9 +150,11 @@ export type PartialThis = {
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
 	readonly logger: Logger;
+	readonly route: string;
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
