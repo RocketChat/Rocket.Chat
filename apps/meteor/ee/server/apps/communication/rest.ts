@@ -233,7 +233,7 @@ export class AppsRestApi {
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						try {
 							const apps = await fetchMarketplaceApps();
@@ -257,7 +257,7 @@ export class AppsRestApi {
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
 						try {
 							const categories = await fetchMarketplaceCategories();
 							return API.v1.success(categories);
@@ -286,7 +286,7 @@ export class AppsRestApi {
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -308,7 +308,7 @@ export class AppsRestApi {
 							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
-					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
+					apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
 					const proxiedApps = await manager.get();
 					const apps = await Promise.all(proxiedApps.map((app) => formatAppInstanceForRest(app)));
