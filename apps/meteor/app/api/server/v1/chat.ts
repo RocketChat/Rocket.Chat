@@ -173,25 +173,26 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'chat.pinMessage',
-	{ authRequired: true, validateParams: isChatPinMessageProps },
 	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
+		authRequired: true,
+		validateParams: isChatPinMessageProps,
+	},
+	async function () {
+		const msg = await Messages.findOneById(this.bodyParams.messageId);
 
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
 
-			const pinnedMessage = await pinMessage(msg, this.userId);
+		const pinnedMessage = await pinMessage(msg, this.userId);
 
-			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
+		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
-			return API.v1.success({
-				message,
-			});
-		},
+		return API.v1.success({
+			message,
+		});
 	},
 );
 
