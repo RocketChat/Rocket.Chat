@@ -1,3 +1,4 @@
+// TODO: Change the Selection API to support rich text as the current version may support flat text only.
 /* Use Selection API to get the selectionStart and selectionEnd from contenteditable div */
 export const getSelectionRange = (input: HTMLDivElement): { selectionStart: number; selectionEnd: number } => {
 	const selection = window.getSelection();
