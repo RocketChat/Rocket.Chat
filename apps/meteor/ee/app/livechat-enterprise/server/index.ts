@@ -35,6 +35,7 @@ await License.onLicense('livechat-enterprise', async () => {
 	await import('./startup');
 	const { createPermissions } = await import('./permissions');
 	const { createSettings } = await import('./settings');
+	await import('./lib/unit');
 
 	Meteor.startup(() => {
 		void createSettings();
