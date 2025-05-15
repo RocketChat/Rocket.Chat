@@ -27,7 +27,7 @@ export const honoAdapter = (hono: Hono) => async (expressReq: Request, res: Resp
 	honoRes.headers.forEach((value, key) => res.setHeader(key, value));
 
 	if (!honoRes.body) {
-		res.send();
+		res.end();
 		return;
 	}
 
