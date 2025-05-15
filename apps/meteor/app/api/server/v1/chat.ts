@@ -178,6 +178,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		validateParams: isChatPinMessageProps,
+		body: isChatPinMessageProps,
 	},
 	async function () {
 		const msg = await Messages.findOneById(this.bodyParams.messageId);
