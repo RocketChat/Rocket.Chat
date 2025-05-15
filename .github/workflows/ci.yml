@@ -431,6 +431,7 @@ jobs:
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

@@ -5,6 +5,10 @@ on:
     inputs:
       node-version:
         required: true
+        type: string
+      deno-version:
+        required: true
+        type: string
 
     secrets:
       CODECOV_TOKEN:
