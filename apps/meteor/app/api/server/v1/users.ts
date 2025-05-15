@@ -890,33 +890,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			// const options = await generateRegistrationOptions({
-			// 	rpName: 'WebAuthn Demo',
-			// 	rpID: 'localhost',
-			// 	userID: this.user.id,
-			// 	userName: this.user.username,
-			// 	attestationType: 'none',
-			// 	excludeCredentials: this.user.credentials?.map((cred) => ({
-			// 		id: cred.id,
-			// 		type: 'public-key',
-			// 		transports: cred.transports,
-			// 	})),
-			// 	authenticatorSelection: {
-			// 		residentKey: 'discouraged',
-			// 		userVerification: 'preferred',
-			// 	},
-			// 	supportedAlgorithmIDs: [-7, -257],
-			// });
-			//
-			// await Users.updateOne(
-			// 	{ _id: this.userId },
-			// 	{
-			// 		$set: {
-			// 			'challenge': options.challenge,
-			// 		},
-			// 	},
-			// )
-
+			console.log(this.user.passkeys);
 			const result = await passkey.generateRegistrationOptions(this.user)
 			return API.v1.success(result);
 		},
@@ -928,47 +902,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			// const { id, registrationResponse } = this.bodyParams
-			// const expectedChallenge = idAndChallenge[id];
-			// delete idAndChallenge[id]
-			//
-			// let verification: VerifiedRegistrationResponse
-			// try {
-			// 	verification = await verifyRegistrationResponse({
-			// 		response: registrationResponse,
-			// 		expectedChallenge: expectedChallenge,
-			// 		expectedOrigin: 'http://localhost:3000',
-			// 		expectedRPID: 'localhost',
-			// 		requireUserVerification: false,
-			// 	});
-			// } catch (error) {
-			// 	return API.v1.failure(error.message)
-			// }
-			//
-			// if (!verification.verified) {
-			// 	return API.v1.failure("verification failed")
-			// }
-			//
-			// let credentials
-			// const user = await Users.findOneById(this.userId)
-			// if (user.credentials !== undefined)
-			// 	credentials = user.credentials
-			// else
-			// 	credentials = []
-			// const credential = verification.registrationInfo!.credential;
-			// const existingCredential = credentials.find((cred) => cred.id === credential.id);
-			//
-			// if (!existingCredential) { // TODO unnecessary? Registered devices cannot choose to register in the first place, but this judgment exists in SimpleWebAuthn's sample
-			// 	credentials.push(credential);
-			// 	await Users.updateOne({ _id: this.userId },
-			// 		{
-			// 			$set: {
-			// 				'credentials': credentials,
-			// 			},
-			// 		},
-			// 	)
-			// }
-
 			await passkey.verifyRegistrationResponse(this.user, this.bodyParams.id, this.bodyParams.registrationResponse)
 			return API.v1.success();
 		},
@@ -980,92 +913,58 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			// const options = await generateAuthenticationOptions({
-			// 	timeout: 60000,
-			// 	// allowCredentials: user.credentials.map((cred) => ({
-			// 	// 	id: cred.credentialId,
-			// 	// 	type: 'public-key',
-			// 	// 	transports: cred.transports,
-			// 	// })),
-			// 	userVerification: 'preferred',
-			// 	rpID: 'localhost',
-			// });
-			//
-			// let id;
-			// do {
-			// 	id = Random.id()
-			// } while(idAndChallenge[id])
-			// idAndChallenge[id] = options.challenge
-
 			const result = await passkey.generateAuthenticationOptions()
 			return API.v1.success(result);
 		},
 	},
 );
 
-// API.v1.addRoute(
-// 	'users.verifyAuthenticationResponse',
-// 	{ authRequired: true },
-// 	{
-// 		async post() {
-// 			// const {id, authenticationResponse } = this.bodyParams
-// 			// const expectedChallenge = idAndChallenge[id];
-// 			// delete idAndChallenge[id]
-// 			// // user是谁?
-// 			// const user = await Users.findOne({ credentials: { $elemMatch: { id: authenticationResponse.id } } })
-// 			// if (!user)
-// 			// 	throw new Meteor.Error('Authenticator is not registered with this site');
-// 			// const credential = user.credentials.find(cred => cred.id = authenticationResponse.id)
-// 			// credential.publicKey = credential.publicKey.buffer
-// 			//
-// 			// let verification: VerifiedAuthenticationResponse
-// 			// try {
-// 			// 	verification = await verifyAuthenticationResponse({
-// 			// 		response: authenticationResponse,
-// 			// 		expectedChallenge: expectedChallenge,
-// 			// 		expectedOrigin: 'http://localhost:3000',
-// 			// 		expectedRPID: 'localhost',
-// 			// 		credential,
-// 			// 		requireUserVerification: false,
-// 			// 	});
-// 			// } catch (error) {
-// 			// 	throw new Meteor.Error("verification error", error.message);
-// 			// }
-// 			//
-// 			// if (!verification.verified) {
-// 			// 	throw new Meteor.Error("verification failed");
-// 			// }
-// 			//
-// 			// await Users.updateOne(
-// 			// 	{ _id: user._id, credentials: { $elemMatch: { id: authenticationResponse.id } } },
-// 			// 	{
-// 			// 		$set: {
-// 			// 			'credentials.$.count': verification.authenticationInfo.newCounter,
-// 			// 		},
-// 			// 	},
-// 			// )
-//
-// 		},
-// 	},
-// );
+API.v1.addRoute(
+	'users.findPasskeys',
+	{ authRequired: true },
+	{
+		async get() {
+			const passkeys = await passkey.findPasskeys(this.userId)
+			return API.v1.success({ passkeys });
+		},
+	},
+);
 
-// API.v1.addRoute(
-// 	'users.deletePasskey',
-// 	{ authRequired: true, twoFactorRequired: true },
-// 	{
-// 		async post() {
-// 			const { tokenName } = this.bodyParams;
-// 			if (!tokenName) {
-// 				return API.v1.failure("The 'tokenName' param is required");
-// 			}
-// 			await Meteor.callAsync('personalAccessTokens:removeToken', {
-// 				tokenName,
-// 			});
-//
-// 			return API.v1.success();
-// 		},
-// 	},
-// );
+API.v1.addRoute(
+	'users.editPasskey',
+	{ authRequired: true },
+	{
+		async put() {
+			// const { tokenName } = this.bodyParams;
+			// if (!tokenName) {
+			// 	return API.v1.failure("The 'tokenName' param is required");
+			// }
+
+			console.log(this);
+			console.log(this.bodyParams);
+			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name)
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.deletePasskey',
+	{ authRequired: true },
+	{
+		async delete() {
+			// const { tokenName } = this.bodyParams;
+			// if (!tokenName) {
+			// 	return API.v1.failure("The 'tokenName' param is required");
+			// }
+
+			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId)
+
+			return API.v1.success();
+		},
+	},
+);
 
 API.v1.addRoute(
 	'users.2fa.enableEmail',

@@ -8,6 +8,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	Passkey,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -16,21 +17,20 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Collection,
 	Db,
+	Document,
 	Filter,
+	FindCursor,
+	FindOneAndUpdateOptions,
 	FindOptions,
 	IndexDescription,
-	Document,
+	SortDirection,
 	UpdateFilter,
 	UpdateOptions,
-	FindCursor,
-	SortDirection,
 	UpdateResult,
-	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
-import { WebAuthnCredential } from '@simplewebauthn/server';
 
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
 	statusLivechat: 'available',
@@ -3391,7 +3391,39 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	setPasskeys(userId: IUser['_id'], passkeys: WebAuthnCredential) {
+	async findPasskeysByUserId(userId: IUser['_id']) {
+		const query = {
+			_id: userId
+		};
+
+		const options = {
+			projection: {
+				passkeys: 1,
+			},
+		};
+
+		const user = await this.findOne(query, options)
+		return user?.passkeys;
+	}
+
+	async findPasskeysByUserIdForUser(userId: IUser['_id']) {
+		const query = {
+			_id: userId
+		};
+
+		const options = {
+			projection: {
+				'passkeys.id': 1,
+				'passkeys.name': 1,
+				'passkeys.datetime': 1,
+			},
+		};
+
+		const user = await this.findOne(query, options)
+		return user?.passkeys;
+	}
+
+	async setPasskeys(userId: IUser['_id'], passkeys: Passkey[]) {
 		const query = {
 			_id: userId,
 		};
@@ -3402,10 +3434,39 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.updateOne(query, update);
+		return await this.updateOne(query, update);
 	}
 
-	updatePasskeyCounter(userId: IUser['_id'], passkeyId: string, newCounter: number) {
+	async updatePasskey(userId: IUser['_id'], passkeyId: Passkey['id'], newName: string) {
+		const query = {
+			_id: userId,
+			passkeys: { $elemMatch: { id: passkeyId } }
+		};
+
+		const update = {
+			$set: {
+				'passkeys.$.name': newName,
+			},
+		};
+
+		return await this.updateOne(query, update);
+	}
+
+	async deletePasskey(userId: IUser['_id'], passkeyId: Passkey['id']) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$pull: {
+				passkeys: { id: passkeyId },
+			},
+		};
+
+		return await this.updateOne(query, update);
+	}
+
+	async updatePasskeyCounter(userId: IUser['_id'], passkeyId: Passkey['id'], newCounter: Passkey['counter']) {
 		const query =
 				{ _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
 
@@ -3415,6 +3476,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return this.updateOne(query, update);
+		return await this.updateOne(query, update);
 	}
 }

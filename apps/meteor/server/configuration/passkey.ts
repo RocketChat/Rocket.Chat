@@ -12,16 +12,14 @@ import { passkey } from '/app/passkey/server';
 import { API } from '/app/api/server';
 import { ICachedSettings } from '/app/settings/server/CachedSettings';
 
-export async function configurePasskey(setting: ICachedSettings) {
+export async function configurePasskey(setting: ICachedSettings) { // TODO fzh075 setting
 	// const _updateCasServices = debounce(updateCasServices, 2000);
 	//
 	// settings.watchByRegex(/^CAS_.+/, async () => {
 	// 	await _updateCasServices();
 	// });
-
 // 	TODO: Fix registerLoginHandler's type definitions (it accepts promises) (The same problem occurs in Rocket.Chat/apps/meteor/server/configuration/cas.ts)
 	Accounts.registerLoginHandler("passkey", async (loginRequest) => {
-		console.log(loginRequest);
 		if (!loginRequest.id || !loginRequest.authenticationResponse) {
 			return undefined;
 		}

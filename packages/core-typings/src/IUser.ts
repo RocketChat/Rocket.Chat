@@ -2,6 +2,7 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
 import type { Serialized } from './Serialized';
 import type { UserStatus } from './UserStatus';
+import { WebAuthnCredential } from '@simplewebauthn/server';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -157,6 +158,11 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
+export type Passkey = WebAuthnCredential & { // TODO fzh075 Should the position be changed?
+	name?: string;
+	createTime?: number;
+}
+
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
@@ -223,6 +229,7 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	passkeys?: Passkey[];
 }
 
 export interface IRegisterUser extends IUser {
