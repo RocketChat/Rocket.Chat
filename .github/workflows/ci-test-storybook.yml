@@ -24,6 +24,7 @@ jobs:
     name: Test Storybook
     
     steps:
+      - uses: actions/checkout@v4
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:

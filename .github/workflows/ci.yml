@@ -427,9 +427,7 @@ jobs:
   test-storybook:
     name: 🔨 Test Storybook
     needs: [packages-build, release-versions]
-
-    uses: actions/checkout@v4
-
+  
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
