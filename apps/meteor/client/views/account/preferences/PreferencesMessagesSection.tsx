@@ -48,7 +48,7 @@ const PreferencesMessagesSection = () => {
 							name='unreadAlert'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={unreadAlertId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={unreadAlertId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -61,6 +61,7 @@ const PreferencesMessagesSection = () => {
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
 								<ToggleSwitch
+									is='div'
 									aria-describedby={`${showThreadsInMainChannelId}-hint`}
 									id={showThreadsInMainChannelId}
 									ref={ref}
@@ -106,7 +107,7 @@ const PreferencesMessagesSection = () => {
 							name='useEmojis'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={useEmojisId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={useEmojisId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -118,7 +119,7 @@ const PreferencesMessagesSection = () => {
 							name='convertAsciiEmoji'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={convertAsciiEmojiId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={convertAsciiEmojiId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -130,7 +131,7 @@ const PreferencesMessagesSection = () => {
 							name='autoImageLoad'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={autoImageLoadId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={autoImageLoadId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -142,7 +143,7 @@ const PreferencesMessagesSection = () => {
 							name='saveMobileBandwidth'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={saveMobileBandwidthId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={saveMobileBandwidthId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -154,7 +155,7 @@ const PreferencesMessagesSection = () => {
 							name='collapseMediaByDefault'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={collapseMediaByDefaultId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={collapseMediaByDefaultId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -174,7 +175,7 @@ const PreferencesMessagesSection = () => {
 							name='hideFlexTab'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={hideFlexTabId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={hideFlexTabId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -186,7 +187,7 @@ const PreferencesMessagesSection = () => {
 							name='displayAvatars'
 							control={control}
 							render={({ field: { value, onChange, ref } }) => (
-								<ToggleSwitch id={displayAvatarsId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={displayAvatarsId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>

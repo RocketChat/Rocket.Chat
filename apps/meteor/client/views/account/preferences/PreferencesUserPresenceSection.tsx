@@ -20,7 +20,7 @@ const PreferencesUserPresenceSection = () => {
 							name='enableAutoAway'
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
-								<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>

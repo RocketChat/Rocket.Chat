@@ -143,7 +143,7 @@ const PreferencesSoundSection = () => {
 							name='muteFocusedConversations'
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
-								<ToggleSwitch id={muteFocusedConversationsId} ref={ref} checked={value} onChange={onChange} />
+								<ToggleSwitch is='div' id={muteFocusedConversationsId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
