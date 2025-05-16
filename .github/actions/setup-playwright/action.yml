@@ -7,7 +7,6 @@ runs:
     - name: Cache Playwright binaries
       uses: actions/cache@v4
       id: cache-playwright
-      shell: bash
       with:
         path: |
           ~/.cache/ms-playwright
