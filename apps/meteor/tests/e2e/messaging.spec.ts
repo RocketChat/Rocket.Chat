@@ -147,10 +147,10 @@ test.describe('Messaging', () => {
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
-				text: 'Hello world',
+				text: 'Message from chat.postMessage',
 			});
 
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Hello world');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message from chat.postMessage');
 		});
 
 		test('expect show attachment text', async ({ api }) => {
