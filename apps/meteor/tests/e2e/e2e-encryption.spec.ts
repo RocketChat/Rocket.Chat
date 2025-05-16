@@ -8,6 +8,20 @@ import { Users, storeState, restoreState } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 
+const testMessages = {
+	encrypted: 'This is an encrypted message.',
+	unencrypted: 'This is an unencrypted message.',
+	helloWorld: 'hello world',
+	helloWorldNotEncrypted: 'hello world not encrypted',
+	helloWorldEncryptedAgain: 'hello world encrypted again',
+	threadMain: 'This is the thread main message.',
+	helloUser: 'hello @user1',
+	generalChannel: 'Are you in the #general channel?',
+	generalChannelWithUser: 'Are you in the #general channel, @user1 ?',
+	fileDescription: 'any_description',
+	fileName: 'any_file1.txt',
+};
+
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('e2e-encryption initial setup', () => {
@@ -106,6 +120,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
+		await poHomeChannel.btnNotPossibleDecodeKey.waitFor();
 		await poHomeChannel.btnNotPossibleDecodeKey.click();
 
 		await page.locator('#modal-root input').fill(newPassword);
@@ -129,9 +144,9 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+		await poHomeChannel.content.sendMessage(testMessages.encrypted);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.encrypted);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		// Logout and login
@@ -165,14 +180,14 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await poHomeChannel.sidenav.openChat(channelName);
 
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.descriptionInput.fill('any_description');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.descriptionInput.fill(testMessages.fileDescription);
+		await poHomeChannel.content.fileNameInput.fill(testMessages.fileName);
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.getFileDescription).toHaveText(testMessages.fileDescription);
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText(testMessages.fileName);
 
 		await test.step('disable E2EE in the room', async () => {
 			await poHomeChannel.tabs.kebab.click();
@@ -192,14 +207,14 @@ test.describe.serial('e2e-encryption initial setup', () => {
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
 
 			await poHomeChannel.content.dragAndDropTxtFile();
-			await poHomeChannel.content.descriptionInput.fill('any_description');
-			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			await poHomeChannel.content.descriptionInput.fill(testMessages.fileDescription);
+			await poHomeChannel.content.fileNameInput.fill(testMessages.fileName);
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
-			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			await expect(poHomeChannel.content.getFileDescription).toHaveText(testMessages.fileDescription);
+			await expect(poHomeChannel.content.lastMessageFileName).toContainText(testMessages.fileName);
 		});
 
 		await test.step('Enable E2EE in the room', async () => {
@@ -279,9 +294,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('hello world');
+		await poHomeChannel.content.sendMessage(testMessages.helloWorld);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.helloWorld);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
@@ -293,9 +308,9 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
-		await poHomeChannel.content.sendMessage('hello world not encrypted');
+		await poHomeChannel.content.sendMessage(testMessages.helloWorldNotEncrypted);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world not encrypted');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.helloWorldNotEncrypted);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
@@ -306,9 +321,9 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
-		await poHomeChannel.content.sendMessage('hello world encrypted again');
+		await poHomeChannel.content.sendMessage(testMessages.helloWorldEncryptedAgain);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world encrypted again');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.helloWorldEncryptedAgain);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
@@ -323,9 +338,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('This is the thread main message.');
+		await poHomeChannel.content.sendMessage(testMessages.threadMain);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is the thread main message.');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.threadMain);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await page.locator('[data-qa-type="message"]').last().hover();
@@ -333,7 +348,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(/.*thread/);
 
-		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
+		await expect(poHomeChannel.content.mainThreadMessageText).toContainText(testMessages.threadMain);
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
@@ -342,7 +357,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is an encrypted thread message also sent in channel');
 		await expect(poHomeChannel.content.lastThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is an encrypted thread message also sent in channel');
-		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
+		await expect(poHomeChannel.content.mainThreadMessageText).toContainText(testMessages.threadMain);
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
@@ -357,9 +372,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+		await poHomeChannel.content.sendMessage(testMessages.encrypted);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.encrypted);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await page.locator('[data-qa-type="message"]').last().hover();
@@ -393,9 +408,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('hello world');
+		await poHomeChannel.content.sendMessage(testMessages.helloWorld);
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(testMessages.helloWorld);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
@@ -410,7 +425,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('hello @user1');
+		await poHomeChannel.content.sendMessage(testMessages.helloUser);
 
 		const userMention = await page.getByRole('button', {
 			name: 'user1',
@@ -430,7 +445,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('Are you in the #general channel?');
+		await poHomeChannel.content.sendMessage(testMessages.generalChannel);
 
 		const channelMention = await page.getByRole('button', {
 			name: 'general',
@@ -454,7 +469,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
+		await poHomeChannel.content.sendMessage(testMessages.generalChannelWithUser);
 
 		const channelMention = await page.getByRole('button', {
 			name: 'general',
@@ -541,13 +556,13 @@ test.describe.serial('e2e-encryption', () => {
 
 			await test.step('send a file in channel', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('any_description');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				await poHomeChannel.content.descriptionInput.fill(testMessages.fileDescription);
+				await poHomeChannel.content.fileNameInput.fill(testMessages.fileName);
 				await poHomeChannel.content.btnModalConfirm.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
-				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.getFileDescription).toHaveText(testMessages.fileDescription);
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText(testMessages.fileName);
 			});
 		});
 
