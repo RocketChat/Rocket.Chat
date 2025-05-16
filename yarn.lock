@@ -5585,17 +5585,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.52.0":
-  version: 1.52.0
-  resolution: "@playwright/test@npm:1.52.0"
-  dependencies:
-    playwright: "npm:1.52.0"
-  bin:
-    playwright: cli.js
-  checksum: 10/e18a4eb626c7bc6cba212ff2e197cf9ae2e4da1c91bfdf08a744d62e27222751173e4b220fa27da72286a89a3b4dea7c09daf384d23708f284b64f98e9a63a88
-  languageName: node
-  linkType: hard
-
 "@polka/url@npm:^0.5.0":
   version: 0.5.0
   resolution: "@polka/url@npm:0.5.0"
@@ -8419,7 +8408,7 @@ __metadata:
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.7.2"
   peerDependencies:
-    "@rocket.chat/apps-engine": 1.51.0-rc.0
+    "@rocket.chat/apps-engine": 1.51.0
     "@rocket.chat/eslint-config": 0.7.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -10023,7 +10012,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:~7.26.0"
     "@faker-js/faker": "npm:~8.0.2"
-    "@playwright/test": "npm:^1.52.0"
+    "@playwright/test": "npm:^1.48.2"
     "@react-spectrum/test-utils": "npm:~1.0.0-alpha.2"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
@@ -30503,7 +30492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright@npm:1.52.0, playwright@npm:^1.14.0":
+"playwright@npm:^1.14.0":
   version: 1.52.0
   resolution: "playwright@npm:1.52.0"
   dependencies:
