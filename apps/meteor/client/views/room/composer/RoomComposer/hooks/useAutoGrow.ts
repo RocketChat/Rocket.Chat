@@ -2,6 +2,13 @@ import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
 import { useCallback } from 'react';
 
+function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
+	const isCursorAtBottom = textarea.selectionEnd === textarea.value.length;
+	const isScrolledToBottom = textarea.scrollTop + textarea.clientHeight === textarea.scrollHeight;
+
+	return isCursorAtBottom || isScrolledToBottom;
+}
+
 export const useAutoGrow = (
 	ref: MutableRefObject<HTMLTextAreaElement | null>,
 	hideTextArea?: boolean,
@@ -19,10 +26,12 @@ export const useAutoGrow = (
 				ref.current = node;
 
 				const resize = () => {
+					const shouldScroll = shouldScrollToBottom(node);
+
 					node.style.height = '0';
 					node.style.height = `${node.scrollHeight}px`;
 
-					if (node.scrollHeight > node.clientHeight) {
+					if (shouldScroll) {
 						node.scrollTop = node.scrollHeight;
 					}
 				};
