@@ -128,6 +128,29 @@ const RichTextMessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
+	// We store the last known cursor position for each contenteditable div using a WeakMap keyed by the element.
+	// This allows us to restore the caret position when the user refocuses the editor,
+	// preventing the cursor from jumping to the start and improving typing experience in multiple composer instances.
+	const cursorMap = new WeakMap<HTMLElement, number>();
+
+	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
+		const node = e.currentTarget as HTMLDivElement;
+		const { selectionStart } = getSelectionRange(node);
+		cursorMap.set(node, selectionStart);
+		console.log('Saved cursor position for:', node, selectionStart);
+	};
+
+	const getLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
+		const node = e.currentTarget as HTMLDivElement;
+		const savedPosition = cursorMap.get(node);
+		if (savedPosition === undefined) return; // no saved cursor position
+
+		// Use the same value for start and end to place caret at a single point
+		setSelectionRange(node, savedPosition, savedPosition);
+
+		console.log('Restored cursor position for:', node, savedPosition);
+	};
+
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
 
 	/* NEW: contenteditableRef */
@@ -429,6 +452,8 @@ const RichTextMessageBox = ({
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					onBlur={setLastCursorPosition}
+					onFocus={getLastCursorPosition}
 				/>
 				<div ref={shadowRef} /* style={shadowStyle} */ />
 				<MessageComposerToolbar>
