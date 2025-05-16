@@ -76,7 +76,7 @@ export const useAgentsList = (
 
 			return {
 				items,
-				itemCount: total + 1,
+				itemCount: total,
 			};
 		},
 		[excludeId, getAgents, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents, t, text],
