@@ -57,9 +57,8 @@ const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancem
       const res = await fetch('api/enhance', {
         method: 'POST',
         headers: {
-					'Content-Type': 'application/json',
-					'Authorization': '--Bearer YOUR_API_KEY--',
-				},
+			'Content-Type': 'application/json',
+		},
         body: JSON.stringify(payload)
       });
       const data = await res.json();
