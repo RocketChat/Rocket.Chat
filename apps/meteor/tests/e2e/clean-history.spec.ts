@@ -34,7 +34,7 @@ test.describe('clean-history', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		await api.post('/channels.delete', { roomName: targetChannel });
+		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
 	test('should prune messages with files', async () => {
@@ -49,19 +49,50 @@ test.describe('clean-history', () => {
 		await content.btnModalConfirm.click();
 		await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
-		await test.step('check if file is deleted from disk', async () => {
+		await test.step('check if file is in upload directory', async () => {
 			const dir = await fs.promises.readdir(filePath);
 			expect(dir).toHaveLength(1);
 		});
 
-		await test.step('prune files only not pinned', async () => {
+		await test.step('prune files only', async () => {
 			await pruneMessages.filesOnly.check({ force: true });
 			await pruneMessages.prune();
 			await expect(alert).toHaveText('1 file pruned');
 			await dismiss.click();
 		});
 
-		await test.step('check if file is deleted from disk', async () => {
+		await test.step('check if file is deleted from upload directory', async () => {
+			const dir = await fs.promises.readdir(filePath);
+			expect(dir).toHaveLength(0);
+		});
+	});
+
+	test('should prune file if it is already physically deleted', async () => {
+		const {
+			content,
+			tabs: { pruneMessages },
+		} = poHomeChannel;
+		const { alert, dismiss } = poToastBar;
+
+		await content.sendFileMessage('any_file.txt');
+		await content.descriptionInput.fill('a message with a file');
+		await content.btnModalConfirm.click();
+		await expect(content.lastMessageFileName).toHaveText('any_file.txt');
+
+		await test.step('check if file is in upload directory', async () => {
+			const dir = await fs.promises.readdir(filePath);
+			expect(dir).toHaveLength(1);
+			await fs.promises.rm(`${filePath}/${dir[0]}`);
+		});
+
+		await test.step('prune files only', async () => {
+			await pruneMessages.filesOnly.check({ force: true });
+			await pruneMessages.prune();
+			await expect(alert).toContainText('1 file pruned');
+			await dismiss.click();
+		});
+
+		await test.step('check if file is deleted from upload directory', async () => {
 			const dir = await fs.promises.readdir(filePath);
 			expect(dir).toHaveLength(0);
 		});
