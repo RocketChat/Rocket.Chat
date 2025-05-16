@@ -52,8 +52,5 @@
 	"main": "./dist/ee/apps/account-service/src/service.js",
 	"files": [
 		"/dist"
-	],
-	"volta": {
-		"node": "22.14.0"
-	}
+	]
 }

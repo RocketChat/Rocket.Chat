@@ -50,7 +50,6 @@
 		"/dist"
 	],
 	"volta": {
-		"extends": "../../../package.json",
-		"node": "22.14.0"
+		"extends": "../../../package.json"
 	}
 }

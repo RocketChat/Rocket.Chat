@@ -62,8 +62,5 @@
 	"main": "./dist/service.js",
 	"files": [
 		"/dist"
-	],
-	"volta": {
-		"node": "22.14.0"
-	}
+	]
 }

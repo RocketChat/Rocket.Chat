@@ -48,8 +48,5 @@
 	"main": "./dist/ee/apps/authorization-service/src/service.js",
 	"files": [
 		"/dist"
-	],
-	"volta": {
-		"node": "22.14.0"
-	}
+	]
 }
