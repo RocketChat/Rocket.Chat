@@ -68,6 +68,12 @@ COPY ./packages/tracing/dist packages/tracing/dist
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
+COPY ./packages/i18n/package.json packages/i18n/package.json
+COPY ./packages/i18n/dist packages/i18n/dist
+
+COPY ./packages/i18next/package.json packages/i18next/package.json
+COPY ./packages/i18next/dist packages/i18next/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .

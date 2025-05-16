@@ -31,6 +31,7 @@ import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
+import { i18n } from '../lib/i18n';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -76,6 +77,6 @@ export const registerServices = async (): Promise<void> => {
 		// Otherwise, monolith would ignore them :(
 		// Always register the service and manage licensing inside the service (tbd)
 		api.registerService(new QueueWorker(db, Logger));
-		api.registerService(new OmnichannelTranscript(Logger));
+		api.registerService(new OmnichannelTranscript(Logger, i18n));
 	}
 };
