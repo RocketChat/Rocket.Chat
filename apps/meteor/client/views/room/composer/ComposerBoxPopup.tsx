@@ -4,6 +4,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CustomScrollbars } from '/client/components/CustomScrollbars';
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -91,26 +92,28 @@ function ComposerBoxPopup<
 						{title}
 					</Box>
 				)}
-				<Box pb={8} maxHeight='x320' overflowY='auto'>
-					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
-					{isLoading && <OptionSkeleton />}
-					{itemsFlat.map((item, index) => {
-						return (
-							<Option
-								title={getOptionTitle(item)}
-								onClick={() => select(item)}
-								selected={item === focused}
-								key={index}
-								id={`popup-item-${item._id}`}
-								tabIndex={item === focused ? 0 : -1}
-								aria-selected={item === focused}
-								disabled={item.disabled}
-							>
-								{renderItem({ item: { ...item, variant } })}
-							</Option>
-						);
-					})}
-				</Box>
+				<CustomScrollbars>
+					<Box pb={8} maxHeight='x320'>
+						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
+						{isLoading && <OptionSkeleton />}
+						{itemsFlat.map((item, index) => {
+							return (
+								<Option
+									title={getOptionTitle(item)}
+									onClick={() => select(item)}
+									selected={item === focused}
+									key={index}
+									id={`popup-item-${item._id}`}
+									tabIndex={item === focused ? 0 : -1}
+									aria-selected={item === focused}
+									disabled={item.disabled}
+								>
+									{renderItem({ item: { ...item, variant } })}
+								</Option>
+							);
+						})}
+					</Box>
+				</CustomScrollbars>
 			</Tile>
 		</Box>
 	);
