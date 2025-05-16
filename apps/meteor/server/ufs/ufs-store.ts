@@ -232,11 +232,7 @@ export class Store {
 	async removeById(fileId: string, options?: { session?: ClientSession }) {
 		// Delete the physical file in the store
 		await this.delete(fileId);
-		this.deleteTempFile(fileId);
-		await this.getCollection().removeById(fileId, { session: options?.session });
-	}
 
-	protected deleteTempFile(fileId: string) {
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		// Delete the temp file
@@ -246,6 +242,8 @@ export class Store {
 					err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
 				});
 		});
+
+		await this.getCollection().removeById(fileId, { session: options?.session });
 	}
 
 	async delete(_fileId: string, _options?: { session?: ClientSession }): Promise<any> {

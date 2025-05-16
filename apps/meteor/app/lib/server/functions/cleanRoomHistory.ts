@@ -59,25 +59,9 @@ export async function cleanRoomHistory({
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		if (!document.files || document.files.length === 0) {
-			continue;
-		}
-		const result = await Promise.all(
-			document.files.map(async (file) => {
-				try {
-					await uploadsStore.deleteById(file._id);
-					return { success: true, file } as const;
-				} catch (error) {
-					return { success: false, error, file } as const;
-				}
-			}),
-		);
+		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
 
-		const deletedFiles = result.filter(({ success }) => success);
-		const failedFiles = result.filter(({ success }) => !success);
-
-		fileCount += deletedFiles.length;
-
+		fileCount++;
 		if (filesOnly) {
 			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}

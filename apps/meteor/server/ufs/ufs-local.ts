@@ -1,11 +1,12 @@
 import fs from 'fs';
-import { unlink } from 'fs/promises';
+import { stat, unlink } from 'fs/promises';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
-import { Store, type StoreOptions } from './ufs-store';
+import type { StoreOptions } from './ufs-store';
+import { Store } from './ufs-store';
 
 type LocalStoreOptions = StoreOptions & {
 	mode?: string;
@@ -68,19 +69,17 @@ export class LocalStore extends Store {
 		this.delete = async (fileId, options) => {
 			const path = await this.getFilePath(fileId);
 
-			let success = false;
-
 			try {
-				await unlink(path);
-				success = true;
-			} catch (err) {
-				throw err;
-			} finally {
-				this.deleteTempFile(fileId);
-				if (success) {
-					await this.getCollection().removeById(fileId, { session: options?.session });
+				if (!(await stat(path)).isFile()) {
+					return;
 				}
+			} catch (_e) {
+				// FIXME(user) don't ignore, rather this block shouldn't run twice like it does now
+				return;
 			}
+
+			await unlink(path);
+			await this.removeById(fileId, { session: options?.session });
 		};
 
 		this.getReadStream = async (fileId: string, file: IUpload, options?: { start?: number; end?: number }) => {
