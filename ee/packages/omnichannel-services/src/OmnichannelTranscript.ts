@@ -470,7 +470,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					file: transcriptFile,
 					message: {
 						// Translate from service
-						msg: this.translator.t('pdf_success_message', { lng: serverLanguage, fallbackLng: 'en' }),
+						msg: this.translator.t('pdf_success_message', { lng: serverLanguage }),
 					},
 				}),
 				// Send the file to the user who requested it, so they can download it
