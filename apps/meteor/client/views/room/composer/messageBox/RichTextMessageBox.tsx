@@ -30,6 +30,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -50,7 +51,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 
 const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
-	const target = event.target as HTMLInputElement;
+	const target = event.target as HTMLDivElement;
 
 	return Boolean(target.innerText.trim());
 };
@@ -196,7 +197,7 @@ const RichTextMessageBox = ({
 	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
-		const input = event.target as HTMLTextAreaElement;
+		const input = event.target as HTMLDivElement;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
@@ -224,19 +225,21 @@ const RichTextMessageBox = ({
 		switch (event.key) {
 			case 'Escape': {
 				closeEditing(event);
-				if (!input.value.trim()) onEscape?.();
+				if (!input.innerText.trim()) onEscape?.();
 				return;
 			}
 
 			case 'ArrowUp': {
-				if (input.selectionEnd === 0) {
+				const { selectionEnd } = getSelectionRange(input);
+
+				if (selectionEnd === 0) {
 					event.preventDefault();
 					event.stopPropagation();
 
 					onNavigateToPreviousMessage?.();
 
 					if (event.altKey) {
-						input.setSelectionRange(0, 0);
+						setSelectionRange(input, 0, 0);
 					}
 				}
 
@@ -244,14 +247,16 @@ const RichTextMessageBox = ({
 			}
 
 			case 'ArrowDown': {
-				if (input.selectionEnd === input.value.length) {
+				const { selectionEnd } = getSelectionRange(input);
+
+				if (selectionEnd === input.innerText.length) {
 					event.preventDefault();
 					event.stopPropagation();
 
 					onNavigateToNextMessage?.();
 
 					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
+						setSelectionRange(input, input.innerText.length, input.innerText.length);
 					}
 				}
 			}
@@ -298,7 +303,7 @@ const RichTextMessageBox = ({
 		mutationFn: async () => onJoin?.(),
 	});
 
-	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLTextAreaElement>) => {
+	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLDivElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {
@@ -343,7 +348,7 @@ const RichTextMessageBox = ({
 
 	const keyDownHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
-			(node: HTMLTextAreaElement) => {
+			(node: HTMLDivElement) => {
 				if (node === null) {
 					return;
 				}
