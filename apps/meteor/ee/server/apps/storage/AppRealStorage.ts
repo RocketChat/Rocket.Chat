@@ -19,10 +19,11 @@ export class AppRealStorage extends AppMetadataStorage {
 			throw new Error('App already exists.');
 		}
 
-		const id = (await this.db.insertOne(removeEmpty(item))).insertedId as unknown as string;
-		item._id = id;
+		const nonEmptyItem = removeEmpty(item);
+		const id = (await this.db.insertOne(nonEmptyItem)).insertedId as unknown as string;
+		nonEmptyItem._id = id;
 
-		return item;
+		return nonEmptyItem;
 	}
 
 	public async retrieveOne(id: string): Promise<IAppStorageItem> {
