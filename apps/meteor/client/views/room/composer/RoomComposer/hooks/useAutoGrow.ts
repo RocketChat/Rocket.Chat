@@ -21,6 +21,10 @@ export const useAutoGrow = (
 				const resize = () => {
 					node.style.height = '0';
 					node.style.height = `${node.scrollHeight}px`;
+
+					if (node.scrollHeight > node.clientHeight) {
+						node.scrollTop = node.scrollHeight;
+					}
 				};
 
 				const resizeObserver = new ResizeObserver(resize);
