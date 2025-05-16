@@ -1,67 +1,37 @@
-import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
-import type { CSSProperties, RefObject } from 'react';
-import { useEffect, useState } from 'react';
-
-const shadowStyleBase: CSSProperties = {
-	position: 'fixed',
-	top: '-10000px',
-	left: '-10000px',
-	resize: 'none',
-	whiteSpace: 'pre-wrap',
-	wordWrap: 'break-word',
-	willChange: 'contents',
-};
+import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
+import { useCallback } from 'react';
 
 export const useAutoGrow = (
-	ref: RefObject<HTMLTextAreaElement>,
-	shadowRef: RefObject<HTMLDivElement>,
+	ref: MutableRefObject<HTMLTextAreaElement | null>,
 	hideTextArea?: boolean,
 ): {
 	textAreaStyle: CSSProperties;
-	shadowStyle: CSSProperties;
+	autoGrowRef: RefCallback<HTMLTextAreaElement>;
 } => {
-	const [style, setStyle] = useState(() => ref.current && window.getComputedStyle(ref.current));
-
-	useEffect(() => {
-		const { current: textarea } = ref;
-
-		if (!textarea) {
-			return;
-		}
-		setStyle(() => ref.current && window.getComputedStyle(ref.current));
-	}, [ref]);
-
-	useEffect(() => {
-		const { current: textarea } = ref;
-
-		if (!textarea) {
-			return;
-		}
-		const updateTextareaSize = () => {
-			const { value } = textarea;
-			const { current: shadow } = shadowRef;
-			if (!shadow) {
+	const autoGrowRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			if (!node) {
 				return;
 			}
-			shadow.innerHTML = value
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/\n$/, '<br/>&nbsp;')
-				.replace(/\n/g, '<br/>');
-		};
-		updateTextareaSize();
-		textarea.addEventListener('input', updateTextareaSize);
-		return () => {
-			textarea.removeEventListener('input', updateTextareaSize);
-		};
-	}, [ref, shadowRef]);
 
-	const shadowContentSize = useContentBoxSize(shadowRef);
+			ref.current = node;
 
-	const composerContentSize = useContentBoxSize(ref);
+			node.addEventListener('input', (e) => {
+				const element = e.target as HTMLTextAreaElement;
+				element.style.height = '52px';
+				element.style.height = `${element.scrollHeight}px`;
+
+				// Keep cursor on the bottom when inserting a new line
+				if (element.scrollHeight > element.clientHeight) {
+					element.scrollTop = element.scrollHeight;
+				}
+			});
+		},
+		[ref],
+	);
 
 	return {
+		autoGrowRef,
 		textAreaStyle: {
 			...(hideTextArea && {
 				visibility: 'hidden',
@@ -71,17 +41,6 @@ export const useAutoGrow = (
 			overflowWrap: 'break-word',
 			willChange: 'contents',
 			wordBreak: 'normal',
-			overflowY: shadowContentSize.blockSize > parseInt(style?.maxHeight || '0') ? 'scroll' : 'hidden',
-			...(shadowContentSize.blockSize && {
-				height: `${shadowContentSize.blockSize}px`,
-			}),
-		},
-		shadowStyle: {
-			...shadowStyleBase,
-			font: style?.font,
-			width: composerContentSize.inlineSize,
-			minHeight: style?.minHeight,
-			lineHeight: style?.lineHeight,
 		},
 	};
 };
