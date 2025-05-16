@@ -49,6 +49,7 @@ import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import MessageBoxEnhancementToolbar from './MessageEnhancementToolbar';
 
 const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
 	const target = event.target as HTMLDivElement;
@@ -448,6 +449,8 @@ const RichTextMessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
+						{/* This is the new enhancement toolbar binding together tone enhancer, summariser and translater buttons */}
+						{chat.composer && (<MessageBoxEnhancementToolbar composer={chat.composer} disabled={isRecording || !canSend} />)} 
 						<MessageBoxActionsToolbar
 							canSend={canSend}
 							typing={typing}
