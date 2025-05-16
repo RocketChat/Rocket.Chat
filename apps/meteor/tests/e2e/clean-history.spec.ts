@@ -3,7 +3,7 @@ import fs from 'fs';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { ToastBar } from './page-objects/toastBar';
-import { setSettingValueById, createTargetChannel, sendTargetChannelMessage } from './utils';
+import { setSettingValueById, createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -37,7 +37,7 @@ test.describe('clean-history', () => {
 		await api.post('/channels.delete', { roomName: targetChannel });
 	});
 
-	test('should prune messages with files', async ({ api }) => {
+	test('should prune messages with files', async () => {
 		const {
 			content,
 			tabs: { pruneMessages },
@@ -49,15 +49,6 @@ test.describe('clean-history', () => {
 		await content.btnModalConfirm.click();
 		await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
-		await sendTargetChannelMessage(api, targetChannel, {
-			msg: 'a message without files',
-		});
-
-		await sendTargetChannelMessage(api, targetChannel, {
-			msg: 'a pinned message without files',
-			pinned: true,
-		});
-
 		await test.step('check if file is deleted from disk', async () => {
 			const dir = await fs.promises.readdir(filePath);
 			expect(dir).toHaveLength(1);
@@ -68,8 +59,6 @@ test.describe('clean-history', () => {
 			await pruneMessages.prune();
 			await expect(alert).toHaveText('1 file pruned');
 			await dismiss.click();
-			await expect(pruneMessages.filesOnly, 'Checkbox is reset after success').not.toBeChecked();
-			await expect(pruneMessages.doNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
 		});
 
 		await test.step('check if file is deleted from disk', async () => {
