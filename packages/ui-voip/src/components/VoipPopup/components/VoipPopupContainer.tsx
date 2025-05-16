@@ -15,16 +15,12 @@ export type PositionOffsets = Partial<{
 
 type ContainerProps = {
 	children: ReactNode;
-	secondary?: boolean;
 	position?: PositionOffsets;
 	dragHandleRef?: Ref<HTMLElement>;
 	['data-testid']: string;
 };
 
-const Container = styled(
-	'article',
-	({ secondary: _secondary, position: _position, ...props }: Pick<ContainerProps, 'secondary' | 'position'>) => props,
-)`
+const Container = styled('article', ({ position: _position, ...props }: Pick<ContainerProps, 'position'>) => props)`
 	position: fixed;
 	top: ${(p) => (p.position?.top !== undefined ? `${p.position.top}px` : 'initial')};
 	right: ${(p) => (p.position?.right !== undefined ? `${p.position.right}px` : 'initial')};
@@ -39,14 +35,14 @@ const Container = styled(
 	box-shadow:
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
-	background-color: ${(p) => (p.secondary ? Palette.surface['surface-neutral'].toString() : Palette.surface['surface-light'].toString())};
+	background-color: ${Palette.surface['surface-tint'].toString()};
 	z-index: 100;
 `;
 
 const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(
-	({ children, secondary = false, position = { top: 0, left: 0 }, dragHandleRef, ...props }, ref) => (
+	({ children, position = { top: 0, left: 0 }, dragHandleRef, ...props }, ref) => (
 		<FocusScope autoFocus restoreFocus>
-			<Container ref={ref} aria-labelledby='voipPopupTitle' secondary={secondary} position={position} {...props}>
+			<Container ref={ref} aria-labelledby='voipPopupTitle' position={position} {...props}>
 				<VoipPopupDragHandle ref={dragHandleRef} />
 				{children}
 			</Container>

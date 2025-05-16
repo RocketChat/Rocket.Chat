@@ -12,7 +12,16 @@ const dragHandle = css`
 
 const VoipPopupDragHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Box>>((props, ref) => {
 	return (
-		<Box height={20} display='flex' flexDirection='row' justifyContent='center' className={dragHandle} ref={ref} {...props}>
+		<Box
+			height={20}
+			bg='surface-neutral'
+			display='flex'
+			flexDirection='row'
+			justifyContent='center'
+			className={dragHandle}
+			ref={ref}
+			{...props}
+		>
 			{/* TODO: Using burger as a placeholder. Add the correct icon to fuselage */}
 			<Icon name='burger-menu' size='x20' />
 		</Box>

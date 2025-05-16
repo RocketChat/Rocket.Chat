@@ -37,7 +37,7 @@ const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ sess
 	};
 
 	return (
-		<Container ref={ref} secondary data-testid='vc-popup-ongoing' position={position} {...props}>
+		<Container ref={ref} data-testid='vc-popup-ongoing' position={position} {...props}>
 			<Header>
 				<Timer />
 			</Header>

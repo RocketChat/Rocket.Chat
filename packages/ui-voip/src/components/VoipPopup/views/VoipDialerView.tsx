@@ -26,7 +26,7 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ positi
 	};
 
 	return (
-		<Container ref={ref} secondary data-testid='vc-popup-dialer' position={position} {...props}>
+		<Container ref={ref} data-testid='vc-popup-dialer' position={position} {...props}>
 			<Header hideSettings onClose={closeDialer}>
 				{t('New_Call')}
 			</Header>
