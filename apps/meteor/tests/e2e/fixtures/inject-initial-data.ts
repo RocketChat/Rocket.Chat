@@ -1,3 +1,4 @@
+import type { ISetting, IUser } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
 import * as constants from '../config/constants';
@@ -23,7 +24,7 @@ export default async function injectInitialData() {
 
 	await connection
 		.db()
-		.collection('users')
+		.collection<IUser>('users')
 		.updateOne(
 			{ username: Users.admin.data.username },
 			{ $addToSet: { 'services.resume.loginTokens': { when: Users.admin.data.loginExpire, hashedToken: Users.admin.data.hashedToken } } },
@@ -74,8 +75,8 @@ export default async function injectInitialData() {
 		].map((setting) =>
 			connection
 				.db()
-				.collection('rocketchat_settings')
-				.updateOne({ _id: setting._id as any }, { $set: { value: setting.value } }),
+				.collection<ISetting>('rocketchat_settings')
+				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
 		),
 	);
 
