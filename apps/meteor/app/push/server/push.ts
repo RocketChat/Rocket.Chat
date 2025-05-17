@@ -87,6 +87,7 @@ type GatewayNotification = {
 	contentAvailable?: 1 | 0;
 	forceStart?: number;
 	topic?: string;
+	appName: string;
 	apn?: {
 		from?: string;
 		title?: string;
@@ -312,13 +313,15 @@ class PushClass {
 		}
 	}
 
-	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
+	private getGatewayNotificationData(notification: PendingPushNotification, app: IAppsTokens): Omit<GatewayNotification, 'uniqueId'> {
 		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority
 		// If new attributes are added to the PendingPushNotification type, they'll need to be removed here as well.
 		const { priority: _priority, ...notifData } = notification;
 
 		return {
 			...notifData,
+			appName: app.appName, // Ensure appName is always included
+			topic: 'apn' in app.token ? app.appName : undefined, // Set topic for APN only
 		};
 	}
 
@@ -332,14 +335,14 @@ class PushClass {
 			return;
 		}
 
-		const gatewayNotification = this.getGatewayNotificationData(notification);
+		const gatewayNotification = this.getGatewayNotificationData(notification, app);
 
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
 			if ('apn' in app.token && app.token.apn) {
 				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...gatewayNotification });
+				return this.sendGatewayPush(gateway, 'apn', app.token.apn, gatewayNotification);
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
@@ -347,6 +350,7 @@ class PushClass {
 				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification);
 			}
 		}
+
 	}
 
 	private async sendNotification(notification: PendingPushNotification): Promise<{ apn: string[]; gcm: string[] }> {
@@ -464,17 +468,17 @@ class PushClass {
 
 			...(this.hasApnOptions(options)
 				? {
-						apn: {
-							...pick(options.apn, 'category'),
-						},
-					}
+					apn: {
+						...pick(options.apn, 'category'),
+					},
+				}
 				: {}),
 			...(this.hasGcmOptions(options)
 				? {
-						gcm: {
-							...pick(options.gcm, 'image', 'style'),
-						},
-					}
+					gcm: {
+						...pick(options.gcm, 'image', 'style'),
+					},
+				}
 				: {}),
 		};
 
