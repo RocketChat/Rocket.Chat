@@ -726,13 +726,7 @@ export class FileUploadClass {
 	async delete(fileId: string, options?: { session?: ClientSession }) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			try {
-				await this.store.delete(fileId, { session: options?.session });
-			} catch (error: any) {
-				if (error.code !== 'ENOENT') {
-					throw error;
-				}
-			}
+			await this.store.delete(fileId, { session: options?.session });
 		}
 
 		return this.model.deleteFile(fileId, { session: options?.session });
