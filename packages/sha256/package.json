@@ -18,6 +18,7 @@
 		"@babel/preset-env": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",

@@ -53,6 +53,8 @@ COPY ./packages/random/dist packages/random/dist
 COPY ./packages/sha256/package.json packages/sha256/package.json
 COPY ./packages/sha256/dist packages/sha256/dist
 
+COPY ./packages/tsconfig packages/tsconfig
+
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 
