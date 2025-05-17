@@ -2,7 +2,7 @@ import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -95,6 +95,12 @@ const RoomFiles = ({
 								overscan={50}
 								data={filesItems}
 								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
+								components={{
+									// eslint-disable-next-line react/no-multi-comp
+									List: forwardRef(function List(props, ref) {
+										return <Box is='ul' {...props} ref={ref} role='list' />;
+									}),
+								}}
 							/>
 						</VirtualizedScrollbars>
 					</Box>
