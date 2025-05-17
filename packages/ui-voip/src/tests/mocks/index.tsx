@@ -1,6 +1,12 @@
+import { Emitter } from '@rocket.chat/emitter';
+import { MockedModalContext } from '@rocket.chat/mock-providers';
 import type { OperationParams } from '@rocket.chat/rest-typings';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactNode } from 'react';
 
+import { VoipContext } from '../../contexts/VoipContext';
 import type { VoipErrorSession, VoipIncomingSession, VoipOngoingSession, VoipOutgoingSession, VoipSession } from '../../definitions';
+import type VoipClient from '../../lib/VoipClient';
 
 export const createMockFreeSwitchExtensionDetails = (
 	overwrite?: Partial<OperationParams<'GET', '/v1/voip-freeswitch.extension.getDetails'>>,
@@ -73,3 +79,58 @@ export const createMockVoipIncomingSession = (partial?: Partial<VoipIncomingSess
 	accept: jest.fn(),
 	...partial,
 });
+
+class MockVoipClient extends Emitter {
+	public _sessionType: VoipSession['type'] = 'INCOMING';
+
+	setSessionType(type: VoipSession['type']) {
+		this._sessionType = type;
+		setTimeout(() => this.emit('stateChanged'), 0);
+	}
+
+	getSession = () =>
+		({
+			type: this._sessionType,
+			contact: { id: '1000', host: '', name: 'John Doe' },
+			transferedBy: null,
+			isMuted: false,
+			isHeld: false,
+			accept: async () => undefined,
+			end: async () => undefined,
+			mute: async (..._: any[]) => undefined,
+			hold: async (..._: any[]) => undefined,
+			dtmf: async () => undefined,
+			error: { status: 488, reason: '' },
+		}) as VoipSession;
+}
+
+export function createMockVoipProviders(): [React.FC<{ children: ReactNode }>, InstanceType<typeof MockVoipClient>] {
+	const voipClient = new MockVoipClient();
+
+	const contextValue = {
+		isEnabled: true as const,
+		voipClient: voipClient as unknown as VoipClient,
+		error: null,
+		changeAudioInputDevice: async () => undefined,
+		changeAudioOutputDevice: async () => undefined,
+	};
+
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: { retry: false },
+			mutations: { retry: false },
+		},
+	});
+
+	const Provider = ({ children }: { children: ReactNode }) => {
+		return (
+			<QueryClientProvider client={queryClient}>
+				<MockedModalContext>
+					<VoipContext.Provider value={contextValue}>{children}</VoipContext.Provider>
+				</MockedModalContext>
+			</QueryClientProvider>
+		);
+	};
+
+	return [Provider, voipClient];
+}
