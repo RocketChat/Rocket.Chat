@@ -201,7 +201,7 @@ API.v1.post(
 							},
 							mentions: {
 								type: 'array',
-								item: {
+								items: {
 									type: 'object',
 									properties: {
 										type: {
