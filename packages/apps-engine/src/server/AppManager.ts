@@ -1,7 +1,5 @@
 import { Buffer } from 'buffer';
 
-import { removeEmpty } from '@rocket.chat/tools';
-
 import type { IGetAppsFilter } from './IGetAppsFilter';
 import { ProxiedApp } from './ProxiedApp';
 import type { PersistenceBridge, UserBridge } from './bridges';
@@ -609,7 +607,7 @@ export class AppManager {
         }
 
         descriptor.signature = await this.getSignatureManager().signApp(descriptor);
-        const created = await this.appMetadataStorage.create(removeEmpty(descriptor));
+        const created = await this.appMetadataStorage.create(descriptor);
 
         if (!created) {
             aff.setStorageError('Failed to create the App, the storage did not return it.');
