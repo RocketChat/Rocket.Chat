@@ -62,6 +62,10 @@ export class TestLivechatBridge extends LivechatBridge {
         throw new Error('Method not implemented');
     }
 
+    protected findVisitorByUsername(username: string, appId: string): Promise<IVisitor | undefined> {
+        throw new Error('Method not implemented');
+    }
+
     public createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
         throw new Error('Method not implemented');
     }

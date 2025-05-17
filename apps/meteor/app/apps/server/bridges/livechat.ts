@@ -333,6 +333,15 @@ export class AppLivechatBridge extends LivechatBridge {
 			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
+	protected async findVisitorByUsername(username: string, appId: string): Promise<IVisitor | undefined> {
+		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
+
+		return this.orch
+			.getConverters()
+			?.get('visitors')
+			.convertVisitor(await LivechatVisitors.findOneVisitorByUsername (username));
+	}
+
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat departments.`);
 
