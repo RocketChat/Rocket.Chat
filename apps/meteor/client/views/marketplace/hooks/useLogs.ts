@@ -8,6 +8,6 @@ export const useLogs = (appId: string): UseQueryResult<OperationResult<'GET', '/
 
 	return useQuery({
 		queryKey: ['marketplace', 'apps', appId, 'logs'],
-		queryFn: () => logs(),
+		queryFn: () => logs({}),
 	});
 };
