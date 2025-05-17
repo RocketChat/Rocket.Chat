@@ -489,4 +489,8 @@ export class HomeContent {
 	get btnDismissContactUnknownCallout() {
 		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
 	}
+
+	async expectLastMessageToHaveText(text: string): Promise<void> {
+		await expect(this.lastUserMessageBody).toHaveText(text);
+	}
 }

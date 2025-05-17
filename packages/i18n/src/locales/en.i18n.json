@@ -5043,7 +5043,7 @@
   "This_monitor_was_already_selected": "This monitor was already selected",
   "This_month": "This Month",
   "This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel": "This option affect this conversation only. To set default selection, go to My Account > Omnichannel.",
-  "This_page_will_be_deprecated_soon": "This page will be deprecated soon",
+  "This_page_is_deprecated_will_be_removed_soon": "This page is deprecated and will be removed soon",
   "This_room_encryption_has_been_disabled_by__username_": "This room's encryption has been disabled by {{username}}",
   "This_room_encryption_has_been_enabled_by__username_": "This room's encryption has been enabled by {{username}}",
   "This_room_has_been_archived": "archived room",
