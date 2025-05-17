@@ -23,4 +23,8 @@ export class LivechatUpdater implements ILivechatUpdater {
             .doSetCustomFields({ token, key, value, overwrite }, this.appId)
             .then((result) => result > 0);
     }
+
+    public takeInquiry(agentId: string, inquiryId: string): Promise<void> {
+        return this.bridges.getLivechatBridge().doTakeInquiry(agentId, inquiryId, this.appId);
+    }
 }
