@@ -179,6 +179,293 @@ API.v1.post(
 		authRequired: true,
 		validateParams: isChatPinMessageProps,
 		body: isChatPinMessageProps,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					message: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							_updatedAt: {
+								type: 'string',
+								format: 'date-time',
+							},
+							rid: { type: 'string' },
+							msg: { type: 'string' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
+							ts: {
+								type: 'string',
+								format: 'date-time',
+							},
+							mentions: {
+								type: 'array',
+								item: {
+									type: 'object',
+									properties: {
+										type: {
+											enum: ['user', 'team'],
+										},
+										_id: { type: 'string' },
+										name: { type: 'string' },
+										username: { type: 'string' },
+										fname: { type: 'string' },
+									},
+									required: ['_id'],
+									additionalProperties: false,
+								},
+							},
+							groupable: { type: 'boolean' },
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+										name: { type: 'string' },
+									},
+									required: ['_id', 'name'],
+									additionalProperties: false,
+								},
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							blocks: { type: 'array' },
+							alias: { type: 'string' },
+							md: { type: 'array' },
+							_hidden: { type: 'boolean' },
+							imported: { type: 'boolean' },
+							replies: { type: 'array' },
+							location: {
+								type: 'object',
+								properties: {
+									type: { const: 'Point' },
+									coordinates: {
+										type: 'array',
+										prefixItems: [{ type: 'integer' }, { type: 'integer' }],
+										minItems: 2,
+										items: false,
+									},
+								},
+								required: ['type', 'coordinates'],
+								additionalProperties: false,
+							},
+							starred: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+									},
+									required: ['_id'],
+									additionalProperties: false,
+								},
+							},
+							pinned: { type: 'boolean' },
+							pinnedAt: {
+								type: 'string',
+								format: 'date-time',
+							},
+							pinnedBy: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'username'],
+								additionalProperties: false,
+							},
+							unread: { type: 'boolean' },
+							temp: { type: 'boolean' },
+							drid: { type: 'string' },
+							tlm: {
+								type: 'string',
+								format: 'date-time',
+							},
+							dcount: { type: 'integer' },
+							tcount: { type: 'integer' },
+							t: { type: 'string' },
+							e2e: { enum: ['pending', 'done'] },
+							e2eMentions: {
+								type: 'object',
+								properties: {
+									e2eUserMentions: { type: 'array', items: { type: 'string' } },
+									e2eChannelMentions: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['e2eUserMentions', 'e2eChannelMentions'],
+								additionalProperties: false,
+							},
+							otrAck: { type: 'string' },
+							urls: { type: 'array', items: { type: 'string' } },
+							/** @deprecated Deprecated */
+							actionLinks: { type: 'array', items: { type: 'object' } },
+							/** @deprecated Deprecated in favor of files */
+							file: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									type: { type: 'string' },
+									format: { type: 'string' },
+									size: { type: 'integer' },
+								},
+								required: ['_id', 'name', 'type', 'format', 'size'],
+								additionalProperties: false,
+							},
+							fileUpload: {
+								type: 'object',
+								properties: {
+									publicFilePath: { type: 'string' },
+									type: { type: 'string' },
+									size: { type: 'integer' },
+								},
+								required: ['publicFilePath'],
+								additionalProperties: false,
+							},
+							files: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+										name: { type: 'string' },
+										type: { type: 'string' },
+										format: { type: 'string' },
+										size: { type: 'integer' },
+									},
+									required: ['_id', 'name', 'type', 'format', 'size'],
+									additionalProperties: false,
+								},
+							},
+							// TODO: Add the types of object properties of MessageAttachment to the attachments.
+							attachments: { type: 'array' },
+							reactions: {
+								type: 'object',
+								patternProperties: {
+									'.*': {
+										type: 'object',
+										properties: {
+											names: {
+												type: 'array',
+												items: {
+													type: ['string', 'null'],
+												},
+											},
+											usernames: {
+												type: 'array',
+												items: { type: 'string' },
+											},
+											federationReactionEventIds: {
+												type: 'object',
+												additionalProperties: { type: 'string' },
+											},
+										},
+										required: ['usernames'],
+										additionalProperties: false,
+									},
+								},
+								additionalProperties: false,
+							},
+							private: { type: 'boolean' },
+							bot: {
+								type: 'object',
+								properties: {},
+								additionalProperties: true,
+							},
+							sentByEmail: { type: 'boolean' },
+							webRtcCallEndTs: {
+								type: 'string',
+								format: 'date-time',
+							},
+							role: { type: 'string' },
+							avatar: { type: 'string' },
+							emoji: { type: 'string' },
+							tokens: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										token: { type: 'string' },
+										text: { type: 'string' },
+										type: {
+											type: 'string',
+											enum: ['code', 'inlinecode', 'bold', 'italic', 'strike', 'link'],
+										},
+										noHtml: { type: 'string' },
+										highlight: { type: 'boolean' },
+									},
+									required: ['token', 'text'],
+									additionalProperties: false,
+								},
+							},
+							html: { type: 'string' },
+							token: { type: 'string' },
+							federation: {
+								type: 'object',
+								properties: {
+									eventId: { type: 'string' },
+								},
+								required: ['eventId'],
+								additionalProperties: false,
+							},
+							slaData: {
+								type: 'object',
+								properties: {
+									definedBy: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											username: { type: 'string' },
+										},
+										required: ['_id'],
+										additionalProperties: false,
+									},
+									priority: {
+										type: 'object',
+										properties: {
+											name: { type: 'string' },
+											i18n: { type: 'string' },
+										},
+										required: ['i18n'],
+										additionalProperties: false,
+									},
+								},
+								required: ['definedBy'],
+								additionalProperties: false,
+							},
+							// ? Should customFields have properties implement in the IMessageCustomFields interface and ensure it is not empty?
+							customFields: { type: 'object' },
+							content: {
+								type: 'object',
+								properties: {
+									algorithm: { type: 'string' },
+									ciphertext: { type: 'string' },
+								},
+								required: ['algorithm', 'ciphertext'],
+								additionalProperties: false,
+							},
+						},
+						required: ['_id', '_updatedAt', 'rid', 'msg', 'ts', 'u'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+		},
 	},
 	async function () {
 		const msg = await Messages.findOneById(this.bodyParams.messageId);
