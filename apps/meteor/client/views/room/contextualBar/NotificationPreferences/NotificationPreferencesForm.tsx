@@ -1,5 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
+import { FocusScope } from 'react-aria';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +22,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 	const { showCounter } = watch();
 
 	return (
-		<>
+		<FocusScope autoFocus>
 			<Controller
 				control={control}
 				name='turnOn'
@@ -126,7 +127,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 					/>
 				</NotificationByDevice>
 			</FieldGroup>
-		</>
+		</FocusScope>
 	);
 };
 
