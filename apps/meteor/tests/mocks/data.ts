@@ -11,6 +11,7 @@ import type {
 	IUser,
 	ILivechatContactChannel,
 	Serialized,
+	ILivechatTag,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -327,6 +328,17 @@ export function createFakeContact(overrides?: Partial<Serialized<ILivechatContac
 		unknown: true,
 		channels: [createFakeContactChannel()],
 		createdAt: new Date().toISOString(),
+		...overrides,
+	};
+}
+
+export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Serialized<ILivechatTag> {
+	return {
+		_id: faker.string.uuid(),
+		name: faker.commerce.department(),
+		description: 'description',
+		numDepartments: 0,
+		departments: [],
 		...overrides,
 	};
 }
