@@ -251,9 +251,8 @@ API.v1.post(
 									type: { const: 'Point' },
 									coordinates: {
 										type: 'array',
-										prefixItems: [{ type: 'integer' }, { type: 'integer' }],
+										items: [{ type: 'integer' }, { type: 'integer' }],
 										minItems: 2,
-										items: false,
 									},
 								},
 								required: ['type', 'coordinates'],
