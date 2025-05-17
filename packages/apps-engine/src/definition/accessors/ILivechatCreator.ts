@@ -18,7 +18,7 @@ export interface ILivechatCreator {
      * @param visitor The Livechat Visitor that started the conversation
      * @param agent The agent responsible for the room
      */
-    createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
+    createRoom(visitor: IVisitor, agent?: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
 
     /**
      * @deprecated Use `createAndReturnVisitor` instead.
