@@ -3,8 +3,6 @@ import type { ReactElement, ComponentProps } from 'react';
 
 type UserCardActionProps = ComponentProps<typeof IconButton>;
 
-const UserCardAction = ({ label, icon, ...props }: UserCardActionProps): ReactElement => (
-	<IconButton icon={icon} small title={label} {...props} />
-);
+const UserCardAction = ({ icon, ...props }: UserCardActionProps): ReactElement => <IconButton icon={icon} small {...props} />;
 
 export default UserCardAction;

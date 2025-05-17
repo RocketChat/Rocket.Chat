@@ -12,11 +12,9 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '.';
-import RetentionPolicyCallout from './RetentionPolicyCallout';
-import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
-	title: 'Info Panel/InfoPanel',
+	title: 'components/InfoPanel',
 	component: InfoPanel,
 	subcomponents: {
 		InfoPanelAction: InfoPanelAction as ComponentType<any>,
@@ -27,11 +25,8 @@ export default {
 		InfoPanelSection: InfoPanelSection as ComponentType<any>,
 		InfoPanelText: InfoPanelText as ComponentType<any>,
 		InfoPanelTitle: InfoPanelTitle as ComponentType<any>,
-		RetentionPolicyCallout: RetentionPolicyCallout as ComponentType<any>,
 	},
 } satisfies Meta<typeof InfoPanel>;
-
-const fakeRoom = createFakeRoom();
 
 export const Default: StoryFn<typeof InfoPanel> = () => (
 	<InfoPanel>
@@ -62,9 +57,6 @@ export const Default: StoryFn<typeof InfoPanel> = () => (
 					libero
 				</InfoPanelText>
 			</InfoPanelField>
-		</InfoPanelSection>
-		<InfoPanelSection>
-			<RetentionPolicyCallout room={fakeRoom} />
 		</InfoPanelSection>
 	</InfoPanel>
 );

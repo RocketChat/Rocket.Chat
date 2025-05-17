@@ -1,11 +1,30 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
+import { composeStories } from '@storybook/react';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
+import * as stories from './GenericModal.stories';
 import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
+import { render } from '../../testing';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const view = render(<Story />, { wrapper: mockAppRoot().build() });
+	expect(view.baseElement).toMatchSnapshot();
+});
+
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
+});
 
 const renderModal = (modalElement: ReactElement) => {
 	const {

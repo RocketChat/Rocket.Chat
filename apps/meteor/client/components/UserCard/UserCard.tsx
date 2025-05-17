@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { ReactNode, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,9 +48,10 @@ const UserCard = ({
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
+	const displayName = useUserDisplayName({ name, username });
 
 	return (
-		<UserCardDialog data-qa='UserCard' {...props}>
+		<UserCardDialog aria-label={t('User_card')} {...props}>
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
@@ -58,7 +60,7 @@ const UserCard = ({
 			</div>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
 				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
-					<UserCardUsername status={status} name={name} />
+					<UserCardUsername status={status} name={displayName} />
 					{nickname && (
 						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
 							({nickname})

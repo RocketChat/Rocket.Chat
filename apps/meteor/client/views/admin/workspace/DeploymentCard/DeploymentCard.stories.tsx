@@ -4,7 +4,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import DeploymentCard from './DeploymentCard';
 
 export default {
-	title: 'Admin/Info/DeploymentCard',
+	title: 'views/Admin/Info/DeploymentCard',
 	component: DeploymentCard,
 	parameters: {
 		layout: 'centered',

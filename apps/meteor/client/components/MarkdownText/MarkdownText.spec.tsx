@@ -1,9 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render } from '@testing-library/react';
+import { composeStories } from '@storybook/react';
+import { axe } from 'jest-axe';
 
 import MarkdownText from './MarkdownText';
-
-import '@testing-library/jest-dom';
+import * as stories from './MarkdownText.stories';
+import { render } from '../../testing';
 
 const normalizeHtml = (html: any) => {
 	return html.replace(/\s+/g, ' ').trim();
@@ -98,4 +99,18 @@ it('should render html elements as expected using inline parser', async () => {
 	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
 	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
+});
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const view = render(<Story />);
+	expect(view.baseElement).toMatchSnapshot();
+});
+
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />);
+
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
 });

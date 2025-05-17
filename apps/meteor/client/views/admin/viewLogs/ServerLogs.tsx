@@ -44,6 +44,9 @@ const ServerLogs = (): ReactElement => {
 	useEffect(
 		() =>
 			subscribeToStdout('stdout', (entry: StdOutLogEntry) => {
+				if (!entry) {
+					return;
+				}
 				setEntries((entries) => [...entries, entry]);
 			}),
 		[subscribeToStdout],

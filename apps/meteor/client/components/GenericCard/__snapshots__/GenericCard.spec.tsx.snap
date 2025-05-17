@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-describedby=":r1:"
+      aria-labelledby=":r0:"
+      class="rcx-box rcx-box--full rcx-card__vertical rcx-card"
+      role="region"
+    >
+      <div
+        class="rcx-card__header"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-framed-icon--info rcx-framed-icon rcx-icon--name-info rcx-icon rcx-css-1bepdyv"
+        >
+          
+        </i>
+        <h4
+          class="rcx-box rcx-box--full rcx-card__title rcx-css-2eyztw"
+          id=":r0:"
+        >
+          Card Title
+        </h4>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-card__body rcx-css-1brox57"
+        id=":r1:"
+      >
+        Card Body
+      </div>
+    </div>
+  </div>
+</body>
+`;

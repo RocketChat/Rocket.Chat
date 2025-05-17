@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-16js560"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-states__icon--danger rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Something_went_wrong
+        </h3>
+      </div>
+    </div>
+  </div>
+</body>
+`;

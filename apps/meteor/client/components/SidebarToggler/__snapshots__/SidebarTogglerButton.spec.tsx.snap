@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1siaxf"
+    >
+      <button
+        aria-label="Open_sidebar"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-burger-menu rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithBadge without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1siaxf"
+    >
+      <button
+        aria-label="Open_sidebar"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-burger-menu rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <div
+        class="rcx-box rcx-box--full rcx-css-5j6qsn"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+        >
+          99
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
