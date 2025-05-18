@@ -1,5 +1,4 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { isExternal } from '@rocket.chat/ui-client';
 import { render, screen } from '@testing-library/react';
 
 import MarkdownText from './MarkdownText';
@@ -125,136 +124,147 @@ it('should render html elements as expected using inline parser', async () => {
 	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
 });
 
-describe('MarkdownText scheme handling', () => {
-	const schemesData = [
-		{ schemeName: 'http-ext', link: 'http://example.com' },
-		{ schemeName: 'https-ext', link: 'https://example.com' },
-		{ schemeName: 'notes', link: 'notes://example.com/path' },
-		{ schemeName: 'ftp', link: 'ftp://example.com/file.txt' },
-		{ schemeName: 'ftps', link: 'ftps://example.com/file.txt' },
-		{ schemeName: 'tel', link: 'tel:+1234567890' },
-		{ schemeName: 'mailto', link: 'mailto:test@example.com', explicitTitle: 'mailto:test@example.com' },
-		{ schemeName: 'sms', link: 'sms:+1234567890?body=hello' },
-		{ schemeName: 'cid', link: 'cid:someimage@example.com' },
-		{ schemeName: 'internal-relative', link: '/channel/general', isRemoved: true },
-		{ schemeName: 'internal-absolute', link: 'http://localhost/another-channel' },
-		{ schemeName: 'invalid-scheme', link: 'invalid://example.com', isRemoved: true },
-		{ schemeName: 'javascript-uri', link: "javascript:alert('XSS')", isRemoved: true },
-	];
-
-	const testCases = schemesData.map(({ schemeName, link, explicitTitle, isRemoved }) => {
-		const isActuallyExternal = isExternal(link);
-
-		let expectedTitleAttr: string | undefined = explicitTitle;
-		if (expectedTitleAttr === undefined) {
-			if (isRemoved) {
-				expectedTitleAttr = '';
-			} else if (isActuallyExternal) {
-				expectedTitleAttr = '';
-			} else {
-				expectedTitleAttr = 'Go_to_href';
-			}
-		}
-
-		const shouldHaveExternalRelTarget = isRemoved || isActuallyExternal || link.startsWith('mailto:');
-
-		let queryStrategy: { method: 'getByRole'; name: string | RegExp } | { method: 'getByText'; text: string | RegExp };
-
-		if (expectedTitleAttr && expectedTitleAttr !== '') {
-			queryStrategy = { method: 'getByRole', name: expectedTitleAttr };
-		} else if (link.startsWith('mailto:') && !expectedTitleAttr) {
-			queryStrategy = { method: 'getByRole', name: link };
-		} else {
-			// For links with empty titles or no specific title attribute, target by text content.
-			queryStrategy = { method: 'getByText', text: 'Test Link' };
-		}
-
-		return {
-			schemeName,
-			link,
-			isRemoved: Boolean(isRemoved),
-			isActuallyExternal,
-			expectedHref: link,
-			expectedRel: shouldHaveExternalRelTarget ? 'nofollow noopener noreferrer' : undefined,
-			expectedTarget: shouldHaveExternalRelTarget ? '_blank' : undefined,
-			expectedTitleAttribute: expectedTitleAttr,
-			queryStrategy,
-		};
-	});
-
-	testCases.forEach((tc) => {
-		it(`should ${tc.isRemoved ? 'handle' : 'correctly process'} ${tc.schemeName} links (isExternal returned: ${tc.isActuallyExternal})`, () => {
-			const markdownContent = `[Test Link](${tc.link})`;
-			render(<MarkdownText content={markdownContent} variant='document' />, {
-				wrapper: mockAppRoot().build(),
-			});
-
-			let anchorElement: HTMLElement;
-			if (tc.queryStrategy.method === 'getByRole') {
-				anchorElement = screen.getByRole('link', { name: tc.queryStrategy.name });
-			} else {
-				// tc.queryStrategy.method === 'getByText'
-				const elementWithText = screen.getByText(tc.queryStrategy.text);
-				if (elementWithText.tagName === 'A') {
-					anchorElement = elementWithText;
-				} else {
-					const parentAnchor = elementWithText.closest('a');
-					if (!parentAnchor) {
-						// This case should ideally not happen if markdown `[Text](link)` is parsed correctly to an anchor.
-						// If it does, it indicates a deeper issue or a test case where text isn't in an anchor.
-						throw new Error(`Query by text found "${tc.queryStrategy.text}", but it is not within an anchor tag.`);
-					}
-					anchorElement = parentAnchor;
-				}
-			}
-
-			expect(anchorElement).toBeInTheDocument();
-			expect(anchorElement.tagName).toBe('A');
-
-			// Assert href
-			if (tc.isRemoved) {
-				// eslint-disable-next-line testing-library/no-node-access -- Need to check href value against multiple possibilities for sanitized links
-				const currentHref = anchorElement.getAttribute('href');
-				if (tc.link.startsWith('javascript:')) {
-					// For JS links, ensure href is neutralized (null, '#', or non-JS)
-					expect(
-						currentHref === null || // Stripped completely
-							currentHref === '#' || // Commonly neutralized to #
-							!currentHref.startsWith('javascript:'), // Original but non-functional due to other attributes or browser measures
-					).toBe(true);
-				} else if (tc.schemeName === 'internal-relative') {
-					// Internal relative links are expected to have their href attribute removed by DOMPurify
-					expect(anchorElement).not.toHaveAttribute('href');
-				} else {
-					// For other removed links (e.g., invalid-scheme), href might be original, '#', or null.
-					expect(
-						currentHref === tc.link || // Left as is
-							currentHref === '#' || // Neutralized to #
-							currentHref === null, // Stripped
-					).toBe(true);
-				}
-			} else {
-				expect(anchorElement).toHaveAttribute('href', tc.expectedHref);
-			}
-
-			// Assert rel
-			if (tc.expectedRel) {
-				expect(anchorElement).toHaveAttribute('rel', tc.expectedRel);
-			} else {
-				expect(anchorElement).not.toHaveAttribute('rel');
-			}
-
-			// Assert target
-			if (tc.expectedTarget) {
-				expect(anchorElement).toHaveAttribute('target', tc.expectedTarget);
-			} else {
-				expect(anchorElement).not.toHaveAttribute('target');
-			}
-
-			// Assert title - tc.expectedTitleAttribute is always a string ('' or a specific title)
-			expect(anchorElement).toHaveAttribute('title', tc.expectedTitleAttribute);
-
-			expect(anchorElement).toHaveTextContent('Test Link');
+describe('links handling', () => {
+	it.each([
+		{
+			caseName: 'transform external http',
+			link: 'http://example.com',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'http://example.com',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform external https',
+			link: 'https://example.com',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'https://example.com',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform notes',
+			link: 'notes://example.com/path',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'notes://example.com/path',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform ftp',
+			link: 'ftp://example.com/file.txt',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'ftp://example.com/file.txt',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform ftps',
+			link: 'ftps://example.com/file.txt',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'ftps://example.com/file.txt',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform tel',
+			link: 'tel:+1234567890',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'tel:+1234567890',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform mailto',
+			link: 'mailto:test@example.com',
+			query: () => screen.getByRole('link', { name: 'mailto:test@example.com' }),
+			expectedHref: 'mailto:test@example.com',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: 'mailto:test@example.com',
+		},
+		{
+			caseName: 'transform sms',
+			link: 'sms:+1234567890?body=hello',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'sms:+1234567890?body=hello',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform cid',
+			link: 'cid:someimage@example.com',
+			query: () => screen.getByRole('link', { name: 'Test Link' }),
+			expectedHref: 'cid:someimage@example.com',
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'filter relative',
+			link: '/channel/general',
+			query: () => screen.getByText('Test Link'),
+			expectedHref: undefined,
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'transform absolute',
+			link: 'http://localhost/another-channel',
+			query: () => screen.getByRole('link', { name: 'Go to: another-channel' }),
+			expectedHref: 'http://localhost/another-channel',
+			expectedRel: undefined,
+			expectedTarget: undefined,
+			expectedTitleAttribute: 'Go to: another-channel',
+		},
+		{
+			caseName: 'filter unknown scheme',
+			link: 'invalid://example.com',
+			query: () => screen.getByText('Test Link'),
+			expectedHref: undefined,
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+		{
+			caseName: 'filter javascript',
+			link: "javascript:alert('XSS')",
+			query: () => screen.getByText('Test Link'),
+			expectedHref: undefined,
+			expectedRel: 'nofollow noopener noreferrer',
+			expectedTarget: '_blank',
+			expectedTitleAttribute: '',
+		},
+	] as const)('should $caseName links', ({ link, query, expectedHref, expectedRel, expectedTarget, expectedTitleAttribute }) => {
+		const markdownContent = `[Test Link](${link})`;
+		render(<MarkdownText content={markdownContent} variant='document' />, {
+			wrapper: mockAppRoot().withTranslations('en', 'core', { Go_to_href: 'Go to: {{href}}' }).build(),
 		});
+
+		const anchorElement = query();
+
+		expect(anchorElement).toBeInTheDocument();
+		expect(anchorElement.tagName).toBe('A');
+		expect(anchorElement).toHaveTextContent('Test Link');
+
+		if (expectedHref !== undefined) expect(anchorElement).toHaveAttribute('href', expectedHref);
+		else expect(anchorElement).not.toHaveAttribute('href');
+
+		if (expectedRel !== undefined) expect(anchorElement).toHaveAttribute('rel', expectedRel);
+		else expect(anchorElement).not.toHaveAttribute('rel');
+
+		if (expectedTarget !== undefined) expect(anchorElement).toHaveAttribute('target', expectedTarget);
+		else expect(anchorElement).not.toHaveAttribute('target');
+
+		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
+		else expect(anchorElement).not.toHaveAttribute('title');
 	});
 });
