@@ -323,7 +323,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 				end: input.selectionEnd,
 			};
 		},
-
+		originalText:'',
+		aiEnhancedText: '',
 		editing,
 		setEditingMode,
 		recording,

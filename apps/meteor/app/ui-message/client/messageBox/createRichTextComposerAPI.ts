@@ -357,7 +357,8 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 				end: selectionEnd,
 			};
 		},
-
+		originalText:'',
+		aiEnhancedText: '',
 		editing,
 		setEditingMode,
 		recording,

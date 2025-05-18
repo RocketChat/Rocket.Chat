@@ -18,7 +18,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -50,6 +50,7 @@ import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import MessageBoxEnhancementToolbar from './MessageEnhancementToolbar';
+import { ToggleSwitch } from '@rocket.chat/fuselage';
 
 const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
 	const target = event.target as HTMLDivElement;
@@ -118,6 +119,7 @@ const RichTextMessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
+	const [enhancementActive, setEnhancementActive] = useState<boolean>(false);
 
 	const [typing, setTyping] = useReducer(reducer, false);
 
@@ -462,6 +464,24 @@ const RichTextMessageBox = ({
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
+						{/* Toggle switch is not working yet and needs to be fixed (how it should behave -> when enhacement button
+						is clicked, the original text state should be saved and toggle switch should get activated and after that the current or the future
+						enhanced text state also store somewhere and this to states will be easily get toggled between the two) */}
+						{true && (
+							<ToggleSwitch
+									checked={enhancementActive}
+									onChange={(e) => {
+									const checked = (e.currentTarget as HTMLInputElement).checked;
+									setEnhancementActive(checked);
+									chat.composer?.clear();
+									chat.composer?.insertText(
+										checked ? chat.composer?.aiEnhancedText  : chat.composer?.originalText ,
+									);
+									}}
+									aria-label='Enhancement Toggle'
+								/>
+
+						)}
 						{!canSend && (
 							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isPending}>
 								{t('Join')}

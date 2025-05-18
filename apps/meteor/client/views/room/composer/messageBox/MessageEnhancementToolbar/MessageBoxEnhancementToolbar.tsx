@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 import EnhancementToolbarDropdown from './EnhancementToolbarDropdown';
 import { Box, Throbber } from '@rocket.chat/fuselage';
-
 type EnhancementOption = 'tone' | 'translate' | 'summarize';
 
 type MessageBoxEnhancementToolbarProps = {
@@ -22,6 +21,7 @@ const translationOptions = [
 const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancementToolbarProps) => {
   const [Loading, setLoading] = useState(false);
   const {t} = useTranslation();
+  const [aiEnahcementCounter, setAiEnhancementCounter] = useState(0);
 
   const handleEnhancement = async (type: EnhancementOption, option?: string) => {
     const text = composer.text.trim();
@@ -50,7 +50,7 @@ const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancem
         };
         break;
     }
-
+    setAiEnhancementCounter((prev) => prev + 1);
     composer.clear();
         
     try {
@@ -63,7 +63,8 @@ const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancem
       });
       const data = await res.json();
       composer.clear();
-      composer.insertText(data.choices[0].message.content);
+      // composer.insertText(data.choices[0].message.content);
+      composer.insertText('This is AI Enhanced Text' + aiEnahcementCounter); 
     } catch (err) {
       console.error(err);
       composer.clear();
