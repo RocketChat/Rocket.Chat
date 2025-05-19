@@ -1,7 +1,7 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import { useRef } from 'react';
+import { memo, useRef } from 'react';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -58,6 +58,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 			tabIndex={0}
 			onKeyDown={handleKeyDown}
 			role='listitem'
+			key={`file-${_id}`}
 		>
 			{typeGroup === 'image' ? (
 				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} ref={ref} />
@@ -99,4 +100,4 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	);
 };
 
-export default FileItem;
+export default memo(FileItem);
