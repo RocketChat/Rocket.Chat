@@ -1,5 +1,76 @@
 # @rocket.chat/models
 
+## 1.5.0
+
+### Minor Changes
+
+- ([#34954](https://github.com/RocketChat/Rocket.Chat/pull/34954) by [@tapiarafael](https://github.com/tapiarafael)) Allows search omnichannel rooms by the exact visitor name using double quotes to have a faster response
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#34494](https://github.com/RocketChat/Rocket.Chat/pull/34494)) Implements auditing events for `/v1/users.update` API endpoint
+
+### Patch Changes
+
+- ([#35497](https://github.com/RocketChat/Rocket.Chat/pull/35497)) Fixes an issue where the app's logs index was not being created by default sometimes, also set to be always 30 days
+
+- ([#35722](https://github.com/RocketChat/Rocket.Chat/pull/35722)) Fixes the behavior of "Maximum number of simultaneous chats" settings, making them more predictable. Previously, we applied a single limit per operation, being the order: `Department > Agent > Global`. This caused the department limit to take prescedence over agent's specific limit, causing some unwanted side effects.
+
+  The new way of applying the filter is as follows:
+
+  - An agent can accept chats from multiple departments, respecting each department’s limit individually.
+  - The total number of active chats (across all departments) must not exceed the configured Agent-Level or Global limit.
+  - If neither the Agent-Level nor Global Limit is set, only department-specific limits apply.
+  - If no limits are set at any level, there is no restriction on the number of chats an agent can handle.
+
+- ([#35618](https://github.com/RocketChat/Rocket.Chat/pull/35618)) Fixes an issue when sending a message on an omnichannel room would cause the web client to fetch the room data again.
+
+- <details><summary>Updated dependencies [45a93a7713546ed2e3e0b3988e1f989371ebf53a, 5f11fea4ab1dc149f82b7d8c5fc556a2cf09fa5e, d8eb824d242cbbeafb11b1c4a806860e4541ba79, 47ae69912cd90743e7bf836fdee4be481a01bbba]:</summary>
+
+  - @rocket.chat/model-typings@1.6.0
+  - @rocket.chat/rest-typings@7.6.0
+  </details>
+
+## 1.5.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.8
+  - @rocket.chat/model-typings@1.6.0-rc.8
+  </details>
+
+## 1.5.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.7
+  - @rocket.chat/model-typings@1.6.0-rc.7
+  </details>
+
+## 1.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.6
+  - @rocket.chat/model-typings@1.6.0-rc.6
+  </details>
+
+## 1.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.5
+  - @rocket.chat/model-typings@1.6.0-rc.5
+  </details>
+
 ## 1.5.0-rc.4
 
 ### Patch Changes

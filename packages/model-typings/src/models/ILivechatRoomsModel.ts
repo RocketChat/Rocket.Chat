@@ -128,9 +128,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 
 	findAvailableSources(): AggregationCursor<Document>;
-
-	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
-	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
 	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult>;
 
 	setEmailTranscriptRequestedByRoomId(

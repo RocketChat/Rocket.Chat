@@ -122,6 +122,11 @@ class RoomHistoryManagerClass extends Emitter {
 		return setTimeout(fn, 500 - difference);
 	}
 
+	public isLoaded(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		return room.loaded !== undefined;
+	}
+
 	private unqueue() {
 		const requestId = this.requestsList.pop();
 		if (!requestId) {
@@ -130,82 +135,84 @@ class RoomHistoryManagerClass extends Emitter {
 		this.run(() => this.emit(requestId));
 	}
 
-	public async getMore(rid: IRoom['_id'], limit = defaultLimit): Promise<void> {
+	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
 		const room = this.getRoom(rid);
 
 		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
 			return;
 		}
 
-		room.isLoading.set(true);
+		try {
+			room.isLoading.set(true);
 
-		await this.queue();
+			await this.queue();
 
-		let ls = undefined;
+			let ls = undefined;
 
-		const subscription = Subscriptions.findOne({ rid });
-		if (subscription) {
-			({ ls } = subscription);
+			const subscription = Subscriptions.findOne({ rid });
+			if (subscription) {
+				({ ls } = subscription);
+			}
+
+			const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+			const result = await callWithErrorHandling(
+				'loadHistory',
+				rid,
+				room.oldestTs,
+				limit,
+				ls ? String(ls) : undefined,
+				showThreadsInMainChannel,
+			);
+
+			if (!result) {
+				throw new Error('loadHistory returned nothing');
+			}
+
+			this.unqueue();
+
+			const { messages = [] } = result;
+			room.unreadNotLoaded.set(result.unreadNotLoaded);
+			room.firstUnread.set(result.firstUnread);
+
+			if (messages.length > 0) {
+				room.oldestTs = messages[messages.length - 1].ts;
+			}
+
+			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+			room.scroll = {
+				scrollHeight: wrapper.scrollHeight,
+				scrollTop: wrapper.scrollTop,
+			};
+
+			await upsertMessageBulk({
+				msgs: messages.filter((msg) => msg.t !== 'command'),
+				subscription,
+			});
+
+			this.emit('loaded-messages');
+
+			if (!room.loaded) {
+				room.loaded = 0;
+			}
+
+			const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
+
+			room.loaded += visibleMessages.length;
+
+			if (messages.length < limit) {
+				room.hasMore.set(false);
+			}
+
+			if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+				return this.getMore(rid);
+			}
+
+			this.emit('loaded-messages');
+		} finally {
+			room.isLoading.set(false);
+			await waitAfterFlush();
 		}
-
-		const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
-		const result = await callWithErrorHandling(
-			'loadHistory',
-			rid,
-			room.oldestTs,
-			limit,
-			ls ? String(ls) : undefined,
-			showThreadsInMainChannel,
-		);
-
-		if (!result) {
-			throw new Error('loadHistory returned nothing');
-		}
-
-		this.unqueue();
-
-		const { messages = [] } = result;
-		room.unreadNotLoaded.set(result.unreadNotLoaded);
-		room.firstUnread.set(result.firstUnread);
-
-		if (messages.length > 0) {
-			room.oldestTs = messages[messages.length - 1].ts;
-		}
-
-		const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-		room.scroll = {
-			scrollHeight: wrapper.scrollHeight,
-			scrollTop: wrapper.scrollTop,
-		};
-
-		await upsertMessageBulk({
-			msgs: messages.filter((msg) => msg.t !== 'command'),
-			subscription,
-		});
-
-		this.emit('loaded-messages');
-
-		if (!room.loaded) {
-			room.loaded = 0;
-		}
-
-		const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
-
-		room.loaded += visibleMessages.length;
-
-		if (messages.length < limit) {
-			room.hasMore.set(false);
-		}
-
-		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
-			return this.getMore(rid);
-		}
-
-		this.emit('loaded-messages');
-
-		room.isLoading.set(false);
-		await waitAfterFlush();
 	}
 
 	public restoreScroll(rid: IRoom['_id']) {
@@ -286,10 +293,15 @@ class RoomHistoryManagerClass extends Emitter {
 		return room.isLoading.get();
 	}
 
+	public close(rid: IRoom['_id']) {
+		Messages.remove({ rid });
+		delete this.histories[rid];
+	}
+
 	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		Messages.remove({ rid });
-		room.isLoading.set(true);
+		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
 		room.oldestTs = undefined;
@@ -308,14 +320,20 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
-		this.clear(message.rid);
 
 		const subscription = Subscriptions.findOne({ rid: message.rid });
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
+		this.clear(message.rid);
+
 		if (!result) {
 			return;
+		}
+		const { messages = [] } = result;
+
+		if (messages.length > 0) {
+			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
 		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });

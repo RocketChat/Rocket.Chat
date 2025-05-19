@@ -25,6 +25,17 @@ export const honoAdapter = (hono: Hono) => async (expressReq: Request, res: Resp
 	);
 	res.status(honoRes.status);
 	honoRes.headers.forEach((value, key) => res.setHeader(key, value));
+
+	if (!honoRes.body) {
+		res.end();
+		return;
+	}
+
+	if (honoRes.body instanceof ReadableStream) {
+		Readable.fromWeb(honoRes.body as any).pipe(res);
+		return;
+	}
+
 	// Converting it to a Buffer because res.send appends always a charset to the Content-Type
 	// https://github.com/expressjs/express/issues/2238
 	res.send(Buffer.from(await honoRes.text()));
