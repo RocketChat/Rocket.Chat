@@ -12,6 +12,8 @@ import {
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
+import createDOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
 import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -23,6 +25,8 @@ import { MessageTypes } from '../../../ui-utils/lib/MessageTypes';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const logger = new Logger('Livechat-SendTranscript');
+
+const DOMPurify = createDOMPurify(new JSDOM('').window);
 
 export async function sendTranscript({
 	token,
@@ -65,7 +69,6 @@ export async function sendTranscript({
 		'livechat_video_call',
 		'omnichannel_priority_change_history',
 	];
-	const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 	const messages = Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
 		rid,
 		ignoredMessageTypes,
@@ -75,7 +78,6 @@ export async function sendTranscript({
 			sort: { ts: 1 },
 		},
 	);
-
 	let html = '<div> <hr>';
 	const InvalidFileMessage = `<div style="background-color: ${colors.n100}; text-align: center; border-color: ${
 		colors.n250
@@ -83,6 +85,17 @@ export async function sendTranscript({
 		'This_attachment_is_not_supported',
 		{ lng: userLanguage },
 	)}</div>`;
+
+	function escapeHtml(str: string): string {
+		if (typeof str !== 'string') return '';
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#x27;')
+			.replace(/\//g, '&#x2F;');
+	}
 
 	for await (const message of messages) {
 		let author;
@@ -96,62 +109,56 @@ export async function sendTranscript({
 		const messageType = isSystemMessage && MessageTypes.getType(message);
 
 		let messageContent = messageType
-			? `<i>${i18n.t(
+			? DOMPurify.sanitize(`
+				<i>${i18n.t(
 					messageType.message,
 					messageType.data
 						? { ...messageType.data(message), interpolation: { escapeValue: false } }
 						: { interpolation: { escapeValue: false } },
-				)}</i>`
-			: message.msg;
+				)}</i>`)
+			: escapeHtml(message.msg);
 
 		let filesHTML = '';
 
 		if (message.attachments && message.attachments?.length > 0) {
 			messageContent = message.attachments[0].description || '';
+			escapeHtml(messageContent);
 
 			for await (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
-					// ignore other types of attachments
 					continue;
 				}
 
 				if (!isFileImageAttachment(attachment)) {
-					filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
+					filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
 					continue;
 				}
 
-				if (!attachment.image_type || !acceptableImageMimeTypes.includes(attachment.image_type)) {
-					filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
-					continue;
-				}
-
-				// Image attachment can be rendered in email body
 				const file = message.files?.find((file) => file.name === attachment.title);
 
 				if (!file) {
-					filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
+					filesHTML += `<div>${escapeHtml(attachment.title || '')}${InvalidFileMessage}</div>`;
 					continue;
 				}
 
 				const uploadedFile = await Uploads.findOneById(file._id);
 
 				if (!uploadedFile) {
-					filesHTML += `<div>${file.name}${InvalidFileMessage}</div>`;
+					filesHTML += `<div>${escapeHtml(file.name)}${InvalidFileMessage}</div>`;
 					continue;
 				}
 
 				const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
-				filesHTML += `<div styles="color: ${colors.n700}; margin-top: 4px; flex-direction: "column";"><p>${file.name}</p><img src="data:${
-					attachment.image_type
-				};base64,${uploadedFileBuffer.toString(
-					'base64',
-				)}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;"/></div>`;
+				filesHTML += `<div style="color: ${colors.n700}; margin-top: 4px; flex-direction: column;">
+					<p>${escapeHtml(file.name)}</p>
+					<img src="data:${attachment.image_type};base64,${uploadedFileBuffer.toString('base64')}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;" />
+				</div>`;
 			}
 		}
 
 		const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 		const singleMessage = `
-			<p><strong>${author}</strong>  <em>${datetime}</em></p>
+			<p><strong>${escapeHtml(author)}</strong>  <em>${escapeHtml(datetime)}</em></p>
 			<p>${messageContent}</p>
 			<p>${filesHTML}</p>
 		`;
