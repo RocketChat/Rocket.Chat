@@ -709,7 +709,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe.only('[POST] omnichannel/contacts.conflicts', () => {
+	describe('[POST] omnichannel/contacts.conflicts', () => {
 		let contactToken: string;
 		let contactId: string;
 
