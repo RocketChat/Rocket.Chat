@@ -27,7 +27,6 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - traefik
-      - varnish
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
@@ -174,8 +173,6 @@ services:
       - ./varnish/default.vcl:/etc/varnish/default.vcl
     environment:
       - VARNISH_SIZE=2G
-    depends_on:
-      - rocketchat
     labels:
       traefik.enable: true
       traefik.http.services.varnish.loadbalancer.server.port: 80
