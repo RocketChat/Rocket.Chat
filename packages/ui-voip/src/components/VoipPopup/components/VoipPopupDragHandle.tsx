@@ -22,8 +22,7 @@ const VoipPopupDragHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Bo
 			ref={ref}
 			{...props}
 		>
-			{/* TODO: Using burger as a placeholder. Add the correct icon to fuselage */}
-			<Icon name='burger-menu' size='x20' />
+			<Icon color='info' name='stacked-meatballs' size='x20' />
 		</Box>
 	);
 });
