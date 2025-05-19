@@ -22,7 +22,7 @@ type VoipOngoingViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ session, position, ...props }, ref) => {
+const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(function VoipOngoingView({ session, position, ...props }, ref) {
 	const { startTransfer } = useVoipTransferModal({ session });
 	const contactData = useVoipContactId({ session, transferEnabled: false });
 
@@ -65,7 +65,5 @@ const VoipOngoingView = forwardRef<HTMLDivElement, VoipOngoingViewProps>(({ sess
 		</Container>
 	);
 });
-
-VoipOngoingView.displayName = 'VoipOngoingView';
 
 export default VoipOngoingView;

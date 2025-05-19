@@ -16,7 +16,7 @@ type VoipIncomingViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(({ session, position, ...props }, ref) => {
+const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(function VoipIncomingView({ session, position, ...props }, ref) {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
@@ -34,7 +34,5 @@ const VoipIncomingView = forwardRef<HTMLDivElement, VoipIncomingViewProps>(({ se
 		</Container>
 	);
 });
-
-VoipIncomingView.displayName = 'VoipIncomingView';
 
 export default VoipIncomingView;

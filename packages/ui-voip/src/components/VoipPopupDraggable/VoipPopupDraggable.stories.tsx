@@ -6,7 +6,7 @@ import { createMockVoipProviders } from '../../tests/mocks';
 
 const [MockedProviders] = createMockVoipProviders();
 
-const meta: Meta<typeof VoipPopupDraggable> = {
+export default {
 	title: 'Voip/VoipPopupDraggable',
 	component: VoipPopupDraggable,
 	parameters: {
@@ -21,9 +21,8 @@ const meta: Meta<typeof VoipPopupDraggable> = {
 			</MockedProviders>
 		),
 	],
-};
+} satisfies Meta<typeof VoipPopupDraggable>;
 
-export default meta;
 type Story = StoryObj<typeof VoipPopupDraggable>;
 
 export const Default: Story = {

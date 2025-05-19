@@ -10,7 +10,7 @@ const dragHandle = css`
 	}
 `;
 
-const VoipPopupDragHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Box>>((props, ref) => {
+const VoipPopupDragHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Box>>(function VoipPopupDragHandle(props, ref) {
 	return (
 		<Box
 			height={20}
@@ -27,7 +27,5 @@ const VoipPopupDragHandle = forwardRef<HTMLSpanElement, ComponentProps<typeof Bo
 		</Box>
 	);
 });
-
-VoipPopupDragHandle.displayName = 'VoipPopupDragHandle';
 
 export default VoipPopupDragHandle;

@@ -15,7 +15,7 @@ type VoipDialerViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ position, ...props }, ref) => {
+const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function VoipDialerView({ position, ...props }, ref) {
 	const { t } = useTranslation();
 	const { makeCall, closeDialer } = useVoipAPI();
 	const [number, setNumber] = useState('');
@@ -46,7 +46,5 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(({ positi
 		</Container>
 	);
 });
-
-VoipDialerView.displayName = 'VoipDialerView';
 
 export default VoipDialerView;

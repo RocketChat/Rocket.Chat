@@ -17,7 +17,7 @@ type VoipErrorViewProps = {
 	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session, position, ...props }, ref) => {
+const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(function VoipErrorView({ session, position, ...props }, ref) {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
@@ -56,7 +56,5 @@ const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(({ session,
 		</Container>
 	);
 });
-
-VoipErrorView.displayName = 'VoipErrorView';
 
 export default VoipErrorView;
