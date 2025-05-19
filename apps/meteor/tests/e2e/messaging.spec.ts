@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
@@ -141,64 +142,75 @@ test.describe('Messaging', () => {
 		});
 	});
 
-	test.describe.serial('Message by "chat.postMessage" API method', () => {
+	test.describe('Message by "chat.postMessage" API method', () => {
 		test('expect show a message', async ({ api }) => {
+			const messageText = faker.lorem.sentence();
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
-				text: 'Message from chat.postMessage',
+				text: messageText,
 			});
 
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message from chat.postMessage');
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(messageText);
 		});
 
 		test('expect show attachment text', async ({ api }) => {
+			const messageText = faker.lorem.sentence();
+			const attachmentText = faker.lorem.sentence();
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
-				text: 'Hello world',
+				text: messageText,
 				attachments: [
 					{
-						text: 'Attachment text',
+						text: attachmentText,
 					},
 				],
 			});
 
-			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText('Attachment text');
+			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText(attachmentText);
 		});
 
 		test('expect show attachment text with emoji', async ({ api }) => {
+			const messageText = faker.lorem.sentence();
+			const attachmentText = faker.lorem.sentence();
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
-				text: 'Hello world',
+				text: messageText,
 				attachments: [
 					{
-						text: 'Attachment text B) ',
+						text: `${attachmentText} B) `,
 					},
 				],
 			});
 
-			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText(/Attachment text \ud83d/g);
+			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText(`${attachmentText} \ud83d\ude0e `);
 		});
 
 		test('expect show attachment text without emoji inside code block', async ({ api }) => {
+			const messageText = faker.lorem.sentence();
+			const attachmentText = faker.lorem.sentence();
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			await api.post('/chat.postMessage', {
 				channel: targetChannel,
-				text: 'Hello world',
+				text: messageText,
 				attachments: [
 					{
-						text: '```Attachment text B) ```',
+						text: `\`\`\`${attachmentText} B) \`\`\``,
 					},
 				],
 			});
 
-			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText('Attachment text B) ');
+			await expect(poHomeChannel.content.lastUserMessageAttachment).toHaveText(`${attachmentText} B) `);
 		});
 	});
 
