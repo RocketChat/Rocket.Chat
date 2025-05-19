@@ -1386,7 +1386,9 @@ export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnich
 
 type POSTOmnichannelContactsConflictsProps = {
 	contactId: string;
-	customFields: Record<string, unknown>;
+	name?: string;
+	contactManager?: string;
+	customFields?: Record<string, unknown>;
 	wipeConflicts?: boolean;
 };
 
@@ -1396,6 +1398,14 @@ const POSTOmnichannelContactsConflictsSchema = {
 		contactId: {
 			type: 'string',
 		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'string',
+			nullable: true,
+		},
 		customFields: {
 			type: 'object',
 		},
@@ -1404,7 +1414,7 @@ const POSTOmnichannelContactsConflictsSchema = {
 			nullable: true,
 		},
 	},
-	required: ['contactId', 'customFields'],
+	required: ['contactId'],
 	additionalProperties: false,
 };
 

@@ -1,16 +1,19 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactConflictingField } from '@rocket.chat/core-typings';
 import { LivechatContacts, Settings } from '@rocket.chat/models';
 
+import { validateContactManager } from './validateContactManager';
 import { notifyOnSettingChanged } from '../../../../lib/server/lib/notifyListener';
 
 export type ResolveContactConflictsParams = {
 	contactId: string;
-	customFields: Record<string, unknown>;
+	name?: string;
+	customFields?: Record<string, unknown>;
+	contactManager?: string;
 	wipeConflicts?: boolean;
 };
 
 export async function resolveContactConflicts(params: ResolveContactConflictsParams): Promise<ILivechatContact> {
-	const { contactId, customFields, wipeConflicts } = params;
+	const { contactId, name, customFields, contactManager, wipeConflicts } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'customFields' | 'conflictingFields'>>(contactId, {
 		projection: { _id: 1, customFields: 1, conflictingFields: 1 },
@@ -18,6 +21,10 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
+	}
+
+	if (contactManager) {
+		await validateContactManager(contactManager);
 	}
 
 	if (wipeConflicts && contact.conflictingFields?.length) {
@@ -29,14 +36,27 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		}
 	}
 
+	let updatedConflictingFieldsArr: ILivechatContactConflictingField[] = [];
 	if (contact.conflictingFields && !wipeConflicts) {
-		contact.conflictingFields = contact.conflictingFields.filter((item) => item.field !== `customFields.${Object.keys(customFields)[0]}`);
+		const fieldsToRemove = new Set<string>(
+			[
+				name && 'name',
+				contactManager && 'manager',
+				...(customFields ? Object.keys(customFields).map((key) => `customFields.${key}`) : []),
+			].filter((field): field is string => !!field),
+		);
+
+		updatedConflictingFieldsArr = contact.conflictingFields.filter(
+			(conflictingField: ILivechatContactConflictingField) => !fieldsToRemove.has(conflictingField.field),
+		) as ILivechatContactConflictingField[];
 	}
 
-	Object.assign(contact, {
-		customFields: { ...contact.customFields, ...customFields },
-		...(wipeConflicts && { conflictingFields: [] }),
-	});
+	const dataToUpdate = {
+		...(name && { name }),
+		...(contactManager && { contactManager }),
+		...(customFields && { customFields: { ...contact.customFields, ...customFields } }),
+		conflictingFields: updatedConflictingFieldsArr,
+	};
 
-	return LivechatContacts.updateContact(contactId, contact);
+	return LivechatContacts.updateContact(contactId, dataToUpdate);
 }
