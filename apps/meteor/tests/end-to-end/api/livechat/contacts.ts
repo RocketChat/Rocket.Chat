@@ -22,6 +22,7 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
+	createManager,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -708,17 +709,21 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe.skip('[POST] omnichannel/contacts.conflicts', () => {
+	describe.only('[POST] omnichannel/contacts.conflicts', () => {
+		let contactToken: string;
 		let contactId: string;
 
 		before(async () => {
+			const visitor = await createVisitor();
+			contactToken = visitor.token;
+
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
 				.send({
-					name: faker.person.fullName(),
-					emails: [faker.internet.email().toLowerCase()],
-					phones: [faker.phone.number()],
+					name: visitor.name,
+					emails: [visitor.visitorEmails?.[0].address],
+					phones: [visitor.phone?.[0].phoneNumber],
 				});
 			contactId = body.contactId;
 
@@ -734,8 +739,10 @@ describe('LIVECHAT - contacts', () => {
 				public: true,
 			});
 
-			await request.post(api('livechat/custom.fields')).set(credentials).send({ key: 'cf1', value: '123' });
-			await request.post(api('livechat/custom.fields')).set(credentials).send({ key: 'cf1', value: '456', overwrite: false });
+			await request.post(api('livechat/custom.fields')).send({ token: contactToken, customFields: [{ key: 'cf1', value: '123' }] });
+			await request
+				.post(api('livechat/custom.fields'))
+				.send({ token: contactToken, customFields: [{ key: 'cf1', value: '456' }], overwrite: false });
 		});
 
 		after(async () => {
@@ -753,8 +760,40 @@ describe('LIVECHAT - contacts', () => {
 						cf1: '123',
 					},
 				});
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result');
+
+			expect(res.body.result).to.have.property('customFields');
+			expect(res.body.result.customFields).to.have.property('cf1', '123');
+		});
+
+		it('should resolve the contact name conflict', async () => {
+			const newName = faker.person.fullName();
+			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
+				contactId,
+				name: newName,
+			});
 
 			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result');
+
+			expect(res.body.result).to.have.property('name');
+			expect(res.body.result.name).to.equal(newName);
+		});
+
+		it.skip('should resolve the contact manager conflict', async () => {
+			const manager = await createManager();
+			console.log('manager', manager);
+			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
+				contactId,
+				contactManager: manager._id,
+			});
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('result');
 		});
 	});
 
