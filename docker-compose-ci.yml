@@ -27,12 +27,14 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - traefik
+      - varnish
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
       traefik.http.middlewares.test-retry.retry.attempts: 4
+      traefik.http.routers.rocketchat.middlewares: varnish-cache
 
   authorization-service:
     platform: linux/amd64
@@ -165,6 +167,21 @@ services:
 
   nats:
     image: nats:2.6-alpine
+
+  varnish:
+    image: varnish:stable
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl
+    environment:
+      - VARNISH_SIZE=2G
+    depends_on:
+      - rocketchat
+    labels:
+      traefik.enable: true
+      traefik.http.services.varnish.loadbalancer.server.port: 80
+      traefik.http.routers.varnish.service: varnish
+      traefik.http.routers.varnish.rule: PathPrefix(`/`)
+      traefik.http.middlewares.varnish-cache.headers.customrequestheaders.X-Forwarded-Proto: https
 
   traefik:
     image: traefik:v3.1
