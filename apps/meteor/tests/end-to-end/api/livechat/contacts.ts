@@ -22,7 +22,6 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
-	createManager,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
@@ -783,12 +782,12 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.result.name).to.equal(newName);
 		});
 
-		it.skip('should resolve the contact manager conflict', async () => {
-			const manager = await createManager();
-			console.log('manager', manager);
+		it('should resolve the contact manager conflict', async () => {
+			const agent = await createAgent();
+
 			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
 				contactId,
-				contactManager: manager._id,
+				contactManager: agent._id,
 			});
 
 			expect(res.status).to.be.equal(200);
