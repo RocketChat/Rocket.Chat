@@ -5,4 +5,4 @@
 "@rocket.chat/ui-voip": minor
 ---
 
-Introduces a new feature preview `Draggable VoIP popup` which enables dragging the VoIP call widget to change it's position on the screen.
+Introduces a new feature which enables dragging the VoIP call widget to change it's position on the screen.
