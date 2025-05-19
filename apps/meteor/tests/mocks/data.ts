@@ -13,6 +13,7 @@ import type {
 	Serialized,
 	ILivechatAgent,
 	ILivechatTag,
+	IOmnichannelBusinessUnit,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -372,6 +373,19 @@ export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Se
 		description: 'description',
 		numDepartments: 0,
 		departments: [],
+		...overrides,
+	};
+}
+
+export function createFakeBusinessUnit(overrides?: Partial<Serialized<IOmnichannelBusinessUnit>>): Serialized<IOmnichannelBusinessUnit> {
+	return {
+		_id: faker.string.uuid(),
+		name: faker.commerce.department(),
+		visibility: 'public',
+		type: 'u',
+		numMonitors: 1,
+		numDepartments: 1,
+		_updatedAt: new Date().toISOString(),
 		...overrides,
 	};
 }
