@@ -15,6 +15,7 @@ import type {
 	ILivechatTag,
 	IOmnichannelBusinessUnit,
 	ILivechatDepartment,
+	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -406,3 +407,20 @@ export const createFakeDepartment = (overrides: Partial<Serialized<ILivechatDepa
 	parentId: undefined,
 	...overrides,
 });
+
+export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonitor>>): Serialized<ILivechatMonitor> {
+	const firstName = faker.person.firstName();
+	const lastName = faker.person.lastName();
+	const username = faker.internet.userName({ firstName, lastName });
+
+	return {
+		_id: faker.string.uuid(),
+		username,
+		name: `${firstName} ${lastName}`,
+		type: '',
+		enabled: true,
+		numMonitors: 0,
+		visibility: 'visible',
+		...overrides,
+	};
+}
