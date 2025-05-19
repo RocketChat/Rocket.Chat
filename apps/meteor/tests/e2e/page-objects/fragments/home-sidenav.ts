@@ -96,6 +96,22 @@ export class HomeSidenav {
 		return this.page.getByRole('search').getByRole('listbox');
 	}
 
+	get sidebarItemMessage(): Locator {
+		return this.page.locator('[data-qa="sidebar-item"]').locator('.message-body--unstyled').first();
+	}
+
+	get sidebarListItem(): Locator {
+		return this.page.locator('[data-testid="virtuoso-item-list"]').getByRole('listitem').nth(1);
+	}
+
+	get switchAvatars(): Locator {
+		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' }).locator('label i');
+	}
+
+	async getSidebarAvatars(channelName: string): Promise<Locator> {
+		return this.page.locator(`[data-qa="sidebar-item-title"]:has-text("${channelName}")`).locator('figure.rcx-avatar');
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
