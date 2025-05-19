@@ -7,7 +7,7 @@ export const useRoomFilesNavigation = () => {
 	const roomFilesFocusManager = useFocusManager();
 
 	const roomFilesRef = useCallback(
-		(node: HTMLDivElement) => {
+		(node: HTMLDivElement | null) => {
 			if (!node) {
 				return;
 			}
