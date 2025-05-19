@@ -1,39 +1,28 @@
-import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import { memo, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUnitsList } from '../../components/Omnichannel/hooks/useUnitsList';
-import { useRecordList } from '../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../lib/asyncState';
 
-type AutoCompleteUnitsProps = {
-	value?: PaginatedMultiSelectOption[];
-	error?: boolean;
-	placeholder?: string;
-	onChange: (value: PaginatedMultiSelectOption[]) => void;
-};
+type AutoCompleteUnitsProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
+>;
 
-const AutoCompleteUnits = ({ value, error, placeholder, onChange }: AutoCompleteUnitsProps): ReactElement => {
+const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompleteUnitsProps): ReactElement => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
-
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);
 
-	const { itemsList: unitsList, loadMoreItems: loadMoreUnits } = useUnitsList(
-		useMemo(() => ({ text: debouncedUnitFilter }), [debouncedUnitFilter]),
-	);
-
-	const { phase: unitsPhase, itemCount: unitsTotal, items: unitItems } = useRecordList(unitsList);
+	const { data: unitItems, fetchNextPage } = useUnitsList({ filter: debouncedUnitFilter });
 
 	return (
 		<PaginatedMultiSelectFiltered
+			{...props}
 			value={value}
-			error={error}
 			placeholder={placeholder || t('Select_an_option')}
-			onChange={onChange}
 			filter={unitsFilter}
 			width='100%'
 			flexShrink={0}
@@ -41,9 +30,8 @@ const AutoCompleteUnits = ({ value, error, placeholder, onChange }: AutoComplete
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			options={unitItems}
 			data-qa='autocomplete-multiple-unit'
-			endReached={
-				unitsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreUnits(start!, Math.min(50, unitsTotal))
-			}
+			onChange={onChange}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };

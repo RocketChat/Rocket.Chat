@@ -55,7 +55,7 @@ test.describe('OC - Business Hours', () => {
 		await test.step('expect to create a new business hours', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
 			await poOmnichannelBusinessHours.inputName.fill(BHName);
-			await poOmnichannelBusinessHours.selectDepartment(department.data);
+			await poOmnichannelBusinessHours.selectDepartment(department.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
 
 			await test.step('expect business hours to have been created', async () => {
@@ -103,28 +103,28 @@ test.describe('OC - Business Hours', () => {
 		await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await poOmnichannelBusinessHours.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
 		});
 
 		await test.step('expect department to be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await expect(page.getByRole('option', { name: department2.data.name })).toBeVisible();
+			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeVisible();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
 		await test.step('expect to remove business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await poOmnichannelBusinessHours.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
 		});
 
 		await test.step('expect department to not be in the chosen departments list', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
-			await expect(page.getByRole('option', { name: department2.data.name })).toBeHidden();
+			await expect(poOmnichannelBusinessHours.findDepartmentsChipOption(department2.data.name)).toBeHidden();
 			await poOmnichannelBusinessHours.btnBack.click();
 		});
 
