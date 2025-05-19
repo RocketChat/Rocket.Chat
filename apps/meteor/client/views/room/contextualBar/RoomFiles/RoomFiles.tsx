@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import FileItem from './components/FileItem';
+import { useRoomFilesNavigation } from './hooks/useRoomFilesListNavigation';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -56,6 +57,8 @@ const RoomFiles = ({
 		[t],
 	);
 
+	const roomFilesRef = useRoomFilesNavigation();
+
 	return (
 		<>
 			<ContextualbarHeader>
@@ -84,7 +87,7 @@ const RoomFiles = ({
 				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-						<VirtualizedScrollbars>
+						<VirtualizedScrollbars ref={roomFilesRef}>
 							<Virtuoso
 								style={{
 									height: '100%',
@@ -101,6 +104,7 @@ const RoomFiles = ({
 										return <Box is='ul' {...props} ref={ref} role='list' />;
 									}),
 								}}
+								tabIndex={-1}
 							/>
 						</VirtualizedScrollbars>
 					</Box>

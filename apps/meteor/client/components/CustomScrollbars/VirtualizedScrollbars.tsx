@@ -1,3 +1,4 @@
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import type { HTMLAttributes, ReactElement } from 'react';
 import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
@@ -13,13 +14,14 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 	{ overflowX, ...props },
 	ref,
 ) {
-	const rootRef = useRef(null);
+	const rootRef = useRef<HTMLElement>(null);
 	const [scroller, setScroller] = useState(null);
 	const scrollbarsOptions = getScrollbarsOptions(overflowX);
 	const [initialize, osInstance] = useOverlayScrollbars({
 		options: scrollbarsOptions,
 		defer: true,
 	});
+	const mergedRef = useMergedRefs(rootRef, ref);
 
 	useEffect(() => {
 		const { current: root } = rootRef;
@@ -36,7 +38,7 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 		return () => osInstance()?.destroy();
 	}, [initialize, osInstance, ref, scroller]);
 
-	return <BaseScrollbars ref={rootRef}>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
+	return <BaseScrollbars ref={mergedRef}>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
 });
 
 export default memo(VirtualizedScrollbars);
