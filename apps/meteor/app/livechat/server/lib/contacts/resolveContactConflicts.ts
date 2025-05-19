@@ -31,7 +31,7 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		await validateContactManager(contactManager);
 	}
 
-	let updatedConflictingFieldsArr: ILivechatContactConflictingField[] = contact.conflictingFields ?? [];
+	let updatedConflictingFieldsArr: ILivechatContactConflictingField[] = [];
 	if (wipeConflicts) {
 		const value = await Settings.incrementValueById('Resolved_Conflicts_Count', contact.conflictingFields.length, {
 			returnDocument: 'after',

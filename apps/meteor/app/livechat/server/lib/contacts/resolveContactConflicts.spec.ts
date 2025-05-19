@@ -124,6 +124,80 @@ describe('resolveContactConflicts', () => {
 		});
 	});
 
+	it('should wipe conflicts if wipeConflicts = true', async () => {
+		it('should update the contact with the resolved name', async () => {
+			modelsMock.LivechatContacts.findOneById.resolves({
+				_id: 'contactId',
+				name: 'Name',
+				customFields: { customField: 'newValue' },
+				conflictingFields: [
+					{ field: 'name', value: 'NameTest' },
+					{ field: 'customFields.customField', value: 'value' },
+				],
+			});
+			modelsMock.Settings.incrementValueById.resolves(2);
+			modelsMock.LivechatContacts.updateContact.resolves({
+				_id: 'contactId',
+				name: 'New Name',
+				customField: { customField: 'newValue' },
+				conflictingFields: [],
+			} as Partial<ILivechatContact>);
+
+			const result = await resolveContactConflicts({ contactId: 'contactId', name: 'New Name', wipeConflicts: true });
+
+			expect(modelsMock.LivechatContacts.findOneById.getCall(0).args[0]).to.be.equal('contactId');
+
+			expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
+			expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(2);
+
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ name: 'New Name' });
+			expect(result).to.be.deep.equal({
+				_id: 'contactId',
+				name: 'New Name',
+				customField: { customField: 'newValue' },
+				conflictingFields: [],
+			});
+		});
+	});
+
+	it('should wipe conflicts if wipeConflicts = true', async () => {
+		it('should update the contact with the resolved name', async () => {
+			modelsMock.LivechatContacts.findOneById.resolves({
+				_id: 'contactId',
+				name: 'Name',
+				customFields: { customField: 'newValue' },
+				conflictingFields: [
+					{ field: 'name', value: 'NameTest' },
+					{ field: 'customFields.customField', value: 'value' },
+				],
+			});
+			modelsMock.Settings.incrementValueById.resolves(2);
+			modelsMock.LivechatContacts.updateContact.resolves({
+				_id: 'contactId',
+				name: 'New Name',
+				customField: { customField: 'newValue' },
+				conflictingFields: [],
+			} as Partial<ILivechatContact>);
+
+			const result = await resolveContactConflicts({ contactId: 'contactId', name: 'New Name', wipeConflicts: false });
+
+			expect(modelsMock.LivechatContacts.findOneById.getCall(0).args[0]).to.be.equal('contactId');
+
+			expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
+			expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(1);
+
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ name: 'New Name' });
+			expect(result).to.be.deep.equal({
+				_id: 'contactId',
+				name: 'New Name',
+				customField: { customField: 'newValue' },
+				conflictingFields: [{ field: 'customFields.customField', value: 'value' }],
+			});
+		});
+	});
+
 	it('should throw an error if the contact does not exist', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves(undefined);
 		await expect(resolveContactConflicts({ contactId: 'id', customField: { customField: 'newValue' } })).to.be.rejectedWith(

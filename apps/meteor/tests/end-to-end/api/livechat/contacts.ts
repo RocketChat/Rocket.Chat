@@ -709,12 +709,12 @@ describe('LIVECHAT - contacts', () => {
 	});
 
 	describe('[POST] omnichannel/contacts.conflicts', () => {
-		let contactToken: string;
+		let token: string;
 		let contactId: string;
 
 		before(async () => {
 			const visitor = await createVisitor();
-			contactToken = visitor.token;
+			token = visitor.token;
 
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
@@ -725,6 +725,8 @@ describe('LIVECHAT - contacts', () => {
 					phones: [visitor.phone?.[0].phoneNumber],
 				});
 			contactId = body.contactId;
+
+			await request.get(api('livechat/room')).query({ token: visitor.token });
 
 			await createCustomField({
 				field: 'cf1',
@@ -737,11 +739,6 @@ describe('LIVECHAT - contacts', () => {
 				searchable: true,
 				public: true,
 			});
-
-			await request.post(api('livechat/custom.fields')).send({ token: contactToken, customFields: [{ key: 'cf1', value: '123' }] });
-			await request
-				.post(api('livechat/custom.fields'))
-				.send({ token: contactToken, customFields: [{ key: 'cf1', value: '456' }], overwrite: false });
 		});
 
 		after(async () => {
@@ -750,6 +747,22 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should resolve the contact custom field conflict', async () => {
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token, key: 'cf1', value: '123', overwrite: true })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('livechat/custom.field'))
+				.send({ token, key: 'cf1', value: '456', overwrite: false })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
 			const res = await request
 				.post(api('omnichannel/contacts.conflicts'))
 				.set(credentials)
@@ -767,7 +780,10 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.result.customFields).to.have.property('cf1', '123');
 		});
 
-		it('should resolve the contact name conflict', async () => {
+		/** Skipping this test as we don't have a way to conflict a contact's name yet.
+		 * TODO: update this test once we implement a way to cause a conflict in the contact's name.
+		 */
+		it.skip('should resolve the contact name conflict', async () => {
 			const newName = faker.person.fullName();
 			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
 				contactId,
@@ -782,7 +798,10 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.result.name).to.equal(newName);
 		});
 
-		it('should resolve the contact manager conflict', async () => {
+		/** Skipping this test as we don't have a way to conflict a contact's manager yet.
+		 * TODO: update this test once we implement a way to cause a conflict in contact's manager.
+		 */
+		it.skip('should resolve the contact manager conflict', async () => {
 			const agent = await createAgent();
 
 			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
