@@ -47,6 +47,10 @@ export class HomeContent {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
+	get lastUserMessageAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message-attachment"]').last();
+	}
+
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
