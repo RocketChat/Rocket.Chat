@@ -55,11 +55,13 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const renderItem = ({ label, value, ...props }: ComponentProps<typeof Option>): ReactElement => {
 		if (withCheckbox) {
-			<CheckOption
-				{...props}
-				label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
-				selected={value ? selectedValues.has(value) : false}
-			/>;
+			return (
+				<CheckOption
+					{...props}
+					label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
+					selected={value ? selectedValues.has(value) : false}
+				/>
+			);
 		}
 
 		return <Option {...props} label={label} />;
