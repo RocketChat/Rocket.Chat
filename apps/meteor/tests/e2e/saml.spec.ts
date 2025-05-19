@@ -1,12 +1,10 @@
-import child_process from 'child_process';
-import path from 'path';
-
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
-import { v2 as compose } from 'docker-compose';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
 import * as constants from './config/constants';
+import { provideContainerFor } from './containers/provideContainer';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
@@ -20,7 +18,7 @@ import { test, expect } from './utils/test';
 
 const KEY = 'fuselage-sessionStorage-saml_invite_token';
 
-const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
+const resetTestData = async ({ cleanupOnly = false }: { cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
@@ -66,7 +64,9 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 		{ _id: 'SAML_Custom_Default_button_color', value: '#185925' },
 	];
 
-	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
+	await Promise.all(
+		settings.map(({ _id, value }) => connection.db().collection<ISetting>('rocketchat_settings').updateOne({ _id }, { $set: { value } })),
+	);
 };
 
 const setupCustomRole = async (api: BaseTest['api']) => {
@@ -84,10 +84,10 @@ test.describe('SAML', () => {
 	let targetInviteGroupName: string;
 	let inviteId: string;
 
-	const containerPath = path.join(__dirname, 'containers', 'saml');
+	const container = provideContainerFor('SAML');
 
 	test.beforeAll(async ({ api }) => {
-		await resetTestData({ api });
+		await resetTestData();
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
@@ -97,13 +97,7 @@ test.describe('SAML', () => {
 			samlRoleId = await setupCustomRole(api);
 		}
 
-		await compose.buildOne('testsamlidp_idp', {
-			cwd: containerPath,
-		});
-
-		await compose.upOne('testsamlidp_idp', {
-			cwd: containerPath,
-		});
+		await container.startUp();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -120,18 +114,7 @@ test.describe('SAML', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await compose.down({
-			cwd: containerPath,
-		});
-
-		// the compose CLI doesn't have any way to remove images, so try to remove it with a direct call to the docker cli, but ignore errors if it fails.
-		try {
-			child_process.spawn('docker', ['rmi', 'saml-testsamlidp_idp'], {
-				cwd: containerPath,
-			});
-		} catch {
-			// ignore errors here
-		}
+		await container.cleanUp();
 
 		// Remove saml test users so they don't interfere with other tests
 		await resetTestData({ cleanupOnly: true });
