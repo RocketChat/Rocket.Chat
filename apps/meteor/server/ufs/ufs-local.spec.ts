@@ -6,6 +6,8 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import type { SinonStub } from 'sinon';
 
+// import { Config } from './ufs-config';
+// import { UploadFS } from './ufs';
 import type { LocalStore as LocalStoreClass } from './ufs-local';
 
 const fakeCollection = {
@@ -20,17 +22,29 @@ const ufsFilterMock = proxyquire.noCallThru().load('./ufs-filter', {
 	'meteor/mongo': {},
 	'meteor/npm-mongo': {},
 });
-// Create the UploadFS mock object as a callable function with properties
-function UploadFS() {
-	return UploadFS;
-}
-Object.assign(UploadFS, {
-	store: {},
-	config: { tmpDir: '/tmp', tmpDirPermissions: '0700' },
-	addStore: sinon.stub(),
-	getStore: sinon.stub().returns(undefined),
-	getTempFilePath: sinon.stub().returns('/tmp/mockfile'),
+
+const { UploadFS } = proxyquire.noCallThru().load('./ufs', {
+	'meteor/meteor': {},
+	'meteor/check': {},
+	'meteor/mongo': {},
+	'meteor/npm-mongo': {},
+	'./ufs-filter': ufsFilterMock,
+	'./ufs-store': {
+		Store: Object,
+	},
 });
+
+// Create the UploadFS mock object as a callable function with properties
+// function UploadFS() {
+// 	return UploadFS;
+// }
+// Object.assign(UploadFS, {
+// 	store: {},
+// 	config: new Config(),
+// 	addStore: sinon.stub(),
+// 	getStore: sinon.stub().returns(undefined),
+// 	getTempFilePath: sinon.stub().returns('/tmp/mockfile'),
+// });
 // The module must export { UploadFS: ... }
 const ufsMock = { UploadFS };
 const ufsMockModule = { UploadFS };
@@ -48,7 +62,7 @@ const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
 // Patch ufsStoreMock to export all possible ways (default, named, etc)
 const ufsStoreMock = Object.assign({}, ufsStoreMockRaw, { default: ufsStoreMockRaw, ufsStoreMock: ufsStoreMockRaw });
 const localStoreProxy = proxyquire.noCallThru().load('./ufs-local', {
-	'mkdirp': sinon.stub(),
+	// 'mkdirp': sinon.stub(),
 	'meteor/meteor': {},
 	'meteor/check': {},
 	'meteor/mongo': {},
@@ -65,24 +79,21 @@ const { LocalStore } = localStoreProxy as {
 describe('LocalStore', () => {
 	let store: LocalStoreClass;
 	let unlinkStub: SinonStub;
-	let statStub: SinonStub;
 
 	before(() => {
 		fakeCollection.removeById.resolves();
 		fakeCollection.findOne.resolves({ _id: 'test', name: 'file.txt' });
+		store = new LocalStore({ name: 'test', collection: fakeCollection as any, path: '/tmp/ufs-local' });
 	});
 
 	beforeEach(() => {
-		store = new LocalStore({ name: 'test', collection: fakeCollection as any, path: '/tmp' });
 		unlinkStub = sinon.stub(fs.promises, 'unlink').resolves();
-		statStub = sinon.stub(fs, 'stat').callsFake((_path: any, cb: any) => cb?.(null));
 		fakeCollection.removeById.resetHistory();
 		fakeCollection.findOne.resetHistory();
 	});
 
 	afterEach(() => {
 		unlinkStub.restore();
-		statStub.restore();
 	});
 
 	it('should not throw if file does not exist (ENOENT)', async () => {
