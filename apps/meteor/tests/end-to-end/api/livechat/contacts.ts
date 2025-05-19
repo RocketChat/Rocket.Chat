@@ -779,40 +779,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.result).to.have.property('customFields');
 			expect(res.body.result.customFields).to.have.property('cf1', '123');
 		});
-
-		/** Skipping this test as we don't have a way to conflict a contact's name yet.
-		 * TODO: update this test once we implement a way to cause a conflict in the contact's name.
-		 */
-		it.skip('should resolve the contact name conflict', async () => {
-			const newName = faker.person.fullName();
-			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
-				contactId,
-				name: newName,
-			});
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('result');
-
-			expect(res.body.result).to.have.property('name');
-			expect(res.body.result.name).to.equal(newName);
-		});
-
-		/** Skipping this test as we don't have a way to conflict a contact's manager yet.
-		 * TODO: update this test once we implement a way to cause a conflict in contact's manager.
-		 */
-		it.skip('should resolve the contact manager conflict', async () => {
-			const agent = await createAgent();
-
-			const res = await request.post(api('omnichannel/contacts.conflicts')).set(credentials).send({
-				contactId,
-				contactManager: agent._id,
-			});
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('result');
-		});
 	});
 
 	describe('Contact Rooms', () => {
