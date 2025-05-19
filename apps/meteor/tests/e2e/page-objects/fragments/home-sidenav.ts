@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
@@ -211,10 +212,14 @@ export class HomeSidenav {
 	}
 
 	async createEncryptedChannel(name: string) {
+		const toastMessages = new ToastMessages(this.page);
+
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+
+		await toastMessages.dismissToast('success');
 	}
 }
