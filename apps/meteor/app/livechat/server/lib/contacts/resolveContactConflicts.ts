@@ -23,6 +23,10 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		throw new Error('error-contact-not-found');
 	}
 
+	if (!contact.conflictingFields) {
+		throw new Error('error-contact-has-no-conflicts');
+	}
+
 	if (contactManager) {
 		await validateContactManager(contactManager);
 	}
@@ -36,8 +40,8 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		}
 	}
 
-	let updatedConflictingFieldsArr: ILivechatContactConflictingField[] = [];
-	if (contact.conflictingFields && !wipeConflicts) {
+	let updatedConflictingFieldsArr: ILivechatContactConflictingField[] = contact.conflictingFields ?? [];
+	if (!wipeConflicts) {
 		const fieldsToRemove = new Set<string>(
 			[
 				name && 'name',

@@ -132,6 +132,20 @@ describe('resolveContactConflicts', () => {
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
 	});
 
+	it('should throw an error if the contact has no conflicting fields', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves({
+			_id: 'contactId',
+			name: 'Name',
+			contactManager: 'contactManagerId',
+			customFields: { customField: 'value' },
+			conflictingFields: [],
+		});
+		await expect(resolveContactConflicts({ contactId: 'id', customField: { customField: 'newValue' } })).to.be.rejectedWith(
+			'error-contact-has-no-conflicts',
+		);
+		expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
+	});
+
 	it('should throw an error if the contact manager is invalid', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves({
 			_id: 'contactId',
