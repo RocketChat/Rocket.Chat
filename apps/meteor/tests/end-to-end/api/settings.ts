@@ -281,7 +281,8 @@ describe('[Settings]', () => {
 		let endDate: Date;
 
 		before(async () => {
-			// Change a few settings so we can test filtering
+			// Changing these settings to true and then false ensures that we have audited events
+			// So we can test filtering reliably
 			startDate = new Date();
 			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', true), updateSetting('Accounts_AllowDeleteOwnAccount', true)]);
 
