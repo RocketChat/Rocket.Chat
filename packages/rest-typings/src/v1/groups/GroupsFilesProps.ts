@@ -8,9 +8,24 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps>;
+export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
+	name?: string;
+	typeGroup?: string;
+};
 
 const GroupsFilesPropsSchema = withGroupBaseProperties({
+	roomId: {
+		type: 'string',
+		nullable: true,
+	},
+	name: {
+		type: 'string',
+		nullable: true,
+	},
+	typeGroup: {
+		type: 'string',
+		nullable: true,
+	},
 	count: {
 		type: 'number',
 		nullable: true,
