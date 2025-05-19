@@ -39,17 +39,18 @@ const Container = styled('article', ({ position: _position, ...props }: Pick<Con
 	z-index: 100;
 `;
 
-const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(
-	({ children, position = { top: 0, left: 0 }, dragHandleRef, ...props }, ref) => (
+const VoipPopupContainer = forwardRef<HTMLDivElement, ContainerProps>(function VoipPopupContainer(
+	{ children, position = { top: 0, left: 0 }, dragHandleRef, ...props },
+	ref,
+) {
+	return (
 		<FocusScope autoFocus restoreFocus>
 			<Container ref={ref} aria-labelledby='voipPopupTitle' position={position} {...props}>
 				<VoipPopupDragHandle ref={dragHandleRef} />
 				{children}
 			</Container>
 		</FocusScope>
-	),
-);
-
-VoipPopupContainer.displayName = 'VoipPopupContainer';
+	);
+});
 
 export default VoipPopupContainer;
