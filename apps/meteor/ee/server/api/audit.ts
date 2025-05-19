@@ -170,10 +170,15 @@ API.v1.get(
 		const { sort } = await this.parseJsonQuery();
 		const _sort = { ts: sort?.ts ? sort?.ts : -1 };
 
+		// transform { actor: { type: 'user' } } to { 'actor.type': 'user' }
+		// If actor is passed as an object, mongo will only return full matches to the object
+		// Meaning that if we pass { actor: { type: 'user' } }, no results will be returned, because actor has extra properties
+		const actorQuery = Object.fromEntries(Object.keys(actor || {}).map((key) => [`actor.${key}`, (actor as any)[key]]));
+
 		const { cursor, totalCount } = ServerEvents.findPaginated(
 			{
 				...(settingId && { 'data.key': 'id', 'data.value': settingId }),
-				...(actor && { actor }),
+				...actorQuery,
 				ts: {
 					$gte: start ? new Date(start as string) : new Date(0),
 					$lte: end ? new Date(end as string) : new Date(),
