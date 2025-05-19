@@ -708,6 +708,56 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe.skip('[POST] omnichannel/contacts.conflicts', () => {
+		let contactId: string;
+
+		before(async () => {
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					emails: [faker.internet.email().toLowerCase()],
+					phones: [faker.phone.number()],
+				});
+			contactId = body.contactId;
+
+			await createCustomField({
+				field: 'cf1',
+				label: 'Custom Field 1',
+				scope: 'visitor',
+				visibility: 'public',
+				type: 'input',
+				required: true,
+				regexp: '^[0-9]+$',
+				searchable: true,
+				public: true,
+			});
+
+			await request.post(api('livechat/custom.fields')).set(credentials).send({ key: 'cf1', value: '123' });
+			await request.post(api('livechat/custom.fields')).set(credentials).send({ key: 'cf1', value: '456', overwrite: false });
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('update-livechat-contact');
+			await deleteCustomField('cf1');
+		});
+
+		it('should resolve the contact custom field conflict', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.conflicts'))
+				.set(credentials)
+				.send({
+					contactId,
+					customFields: {
+						cf1: '123',
+					},
+				});
+
+			expect(res.status).to.be.equal(200);
+		});
+	});
+
 	describe('Contact Rooms', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 
