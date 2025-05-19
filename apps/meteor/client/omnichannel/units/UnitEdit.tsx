@@ -1,27 +1,15 @@
 import type { ILivechatDepartment, ILivechatUnitMonitor, Serialized, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import {
-	FieldError,
-	Field,
-	TextInput,
-	Button,
-	PaginatedMultiSelectFiltered,
-	Select,
-	ButtonGroup,
-	FieldGroup,
-	Box,
-	FieldLabel,
-	FieldRow,
-	CheckOption,
-} from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo, useState } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
+import AutoCompleteMonitors from '../../components/AutoCompleteMonitors';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -30,9 +18,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
-import { useRecordList } from '../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useMonitorsList } from '../../views/hooks/useMonitorsList';
 
 type UnitEditFormData = {
 	name: string;
@@ -61,15 +46,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	const queryClient = useQueryClient();
 
 	const handleDeleteUnit = useRemoveUnit();
-
-	const [monitorsFilter, setMonitorsFilter] = useState('');
-	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
-
-	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
-	);
-
-	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(monitorsList);
 
 	const visibilityOpts: SelectOption[] = [
 		['public', t('Public')],
@@ -112,15 +88,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 	});
 
 	const { departments, monitors } = watch();
-
-	const monitorsOptions = useMemo(() => {
-		const pending = monitors.filter(({ value }) => !monitorsItems.find((mon) => mon._id === value));
-		const mappedMonitorsItems = monitorsItems?.map(({ _id, name }) => ({
-			value: _id,
-			label: name,
-		}));
-		return [...mappedMonitorsItems, ...pending];
-	}, [monitors, monitorsItems]);
 
 	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
@@ -251,29 +218,16 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Monitors') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
-										<PaginatedMultiSelectFiltered
+										<AutoCompleteMonitors
 											id={monitorsField}
 											name={name}
 											value={value}
-											onChange={onChange}
-											onBlur={onBlur}
-											withTitle
-											filter={monitorsFilter}
-											setFilter={setMonitorsFilter}
-											options={monitorsOptions}
 											error={Boolean(errors?.monitors)}
-											placeholder={t('Select_an_option')}
-											endReached={
-												monitorsPhase === AsyncStatePhase.LOADING
-													? undefined
-													: (start) => start && loadMoreMonitors(start, Math.min(50, monitorsTotal))
-											}
 											aria-describedby={`${monitorsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.monitors)}
-											renderItem={({ label, ...props }) => (
-												<CheckOption {...props} label={label} selected={value.some((item) => item.value === props.value)} />
-											)}
+											onChange={onChange}
+											onBlur={onBlur}
 										/>
 									)}
 								/>
