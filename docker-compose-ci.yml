@@ -31,7 +31,7 @@ services:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
-      traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.routers.rocketchat.rule: PathPrefix(`/sockjs`)
       traefik.http.middlewares.test-retry.retry.attempts: 4
       traefik.http.routers.rocketchat.middlewares: varnish-cache
 
@@ -177,7 +177,7 @@ services:
       traefik.enable: true
       traefik.http.services.varnish.loadbalancer.server.port: 80
       traefik.http.routers.varnish.service: varnish
-      traefik.http.routers.varnish.rule: PathPrefix(`/`)
+      traefik.http.routers.varnish.rule: PathPrefix(`/`) && !PathPrefix(`/sockjs`) && !PathPrefix(`/websocket`)
       traefik.http.middlewares.varnish-cache.headers.customrequestheaders.X-Forwarded-Proto: https
 
   traefik:

@@ -6,20 +6,17 @@ backend default {
 }
 
 sub vcl_recv {
-    # Don't cache POST requests
-    if (req.method == "POST") {
-        return (pass);
+
+    if(req.url ~ "/websocket$") {
+         return (pipe);
     }
+
 
     # Don't cache WebSocket connections
-    if (req.http.Upgrade ~ "(?i)websocket") {
-        return (pass);
+   if (req.http.Upgrade ~ "(?i)websocket") {
+         return (pipe);
     }
 
-    # Don't cache authenticated requests
-    if (req.http.Authorization) {
-        return (pass);
-    }
 
     # Don't cache API requests
     if (req.url ~ "^/api/") {
@@ -36,10 +33,5 @@ sub vcl_backend_response {
     # Cache successful responses for 1 hour
     if (beresp.status == 200) {
         set beresp.ttl = 1h;
-    }
-
-    # Don't cache error responses
-    if (beresp.status >= 400) {
-        set beresp.ttl = 0s;
     }
 }
