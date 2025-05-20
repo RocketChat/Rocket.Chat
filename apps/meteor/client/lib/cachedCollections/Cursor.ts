@@ -6,11 +6,12 @@ import { IdMap } from './IdMap';
 import type { LocalCollection } from './LocalCollection';
 import { Matcher } from './Matcher';
 import type { FieldSpecifier, Options, Transform } from './MinimongoCollection';
+import { MinimongoError } from './MinimongoError';
 import { ObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
-import type { CompleteQuery, Query } from './Query';
+import type { CompleteQuery, OrderedQuery, Query, UnorderedQuery } from './Query';
 import { Sorter } from './Sorter';
-import { _isPlainObject, clone, createMinimongoError, hasOwn, isEqual, isPromiseLike } from './common';
+import { _isPlainObject, clone, hasOwn, isEqual, isPromiseLike } from './common';
 
 export type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
 	? ReturnType<TTransform>
@@ -148,22 +149,22 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 	private _checkSupportedProjection(fields: FieldSpecifier) {
 		if (fields !== Object(fields) || Array.isArray(fields)) {
-			throw createMinimongoError('fields option must be an object');
+			throw new MinimongoError('fields option must be an object');
 		}
 
 		Object.keys(fields).forEach((keyPath) => {
 			if (keyPath.split('.').includes('$')) {
-				throw createMinimongoError("Minimongo doesn't support $ operator in projections yet.");
+				throw new MinimongoError("Minimongo doesn't support $ operator in projections yet.");
 			}
 
 			const value = fields[keyPath];
 
 			if (typeof value === 'object' && ['$elemMatch', '$meta', '$slice'].some((key) => key in value)) {
-				throw createMinimongoError("Minimongo doesn't support operators in projections yet.");
+				throw new MinimongoError("Minimongo doesn't support operators in projections yet.");
 			}
 
 			if (![1, 0, true, false].includes(value)) {
-				throw createMinimongoError('Projection values should be one of 1, 0, true, or false');
+				throw new MinimongoError('Projection values should be one of 1, 0, true, or false');
 			}
 		});
 	}
@@ -201,7 +202,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 			// This error message is copied from MongoDB shell
 			if (including !== rule) {
-				throw createMinimongoError('You cannot currently mix including and excluding fields.');
+				throw new MinimongoError('You cannot currently mix including and excluding fields.');
 			}
 		}
 
@@ -225,7 +226,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 				// {"_id": ObjectId("520bfe456024608e8ef24af3"), "a": {"b": 23, "c": 44}}
 				//
 				// Note, how second time the return set of keys is different.
-				throw createMinimongoError(
+				throw new MinimongoError(
 					`both ${fullPath} and ${path} found in fields option, ` +
 						'using both of them may trigger unexpected behavior. Did you mean to ' +
 						'use only one of them?',
@@ -300,7 +301,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			if (!('_id' in doc)) {
 				// XXX do we ever have a transform on the oplog's collection? because that
 				// collection has no _id.
-				throw createMinimongoError('can only transform documents with _id');
+				throw new MinimongoError('can only transform documents with _id');
 			}
 
 			const id = doc._id;
@@ -562,7 +563,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					ordered,
 					projectionFn: this._projectionFn,
 					resultsSnapshot: null,
-					sorter: this.sorter!,
+					sorter: this.sorter,
 				}
 			: {
 					cursor: this,
@@ -629,20 +630,20 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 				delete fields._id;
 
 				if (query.ordered) {
-					query.addedBefore!(doc._id, this._projectionFn(fields), null);
+					(query as OrderedQuery<T, TOptions, TProjection>).addedBefore(doc._id, this._projectionFn(fields), null);
 				}
 
-				query.added!(doc._id, this._projectionFn(fields));
+				(query as OrderedQuery<T, TOptions, TProjection>).added(doc._id, this._projectionFn(fields));
 			};
 			// it means it's just an array
-			if ((query.results as T[]).length) {
-				for (const doc of query.results as T[]) {
+			if ((query as OrderedQuery<T, TOptions, TProjection>).results.length) {
+				for (const doc of (query as OrderedQuery<T, TOptions, TProjection>).results) {
 					handler(doc);
 				}
 			}
 			// it means it's an id map
-			if ((query.results as IdMap<T['_id'], T>).size?.()) {
-				(query.results as IdMap<T['_id'], T>).forEach(handler);
+			if ((query as UnorderedQuery<T, TOptions, TProjection>).results.size()) {
+				(query as UnorderedQuery<T, TOptions, TProjection>).results.forEach(handler);
 			}
 		}
 
@@ -751,7 +752,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 		// slow path for arbitrary selector, sort, skip, limit
 
-		for (const doc of this.collection.all()) {
+		for (const doc of this.collection.store.getState().records) {
 			const matchResult = this.matcher.documentMatches(doc);
 			if (matchResult.result) {
 				if (options.ordered) {

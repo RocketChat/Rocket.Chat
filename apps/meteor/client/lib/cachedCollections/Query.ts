@@ -48,7 +48,7 @@ export interface UnorderedQuery<T extends { _id: string }, TOptions extends Opti
 export interface IncompleteOrderedQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any>
 	extends BaseQuery<T, TOptions, TProjection> {
 	ordered: true;
-	sorter: Sorter<T>;
+	sorter: Sorter<T> | null;
 	results?: T[];
 	resultsSnapshot?: T[] | null;
 	added?: AddedCallback<T, TProjection>;
