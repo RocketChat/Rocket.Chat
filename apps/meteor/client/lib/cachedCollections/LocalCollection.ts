@@ -9,7 +9,7 @@ import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
 import type { Options } from './MinimongoCollection';
 import { MinimongoError } from './MinimongoError';
-import type { CompleteQuery } from './Query';
+import type { Query } from './Query';
 import { Sorter } from './Sorter';
 import { SynchronousQueue } from './SynchronousQueue';
 import {
@@ -24,10 +24,11 @@ import {
 	clone,
 } from './common';
 
+/** @deprecated internal use only */
 export class LocalCollection<T extends { _id: string }> {
 	readonly observeQueue = new SynchronousQueue();
 
-	readonly queries = new Set<CompleteQuery<T>>();
+	readonly queries = new Set<Query<T>>();
 
 	private savedOriginals: Map<T['_id'], T | undefined> | null = null;
 
@@ -75,7 +76,7 @@ export class LocalCollection<T extends { _id: string }> {
 	insert(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
-		const queriesToRecompute = new Set<CompleteQuery<T>>();
+		const queriesToRecompute = new Set<Query<T>>();
 
 		for (const query of this.queries) {
 			if (query.dirty) continue;
@@ -104,7 +105,7 @@ export class LocalCollection<T extends { _id: string }> {
 	async insertAsync(doc: T, callback?: (error: Error | null, id: T['_id']) => void) {
 		doc = clone(doc);
 		const id = this.prepareInsert(doc);
-		const queriesToRecompute = new Set<CompleteQuery<T>>();
+		const queriesToRecompute = new Set<Query<T>>();
 
 		for await (const query of this.queries) {
 			if (query.dirty) continue;
@@ -134,7 +135,7 @@ export class LocalCollection<T extends { _id: string }> {
 		if (callback) Meteor.defer(() => callback(...args));
 	}
 
-	private _insertInResults(query: CompleteQuery<T>, doc: T) {
+	private _insertInResults(query: Query<T>, doc: T) {
 		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
 
 		delete fields._id;
@@ -158,7 +159,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private async _insertInResultsAsync(query: CompleteQuery<T>, doc: T) {
+	private async _insertInResultsAsync(query: Query<T>, doc: T) {
 		const fields: Omit<T, '_id'> & Partial<Pick<T, '_id'>> = clone(doc);
 
 		delete fields._id;
@@ -220,8 +221,8 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 		});
 
-		const queriesToRecompute = new Set<CompleteQuery<T>>();
-		const queryRemove = new Set<{ doc: T; query: CompleteQuery<T> }>();
+		const queriesToRecompute = new Set<Query<T>>();
+		const queryRemove = new Set<{ doc: T; query: Query<T> }>();
 
 		for (const removeDoc of remove) {
 			for (const query of this.queries) {
@@ -336,7 +337,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private prepareUpdate(selector: Filter<T>) {
-		const queryToOriginalResults = new Map<CompleteQuery<T>, IdMap<T['_id'], T> | T[]>();
+		const queryToOriginalResults = new Map<Query<T>, IdMap<T['_id'], T> | T[]>();
 
 		const docMap = new Map<T['_id'], T>();
 		const idsMatched = this._idsMatchedBySelector(selector);
@@ -438,7 +439,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
-		let recomputeQueries = new Set<CompleteQuery<T>>();
+		let recomputeQueries = new Set<Query<T>>();
 
 		let updateCount = 0;
 
@@ -530,7 +531,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
-		let recomputeQueries = new Set<CompleteQuery<T>>();
+		let recomputeQueries = new Set<Query<T>>();
 
 		let updateCount = 0;
 
@@ -683,7 +684,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private _getMatchedDocAndModify(doc: T) {
-		const matchedBefore = new Map<CompleteQuery<T>, boolean>();
+		const matchedBefore = new Map<Query<T>, boolean>();
 
 		for (const query of this.queries) {
 			if (query.dirty) continue;
@@ -705,7 +706,7 @@ export class LocalCollection<T extends { _id: string }> {
 		doc = this._modify(doc, mod, { arrayIndices });
 		this.store.getState().store(doc, { recomputeQueries: false });
 
-		const recomputeQueries = new Set<CompleteQuery<T>>();
+		const recomputeQueries = new Set<Query<T>>();
 
 		for (const query of this.queries) {
 			if (query.dirty) continue;
@@ -736,7 +737,7 @@ export class LocalCollection<T extends { _id: string }> {
 		doc = this._modify(doc, mod, { arrayIndices });
 		this.store.getState().store(doc, { recomputeQueries: false });
 
-		const recomputeQueries = new Set<CompleteQuery<T>>();
+		const recomputeQueries = new Set<Query<T>>();
 		for await (const query of this.queries) {
 			if (query.dirty) continue;
 
@@ -759,7 +760,7 @@ export class LocalCollection<T extends { _id: string }> {
 		return recomputeQueries;
 	}
 
-	private _recomputeResults(query: CompleteQuery<T>, oldResults?: IdMap<T['_id'], T> | T[] | null) {
+	private _recomputeResults(query: Query<T>, oldResults?: IdMap<T['_id'], T> | T[] | null) {
 		if (this.paused) {
 			query.dirty = true;
 			return;
@@ -838,7 +839,7 @@ export class LocalCollection<T extends { _id: string }> {
 		return replacement as T;
 	}
 
-	private _findInOrderedResults(query: CompleteQuery<T>, doc: T): number {
+	private _findInOrderedResults(query: Query<T>, doc: T): number {
 		if (!query.ordered) {
 			throw new MinimongoError("Can't call _findInOrderedResults on unordered query");
 		}
@@ -988,7 +989,7 @@ export class LocalCollection<T extends { _id: string }> {
 		return Object.freeze(newDoc);
 	}
 
-	private _removeFromResultsSync(query: CompleteQuery<T>, doc: T) {
+	private _removeFromResultsSync(query: Query<T>, doc: T) {
 		if (query.ordered) {
 			const i = this._findInOrderedResults(query, doc);
 
@@ -1002,7 +1003,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private async _removeFromResultsAsync(query: CompleteQuery<T>, doc: T) {
+	private async _removeFromResultsAsync(query: Query<T>, doc: T) {
 		if (query.ordered) {
 			const i = this._findInOrderedResults(query, doc);
 
@@ -1016,7 +1017,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private _updateInResultsSync(query: CompleteQuery<T>, doc: T, oldDoc: T) {
+	private _updateInResultsSync(query: Query<T>, doc: T, oldDoc: T) {
 		if (doc._id !== oldDoc._id) {
 			throw new MinimongoError("Can't change a doc's _id while updating");
 		}
@@ -1054,7 +1055,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private async _updateInResultsAsync(query: CompleteQuery<T>, doc: T, oldDoc: T) {
+	private async _updateInResultsAsync(query: Query<T>, doc: T, oldDoc: T) {
 		if (doc._id !== oldDoc._id) {
 			throw new MinimongoError("Can't change a doc's _id while updating");
 		}

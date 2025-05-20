@@ -1,10 +1,3 @@
-// This file defines an ordered dictionary abstraction that is useful for
-// maintaining a dataset backed by observeChanges.  It supports ordering items
-// by specifying the item they now come before.
-
-// The implementation is a dictionary that contains nodes of a doubly-linked
-// list as its values.
-
 type ElementType<TKey, TValue> = {
 	key: TKey;
 	value: TValue;
@@ -12,8 +5,6 @@ type ElementType<TKey, TValue> = {
 	prev: ElementType<TKey, TValue> | null;
 };
 
-// constructs a new element struct
-// next and prev are whole elements, not keys.
 function element<TKey, TValue>(
 	key: TKey,
 	value: TValue,
@@ -28,6 +19,7 @@ function element<TKey, TValue>(
 	};
 }
 
+/** @deprecated internal use only */
 export class OrderedDict<TKey extends string, TValue> {
 	private _dict: Record<string, ElementType<TKey, TValue>> = Object.create(null);
 
@@ -37,8 +29,6 @@ export class OrderedDict<TKey extends string, TValue> {
 
 	private _size = 0;
 
-	// the "prefix keys with a space" thing comes from here
-	// https://github.com/documentcloud/underscore/issues/376#issuecomment-2815649
 	_k(key: TKey): string {
 		return ` ${key}`;
 	}
@@ -103,10 +93,6 @@ export class OrderedDict<TKey extends string, TValue> {
 		return Object.prototype.hasOwnProperty.call(this._dict, this._k(key));
 	}
 
-	// Iterate through the items in this dictionary in order, calling
-	// iter(value, key, index) on each one.
-
-	// Stops whenever iter returns OrderedDict.BREAK, or after the last element.
 	forEach(iter: (value: TValue, key: TKey, index: number) => void | typeof OrderedDict.BREAK, context?: null): void;
 
 	forEach<TContext>(
@@ -157,28 +143,28 @@ export class OrderedDict<TKey extends string, TValue> {
 		if (this.empty()) {
 			return;
 		}
-		return this._first!.key;
+		return this._first?.key;
 	}
 
 	firstValue(): TValue | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._first!.value;
+		return this._first?.value;
 	}
 
 	last(): TKey | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._last!.key;
+		return this._last?.key;
 	}
 
 	lastValue(): TValue | undefined {
 		if (this.empty()) {
 			return;
 		}
-		return this._last!.value;
+		return this._last?.value;
 	}
 
 	prev(key: TKey): TKey | null {
@@ -206,17 +192,12 @@ export class OrderedDict<TKey extends string, TValue> {
 		if (typeof eltBefore === 'undefined') {
 			throw new Error('Could not find element to move this one before');
 		}
-		if (eltBefore === elt.next)
-			// no moving necessary
-			return;
-		// remove from its old place
+		if (eltBefore === elt.next) return;
 		this._linkEltOut(elt);
-		// patch into its new place
 		elt.next = eltBefore;
 		this._linkEltIn(elt);
 	}
 
-	// Linear, sadly.
 	indexOf(key: TKey): number {
 		let ret = -1;
 		this.forEach((_v, k, i) => {
