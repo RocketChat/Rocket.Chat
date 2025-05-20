@@ -1,67 +1,58 @@
-import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
-import type { CSSProperties, RefObject } from 'react';
-import { useEffect, useState } from 'react';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import type { CSSProperties, MutableRefObject, RefCallback } from 'react';
+import { useCallback } from 'react';
 
-const shadowStyleBase: CSSProperties = {
-	position: 'fixed',
-	top: '-10000px',
-	left: '-10000px',
-	resize: 'none',
-	whiteSpace: 'pre-wrap',
-	wordWrap: 'break-word',
-	willChange: 'contents',
-};
+function shouldScrollToBottom(textarea: HTMLTextAreaElement) {
+	const isCursorAtBottom = textarea.selectionEnd === textarea.value.length;
+	const isScrolledToBottom = textarea.scrollTop + textarea.clientHeight === textarea.scrollHeight;
+
+	return isCursorAtBottom || isScrolledToBottom;
+}
 
 export const useAutoGrow = (
-	ref: RefObject<HTMLTextAreaElement>,
-	shadowRef: RefObject<HTMLDivElement>,
+	ref: MutableRefObject<HTMLTextAreaElement | null>,
 	hideTextArea?: boolean,
 ): {
 	textAreaStyle: CSSProperties;
-	shadowStyle: CSSProperties;
+	autoGrowRef: RefCallback<HTMLTextAreaElement>;
 } => {
-	const [style, setStyle] = useState(() => ref.current && window.getComputedStyle(ref.current));
+	const autoGrowRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				if (!node) {
+					return;
+				}
 
-	useEffect(() => {
-		const { current: textarea } = ref;
+				ref.current = node;
 
-		if (!textarea) {
-			return;
-		}
-		setStyle(() => ref.current && window.getComputedStyle(ref.current));
-	}, [ref]);
+				const resize = () => {
+					const shouldScroll = shouldScrollToBottom(node);
 
-	useEffect(() => {
-		const { current: textarea } = ref;
+					node.style.height = '0';
+					node.style.height = `${node.scrollHeight}px`;
 
-		if (!textarea) {
-			return;
-		}
-		const updateTextareaSize = () => {
-			const { value } = textarea;
-			const { current: shadow } = shadowRef;
-			if (!shadow) {
-				return;
-			}
-			shadow.innerHTML = value
-				.replace(/&/g, '&amp;')
-				.replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/\n$/, '<br/>&nbsp;')
-				.replace(/\n/g, '<br/>');
-		};
-		updateTextareaSize();
-		textarea.addEventListener('input', updateTextareaSize);
-		return () => {
-			textarea.removeEventListener('input', updateTextareaSize);
-		};
-	}, [ref, shadowRef]);
+					if (shouldScroll) {
+						node.scrollTop = node.scrollHeight;
+					}
+				};
 
-	const shadowContentSize = useContentBoxSize(shadowRef);
+				const resizeObserver = new ResizeObserver(resize);
 
-	const composerContentSize = useContentBoxSize(ref);
+				resizeObserver.observe(node);
+
+				node.addEventListener('input', resize);
+
+				return () => {
+					resizeObserver.disconnect();
+					node.removeEventListener('input', resize);
+				};
+			},
+			[ref],
+		),
+	);
 
 	return {
+		autoGrowRef,
 		textAreaStyle: {
 			...(hideTextArea && {
 				visibility: 'hidden',
@@ -71,17 +62,6 @@ export const useAutoGrow = (
 			overflowWrap: 'break-word',
 			willChange: 'contents',
 			wordBreak: 'normal',
-			overflowY: shadowContentSize.blockSize > parseInt(style?.maxHeight || '0') ? 'scroll' : 'hidden',
-			...(shadowContentSize.blockSize && {
-				height: `${shadowContentSize.blockSize}px`,
-			}),
-		},
-		shadowStyle: {
-			...shadowStyleBase,
-			font: style?.font,
-			width: composerContentSize.inlineSize,
-			minHeight: style?.lineHeight,
-			lineHeight: style?.lineHeight,
 		},
 	};
 };
