@@ -4,7 +4,6 @@ import https from 'https';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import fetch from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { parseRequestOptions } from './parsers';
@@ -71,7 +70,5 @@ export function serverFetch(input: string, options?: ExtendedFetchOptions, allow
 		}
 	});
 }
-
-export { Response } from 'node-fetch';
 
 export { ExtendedFetchOptions };

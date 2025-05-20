@@ -1,6 +1,5 @@
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import EJSON from 'ejson';
-import type { Response } from 'node-fetch';
 
 import type { PendingPushNotification } from './definition';
 import { logger } from './logger';

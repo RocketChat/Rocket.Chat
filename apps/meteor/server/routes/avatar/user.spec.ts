@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import { Headers } from 'node-fetch';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 

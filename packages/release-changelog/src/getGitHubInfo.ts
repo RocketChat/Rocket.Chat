@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader';
-import fetch from 'node-fetch';
 
 const validRepoNameRegex = /^[\w.-]+\/[\w.-]+$/;
 

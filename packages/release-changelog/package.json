@@ -15,7 +15,6 @@
 		"typescript": "~5.7.2"
 	},
 	"dependencies": {
-		"dataloader": "^2.2.2",
-		"node-fetch": "^2.7.0"
+		"dataloader": "^2.2.2"
 	}
 }
