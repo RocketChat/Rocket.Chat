@@ -1,2 +1,2 @@
-/** the return value of a live query */
+/** @deprecated internal use only */
 export class ObserveHandle {}

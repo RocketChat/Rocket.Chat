@@ -1,5 +1,5 @@
 import { Mongo } from 'meteor/mongo';
-import type { Hint, Sort } from 'mongodb';
+import type { Sort } from 'mongodb';
 import { create } from 'zustand';
 
 import type { IDocumentMapStore } from './IDocumentMapStore';
@@ -25,9 +25,7 @@ export type Options<T> = {
 	fields?: FieldSpecifier | undefined;
 	/** Dictionary of fields to return or exclude. */
 	projection?: FieldSpecifier | undefined;
-	/** (Server only) Overrides MongoDB's default index selection and query optimization process. Specify an index to force its use, either by its name or index specification. */
-	hint?: Hint | undefined;
-	/** (Client only) Default `true`; pass `false` to disable reactivity */
+	/** Default `true`; pass `false` to disable reactivity */
 	reactive?: boolean | undefined;
 	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
 	transform?: Transform<T> | null | undefined;

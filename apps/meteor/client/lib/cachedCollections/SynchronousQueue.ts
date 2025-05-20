@@ -1,3 +1,4 @@
+/** @deprecated internal use only */
 export class SynchronousQueue {
 	private tasks: (() => void)[] = [];
 

@@ -15,11 +15,6 @@ interface IIdMap<TId, TValue> {
 export class IdMap<TId, TValue> implements IIdMap<TId, TValue> {
 	private _map: Map<TId, TValue> = new Map();
 
-	// Some of these methods are designed to match methods on OrderedDict, since
-	// (eg) ObserveMultiplex and _CachingChangeObserver use them interchangeably.
-	// (Conceivably, this should be replaced with "UnorderedDict" with a specific
-	// set of methods that overlap between the two.)
-
 	get(id: TId): TValue | undefined {
 		return this._map.get(id);
 	}
@@ -44,7 +39,6 @@ export class IdMap<TId, TValue> implements IIdMap<TId, TValue> {
 		this._map.clear();
 	}
 
-	// Iterates over the items in the map. Return `false` to break the loop.
 	forEach(callback: (value: TValue, id: TId) => boolean | void): void {
 		for (const [key, value] of this._map) {
 			if (callback.call(null, value, key) === false) {
@@ -66,25 +60,18 @@ export class IdMap<TId, TValue> implements IIdMap<TId, TValue> {
 	}
 
 	setDefault(id: TId, def: TValue): TValue {
-		if (this._map.has(id)) {
-			return this._map.get(id)!;
+		if (!this._map.has(id)) {
+			this._map.set(id, def);
 		}
-		this._map.set(id, def);
-		return def;
+
+		return this._map.get(id) ?? def;
 	}
 
-	// Assumes that values are EJSON-cloneable, and that we don't need to clone
-	// IDs (ie, that nobody is going to mutate an ObjectId).
 	clone(): IdMap<TId, TValue> {
 		const copy = new IdMap<TId, TValue>();
-		// copy directly to avoid stringify/parse overhead
 		this._map.forEach((value, key) => {
 			copy._map.set(key, clone(value));
 		});
 		return copy;
-	}
-
-	values(): IterableIterator<TValue> {
-		return this._map.values();
 	}
 }
