@@ -39,19 +39,6 @@ export class LocalCollection<T extends { _id: string }> {
 		return this.store.getState().records;
 	}
 
-	private storeDocument(doc: T) {
-		this.store.setState((state) => {
-			const records = [...state.records];
-			const index = records.findIndex((r) => r._id === doc._id);
-			if (index !== -1) {
-				records[index] = doc;
-			} else {
-				records.push(doc);
-			}
-			return { records };
-		});
-	}
-
 	find(selector: Filter<T> | T['_id'] = {}, options?: Options<T>) {
 		return new Cursor(this, selector, options);
 	}
@@ -84,7 +71,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		this._saveOriginal(doc._id, undefined);
-		this.storeDocument(doc);
+		this.store.getState().store(doc, { recomputeQueries: false });
 
 		return doc._id;
 	}
@@ -210,7 +197,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private clearResultQueries(callback?: (error: Error | null, result: number) => void) {
-		const result = this.all().length;
+		const result = this.store.getState().records.length;
 
 		this.store.setState({ records: [] });
 
@@ -256,9 +243,7 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 
 			this._saveOriginal(removeDoc._id, removeDoc);
-			this.store.setState((state) => ({
-				records: state.records.filter((record) => record._id !== removeDoc._id),
-			}));
+			this.store.getState().remove(removeDoc, { recomputeQueries: false });
 		}
 
 		return { queriesToRecompute, queryRemove, count: remove.size };
@@ -734,7 +719,7 @@ export class LocalCollection<T extends { _id: string }> {
 				}
 			}
 		} else {
-			for await (const doc of this.all()) {
+			for await (const doc of this.store.getState().records) {
 				if ((await fn(doc, doc._id)) === false) {
 					break;
 				}
@@ -754,7 +739,7 @@ export class LocalCollection<T extends { _id: string }> {
 				}
 			}
 		} else {
-			for (const doc of this.all()) {
+			for (const doc of this.store.getState().records) {
 				if (fn(doc, doc._id) === false) {
 					break;
 				}
@@ -785,7 +770,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.storeDocument(doc);
+		this.store.getState().store(doc, { recomputeQueries: false });
 
 		const recomputeQueries = new Set<Query<T>>();
 
@@ -823,7 +808,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.storeDocument(doc);
+		this.store.getState().store(doc, { recomputeQueries: false });
 
 		const recomputeQueries = new Set<Query<T>>();
 		for await (const query of this.queries) {

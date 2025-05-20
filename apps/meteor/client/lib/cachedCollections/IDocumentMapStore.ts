@@ -6,5 +6,7 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	find(predicate: (record: T) => boolean): T | undefined;
 	filter<U extends T>(predicate: (record: T) => record is U): U[];
 	filter(predicate: (record: T) => boolean): T[];
-	replaceAll(records: T[]): void;
+	replaceAll(records: T[], options: { recomputeQueries: boolean }): void;
+	store(doc: T, options: { recomputeQueries: boolean }): void;
+	remove(doc: T, options: { recomputeQueries: boolean }): void;
 }
