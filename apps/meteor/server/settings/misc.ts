@@ -5,6 +5,7 @@ import { Settings } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
 
 import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settingsRegistry, settings } from '../../app/settings/server';
 
 const logger = new Logger('FingerPrint');
@@ -26,6 +27,9 @@ const updateFingerprint = async function (fingerprint: string, verified: boolean
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Hash', fingerprint),
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Verified', verified),
 	]);
+
+	void notifyOnSettingChangedById('Deployment_FingerPrint_Hash');
+	void notifyOnSettingChangedById('Deployment_FingerPrint_Verified');
 };
 
 const verifyFingerPrint = async function () {
