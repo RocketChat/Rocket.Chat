@@ -245,7 +245,9 @@ export async function testFileUploads(
 	it('should properly filter files by name or typeGroup', async () => {
 		const fileOneName = 'image-zyxwv.png';
 		const fileTwoName = 'sound-abcde.png';
+		const fileIdsToConfirm: string[] = [];
 
+		// Post 2 files, one image and one audio
 		await Promise.all([
 			request
 				.post(api(`rooms.media/${testRoom._id}`))
@@ -255,6 +257,8 @@ export async function testFileUploads(
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(typeof res.body?.file?._id).to.equal('string');
+					fileIdsToConfirm.push(res.body.file._id);
 				}),
 			request
 				.post(api(`rooms.media/${testRoom._id}`))
@@ -264,10 +268,24 @@ export async function testFileUploads(
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+					expect(typeof res.body?.file?._id).to.equal('string');
+					fileIdsToConfirm.push(res.body.file._id);
 				}),
 		]);
 
-		await request
+		// Confirm the files
+		await Promise.all(
+			fileIdsToConfirm.map((fileId) =>
+				request
+					.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200),
+			),
+		);
+
+		// test filtering by name
+		const nameFilterTest = request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -285,7 +303,8 @@ export async function testFileUploads(
 				expect(files[0].name).to.equal(fileOneName);
 			});
 
-		await request
+		// test filtering by typeGroup
+		const typeGroupFilterTest = request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -302,5 +321,7 @@ export async function testFileUploads(
 
 				expect(files[0].name).to.equal(fileTwoName);
 			});
+
+		await Promise.all([nameFilterTest, typeGroupFilterTest]);
 	});
 }
