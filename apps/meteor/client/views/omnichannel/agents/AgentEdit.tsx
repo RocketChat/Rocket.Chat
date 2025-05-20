@@ -103,9 +103,9 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 			);
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
-			queryClient.invalidateQueries({
-				queryKey: ['livechat-agents'],
-			});
+
+			queryClient.invalidateQueries({ queryKey: ['livechat-agents'] });
+			queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', agentData._id] });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
