@@ -18,7 +18,7 @@ const generateFingerprint = function () {
 	return crypto.createHash('sha256').update(fingerprint).digest('base64');
 };
 
-const updateFingerprint = async function (fingerprint: string, verified: boolean) {
+const updateFingerprint = async function (fingerprint: string, verified: boolean, emit = true) {
 	const auditedSettingBySystem = updateAuditedBySystem({
 		reason: 'updateFingerprint',
 	});
@@ -27,19 +27,20 @@ const updateFingerprint = async function (fingerprint: string, verified: boolean
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Hash', fingerprint),
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Verified', verified),
 	]);
-
-	void notifyOnSettingChangedById('Deployment_FingerPrint_Hash');
-	void notifyOnSettingChangedById('Deployment_FingerPrint_Verified');
+	if (emit) {
+		void notifyOnSettingChangedById('Deployment_FingerPrint_Hash');
+		void notifyOnSettingChangedById('Deployment_FingerPrint_Verified');
+	}
 };
 
-const verifyFingerPrint = async function () {
+const verifyFingerPrint = async function (emit = true) {
 	const DeploymentFingerPrintRecordHash = await Settings.getValueById('Deployment_FingerPrint_Hash');
 
 	const fingerprint = generateFingerprint();
 
 	if (!DeploymentFingerPrintRecordHash) {
 		logger.info('Generating fingerprint for the first time', fingerprint);
-		await updateFingerprint(fingerprint, true);
+		await updateFingerprint(fingerprint, true, emit);
 		return;
 	}
 
@@ -49,12 +50,12 @@ const verifyFingerPrint = async function () {
 
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
 		logger.info('Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint);
-		await updateFingerprint(fingerprint, true);
+		await updateFingerprint(fingerprint, true, emit);
 		return;
 	}
 
 	logger.warn('Updating fingerprint as pending for admin verification', fingerprint);
-	await updateFingerprint(fingerprint, false);
+	await updateFingerprint(fingerprint, false, emit);
 };
 
 // Insert server unique id if it doesn't exist
@@ -74,9 +75,11 @@ export const createMiscSettings = async () => {
 		readonly: true,
 	});
 
-	settings.watch('Site_Url', () => {
+	settings.change('Site_Url', () => {
 		void verifyFingerPrint();
 	});
+
+	void verifyFingerPrint(false);
 
 	await settingsRegistry.add('Initial_Channel_Created', false, {
 		type: 'boolean',
