@@ -5,7 +5,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { Filter } from 'mongodb';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
@@ -110,7 +109,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection.replaceAll(deserializedRecords.filter(hasId));
+		this.collection.state.replaceAll(deserializedRecords.filter(hasId), { recomputeQueries: true });
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -154,8 +153,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				return;
 			}
 
-			const { _id } = newRecord;
-			this.collection.upsert({ _id } as Filter<T>, newRecord);
+			this.collection.state.store(newRecord, { recomputeQueries: true });
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
 				this.updatedAt = newRecord._updatedAt;
@@ -183,7 +181,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.find().fetch();
+		const data = this.collection.state.records;
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
@@ -198,7 +196,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.remove({});
+		this.collection.state.replaceAll([], { recomputeQueries: true });
 	}
 
 	protected async setupListener() {
@@ -216,13 +214,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		}
 
 		if (action === 'removed') {
-			this.collection.remove(newRecord._id);
+			this.collection.state.remove(newRecord, { recomputeQueries: true });
 		} else {
 			const { _id } = newRecord;
-			if (!_id) {
-				return;
-			}
-			this.collection.upsert({ _id } as any, newRecord);
+			if (!_id) return;
+			this.collection.state.store(newRecord, { recomputeQueries: true });
 		}
 		await this.save();
 	}
@@ -264,8 +260,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						const { _id } = newRecord;
-						this.collection.upsert({ _id } as Filter<T>, newRecord);
+						this.collection.state.store(newRecord, { recomputeQueries: true });
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -288,8 +283,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						const { _id } = newRecord;
-						this.collection.remove({ _id } as Filter<T>);
+						this.collection.state.remove(newRecord, { recomputeQueries: true });
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
