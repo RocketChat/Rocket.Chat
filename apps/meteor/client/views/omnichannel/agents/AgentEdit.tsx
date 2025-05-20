@@ -115,7 +115,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const nameField = useId();
 	const usernameField = useId();
 	const emailField = useId();
-	const departmentsField = useId();
+	const departmentsFieldId = useId();
 	const statusField = useId();
 	const voipExtensionField = useId();
 
@@ -181,19 +181,13 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 								</FieldRow>
 							</Field>
 							<Field>
-								<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+								<FieldLabel id={departmentsFieldId}>{t('Departments')}</FieldLabel>
 								<FieldRow>
 									<Controller
 										name='departments'
 										control={control}
 										render={({ field }) => (
-											<AutoCompleteDepartmentMultiple
-												id={departmentsField}
-												data-qa-id='agent-edit-departments'
-												withCheckbox
-												showArchived
-												{...field}
-											/>
+											<AutoCompleteDepartmentMultiple aria-labelledby={departmentsFieldId} withCheckbox showArchived {...field} />
 										)}
 									/>
 								</FieldRow>
