@@ -2298,11 +2298,9 @@ var Ml = "UNIVERSAL_STORE:", ee = {
       throw new TypeError(
         "UniversalStore is not constructable - use UniversalStore.create() instead"
       );
-    if (w.isInternalConstructing = !1, this.id = e.id, this.actorId = globalThis.crypto ? globalThis.crypto.randomUUID() : (
-      // TODO: remove this fallback in SB 9.0 when we no longer support Node 18
-      Date.now().toString(36) + Math.random().toString(36).substring(2)
-    ), this.actorType = e.leader ? w.ActorType.LEADER : w.ActorType.FOLLOWER, this.state = e.initialState, this.channelEventName = `${Ml}${this.
-    id}`, this.debug("constructor", {
+    if (w.isInternalConstructing = !1, this.id = e.id, this.actorId = Date.now().toString(36) + Math.random().toString(36).substring(2), this.
+    actorType = e.leader ? w.ActorType.LEADER : w.ActorType.FOLLOWER, this.state = e.initialState, this.channelEventName = `${Ml}${this.id}`,
+    this.debug("constructor", {
       options: e,
       environmentOverrides: t,
       channelEventName: this.channelEventName
