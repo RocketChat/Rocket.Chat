@@ -187,15 +187,17 @@ API.v1.post(
 						type: 'object',
 						properties: {
 							_id: { type: 'string' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
 							_updatedAt: {
-								type: 'string',
+								type: 'object',
 							},
 							rid: { type: 'string' },
 							msg: { type: 'string' },
 							tmid: { type: 'string' },
 							tshow: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
 							ts: {
-								type: 'string',
+								type: 'object',
 							},
 							mentions: {
 								type: 'array',
@@ -268,8 +270,9 @@ API.v1.post(
 								},
 							},
 							pinned: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
 							pinnedAt: {
-								type: 'string',
+								type: 'object',
 							},
 							pinnedBy: {
 								type: 'object',
@@ -285,6 +288,7 @@ API.v1.post(
 							drid: { type: 'string' },
 							tlm: {
 								type: 'string',
+								format: 'date-time',
 							},
 							dcount: { type: 'integer' },
 							tcount: { type: 'integer' },
@@ -379,6 +383,7 @@ API.v1.post(
 							sentByEmail: { type: 'boolean' },
 							webRtcCallEndTs: {
 								type: 'string',
+								format: 'date-time',
 							},
 							role: { type: 'string' },
 							avatar: { type: 'string' },
@@ -474,7 +479,8 @@ API.v1.post(
 							},
 						},
 						required: ['_id', '_updatedAt', 'rid', 'msg', 'ts', 'u'],
-						additionalProperties: false,
+						// TODO : Set additionalProperties to false
+						// additionalProperties: false,
 					},
 					success: {
 						type: 'boolean',
@@ -482,13 +488,14 @@ API.v1.post(
 					},
 				},
 				required: ['success'],
-				// additionalProperties: false,
+				additionalProperties: false,
 			}),
 			400: ajv.compile({
 				type: 'object',
 				properties: {
 					error: { type: 'string' },
 					errorType: { type: 'string' },
+					stack: { type: 'object' },
 					success: {
 						type: 'boolean',
 						enum: [false],
