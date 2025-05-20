@@ -11,7 +11,7 @@ import GenericModal from '../../../../components/GenericModal';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
-import { useEditContact } from '../hooks/useEditContact';
+import { useReviewContact } from '../hooks/useReviewContact';
 
 type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
@@ -41,7 +41,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		enabled: canViewCustomFields,
 	});
 
-	const editContact = useEditContact(['getContactById']);
+	const editContact = useReviewContact(['getContactById']);
 
 	const handleConflicts = async ({ name, contactManager, ...customFields }: HandleConflictsPayload) => {
 		const payload = {
