@@ -189,7 +189,6 @@ API.v1.post(
 							_id: { type: 'string' },
 							_updatedAt: {
 								type: 'string',
-								format: 'date-time',
 							},
 							rid: { type: 'string' },
 							msg: { type: 'string' },
@@ -197,7 +196,6 @@ API.v1.post(
 							tshow: { type: 'boolean' },
 							ts: {
 								type: 'string',
-								format: 'date-time',
 							},
 							mentions: {
 								type: 'array',
@@ -272,7 +270,6 @@ API.v1.post(
 							pinned: { type: 'boolean' },
 							pinnedAt: {
 								type: 'string',
-								format: 'date-time',
 							},
 							pinnedBy: {
 								type: 'object',
@@ -288,7 +285,6 @@ API.v1.post(
 							drid: { type: 'string' },
 							tlm: {
 								type: 'string',
-								format: 'date-time',
 							},
 							dcount: { type: 'integer' },
 							tcount: { type: 'integer' },
@@ -383,7 +379,6 @@ API.v1.post(
 							sentByEmail: { type: 'boolean' },
 							webRtcCallEndTs: {
 								type: 'string',
-								format: 'date-time',
 							},
 							role: { type: 'string' },
 							avatar: { type: 'string' },
@@ -428,7 +423,7 @@ API.v1.post(
 										required: ['_id'],
 										additionalProperties: false,
 									},
-									priority: {
+									sla: {
 										type: 'object',
 										properties: {
 											name: { type: 'string' },
@@ -452,6 +447,31 @@ API.v1.post(
 								required: ['algorithm', 'ciphertext'],
 								additionalProperties: false,
 							},
+							priorityData: {
+								type: 'object',
+								properties: {
+									definedBy: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											username: { type: 'string' },
+										},
+										required: ['_id', 'username'],
+										additionalProperties: false,
+									},
+									priority: {
+										type: 'object',
+										properties: {
+											name: { type: 'string' },
+											i18n: { type: 'string' },
+										},
+										required: ['name', 'i18n'],
+										additionalProperties: false,
+									},
+								},
+								required: ['definedBy'],
+								additionalProperties: false,
+							},
 						},
 						required: ['_id', '_updatedAt', 'rid', 'msg', 'ts', 'u'],
 						additionalProperties: false,
@@ -462,7 +482,7 @@ API.v1.post(
 					},
 				},
 				required: ['success'],
-				additionalProperties: false,
+				// additionalProperties: false,
 			}),
 			400: ajv.compile({
 				type: 'object',
@@ -505,9 +525,7 @@ API.v1.post(
 
 		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
-		return API.v1.success({
-			message,
-		});
+		return API.v1.success({ message });
 	},
 );
 
