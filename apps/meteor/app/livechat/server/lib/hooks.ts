@@ -8,6 +8,8 @@ import type {
 	IOmnichannelSource,
 	IUser,
 	SelectedAgent,
+	InquiryWithAgentInfo,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -108,4 +110,25 @@ export const onNewRoom = makeFunction(async (room: IOmnichannelRoom) => {
 	if (settings.get('Livechat_webhook_on_start')) {
 		await sendToCRM('LivechatSessionStart', room);
 	}
+});
+
+export const afterTakeInquiry = makeFunction(
+	async ({ room }: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom; agent: { agentId: string; username: string } }) => {
+		if (settings.get('Livechat_webhook_on_chat_taken')) {
+			return;
+		}
+		await sendToCRM('LivechatSessionTaken', room);
+	},
+);
+
+export const afterInquiryQueued = makeFunction(async (_inquiry: ILivechatInquiryRecord) => {
+	return void 0;
+});
+
+export const afterRoomQueued = makeFunction((room: IOmnichannelRoom) => {
+	if (!settings.get('Livechat_webhook_on_chat_queued')) {
+		return;
+	}
+
+	return sendToCRM('LivechatSessionQueued', room);
 });

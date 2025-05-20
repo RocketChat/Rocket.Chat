@@ -15,6 +15,14 @@ export class AdminFlextabUsers {
 		return this.page.locator('role=button[name="Add user"]');
 	}
 
+	get btnMoreActions(): Locator {
+		return this.page.locator('role=button[name="More"]');
+	}
+
+	get btnDeleteUser(): Locator {
+		return this.page.locator('role=menuitem[name="Delete"]');
+	}
+
 	get btnInvite(): Locator {
 		return this.page.locator('role=button[name="Invite"]');
 	}
