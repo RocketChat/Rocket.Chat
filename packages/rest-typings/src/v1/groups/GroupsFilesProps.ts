@@ -1,7 +1,6 @@
 import Ajv from 'ajv';
 
 import type { GroupsBaseProps } from './BaseProps';
-import { withGroupBaseProperties } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
@@ -13,35 +12,45 @@ export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
 	typeGroup?: string;
 };
 
-const GroupsFilesPropsSchema = withGroupBaseProperties({
-	roomId: {
-		type: 'string',
-		nullable: true,
+const GroupsFilesPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		roomName: {
+			type: 'string',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		typeGroup: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 	},
-	name: {
-		type: 'string',
-		nullable: true,
-	},
-	typeGroup: {
-		type: 'string',
-		nullable: true,
-	},
-	count: {
-		type: 'number',
-		nullable: true,
-	},
-	sort: {
-		type: 'string',
-		nullable: true,
-	},
-	query: {
-		type: 'string',
-		nullable: true,
-	},
-	offset: {
-		type: 'number',
-		nullable: true,
-	},
-});
+	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	required: [],
+	additionalProperties: true, // keep additional properties for backwards compatibility, otherwise this would be a breaking change
+};
 
 export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);
