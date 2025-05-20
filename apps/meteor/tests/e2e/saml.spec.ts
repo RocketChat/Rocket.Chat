@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
-import type { ISetting } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
 import * as constants from './config/constants';
@@ -45,28 +44,6 @@ const resetTestData = async ({ cleanupOnly = false }: { cleanupOnly?: boolean } 
 			connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
 		),
 	);
-
-	const settings = [
-		{ _id: 'Accounts_AllowAnonymousRead', value: false },
-		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
-		{ _id: 'SAML_Custom_Default_immutable_property', value: 'EMail' },
-		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
-		{ _id: 'SAML_Custom_Default_name_overwrite', value: false },
-		{ _id: 'SAML_Custom_Default', value: false },
-		{ _id: 'SAML_Custom_Default_role_attribute_sync', value: true },
-		{ _id: 'SAML_Custom_Default_role_attribute_name', value: 'role' },
-		{ _id: 'SAML_Custom_Default_user_data_fieldmap', value: '{"username":"username", "email":"email", "name": "cn"}' },
-		{ _id: 'SAML_Custom_Default_provider', value: 'test-sp' },
-		{ _id: 'SAML_Custom_Default_issuer', value: 'http://localhost:3000/_saml/metadata/test-sp' },
-		{ _id: 'SAML_Custom_Default_entry_point', value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php' },
-		{ _id: 'SAML_Custom_Default_idp_slo_redirect_url', value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php' },
-		{ _id: 'SAML_Custom_Default_button_label_text', value: 'SAML test login button' },
-		{ _id: 'SAML_Custom_Default_button_color', value: '#185925' },
-	];
-
-	await Promise.all(
-		settings.map(({ _id, value }) => connection.db().collection<ISetting>('rocketchat_settings').updateOne({ _id }, { $set: { value } })),
-	);
 };
 
 const setupCustomRole = async (api: BaseTest['api']) => {
@@ -89,7 +66,7 @@ test.describe('SAML', () => {
 	test.beforeAll(async ({ api }) => {
 		await resetTestData();
 
-		// Only one setting updated through the API to avoid refreshing the service configurations several times
+		// The params for the SAML integration have been injected by the initial script, we only enable it by API
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
 
 		// Create a new custom role
@@ -119,6 +96,8 @@ test.describe('SAML', () => {
 		// Remove saml test users so they don't interfere with other tests
 		await resetTestData({ cleanupOnly: true });
 
+		await expect((await setSettingValueById(api, 'SAML_Custom_Default', false)).status()).toBe(200);
+
 		// Remove created custom role
 		if (constants.IS_EE) {
 			expect((await deleteCustomRole(api, 'saml-role')).status()).toBe(200);
@@ -141,6 +120,7 @@ test.describe('SAML', () => {
 		});
 
 		await test.step('expect to have SAML login button to have the required background color', async () => {
+			// This color is configured in the inject-initial-data.ts script
 			await expect(poRegistration.btnLoginWithSaml).toHaveCSS('background-color', convertHexToRGB('#185925'));
 		});
 

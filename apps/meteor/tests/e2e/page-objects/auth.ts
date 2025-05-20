@@ -20,6 +20,7 @@ export class Registration {
 	}
 
 	get btnLoginWithSaml(): Locator {
+		// Label for this button is defined in the inject-initial-data-.ts file
 		return this.page.locator('role=button[name="SAML test login button"]');
 	}
 
