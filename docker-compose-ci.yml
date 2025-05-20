@@ -27,13 +27,13 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - traefik
+      - varnish
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/sockjs`) || PathPrefix(`/health`)
       traefik.http.middlewares.test-retry.retry.attempts: 4
-      traefik.http.routers.rocketchat.middlewares: varnish-cache
 
   authorization-service:
     platform: linux/amd64
