@@ -939,16 +939,6 @@ export function makeLookupFunction<T>(key: string, options: any = {}) {
 	};
 }
 
-export const createMinimongoError = (message: any, options: any = {}) => {
-	if (typeof message === 'string' && options.field) {
-		message += ` for field '${options.field}'`;
-	}
-
-	const error = new Error(message);
-	error.name = 'MinimongoError';
-	return error;
-};
-
 export function nothingMatcher(_docOrBranchedValues: any) {
 	return { result: false };
 }
