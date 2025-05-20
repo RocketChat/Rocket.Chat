@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldLabel,
@@ -7,12 +7,10 @@ import {
 	TextInput,
 	Button,
 	Box,
-	MultiSelect,
 	Icon,
 	Select,
 	ContextualbarFooter,
 	ButtonGroup,
-	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
@@ -22,6 +20,7 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import {
 	Contextualbar,
 	ContextualbarTitle,
@@ -36,7 +35,7 @@ type AgentEditFormData = {
 	name: string | undefined;
 	username: string | undefined;
 	email: string | undefined;
-	departments: string[];
+	departments: { label: string; value: string }[];
 	status: ILivechatAgentStatus;
 	maxNumberSimultaneousChat: number;
 	voipExtension: string;
@@ -44,11 +43,10 @@ type AgentEditFormData = {
 
 type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
-	userDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
-	availableDepartments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[];
+	agentDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 };
 
-const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEditProps) => {
+const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -60,27 +58,6 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 
 	const email = getUserEmailAddress(agentData);
 
-	const departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] = useMemo(() => {
-		const pending = userDepartments
-			.filter(({ departmentId }) => !availableDepartments.find((dep) => dep._id === departmentId))
-			.map((dep) => ({
-				_id: dep.departmentId,
-				name: dep.departmentName,
-			}));
-
-		return [...availableDepartments, ...pending];
-	}, [availableDepartments, userDepartments]);
-
-	const departmentsOptions: SelectOption[] = useMemo(() => {
-		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
-
-		return (
-			departments.map(({ _id, name, archived }) =>
-				name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
-			) || []
-		);
-	}, [departments, t]);
-
 	const statusOptions: SelectOption[] = useMemo(
 		() => [
 			['available', t('Available')],
@@ -89,7 +66,10 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 		[t],
 	);
 
-	const initialDepartmentValue = useMemo(() => userDepartments.map(({ departmentId }) => departmentId) || [], [userDepartments]);
+	const initialDepartmentValue = useMemo(
+		() => agentDepartments.map(({ departmentName, departmentId }) => ({ label: departmentName, value: departmentId })) || [],
+		[agentDepartments],
+	);
 
 	const methods = useForm<AgentEditFormData>({
 		values: {
@@ -116,7 +96,11 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
-			await saveAgentInfo(agentData._id, data, departments);
+			await saveAgentInfo(
+				agentData._id,
+				data,
+				departments.map((dep) => dep.value),
+			);
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
 			queryClient.invalidateQueries({
@@ -203,15 +187,12 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 										name='departments'
 										control={control}
 										render={({ field }) => (
-											<MultiSelect
+											<AutoCompleteDepartmentMultiple
 												id={departmentsField}
 												data-qa-id='agent-edit-departments'
-												options={departmentsOptions}
+												withCheckbox
+												showArchived
 												{...field}
-												placeholder={t('Select_an_option')}
-												renderItem={({ label, ...props }) => (
-													<CheckOption {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
-												)}
 											/>
 										)}
 									/>
