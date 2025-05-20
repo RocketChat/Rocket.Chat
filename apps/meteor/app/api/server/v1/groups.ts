@@ -395,7 +395,7 @@ API.v1.addRoute(
 			const { typeGroup, name, roomId, roomName } = this.queryParams;
 
 			const findResult = await findPrivateGroupByIdOrName({
-				params: { roomId, roomName },
+				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 				checkedArchived: false,
 			});
