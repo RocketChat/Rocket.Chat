@@ -145,7 +145,7 @@ const ThreadList = () => {
 
 				{error && (
 					<Callout mi={24} type='danger'>
-						{getErrorMessage(error, t('Error'))}
+						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
 
