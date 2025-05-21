@@ -52,6 +52,7 @@
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor yarn set-version --silent",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
+		"test-storybook": "npx concurrently -k -s first -n \"SB,TEST\" \"yarn storybook --ci\" \"npx wait-on tcp:127.0.0.1:6006 && yarn exec test-storybook --includeTags=\"play-fn\"\"",
 		"prepare": "node playwright.prepare.mjs",
 		"docker:start": "docker-compose up"
 	},
@@ -84,6 +85,8 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
+		"@storybook/test": "^8.6.14",
+		"@storybook/test-runner": "^0.22.0",
 		"@testing-library/react": "~16.0.1",
 		"@testing-library/user-event": "~14.5.2",
 		"@types/adm-zip": "^0.5.6",

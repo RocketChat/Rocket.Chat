@@ -1,9 +1,10 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { within, expect } from '@storybook/test';
 import outdent from 'outdent';
 
 import MarkdownText from './MarkdownText';
 
-export default {
+const meta = {
 	title: 'Components/MarkdownText',
 	component: MarkdownText,
 	parameters: {
@@ -12,9 +13,12 @@ export default {
 	},
 } satisfies Meta<typeof MarkdownText>;
 
-export const Example: StoryFn<typeof MarkdownText> = () => (
-	<MarkdownText
-		content={outdent`
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+	args: {
+		content: outdent`
 			# h1 Heading
 			## h2 Heading
 			### h3 Heading
@@ -41,31 +45,13 @@ export const Example: StoryFn<typeof MarkdownText> = () => (
 			\`rocket.chat();\`
 
 			https://rocket.chat
-		`}
-	/>
-);
-
-const Template: StoryFn<typeof MarkdownText> = (args) => <MarkdownText {...args} />;
-
-export const Document = Template.bind({});
-Document.args = {
-	content: outdent`
-		# Title
-
-		Paragraph text.
-
-		## Subtitle
-
-		- List item 1
-		- List item 2
-		- List item 3
-	`,
-	variant: 'document',
+		`,
+	},
 };
 
-export const Inline = Template.bind({});
-Inline.args = {
-	content: outdent`
+export const Document: Story = {
+	args: {
+		content: outdent`
 		# Title
 
 		Paragraph text.
@@ -75,13 +61,43 @@ Inline.args = {
 		- List item 1
 		- List item 2
 		- List item 3
-	`,
-	variant: 'inline',
+
+		\`2 < 3 > 1 & 4 "Test"\`
+
+		\`\`\`
+		Two < Three > One & Four "Test"
+		\`\`\`
+		`,
+		variant: 'document',
+	},
+	play: async (test) => {
+		const canvas = within(test.canvasElement);
+		const h1 = await canvas.findByRole('heading', { name: 'Title' });
+		expect(h1).toBeVisible();
+
+		const h2 = await canvas.findByRole('heading', { name: 'Subtitle' });
+		expect(h2).toBeVisible();
+
+		const listItem1 = await canvas.findByText('List item 1');
+		expect(listItem1).toBeVisible();
+
+		const listItem2 = await canvas.findByText('List item 2');
+		expect(listItem2).toBeVisible();
+
+		const listItem3 = await canvas.findByText('List item 3');
+		expect(listItem3).toBeVisible();
+
+		const inlineCode = await canvas.findByText('2 &lt; 3 &gt; 1 &amp; 4 "Test"');
+		expect(inlineCode).toBeVisible();
+
+		const blockCode = await canvas.findByText('Two < Three > One & Four "Test"');
+		expect(blockCode).toBeVisible();
+	},
 };
 
-export const InlineWithoutBreaks = Template.bind({});
-InlineWithoutBreaks.args = {
-	content: outdent`
+export const Inline: Story = {
+	args: {
+		content: outdent`
 		# Title
 
 		Paragraph text.
@@ -92,5 +108,23 @@ InlineWithoutBreaks.args = {
 		- List item 2
 		- List item 3
 	`,
-	variant: 'inlineWithoutBreaks',
+		variant: 'inline',
+	},
+};
+
+export const InlineWithoutBreaks: Story = {
+	args: {
+		content: outdent`
+		# Title
+
+		Paragraph text.
+
+		## Subtitle
+
+		- List item 1
+		- List item 2
+		- List item 3
+		`,
+		variant: 'inlineWithoutBreaks',
+	},
 };

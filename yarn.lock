@@ -8891,6 +8891,8 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
+    "@storybook/test": "npm:^8.6.14"
+    "@storybook/test-runner": "npm:^0.22.0"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
