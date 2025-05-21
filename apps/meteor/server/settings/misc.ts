@@ -75,11 +75,10 @@ export const createMiscSettings = async () => {
 		readonly: true,
 	});
 
+	await verifyFingerPrint(false);
 	settings.change('Site_Url', () => {
 		void verifyFingerPrint();
 	});
-
-	void verifyFingerPrint(false);
 
 	await settingsRegistry.add('Initial_Channel_Created', false, {
 		type: 'boolean',
