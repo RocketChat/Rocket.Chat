@@ -1,5 +1,18 @@
 # @rocket.chat/gazzodown
 
+## 19.0.0-rc.0
+
+### Patch Changes
+
+- ([#36016](https://github.com/RocketChat/Rocket.Chat/pull/36016)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [aadc7956bdeb281007ef06f158088640a44171df]:</summary>
+
+  - @rocket.chat/ui-client@19.0.0-rc.0
+  - @rocket.chat/ui-contexts@19.0.0-rc.0
+  - @rocket.chat/core-typings@7.7.0-rc.0
+  </details>
+
 ## 18.0.0
 
 ### Patch Changes

@@ -1384,6 +1384,44 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
+type POSTOmnichannelContactsConflictsProps = {
+	contactId: string;
+	name?: string;
+	contactManager?: string;
+	customFields?: Record<string, unknown>;
+	wipeConflicts?: boolean;
+};
+
+const POSTOmnichannelContactsConflictsSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+		},
+		wipeConflicts: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactsConflictsProps = ajv.compile<POSTOmnichannelContactsConflictsProps>(
+	POSTOmnichannelContactsConflictsSchema,
+);
+
 type GETOmnichannelContactsProps = { contactId?: string };
 
 export const ContactVisitorAssociationSchema = {
@@ -3964,6 +4002,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.update': {
 		POST: (params: POSTUpdateOmnichannelContactsProps) => { contact: ILivechatContact };
+	};
+	'/v1/omnichannel/contacts.conflicts': {
+		POST: (params: POSTOmnichannelContactsConflictsProps) => { contact: ILivechatContact };
 	};
 	'/v1/omnichannel/contacts.get': {
 		GET: (params: GETOmnichannelContactsProps) => { contact: ILivechatContact | null };

@@ -4781,7 +4781,6 @@
   "This_is_a_push_test_messsage": "Dette er en push-testmelding",
   "This_message_was_rejected_by__peer__peer": "Denne meldingen ble avvist av <em>{{peer}}</em> peer.",
   "This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel": "Dette alternativet påvirker kun denne samtalen. For å angi standardvalg, gå til Min konto > Omnikanal.",
-  "This_page_will_be_deprecated_soon": "Denne siden avvikles snart",
   "This_room_encryption_has_been_disabled_by__username_": "Dette rommets kryptering har blitt deaktivert av {{username}}",
   "This_room_encryption_has_been_enabled_by__username_": "Dette rommets kryptering er aktivert av {{username}}",
   "This_room_has_been_archived_by__username_": "Dette rommet er arkivert av {{username}}",

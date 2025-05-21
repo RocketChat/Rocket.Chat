@@ -1,5 +1,14 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.0
+  </details>
+
 ## 0.3.0
 
 ### Minor Changes
