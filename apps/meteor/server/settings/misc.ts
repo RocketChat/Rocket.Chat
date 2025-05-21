@@ -27,13 +27,14 @@ const updateFingerprint = async function (fingerprint: string, verified: boolean
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Hash', fingerprint),
 		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Verified', verified),
 	]);
+
 	if (emit) {
 		void notifyOnSettingChangedById('Deployment_FingerPrint_Hash');
 		void notifyOnSettingChangedById('Deployment_FingerPrint_Verified');
 	}
 };
 
-const verifyFingerPrint = async function (emit = true) {
+export const verifyFingerPrint = async function (emit = true) {
 	const DeploymentFingerPrintRecordHash = await Settings.getValueById('Deployment_FingerPrint_Hash');
 
 	const fingerprint = generateFingerprint();
@@ -76,9 +77,6 @@ export const createMiscSettings = async () => {
 	});
 
 	await verifyFingerPrint(false);
-	settings.change('Site_Url', () => {
-		void verifyFingerPrint();
-	});
 
 	await settingsRegistry.add('Initial_Channel_Created', false, {
 		type: 'boolean',
