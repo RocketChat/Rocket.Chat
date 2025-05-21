@@ -1,16 +1,24 @@
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { isCustomSoundsListProps } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../api';
+import type { ExtractRoutesFromAPI } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+// import type { ExtractRouterEndpoints } from '../router';
 
-API.v1.get(
+const customSoundsEndpoints = API.v1.get(
 	'custom-sounds.list',
 	{
 		response: {
-			200: ajv.compile({
+			200: ajv.compile<
+				PaginatedResult<{
+					sounds: ICustomSound[];
+				}>
+			>({
 				additionalProperties: false,
 				type: 'object',
 				properties: {
@@ -87,3 +95,12 @@ API.v1.get(
 		});
 	},
 );
+
+export type CustomSoundEndpoints = ExtractRoutesFromAPI<typeof customSoundsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	// interface Endpoints extends CustomSoundEndpoint {
+	// 	// 	empty: undefined;
+	// }
+}

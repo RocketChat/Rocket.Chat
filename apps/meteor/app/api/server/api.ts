@@ -63,6 +63,27 @@ const logger = new Logger('API');
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
 const applyBreakingChanges = shouldBreakInVersion('8.0.0');
+type MinimalRoute = {
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+	path: string;
+} & TypedOptions;
+
+export type Prettify<T> = {
+	[K in keyof T]: T[K];
+} & unknown;
+
+type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
+
+export type ExtractRoutesFromAPI<T> =
+	T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never;
+
+type ConvertToRoute<TRoute extends MinimalRoute> = {
+	[K in TRoute['path']]: {
+		[K2 in TRoute['method']]: K2 extends 'GET'
+			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
+			: (params: ExtractValidation<TRoute['body']>) => ExtractValidation<TRoute['response'][200 | 201]>;
+	};
+};
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;
@@ -626,10 +647,12 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: 'GET';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'GET';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('GET', subpath, options, action);
 	}
@@ -1224,3 +1247,6 @@ export const startRestAPI = () => {
 			.use(API.default.router).router,
 	);
 };
+
+export type ExtractApiClassEndpoints<TApi extends APIClass<any>> =
+	TApi extends APIClass<any, infer TOperations> ? (TOperations extends { method: string } ? Prettify<TOperations> : never) : never;
