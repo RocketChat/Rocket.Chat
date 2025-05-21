@@ -9669,7 +9669,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-config@workspace:packages/storybook-config":
+"@rocket.chat/storybook-config@workspace:packages/storybook-config, @rocket.chat/storybook-config@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-config@workspace:packages/storybook-config"
   dependencies:
@@ -9823,6 +9823,7 @@ __metadata:
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
+    "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@storybook/react": "npm:^8.6.14"
