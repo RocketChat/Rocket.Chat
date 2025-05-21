@@ -38,12 +38,8 @@ const markdownText = `
   gabriel.engel@rocket.chat
   +55991999999
   \`Inline code\`
-  \`2 < 3 > 1 & 4 "Test"\`
   \`\`\`typescript
   const test = 'this is code'
-  \`\`\`
-  \`\`\`
-  Two < Three > One & Four "Test"
   \`\`\`
   **Bold text within __Italics__**
   *Bold text with single asterik and underscore within _Italics_*
@@ -82,9 +78,7 @@ it('should render html elements as expected using default parser', async () => {
 
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('<code>Inline code</code>');
-	expect(normalizedHtml).toContain('<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>');
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
-	expect(normalizedHtml).toContain('<pre><code>Two &lt; Three &gt; One &amp; Four "Test" </code></pre>');
 	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
@@ -272,5 +266,35 @@ describe('links handling', () => {
 
 		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
 		else expect(anchorElement).not.toHaveAttribute('title');
+	});
+});
+
+describe('code handling', () => {
+	it.each([
+		{
+			caseName: 'inline code',
+			content: '`Inline code`',
+			expected: '<code>Inline code</code>',
+		},
+		{
+			caseName: 'inline code with special characters',
+			content: '`2 < 3 > 1 & 4 "Test"`',
+			expected: '<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>',
+		},
+		{
+			caseName: 'block code with language',
+			content: "```typescript\nconst test = 'this is code'\n```",
+			expected: '<code class="language-typescript">const test = \'this is code\' </code>',
+		},
+		{
+			caseName: 'block code without language',
+			content: '```\nTwo < Three > One & Four "Test"\n```',
+			expected: '<code>Two &lt; Three &gt; One &amp; Four "Test" </code>',
+		},
+	] as const)('should render $caseName', ({ content, expected }) => {
+		render(<MarkdownText content={`${content}`} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(screen.getByRole('code').outerHTML).toEqual(expected);
 	});
 });

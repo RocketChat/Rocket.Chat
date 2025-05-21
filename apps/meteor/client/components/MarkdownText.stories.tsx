@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { within, expect } from '@storybook/test';
 import outdent from 'outdent';
 
 import MarkdownText from './MarkdownText';
@@ -69,26 +68,6 @@ export const Document: Story = {
 		\`\`\`
 		`,
 		variant: 'document',
-	},
-	play: async (test) => {
-		const canvas = within(test.context.canvasElement);
-		expect(await canvas.findByRole('heading', { level: 1 })).toHaveTextContent('Title');
-		expect(await canvas.findByRole('heading', { level: 2 })).toHaveTextContent('Subtitle');
-
-		const listItem1 = await canvas.findByText('List item 1');
-		expect(listItem1).toBeVisible();
-
-		const listItem2 = await canvas.findByText('List item 2');
-		expect(listItem2).toBeVisible();
-
-		const listItem3 = await canvas.findByText('List item 3');
-		expect(listItem3).toBeVisible();
-
-		const inlineCode = await canvas.findByText('2 < 3 > 1 & 4 "Test"');
-		expect(inlineCode).toBeVisible();
-
-		const blockCode = await canvas.findByText('Two < Three > One & Four "Test"');
-		expect(blockCode).toBeVisible();
 	},
 };
 

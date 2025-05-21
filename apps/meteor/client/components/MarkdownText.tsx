@@ -48,12 +48,14 @@ const codeMarked = (code: string, language: string | undefined, _isEscaped: bool
 	}
 	return `<pre><code>${code} </code></pre>`;
 };
+const codespanMarked = (code: string): string => {
+	return `<code>${code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')}</code>`;
+};
 
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
 documentRenderer.code = codeMarked;
-documentRenderer.codespan = (code: string): string =>
-	`<code>${code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')}</code>`;
+documentRenderer.codespan = codespanMarked;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
