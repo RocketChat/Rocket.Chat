@@ -1,0 +1,49 @@
+{
+	"name": "@rocket.chat/storybook-config",
+	"version": "0.0.1",
+	"private": true,
+	"dependencies": {
+		"@rocket.chat/fuselage-tokens": "~0.33.2"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/fuselage": "^0.62.2",
+		"@rocket.chat/icons": "^0.43.0",
+		"@storybook/addon-a11y": "^8.6.14",
+		"@storybook/addon-essentials": "^8.6.14",
+		"@storybook/addon-styling-webpack": "^1.0.1",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/blocks": "^8.6.14",
+		"@storybook/preview-api": "^8.6.14",
+		"@storybook/react": "^8.6.14",
+		"@storybook/react-webpack5": "^8.6.14",
+		"@storybook/theming": "^8.6.14",
+		"eslint": "~8.45.0",
+		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"storybook-dark-mode": "^4.0.2",
+		"typescript": "~5.7.2"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/icons": "*",
+		"react": "*"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
+		"build": "rm -rf dist && tsc && npm run copy-svg -s",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/test"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

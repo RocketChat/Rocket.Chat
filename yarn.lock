@@ -8407,7 +8407,7 @@ __metadata:
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.7.2"
   peerDependencies:
-    "@rocket.chat/apps-engine": 1.51.0
+    "@rocket.chat/apps-engine": 1.52.0-rc.0
     "@rocket.chat/eslint-config": 0.7.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -9669,6 +9669,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/storybook-config@workspace:packages/storybook-config":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/storybook-config@workspace:packages/storybook-config"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/fuselage": "npm:^0.62.2"
+    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
+    "@rocket.chat/icons": "npm:^0.43.0"
+    "@storybook/addon-a11y": "npm:^8.6.14"
+    "@storybook/addon-essentials": "npm:^8.6.14"
+    "@storybook/addon-styling-webpack": "npm:^1.0.1"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
+    "@storybook/blocks": "npm:^8.6.14"
+    "@storybook/preview-api": "npm:^8.6.14"
+    "@storybook/react": "npm:^8.6.14"
+    "@storybook/react-webpack5": "npm:^8.6.14"
+    "@storybook/theming": "npm:^8.6.14"
+    eslint: "npm:~8.45.0"
+    react: "npm:~18.3.1"
+    react-dom: "npm:~18.3.1"
+    storybook-dark-mode: "npm:^4.0.2"
+    typescript: "npm:~5.7.2"
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    "@rocket.chat/icons": "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service"
@@ -9796,14 +9825,6 @@ __metadata:
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/addon-a11y": "npm:^8.6.14"
-    "@storybook/addon-actions": "npm:^8.6.14"
-    "@storybook/addon-docs": "npm:^8.6.14"
-    "@storybook/addon-essentials": "npm:^8.6.14"
-    "@storybook/addon-interactions": "npm:^8.6.14"
-    "@storybook/addon-links": "npm:^8.6.14"
-    "@storybook/addon-styling-webpack": "npm:^1.0.1"
-    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
     "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@testing-library/react": "npm:~16.0.1"
@@ -9823,7 +9844,6 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-hook-form: "npm:~7.45.4"
     storybook: "npm:^8.6.14"
-    storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.7.2"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -11013,7 +11033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/preview-api@npm:8.6.14":
+"@storybook/preview-api@npm:8.6.14, @storybook/preview-api@npm:^8.6.14":
   version: 8.6.14
   resolution: "@storybook/preview-api@npm:8.6.14"
   peerDependencies:
