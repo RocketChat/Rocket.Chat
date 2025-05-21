@@ -1,3 +1,4 @@
+import { forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipActions as Actions, VoipContactId as CallContactId } from '../..';
@@ -12,14 +13,15 @@ import Header from '../components/VoipPopupHeader';
 type VoipOutgoingViewProps = {
 	session: VoipOutgoingSession;
 	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipOutgoingView = ({ session, position }: VoipOutgoingViewProps) => {
+const VoipOutgoingView = forwardRef<HTMLDivElement, VoipOutgoingViewProps>(function VoipOutgoingView({ session, position, ...props }, ref) {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
 	return (
-		<Container data-testid='vc-popup-outgoing' position={position}>
+		<Container ref={ref} data-testid='vc-popup-outgoing' position={position} {...props}>
 			<Header>{`${t('Calling')}...`}</Header>
 
 			<Content>
@@ -31,6 +33,6 @@ const VoipOutgoingView = ({ session, position }: VoipOutgoingViewProps) => {
 			</Footer>
 		</Container>
 	);
-};
+});
 
 export default VoipOutgoingView;

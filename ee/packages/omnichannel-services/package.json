@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.18-rc.8",
+	"version": "0.3.19-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -26,6 +26,7 @@
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^5.0.1",
+		"i18next": "~23.4.9",
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.1.0",
