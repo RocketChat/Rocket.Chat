@@ -21,7 +21,7 @@ it('should render autocomplete with checkbox', async () => {
 		total: 1,
 	});
 
-	render(<AutoCompleteDepartmentMultiple value={undefined} onChange={jest.fn()} />, { wrapper: appRoot.build() });
+	render(<AutoCompleteDepartmentMultiple withCheckbox value={undefined} onChange={jest.fn()} />, { wrapper: appRoot.build() });
 
 	await userEvent.click(screen.getByRole('listbox'));
 
@@ -39,7 +39,7 @@ it('should render autocomplete without checkbox', async () => {
 		total: 1,
 	});
 
-	render(<AutoCompleteDepartmentMultiple value={undefined} onChange={jest.fn()} withCheckbox={false} />, { wrapper: appRoot.build() });
+	render(<AutoCompleteDepartmentMultiple value={undefined} onChange={jest.fn()} />, { wrapper: appRoot.build() });
 
 	await userEvent.click(screen.getByRole('listbox'));
 
