@@ -81,6 +81,15 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		return Authorization.canAccessRoom(parentRoom, user);
 	},
 
+	async function _validateAdminAccessToPrivateRooms(room, user): Promise<boolean> {
+		if (!room?._id || room.t !== 'p' || !user?._id) {
+			return false;
+		}
+
+		// 检查用户是否有view-p-room权限
+		return Authorization.hasPermission(user._id, 'view-p-room');
+	},
+
 	canAccessRoomLivechat,
 	canAccessRoomVoip,
 ];
