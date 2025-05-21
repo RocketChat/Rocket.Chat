@@ -10,7 +10,7 @@ const mockGetDepartments = jest.fn();
 const appRoot = new MockedAppRootBuilder()
 	.withEndpoint('GET', '/v1/livechat/department', mockGetDepartments)
 	.wrap((children) => (
-		<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 100 }}>{children}</VirtuosoMockContext.Provider>
+		<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 28 }}>{children}</VirtuosoMockContext.Provider>
 	));
 
 it('should render autocomplete with checkbox', async () => {
