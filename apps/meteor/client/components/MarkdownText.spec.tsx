@@ -82,6 +82,7 @@ it('should render html elements as expected using default parser', async () => {
 
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('<code>Inline code</code>');
+	expect(normalizedHtml).toContain('<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>');
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
 	expect(normalizedHtml).toContain('<pre><code>Two &lt; Three &gt; One &amp; Four "Test" </code></pre>');
 	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');

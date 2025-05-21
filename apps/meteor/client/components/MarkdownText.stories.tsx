@@ -8,7 +8,7 @@ const meta = {
 	title: 'Components/MarkdownText',
 	component: MarkdownText,
 	parameters: {
-		layout: 'padded',
+		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
 } satisfies Meta<typeof MarkdownText>;
@@ -71,12 +71,9 @@ export const Document: Story = {
 		variant: 'document',
 	},
 	play: async (test) => {
-		const canvas = within(test.canvasElement);
-		const h1 = await canvas.findByRole('heading', { name: 'Title' });
-		expect(h1).toBeVisible();
-
-		const h2 = await canvas.findByRole('heading', { name: 'Subtitle' });
-		expect(h2).toBeVisible();
+		const canvas = within(test.context.canvasElement);
+		expect(await canvas.findByRole('heading', { level: 1 })).toHaveTextContent('Title');
+		expect(await canvas.findByRole('heading', { level: 2 })).toHaveTextContent('Subtitle');
 
 		const listItem1 = await canvas.findByText('List item 1');
 		expect(listItem1).toBeVisible();
@@ -87,7 +84,7 @@ export const Document: Story = {
 		const listItem3 = await canvas.findByText('List item 3');
 		expect(listItem3).toBeVisible();
 
-		const inlineCode = await canvas.findByText('2 &lt; 3 &gt; 1 &amp; 4 "Test"');
+		const inlineCode = await canvas.findByText('2 < 3 > 1 & 4 "Test"');
 		expect(inlineCode).toBeVisible();
 
 		const blockCode = await canvas.findByText('Two < Three > One & Four "Test"');

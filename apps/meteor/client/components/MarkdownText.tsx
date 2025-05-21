@@ -52,6 +52,8 @@ const codeMarked = (code: string, language: string | undefined, _isEscaped: bool
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
 documentRenderer.code = codeMarked;
+documentRenderer.codespan = (code: string): string =>
+	`<code>${code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')}</code>`;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
