@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 
@@ -20,12 +21,16 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 
 	const activeTab = useRouteParameter('tab');
 
+	const handleCloseContextualbar = useEffectEvent(() => {
+		moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true });
+	});
+
 	return (
-		<ContextualbarDialog>
+		<ContextualbarDialog onClose={handleCloseContextualbar}>
 			<Contextualbar>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
-					<ContextualbarClose onClick={() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true })} />
+					<ContextualbarClose onClick={handleCloseContextualbar} />
 				</ContextualbarHeader>
 				<Tabs paddingBlockStart={8}>
 					<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>

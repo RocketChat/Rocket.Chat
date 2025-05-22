@@ -1,4 +1,5 @@
-import { useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +11,13 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DeviceManagementAdminPage = (): ReactElement => {
 	const { t } = useTranslation();
+	const deviceManagementRouter = useRoute('device-management');
+
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
 
 	const reloadRef = useRef(() => null);
+	const handleCloseContextualBar = useEffectEvent((): void => deviceManagementRouter.push({}));
 
 	return (
 		<Page flexDirection='row'>
@@ -24,7 +28,7 @@ const DeviceManagementAdminPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context === 'info' && deviceId && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleCloseContextualBar}>
 					<DeviceManagementInfo deviceId={deviceId} onReload={reloadRef.current} />
 				</ContextualbarDialog>
 			)}
