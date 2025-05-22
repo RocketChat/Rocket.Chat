@@ -289,8 +289,6 @@ test.describe('basic features', () => {
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('e2e-encryption', () => {
-	// test.skip();
-
 	let poHomeChannel: HomeChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
@@ -877,8 +875,6 @@ test.describe.serial('e2e-encryption', () => {
 });
 
 test.describe.serial('e2ee room setup', () => {
-	// test.skip();
-
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
@@ -1070,8 +1066,6 @@ test.describe.serial('e2ee room setup', () => {
 });
 
 test.describe('e2ee support legacy formats', () => {
-	// test.skip();
-
 	test.use({ storageState: Users.userE2EE.state });
 
 	let poHomeChannel: HomeChannel;
