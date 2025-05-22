@@ -51,17 +51,17 @@ const expectCallback = function (cb: jest.Mock) {
 	return { toHaveBeenCalledTimes };
 };
 
-const getTestVariations = (options: Exclude<UseIdleDetectionOptions, 'time'>): Required<UseIdleDetectionOptions>[] => {
+const getTestVariations = (getOptions: () => Exclude<UseIdleDetectionOptions, 'time'>): Required<UseIdleDetectionOptions>[] => {
 	return [60, 30, 300, 3000].map((seconds): Required<UseIdleDetectionOptions> => {
-		return { ...DEFAULT_IDLE_DETECTION_OPTIONS, time: seconds * 1000, ...options };
+		return { ...DEFAULT_IDLE_DETECTION_OPTIONS, time: seconds * 1000, ...getOptions() };
 	});
 };
 
 const variations = [
-	...getTestVariations({}),
-	...getTestVariations({ id: faker.string.uuid() }),
-	...getTestVariations({ awayOnWindowBlur: true }),
-	...getTestVariations({ awayOnWindowBlur: true, id: faker.string.uuid() }),
+	...getTestVariations(() => ({})),
+	...getTestVariations(() => ({ id: faker.string.uuid() })),
+	...getTestVariations(() => ({ awayOnWindowBlur: true })),
+	...getTestVariations(() => ({ awayOnWindowBlur: true, id: faker.string.uuid() })),
 ];
 
 describe('useIdleDetection', () => {
