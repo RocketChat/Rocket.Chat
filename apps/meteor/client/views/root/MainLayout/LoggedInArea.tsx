@@ -7,6 +7,7 @@ import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
 import { useFingerprintChange } from '../../../hooks/useFingerprintChange';
 import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
 import { useRootUrlChange } from '../../../hooks/useRootUrlChange';
+import { useTwoFactorAuthSetupCheck } from '../../../hooks/useTwoFactorAuthSetupCheck';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
@@ -33,6 +34,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	// TODO: reevaluate `useSetModal`
 	useFingerprintChange();
 	useRootUrlChange();
+	useTwoFactorAuthSetupCheck();
 
 	return children;
 };
