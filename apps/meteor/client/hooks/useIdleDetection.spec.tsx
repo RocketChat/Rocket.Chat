@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { renderHook, waitFor, fireEvent } from '@testing-library/react';
+import { renderHook, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 
@@ -51,17 +51,17 @@ const expectCallback = function (cb: jest.Mock) {
 	return { toHaveBeenCalledTimes };
 };
 
-const getTestVariations = (options: Exclude<UseIdleDetectionOptions, 'time'>): Required<UseIdleDetectionOptions>[] => {
+const getTestVariations = (getOptions: () => Exclude<UseIdleDetectionOptions, 'time'>): Required<UseIdleDetectionOptions>[] => {
 	return [60, 30, 300, 3000].map((seconds): Required<UseIdleDetectionOptions> => {
-		return { ...DEFAULT_IDLE_DETECTION_OPTIONS, time: seconds * 1000, ...options };
+		return { ...DEFAULT_IDLE_DETECTION_OPTIONS, time: seconds * 1000, ...getOptions() };
 	});
 };
 
 const variations = [
-	...getTestVariations({}),
-	...getTestVariations({ id: faker.string.uuid() }),
-	...getTestVariations({ awayOnWindowBlur: true }),
-	...getTestVariations({ awayOnWindowBlur: true, id: faker.string.uuid() }),
+	...getTestVariations(() => ({})),
+	...getTestVariations(() => ({ id: faker.string.uuid() })),
+	...getTestVariations(() => ({ awayOnWindowBlur: true })),
+	...getTestVariations(() => ({ awayOnWindowBlur: true, id: faker.string.uuid() })),
 ];
 
 describe('useIdleDetection', () => {
@@ -107,30 +107,10 @@ describe('useIdleDetection', () => {
 			jest.clearAllMocks();
 		});
 
-		it('should return false if the user is active', async () => {
-			const { result } = renderHook(() => useIdleDetection(args));
-			expect(result.current).toBe(false);
+		it('should not dispatch any event on initial render', async () => {
+			renderHook(() => useIdleDetection(args));
 
-			// Trigger idle
-			act(() => {
-				jest.advanceTimersByTime(idleDelayMillis + 1);
-			});
-
-			// Trigger active
-			await user.click(document.body);
-
-			await waitFor(() => expect(result.current).toBe(false));
-		});
-
-		it('should return true if the user is idle', async () => {
-			const { result } = renderHook(() => useIdleDetection(args));
-			expect(result.current).toBe(false);
-
-			act(() => {
-				jest.advanceTimersByTime(idleDelayMillis + 1);
-			});
-
-			await waitFor(() => expect(result.current).toBe(true));
+			expectNoCalls();
 		});
 
 		it('should dispatch idle event if no interaction before timeout', async () => {
