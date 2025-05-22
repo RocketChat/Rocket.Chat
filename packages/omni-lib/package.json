@@ -1,0 +1,30 @@
+{
+	"name": "@rocket.chat/omni-lib",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@types/jest": "~29.5.14",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"typescript": "~5.7.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/omni-lib"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/patch-injection": "workspace:^"
+	}
+}
