@@ -27,13 +27,13 @@ test.describe.serial('display settings', () => {
 		await test.step('expect to select display mode as Extended', async () => {
 			sentMessage = await sendTargetChannelMessage(api, channelName);
 			await poHomeChannel.sidenav.setDisplayMode('Extended');
-			const message = await poHomeChannel.sidenav.getsidebarItemMessage(channelName).textContent();
+			const message = await poHomeChannel.sidenav.getSidebarItemMessage(channelName).textContent();
 			expect(message).toContain(`${sentMessage}`);
 		});
 
 		await test.step('expect to select display mode as Medium', async () => {
 			await poHomeChannel.sidenav.setDisplayMode('Medium');
-			await expect(poHomeChannel.sidenav.getsidebarItemMessage(channelName)).not.toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemMessage(channelName)).not.toBeVisible();
 		});
 
 		await test.step('expect to select display mode as condensed', async () => {
