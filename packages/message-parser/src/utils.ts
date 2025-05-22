@@ -70,6 +70,11 @@ export const italic = generate('ITALIC');
 export const plain = generate('PLAIN_TEXT');
 export const strike = generate('STRIKE');
 
+export const spoiler = (text: string): Types['SPOILER'] => ({
+  type: 'SPOILER',
+  value: text,
+});
+
 export const codeLine = generate('CODE_LINE');
 
 const isValidLink = (link: string) => {

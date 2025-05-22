@@ -272,3 +272,17 @@ blockquote {
 		opacity: 1;
 	}
 }
+
+.rcx-spoiler {
+	background-color: var(--rcx-color-neutral-700, #4a4a4a); /* Default to a dark gray if variable not found */
+	color: transparent;
+	cursor: pointer;
+	transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+	padding: 0.1em 0.3em;
+	border-radius: var(--rcx-border-radius-small, 4px); /* Default to 4px if variable not found */
+}
+
+.rcx-spoiler:hover {
+	background-color: transparent;
+	color: inherit;
+}

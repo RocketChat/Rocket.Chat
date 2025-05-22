@@ -184,6 +184,11 @@ export type Timestamp = {
   fallback?: Plain;
 };
 
+export interface SpoilerNode {
+  type: 'SPOILER';
+  value: string;
+}
+
 export type Types = {
   BOLD: Bold;
   PARAGRAPH: Paragraph;
@@ -208,6 +213,7 @@ export type Types = {
   LIST_ITEM: ListItem;
   IMAGE: Image;
   LINE_BREAK: LineBreak;
+  SPOILER: SpoilerNode;
 };
 
 export type ASTNode =
@@ -227,7 +233,8 @@ export type ASTNode =
   | ChannelMention
   | Emoji
   | Color
-  | Tasks;
+  | Tasks
+  | SpoilerNode;
 
 export type TypesKeys = keyof Types;
 
@@ -244,7 +251,8 @@ export type Inlines =
   | ChannelMention
   | Emoji
   | Color
-  | InlineKaTeX;
+  | InlineKaTeX
+  | SpoilerNode;
 
 export type Blocks =
   | Code

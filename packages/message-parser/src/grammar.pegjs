@@ -28,6 +28,7 @@
     plain,
     quote,
     reducePlainTexts,
+    spoiler,
     strike,
     task,
     tasks,
@@ -245,6 +246,7 @@ InlineItemPattern = Whitespace
   / InlineEmoticon
   / Color
   / KatexInline
+  / Spoiler
   / Escaped
 
 /**
@@ -694,6 +696,9 @@ UnicodeEmojiFlags = $([\uD83C] [\uDD00-\uDDFF] [\uD83C] [\uDD00-\uDDFF])
 InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
 
 InlineCode__ = $(!"`" !"\n" .)
+
+Spoiler
+  = "||" content:$((!"||" .)+) "||" { return spoiler(content); }
 
 /**
  *
