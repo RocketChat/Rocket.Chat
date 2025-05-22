@@ -14,6 +14,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
@@ -99,7 +100,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 	}, [data, getRoles]);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
 				{!onClickBack && <ContextualbarIcon name='user' />}
@@ -120,7 +121,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			)}
 
 			{!isLoading && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
-		</>
+		</ContextualbarDialog>
 	);
 };
 
