@@ -55,12 +55,39 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 			});
 			if (recomputeQueries) this._collection.recomputeAllResults();
 		},
-		remove: (doc, { recomputeQueries }) => {
+		storeMany: (docs, { recomputeQueries }) => {
+			set((state) => {
+				const records = [...state.records];
+				docs.forEach((doc) => {
+					const index = records.findIndex((r) => r._id === doc._id);
+					if (index !== -1) {
+						records[index] = doc;
+					} else {
+						records.push(doc);
+					}
+				});
+				return { records };
+			});
+			if (recomputeQueries) this._collection.recomputeAllResults();
+		},
+		delete: (doc, { recomputeQueries }) => {
 			set((state) => {
 				const records = state.records.filter((r) => r._id !== doc._id);
 				return { records };
 			});
 			if (recomputeQueries) this._collection.recomputeAllResults();
+		},
+		update: (predicate: (record: T) => boolean, modifier: (record: T) => T) => {
+			set({
+				records: get().records.map((record) => (predicate(record) ? modifier(record) : record)),
+			});
+			this._collection.recomputeAllResults();
+		},
+		updateAsync: async (predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>) => {
+			set({
+				records: await Promise.all(get().records.map((record) => (predicate(record) ? modifier(record) : record))),
+			});
+			this._collection.recomputeAllResults();
 		},
 	}));
 

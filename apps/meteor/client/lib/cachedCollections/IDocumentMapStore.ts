@@ -8,5 +8,10 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	filter(predicate: (record: T) => boolean): T[];
 	replaceAll(records: T[], options: { recomputeQueries: boolean }): void;
 	store(doc: T, options: { recomputeQueries: boolean }): void;
-	remove(doc: T, options: { recomputeQueries: boolean }): void;
+	storeMany(docs: T[], options: { recomputeQueries: boolean }): void;
+	delete(doc: T, options: { recomputeQueries: boolean }): void;
+	update<U extends T>(predicate: (record: T) => record is U, modifier: (record: U) => U): void;
+	update(predicate: (record: T) => boolean, modifier: (record: T) => T): void;
+	updateAsync<U extends T>(predicate: (record: T) => record is U, modifier: (record: U) => Promise<U>): Promise<void>;
+	updateAsync(predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>): Promise<void>;
 }

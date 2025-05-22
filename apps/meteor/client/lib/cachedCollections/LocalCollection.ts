@@ -238,7 +238,7 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 
 			this._saveOriginal(removeDoc._id, removeDoc);
-			this.store.getState().remove(removeDoc, { recomputeQueries: false });
+			this.store.getState().delete(removeDoc, { recomputeQueries: false });
 		}
 
 		return { queriesToRecompute, queryRemove, count: remove.size };
