@@ -3,6 +3,10 @@ import type { Locator, Page } from '@playwright/test';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
+	sidebarListItem() {
+		throw new Error('Method not implemented.');
+	}
+
 	private readonly page: Page;
 
 	constructor(page: Page) {
@@ -96,16 +100,16 @@ export class HomeSidenav {
 		return this.page.getByRole('search').getByRole('listbox');
 	}
 
-	get sidebarListItem(): Locator {
-		return this.page.locator('[data-testid="virtuoso-item-list"]').getByRole('listitem').nth(1);
+	get menuItemSwitchAvatars(): Locator {
+		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' });
 	}
 
-	get switchAvatars(): Locator {
-		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' }).locator('label i');
+	getsidebarItemMessage(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('.message-body--unstyled');
 	}
 
-	getsidebarItemMessage(message: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${message}")`).locator('.message-body--unstyled');
+	getSidebarChannelName(name: string): Locator {
+		return this.page.getByRole('listitem').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getSidebarAvatars(name: string): Locator {

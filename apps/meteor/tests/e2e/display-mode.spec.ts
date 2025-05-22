@@ -38,22 +38,22 @@ test.describe.serial('display settings', () => {
 
 		await test.step('expect to select display mode as condensed', async () => {
 			await poHomeChannel.sidenav.setDisplayMode('Condensed');
-			await expect(poHomeChannel.sidenav.sidebarListItem).toHaveAttribute('data-known-size', '28');
+			await expect(poHomeChannel.sidenav.getSidebarChannelName(channelName)).toHaveAttribute('data-known-size', '28');
 		});
 
 		await test.step('expect to display Avatars in sidebar when toggle is on', async () => {
 			await poHomeChannel.sidenav.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-			const isChecked = await poHomeChannel.sidenav.switchAvatars.isChecked();
+			const isChecked = await poHomeChannel.sidenav.menuItemSwitchAvatars.isChecked();
 			if (!isChecked) {
-				await poHomeChannel.sidenav.switchAvatars.click();
+				await poHomeChannel.sidenav.menuItemSwitchAvatars.click();
 			}
 			await expect(poHomeChannel.sidenav.getSidebarAvatars(channelName)).toBeVisible();
 		});
 
 		await test.step('expect to hide avatars in sidebar when toggle is off', async () => {
-			const isChecked = await poHomeChannel.sidenav.switchAvatars.isChecked();
+			const isChecked = await poHomeChannel.sidenav.menuItemSwitchAvatars.isChecked();
 			if (isChecked) {
-				await poHomeChannel.sidenav.switchAvatars.click();
+				await poHomeChannel.sidenav.menuItemSwitchAvatars.click();
 			}
 			await expect(poHomeChannel.sidenav.getSidebarAvatars(channelName)).toBeHidden();
 		});
