@@ -197,6 +197,7 @@ jobs:
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
+          docker compose -f docker-compose-ci.yml logs varnish
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
@@ -226,6 +227,9 @@ jobs:
         run: |
           docker ps
 
+
+          docker compose -f docker-compose-ci.yml logs varnish
+
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
@@ -233,7 +237,9 @@ jobs:
           done;
 
       - name: Remove unused Docker images
-        run: docker system prune -af
+        run: |
+          docker compose -f docker-compose-ci.yml logs varnish
+          docker system prune -af
 
       - name: E2E Test API
         if: inputs.type == 'api'
