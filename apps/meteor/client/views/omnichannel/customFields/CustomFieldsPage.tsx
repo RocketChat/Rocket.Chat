@@ -1,4 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +16,10 @@ const CustomFieldsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
+	const handleCloseContextualbar = useEffectEvent(() => {
+		router.navigate('/omnichannel/customfields');
+	});
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -28,7 +33,7 @@ const CustomFieldsPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} />}
 					{context === 'new' && <EditCustomFields />}
 				</ContextualbarDialog>

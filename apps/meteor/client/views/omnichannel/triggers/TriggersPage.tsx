@@ -7,12 +7,14 @@ import EditTriggerWithData from './EditTriggerWithData';
 import TriggersTable from './TriggersTable';
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { useCallback } from 'react';
 
 const TriggersPage = () => {
 	const { t } = useTranslation();
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 	const router = useRouter();
+	const handleClose = useCallback(() => router.navigate('/omnichannel/triggers'), [router]);
 
 	return (
 		<Page flexDirection='row'>
@@ -25,7 +27,7 @@ const TriggersPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleClose}>
 					{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
 					{context === 'new' && <EditTrigger />}
 				</ContextualbarDialog>

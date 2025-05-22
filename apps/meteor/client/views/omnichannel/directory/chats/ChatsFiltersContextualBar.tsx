@@ -15,6 +15,8 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
+	Contextualbar,
 } from '../../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import AutoCompleteUnits from '../../../../omnichannel/additionalForms/AutoCompleteUnits';
@@ -60,90 +62,111 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const formId = useUniqueId();
 
 	return (
-		<>
-			<ContextualbarHeader>
-				<ContextualbarIcon name='customize' />
-				<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
-				<ContextualbarClose onClick={onClose} />
-			</ContextualbarHeader>
-			<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSubmitFilters)}>
-				<Field>
-					<FieldLabel>{t('From')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='from'
-							control={control}
-							render={({ field }) => <InputBox type='date' placeholder={t('From')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('To')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='to'
-							control={control}
-							render={({ field }) => <InputBox type='date' placeholder={t('To')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
-						/>
-					</FieldRow>
-				</Field>
-				{canViewLivechatRooms && (
+		<ContextualbarDialog onClose={onClose}>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarIcon name='customize' />
+					<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
+					<ContextualbarClose onClick={onClose} />
+				</ContextualbarHeader>
+				<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSubmitFilters)}>
 					<Field>
-						<FieldLabel>{t('Served_By')}</FieldLabel>
+						<FieldLabel>{t('From')}</FieldLabel>
 						<FieldRow>
 							<Controller
-								name='servedBy'
+								name='from'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent value={value} onChange={onChange} />}
+								render={({ field }) => <InputBox type='date' placeholder={t('From')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
 							/>
 						</FieldRow>
 					</Field>
-				)}
-				<Field>
-					<FieldLabel>{t('Status')}</FieldLabel>
-					<Controller
-						name='status'
-						control={control}
-						render={({ field }) => <Select {...field} options={statusOptions} placeholder={t('Select_an_option')} />}
-					/>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Department')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='department'
-							control={control}
-							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments withCheckbox={false} />
-							)}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Tags')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='tags'
-							control={control}
-							render={({ field: { value, onChange } }) => <CurrentChatTags value={value} handler={onChange} viewAll />}
-						/>
-					</FieldRow>
-				</Field>
-				{isEnterprise && (
 					<Field>
-						<FieldLabel>{t('Units')}</FieldLabel>
+						<FieldLabel>{t('To')}</FieldLabel>
 						<FieldRow>
 							<Controller
-								name='units'
+								name='to'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteUnits value={value} onChange={onChange} />}
+								render={({ field }) => <InputBox type='date' placeholder={t('To')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
 							/>
 						</FieldRow>
 					</Field>
-				)}
-				{canViewCustomFields &&
-					contactCustomFields?.map((customField) => {
-						if (customField.type === 'select') {
+					{canViewLivechatRooms && (
+						<Field>
+							<FieldLabel>{t('Served_By')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='servedBy'
+									control={control}
+									render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent value={value} onChange={onChange} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
+					<Field>
+						<FieldLabel>{t('Status')}</FieldLabel>
+						<Controller
+							name='status'
+							control={control}
+							render={({ field }) => <Select {...field} options={statusOptions} placeholder={t('Select_an_option')} />}
+						/>
+					</Field>
+					<Field>
+						<FieldLabel>{t('Department')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='department'
+								control={control}
+								render={({ field: { value, onChange } }) => (
+									<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments withCheckbox={false} />
+								)}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel>{t('Tags')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='tags'
+								control={control}
+								render={({ field: { value, onChange } }) => <CurrentChatTags value={value} handler={onChange} viewAll />}
+							/>
+						</FieldRow>
+					</Field>
+					{isEnterprise && (
+						<Field>
+							<FieldLabel>{t('Units')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='units'
+									control={control}
+									render={({ field: { value, onChange } }) => <AutoCompleteUnits value={value} onChange={onChange} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
+					{canViewCustomFields &&
+						contactCustomFields?.map((customField) => {
+							if (customField.type === 'select') {
+								return (
+									<Field key={customField._id}>
+										<FieldLabel>{customField.label}</FieldLabel>
+										<FieldRow>
+											<Controller
+												name={customField._id}
+												control={control}
+												render={({ field }) => (
+													<Select
+														{...field}
+														value={field.value as string}
+														options={(customField.options || '').split(',').map((item) => [item, item])}
+													/>
+												)}
+											/>
+										</FieldRow>
+									</Field>
+								);
+							}
+
 							return (
 								<Field key={customField._id}>
 									<FieldLabel>{customField.label}</FieldLabel>
@@ -151,44 +174,25 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 										<Controller
 											name={customField._id}
 											control={control}
-											render={({ field }) => (
-												<Select
-													{...field}
-													value={field.value as string}
-													options={(customField.options || '').split(',').map((item) => [item, item])}
-												/>
-											)}
+											render={({ field }) => <TextInput {...field} value={field.value as string} />}
 										/>
 									</FieldRow>
 								</Field>
 							);
-						}
-
-						return (
-							<Field key={customField._id}>
-								<FieldLabel>{customField.label}</FieldLabel>
-								<FieldRow>
-									<Controller
-										name={customField._id}
-										control={control}
-										render={({ field }) => <TextInput {...field} value={field.value as string} />}
-									/>
-								</FieldRow>
-							</Field>
-						);
-					})}
-			</ContextualbarScrollableContent>
-			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
-						{t('Clear_filters')}
-					</Button>
-					<Button type='submit' form={formId} primary>
-						{t('Apply')}
-					</Button>
-				</ButtonGroup>
-			</ContextualbarFooter>
-		</>
+						})}
+				</ContextualbarScrollableContent>
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
+							{t('Clear_filters')}
+						</Button>
+						<Button type='submit' form={formId} primary>
+							{t('Apply')}
+						</Button>
+					</ButtonGroup>
+				</ContextualbarFooter>
+			</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 

@@ -1,11 +1,10 @@
 import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Callout, ContextualbarV2Skeleton } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
 	const { t } = useTranslation();
@@ -43,7 +42,7 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 	});
 
 	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarV2Skeleton />;
 	}
 
 	if (isError || unitMonitorsError || unitDepartmentsError) {

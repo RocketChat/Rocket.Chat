@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { FormSkeleton } from './components/FormSkeleton';
-import { Contextualbar } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
@@ -52,7 +51,7 @@ const CallsContextualBarDirectory = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <Contextualbar>{context === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
+	return context === 'info' ? <VoipInfo room={room} onClickClose={handleClose} /> : null;
 };
 
 export default CallsContextualBarDirectory;

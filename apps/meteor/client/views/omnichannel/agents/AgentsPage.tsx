@@ -1,4 +1,4 @@
-import { usePermission, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,7 @@ import AgentsTable from './AgentsTable/AgentsTable';
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 
 const AgentsPage = (): ReactElement => {
 	const { t } = useTranslation();
@@ -15,6 +16,10 @@ const AgentsPage = (): ReactElement => {
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+	const router = useRouter();
+	const handleCloseContextualbar = useEffectEvent(() => {
+		router.navigate('/omnichannel/agents');
+	});
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;
@@ -29,7 +34,7 @@ const AgentsPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					{id && context === 'edit' && <AgentEditWithData uid={id} />}
 					{id && context === 'info' && <AgentInfo uid={id} />}
 				</ContextualbarDialog>

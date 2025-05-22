@@ -5,7 +5,7 @@ import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-c
 import { useTranslation } from 'react-i18next';
 
 import ReviewContactModal from './ReviewContactModal';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';
@@ -34,7 +34,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const customFieldEntries = useValidCustomFields(userCustomFields);
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='user' />
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
@@ -99,7 +99,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			)}
 			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
 			{context === 'history' && <ContactInfoHistory contact={contact} />}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

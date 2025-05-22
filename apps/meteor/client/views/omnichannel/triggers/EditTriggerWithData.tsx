@@ -1,11 +1,10 @@
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Callout, ContextualbarSkeleton } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditTrigger from './EditTrigger';
-import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 const EditTriggerWithData = ({ triggerId }: { triggerId: ILivechatTrigger['_id'] }) => {
 	const { t } = useTranslation();

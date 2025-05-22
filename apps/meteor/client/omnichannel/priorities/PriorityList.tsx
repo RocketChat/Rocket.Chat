@@ -23,7 +23,7 @@ const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): React
 	const { t } = useTranslation();
 
 	return (
-		<ContextualbarDialog>
+		<ContextualbarDialog onClose={onClose}>
 			<Contextualbar>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{t('Edit_Priority')}</ContextualbarTitle>
