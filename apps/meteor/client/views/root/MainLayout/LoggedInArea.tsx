@@ -29,8 +29,10 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
 	useRestrictedRoles();
-	useRootUrlChange(user._id);
-	useFingerprintChange(user._id);
+	// These 3 hooks below need to be called in this order due to the way our `setModal` works.
+	// TODO: reevaluate `useSetModal`
+	useFingerprintChange();
+	useRootUrlChange();
 
 	return children;
 };
