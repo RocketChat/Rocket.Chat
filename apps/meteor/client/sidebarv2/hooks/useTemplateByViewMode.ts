@@ -6,10 +6,10 @@ import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
 import Medium from '../Item/Medium';
 
-export const useTemplateByViewMode = (): ComponentType<any> => {
+export const useTemplateByViewMode = (viewMode?: string): ComponentType<any> => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	return useMemo(() => {
-		switch (sidebarViewMode) {
+		switch (viewMode || sidebarViewMode) {
 			case 'extended':
 				return Extended;
 			case 'medium':
@@ -18,5 +18,5 @@ export const useTemplateByViewMode = (): ComponentType<any> => {
 			default:
 				return Condensed;
 		}
-	}, [sidebarViewMode]);
+	}, [sidebarViewMode, viewMode]);
 };

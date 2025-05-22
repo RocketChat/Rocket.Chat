@@ -14,7 +14,7 @@ export const useItemData = (
 	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
 	const { t } = useTranslation();
-	const AvatarTemplate = useAvatarTemplate();
+	const AvatarTemplate = useAvatarTemplate(viewMode);
 
 	const { unreadTitle, unreadVariant, showUnread, highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
 
@@ -23,7 +23,7 @@ export const useItemData = (
 		[highlighted, room],
 	);
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
-	const message = viewMode === 'extended' ? getMessage(room, room.lastMessage, t) : undefined;
+	const message = getMessage(room, room.lastMessage, t);
 
 	const badges = useMemo(
 		() => (

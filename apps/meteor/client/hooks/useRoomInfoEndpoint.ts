@@ -7,7 +7,10 @@ import { minutesToMilliseconds } from 'date-fns';
 
 type APIErrorResult = { success: boolean; error: string };
 
-export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>, APIErrorResult> => {
+export const useRoomInfoEndpoint = (
+	rid: IRoom['_id'],
+	enabled = true,
+): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>, APIErrorResult> => {
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const uid = useUserId();
 	return useQuery({
@@ -23,6 +26,6 @@ export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<Operation
 			return true;
 		},
 
-		enabled: !!uid,
+		enabled: !!uid && enabled,
 	});
 };
