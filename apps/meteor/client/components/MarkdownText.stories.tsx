@@ -7,7 +7,7 @@ const meta = {
 	title: 'Components/MarkdownText',
 	component: MarkdownText,
 	parameters: {
-		layout: 'fullscreen',
+		layout: 'padded',
 		controls: { hideNoControlsWarning: true },
 	},
 } satisfies Meta<typeof MarkdownText>;
@@ -63,9 +63,18 @@ export const Document: Story = {
 
 		\`2 < 3 > 1 & 4 "Test"\`
 
+		\`< = &lt; > = &gt; & = &amp;\`
+
 		\`\`\`
 		Two < Three > One & Four "Test"
 		\`\`\`
+
+		\`\`\`
+		< : &lt;
+		> : &gt;
+		& : &amp;
+		\`\`\`
+
 		`,
 		variant: 'document',
 	},
