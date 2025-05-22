@@ -294,7 +294,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 class WebHookAPI extends APIClass<'/hooks'> {
 	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = this.urlParams;
-		const integration = await Integrations.findOneById<IIncomingIntegration>(integrationId);
+		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, token);
 
 		if (!integration) {
 			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
