@@ -147,18 +147,15 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
-		data.forEach((record) => {
-			const newRecord = this.handleLoadFromServer(record);
-			if (!hasId(newRecord)) {
-				return;
-			}
+		const newRecords = data.map((record) => this.handleLoadFromServer(record)).filter((record) => hasId(record));
 
-			this.collection.state.store(newRecord, { recomputeQueries: true });
-
-			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
-				this.updatedAt = newRecord._updatedAt;
+		newRecords.forEach((record) => {
+			if (hasUpdatedAt(record) && record._updatedAt > this.updatedAt) {
+				this.updatedAt = record._updatedAt;
 			}
 		});
+
+		this.collection.state.storeMany(newRecords, { recomputeQueries: true });
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
@@ -214,7 +211,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		}
 
 		if (action === 'removed') {
-			this.collection.state.remove(newRecord, { recomputeQueries: true });
+			this.collection.state.delete(newRecord, { recomputeQueries: true });
 		} else {
 			const { _id } = newRecord;
 			if (!_id) return;
@@ -283,7 +280,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.state.remove(newRecord, { recomputeQueries: true });
+						this.collection.state.delete(newRecord, { recomputeQueries: true });
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}

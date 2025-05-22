@@ -146,13 +146,27 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				(!message.translations ||
 					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
-				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
-				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					(record) => ({
+						...record,
+						autoTranslateFetching: true,
+					}),
+				);
 			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
-				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => ({
+						...record,
+						autoTranslateShowInverse: true,
+					}),
+				);
 				delete AutoTranslate.messageIdsToWait[message._id];
 			} else if (message.autoTranslateFetching === true) {
-				Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => record,
+				);
 			}
 		}
 	};
