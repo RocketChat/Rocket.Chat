@@ -3,10 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
-	sidebarListItem() {
-		throw new Error('Method not implemented.');
-	}
-
 	private readonly page: Page;
 
 	constructor(page: Page) {
@@ -104,7 +100,7 @@ export class HomeSidenav {
 		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' });
 	}
 
-	getsidebarItemMessage(name: string): Locator {
+	getSidebarItemMessage(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('.message-body--unstyled');
 	}
 
