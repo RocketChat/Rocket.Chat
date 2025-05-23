@@ -69,6 +69,7 @@
     "@rocket.chat/web-ui-registration": "18.0.0"
   },
   "changesets": [
+    "bump-patch-1748040988589",
     "calm-jobs-relax",
     "chatty-actors-drop",
     "cuddly-feet-clap",
@@ -83,6 +84,7 @@
     "khaki-donkeys-wink",
     "long-tools-whisper",
     "loud-chairs-accept",
+    "odd-beds-dream",
     "old-rats-ring",
     "pink-balloons-glow",
     "polite-islands-try",
@@ -95,6 +97,7 @@
     "serious-trees-whisper",
     "short-mayflies-sing",
     "shy-moles-boil",
+    "silent-shoes-repeat",
     "spicy-vans-cough",
     "stale-walls-move",
     "tender-goats-cross",
