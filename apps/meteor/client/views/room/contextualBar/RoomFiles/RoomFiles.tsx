@@ -14,6 +14,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
@@ -57,7 +58,7 @@ const RoomFiles = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='attachment' />
 				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
@@ -100,7 +101,7 @@ const RoomFiles = ({
 					</Box>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

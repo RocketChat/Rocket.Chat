@@ -2,7 +2,7 @@ import type { ILivechatDepartment, ILivechatUnitMonitor, Serialized, IOmnichanne
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -36,11 +36,11 @@ type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];
+	onClose: () => void;
 };
 
-const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) => {
+const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose }: UnitEditProps) => {
 	const t = useTranslation();
-	const router = useRouter();
 	const saveUnit = useMethod('livechat:saveUnit');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -103,7 +103,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-units'],
 			});
-			router.navigate('/omnichannel/units');
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -119,7 +119,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		<Contextualbar data-qa-id='units-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Unit') : t('New_Unit')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => router.navigate('/omnichannel/units')}></ContextualbarClose>
+				<ContextualbarClose onClick={onClose}></ContextualbarClose>
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<Box id={formId} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -243,7 +243,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={() => router.navigate('/omnichannel/units')}>{t('Cancel')}</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button form={formId} disabled={!isDirty} type='submit' primary>
 						{t('Save')}
 					</Button>

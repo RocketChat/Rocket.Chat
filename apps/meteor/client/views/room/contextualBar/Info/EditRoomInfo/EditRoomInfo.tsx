@@ -43,6 +43,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
@@ -253,7 +254,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
 				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
@@ -681,7 +682,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
