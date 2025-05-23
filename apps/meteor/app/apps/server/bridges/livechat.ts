@@ -198,6 +198,15 @@ export class AppLivechatBridge extends LivechatBridge {
 		return Promise.all(result.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>));
 	}
 
+	protected async findRoomById(roomId: string, appId: string): Promise<ILivechatRoom | undefined> {
+		this.orch.debugLog(`The App ${appId} is looking for livechat room with id ${roomId}.`);
+
+		return this.orch
+			.getConverters()
+			?.get('rooms')
+			.convertRoom(await LivechatRooms.findOneById(roomId)) as Promise<ILivechatRoom | undefined>;
+	}
+
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
 
