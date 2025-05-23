@@ -20,7 +20,7 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
-	const closeContetxualbar = onClose ?? closeTab;
+	const closeContextualbar = onClose ?? closeTab;
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
@@ -31,11 +31,11 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 			ref.current = node;
 			node.addEventListener('keydown', (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
-					closeContetxualbar();
+					closeContextualbar();
 				}
 			});
 		},
-		[closeContetxualbar],
+		[closeContextualbar],
 	);
 
 	return (
