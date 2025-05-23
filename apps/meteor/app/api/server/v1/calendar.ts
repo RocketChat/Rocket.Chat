@@ -90,6 +90,7 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({ id });
+			
 		},
 	},
 );
