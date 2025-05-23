@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
-import { GenericTable } from '../../../../../components/GenericTable';
+import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import AccordionLoading from '../../../components/AccordionLoading';
@@ -17,14 +17,14 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	return (
 		<>
-			<GenericTable>
-				{isLoading && <AccordionLoading />}
-				{isError && (
-					<Box maxWidth='x600' alignSelf='center'>
-						{t('App_not_found')}
-					</Box>
-				)}
-				{isSuccess && (
+			{isLoading && <AccordionLoading />}
+			{isError && (
+				<Box maxWidth='x600' alignSelf='center'>
+					{t('App_not_found')}
+				</Box>
+			)}
+			{isSuccess && (
+				<CustomScrollbars>
 					<Accordion width='100%' alignSelf='center'>
 						{data?.logs?.map((log) => (
 							<AppLogsItem
@@ -35,8 +35,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 							/>
 						))}
 					</Accordion>
-				)}
-			</GenericTable>
+				</CustomScrollbars>
+			)}
 			<Pagination
 				divider
 				current={current}
