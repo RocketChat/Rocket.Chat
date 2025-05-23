@@ -1,0 +1,40 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "only_numbers_and_English",
+      "value": "只可以输入数字和英文"
+    },
+    {
+      "name": "visitor_name_cannot_empty",
+      "value": "visitor name 不可以为空"
+    },
+    {
+      "name": "enter_correct_phone_number",
+      "value": "请输入正确的手机号"
+    },
+    {
+      "name": "enter_correct_email",
+      "value": "请输入正确的邮箱"
+    },
+    {
+      "name": "channel_name_cannot_be_empty",
+      "value": "channelName 不可以为空"
+    },
+    {
+      "name": "group_name_cannot_be_empty",
+      "value": "group name 不可以为空"
+    }
+  ]
+}
