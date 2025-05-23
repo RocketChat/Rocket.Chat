@@ -1,22 +1,32 @@
 import type { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, AccordionItem } from '@rocket.chat/fuselage';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
 
-type AppLogsItemProps = {
+export type AppLogsItemProps = {
 	entries: ILogEntry[];
 	instanceId: string;
-	title: string;
 };
 
-const AppLogsItem = ({ entries, instanceId, title, ...props }: AppLogsItemProps) => {
+const AppLogsItem = ({ entries, instanceId, ...props }: AppLogsItemProps) => {
 	const { t } = useTranslation();
+	const title = (
+		<>
+			{entries.map(({ severity, timestamp, caller, args }) => {
+				const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+
+				const parsedArgs = args.map((arg) => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' ');
+				return <Box style={style} key={`${severity}-${timestamp}-${caller}`}>{`${timestamp} ${severity} ${caller} ${parsedArgs}`}</Box>;
+			})}
+		</>
+	);
 
 	return (
 		<AccordionItem title={title} {...props}>
 			{instanceId && (
-				<Box color='default'>
+				<Box display='flex' color='default'>
 					{t('Instance')}: {instanceId}
 				</Box>
 			)}

@@ -8,7 +8,7 @@ type AppLogsItemEntryProps = {
 	severity: string;
 	timestamp: string;
 	caller: string;
-	args: unknown;
+	args: unknown[];
 };
 
 const AppLogsItemEntry = ({ severity, timestamp, caller, args }: AppLogsItemEntryProps) => {
