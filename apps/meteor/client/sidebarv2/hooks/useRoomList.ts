@@ -1,8 +1,8 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
-import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+// import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
@@ -13,36 +13,132 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-const order = [
-	'Incoming_Calls',
-	'Incoming_Livechats',
-	'Open_Livechats',
-	'On_Hold_Chats',
-	'Unread',
-	'Favorites',
-	'Teams',
-	'Discussions',
-	'Channels',
-	'Direct_Messages',
-	'Conversations',
-] as const;
+const sideBarGroups = ['Teams', 'Channels', 'Direct_Messages'];
+const sidePanelGroups = ['All', 'Starred', 'Mentions', 'Discussions', 'In_progress', 'Queue', 'On_Hold'];
 
-type useRoomListReturnType = {
-	roomList: Array<SubscriptionWithRoom>;
-	groupsCount: number[];
-	groupsList: TranslationKey[];
-	groupedUnreadInfo: Pick<
-		SubscriptionWithRoom,
-		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
-	>[];
+export type useRoomListReturnType = {
+	sideBar: {
+		roomList: Array<SubscriptionWithRoom>;
+		groupsCount: number[];
+		groupsList: TranslationKey[];
+		groupedUnreadInfo: Pick<
+			SubscriptionWithRoom,
+			'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
+		>[];
+	};
+	sidePanel: {
+		roomList: { [key: string]: SubscriptionWithRoom[] };
+		groupedUnreadInfo: Pick<
+			SubscriptionWithRoom,
+			'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
+		>[];
+	};
 };
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+
+const groupedUnreadInfoAcc = {
+	userMentions: 0,
+	groupMentions: 0,
+	tunread: [],
+	tunreadUser: [],
+	unread: 0,
+};
+
+const getUnreadInfo = (groupData) => {
+	const groupedUnreadInfo = [...groupData].reduce(
+		(counter, { userMentions, groupMentions, tunread, tunreadUser, unread, alert, hideUnreadStatus }) => {
+			if (hideUnreadStatus) {
+				return counter;
+			}
+
+			counter.userMentions += userMentions || 0;
+			counter.groupMentions += groupMentions || 0;
+			counter.tunread = [...counter.tunread, ...(tunread || [])];
+			counter.tunreadUser = [...counter.tunreadUser, ...(tunreadUser || [])];
+			counter.unread += unread || 0;
+			!unread && !tunread?.length && alert && (counter.unread += 1);
+			return counter;
+		},
+		groupedUnreadInfoAcc,
+	);
+
+	return { groupedUnreadInfo };
+};
+
+const getSidePanelListData = (groupsData: Map<string, Set<SubscriptionWithRoom>>, groupsOrder: string[]) => {
+	const { roomList, groupedUnreadInfo } = groupsOrder.reduce(
+		(acc, groupTitle) => {
+			const value = groupsData.get(groupTitle);
+
+			if (!value) {
+				return acc;
+			}
+
+			const { groupedUnreadInfo } = getUnreadInfo(value);
+			acc.groupedUnreadInfo.push(groupedUnreadInfo);
+			acc.roomList[groupTitle] = [...value];
+
+			return acc;
+		},
+		{
+			roomList: {},
+			groupedUnreadInfo: [],
+		} as useRoomListReturnType['sidePanel'],
+	);
+
+	return { roomList, groupedUnreadInfo };
+};
+
+const getSideBarListData = (groupsData: any, groupsOrder: string[], collapsedGroups: any) => {
+	const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
+
+	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = groupsOrder.reduce(
+		(acc, key) => {
+			const value = groupsData.get(key);
+
+			if (!value) {
+				return acc;
+			}
+
+			acc.groupsList.push(key as TranslationKey);
+
+			if (isCollapsed(key)) {
+				const { groupedUnreadInfo } = getUnreadInfo(value);
+
+				acc.groupedUnreadInfo.push(groupedUnreadInfo);
+				acc.groupsCount.push(0);
+				return acc;
+			}
+
+			acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
+			acc.groupsCount.push(value.size);
+			acc.roomList.push(...value);
+			return acc;
+		},
+		{
+			groupsCount: [],
+			groupsList: [],
+			roomList: [],
+			groupedUnreadInfo: [],
+		} as useRoomListReturnType['sideBar'],
+	);
+
+	return { groupsCount, groupsList, roomList, groupedUnreadInfo };
+};
+
+type useRoomListProps = {
+	collapsedGroups?: string[];
+	onlyUnReads?: boolean;
+};
+
+const isUnread = (room: SubscriptionWithRoom) => (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus;
+
+export const useRoomList = ({ collapsedGroups, onlyUnReads }: useRoomListProps): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
-	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	// const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
-	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
+	const sidebarOrder = useUserPreference<typeof sideBarGroups>('sidebarSectionsOrder') ?? sideBarGroups;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
-	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	// const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const options = useSortQueryOptions();
 
@@ -50,51 +146,54 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const inquiries = useQueuedInquiries();
 
-	const incomingCalls = useVideoConfIncomingCalls();
+	// const incomingCalls = useVideoConfIncomingCalls();
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
+	const { sideBar, sidePanel } = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
-
-			const incomingCall = new Set();
-			const favorite = new Set();
+			// const incomingCall = new Set();
+			const starred = new Set();
 			const team = new Set();
 			const omnichannel = new Set();
-			const unread = new Set();
+			const mentions = new Set();
+			// const unread = new Set();
 			const channels = new Set();
 			const direct = new Set();
 			const discussion = new Set();
-			const conversation = new Set();
-			const onHold = new Set();
+			const conversation = new Set([]);
+			const onHold = new Set([]);
 
-			rooms.forEach((room) => {
+			(onlyUnReads ? rooms.filter((room) => isUnread(room)) : rooms).forEach((room) => {
 				if (room.archived) {
 					return;
 				}
 
-				if (incomingCalls.find((call) => call.rid === room.rid)) {
-					return incomingCall.add(room);
-				}
+				// if (incomingCalls.find((call) => call.rid === room.rid)) {
+				// 	return incomingCall.add(room);
+				// }
 
-				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
-					return unread.add(room);
-				}
+				// if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
+				// 	return unread.add(room);
+				// }
 
 				if (favoritesEnabled && room.f) {
-					return favorite.add(room);
+					return starred.add(room);
 				}
 
-				if (sidebarGroupByType && room.teamMain) {
+				if (room.teamMain) {
 					return team.add(room);
 				}
 
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
+				if (isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
 				}
 
-				if (room.t === 'c' || room.t === 'p') {
+				if (room.userMentions || room.groupMentions) {
+					return mentions.add(room);
+				}
+
+				if ((room.t === 'c' || room.t === 'p') && !room.prid) {
 					channels.add(room);
 				}
 
@@ -114,101 +213,47 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			const groups = new Map<string, Set<any>>();
-			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
+			// const sidePanelGroups = new Map<string, Set<any>>();
 
-			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
-			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
-			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
+			// incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
-			sidebarShowUnread && unread.size && groups.set('Unread', unread);
+			showOmnichannel && inquiries.enabled && queue.length && groups.set('Queue', queue);
+			showOmnichannel && omnichannel && groups.set('In_progress', omnichannel);
+			showOmnichannel && groups.set('On_Hold', onHold);
 
-			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+			// sidebarShowUnread && unread.size && groups.set('Unread', unread);
 
-			sidebarGroupByType && team.size && groups.set('Teams', team);
+			groups.set('All', conversation);
+			favoritesEnabled && groups.set('Starred', starred);
 
-			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+			// sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+			isDiscussionEnabled && groups.set('Discussions', discussion);
+			groups.set('Mentions', mentions);
 
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			team.size && groups.set('Teams', team);
+			channels.size && groups.set('Channels', channels);
+			direct.size && groups.set('Direct_Messages', direct);
 
-			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
+			const sideBar = getSideBarListData(groups, sidebarOrder, collapsedGroups);
+			const sidePanel = getSidePanelListData(groups, sidePanelGroups);
 
-			!sidebarGroupByType && groups.set('Conversations', conversation);
-
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
-				(acc, key) => {
-					const value = groups.get(key);
-
-					if (!value) {
-						return acc;
-					}
-
-					acc.groupsList.push(key as TranslationKey);
-
-					const groupedUnreadInfoAcc = {
-						userMentions: 0,
-						groupMentions: 0,
-						tunread: [],
-						tunreadUser: [],
-						unread: 0,
-					};
-
-					if (isCollapsed(key)) {
-						const groupedUnreadInfo = [...value].reduce(
-							(counter, { userMentions, groupMentions, tunread, tunreadUser, unread, alert, hideUnreadStatus }) => {
-								if (hideUnreadStatus) {
-									return counter;
-								}
-
-								counter.userMentions += userMentions || 0;
-								counter.groupMentions += groupMentions || 0;
-								counter.tunread = [...counter.tunread, ...(tunread || [])];
-								counter.tunreadUser = [...counter.tunreadUser, ...(tunreadUser || [])];
-								counter.unread += unread || 0;
-								!unread && !tunread?.length && alert && (counter.unread += 1);
-								return counter;
-							},
-							groupedUnreadInfoAcc,
-						);
-
-						acc.groupedUnreadInfo.push(groupedUnreadInfo);
-						acc.groupsCount.push(0);
-						return acc;
-					}
-
-					acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
-					acc.groupsCount.push(value.size);
-					acc.roomList.push(...value);
-					return acc;
-				},
-				{
-					groupsCount: [],
-					groupsList: [],
-					roomList: [],
-					groupedUnreadInfo: [],
-				} as useRoomListReturnType,
-			);
-
-			return { groupsCount, groupsList, roomList, groupedUnreadInfo };
+			return { sideBar, sidePanel };
 		}, [
 			rooms,
 			showOmnichannel,
 			inquiries.enabled,
 			queue,
-			sidebarShowUnread,
 			favoritesEnabled,
-			sidebarGroupByType,
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,
-			incomingCalls,
+			onlyUnReads,
 		]),
 		50,
 	);
 
 	return {
-		roomList,
-		groupsCount,
-		groupsList,
-		groupedUnreadInfo,
+		sideBar,
+		sidePanel,
 	};
 };
