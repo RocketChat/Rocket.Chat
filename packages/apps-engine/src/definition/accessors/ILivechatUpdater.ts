@@ -30,4 +30,11 @@ export interface ILivechatUpdater {
      * @returns Promise to whether success or not
      */
     setCustomFields(token: IVisitor['token'], key: string, value: string, overwrite: boolean): Promise<boolean>;
+
+    /**
+     * Take the room's inquiry.
+     * @param agentId The agent's id
+     * @param inquiryId The inquiry's id
+     */
+    takeInquiry(agentId: string, inquiryId: string): Promise<void>;
 }
