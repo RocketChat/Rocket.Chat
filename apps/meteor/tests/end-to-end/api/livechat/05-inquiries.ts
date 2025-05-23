@@ -1,10 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatInquiryRecord, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	createAgent,
@@ -15,9 +16,10 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	makeAgentAvailable,
+	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
-import { parseMethodResponse } from '../../../data/livechat/utils';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
@@ -539,6 +541,47 @@ describe('LIVECHAT - inquiries', () => {
 			expect(inquiry).to.have.property('rid', room._id);
 			expect(inquiry).to.have.property('lastMessage');
 			expect(inquiry.lastMessage).to.have.property('msg', msgText);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('Auto Transfer Scheduler - Manual_Selection', () => {
+		let testRoom: IOmnichannelRoom;
+		let testDepartment: ILivechatDepartment;
+		before(async () => {
+			// seconds
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', 3),
+				createAgent(),
+				updateSetting('Omnichannel_enable_department_removal', true),
+			]);
+			testDepartment = await createDepartment([{ agentId: 'rocketchat.internal.admin.test' }]);
+		});
+
+		after(async () => {
+			await deleteDepartment(testDepartment._id);
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', 0),
+				updateSetting('Omnichannel_enable_department_removal', false),
+			]);
+		});
+
+		it('should create a room and schedule it for transfer', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ departmentId: testDepartment._id });
+			// The room returned is not updated :(
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			expect(updatedRoom).to.have.property('servedBy').that.is.an('object');
+			testRoom = updatedRoom;
+		});
+		it('should return a chat to the queue when not answered after 3 seconds', async () => {
+			await sleep(3000);
+			const inquiry = await fetchInquiry(testRoom._id);
+			const room = await getLivechatRoomInfo(testRoom._id);
+
+			expect(room).to.not.have.property('servedBy');
+			expect(inquiry).to.have.property('status', 'queued');
+
+			await closeOmnichannelRoom(testRoom._id);
 		});
 	});
 });

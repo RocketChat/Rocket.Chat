@@ -150,9 +150,11 @@ export type PartialThis = {
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
 	readonly logger: Logger;
+	readonly route: string;
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -215,7 +217,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 				readonly token?: string;
 			});
 
-export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> = (
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
@@ -223,7 +225,10 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| {
 			statusCode: number;
 			body: unknown;
-	  };
+	  }
+) & {
+	headers?: Record<string, string>;
+};
 
 export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
