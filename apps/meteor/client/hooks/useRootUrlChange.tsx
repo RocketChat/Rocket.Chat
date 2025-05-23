@@ -28,7 +28,8 @@ export const useRootUrlChange = () => {
 			await setSiteUrl(url);
 			return { url };
 		},
-		onSuccess: ({ url }) => dispatchToastMessage({ type: 'success', message: `${t('Saved')}, new site url is: ${url}` }),
+		onSuccess: ({ url }) => dispatchToastMessage({ type: 'success', message: t('Saved_new_url_site_is__url__', { url }) }),
+		onError: () => dispatchToastMessage({ type: 'error', message: t('Something_went_wrong') }),
 	});
 
 	useEffect(() => {
