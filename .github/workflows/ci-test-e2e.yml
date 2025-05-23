@@ -184,7 +184,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          docker compose -f docker-compose-ci.yml up -d rocketchat varnish
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -197,7 +197,6 @@ jobs:
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
-          docker compose -f docker-compose-ci.yml logs varnish
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
@@ -226,9 +225,6 @@ jobs:
         if: inputs.release == 'ee'
         run: |
           docker ps
-
-
-          docker compose -f docker-compose-ci.yml logs varnish
 
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
