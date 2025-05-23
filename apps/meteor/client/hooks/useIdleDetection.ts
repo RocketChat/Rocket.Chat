@@ -2,11 +2,17 @@ import { useEffect, useReducer } from 'react';
 
 const events = ['mousemove', 'mousedown', 'touchend', 'touchstart', 'keypress'];
 
-type UseIdleDetectionOptions = {
+export type UseIdleDetectionOptions = {
 	id?: string;
 	time?: number;
 	awayOnWindowBlur?: boolean;
 };
+
+export const DEFAULT_IDLE_DETECTION_OPTIONS = Object.freeze({
+	id: 'useIdleDetection',
+	time: 600_000, // 10 minutes
+	awayOnWindowBlur: false,
+});
 
 /**
  * A hook that detects when the user is idle.
@@ -22,8 +28,11 @@ type UseIdleDetectionOptions = {
  *
  * @returns {boolean} A boolean indicating whether the user is idle or not.
  */
-
-export const useIdleDetection = ({ id = 'useIdleDetection', time = 600000, awayOnWindowBlur = false }: UseIdleDetectionOptions = {}) => {
+export const useIdleDetection = ({
+	id = DEFAULT_IDLE_DETECTION_OPTIONS.id,
+	time = DEFAULT_IDLE_DETECTION_OPTIONS.time,
+	awayOnWindowBlur = DEFAULT_IDLE_DETECTION_OPTIONS.awayOnWindowBlur,
+}: UseIdleDetectionOptions = {}) => {
 	const [isIdle, dispatch] = useReducer((state: boolean, action: boolean) => {
 		if (state === action) {
 			return state;
