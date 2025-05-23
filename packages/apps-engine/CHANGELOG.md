@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.51.1
+
+### Patch Changes
+
+-   ([#36033](https://github.com/RocketChat/Rocket.Chat/pull/36033) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the Apps-Engine package installation, removing the dependency on an internal package
+
 ## 1.51.0
 
 ### Minor Changes
