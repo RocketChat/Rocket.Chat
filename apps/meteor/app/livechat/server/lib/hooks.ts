@@ -132,3 +132,9 @@ export const afterRoomQueued = makeFunction((room: IOmnichannelRoom) => {
 
 	return sendToCRM('LivechatSessionQueued', room);
 });
+
+export const beforeRouteChat = makeFunction(
+	async (inquiry: ILivechatInquiryRecord, _agent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null | undefined> => {
+		return inquiry;
+	},
+);
