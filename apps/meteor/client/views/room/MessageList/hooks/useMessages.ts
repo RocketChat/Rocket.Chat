@@ -1,7 +1,7 @@
 import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 import { useCallback, useMemo } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
@@ -23,7 +23,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 
 	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
-	const query: Mongo.Selector<IMessage> = useMemo(
+	const query: Filter<IMessage> = useMemo(
 		() => ({
 			rid,
 			_hidden: { $ne: true },

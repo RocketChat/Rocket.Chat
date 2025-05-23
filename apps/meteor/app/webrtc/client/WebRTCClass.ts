@@ -8,7 +8,7 @@ import { ChromeScreenShare } from './screenShare';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Subscriptions } from '../../models/client';
+import { Subscriptions, Users } from '../../models/client';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -821,7 +821,7 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Meteor.users.findOne(data.from);
+		const user = Users.findOne(data.from);
 		let fromUsername = undefined;
 		if (user?.username) {
 			fromUsername = user.username;
