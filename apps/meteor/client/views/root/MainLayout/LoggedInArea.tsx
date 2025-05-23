@@ -5,6 +5,7 @@ import { useCustomEmoji } from '../../../hooks/customEmoji/useCustomEmoji';
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
 import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
+import { useUnread } from '../../../hooks/useUnread';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
@@ -18,6 +19,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 		throw new Error('User not logged');
 	}
 
+	useUnread();
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useWebRTC(user._id);
