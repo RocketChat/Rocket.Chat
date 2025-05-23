@@ -34,8 +34,8 @@ const CustomFieldsPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} />}
-					{context === 'new' && <EditCustomFields />}
+					{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <EditCustomFields onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

@@ -31,8 +31,8 @@ const TagsPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					{context === 'edit' && id && <TagEditWithData tagId={id} />}
-					{context === 'new' && <TagEdit />}
+					{context === 'edit' && id && <TagEditWithData tagId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <TagEdit onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

@@ -28,7 +28,7 @@ const RoomsPage = (): ReactElement => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					<EditRoomWithData rid={id} onReload={reloadRef.current} />
+					<EditRoomWithData rid={id} onReload={reloadRef.current} onClose={handleCloseContextualbar} />
 				</ContextualbarDialog>
 			)}
 		</Page>

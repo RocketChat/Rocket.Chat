@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import TagEdit from './TagEdit';
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
-const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
+const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: ILivechatTag; onClose: () => void }) => {
 	const t = useTranslation();
 
 	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');
@@ -28,7 +28,7 @@ const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 		);
 	}
 
-	return <TagEdit tagData={tagData} currentDepartments={data?.departments} />;
+	return <TagEdit tagData={tagData} currentDepartments={data?.departments} onClose={onClose} />;
 };
 
 export default TagEditWithDepartmentData;

@@ -28,8 +28,8 @@ const TriggersPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleClose}>
-					{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
-					{context === 'new' && <EditTrigger />}
+					{context === 'edit' && id && <EditTriggerWithData triggerId={id} onClose={handleClose} />}
+					{context === 'new' && <EditTrigger onClose={handleClose} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

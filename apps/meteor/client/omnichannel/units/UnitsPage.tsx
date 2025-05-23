@@ -35,8 +35,8 @@ const UnitsPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					{context === 'edit' && id && <UnitEditWithData unitId={id} />}
-					{context === 'new' && <UnitEdit />}
+					{context === 'edit' && id && <UnitEditWithData unitId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <UnitEdit onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>
