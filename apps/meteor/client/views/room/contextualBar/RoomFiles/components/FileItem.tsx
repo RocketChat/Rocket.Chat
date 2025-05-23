@@ -1,7 +1,7 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import { memo, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -26,14 +26,23 @@ const customClass = css`
 type FileItemProps = {
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
+	focused: boolean;
 };
 
-const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
+const FileItem = ({ fileData, onClickDelete, focused }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
 	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
 	const ref = useRef<HTMLElement>(null);
+	const containerRef = useRef<HTMLLIElement>(null);
+
+	useEffect(() => {
+		if (focused && containerRef.current) {
+			containerRef.current.focus();
+		}
+	}
+	, [focused]);
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (!ref.current) {
@@ -58,7 +67,8 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 			tabIndex={0}
 			onKeyDown={handleKeyDown}
 			role='listitem'
-			key={`file-${_id}`}
+			ref={containerRef}
+			// key={`file-${_id}`}
 		>
 			{typeGroup === 'image' ? (
 				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} ref={ref} />
