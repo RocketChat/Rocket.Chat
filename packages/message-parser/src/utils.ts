@@ -85,6 +85,8 @@ export const link = (src: string, label?: Markup[]): Link => ({
   value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+export const isValidCustomDomain = (domain: string, customDomains?: string[]) =>
+  customDomains?.includes(domain);
 export const autoLink = (src: string, customDomains?: string[]) => {
   const validHosts = ['localhost', ...(customDomains ?? [])];
   const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
@@ -92,7 +94,6 @@ export const autoLink = (src: string, customDomains?: string[]) => {
     allowPrivateDomains: true,
     validHosts,
   });
-
   if (
     !(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))
   ) {
