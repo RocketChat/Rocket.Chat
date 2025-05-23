@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';
-import { ContextualbarSkeleton } from '/client/components/Contextualbar';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 type EditContactInfoWithDataProps = {
 	id: string;

@@ -5,7 +5,13 @@ import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-c
 import { useTranslation } from 'react-i18next';
 
 import ReviewContactModal from './ReviewContactModal';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../../components/Contextualbar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';

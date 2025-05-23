@@ -4,7 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import ChatInfo from './ChatInfo';
 import RoomEdit from './RoomEdit';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../../../components/Contextualbar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../../../components/Contextualbar';
 import { useRoom } from '../../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 

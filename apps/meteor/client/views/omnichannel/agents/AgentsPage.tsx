@@ -1,3 +1,4 @@
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import AgentsTable from './AgentsTable/AgentsTable';
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 
 const AgentsPage = (): ReactElement => {
 	const { t } = useTranslation();

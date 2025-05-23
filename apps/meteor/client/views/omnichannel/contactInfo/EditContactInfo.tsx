@@ -187,7 +187,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
-		return <ContextualbarSkeleton />;
+		return (
+			<ContextualbarDialog onClose={onClose}>
+				<ContextualbarSkeleton />
+			</ContextualbarDialog>
+		);
 	}
 
 	return (
