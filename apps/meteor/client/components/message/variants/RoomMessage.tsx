@@ -1,5 +1,5 @@
 import { type IMessage, isOTRAckMessage, isOTRMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
+import { CheckBox, Message, MessageContainer, MessageLeftContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -9,10 +9,10 @@ import { memo } from 'react';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
+	useCountSelected,
+	useIsSelectedMessage,
 	useIsSelecting,
 	useToggleSelect,
-	useIsSelectedMessage,
-	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useUserCard } from '../../../views/room/contexts/UserCardContext';
@@ -22,6 +22,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { useMessageListReadReceipts } from '/client/components/message/list/MessageListContext';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -60,6 +61,8 @@ const RoomMessage = ({
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id, isOTRMsg);
 
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
+
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
 
@@ -70,7 +73,7 @@ const RoomMessage = ({
 			role='listitem'
 			aria-roledescription={isOTRMsg ? t('OTR_message') : t('message')}
 			tabIndex={0}
-			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
+			aria-labelledby={`${!sequential ? `${message._id}-displayName ${message._id}-time ${message._id}-content ${readReceiptEnabled ? `${message._id}-read-status` : ''}` : ''}`}
 			onClick={selecting && !isOTRMsg ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
