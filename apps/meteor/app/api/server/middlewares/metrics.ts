@@ -5,7 +5,17 @@ import type { CachedSettings } from '../../../settings/server/CachedSettings';
 import type { APIClass } from '../api';
 
 export const metricsMiddleware =
-	(api: APIClass, settings: CachedSettings, summary: Summary): MiddlewareHandler =>
+	({
+		basePathRegex,
+		api,
+		settings,
+		summary,
+	}: {
+		basePathRegex?: RegExp;
+		api: APIClass;
+		settings: CachedSettings;
+		summary: Summary;
+	}): MiddlewareHandler =>
 	async (c, next) => {
 		const rocketchatRestApiEnd = summary.startTimer();
 
@@ -14,13 +24,13 @@ export const metricsMiddleware =
 		const { method, path, routePath } = c.req;
 
 		// get rid of the base path (i.e.: /api/v1/)
-		const entrypoint = routePath.slice(8);
+		const entrypoint = basePathRegex ? routePath.replace(basePathRegex, '') : routePath;
 
 		rocketchatRestApiEnd({
 			status: c.res.status,
 			method: method.toLowerCase(),
 			version: api.version,
 			...(settings.get('Prometheus_API_User_Agent') && { user_agent: c.req.header('user-agent') }),
-			entrypoint: entrypoint.startsWith('method.call') ? decodeURIComponent(path.slice(8)) : entrypoint,
+			entrypoint: basePathRegex && entrypoint.startsWith('method.call') ? decodeURIComponent(path.replace(basePathRegex, '')) : entrypoint,
 		});
 	};
