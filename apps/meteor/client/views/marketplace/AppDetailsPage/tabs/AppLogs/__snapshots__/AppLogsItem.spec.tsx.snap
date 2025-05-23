@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Simple without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-accordion-item"
+    >
+      <div
+        aria-controls=":r1:"
+        aria-expanded="false"
+        class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+        role="button"
+        tabindex="0"
+      >
+        <h2
+          class="rcx-box rcx-box--full rcx-accordion-item__title"
+          id=":r0:"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+            style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          >
+            2025-05-23T19:56:58.597Z info method arg1 arg2
+          </div>
+          <div
+            class="rcx-box rcx-box--full"
+            style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          >
+            2025-03-23T12:16:58.597Z error method arg1 arg2
+          </div>
+          <div
+            class="rcx-box rcx-box--full"
+            style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          >
+            2025-07-23T19:54:58.597Z warn method arg1 arg2
+          </div>
+          <div
+            class="rcx-box rcx-box--full"
+            style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          >
+            2025-05-23T19:56:58.597Z debug method arg1 arg2
+          </div>
+          <div
+            class="rcx-box rcx-box--full"
+            style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+          >
+            2025-05-23T19:56:58.597Z success method arg1 arg2
+          </div>
+        </h2>
+        <span
+          class="rcx-box rcx-box--full rcx-chevron"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+          >
+            
+          </i>
+        </span>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
+        id=":r1:"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-4w7o7u"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+          >
+            info
+            : 
+            2025-05-23T19:56:58.597Z
+             
+            Caller
+            : 
+            method
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"
+          >
+            <pre>
+              <code>
+                Loading
+              </code>
+            </pre>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4w7o7u"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+          >
+            error
+            : 
+            2025-03-23T12:16:58.597Z
+             
+            Caller
+            : 
+            method
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"
+          >
+            <pre>
+              <code>
+                Loading
+              </code>
+            </pre>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4w7o7u"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+          >
+            warn
+            : 
+            2025-07-23T19:54:58.597Z
+             
+            Caller
+            : 
+            method
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"
+          >
+            <pre>
+              <code>
+                Loading
+              </code>
+            </pre>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4w7o7u"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+          >
+            debug
+            : 
+            2025-05-23T19:56:58.597Z
+             
+            Caller
+            : 
+            method
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"
+          >
+            <pre>
+              <code>
+                Loading
+              </code>
+            </pre>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-4w7o7u"
+        >
+          <div
+            class="rcx-box rcx-box--full"
+          >
+            success
+            : 
+            2025-05-23T19:56:58.597Z
+             
+            Caller
+            : 
+            method
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-css-1qcz93u"
+          >
+            <pre>
+              <code>
+                Loading
+              </code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;

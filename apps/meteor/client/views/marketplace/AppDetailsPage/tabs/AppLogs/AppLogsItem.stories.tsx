@@ -10,31 +10,31 @@ export default {
 		entries: [
 			{
 				severity: 'info',
-				timestamp: new Date().toISOString(),
+				timestamp: '2025-05-23T19:56:58.597Z',
 				caller: 'method',
 				args: ['arg1', 'arg2'],
 			},
 			{
 				severity: 'error',
-				timestamp: new Date().toISOString(),
+				timestamp: '2025-03-23T12:16:58.597Z',
 				caller: 'method',
 				args: ['arg1', 'arg2'],
 			},
 			{
 				severity: 'warn',
-				timestamp: new Date().toISOString(),
+				timestamp: '2025-07-23T19:54:58.597Z',
 				caller: 'method',
 				args: ['arg1', 'arg2'],
 			},
 			{
 				severity: 'debug',
-				timestamp: new Date().toISOString(),
+				timestamp: '2025-05-23T19:56:58.597Z',
 				caller: 'method',
 				args: ['arg1', 'arg2'],
 			},
 			{
 				severity: 'success',
-				timestamp: new Date().toISOString(),
+				timestamp: '2025-05-23T19:56:58.597Z',
 				caller: 'method',
 				args: ['arg1', 'arg2'],
 			},
