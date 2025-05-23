@@ -1,7 +1,10 @@
-import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { isObject } from '@rocket.chat/tools';
 import type i18next from 'i18next';
 import type { TOptions } from 'i18next';
+
+import type { RocketchatI18nKeys } from '../resources';
+
+export type { RocketchatI18nKeys };
 
 declare module 'i18next' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
