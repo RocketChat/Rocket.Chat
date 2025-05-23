@@ -286,27 +286,24 @@ test.describe('basic features', () => {
 	});
 });
 
-test.use({ storageState: Users.admin.state });
-
 test.describe.serial('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
-	test.beforeEach(async ({ page, api }) => {
-		await api.post('/settings/E2E_Enable', { value: true });
-
-		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-	});
-
 	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 	});
 
 	test.afterAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: false });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		await page.goto('/home');
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -873,6 +870,8 @@ test.describe.serial('e2e-encryption', () => {
 		});
 	});
 });
+
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('e2ee room setup', () => {
 	let poAccountProfile: AccountProfile;
