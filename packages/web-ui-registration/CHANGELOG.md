@@ -1,5 +1,25 @@
 # @rocket.chat/web-ui-registration
 
+## 19.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.0-rc.1
+  </details>
+
+## 19.0.0-rc.0
+
+### Patch Changes
+
+- ([#35885](https://github.com/RocketChat/Rocket.Chat/pull/35885)) Fixes registration pages a11y color contrast and apply browser theme configuration
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.0-rc.0
+  </details>
+
 ## 18.0.0
 
 ### Patch Changes

@@ -34,23 +34,20 @@ callbacks.add(
 					`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
 				);
 
-				// update visitor
-				await setDepartmentForGuest({
-					token: inquiry?.v?.token,
-					department: department.fallbackForwardDepartment,
-				});
-
-				// update inquiry
-				const updatedLivechatInquiry = await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
+				const [, updatedLivechatInquiry] = await Promise.all([
+					setDepartmentForGuest({
+						visitorId: inquiry.v._id,
+						department: department.fallbackForwardDepartment,
+					}),
+					LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment),
+					LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment),
+				]);
 
 				if (updatedLivechatInquiry) {
 					void notifyOnLivechatInquiryChanged(updatedLivechatInquiry, 'updated', { department: updatedLivechatInquiry.department });
 				}
 
 				inquiry = updatedLivechatInquiry ?? inquiry;
-
-				// update room
-				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 			}
 		}
 

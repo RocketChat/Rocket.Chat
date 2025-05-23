@@ -1,5 +1,29 @@
 # @rocket.chat/ui-client
 
+## 19.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.0-rc.1
+  - @rocket.chat/ui-avatar@15.0.0-rc.1
+  </details>
+
+## 19.0.0-rc.0
+
+### Minor Changes
+
+- ([#35830](https://github.com/RocketChat/Rocket.Chat/pull/35830)) Introduces a new feature which enables dragging the VoIP call widget to change its position on the screen.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.0-rc.0
+  - @rocket.chat/ui-avatar@15.0.0-rc.0
+  </details>
+
 ## 18.0.0
 
 ### Minor Changes

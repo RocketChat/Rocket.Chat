@@ -66,7 +66,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 			// If it's updating an existing visitor, it must also update the roomInfo
 			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
 			await Promise.all(
@@ -169,7 +169,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		if (!visitor) {
 			throw new Meteor.Error('invalid-token');
 		}
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 		const rooms = await LivechatRooms.findOpenByVisitorToken(
 			this.urlParams.token,
 			{
@@ -190,8 +190,8 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
-		const { _id } = visitor;
-		const result = await removeGuest(_id);
+		const { _id, token } = visitor;
+		const result = await removeGuest({ _id, token });
 		if (!result.modifiedCount) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
@@ -210,7 +210,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 			const rooms = await LivechatRooms.findOpenByVisitorToken(
 				this.urlParams.token,
 				{

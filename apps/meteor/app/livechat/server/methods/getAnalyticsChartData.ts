@@ -32,6 +32,6 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		return OmnichannelAnalytics.getAnalyticsChartData({ ...options, utcOffset: user?.utcOffset });
+		return OmnichannelAnalytics.getAnalyticsChartData({ ...options, utcOffset: user?.utcOffset, executedBy: userId });
 	},
 });

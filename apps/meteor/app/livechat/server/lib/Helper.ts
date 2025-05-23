@@ -41,6 +41,7 @@ import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
+import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
@@ -85,7 +86,7 @@ export const prepareLivechatRoom = async (
 		}),
 	);
 
-	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 	const source = extraRoomInfo.source || roomInfo.source;
@@ -412,7 +413,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	setImmediate(() => callbacks.run('livechat.chatQueued', room));
+	void afterRoomQueued(room);
 
 	if (RoutingManager.getConfig()?.autoAssignAgent) {
 		return;
@@ -749,7 +750,7 @@ const parseFromIntOrStr = (value: string | number) => {
 export const updateDepartmentAgents = async (
 	departmentId: string,
 	agents: {
-		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
+		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId'> & { count?: number; order?: number })[];
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 	departmentEnabled: boolean,
