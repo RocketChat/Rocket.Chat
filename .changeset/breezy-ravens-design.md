@@ -3,4 +3,4 @@
 "@rocket.chat/web-ui-registration": patch
 ---
 
-Removes a `Change to Default` button that change the language in login page
+Removes the `Change to Default` language button from the login page
