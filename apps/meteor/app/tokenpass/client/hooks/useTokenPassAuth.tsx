@@ -20,7 +20,7 @@ const config: OauthConfig = {
 	accessTokenParam: 'access_token',
 };
 
-const Tokenpass = new CustomOAuth('tokenpass', config);
+const Tokenpass = CustomOAuth.configureOAuthService('tokenpass', config);
 
 export const useTokenPassAuth = () => {
 	const setting = useSetting('API_Tokenpass_URL') as string | undefined;

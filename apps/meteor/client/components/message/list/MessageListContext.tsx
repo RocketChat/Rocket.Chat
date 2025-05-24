@@ -1,9 +1,18 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { KeyboardEvent, MouseEvent, RefObject } from 'react';
+import type { KeyboardEvent, MouseEvent, RefCallback } from 'react';
 import { createContext, useContext } from 'react';
 
+import type { useFormatDate } from '../../../hooks/useFormatDate';
+import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import type { useFormatTime } from '../../../hooks/useFormatTime';
+
 export type MessageListContextValue = {
-	useShowTranslated: (message: IMessage) => boolean;
+	autoTranslate: {
+		showAutoTranslate: (message: IMessage) => boolean;
+		autoTranslateLanguage?: string;
+		autoTranslateEnabled: boolean;
+	};
+	autoLinkDomains: string;
 	useShowStarred: ({ message }: { message: IMessage }) => boolean;
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
@@ -25,11 +34,23 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	messageListRef?: RefObject<HTMLElement>;
+	apiEmbedEnabled: boolean;
+	readReceipts: {
+		enabled: boolean;
+		storeUsers: boolean;
+	};
+	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
+	formatTime: ReturnType<typeof useFormatTime>;
+	formatDate: ReturnType<typeof useFormatDate>;
+	messageListRef?: RefCallback<HTMLElement | undefined>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
-	useShowTranslated: () => false,
+	autoTranslate: {
+		showAutoTranslate: () => false,
+		autoTranslateLanguage: undefined,
+		autoTranslateEnabled: false,
+	},
 	useShowStarred: () => false,
 	useShowFollowing: () => false,
 	useUserHasReacted: () => (): boolean => false,
@@ -43,11 +64,20 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showUsername: false,
 	showColors: false,
 	username: undefined,
-	messageListRef: { current: null },
+	apiEmbedEnabled: false,
+	readReceipts: {
+		enabled: false,
+		storeUsers: false,
+	},
+	autoLinkDomains: '',
+	formatDateAndTime: () => '',
+	formatTime: () => '',
+	formatDate: () => '',
+	messageListRef: undefined,
 });
 
-export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
-	useContext(MessageListContext).useShowTranslated(...args);
+export const useShowTranslated: MessageListContextValue['autoTranslate']['showAutoTranslate'] = (...args) =>
+	useContext(MessageListContext).autoTranslate.showAutoTranslate(...args);
 export const useShowStarred: MessageListContextValue['useShowStarred'] = (...args) =>
 	useContext(MessageListContext).useShowStarred(...args);
 export const useShowFollowing: MessageListContextValue['useShowFollowing'] = (...args) =>
@@ -67,3 +97,22 @@ export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] =
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 
 export const useMessageListRef = (): MessageListContextValue['messageListRef'] => useContext(MessageListContext).messageListRef;
+
+export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
+
+export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
+
+export const useMessageListReadReceipts = (): MessageListContextValue['readReceipts'] => useContext(MessageListContext).readReceipts;
+
+export const useMessageListAutoTranslate = (): MessageListContextValue['autoTranslate'] => useContext(MessageListContext).autoTranslate;
+
+export const useMessageListOembedEnabled = (): MessageListContextValue['apiEmbedEnabled'] => useContext(MessageListContext).apiEmbedEnabled;
+
+export const useMessageListAutoLinkDomains = (): MessageListContextValue['autoLinkDomains'] =>
+	useContext(MessageListContext).autoLinkDomains;
+
+export const useMessageListFormatDateAndTime = (): MessageListContextValue['formatDateAndTime'] =>
+	useContext(MessageListContext).formatDateAndTime;
+
+export const useMessageListFormatTime = (): MessageListContextValue['formatTime'] => useContext(MessageListContext).formatTime;
+export const useMessageListFormatDate = (): MessageListContextValue['formatDate'] => useContext(MessageListContext).formatDate;

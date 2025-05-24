@@ -14,9 +14,9 @@ import { stripHtml } from 'string-strip-html';
 import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
+import { registerGuest } from '../../../app/livechat/server/lib/guests';
 import { sendMessage } from '../../../app/livechat/server/lib/messages';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
@@ -36,13 +36,12 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				delete guest.department;
 				return guest;
 			}
-			await setDepartmentForGuest({ token: guest.token, department });
-			return LivechatVisitors.findOneEnabledById(guest._id, {});
+			return setDepartmentForGuest({ visitorId: guest._id, department });
 		}
 		return guest;
 	}
 
-	const livechatVisitor = await LivechatTyped.registerGuest({
+	const livechatVisitor = await registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,

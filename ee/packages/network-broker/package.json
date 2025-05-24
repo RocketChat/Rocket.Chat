@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.1.9",
+	"version": "0.2.1-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/chai": "~4.3.20",
 		"@types/ejson": "^2.2.2",
-		"@types/node": "~20.17.8",
+		"@types/node": "~22.14.0",
 		"@types/sinon": "^10.0.20",
 		"chai": "^4.5.0",
 		"eslint": "~8.45.0",
