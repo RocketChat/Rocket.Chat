@@ -42,6 +42,7 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"babel-loader": "~9.2.1",
 		"eslint": "~8.45.0",

@@ -1,4 +1,5 @@
 {
+	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
 		"target": "es5",
 		"module": "commonjs",
@@ -15,5 +16,5 @@
 		"noUnusedParameters": true,
 		"strictNullChecks": true
 	},
-	"exclude": ["node_modules", "**/*.spec.ts"]
+	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }

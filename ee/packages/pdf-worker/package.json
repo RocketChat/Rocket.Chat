@@ -29,6 +29,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react": "^8.6.14",
