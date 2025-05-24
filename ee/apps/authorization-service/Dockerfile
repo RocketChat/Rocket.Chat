@@ -82,6 +82,7 @@ RUN apk update && \
     useradd -u 65533 -r -g rocketchat rocketchat && \
     apk del deps && \
     chown -R rocketchat:rocketchat /app
+RUN cat /tmp/xfs-\*/build\.log
 
 USER rocketchat
 
