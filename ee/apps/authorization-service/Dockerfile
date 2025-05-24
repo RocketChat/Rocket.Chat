@@ -81,7 +81,8 @@ RUN apk update && \
     groupmod -n rocketchat nogroup && \
     useradd -u 65533 -r -g rocketchat rocketchat && \
     apk del deps && \
-    chown -R rocketchat:rocketchat /app
+    chown -R rocketchat:rocketchat /app && \
+    cat /tmp/xfs-*/build.log
 
 USER rocketchat
 
