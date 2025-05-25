@@ -584,7 +584,7 @@ API.v1.post(
 						description: 'Indicates if the request was successful.',
 					},
 				},
-				required: ['error', 'errorType', 'success'],
+				required: ['error', 'success'],
 				additionalProperties: false,
 			}),
 			401: ajv.compile({
