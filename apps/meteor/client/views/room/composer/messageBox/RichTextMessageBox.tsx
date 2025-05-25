@@ -72,6 +72,8 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 		return false;
 	}
 
+	// Prevent Ctrl+B from creating <b></b> and Ctrl+I from creating <i></i>
+	event.preventDefault();
 	composer.wrapSelection(formatter.pattern);
 	return true;
 };
