@@ -607,7 +607,7 @@ API.v1.post(
 		const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
-			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			return API.v1.failure('The provided "messageId" does not match any existing message.');
 		}
 
 		const pinnedMessage = await pinMessage(msg, this.userId);
