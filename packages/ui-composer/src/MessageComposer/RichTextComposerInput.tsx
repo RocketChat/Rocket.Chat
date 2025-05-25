@@ -15,7 +15,7 @@ type RichTextComposerInputProps = ComponentProps<typeof Box>;
 
 const RichTextComposerInput = forwardRef<HTMLTextAreaElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
 	// The whitespace pre-wrap style is passed into the div contenteditable as without it, additional whitespace gets collapsed
-	// This would then interferes with .innerText a LOT and should now be fixed
+	// This would then interfere with .innerText a LOT and should now be fixed
 	return (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
