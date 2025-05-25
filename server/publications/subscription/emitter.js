@@ -12,6 +12,7 @@ import { settings } from '/app/settings/server';
 import ChannelHandler from '/app/ws/server/channelHandler';
 
 const handleSubscriptionChange = Meteor.bindEnvironment(({clientAction, data, id} ) => {
+	return;
 	switch (clientAction) {
 		case 'inserted':
 			ChannelHandler.addChannelOnCreate(`room-${ data.rid }`, data.u._id);
@@ -56,7 +57,7 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 			ns: 'rocketchat_subscription',
 			clientAction,
 		};
-		publishToRedis(`user-${ data?.u?._id }`, newdata);
+		// publishToRedis(`user-${ data?.u?._id }`, newdata);
 	});
 }
 

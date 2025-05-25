@@ -14,6 +14,7 @@ const getSubscriptions = (id) => {
 };
 
 const handleRoom = ({clientAction, data, id} ) => {
+	return;
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
@@ -57,7 +58,7 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 			ns: 'rocketchat_room',
 			clientAction,
 		};
-		publishToRedis(`room-${ id }`, newdata);
+		// publishToRedis(`room-${ id }`, newdata);
 	});
 }
 

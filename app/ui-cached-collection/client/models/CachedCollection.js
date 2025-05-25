@@ -12,6 +12,7 @@ import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../ui-utils/client/config';
 import { callMethod } from '../../../ui-utils/client/lib/callMethod';
+import webSocketHandler from '/app/ws/client';
 
 const fromEntries = Object.fromEntries || function fromEntries(iterable) {
 	return [...iterable].reduce((obj, { 0: key, 1: val }) => Object.assign(obj, { [key]: val }), {});
@@ -266,27 +267,36 @@ export class CachedCollection extends EventEmitter {
 	}
 
 	async setupListener(eventType, eventName) {
+
+		console.log(this.eventName);
+		
 		const { RoomManager } = await import('../../../ui-utils');
 		const { ChatRoom, CachedChatRoom } = await import('../../../models');
-		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
-			this.log('record received', t, record);
-			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
-			if (t === 'removed') {
+		webSocketHandler.registerListener(eventName || this.eventName, ({clientAction, data}) => {
+			console.log('got room changed');
+			
+			
+		// Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+			console.log(clientAction);
+				console.log(data);
+			this.log('record received', clientAction, data);
+			callbacks.run(`cachedCollection-received-${ this.name }`, data, clientAction);
+			if (clientAction === 'removed') {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
-					room = ChatRoom.findOne(record.rid);
+					room = ChatRoom.findOne(data.rid);
 					this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
 				} else {
 					room = this.collection.findOne({
-						_id: record._id,
+						_id: data._id,
 					});
 				}
 				if (room) {
 					RoomManager.close(room.t + room.name);
 				}
-				this.collection.remove(record._id);
+				this.collection.remove(data._id);
 			} else {
-				const { _id, ...recordData } = record;
+				const { _id, ...recordData } = data;
 				this.collection.direct.upsert({ _id }, recordData);
 			}
 			this.save();

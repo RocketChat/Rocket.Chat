@@ -59,7 +59,7 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 			ns: 'rocketchat_permissions',
 			clientAction,
 		};
-		publishToRedis(`all`, newdata);
+		// publishToRedis(`all`, newdata);
 	});
 }
 redisMessageHandlers['rocketchat_permissions'] = handlePermissionsRedis;

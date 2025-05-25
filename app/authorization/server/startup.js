@@ -302,7 +302,7 @@ Meteor.startup(function () {
 				...diff,
 				ns: 'rocketchat_roles',
 			};
-			publishToRedis(`all`, newdata);
+			// publishToRedis(`all`, newdata);
 		});
 	}
 	redisMessageHandlers['rocketchat_roles'] = handleRolesRedis;

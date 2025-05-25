@@ -163,7 +163,7 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 			ns: 'rocketchat_settings',
 			clientAction,
 		};
-		publishToRedis(`all`, newdata);
+		// publishToRedis(`all`, newdata);
 	});
 }
 redisMessageHandlers['rocketchat_settings'] = handleSettingRedis;

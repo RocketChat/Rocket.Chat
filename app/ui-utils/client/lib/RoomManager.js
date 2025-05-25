@@ -32,8 +32,7 @@ const getSocketRoom = (rid) =>
 	rid.length === 34 ? `${rid}-${Meteor.userId()}` : rid;
 const onDeleteMessageStream = (msg) => {
 	ChatMessage.remove({ _id: msg._id });
-
-	// remove thread refenrece from deleted message
+// remove thread refenrece from deleted message
 	ChatMessage.update(
 		{ tmid: msg._id },
 		{ $unset: { tmid: 1 } },
@@ -61,6 +60,10 @@ const onDeleteMessageBulkStream = ({
 };
 
 export const RoomManager = new (function () {
+	const remvoeAllMessagesListeners = ({rid}) => {
+	webSocketHandler.removeListener(`upsertMessages-${rid}`);
+}
+	
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer("room-messages");
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
@@ -133,20 +136,23 @@ export const RoomManager = new (function () {
 								const socketRoom = getSocketRoom(room._id);
 
 								webSocketHandler.emitToServer("streamMessages", { socketRoom });
+								webSocketHandler.registerListener('removeListeners', remvoeAllMessagesListeners)
 								webSocketHandler.registerListener(
-									`streamMessages-${room._id}`,
+									`upsertMessages-${room._id}`,
 									handleMessage
 								);
-								Notifications.onRoom(
-									record.rid,
-									"deleteMessage",
-									onDeleteMessageStream
-								); // eslint-disable-line no-use-before-define
-								Notifications.onRoom(
-									record.rid,
-									"deleteMessageBulk",
-									onDeleteMessageBulkStream
-								); // eslint-disable-line no-use-before-define
+								webSocketHandler.registerListener('deleteMessage',onDeleteMessageStream);
+								webSocketHandler.registerListener('deleteMessageBulk', onDeleteMessageBulkStream);
+								// Notifications.onRoom(
+								// 	record.rid,
+								// 	"deleteMessage",
+								// 	onDeleteMessageStream
+								// ); // eslint-disable-line no-use-before-define
+								// Notifications.onRoom(
+								// 	record.rid,
+								// 	"deleteMessageBulk",
+								// 	onDeleteMessageBulkStream
+								// ); // eslint-disable-line no-use-before-define
 							}
 						}
 
@@ -189,7 +195,7 @@ export const RoomManager = new (function () {
 				if (openedRooms[typeName].rid != null) {
 					const socketRoom = getSocketRoom(openedRooms[typeName].rid);
 					webSocketHandler.emitToServer("unStreamMessages", { socketRoom });
-					webSocketHandler.removeListener(`streamMessages-${openedRooms[typeName].rid }`);
+					webSocketHandler.removeListener(`upsertMessages-${openedRooms[typeName].rid }`);
 					
 					// msgStream.removeAllListeners(rid);
 					Notifications.unRoom(
