@@ -1218,7 +1218,7 @@ export const startRestAPI = () => {
 			.use(remoteAddressMiddleware)
 			.use(cors(settings))
 			.use(loggerMiddleware(logger))
-			.use(metricsMiddleware(API.v1, settings, metrics.rocketchatRestApi))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi }))
 			.use(tracerSpanMiddleware)
 			.use(API.v1.router)
 			.use(API.default.router).router,
