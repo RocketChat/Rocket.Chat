@@ -262,6 +262,11 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 			}
 		}
 
+		// Explictly set the selection range and send focus back to the editor again
+		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
+		setSelectionRange(input, selectionStart, selectionEnd);
+		focus();
+
 		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
 			input.innerText = initText + pattern.replace('{{text}}', selectedText) + finalText;
 		}
