@@ -8,6 +8,7 @@ import { useFingerprintChange } from '../../../hooks/useFingerprintChange';
 import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
 import { useRootUrlChange } from '../../../hooks/useRootUrlChange';
 import { useTwoFactorAuthSetupCheck } from '../../../hooks/useTwoFactorAuthSetupCheck';
+import { useUnread } from '../../../hooks/useUnread';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
@@ -21,6 +22,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 		throw new Error('User not logged');
 	}
 
+	useUnread();
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useWebRTC(user._id);
