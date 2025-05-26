@@ -218,10 +218,10 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_signature_algorithm`, 'SHA1', {
 						type: 'select',
 						values: [
-							{ key: 'SHA1', i18nLabel: 'SAML_Custom_Signature_Algorithm_SHA1' },
-							{ key: 'SHA256', i18nLabel: 'SAML_Custom_Signature_Algorithm_SHA256' },
-							{ key: 'SHA384', i18nLabel: 'SAML_Custom_Signature_Algorithm_SHA384' },
-							{ key: 'SHA512', i18nLabel: 'SAML_Custom_Signature_Algorithm_SHA512' },
+							{ key: 'SHA1', i18nLabel: 'SHA1' },
+							{ key: 'SHA256', i18nLabel: 'A256' },
+							{ key: 'SHA384', i18nLabel: 'A384' },
+							{ key: 'SHA512', i18nLabel: 'A512' },
 						],
 						i18nLabel: 'SAML_Custom_Signature_Algorithm',
 						i18nDescription: 'SAML_Custom_Signature_Algorithm_description',
