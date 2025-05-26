@@ -129,3 +129,30 @@ it('should return audiLogs item if have license and can-audit-log permission', a
 		),
 	);
 });
+
+it('should return auditSecurityLog item if have license and can-audit-log permission', async () => {
+	const { result } = renderHook(() => useAuditMenu(), {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/licenses.info', () => ({
+				license: {
+					license: {
+						// @ts-expect-error: just for testing
+						grantedModules: [{ module: 'auditing' }],
+					},
+					// @ts-expect-error: just for testing
+					activeModules: ['auditing'],
+				},
+			}))
+			.withJohnDoe()
+			.withPermission('can-audit')
+			.build(),
+	});
+
+	await waitFor(() =>
+		expect(result.current.items[1]).toEqual(
+			expect.objectContaining({
+				id: 'auditSecurityLog',
+			}),
+		),
+	);
+});
