@@ -52,7 +52,7 @@
     "eslint": "~8.45.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
-    "typescript": "~5.7.2",
+    "typescript": "~5.8.3",
     "vite": "^6.2.4"
   },
   "volta": {
