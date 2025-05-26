@@ -23,7 +23,7 @@ export const useLogs = ({
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', appId, query, 'logs'],
+		queryKey: ['marketplace', 'apps', appId, 'logs', query],
 		queryFn: () => logs(query),
 	});
 };
