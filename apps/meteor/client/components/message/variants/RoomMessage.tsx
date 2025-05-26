@@ -22,7 +22,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
-import { useMessageListReadReceipts } from '/client/components/message/list/MessageListContext';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
