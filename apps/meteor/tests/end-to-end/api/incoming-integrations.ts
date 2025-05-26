@@ -889,7 +889,7 @@ describe('[Incoming Integrations]', () => {
 		});
 	});
 
-	describe('Additional Tests for Message Delivery Permissions', () => {
+	describe('Additional Tests for Message Delivery Permissions And Authentication', () => {
 		let nonMemberUser: IUser;
 		let privateTeam: ITeam;
 		let publicChannelInPrivateTeam: IRoom;
@@ -1007,6 +1007,58 @@ describe('[Incoming Integrations]', () => {
 				),
 				updatePermission('manage-incoming-integrations', ['admin']),
 			]);
+		});
+
+		it('should not send a message in public room if token is invalid', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration4._id}/invalid-token`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(500)
+				.expect((res) => {
+					expect(res.text).to.be.equal('Internal Server Error');
+				});
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
+		});
+
+		it('should not send a message in private room if token is invalid', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration2._id}/invalid-token`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(500)
+				.expect((res) => {
+					expect(res.text).to.be.equal('Internal Server Error');
+				});
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: privateRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
 		});
 
 		it('should not send a message to a private rooms on behalf of a non member', async () => {
