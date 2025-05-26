@@ -207,6 +207,8 @@ const RichTextMessageBox = ({
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+		const input = contentEditableRef.current as HTMLDivElement;
+
 		if (chat.currentEditing) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -215,6 +217,9 @@ const RichTextMessageBox = ({
 				if (!reset) {
 					chat.currentEditing?.cancel();
 				}
+				// Sets the cursor position to the end after resetting an edited message
+				setSelectionRange(input, input.innerText.length, input.innerText.length);
+				input.focus();
 			});
 		}
 	};
