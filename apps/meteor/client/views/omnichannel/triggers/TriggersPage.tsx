@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditTrigger from './EditTrigger';
@@ -14,7 +14,7 @@ const TriggersPage = () => {
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 	const router = useRouter();
-	const handleClose = useCallback(() => router.navigate('/omnichannel/triggers'), [router]);
+	const handleClose = useEffectEvent(() => router.navigate('/omnichannel/triggers'));
 
 	return (
 		<Page flexDirection='row'>

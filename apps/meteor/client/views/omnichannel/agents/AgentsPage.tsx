@@ -17,9 +17,7 @@ const AgentsPage = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const router = useRouter();
-	const handleCloseContextualbar = useEffectEvent(() => {
-		router.navigate('/omnichannel/agents');
-	});
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/agents'));
 
 	if (!canViewAgents) {
 		return <NotAuthorizedPage />;

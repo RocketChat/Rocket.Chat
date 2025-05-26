@@ -19,7 +19,7 @@ const KeyboardShortcuts = ({ handleClose }: { handleClose: () => void }): ReactE
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='keyboard' />
-				<ContextualbarTitle>{t('Keyboard_Shortcuts_Title')}</ContextualbarTitle>1
+				<ContextualbarTitle>{t('Keyboard_Shortcuts_Title')}</ContextualbarTitle>
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>

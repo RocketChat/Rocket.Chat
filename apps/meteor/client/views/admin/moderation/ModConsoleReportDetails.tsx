@@ -21,9 +21,7 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 
 	const activeTab = useRouteParameter('tab');
 
-	const handleCloseContextualbar = useEffectEvent(() => {
-		moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true });
-	});
+	const handleCloseContextualbar = useEffectEvent(() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true }));
 
 	return (
 		<ContextualbarDialog onClose={handleCloseContextualbar}>
