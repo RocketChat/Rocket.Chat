@@ -166,6 +166,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+// TODO: test other pointer types (pen, touch, etc)
 const moveHelper = async (handle: HTMLElement, offset: { x: number; y: number }) => {
 	const handleRect = handle.getBoundingClientRect();
 	// Grab the middle of the handle
@@ -214,6 +215,36 @@ export const DraggingBehavior: Story = {
 			const initialRect = draggable.getBoundingClientRect();
 
 			await moveHelper(draggable, { x: 100, y: 100 });
+
+			await waitFor(() => {
+				const finalRect = draggable.getBoundingClientRect();
+				expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
+				expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
+			});
+		});
+
+		await step('should not allow dragging with right click', async () => {
+			const draggable = await canvas.findByTestId('draggable-box');
+			const handle = await canvas.findByTestId('drag-handle');
+
+			const initialRect = draggable.getBoundingClientRect();
+
+			// for some reason `fireEvent` and `userEvent` do not change the `button` property of the event
+			// so we need to create a new event manually
+			await fireEvent(
+				handle,
+				new PointerEvent('pointerdown', {
+					button: 2,
+					pointerType: 'mouse',
+				}),
+			);
+
+			await fireEvent.pointerMove(document.documentElement, {
+				clientX: 50,
+				clientY: 50,
+			});
+
+			await fireEvent.pointerUp(document.documentElement);
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
