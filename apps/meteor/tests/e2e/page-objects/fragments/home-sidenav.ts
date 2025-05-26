@@ -139,7 +139,7 @@ export class HomeSidenav {
 
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Create new"]').click();
-		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+		await this.page.locator(`role=menuitem[name="${text}"]`).click({ timeout: 1000 });
 	}
 
 	async openSearch(): Promise<void> {
