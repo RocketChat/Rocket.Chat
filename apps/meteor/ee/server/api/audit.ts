@@ -2,6 +2,7 @@ import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import { isServerEventsAuditSettingsProps } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
+import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
@@ -173,7 +174,7 @@ API.v1.get(
 		const { cursor, totalCount } = ServerEvents.findPaginated(
 			{
 				...(settingId && { 'data.key': 'id', 'data.value': settingId }),
-				...(actor && { actor }),
+				...(actor && convertSubObjectsIntoPaths({ actor })),
 				ts: {
 					$gte: start ? new Date(start as string) : new Date(0),
 					$lte: end ? new Date(end as string) : new Date(),

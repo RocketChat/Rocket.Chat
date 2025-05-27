@@ -304,14 +304,17 @@ export const updateQueueInactivityTimeout = async () => {
 	});
 };
 
-export const updateSLAInquiries = async (sla?: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>) => {
+export const updateSLAInquiries = async (
+	executedBy: string,
+	sla?: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+) => {
 	if (!sla) {
 		return;
 	}
 
 	const { _id: slaId } = sla;
 	const promises: Promise<void>[] = [];
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: executedBy });
 	await LivechatRooms.findOpenBySlaId(slaId, {}, extraQuery).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});

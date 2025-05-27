@@ -59,12 +59,6 @@ declare module 'hono' {
 	}
 }
 
-declare global {
-	interface Request {
-		route: string;
-	}
-}
-
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -150,6 +144,9 @@ export class Router<
 				parsedBody = await request.raw.clone().json();
 			} else if (contentType?.includes('multipart/form-data')) {
 				parsedBody = await request.raw.clone().formData();
+			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
+				const req = await request.raw.clone().formData();
+				parsedBody = Object.fromEntries(req.entries());
 			} else {
 				parsedBody = await request.raw.clone().text();
 			}
@@ -190,7 +187,6 @@ export class Router<
 
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
-			req.raw.route = `${c.var.route ?? ''}${subpath}`;
 
 			const queryParams = this.parseQueryParams(req);
 
@@ -224,6 +220,8 @@ export class Router<
 				}
 			}
 
+			const request = req.raw.clone();
+
 			const {
 				body,
 				statusCode = 200,
@@ -234,11 +232,12 @@ export class Router<
 					urlParams: req.param(),
 					queryParams,
 					bodyParams,
-					request: req.raw.clone(),
+					request,
 					path: req.path,
 					response: res,
+					route: req.routePath,
 				} as any,
-				[req.raw.clone()],
+				[request],
 			);
 			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
 				const responseValidatorFn = options?.response?.[statusCode];
@@ -376,15 +375,9 @@ export class Router<
 		router.use(
 			this.base,
 			honoAdapter(
-				hono
-					.use(`${this.base}/*`, (c, next) => {
-						c.set('route', `${c.var.route || ''}${this.base}`);
-						return next();
-					})
-					.route(this.base, this.innerRouter)
-					.options('*', (c) => {
-						return c.body('OK');
-					}),
+				hono.route(this.base, this.innerRouter).options('*', (c) => {
+					return c.body('OK');
+				}),
 			),
 		);
 		return router;

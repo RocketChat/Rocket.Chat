@@ -276,10 +276,22 @@ describe('[Settings]', () => {
 	});
 
 	(IS_EE ? describe : describe.skip)('/audit.settings', () => {
-		const formatDate = (date: Date) => date.toISOString().slice(0, 10).replace(/-/g, '/');
+		const formatDate = (date: Date) => date.toISOString();
+		let startDate: Date;
+		let endDate: Date;
+
+		before(async () => {
+			// Changing these settings to true and then false ensures that we have audited events
+			// So we can test filtering reliably
+			startDate = new Date();
+			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', true), updateSetting('Accounts_AllowDeleteOwnAccount', true)]);
+
+			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', false), updateSetting('Accounts_AllowDeleteOwnAccount', false)]);
+			endDate = new Date();
+		});
 
 		it('should return list of settings changed (no filters)', async () => {
-			void request
+			await request
 				.get(api('audit.settings'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -287,15 +299,12 @@ describe('[Settings]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
 				});
 		});
 
 		it('should return list of settings between date ranges', async () => {
-			const startDate = new Date();
-			const endDate = new Date();
-			endDate.setDate(startDate.getDate() + 1);
-
-			void request
+			await request
 				.get(api('audit.settings'))
 				.query({ start: formatDate(startDate), end: formatDate(endDate) })
 				.set(credentials)
@@ -304,14 +313,19 @@ describe('[Settings]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(new Date(event.ts).getTime()).to.be.greaterThanOrEqual(startDate.getTime());
+						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
+					});
 				});
 		});
 
 		it('should throw error when sending invalid dates', async () => {
 			const startDate = new Date();
-			const endDate = '2025/01';
+			const endDate = 'abcdef';
 
-			void request
+			await request
 				.get(api('audit.settings'))
 				.query({ start: formatDate(startDate), end: endDate })
 				.set(credentials)
@@ -319,25 +333,27 @@ describe('[Settings]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('message', 'The "start" query parameter must be a valid date.');
+					expect(res.body).to.have.property('error', 'The "end" query parameter must be a valid date.');
 				});
 		});
 
 		it('should return list of settings changed filtered by an actor', async () => {
-			void request
+			await request
 				.get(api('audit.settings'))
-				.query({ actor: { type: 'user' } })
+				.query({ actor: { type: 'user' }, count: 10 })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((sEvent) => expect(sEvent.actor.type).to.be.equal('user'));
 				});
 		});
 
 		it('should return list of changes of an specific setting', async () => {
-			void request
+			await request
 				.get(api('audit.settings'))
 				.query({ settingId: 'Site_Url' })
 				.set(credentials)
@@ -346,18 +362,15 @@ describe('[Settings]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
-					res.body.events.find(
-						(event: IServerEvents['settings.changed']) => event.data[0].key === 'id' && event.data[0].value === 'Site_Url',
-					);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(event.data[0].key).to.be.equal('id');
+						expect(event.data[0].value).to.be.equal('Site_Url');
+					});
 				});
 		});
 
-		it('should return list of changes of an specific setting filtered by an actor between date ranges', async () => {
-			const startDate = new Date();
-			const endDate = new Date();
-			endDate.setDate(startDate.getDate() + 1);
-
-			void request
+		it('should return list of changes filtered by an actor between date ranges', async () => {
+			await request
 				.get(api('audit.settings'))
 				.query({ actor: { type: 'user' }, start: formatDate(startDate), end: formatDate(endDate) })
 				.set(credentials)
@@ -366,6 +379,12 @@ describe('[Settings]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(event.actor.type).to.be.equal('user');
+						expect(new Date(event.ts).getTime()).to.be.greaterThanOrEqual(startDate.getTime());
+						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
+					});
 				});
 		});
 	});
