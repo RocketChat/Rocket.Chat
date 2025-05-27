@@ -201,7 +201,23 @@ API.v1.post(
 		authRequired: true,
 		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
-		response: {},
+		response: {
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+		},
 	},
 	async function () {
 		const { text, attachments } = this.bodyParams;
