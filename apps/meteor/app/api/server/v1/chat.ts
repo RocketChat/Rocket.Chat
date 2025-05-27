@@ -195,40 +195,43 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
-		async post() {
-			const { text, attachments } = this.bodyParams;
-			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+		authRequired: true,
+		validateParams: isChatPostMessageProps,
+		body: isChatPostMessageProps,
+		response: {},
+	},
+	async function () {
+		const { text, attachments } = this.bodyParams;
+		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
-			if (text && text.length > maxAllowedSize) {
-				return API.v1.failure('error-message-size-exceeded');
-			}
+		if (text && text.length > maxAllowedSize) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
 
-			if (attachments && attachments.length > 0) {
-				for (const attachment of attachments) {
-					if (attachment.text && attachment.text.length > maxAllowedSize) {
-						return API.v1.failure('error-message-size-exceeded');
-					}
+		if (attachments && attachments.length > 0) {
+			for (const attachment of attachments) {
+				if (attachment.text && attachment.text.length > maxAllowedSize) {
+					return API.v1.failure('error-message-size-exceeded');
 				}
 			}
+		}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+		const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
-			if (!messageReturn) {
-				return API.v1.failure('unknown-error');
-			}
+		if (!messageReturn) {
+			return API.v1.failure('unknown-error');
+		}
 
-			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
+		const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
 
-			return API.v1.success({
-				ts: Date.now(),
-				channel: messageReturn.channel,
-				message,
-			});
-		},
+		return API.v1.success({
+			ts: Date.now(),
+			channel: messageReturn.channel,
+			message,
+		});
 	},
 );
 
