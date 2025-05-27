@@ -217,6 +217,20 @@ API.v1.post(
 				required: ['error', 'success'],
 				additionalProperties: false,
 			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					status: { type: 'string' },
+					message: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['message', 'status', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
 	async function () {
