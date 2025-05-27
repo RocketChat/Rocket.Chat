@@ -772,6 +772,7 @@ type ChatPostMessage =
 			emoji?: string;
 			avatar?: string;
 			attachments?: MessageAttachment[];
+			tmid?: string;
 			customFields?: IMessage['customFields'];
 	  }
 	| {
@@ -781,6 +782,7 @@ type ChatPostMessage =
 			emoji?: string;
 			avatar?: string;
 			attachments?: MessageAttachment[];
+			tmid?: string;
 			customFields?: IMessage['customFields'];
 	  };
 
