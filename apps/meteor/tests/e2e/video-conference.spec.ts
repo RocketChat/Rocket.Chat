@@ -26,11 +26,23 @@ test.describe('video conference', () => {
 		await page.goto('/home');
 	});
 
-	test('expect create video conference in a "targetChannel"', async () => {
+	test('should create video conference in targetChannel using keyboard', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello video conference');
+		await poHomeChannel.roomHeaderFavoriteBtn.focus();
 
-		await poHomeChannel.content.btnVideoCall.click();
-		await poHomeChannel.content.btnStartVideoCall.click();
+		await test.step('opens video conference popup', async () => {
+			await page.keyboard.press('Tab');
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.content.btnVideoConfMic).toBeFocused();
+		});
+
+		await test.step('dispatch start call button', async () => {
+			await page.keyboard.press('Tab');
+			await page.keyboard.press('Space');
+		});
+
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 
