@@ -231,6 +231,20 @@ API.v1.post(
 				required: ['message', 'status', 'success'],
 				additionalProperties: false,
 			}),
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					ts: { type: 'number' },
+					channel: { type: 'string' },
+					message: {
+						// Accepts any type for message
+						type: 'object',
+						additionalProperties: true,
+					},
+				},
+				required: ['ts', 'channel', 'message'],
+				additionalProperties: false,
+			}),
 		},
 	},
 	async function () {
