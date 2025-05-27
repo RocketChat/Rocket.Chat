@@ -74,7 +74,7 @@ export class AppsRestApi {
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
 		API.api
 			.use(loggerMiddleware(logger))
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi }))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
 			.use(tracerSpanMiddleware)
 			.use(this.api.router);
 	}
