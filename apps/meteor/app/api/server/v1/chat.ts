@@ -237,7 +237,7 @@ API.v1.post(
 					ts: { type: 'number' },
 					channel: { type: 'string' },
 					message: {
-						// Accepts any type for message
+						// ? Accepts any type for message
 						type: 'object',
 						properties: {
 							_id: { type: 'string' },
