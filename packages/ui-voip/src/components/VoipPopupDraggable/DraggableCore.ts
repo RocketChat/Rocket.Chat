@@ -353,6 +353,7 @@ class HandleDomElement
 			if (!element) {
 				return;
 			}
+			event.preventDefault();
 
 			this.emit('grab', [getPointerEventCoordinates(event), element.getBoundingClientRect()]);
 		};
