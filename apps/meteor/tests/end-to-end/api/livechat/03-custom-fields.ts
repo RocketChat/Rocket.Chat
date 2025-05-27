@@ -190,7 +190,7 @@ describe('LIVECHAT - custom fields', () => {
 		});
 	});
 
-	describe('livechat/custom.field [with Contacts]', () => {
+	describe.only('livechat/custom.field [with Contacts]', () => {
 		let visitor: ILivechatVisitor;
 		let contactId: string;
 
@@ -457,6 +457,60 @@ describe('LIVECHAT - custom fields', () => {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+				});
+
+			// Fetch the visitor's contact to validate custom fields are properly set.
+			await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ contactId: contactId2 })
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('contact');
+					expect(res.body.contact).to.have.property('customFields');
+					expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
+
+					// Validate conflictingFields was not saved as null
+					expect(res.body.contact).to.not.have.property('conflictingFields', null);
+				});
+
+			await deleteVisitor(visitor2.token);
+		});
+
+		it('should not save contact conflictingFields as nullish if not modified (through visitor update)', async () => {
+			// Create a Visitor
+			const visitor2 = await createVisitor();
+			let contactId2: string | undefined;
+
+			// Create a Contact and store id on var
+			await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: visitor2.name,
+					emails: [visitor2.visitorEmails?.[0].address],
+					phones: [visitor2.phone?.[0].phoneNumber],
+				})
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('contactId');
+
+					contactId2 = res.body.contactId;
+				});
+
+			await request.get(api('livechat/room')).query({ token: visitor2.token });
+
+			// Save the custom field on Contact
+			await request
+				.post(api('livechat/visitor'))
+				.set(credentials)
+				.send({
+					visitor: {
+						token: visitor2.token,
+						customFields: [{ key: `${customFieldName}`, value: customFieldValue, overwrite: true }],
+					},
 				});
 
 			// Fetch the visitor's contact to validate custom fields are properly set.
