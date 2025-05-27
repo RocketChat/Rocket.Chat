@@ -241,8 +241,12 @@ API.v1.post(
 						type: 'object',
 						additionalProperties: true,
 					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
 				},
-				required: ['ts', 'channel', 'message'],
+				required: ['ts', 'channel', 'message', 'success'],
 				additionalProperties: false,
 			}),
 		},
