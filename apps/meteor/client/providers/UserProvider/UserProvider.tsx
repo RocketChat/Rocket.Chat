@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
 import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
@@ -64,6 +65,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	useDeleteUser();
 	useUpdateAvatar();
 	useIdleConnection(userId);
+	useReloadAfterLogin(user);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
