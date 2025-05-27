@@ -5,6 +5,7 @@ import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketpla
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -17,8 +18,12 @@ import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
@@ -63,10 +68,15 @@ export class AppsRestApi {
 			version: 'apps',
 		});
 
-		await this.addManagementRoutes();
+		this.addManagementRoutes();
+		const logger = new Logger('APPS');
 
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
-		API.api.use(this.api.router);
+		API.api
+			.use(loggerMiddleware(logger))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi }))
+			.use(tracerSpanMiddleware)
+			.use(this.api.router);
 	}
 
 	addManagementRoutes() {
