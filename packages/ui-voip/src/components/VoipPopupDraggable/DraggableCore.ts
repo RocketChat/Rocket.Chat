@@ -356,6 +356,7 @@ class HandleDomElement
 			if (!element || (isMousePointer(event) && !isLeftClick(event))) {
 				return;
 			}
+			event.preventDefault();
 
 			this.emit('grab', [getPointerEventCoordinates(event), element.getBoundingClientRect()]);
 		};
