@@ -1,4 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 
 import TagEdit from './TagEdit';
@@ -12,6 +13,9 @@ const TagsPage = () => {
 	const router = useRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+	const handleCloseContextualbar = useEffectEvent(() => {
+		router.navigate('/omnichannel/tags');
+	});
 
 	return (
 		<Page flexDirection='row'>
@@ -26,9 +30,9 @@ const TagsPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
-					{context === 'edit' && id && <TagEditWithData tagId={id} />}
-					{context === 'new' && <TagEdit />}
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					{context === 'edit' && id && <TagEditWithData tagId={id} onClose={handleCloseContextualbar} />}
+					{context === 'new' && <TagEdit onClose={handleCloseContextualbar} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

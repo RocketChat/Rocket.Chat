@@ -37,7 +37,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 
 	return (
 		(context && (
-			<ContextualbarDialog>
+			<ContextualbarDialog onClose={handleCloseContextualbar}>
 				<Contextualbar>
 					<ContextualbarHeader>
 						<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>

@@ -14,7 +14,7 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +31,7 @@ type EditRoomProps = {
 	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
+	onClose: () => void;
 };
 
 type EditRoomFormData = {
@@ -63,9 +64,8 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormD
 	roomAvatar: undefined,
 });
 
-const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
+const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -111,7 +111,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
-			router.navigate('/admin/rooms');
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

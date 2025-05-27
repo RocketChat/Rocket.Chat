@@ -1,6 +1,6 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -96,6 +96,8 @@ const AdminUsersPage = (): ReactElement => {
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/users'));
+
 	useEffect(() => {
 		prevSearchTerm.current = searchTerm;
 	}, [searchTerm]);
@@ -164,7 +166,7 @@ const AdminUsersPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					<Contextualbar>
 						<ContextualbarHeader>
 							{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
@@ -178,7 +180,7 @@ const AdminUsersPage = (): ReactElement => {
 								)}
 								{context === 'invite' && t('Invite_Users')}
 							</ContextualbarTitle>
-							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
+							<ContextualbarClose onClick={handleCloseContextualbar} />
 						</ContextualbarHeader>
 						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 						{context === 'edit' && id && (

@@ -58,7 +58,7 @@ const CustomSoundsPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleClose}>
 					<Contextualbar>
 						<ContextualbarHeader>
 							<ContextualbarTitle>

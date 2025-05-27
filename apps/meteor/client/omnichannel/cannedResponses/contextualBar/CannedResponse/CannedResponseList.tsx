@@ -15,6 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarInnerContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
@@ -66,7 +67,7 @@ const CannedResponseList = ({
 	const cannedItem = cannedItems.find((canned) => canned._id === cannedId);
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
@@ -132,7 +133,7 @@ const CannedResponseList = ({
 					<Button onClick={onClickCreate}>{t('Create')}</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

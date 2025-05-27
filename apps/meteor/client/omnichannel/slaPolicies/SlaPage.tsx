@@ -51,7 +51,7 @@ const SlaPage = () => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					<Contextualbar>
 						<ContextualbarHeader>
 							<ContextualbarTitle>
