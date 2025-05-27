@@ -3,21 +3,17 @@ import type { Page } from '@playwright/test';
 import { Users } from './fixtures/userStates';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: Users.admin.state, bypassCSP: true, headless: false, channel: 'chromium' });
+test.use({ storageState: Users.admin.state });
 
 test.describe('menu-create-new', () => {
 	let page: Page;
 
 	test.beforeEach(async ({ browser }) => {
 		const reactDevTools = await fetch('http://localhost:8097');
+		const context = await browser.newContext();
+		page = await context.newPage();
 		if (reactDevTools.ok) {
 			const content = await reactDevTools.text();
-			// Create a new browser context with bypassCSP enabled
-			// This is necessary to allow the React DevTools to inject its script into the page
-			// and to avoid CSP issues that might prevent the script from loading.
-			const context = await browser.newContext({ bypassCSP: true });
-			page = await context.newPage();
-
 			await page.addInitScript({ content });
 		}
 
@@ -34,7 +30,6 @@ test.describe('menu-create-new', () => {
 		});
 
 		await page.goto('/home', { waitUntil: 'domcontentloaded' });
-
 		await page.getByRole('alert', { name: 'loading' }).waitFor({ state: 'hidden' });
 	});
 
