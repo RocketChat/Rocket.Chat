@@ -32,6 +32,7 @@ const NotificationPreferences = ({
 	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },
+		reset,
 	} = useFormContext();
 
 	return (
@@ -46,7 +47,9 @@ const NotificationPreferences = ({
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
 					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
 						{t('Save')}
 					</Button>
