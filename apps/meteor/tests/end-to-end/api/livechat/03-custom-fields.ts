@@ -190,7 +190,7 @@ describe('LIVECHAT - custom fields', () => {
 		});
 	});
 
-	describe.only('livechat/custom.field [with Contacts]', () => {
+	describe('livechat/custom.field [with Contacts]', () => {
 		let visitor: ILivechatVisitor;
 		let contactId: string;
 
