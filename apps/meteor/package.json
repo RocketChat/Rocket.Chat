@@ -259,7 +259,7 @@
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
-		"@rocket.chat/layout": "^0.32.1",
+		"@rocket.chat/layout": "^0.33.0",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/log-format": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",

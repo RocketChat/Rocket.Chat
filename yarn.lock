@@ -8575,15 +8575,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@npm:^0.32.1":
-  version: 0.32.1
-  resolution: "@rocket.chat/layout@npm:0.32.1"
+"@rocket.chat/layout@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "@rocket.chat/layout@npm:0.33.0"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/fccf3c862a053945eaabf56e87658f4b5f0f4a99141365195e175af47d49af68d9569e6dbe63e12b73eb0f8dcd2e7d641852374f5bcf458a43ca69bf56960bc2
+  checksum: 10/e62f733440fcc45043466546cf243de98b7eb477b9e16b36934c25b26033db9c6257be6988063a58189e4de78a175f94728bbfb2ddecbb383c6084151803bbea
   languageName: node
   linkType: hard
 
@@ -8834,7 +8834,7 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "npm:^0.32.1"
+    "@rocket.chat/layout": "npm:^0.33.0"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/log-format": "workspace:^"
@@ -10119,7 +10119,7 @@ __metadata:
     "@babel/preset-react": "npm:~7.25.9"
     "@babel/preset-typescript": "npm:~7.26.0"
     "@rocket.chat/i18n": "workspace:~"
-    "@rocket.chat/layout": "npm:^0.32.1"
+    "@rocket.chat/layout": "npm:^0.33.0"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-client": "workspace:^"
