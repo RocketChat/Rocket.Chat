@@ -28,7 +28,10 @@ export async function updateContactsCustomFields(contact: ILivechatContact, key:
 		contact.conflictingFields.push({ field: `customFields.${key}`, value });
 	}
 
-	await LivechatContacts.updateContact(contact._id, { customFields: contact.customFields, conflictingFields: contact.conflictingFields });
+	await LivechatContacts.updateContact(contact._id, {
+		customFields: contact.customFields,
+		...(contact.conflictingFields && { conflictingFields: contact.conflictingFields }),
+	});
 
 	livechatLogger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
 }
