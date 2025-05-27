@@ -1,13 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
-	FieldDescription,
 	Accordion,
 	AccordionItem,
 	Box,
 	Button,
 	ButtonGroup,
 	Field,
+	FieldDescription,
 	FieldGroup,
 	FieldHint,
 	FieldLabel,
@@ -17,7 +17,7 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -27,7 +27,7 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccessibilityPage = () => {
@@ -135,15 +135,15 @@ const AccessibilityPage = () => {
 						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<Field>
-									<FieldLabel htmlFor={fontSizeId} mbe={12}>
+									<Box is='legend' id={fontSizeId} className='rcx-label rcx-field__label' mbe={12}>
 										{t('Font_size')}
-									</FieldLabel>
+									</Box>
 									<FieldRow>
 										<Controller
 											control={control}
 											name='fontSize'
 											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes} />
+												<Select value={value} onChange={onChange} aria-labelledby={fontSizeId} options={fontSizes} />
 											)}
 										/>
 									</FieldRow>
@@ -170,13 +170,15 @@ const AccessibilityPage = () => {
 									</FieldDescription>
 								</Field>
 								<Field>
-									<FieldLabel htmlFor={clockModeId}>{t('Message_TimeFormat')}</FieldLabel>
+									<Box is='legend' id={clockModeId} className='rcx-label rcx-field__label'>
+										{t('Message_TimeFormat')}
+									</Box>
 									<FieldRow>
 										<Controller
 											name='clockMode'
 											control={control}
 											render={({ field: { value, onChange } }) => (
-												<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
+												<Select aria-labelledby={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
 											)}
 										/>
 									</FieldRow>
