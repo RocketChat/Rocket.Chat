@@ -19,7 +19,6 @@ import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCl
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
@@ -55,9 +54,6 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const inviteTokenHash = useRouteParameter('hash');
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-
-	const createFontStyleElement = useCreateFontStyleElement();
-	createFontStyleElement(user?.settings?.preferences?.fontSize);
 
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
