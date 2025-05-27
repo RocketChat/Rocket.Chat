@@ -239,7 +239,34 @@ API.v1.post(
 					message: {
 						// Accepts any type for message
 						type: 'object',
-						additionalProperties: true,
+						properties: {
+							_id: { type: 'string' },
+							rid: { type: 'string' },
+							alias: { type: 'string' },
+							msg: { type: 'string' },
+							parseUrls: { type: 'boolean' },
+							groupable: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							ts: {
+								type: 'object',
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							_updatedAt: {
+								type: 'object',
+							},
+						},
+						required: ['msg', '_updatedAt'],
+						additionalProperties: false,
 					},
 					success: {
 						type: 'boolean',
