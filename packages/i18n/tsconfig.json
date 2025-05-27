@@ -3,7 +3,10 @@
 	"compilerOptions": {
 		"rootDirs": ["./src", "./"],
 		"outDir": "./dist",
-		"declaration": true
+		"declaration": true,
+		"paths": {
+			"../resources": ["./src/resources"],
+		}
 	},
 	"include": ["./src/**/*", "./jest.config.ts"]
 }

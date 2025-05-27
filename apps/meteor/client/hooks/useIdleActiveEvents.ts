@@ -43,5 +43,5 @@ export const useIdleActiveEvents = (
 		};
 	}, [id, onActiveCallback, stableActiveCallback, stableIdleCallback]);
 
-	return useIdleDetection({ id, time, awayOnWindowBlur });
+	useIdleDetection({ id, time, awayOnWindowBlur });
 };
