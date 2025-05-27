@@ -28,5 +28,6 @@ test.describe('menu-create-new', () => {
 		await page.getByRole('button', { name: 'Create new' }).click();
 		await expect(page.getByRole('menu', { name: 'Create new' })).toBeVisible({ timeout: 1000 });
 		await page.getByRole('menuitem', { name: 'Direct message' }).click({ timeout: 1000 });
+		await expect(page.getByRole('dialog')).toHaveText('New direct message');
 	});
 });
