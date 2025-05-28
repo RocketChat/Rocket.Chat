@@ -3,11 +3,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { HTTP } from 'meteor/http';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useLoginMethod } from '../hooks/useLoginMethod';
+
 export const useIframeLogin = (): string | undefined => {
 	const iframeEnabled = useSetting('Accounts_iframe_enabled', false);
 	const iframeUrl = useSetting('Accounts_iframe_url', '');
 	const apiUrl = useSetting('Accounts_Iframe_api_url', '');
 	const apiMethod = useSetting('Accounts_Iframe_api_method', '');
+	const loginMethod = useLoginMethod();
 
 	const [reactiveIframeUrl, setReactiveIframeUrl] = useState<string | undefined>(undefined);
 
@@ -28,17 +31,15 @@ export const useIframeLogin = (): string | undefined => {
 				return Meteor.loginWithToken(tokenData.loginToken, callback);
 			}
 
-			Accounts.callLoginMethod({
-				methodArguments: [
-					{
-						iframe: true,
-						token: tokenData.token,
-					},
-				],
-				userCallback: callback,
-			});
+			loginMethod(
+				{
+					iframe: true,
+					token: tokenData.token,
+				},
+				callback,
+			);
 		},
-		[iframeEnabled],
+		[iframeEnabled, loginMethod],
 	);
 
 	const tryLogin = useCallback(
