@@ -50,7 +50,7 @@ test.describe('Admin > Users', () => {
 			});
 
 			await test.step('is visible in the Pending tab', async () => {
-				await page.getByRole('tab', { name: 'Pending' }).click();
+				await page.getByRole('tab', { name: 'Pending (1)' }).click();
 				await expect(page.getByRole('link', { name: username })).toBeVisible();
 			});
 
@@ -65,7 +65,8 @@ test.describe('Admin > Users', () => {
 			});
 
 			await test.step('moves from Pending to Deactivated tab', async () => {
-				await page.getByRole('tab', { name: 'Pending' }).click();
+				await page.getByRole('tab', { name: 'Pending (1)' }).click();
+				await expect(page.getByRole('link', { name: username })).toBeVisible();
 				await page.getByRole('button', { name: 'More actions' }).click();
 				await page.getByRole('menuitem', { name: 'Deactivate' }).click();
 				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
@@ -74,13 +75,18 @@ test.describe('Admin > Users', () => {
 				await expect(page.getByRole('link', { name: username })).toBeVisible();
 			});
 
+			await test.step('is not visible in the Pending tab after deactivation', async () => {
+				await page.getByRole('tab', { name: 'Pending (0)' }).click();
+				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
+			});
+
 			await test.step('moves from Deactivated to Pending tab', async () => {
 				await page.getByRole('tab', { name: 'Deactivated' }).click();
 				await page.getByRole('button', { name: 'More actions' }).click();
 				await page.getByRole('menuitem', { name: 'Activate' }).click();
 				await expect(page.getByRole('link', { name: username })).not.toBeVisible();
 
-				await page.getByRole('tab', { name: 'Pending' }).click();
+				await page.getByRole('tab', { name: 'Pending (1)' }).click();
 				await expect(page.getByRole('link', { name: username })).toBeVisible();
 			});
 		},
