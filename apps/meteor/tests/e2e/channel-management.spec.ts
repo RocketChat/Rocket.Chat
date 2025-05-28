@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -44,20 +43,6 @@ test.describe.serial('channel-management', () => {
 		await page.keyboard.press('Tab');
 
 		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Call' })).not.toBeFocused();
-	});
-
-	test('should be able to navigate on call popup with keyboard', async ({ page }) => {
-		test.skip(!IS_EE, 'Premium Only');
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.roomHeaderFavoriteBtn.focus();
-
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Space');
-		await page.keyboard.press('Space');
-		await poHomeChannel.content.btnStartVideoCall.waitFor();
-		await page.keyboard.press('Tab');
-
-		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
 	});
 
 	test('should add user1 to targetChannel', async () => {

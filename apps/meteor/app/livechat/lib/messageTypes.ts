@@ -1,5 +1,4 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import formatDistance from 'date-fns/formatDistance';
 import moment from 'moment';
 
@@ -124,7 +123,7 @@ MessageTypes.registerType({
 			};
 		}
 		return {
-			message: escapeHTML(message.msg),
+			message: message.msg,
 		};
 	},
 });

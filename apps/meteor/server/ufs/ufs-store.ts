@@ -229,9 +229,11 @@ export class Store {
 		};
 	}
 
-	async removeById(fileId: string, options?: { session?: ClientSession }) {
+	async removeById(fileId: string, options?: { session?: ClientSession }, isDeleted = false): Promise<void> {
 		// Delete the physical file in the store
-		await this.delete(fileId);
+		if (!isDeleted) {
+			await this.delete(fileId);
+		}
 
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 

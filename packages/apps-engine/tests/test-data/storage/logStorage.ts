@@ -7,8 +7,8 @@ export class TestsAppLogStorage extends AppLogStorage {
         super('nothing');
     }
 
-    public find(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry>> {
-        return Promise.resolve([]);
+    public find(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<{ logs: ILoggerStorageEntry[]; total: number }> {
+        return Promise.resolve({ logs: [], total: 0 });
     }
 
     public storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {

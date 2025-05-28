@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useState } from 'react';
+import { useState, forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipDialPad as DialPad, VoipSettingsButton as SettingsButton } from '../..';
@@ -12,9 +12,10 @@ import Header from '../components/VoipPopupHeader';
 
 type VoipDialerViewProps = {
 	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipDialerView = ({ position }: VoipDialerViewProps) => {
+const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function VoipDialerView({ position, ...props }, ref) {
 	const { t } = useTranslation();
 	const { makeCall, closeDialer } = useVoipAPI();
 	const [number, setNumber] = useState('');
@@ -25,7 +26,7 @@ const VoipDialerView = ({ position }: VoipDialerViewProps) => {
 	};
 
 	return (
-		<Container secondary data-testid='vc-popup-dialer' position={position}>
+		<Container ref={ref} data-testid='vc-popup-dialer' position={position} {...props}>
 			<Header hideSettings onClose={closeDialer}>
 				{t('New_Call')}
 			</Header>
@@ -44,6 +45,6 @@ const VoipDialerView = ({ position }: VoipDialerViewProps) => {
 			</Footer>
 		</Container>
 	);
-};
+});
 
 export default VoipDialerView;

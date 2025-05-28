@@ -4,7 +4,7 @@
 	&::-webkit-scrollbar {
 		width: 6px;
 		height: 6px;
-		background: var(--transparent-dark);
+		background: transparent;
 	}
 
 	&::-webkit-scrollbar-thumb {
@@ -13,7 +13,7 @@
 	}
 
 	&::-webkit-scrollbar-corner {
-		background-color: var(--transparent-dark);
+		background-color: transparent;
 	}
 }
 
