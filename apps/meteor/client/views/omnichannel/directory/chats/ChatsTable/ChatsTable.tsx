@@ -31,9 +31,7 @@ const ChatsTable = () => {
 	const chatsQuery = useChatsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<
-		'fname' | 'priorityWeight' | 'source.type' | 'verified' | 'department.name' | 'servedBy' | 'ts' | 'lm' | 'status'
-	>('lm', 'desc');
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'ts'>('ts', 'desc');
 
 	const query = useMemo(
 		() => chatsQuery(filters, [sortBy, sortDirection], current, itemsPerPage),
@@ -51,50 +49,19 @@ const ChatsTable = () => {
 				{t('Name')}
 			</GenericTableHeaderCell>
 			{isPriorityEnabled && (
-				<GenericTableHeaderCell
-					key='priorityWeight'
-					direction={sortDirection}
-					active={sortBy === 'priorityWeight'}
-					onClick={setSort}
-					sort='priorityWeight'
-					alignItems='center'
-				>
+				<GenericTableHeaderCell key='priorityWeight' alignItems='center'>
 					{t('Priority')}
 				</GenericTableHeaderCell>
 			)}
-			<GenericTableHeaderCell
-				key='source.type'
-				direction={sortDirection}
-				active={sortBy === 'source.type'}
-				onClick={setSort}
-				sort='source.type'
-			>
-				{t('Channel')}
-			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='servedBy' direction={sortDirection} active={sortBy === 'servedBy'} onClick={setSort} sort='servedBy'>
-				{t('Agent')}
-			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x100' direction={sortDirection} active={sortBy === 'verified'} onClick={setSort} sort='verified'>
-				{t('Verification')}
-			</GenericTableHeaderCell>
-			<GenericTableHeaderCell
-				key='department.name'
-				direction={sortDirection}
-				active={sortBy === 'department.name'}
-				onClick={setSort}
-				sort='department.name'
-			>
-				{t('Department')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='source.type'>{t('Channel')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='servedBy'>{t('Agent')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell w='x100'>{t('Verification')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='department.name'>{t('Department')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 				{t('Started_At')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='lm' direction={sortDirection} active={sortBy === 'lm'} onClick={setSort} sort='lm'>
-				{t('Last_Message')}
-			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Status')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='lm'>{t('Last_Message')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='status'>{t('Status')}</GenericTableHeaderCell>
 			{canRemoveClosedChats && <GenericTableHeaderCell key='remove' w='x60' data-qa='current-chats-header-remove' />}
 		</>
 	);
