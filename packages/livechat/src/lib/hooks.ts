@@ -108,6 +108,28 @@ const updateIframeData = (data: Partial<StoreState['iframe']>) => {
 	store.setState({ iframe: { ...iframeData } });
 };
 
+export const setDepartment = async (value: string) => {
+	const {
+		config: { departments = [] },
+		defaultAgent,
+	} = store.state;
+
+	const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
+
+	if (!department) {
+		console.warn(
+			'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
+		);
+	}
+
+	updateIframeData({ defaultDepartment: department });
+	updateIframeGuestData({ department });
+
+	if (defaultAgent && defaultAgent.department !== department) {
+		store.setState({ defaultAgent: undefined });
+	}
+};
+
 const api = {
 	pageVisited(info: { change: string; title: string; location: { href: string } }) {
 		const { token, room } = store.state;
@@ -143,27 +165,7 @@ const api = {
 		});
 	},
 
-	setDepartment: async (value: string) => {
-		const {
-			config: { departments = [] },
-			defaultAgent,
-		} = store.state;
-
-		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
-
-		if (!department) {
-			console.warn(
-				'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
-			);
-		}
-
-		updateIframeData({ defaultDepartment: department });
-		updateIframeGuestData({ department });
-
-		if (defaultAgent && defaultAgent.department !== department) {
-			store.setState({ defaultAgent: undefined });
-		}
-	},
+	setDepartment,
 
 	setBusinessUnit: async (newBusinessUnit: string) => {
 		if (!newBusinessUnit?.trim().length) {

@@ -484,7 +484,7 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout(token = '') {
+	openPopout(token = '', department = '') {
 		closeWidget();
 
 		if (!config.url) {
@@ -499,7 +499,11 @@ const api: InternalWidgetAPI = {
 			url.searchParams.append('token', token);
 		}
 
-		api.popup = window.open(url.toString(), 'livechat-popout', `width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`);
+		if (department) {
+			url.searchParams.append('department', department);
+		}
+
+		api.popup = window.open(url, 'livechat-popout', `width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`);
 	},
 
 	removeWidget() {
