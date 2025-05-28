@@ -9,12 +9,17 @@ test.describe('menu-create-new', () => {
 	let page: Page;
 
 	test.beforeEach(async ({ browser }) => {
-		const reactDevTools = await fetch('http://localhost:8097');
 		const context = await browser.newContext();
 		page = await context.newPage();
-		if (reactDevTools.ok) {
-			const content = await reactDevTools.text();
-			await page.addInitScript({ content });
+
+		try {
+			const reactDevTools = await fetch('http://localhost:8097');
+			if (reactDevTools.ok) {
+				const content = await reactDevTools.text();
+				await page.addInitScript({ content });
+			}
+		} catch (error) {
+			console.warn('React DevTools not available:', error);
 		}
 
 		// Create a new page in the context
