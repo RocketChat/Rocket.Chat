@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fixed contact.conflictingFields being updated with nullish values
+Fixes `contact.conflictingFields` being updated with nullish values.
