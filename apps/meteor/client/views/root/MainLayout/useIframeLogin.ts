@@ -1,6 +1,5 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
-import { HTTP } from 'meteor/http';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useLoginMethod } from '../hooks/useLoginMethod';
@@ -53,11 +52,6 @@ export const useIframeLogin = (): string | undefined => {
 			}
 
 			console.log('tryLogin');
-			const options = {
-				beforeSend: (xhr: XMLHttpRequest) => {
-					xhr.withCredentials = true;
-				},
-			};
 
 			let url = iframeUrl;
 			let separator = '?';
@@ -69,25 +63,28 @@ export const useIframeLogin = (): string | undefined => {
 				url += `${separator}client=electron`;
 			}
 
-			const result = HTTP.call(apiMethod, apiUrl, options, (error, result) => {
-				console.log(error, result);
-				if (result?.data && (result.data.token || result.data.loginToken)) {
-					loginWithToken(result.data, (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
-						if (error) {
-							setReactiveIframeUrl(url);
-						} else {
-							setReactiveIframeUrl(undefined);
-						}
-						callback?.(error, result);
-					});
-				} else {
-					setReactiveIframeUrl(url);
-				}
+			const result = await fetch(apiUrl, {
+				method: apiMethod,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				credentials: 'include',
 			});
 
-			if (result?.data && (result.data.token || result.data.loginToken)) {
-				loginWithToken(result.data);
+			if (!result.ok || result.status !== 200) {
+				setReactiveIframeUrl(url);
+				callback?.(new Error(), null);
+				return;
 			}
+
+			loginWithToken(await result.json(), async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+				if (error) {
+					setReactiveIframeUrl(url);
+				} else {
+					setReactiveIframeUrl(undefined);
+				}
+				callback?.(error, await result.json());
+			});
 		},
 		[apiMethod, apiUrl, iframeEnabled, iframeUrl, loginWithToken],
 	);
