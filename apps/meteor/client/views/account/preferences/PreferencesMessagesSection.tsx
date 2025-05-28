@@ -43,7 +43,7 @@ const PreferencesMessagesSection = () => {
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
 						<Controller
 							name='unreadAlert'
 							control={control}
@@ -55,7 +55,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</FieldLabel>
 						<Controller
 							name='showThreadsInMainChannel'
 							control={control}
@@ -75,7 +75,7 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
+					<FieldLabel is='legend' htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='alsoSendThreadToChannel'
@@ -101,7 +101,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={useEmojisId}>{t('Use_Emojis')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={useEmojisId}>{t('Use_Emojis')}</FieldLabel>
 						<Controller
 							name='useEmojis'
 							control={control}
@@ -113,7 +113,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</FieldLabel>
 						<Controller
 							name='convertAsciiEmoji'
 							control={control}
@@ -125,7 +125,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</FieldLabel>
 						<Controller
 							name='autoImageLoad'
 							control={control}
@@ -137,7 +137,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</FieldLabel>
 						<Controller
 							name='saveMobileBandwidth'
 							control={control}
@@ -149,7 +149,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</FieldLabel>
 						<Controller
 							name='collapseMediaByDefault'
 							control={control}
@@ -169,7 +169,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={hideFlexTabId}>{t('Hide_flextab')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={hideFlexTabId}>{t('Hide_flextab')}</FieldLabel>
 						<Controller
 							name='hideFlexTab'
 							control={control}
@@ -181,7 +181,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={displayAvatarsId}>{t('Display_avatars')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={displayAvatarsId}>{t('Display_avatars')}</FieldLabel>
 						<Controller
 							name='displayAvatars'
 							control={control}
@@ -192,7 +192,7 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
+					<FieldLabel is='legend' htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='sendOnEnter'

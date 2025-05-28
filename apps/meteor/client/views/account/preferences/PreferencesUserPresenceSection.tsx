@@ -1,4 +1,4 @@
-import { AccordionItem, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, NumberInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,9 @@ const PreferencesUserPresenceSection = () => {
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={enableAutoAwayId}>{t('Enable_Auto_Away')}</FieldLabel>
+						<FieldLabel is='legend' htmlFor={enableAutoAwayId}>
+							{t('Enable_Auto_Away')}
+						</FieldLabel>
 						<Controller
 							name='enableAutoAway'
 							control={control}

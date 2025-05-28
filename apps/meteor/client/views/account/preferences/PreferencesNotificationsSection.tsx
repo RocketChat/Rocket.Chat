@@ -1,9 +1,9 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
+import { AccordionItem, Button, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import { useId, useCallback, useEffect, useState, useMemo } from 'react';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +46,10 @@ const PreferencesNotificationsSection = () => {
 
 	const onSendNotification = useCallback(() => {
 		notify({
-			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
+			payload: {
+				sender: { _id: 'rocket.cat', username: 'rocket.cat' },
+				rid: 'GENERAL',
+			} as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});
@@ -218,7 +221,9 @@ const PreferencesNotificationsSection = () => {
 				{showMobileRinging && (
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
+							<FieldLabel is='legend' htmlFor={enableMobileRingingId}>
+								{t('VideoConf_Mobile_Ringing')}
+							</FieldLabel>
 							<Controller
 								name='enableMobileRinging'
 								control={control}
