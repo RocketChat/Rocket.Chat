@@ -22,7 +22,7 @@
 		"@babel/preset-react": "~7.25.9",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/i18n": "workspace:~",
-		"@rocket.chat/layout": "^0.32.1",
+		"@rocket.chat/layout": "^0.33.0",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/ui-client": "workspace:^",
