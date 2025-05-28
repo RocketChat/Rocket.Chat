@@ -526,7 +526,7 @@ describe('LIVECHAT - custom fields', () => {
 					expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
 
 					// Validate conflictingFields was not saved as null
-					expect(res.body.contact).to.not.have.property('conflictingFields', null);
+					expect(res.body.contact).to.not.have.property('conflictingFields');
 				});
 
 			await deleteVisitor(visitor2.token);
