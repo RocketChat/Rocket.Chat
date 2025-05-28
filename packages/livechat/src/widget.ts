@@ -486,16 +486,20 @@ const api: InternalWidgetAPI = {
 
 	openPopout(token = '') {
 		closeWidget();
+
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
 		}
-		const urlToken = token && `&token=${token}`;
 
-		api.popup = window.open(
-			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout${urlToken}`,
-			'livechat-popout',
-			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
-		);
+		const url = new URL(config.url);
+
+		url.searchParams.append('mode', 'popout');
+
+		if (token) {
+			url.searchParams.append('token', token);
+		}
+
+		api.popup = window.open(url.toString(), 'livechat-popout', `width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`);
 	},
 
 	removeWidget() {
