@@ -52,7 +52,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.62.2",
+		"@rocket.chat/fuselage": "^0.62.3",
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/icons": "^0.43.0",
