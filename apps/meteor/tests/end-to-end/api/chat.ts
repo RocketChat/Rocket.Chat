@@ -690,12 +690,13 @@ describe('[Chat]', () => {
 	});
 
 	describe('Threaded replies with tmid', () => {
-		it('should send a threaded reply to a message in a channel using tmid with channel name', async () => {
+		it('should send a threaded reply to a message in a channel using tmid with roomId', async () => {
 			const channelName = `chat-api-tmid-channel-test-${Date.now()}`;
 			let testChannelResponse;
 			try {
 				testChannelResponse = await createRoom({ type: 'c', name: channelName });
 				expect(testChannelResponse.body.success).to.be.true;
+				const testChannel = testChannelResponse.body.channel;
 
 				const initialMessagePayload = {
 					channel: `#${channelName}`,
@@ -707,7 +708,7 @@ describe('[Chat]', () => {
 				const initialMessageId = initialMessageResponse.body.message._id;
 
 				const replyMessagePayload = {
-					channel: `#${channelName}`,
+					roomId: testChannel._id,
 					text: 'This is a threaded reply',
 					tmid: initialMessageId,
 				};
@@ -771,6 +772,47 @@ describe('[Chat]', () => {
 			} finally {
 				if (testRoomResponse?.body?.success) {
 					await deleteRoom({ type: 'c', roomId: testRoomResponse.body.channel._id });
+				}
+			}
+		});
+		it('should send a threaded reply to a message in a channel using tmid with channel name', async () => {
+			const channelName = `chat-api-tmid-channel-test-${Date.now()}`;
+			let testChannelResponse;
+			try {
+				testChannelResponse = await createRoom({ type: 'c', name: channelName });
+				expect(testChannelResponse.body.success).to.be.true;
+
+				const initialMessagePayload = {
+					channel: `#${channelName}`,
+					text: 'Initial message for tmid test',
+				};
+				const initialMessageResponse = await request.post(api('chat.postMessage')).set(credentials).send(initialMessagePayload);
+				expect(initialMessageResponse.status).to.equal(200);
+				expect(initialMessageResponse.body.success).to.be.true;
+				const initialMessageId = initialMessageResponse.body.message._id;
+
+				const replyMessagePayload = {
+					channel: `#${channelName}`,
+					text: 'This is a threaded reply',
+					tmid: initialMessageId,
+				};
+				const replyMessageResponse = await request.post(api('chat.postMessage')).set(credentials).send(replyMessagePayload);
+
+				expect(replyMessageResponse.status).to.equal(200);
+				expect(replyMessageResponse.body.success).to.be.true;
+
+				expect(replyMessageResponse.body.message.tmid).to.equal(initialMessageId);
+
+				const getReplyMessageResponse = await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({ msgId: replyMessageResponse.body.message._id });
+				expect(getReplyMessageResponse.status).to.equal(200);
+				expect(getReplyMessageResponse.body.success).to.be.true;
+				expect(getReplyMessageResponse.body.message.tmid).to.equal(initialMessageId);
+			} finally {
+				if (testChannelResponse?.body.success) {
+					await deleteRoom({ type: 'c', roomId: testChannelResponse.body.channel._id });
 				}
 			}
 		});

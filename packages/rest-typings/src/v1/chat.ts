@@ -782,7 +782,6 @@ type ChatPostMessage =
 			emoji?: string;
 			avatar?: string;
 			attachments?: MessageAttachment[];
-			tmid?: string;
 			customFields?: IMessage['customFields'];
 	  };
 
@@ -872,9 +871,6 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
-				},
-				tmid: {
-					type: 'string',
 				},
 				customFields: {
 					type: 'object',
