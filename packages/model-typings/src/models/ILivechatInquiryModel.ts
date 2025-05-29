@@ -48,4 +48,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
+	setNameByRoomIds(rids: string[], name: string): Promise<UpdateResult | Document>;
 }

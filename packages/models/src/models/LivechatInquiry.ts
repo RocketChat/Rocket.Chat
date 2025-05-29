@@ -442,6 +442,17 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.updateOne(query, update);
 	}
 
+	setNameByRoomIds(rids: string[], name: string): Promise<UpdateResult | Document> {
+		const query = { rid: { $in: rids } };
+
+		const update = {
+			$set: {
+				name,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null> {
 		const query: Filter<ILivechatInquiryRecord> = {
 			'v.token': token,

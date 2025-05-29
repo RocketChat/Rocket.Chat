@@ -327,4 +327,5 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
+	updateDisplayNameByRoomIds(roomIds: string[], fname: string): Promise<UpdateResult | Document>;
 }

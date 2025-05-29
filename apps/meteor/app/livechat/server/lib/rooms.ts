@@ -208,23 +208,25 @@ export async function saveRoomInfo(
 	return true;
 }
 
-export async function updateRoomsInfoFromVisitorUpdate(roomId: string, guestData: AtLeast<ILivechatVisitor, 'name'>) {
-	if (guestData?.name?.trim().length) {
-		const { name } = guestData;
+export async function updateRoomsInfoFromVisitorUpdate(roomIds: string[], guestData: AtLeast<ILivechatVisitor, 'name'>) {
+	if (!guestData?.name?.trim()) {
+		return;
+	}
 
-		const responses = await Promise.all([
-			Rooms.setFnameById(roomId, name),
-			LivechatInquiry.setNameByRoomId(roomId, name),
-			Subscriptions.updateDisplayNameByRoomId(roomId, name),
-		]);
+	const { name } = guestData;
 
-		if (responses[1]?.modifiedCount) {
-			void notifyOnLivechatInquiryChangedByRoom(roomId, 'updated', { name });
-		}
+	const responses = await Promise.all([
+		Rooms.setFnameByIds(roomIds, name),
+		LivechatInquiry.setNameByRoomIds(roomIds, name),
+		Subscriptions.updateDisplayNameByRoomIds(roomIds, name),
+	]);
 
-		if (responses[2]?.modifiedCount) {
-			await notifyOnSubscriptionChangedByRoomId(roomId);
-		}
+	if (responses[1]?.modifiedCount) {
+		roomIds.map((roomId) => void notifyOnLivechatInquiryChangedByRoom(roomId, 'updated', { name }));
+	}
+
+	if (responses[2]?.modifiedCount) {
+		roomIds.map((roomId) => void notifyOnSubscriptionChangedByRoomId(roomId));
 	}
 }
 
