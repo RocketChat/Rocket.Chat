@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, TextInput, Button, Margins, Select, FieldError, FieldGroup, Field, FieldRow } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -73,6 +73,8 @@ const AddToken = ({ reload }: AddTokenProps) => {
 		[createTokenFn, dispatchToastMessage, reload, reset, setModal, t, userId],
 	);
 
+	const nameErrorId = useId();
+
 	return (
 		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} mb={8}>
 			<Field>
@@ -82,7 +84,14 @@ const AddToken = ({ reload }: AddTokenProps) => {
 							name='name'
 							control={control}
 							rules={{ required: t('Please_provide_a_name_for_your_token') }}
-							render={({ field }) => <TextInput data-qa='PersonalTokenField' {...field} placeholder={t('API_Add_Personal_Access_Token')} />}
+							render={({ field }) => (
+								<TextInput
+									aria-describedby={nameErrorId}
+									data-qa='PersonalTokenField'
+									{...field}
+									placeholder={t('API_Add_Personal_Access_Token')}
+								/>
+							)}
 						/>
 						<Box>
 							<Controller
@@ -96,7 +105,11 @@ const AddToken = ({ reload }: AddTokenProps) => {
 						{t('Add')}
 					</Button>
 				</FieldRow>
-				{errors?.name && <FieldError role='alert'>{errors.name.message}</FieldError>}
+				{errors?.name && (
+					<FieldError id={nameErrorId} role='alert'>
+						{errors.name.message}
+					</FieldError>
+				)}
 			</Field>
 		</FieldGroup>
 	);
