@@ -1,4 +1,4 @@
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import type { FieldExpression, Query } from '@rocket.chat/mongo-adapter';
 import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
@@ -9,21 +9,31 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
+import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import { useRoom } from '../../../contexts/RoomContext';
 
 type RoomMessagesRidEvent = IMessage;
 
-type NotifyRoomRidDeleteMessageBulkEvent = {
+type NotifyRoomRidDeleteBulkBaseEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
 	ignoreDiscussion: boolean;
 	ts: FieldExpression<Date>;
 	users: string[];
 	ids?: string[]; // message ids have priority over ts
+};
+
+type NotifyRoomRidDeleteMessageBulkEvent = NotifyRoomRidDeleteBulkBaseEvent & {
 	showDeletedStatus?: boolean;
 };
 
-const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
+type NotifyRoomRidDeleteFilesBulkEvent = NotifyRoomRidDeleteBulkBaseEvent & {
+	replaceFileAttachmentsWith?: MessageAttachment;
+};
+
+const createDeleteCriteria = (
+	params: NotifyRoomRidDeleteMessageBulkEvent | NotifyRoomRidDeleteFilesBulkEvent,
+): ((message: IMessage) => boolean) => {
 	const query: Query<IMessage> = {};
 
 	if (params.ids) {
@@ -51,7 +61,18 @@ const useSubscribeToMessage = () => {
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	return useCallback(
-		(message: IMessage, { onMutate, onDelete }: { onMutate?: (message: IMessage) => void; onDelete?: () => void }) => {
+		(
+			message: IMessage,
+			{
+				onMutate,
+				onDelete,
+				onFilesDelete,
+			}: {
+				onMutate?: (message: IMessage) => void;
+				onDelete?: () => void;
+				onFilesDelete?: (replaceFileAttachmentsWith?: MessageAttachment) => void;
+			},
+		) => {
 			const unsubscribeFromRoomMessages = subscribeToRoomMessages(message.rid, (event: RoomMessagesRidEvent) => {
 				if (message._id === event._id) onMutate?.(event);
 			});
@@ -62,7 +83,12 @@ const useSubscribeToMessage = () => {
 
 			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${message.rid}/deleteMessageBulk`, (params) => {
 				const matchDeleteCriteria = createDeleteCriteria(params);
-				if (matchDeleteCriteria(message)) onDelete?.();
+				if (matchDeleteCriteria(message)) {
+					if (params.filesOnly) {
+						return onFilesDelete?.(params.replaceFileAttachmentsWith);
+					}
+					return onDelete?.();
+				}
 			});
 
 			return () => {
@@ -119,6 +145,17 @@ export const useThreadMainMessageQuery = (
 					onDelete: () => {
 						onDelete?.();
 						queryClient.invalidateQueries({ queryKey, exact: true });
+					},
+					onFilesDelete: async (replaceFileAttachmentsWith?: MessageAttachment) => {
+						const current = queryClient.getQueryData<IThreadMainMessage>(queryKey);
+						if (!current) {
+							return;
+						}
+						const updated = modifyMessageOnFilesDelete(current, replaceFileAttachmentsWith);
+
+						const msg = await onClientMessageReceived(updated);
+						queryClient.setQueryData(queryKey, () => msg);
+						debouncedInvalidate();
 					},
 				});
 
