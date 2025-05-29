@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Cursor } from './Cursor';
+import type { Cursor, Options } from './Cursor';
 import type { IdMap } from './IdMap';
 import type { Matcher } from './Matcher';
-import type { Options } from './MinimongoCollection';
 import type { Sorter } from './Sorter';
 
 interface BaseQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> {

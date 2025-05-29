@@ -16,6 +16,7 @@ export const Meteor = {
 	},
 	_runFresh: jest.fn(),
 	_isPromise: jest.fn(() => false),
+	defer: jest.fn((fn: () => void) => queueMicrotask(fn)),
 };
 
 export const Mongo = {
@@ -47,4 +48,5 @@ export const ReactiveVar = class ReactiveVar {};
 export const EJSON = {
 	isBinary: jest.fn(() => false),
 	clone: jest.fn((obj) => obj),
+	equals: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
 };
