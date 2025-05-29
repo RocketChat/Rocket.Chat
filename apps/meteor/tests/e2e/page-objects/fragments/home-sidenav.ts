@@ -98,23 +98,19 @@ export class HomeSidenav {
 	}
 
 	get menuItemSwitchAvatars(): Locator {
-		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' });
+		return this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: 'Avatars' });
 	}
 
-	getSidebarItemMessage(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('.message-body--unstyled');
-	}
-
-	getSidebarChannelName(name: string): Locator {
-		return this.page.getByRole('listitem').filter({ has: this.page.getByText(name, { exact: true }) });
-	}
-
-	getSidebarAvatars(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('figure.rcx-avatar');
+	get checkboxSwitchAvatars(): Locator {
+		return this.menuItemSwitchAvatars.getByRole('checkbox');
 	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarItemAvatar(name: string): Locator {
+		return this.getSidebarItemByName(name).getByRole('figure');
 	}
 
 	getSearchItemByName(name: string): Locator {
