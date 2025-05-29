@@ -3,10 +3,10 @@ import type { CountDocumentsOptions, Filter, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { Cursor } from './Cursor';
+import type { Options } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
-import type { Options } from './MinimongoCollection';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
 import { Sorter } from './Sorter';
@@ -214,7 +214,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const matcher = new Matcher(selector);
 		const remove = new Set<T>();
 
-		this._eachPossiblyMatchingDocSync(selector, (doc) => {
+		this._eachPossiblyMatchingDoc(selector, (doc) => {
 			if (matcher.documentMatches(doc).result) {
 				remove.add(doc);
 			}
@@ -251,7 +251,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const { queriesToRecompute, queryRemove, count } = this.prepareRemove(selector);
 
 		for (const remove of queryRemove) {
-			this._removeFromResultsSync(remove.query, remove.doc);
+			this._removeFromResults(remove.query, remove.doc);
 		}
 
 		for (const query of queriesToRecompute) {
@@ -403,7 +403,7 @@ export class LocalCollection<T extends { _id: string }> {
 	async updateAsync(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options:
+		options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -487,7 +487,7 @@ export class LocalCollection<T extends { _id: string }> {
 	update(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options:
+		options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -534,7 +534,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		let updateCount = 0;
 
-		this._eachPossiblyMatchingDocSync(selector, (doc, id) => {
+		this._eachPossiblyMatchingDoc(selector, (doc, id) => {
 			const queryResult = matcher.documentMatches(doc);
 
 			if (queryResult.result) {
@@ -579,7 +579,7 @@ export class LocalCollection<T extends { _id: string }> {
 	upsert(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options:
+		options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -612,7 +612,7 @@ export class LocalCollection<T extends { _id: string }> {
 	upsertAsync(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options:
+		options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -662,7 +662,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private _eachPossiblyMatchingDocSync(selector: Filter<T>, fn: (doc: T, id: T['_id']) => void | boolean) {
+	private _eachPossiblyMatchingDoc(selector: Filter<T>, fn: (doc: T, id: T['_id']) => void | boolean) {
 		const specificIds = this._idsMatchedBySelector(selector);
 
 		if (specificIds) {
@@ -721,11 +721,11 @@ export class LocalCollection<T extends { _id: string }> {
 					recomputeQueries.add(query);
 				}
 			} else if (before && !after) {
-				this._removeFromResultsSync(query, doc);
+				this._removeFromResults(query, doc);
 			} else if (!before && after) {
 				this._insertInResults(query, doc);
 			} else if (before && after) {
-				this._updateInResultsSync(query, doc, oldDoc);
+				this._updateInResults(query, doc, oldDoc);
 			}
 		}
 		return recomputeQueries;
@@ -989,10 +989,10 @@ export class LocalCollection<T extends { _id: string }> {
 			assertHasValidFieldNames(modifier);
 		}
 
-		return Object.freeze(newDoc);
+		return newDoc;
 	}
 
-	private _removeFromResultsSync(query: Query<T>, doc: T) {
+	private _removeFromResults(query: Query<T>, doc: T) {
 		if (query.ordered) {
 			const i = this._findInOrderedResults(query, doc);
 
@@ -1020,7 +1020,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 	}
 
-	private _updateInResultsSync(query: Query<T>, doc: T, oldDoc: T) {
+	private _updateInResults(query: Query<T>, doc: T, oldDoc: T) {
 		if (doc._id !== oldDoc._id) {
 			throw new MinimongoError("Can't change a doc's _id while updating");
 		}
@@ -1479,7 +1479,7 @@ function assertIsValidFieldName(key: string) {
 }
 
 function findModTarget(
-	doc: any,
+	doc: Record<string, any>,
 	keyparts: (number | string)[],
 	options: {
 		noCreate?: boolean;

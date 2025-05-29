@@ -1,11 +1,10 @@
 import { Tracker } from 'meteor/tracker';
-import type { Filter } from 'mongodb';
+import type { Filter, Sort } from 'mongodb';
 
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
 import type { LocalCollection } from './LocalCollection';
 import { Matcher } from './Matcher';
-import type { FieldSpecifier, Options, Transform } from './MinimongoCollection';
 import { MinimongoError } from './MinimongoError';
 import { ObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
@@ -877,4 +876,30 @@ type ObserveChangesCallbacks<T extends { _id: string }> = {
 	added?: (this: _CachingChangeObserver<T>, id: T['_id'], fields: T) => void;
 	_allow_unordered?: boolean;
 	_suppress_initial?: boolean;
+};
+
+export type Transform<T> = ((doc: T) => any) | null | undefined;
+
+export type FieldSpecifier = {
+	[id: string]: number | boolean;
+};
+
+export type Options<T> = {
+	/** Sort order (default: natural order) */
+	sort?: Sort | undefined;
+	/** Number of results to skip at the beginning */
+	skip?: number | undefined;
+	/** Maximum number of results to return */
+	limit?: number | undefined;
+	/**
+	 * Dictionary of fields to return or exclude.
+	 * @deprecated use projection instead
+	 */
+	fields?: FieldSpecifier | undefined;
+	/** Dictionary of fields to return or exclude. */
+	projection?: FieldSpecifier | undefined;
+	/** Default `true`; pass `false` to disable reactivity */
+	reactive?: boolean | undefined;
+	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
+	transform?: Transform<T> | null | undefined;
 };
