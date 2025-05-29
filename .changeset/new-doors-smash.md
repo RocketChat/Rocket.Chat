@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Requires token name when creating personal access token avoiding confusion if there are multiple tokens with no name
+Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
