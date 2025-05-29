@@ -66,9 +66,8 @@ API.v1.addRoute(
 				});
 			}
 
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
+			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}).toArray();
 			await Promise.all(
 				rooms.map(
 					(room: IRoom) =>
@@ -82,66 +81,62 @@ API.v1.addRoute(
 				),
 			);
 
-			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-				const errors: string[] = [];
-				const keys = customFields.map((field) => field.key);
-
-				const livechatCustomFields = await LivechatCustomField.findByScope(
-					'visitor',
-					{ projection: { _id: 1, required: 1 } },
-					false,
-				).toArray();
-				validateRequiredCustomFields(keys, livechatCustomFields);
-
-				const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
-				const processedKeys = await Promise.all(
-					matchingCustomFields.map(async (field: ILivechatCustomField) => {
-						const customField = customFields.find((f) => f.key === field._id);
-						if (!customField) {
-							return;
-						}
-
-						const { key, value, overwrite } = customField;
-						// TODO: Change this to Bulk update
-						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-							errors.push(key);
-						}
-
-						// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
-						const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-						if (contacts.length > 0) {
-							await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
-						}
-
-						return key;
-					}),
-				);
-
-				if (processedKeys.length !== keys.length) {
-					livechatLogger.warn({
-						msg: 'Some custom fields were not processed',
-						visitorId: visitor._id,
-						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
-					});
-				}
-
-				if (errors.length > 0) {
-					livechatLogger.error({
-						msg: 'Error updating custom fields',
-						visitorId: visitor._id,
-						errors,
-					});
-					throw new Error('error-updating-custom-fields');
-				}
-
-				return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
+			if (!Array.isArray(customFields) || !customFields.length) {
+				return API.v1.success({ visitor });
 			}
 
-			if (!visitor) {
-				throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor');
+			const errors: string[] = [];
+			const keys = customFields.map((field) => field.key);
+
+			const livechatCustomFields = await LivechatCustomField.findByScope(
+				'visitor',
+				{ projection: { _id: 1, required: 1 } },
+				false,
+			).toArray();
+			validateRequiredCustomFields(keys, livechatCustomFields);
+
+			const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
+			const processedKeys = await Promise.all(
+				matchingCustomFields.map(async (field: ILivechatCustomField) => {
+					const customField = customFields.find((f) => f.key === field._id);
+					if (!customField) {
+						return;
+					}
+
+					const { key, value, overwrite } = customField;
+					// TODO: Change this to Bulk update
+					if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+						errors.push(key);
+					}
+
+					// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
+					const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+					if (contacts.length > 0) {
+						await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+					}
+
+					return key;
+				}),
+			);
+
+			if (processedKeys.length !== keys.length) {
+				livechatLogger.warn({
+					msg: 'Some custom fields were not processed',
+					visitorId: visitor._id,
+					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
+				});
 			}
 
-			return API.v1.success({ visitor });
+			if (errors.length > 0) {
+				livechatLogger.error({
+					msg: 'Error updating custom fields',
+					visitorId: visitor._id,
+					errors,
+				});
+				throw new Error('error-updating-custom-fields');
+			}
+
+			return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 		},
 	},
 );
