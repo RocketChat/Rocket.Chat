@@ -15,7 +15,7 @@ import { getUserPreference } from '../../../utils/client';
 
 const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
 
-export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
+const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
 
 	if (subscription?.ignored?.includes(userId)) {
@@ -25,19 +25,23 @@ export async function upsertMessage({ msg, subscription }: { msg: IMessage & { i
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
-	msg = (await onClientMessageReceived(msg)) || msg;
 
-	const { _id } = msg;
+	return (await onClientMessageReceived(msg)) || msg;
+};
 
-	return Messages.upsert({ _id }, msg);
+export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
+	Messages.store.store(await processMessage(msg, { subscription }));
 }
 
-export async function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }) {
-	await Messages.bulkMutate(async () => {
-		for await (const msg of msgs) {
-			await upsertMessage({ msg, subscription });
-		}
-	});
+export async function upsertMessageBulk({
+	msgs,
+	subscription,
+}: {
+	msgs: (IMessage & { ignored?: boolean })[];
+	subscription?: ISubscription;
+}) {
+	const processedMsgs = await Promise.all(msgs.map(async (msg) => processMessage(msg, { subscription })));
+	Messages.store.storeMany(processedMsgs);
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;

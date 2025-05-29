@@ -4,7 +4,6 @@ import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { Cursor } from './Cursor';
 import { DiffSequence } from './DiffSequence';
-import type { IDocumentMapStore } from './IDocumentMapStore';
 import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
 import type { Options } from './MinimongoCollection';
@@ -34,7 +33,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 	paused = false;
 
-	constructor(public store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>) {}
+	constructor(public store: UseBoundStore<StoreApi<{ readonly records: readonly T[] }>>) {}
 
 	find(selector: Filter<T> | T['_id'] = {}, options?: Options<T>) {
 		return new Cursor(this, selector, options);
@@ -63,12 +62,12 @@ export class LocalCollection<T extends { _id: string }> {
 			throw new MinimongoError('Document must have an _id field');
 		}
 
-		if (this.store.getState().has(doc._id)) {
+		if (this.store.getState().records.some((record) => record._id === doc._id)) {
 			throw new MinimongoError(`Duplicate _id '${doc._id}'`);
 		}
 
 		this._saveOriginal(doc._id, undefined);
-		this.store.getState().store(doc, { recomputeQueries: false });
+		this.store.setState((state) => ({ records: [...state.records, doc] }));
 
 		return doc._id;
 	}
@@ -238,7 +237,7 @@ export class LocalCollection<T extends { _id: string }> {
 			}
 
 			this._saveOriginal(removeDoc._id, removeDoc);
-			this.store.getState().delete(removeDoc, { recomputeQueries: false });
+			this.store.setState((state) => ({ records: state.records.filter((record) => record._id !== removeDoc._id) }));
 		}
 
 		return { queriesToRecompute, queryRemove, count: remove.size };
@@ -540,7 +539,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 			if (queryResult.result) {
 				this._saveOriginal(id, doc);
-				recomputeQueries = this._modifyAndNotifySync(doc, mod, queryResult.arrayIndices);
+				recomputeQueries = this._modifyAndNotify(doc, mod, queryResult.arrayIndices);
 
 				++updateCount;
 
@@ -648,7 +647,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		if (specificIds) {
 			for await (const id of specificIds) {
-				const doc = this.store.getState().get(id);
+				const doc = this.store.getState().records.find((record) => record._id === id);
 
 				if (doc && (await fn(doc, id)) === false) {
 					break;
@@ -668,7 +667,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		if (specificIds) {
 			for (const id of specificIds) {
-				const doc = this.store.getState().get(id);
+				const doc = this.store.getState().records.find((record) => record._id === id);
 
 				if (doc && fn(doc, id) === false) {
 					break;
@@ -699,12 +698,14 @@ export class LocalCollection<T extends { _id: string }> {
 		return matchedBefore;
 	}
 
-	private _modifyAndNotifySync(doc: T, mod: UpdateFilter<T>, arrayIndices: (number | 'x')[] | undefined) {
+	private _modifyAndNotify(doc: T, mod: UpdateFilter<T>, arrayIndices: (number | 'x')[] | undefined) {
 		const matchedBefore = this._getMatchedDocAndModify(doc);
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.store.getState().store(doc, { recomputeQueries: false });
+		this.store.setState((state) => ({
+			records: state.records.map((record) => (record._id === doc._id ? doc : record)),
+		}));
 
 		const recomputeQueries = new Set<Query<T>>();
 
@@ -735,7 +736,9 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const oldDoc = clone(doc);
 		doc = this._modify(doc, mod, { arrayIndices });
-		this.store.getState().store(doc, { recomputeQueries: false });
+		this.store.setState((state) => ({
+			records: state.records.map((record) => (record._id === doc._id ? doc : record)),
+		}));
 
 		const recomputeQueries = new Set<Query<T>>();
 		for await (const query of this.queries) {

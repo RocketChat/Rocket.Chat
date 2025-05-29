@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import type { Sort } from 'mongodb';
 import { create } from 'zustand';
 
-import type { IDocumentMapStore } from './IDocumentMapStore';
+import type { IDocumentMapStore } from './DocumentMapStore';
 import { LocalCollection } from './LocalCollection';
 
 export type Transform<T> = ((doc: T) => any) | null | undefined;
@@ -38,44 +38,43 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		get: (id: T['_id']) => get().records.find((record) => record._id === id),
 		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
 		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
-		replaceAll: (records: T[], { recomputeQueries }) => {
+		replaceAll: (records: T[]) => {
 			set({ records: records.map<T>(Object.freeze) });
-			if (recomputeQueries) this._collection.recomputeAllResults();
+			this.recomputeQueries();
 		},
-		store: (doc, { recomputeQueries }) => {
+		store: (doc) => {
 			set((state) => {
 				const records = [...state.records];
 				const index = records.findIndex((r) => r._id === doc._id);
 				if (index !== -1) {
-					records[index] = doc;
+					records[index] = Object.freeze(doc);
 				} else {
-					records.push(doc);
+					records.push(Object.freeze(doc));
 				}
 				return { records };
 			});
-			if (recomputeQueries) this._collection.recomputeAllResults();
+			this.recomputeQueries();
 		},
-		storeMany: (docs, { recomputeQueries }) => {
-			set((state) => {
-				const records = [...state.records];
-				docs.forEach((doc) => {
-					const index = records.findIndex((r) => r._id === doc._id);
-					if (index !== -1) {
-						records[index] = doc;
-					} else {
-						records.push(doc);
-					}
-				});
-				return { records };
-			});
-			if (recomputeQueries) this._collection.recomputeAllResults();
+		storeMany: (docs) => {
+			const records = [...get().records];
+
+			for (const doc of docs) {
+				const index = records.findIndex((r) => r._id === doc._id);
+				if (index !== -1) {
+					records[index] = Object.freeze(doc);
+				} else {
+					records.push(Object.freeze(doc));
+				}
+			}
+			set({ records });
+			this.recomputeQueries();
 		},
-		delete: (doc, { recomputeQueries }) => {
+		delete: (doc) => {
 			set((state) => {
 				const records = state.records.filter((r) => r._id !== doc._id);
 				return { records };
 			});
-			if (recomputeQueries) this._collection.recomputeAllResults();
+			this.recomputeQueries();
 		},
 		update: (predicate: (record: T) => boolean, modifier: (record: T) => T) => {
 			set({
@@ -97,17 +96,11 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		super(null);
 	}
 
-	get state() {
+	get store() {
 		return this.use.getState();
 	}
 
-	getCollection(): Mongo.Collection<T> {
-		return this;
-	}
-
-	async bulkMutate(fn: () => Promise<void>) {
-		this._collection.pauseObservers();
-		await fn();
-		this._collection.resumeObserversClient();
+	private recomputeQueries() {
+		this._collection.recomputeAllResults();
 	}
 }
