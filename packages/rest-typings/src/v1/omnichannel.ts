@@ -778,14 +778,11 @@ const LivechatDepartmentsByUnitSchema = {
 
 export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
-type LivechatDepartmentsByUnitIdProps = PaginatedRequest<{ text: string }>;
+type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
 	properties: {
-		text: {
-			type: 'string',
-		},
 		count: {
 			type: 'number',
 			nullable: true,
