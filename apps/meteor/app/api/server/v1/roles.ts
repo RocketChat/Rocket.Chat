@@ -9,6 +9,7 @@ import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUse
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
@@ -69,7 +70,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -81,7 +82,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
+			await addUserToRole(this.userId, role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -123,7 +124,7 @@ API.v1.addRoute(
 				}
 
 				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.route,
+					this.route,
 					'role',
 					'7.0.0',
 					this.response,
@@ -196,7 +197,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);

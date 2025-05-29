@@ -19,7 +19,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
@@ -174,20 +174,22 @@ const RoomMembers = ({
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<GroupedVirtuoso
-								style={{
-									height: '100%',
-									width: '100%',
-								}}
-								overscan={50}
-								groupCounts={counts}
-								groupContent={(index): ReactElement => titles[index]}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index): ReactElement => (
-									<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<GroupedVirtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									overscan={50}
+									groupCounts={counts}
+									groupContent={(index): ReactElement => titles[index]}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+									itemContent={(index): ReactElement => (
+										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}

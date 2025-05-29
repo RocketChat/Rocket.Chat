@@ -506,7 +506,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	async countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number> {
-		return this.col.countDocuments({ t: type }, options);
+		return this.countDocuments({ t: type }, options);
 	}
 
 	async countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number> {
@@ -756,7 +756,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	// FIND
@@ -1022,7 +1022,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
@@ -1664,7 +1664,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	// threads
 
 	countThreads(): Promise<number> {
-		return this.col.countDocuments({ tcount: { $exists: true } });
+		return this.countDocuments({ tcount: { $exists: true } });
 	}
 
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
@@ -1771,7 +1771,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {
@@ -1782,5 +1782,49 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
+		const setAttachments = replaceWith
+			? {
+					$map: {
+						input: '$attachments',
+						as: 'att',
+						in: {
+							$cond: [{ $eq: ['$$att.type', 'file'] }, replaceWith, '$$att'],
+						},
+					},
+				}
+			: {
+					$filter: {
+						input: '$attachments',
+						as: 'att',
+						cond: { $ne: ['$$att.type', 'file'] },
+					},
+				};
+
+		return this.updateMany({ _id: { $in: _ids } }, [
+			{
+				$set: {
+					attachments: setAttachments,
+				},
+			},
+		]);
+	}
+
+	clearFilesByMessageIds(_ids: string[]) {
+		if (!_ids || _ids.length === 0) {
+			return Promise.resolve({ acknowledged: true, modifiedCount: 0, upsertedId: null, upsertedCount: 0, matchedCount: 0 });
+		}
+		return this.updateMany(
+			{ _id: { $in: _ids } },
+			{
+				$set: { files: [] },
+				$unset: { file: 1 },
+			},
+		);
 	}
 }

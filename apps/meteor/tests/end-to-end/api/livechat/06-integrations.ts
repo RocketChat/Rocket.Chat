@@ -63,16 +63,14 @@ describe('LIVECHAT - Integrations', () => {
 			return Promise.all(visitorTokens.map((token) => deleteVisitor(token)));
 		});
 
+		// Twilio sends the body as a x-www-form-urlencoded, the tests should do the same
 		describe('POST livechat/sms-incoming/:service', () => {
 			it('should throw an error if SMS is disabled', async () => {
 				await updateSetting('SMS_Enabled', false);
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						from: '+123456789',
-						body: 'Hello',
-					})
+					.send('from=%2B123456789&body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -82,11 +80,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -97,11 +91,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -113,11 +103,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'text/xml')
 					.expect(200)
 					.expect((res: Response) => {

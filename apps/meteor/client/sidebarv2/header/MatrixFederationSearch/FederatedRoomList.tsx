@@ -8,7 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
@@ -61,21 +61,22 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
 		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} mi={-24}>
-			<Virtuoso
-				data={flattenedData || []}
-				computeItemKey={(index, room) => room?.id || index}
-				overscan={4}
-				components={{
-					// eslint-disable-next-line react/no-multi-comp
-					Footer: () => (isFetchingNextPage ? <Throbber /> : null),
-					Scroller: VirtuosoScrollbars,
-					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
-				}}
-				endReached={isPending || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
-				itemContent={(_, room) => (
-					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
-				)}
-			/>
+			<VirtualizedScrollbars>
+				<Virtuoso
+					data={flattenedData || []}
+					computeItemKey={(index, room) => room?.id || index}
+					overscan={4}
+					components={{
+						// eslint-disable-next-line react/no-multi-comp
+						Footer: () => (isFetchingNextPage ? <Throbber /> : null),
+						EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
+					}}
+					endReached={isPending || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+					itemContent={(_, room) => (
+						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
+					)}
+				/>
+			</VirtualizedScrollbars>
 		</Box>
 	);
 };

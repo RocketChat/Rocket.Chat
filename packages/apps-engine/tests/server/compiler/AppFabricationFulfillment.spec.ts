@@ -8,6 +8,7 @@ import { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppFabricationFulfillment } from '../../../src/server/compiler';
 import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import { EventEmitter } from 'stream';
 
 export class AppFabricationFulfillmentTestFixture {
     @Test()
@@ -41,7 +42,7 @@ export class AppFabricationFulfillmentTestFixture {
         Expect(() => aff.setImplementedInterfaces(expectedInter)).not.toThrow();
         Expect(aff.getImplementedInferfaces()).toEqual(expectedInter);
 
-        const fakeApp = new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN } as IAppStorageItem, {} as DenoRuntimeSubprocessController);
+        const fakeApp = new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN } as IAppStorageItem, new EventEmitter() as DenoRuntimeSubprocessController);
         Expect(() => aff.setApp(fakeApp)).not.toThrow();
         Expect(aff.getApp()).toEqual(fakeApp);
     }

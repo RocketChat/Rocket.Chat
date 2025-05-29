@@ -16,6 +16,7 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
+import { removeOtherTokens } from '../lib/removeOtherTokens';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -142,7 +143,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await Meteor.callAsync('removeOtherTokens');
+				await removeOtherTokens(this.userId, this.connection?.id || '');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
@@ -184,6 +185,31 @@ declare module '@rocket.chat/ddp-client' {
 			...args: unknown[]
 		): boolean;
 	}
+}
+
+export function executeSaveUserProfile(
+	this: Meteor.MethodThisType,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
+	},
+	customFields: Record<string, any> = {},
+	...args: unknown[]
+) {
+	check(settings, Object);
+	check(customFields, Match.Maybe(Object));
+
+	if (settings.email || settings.newPassword) {
+		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+	}
+
+	return saveUserProfile.call(this, settings, customFields, ...args);
 }
 
 Meteor.methods<ServerMethods>({

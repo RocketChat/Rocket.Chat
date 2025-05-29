@@ -64,7 +64,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			if (!this.currentEditing) {
-				let lastMessage = await this.data.findLastOwnMessage();
+				let lastMessage = await this.data.findPreviousOwnMessage();
 
 				// Videoconf messages should not be edited
 				if (lastMessage && isVideoConfMessage(lastMessage)) {

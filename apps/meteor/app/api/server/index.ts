@@ -49,4 +49,7 @@ import './v1/voip';
 import './v1/federation';
 import './v1/moderation';
 
+// This has to come last so all endpoints are registered before generating the OpenAPI documentation
+import './default/openApi';
+
 export { API, APIClass, defaultRateLimiterOptions } from './api';
