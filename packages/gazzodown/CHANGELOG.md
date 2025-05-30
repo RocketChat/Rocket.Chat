@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.3
   - @rocket.chat/ui-contexts@19.0.0-rc.3
   - @rocket.chat/ui-client@19.0.0-rc.3
@@ -16,7 +15,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.2
   - @rocket.chat/ui-contexts@19.0.0-rc.2
   - @rocket.chat/ui-client@19.0.0-rc.2
@@ -45,6 +43,26 @@
   - @rocket.chat/ui-contexts@19.0.0-rc.0
   - @rocket.chat/core-typings@7.7.0-rc.0
   </details>
+
+## 18.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.6.2
+  - @rocket.chat/ui-contexts@18.0.2
+  - @rocket.chat/ui-client@18.0.2
+  </details>
+
+## 18.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.6.1
+- @rocket.chat/ui-contexts@18.0.1
+- @rocket.chat/ui-client@18.0.1
+</details>
 
 ## 18.0.0
 

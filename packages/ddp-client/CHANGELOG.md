@@ -1,28 +1,23 @@
 # @rocket.chat/ddp-client
 
-## 0.3.22-rc.3
+## 0.3.24-rc.3
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.3
   - @rocket.chat/rest-typings@7.7.0-rc.3
   - @rocket.chat/api-client@0.2.22-rc.3
   </details>
 
-## 0.3.22-rc.2
+## 0.3.24-rc.2
 
-### Patch Changes
+- @rocket.chat/core-typings@7.7.0-rc.2
+- @rocket.chat/rest-typings@7.7.0-rc.2
+- @rocket.chat/api-client@0.2.22-rc.2
+</details>
 
-- <details><summary>Updated dependencies []:</summary>
-
-  - @rocket.chat/core-typings@7.7.0-rc.2
-  - @rocket.chat/rest-typings@7.7.0-rc.2
-  - @rocket.chat/api-client@0.2.22-rc.2
-  </details>
-
-## 0.3.22-rc.1
+## 0.3.24-rc.1
 
 ### Patch Changes
 
@@ -33,7 +28,7 @@
   - @rocket.chat/api-client@0.2.22-rc.1
   </details>
 
-## 0.3.22-rc.0
+## 0.3.24-rc.0
 
 ### Patch Changes
 
@@ -43,6 +38,24 @@
   - @rocket.chat/api-client@0.2.22-rc.0
   - @rocket.chat/core-typings@7.7.0-rc.0
   </details>
+
+## 0.3.23
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.6.2
+  - @rocket.chat/rest-typings@7.6.2
+  - @rocket.chat/api-client@0.2.23
+  </details>
+
+## 0.3.22
+
+- @rocket.chat/core-typings@7.6.1
+- @rocket.chat/rest-typings@7.6.1
+- @rocket.chat/api-client@0.2.22
+
+   </details>
 
 ## 0.3.21
 

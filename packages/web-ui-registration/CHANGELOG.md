@@ -14,7 +14,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@19.0.0-rc.2
   </details>
 
@@ -37,6 +36,23 @@
 
   - @rocket.chat/ui-contexts@19.0.0-rc.0
   </details>
+
+## 18.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.2
+  </details>
+
+## 18.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@18.0.1
+</details>
 
 ## 18.0.0
 

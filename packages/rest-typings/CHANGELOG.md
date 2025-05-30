@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.3
   </details>
 
@@ -42,6 +41,22 @@
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/core-typings@7.7.0-rc.0
+    </details>
+
+## 7.6.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.6.2
+  </details>
+
+## 7.6.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.6.1
   </details>
 
 ## 7.6.0
