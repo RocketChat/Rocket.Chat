@@ -13,7 +13,9 @@ const useRouteTitleFocus = () => {
 			return;
 		}
 
-		node.focus();
+		if (document.activeElement?.role !== 'menu') {
+			node.focus();
+		}
 	}, []);
 };
 

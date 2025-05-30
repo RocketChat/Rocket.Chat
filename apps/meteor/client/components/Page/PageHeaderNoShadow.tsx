@@ -18,7 +18,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 
 	const { isMobile } = useLayout();
 
-	useDocumentTitle(typeof title === 'string' ? title : undefined, false);
+	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
 		<Box is='header' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
