@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
+import { useCallLoginMethod } from './hooks/useCallLoginMethod';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { loginServices } from '../../lib/loginServices';
 
@@ -17,6 +18,7 @@ type AuthenticationProviderProps = {
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
+	const callLoginMethod = useCallLoginMethod();
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -71,13 +73,35 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						});
 					});
 			},
+			loginWithIframe: (token: string, callback) =>
+				new Promise<void>((resolve, reject) => {
+					callLoginMethod({ iframe: true, token }, (error) => {
+						if (error) {
+							console.error(error);
+							callback?.(error);
+							return reject(error);
+						}
+						resolve();
+					});
+				}),
+			loginWithTokenRoute: (token: string, callback) =>
+				new Promise<void>((resolve, reject) => {
+					callLoginMethod({ token }, (error) => {
+						if (error) {
+							console.error(error);
+							callback?.(error);
+							return reject(error);
+						}
+						resolve();
+					});
+				}),
 
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
 			},
 		}),
-		[loginMethod],
+		[callLoginMethod, loginMethod],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;
