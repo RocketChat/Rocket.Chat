@@ -1,6 +1,6 @@
 # @rocket.chat/meteor
 
-## 7.7.1-rc.5
+## 7.7.0-rc.5
 
 ### Patch Changes
 
@@ -8,8 +8,8 @@
 
 - <details><summary>Updated dependencies []:</summary>
 
-  - @rocket.chat/core-typings@7.7.1-rc.5
-  - @rocket.chat/rest-typings@7.7.1-rc.5
+  - @rocket.chat/core-typings@7.7.0-rc.5
+  - @rocket.chat/rest-typings@7.7.0-rc.5
   - @rocket.chat/license@1.0.15-rc.5
   - @rocket.chat/omnichannel-services@0.3.21-rc.5
   - @rocket.chat/pdf-worker@0.3.3-rc.5

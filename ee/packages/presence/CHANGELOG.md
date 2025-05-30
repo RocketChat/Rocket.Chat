@@ -6,7 +6,7 @@
 
 - <details><summary>Updated dependencies []:</summary>
 
-  - @rocket.chat/core-typings@7.7.1-rc.5
+  - @rocket.chat/core-typings@7.7.0-rc.5
   - @rocket.chat/core-services@0.9.3-rc.5
   - @rocket.chat/models@1.5.3-rc.5
   </details>
