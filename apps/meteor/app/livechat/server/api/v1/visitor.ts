@@ -71,6 +71,10 @@ API.v1.addRoute(
 
 			const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
 			const validCustomFields = customFields.filter((cf) => matchingCustomFields.find((mcf) => cf.key === mcf._id));
+			if (!validCustomFields.length) {
+				return API.v1.success({ visitor });
+			}
+
 			const visitorCustomFieldsToUpdate = validCustomFields.reduce(
 				(prev, curr) => {
 					if (curr.overwrite) {
