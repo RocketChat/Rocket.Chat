@@ -7,4 +7,4 @@ Deprecates the use of MongoDB oplog or Change Streams to receive real time data 
 
 The previous behavior can still be enabled using the environment flag `DISABLE_DB_WATCHERS=false`.
 
-⚠️ In future major versions, this flag will be completely removed, and the `@rocket.chat/stream-hub-service` package and the `stream-hub-service` Docker image will no longer be published.
+⚠️ In future major versions, this flag will be completely removed, and the `@rocket.chat/stream-hub-service` package and the `stream-hub-service` At that time the Docker image will no longer be published.
