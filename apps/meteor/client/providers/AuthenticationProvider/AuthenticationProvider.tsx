@@ -1,6 +1,7 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
@@ -95,6 +96,16 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
+			unstoreLoginToken: (callback) => {
+				const { _unstoreLoginToken } = Accounts;
+				Accounts._unstoreLoginToken = function (...args) {
+					callback();
+					_unstoreLoginToken.apply(Accounts, args);
+				};
+				return () => {
+					Accounts._unstoreLoginToken = _unstoreLoginToken;
+				};
+			},
 
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),

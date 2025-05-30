@@ -1,5 +1,4 @@
-import { useSetting, useLoginWithIframe } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
+import { useSetting, useLoginWithIframe, useUnstoreLoginToken } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useIframeLogin = (): string | undefined => {
@@ -8,6 +7,7 @@ export const useIframeLogin = (): string | undefined => {
 	const apiUrl = useSetting('Accounts_Iframe_api_url', '');
 	const apiMethod = useSetting('Accounts_Iframe_api_method', '');
 	const iframeLogin = useLoginWithIframe();
+	const unstoreLoginToken = useUnstoreLoginToken();
 
 	const [reactiveIframeUrl, setReactiveIframeUrl] = useState<string | undefined>(undefined);
 
@@ -136,12 +136,9 @@ export const useIframeLogin = (): string | undefined => {
 	}, [loginWithToken, tryLogin]);
 
 	useEffect(() => {
-		const { _unstoreLoginToken } = Accounts;
-		Accounts._unstoreLoginToken = function (...args) {
-			tryLogin();
-			_unstoreLoginToken.apply(Accounts, args);
-		};
-	}, [tryLogin]);
+		const cleanup = unstoreLoginToken(tryLogin);
+		return () => cleanup();
+	}, [tryLogin, unstoreLoginToken]);
 
 	return reactiveIframeUrl;
 };
