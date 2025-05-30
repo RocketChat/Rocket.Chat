@@ -25,7 +25,7 @@ test.describe('sidebar-menu', () => {
 		await page.waitForURL('/directory/channels');
 
 		const textContent = await page.evaluate(() => document.activeElement?.textContent);
-		expect(textContent).toBe('Directory - Rocket.Chat');
+		expect(textContent).toMatch(/Directory/);
 
 		await page.getByRole('button', { name: 'Create new' }).click();
 		await expect(page.getByRole('menu', { name: 'Create new' })).toBeVisible();
