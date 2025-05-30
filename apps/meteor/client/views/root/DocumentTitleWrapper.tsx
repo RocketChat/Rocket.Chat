@@ -13,7 +13,10 @@ const useRouteTitleFocus = () => {
 			return;
 		}
 
-		if (document.activeElement?.role !== 'menu') {
+		// If the parent element has aria-hidden set to true, it means the element is not visible to screen readers.
+		// This is a common practice to hide elements that are not currently in use or are not relevant to the user.
+		// For example, a modal or popover might be open, and the main content is hidden to keep the user's focus on the modal.
+		if (node.parentElement?.ariaHidden !== 'true') {
 			node.focus();
 		}
 	}, []);
