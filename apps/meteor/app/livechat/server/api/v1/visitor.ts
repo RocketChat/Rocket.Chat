@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { updateContactsCustomFields, validateRequiredCustomFields } from '../../lib/custom-fields';
+import { validateRequiredCustomFields } from '../../lib/custom-fields';
 import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
 import { updateRoomsInfoFromVisitorUpdate } from '../../lib/rooms';
@@ -71,45 +71,56 @@ API.v1.addRoute(
 
 			const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
 			const validCustomFields = customFields.filter((cf) => matchingCustomFields.find((mcf) => cf.key === mcf._id));
-			const visitorCustomFieldsToUpdate = validCustomFields
-				.map((cf) => ({
-					key: cf.key,
-					value: cf.value,
-					overwrite: cf.overwrite,
-				}))
-				.reduce(
-					(prev, curr) => {
-						if (curr.overwrite) {
-							prev[`livechatData.${curr.key}`] = curr.value;
-							return prev;
-						}
-
-						if (!visitor?.livechatData?.[curr.key]) {
-							prev[`livechatData.${curr.key}`] = curr.value;
-						}
-
+			const visitorCustomFieldsToUpdate = validCustomFields.reduce(
+				(prev, curr) => {
+					if (curr.overwrite) {
+						prev[`livechatData.${curr.key}`] = curr.value;
 						return prev;
-					},
-					{} as Record<string, string>,
-				);
+					}
+
+					if (!visitor?.livechatData?.[curr.key]) {
+						prev[`livechatData.${curr.key}`] = curr.value;
+					}
+
+					return prev;
+				},
+				{} as Record<string, string>,
+			);
 
 			if (Object.keys(visitorCustomFieldsToUpdate).length) {
 				await VisitorsRaw.updateAllLivechatDataByToken(visitor.token, visitorCustomFieldsToUpdate);
 			}
 
-			await Promise.all(
-				validCustomFields.map(async (customField) => {
-					const { key, value, overwrite } = customField;
+			const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+			if (contacts.length) {
+				await Promise.all(
+					contacts.map((contact) => {
+						const contactCustomFieldsToUpdate = validCustomFields.reduce(
+							(prev, curr) => {
+								if (curr.overwrite || !contact?.customFields?.[curr.key]) {
+									prev.customFields ??= {};
+									prev.customFields[curr.key] = curr.value;
+									return prev;
+								}
+								prev.conflictingFields ??= [];
+								prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
+								return prev;
+							},
+							{} as {
+								customFields?: Record<string, string>;
+								conflictingFields?: Array<{ field: `customFields.${string}`; value: string }>;
+							},
+						);
 
-					// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
-					const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-					if (contacts.length > 0) {
-						await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
-					}
+						if (Object.keys(contactCustomFieldsToUpdate).length) {
+							// TODO: model method
+							return LivechatContacts.updateById(contact._id, { $set: contactCustomFieldsToUpdate });
+						}
 
-					return key;
-				}),
-			);
+						return null;
+					}),
+				);
+			}
 
 			if (validCustomFields.length !== keys.length) {
 				livechatLogger.warn({
