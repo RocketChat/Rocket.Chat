@@ -136,13 +136,15 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			throw new Error('At least one of customFields or conflictingFields must be provided');
 		}
 
-		return this.findOneAndUpdate(
+		const updatedResult = await this.findOneAndUpdate(
 			{ _id: contactId },
 			{
 				$set: { ...dataToUpdate },
 			},
 			{ returnDocument: 'after', ...options },
 		);
+
+		return updatedResult as ILivechatContact;
 	}
 
 	findPaginatedContacts(
