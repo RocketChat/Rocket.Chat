@@ -38,6 +38,8 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSubscriptionChanged,
+	notifyOnManyLivechatInquiriesChangedByRooms,
+	notifyOnManySubscriptionChangedByRoomIds,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
@@ -213,6 +215,10 @@ export async function updateRoomsInfoFromVisitorUpdate(roomIds: string[], guestD
 		return;
 	}
 
+	if (!roomIds.length) {
+		return;
+	}
+
 	const { name } = guestData;
 
 	const responses = await Promise.all([
@@ -222,11 +228,11 @@ export async function updateRoomsInfoFromVisitorUpdate(roomIds: string[], guestD
 	]);
 
 	if (responses[1]?.modifiedCount) {
-		roomIds.map((roomId) => void notifyOnLivechatInquiryChangedByRoom(roomId, 'updated', { name }));
+		void notifyOnManyLivechatInquiriesChangedByRooms(roomIds, 'updated', { name });
 	}
 
 	if (responses[2]?.modifiedCount) {
-		roomIds.map((roomId) => void notifyOnSubscriptionChangedByRoomId(roomId));
+		void notifyOnManySubscriptionChangedByRoomIds(roomIds);
 	}
 }
 

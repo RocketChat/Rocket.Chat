@@ -294,6 +294,18 @@ export const notifyOnLivechatInquiryChangedByRoom = withDbWatcherCheck(
 	},
 );
 
+export const notifyOnManyLivechatInquiriesChangedByRooms = withDbWatcherCheck(
+	async (
+		rids: ILivechatInquiryRecord['rid'][],
+		clientAction: ClientAction = 'updated',
+		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+	): Promise<void> => {
+		for await (const inquiry of LivechatInquiry.find({ rid: { $in: rids } }, {})) {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		}
+	},
+);
+
 export const notifyOnLivechatInquiryChangedByToken = withDbWatcherCheck(
 	async (
 		token: ILivechatInquiryRecord['v']['token'],
@@ -549,6 +561,16 @@ export const notifyOnSubscriptionChangedByUserPreferences = withDbWatcherCheck(
 export const notifyOnSubscriptionChangedByRoomId = withDbWatcherCheck(
 	async (rid: ISubscription['rid'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
 		const cursor = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnManySubscriptionChangedByRoomIds = withDbWatcherCheck(
+	async (rids: ISubscription['rid'][], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const cursor = Subscriptions.findByRoomIds(rids, { projection: subscriptionFields });
 
 		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
