@@ -18,6 +18,7 @@ type Observer<T extends { _id: string }> = {
 	addedBefore?: <TFields>(id: T['_id'], fields: TFields, before: T['_id'] | null) => void;
 };
 
+/** @deprecated internal use only */
 export class DiffSequence {
 	static diffQueryChanges<T extends { _id: string }, TProjection extends T = T>(
 		ordered: true,

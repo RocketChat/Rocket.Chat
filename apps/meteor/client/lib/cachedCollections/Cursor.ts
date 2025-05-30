@@ -6,76 +6,35 @@ import { IdMap } from './IdMap';
 import type { LocalCollection } from './LocalCollection';
 import { Matcher } from './Matcher';
 import { MinimongoError } from './MinimongoError';
-import { ObserveHandle } from './ObserveHandle';
+import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
 import type { Query, OrderedQuery, IncompleteQuery, UnorderedQuery } from './Query';
 import { Sorter } from './Sorter';
 import { _isPlainObject, clone, hasOwn, isEqual, isPromiseLike } from './common';
 
-export type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
+type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
 	? ReturnType<TTransform>
 	: TTransform extends null
 		? T
 		: TProjection;
 
-interface ICursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
-	sorter: Sorter<T> | null;
-	matcher: Matcher<T>;
-	skip: number;
-	limit: number | undefined;
-	fields: FieldSpecifier | undefined;
-	reactive: boolean;
-	count(): number;
-	fetch(): DispatchTransform<TOptions['transform'], T, TProjection>[];
-	[Symbol.iterator](): Iterator<DispatchTransform<TOptions['transform'], T, TProjection>>;
-	[Symbol.asyncIterator](): AsyncIterator<DispatchTransform<TOptions['transform'], T, TProjection>>;
-	forEach<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void>(
-		callback: TIterationCallback,
-		thisArg?: ThisParameterType<TIterationCallback>,
-	): void;
-	getTransform(): TOptions['transform'];
-	map<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => unknown>(
-		callback: TIterationCallback,
-		thisArg?: ThisParameterType<TIterationCallback>,
-	): ReturnType<TIterationCallback>[];
-	observe(options: ObserveCallbacks<TProjection>): ObserveHandle;
-	observeAsync(options: ObserveCallbacks<TProjection>): Promise<ObserveHandle>;
-	observeChanges(options: ObserveChangesCallbacks<TProjection>): ObserveHandle;
-	observeChangesAsync(options: ObserveChangesCallbacks<TProjection>): Promise<ObserveHandle>;
-	countAsync(): Promise<number>;
-	fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T, TProjection>[]>;
-	forEachAsync<
-		TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void,
-	>(
-		callback: TIterationCallback,
-		thisArg: ThisParameterType<TIterationCallback>,
-	): Promise<void>;
-	mapAsync<
-		TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => unknown,
-	>(
-		callback: TIterationCallback,
-		thisArg: ThisParameterType<TIterationCallback>,
-	): Promise<ReturnType<TIterationCallback>[]>;
-}
+/** @deprecated internal use only */
+export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
+	private readonly matcher: Matcher<T>;
 
-export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T>
-	implements ICursor<T, TOptions, TProjection>
-{
-	matcher: Matcher<T>;
+	private readonly sorter: Sorter<T> | null;
 
-	sorter: Sorter<T> | null = null;
+	readonly skip: number;
 
-	skip: number;
+	readonly limit: number | undefined;
 
-	limit: number | undefined;
+	private readonly fields: FieldSpecifier | undefined;
 
-	fields: FieldSpecifier | undefined;
+	private readonly _projectionFn: (doc: T | Omit<T, '_id'>) => TProjection;
 
-	protected _projectionFn: (doc: T | Omit<T, '_id'>) => TProjection;
+	private readonly _transform: TOptions['transform'];
 
-	protected _transform: TOptions['transform'];
-
-	reactive: boolean;
+	private readonly reactive: boolean;
 
 	constructor(
 		protected collection: LocalCollection<T>,
@@ -380,7 +339,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 	}
 
 	observeAsync(options: ObserveCallbacks<TProjection>) {
-		return new Promise<ObserveHandle>((resolve) => resolve(this.observe(options)));
+		return Promise.resolve(this.observe(options));
 	}
 
 	observeChanges(options: ObserveChangesCallbacks<TProjection>) {
@@ -466,46 +425,29 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 				(query as OrderedQuery<T, TOptions, TProjection>).added(doc._id, this._projectionFn(fields));
 			};
+
 			if ((query as OrderedQuery<T, TOptions, TProjection>).results.length) {
 				for (const doc of (query as OrderedQuery<T, TOptions, TProjection>).results) {
 					handler(doc);
 				}
 			}
+
 			if ((query as UnorderedQuery<T, TOptions, TProjection>).results.size()) {
 				(query as UnorderedQuery<T, TOptions, TProjection>).results.forEach(handler);
 			}
 		}
 
-		const handle = Object.assign(new ObserveHandle(), {
-			collection: this.collection,
-			stop: () => {
-				if (this.reactive) {
-					this.collection.queries.delete(query as Query<T, TOptions, TProjection>);
-				}
-			},
-			isReady: false,
-			isReadyPromise: null as unknown as Promise<void>,
-		});
-
-		if (this.reactive && Tracker.active) {
-			Tracker.onInvalidate(() => {
-				handle.stop();
-			});
+		if (this.reactive) {
+			return new ReactiveObserveHandle(query as Query<T>, this.collection);
 		}
 
-		this.collection.observeQueue.drain();
-
-		handle.isReady = true;
-		handle.isReadyPromise = Promise.resolve();
-
-		return handle;
+		return new ObserveHandle(this.collection);
 	}
 
-	observeChangesAsync(options: ObserveChangesCallbacks<TProjection>) {
-		return new Promise<ObserveHandle>((resolve) => {
-			const handle = this.observeChanges(options);
-			handle.isReadyPromise.then(() => resolve(handle));
-		});
+	async observeChangesAsync(options: ObserveChangesCallbacks<TProjection>) {
+		const handle = this.observeChanges(options);
+		await handle.isReadyPromise;
+		return handle;
 	}
 
 	private _depend(
@@ -702,7 +644,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 						const oldDoc = this.docs.get(id)!;
 						const doc = clone(oldDoc);
 
-						DiffSequence.applyChanges(doc!, fields);
+						DiffSequence.applyChanges(doc, fields);
 
 						observeCallbacks.changed(transform(doc), transform(clone(oldDoc)));
 					}
