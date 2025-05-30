@@ -1,5 +1,42 @@
 # @rocket.chat/meteor
 
+## 7.7.1-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36097](https://github.com/RocketChat/Rocket.Chat/pull/36097)) Fixes `contact.conflictingFields` being updated with nullish values.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1-rc.4
+  - @rocket.chat/rest-typings@7.7.1-rc.4
+  - @rocket.chat/license@1.0.15-rc.4
+  - @rocket.chat/omnichannel-services@0.3.21-rc.4
+  - @rocket.chat/pdf-worker@0.3.3-rc.4
+  - @rocket.chat/presence@0.2.24-rc.4
+  - @rocket.chat/api-client@0.2.24-rc.4
+  - @rocket.chat/apps@0.5.3-rc.4
+  - @rocket.chat/core-services@0.9.3-rc.4
+  - @rocket.chat/cron@0.1.24-rc.4
+  - @rocket.chat/freeswitch@1.2.11-rc.4
+  - @rocket.chat/fuselage-ui-kit@19.0.0-rc.4
+  - @rocket.chat/gazzodown@19.0.0-rc.4
+  - @rocket.chat/model-typings@1.6.3-rc.4
+  - @rocket.chat/ui-contexts@19.0.0-rc.4
+  - @rocket.chat/models@1.5.3-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.3-rc.4
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.0-rc.4
+  - @rocket.chat/ui-client@19.0.0-rc.4
+  - @rocket.chat/ui-video-conf@19.0.0-rc.4
+  - @rocket.chat/ui-voip@9.0.0-rc.4
+  - @rocket.chat/web-ui-registration@19.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.24-rc.4
+  </details>
+
 ## 7.7.0-rc.3
 
 ### Patch Changes
