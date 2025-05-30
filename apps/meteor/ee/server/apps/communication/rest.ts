@@ -1088,7 +1088,7 @@ export class AppsRestApi {
 					return {
 						statusCode: 200,
 						headers: {
-							'Content-Length': buf.length,
+							'Content-Length': String(buf.length),
 							'Content-Type': imageData[0].replace('data:', ''),
 						},
 						body: buf,

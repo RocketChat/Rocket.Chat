@@ -206,7 +206,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 				readonly token?: string;
 			});
 
-export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> = (
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
@@ -214,7 +214,10 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| {
 			statusCode: number;
 			body: unknown;
-	  };
+	  }
+) & {
+	headers?: Record<string, string>;
+};
 
 export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
