@@ -27,8 +27,12 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 		return this.page.locator('[name="name"]');
 	}
 
+	get fieldDepartment(): Locator {
+		return this.page.getByLabel('Departments', { exact: true });
+	}
+
 	get inputDepartments(): Locator {
-		return this.page.locator('input[placeholder="Select an option"]');
+		return this.fieldDepartment.getByRole('textbox');
 	}
 
 	findRowByName(name: string): Locator {
@@ -51,14 +55,22 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 		return this.confirmDeleteModal.locator('role=button[name="Delete"]');
 	}
 
-	private selectOption(name: string): Locator {
-		return this.page.locator(`[role=option][value="${name}"]`);
+	getCheckboxByLabel(name: string): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
 	}
 
-	async selectDepartment({ name, _id }: { name: string; _id: string }) {
+	findOption(name: string): Locator {
+		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
+	}
+
+	findDepartmentsChipOption(name: string) {
+		return this.fieldDepartment.getByRole('option', { name, exact: true });
+	}
+
+	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(_id).click();
+		await this.findOption(name).click();
 	}
 
 	async search(text: string) {

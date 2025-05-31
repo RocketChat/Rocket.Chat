@@ -175,6 +175,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.findOne(query);
 	}
 
+	async findContactByEmailAndContactManager(email: string): Promise<Pick<ILivechatContact, 'contactManager'> | null> {
+		return this.findOne(
+			{ emails: { $elemMatch: { address: email } }, contactManager: { $exists: true } },
+			{ projection: { contactManager: 1 } },
+		);
+	}
+
 	private makeQueryForVisitor(
 		visitor: ILivechatContactVisitorAssociation,
 		extraFilters?: Filter<Required<ILivechatContact>['channels'][number]>,
@@ -366,5 +373,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			],
 			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 		);
+	}
+
+	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult> {
+		return this.updateOne({ 'channels.visitor.visitorId': visitorId }, update, options);
 	}
 }

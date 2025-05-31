@@ -31,17 +31,19 @@ import {
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { getOnlineAgents } from './getOnlineAgents';
+import { afterRoomQueued, beforeNewRoom } from './hooks';
+import { checkOnlineAgents, getOnlineAgents } from './service-status';
+import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -84,7 +86,7 @@ export const prepareLivechatRoom = async (
 		}),
 	);
 
-	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 	const source = extraRoomInfo.source || roomInfo.source;
@@ -139,7 +141,6 @@ export const prepareLivechatRoom = async (
 			alias: 'unknown',
 		},
 		queuedAt: newRoomAt,
-		livechatData: undefined,
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,
@@ -148,7 +149,7 @@ export const prepareLivechatRoom = async (
 
 export const createLivechatRoom = async (room: InsertionModel<IOmnichannelRoom>, session: ClientSession) => {
 	const result = await LivechatRooms.findOneAndUpdate(
-		room,
+		removeEmpty(room),
 		{
 			$set: {},
 		},
@@ -212,7 +213,7 @@ export const createLivechatInquiry = async ({
 	});
 
 	const result = await LivechatInquiry.findOneAndUpdate(
-		{
+		removeEmpty({
 			rid,
 			name,
 			ts,
@@ -231,7 +232,7 @@ export const createLivechatInquiry = async ({
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
 			...extraInquiryInfo,
-		},
+		}),
 		{
 			$set: {
 				_id: new ObjectId().toHexString(),
@@ -412,7 +413,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	setImmediate(() => callbacks.run('livechat.chatQueued', room));
+	void afterRoomQueued(room);
 
 	if (RoutingManager.getConfig()?.autoAssignAgent) {
 		return;
@@ -516,7 +517,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		return false;
 	}
 
-	await LivechatTyped.saveTransferHistory(room, transferData);
+	await saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -629,10 +630,10 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	if (
 		!RoutingManager.getConfig()?.autoAssignAgent ||
 		!(await Omnichannel.isWithinMACLimit(room)) ||
-		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+		(department?.allowReceiveForwardOffline && !(await checkOnlineAgents(departmentId)))
 	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
-		await LivechatTyped.saveTransferHistory(room, transferData);
+		await saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
@@ -692,7 +693,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		);
 	}
 
-	await LivechatTyped.saveTransferHistory(room, transferData);
+	await saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
@@ -749,7 +750,7 @@ const parseFromIntOrStr = (value: string | number) => {
 export const updateDepartmentAgents = async (
 	departmentId: string,
 	agents: {
-		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
+		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId'> & { count?: number; order?: number })[];
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 	departmentEnabled: boolean,

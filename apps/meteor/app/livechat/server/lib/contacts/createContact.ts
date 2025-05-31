@@ -40,12 +40,12 @@ export async function createContact({
 
 	return LivechatContacts.insertContact({
 		name,
-		emails: emails?.map((address) => ({ address })),
-		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
-		contactManager,
-		channels,
-		customFields,
-		lastChat,
+		...(emails && { emails: emails?.map((address) => ({ address })) }),
+		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
+		...(contactManager && { contactManager }),
+		...(channels && { channels }),
+		...(customFields && { customFields }),
+		...(lastChat && { lastChat }),
 		unknown,
 		...(importIds?.length && { importIds }),
 	});

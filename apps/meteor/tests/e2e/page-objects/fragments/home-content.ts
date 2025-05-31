@@ -47,6 +47,10 @@ export class HomeContent {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
+	get lastUserMessageAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message-attachment"]').last();
+	}
+
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
@@ -81,11 +85,25 @@ export class HomeContent {
 		await this.joinRoom();
 	}
 
-	async sendMessage(text: string): Promise<void> {
+	async sendMessage(text: string, enforce = true): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
+		const responsePromise = this.page.waitForResponse(
+			(response) =>
+				/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+		);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+
+		if (enforce) {
+			const response = await (await responsePromise).json();
+
+			const mid = JSON.parse(response.message).result._id;
+			const messageLocator = this.getMessageById(mid);
+
+			await expect(messageLocator).toBeVisible();
+			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -114,6 +132,18 @@ export class HomeContent {
 
 	get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
+	}
+
+	get createDiscussionModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Create discussion' });
+	}
+
+	get inputDiscussionName(): Locator {
+		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
+	}
+
+	get btnCreateDiscussionModal(): Locator {
+		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
 	}
 
 	get modalFilePreview(): Locator {
@@ -171,7 +201,7 @@ export class HomeContent {
 	}
 
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('[data-qa-id="edit-message"]');
+		return this.page.locator('role=menu[name="More"] >> role=menuitem[name="Edit"]');
 	}
 
 	get btnOptionDeleteMessage(): Locator {
@@ -260,6 +290,10 @@ export class HomeContent {
 
 	get dialogEmojiPicker(): Locator {
 		return this.page.getByRole('dialog', { name: 'Emoji picker' });
+	}
+
+	get scrollerEmojiPicker(): Locator {
+		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
 	}
 
 	getEmojiPickerTabByName(name: string) {
@@ -359,28 +393,24 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
-	get btnCall(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
+	get btnVideoCall(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
-	get menuItemVideoCall(): Locator {
-		return this.page.locator('role=menuitem[name="Video call"]');
+	getVideoConfPopup(name?: string): Locator {
+		return this.page.getByRole('dialog', { name });
 	}
 
 	get btnStartVideoCall(): Locator {
-		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+		return this.getVideoConfPopup().getByRole('button', { name: 'Start call' });
 	}
 
-	getIncomingCallByName(name: string): Locator {
-		return this.page.getByRole('dialog', { name });
+	get btnVideoConfMic(): Locator {
+		return this.getVideoConfPopup().getByRole('button', { name: 'Mic' });
 	}
 
 	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
-	}
-
-	videoConfRingCallText(text: string): Locator {
-		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
 	}
 
 	get videoConfMessageBlock(): Locator {
@@ -424,6 +454,14 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
+	getOTRMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="OTR message"]', { hasText: text });
+	}
+
+	getMessageById(id: string): Locator {
+		return this.page.locator(`[data-qa-type="message"][id="${id}"]`);
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
@@ -446,5 +484,21 @@ export class HomeContent {
 
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
+	}
+
+	get btnJoinChannel() {
+		return this.page.getByRole('button', { name: 'Join channel' });
+	}
+
+	get contactUnknownCallout() {
+		return this.page.getByRole('status', { name: 'Unknown contact. This contact is not on the contact list.' });
+	}
+
+	get btnDismissContactUnknownCallout() {
+		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
+	}
+
+	async expectLastMessageToHaveText(text: string): Promise<void> {
+		await expect(this.lastUserMessageBody).toHaveText(text);
 	}
 }

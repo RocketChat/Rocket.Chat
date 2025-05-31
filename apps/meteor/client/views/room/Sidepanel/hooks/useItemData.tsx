@@ -30,7 +30,7 @@ export const useItemData = (
 			<>
 				{showUnread && (
 					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
-						{unreadCount.total}
+						<span aria-hidden>{unreadCount.total}</span>
 					</SidebarItemBadge>
 				)}
 			</>

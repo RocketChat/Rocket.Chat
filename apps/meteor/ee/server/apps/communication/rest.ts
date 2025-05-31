@@ -2,20 +2,20 @@ import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/A
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
+import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import type express from 'express';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 import { ZodError } from 'zod';
 
-import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { appsCountHandler } from './endpoints/appsCountHandler';
+import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsHandler } from './endpoints/appLogsHandler';
+import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
@@ -24,11 +24,12 @@ import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
-import { MarketplaceConnectionError, MarketplaceAppsError } from '../marketplace/marketplaceErrors';
+import { MarketplaceConnectionError, MarketplaceAppsError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
@@ -55,14 +56,17 @@ export class AppsRestApi {
 
 	async loadAPI() {
 		this.api = new API.ApiClass({
-			version: 'apps',
-			apiPath: '/api',
+			apiPath: '',
 			useDefaultAuth: true,
 			prettyJson: false,
 			enableCors: false,
+			version: 'apps',
 		});
+
 		await this.addManagementRoutes();
-		(WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(this.api.router.router);
+
+		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
+		API.api.use(this.api.router);
 	}
 
 	addManagementRoutes() {
@@ -90,8 +94,11 @@ export class AppsRestApi {
 			return API.v1.failure();
 		};
 
-		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
-		this.api.addRoute('count', ...appsCountHandler(this));
+		registerActionButtonsHandler(this);
+		registerAppsCountHandler(this);
+
+		registerAppLogsHandler(this);
+		registerAppGeneralLogsHandler(this);
 
 		this.api.addRoute(
 			'incompatibleModal',
@@ -122,7 +129,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -151,7 +158,7 @@ export class AppsRestApi {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
 
-						if (err instanceof MarketplaceAppsError) {
+						if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 							return API.v1.failure({ error: err.message });
 						}
 
@@ -203,7 +210,14 @@ export class AppsRestApi {
 			{
 				async get() {
 					const apps = await manager.get();
-					const formatted = await Promise.all(apps.map(formatAppInstanceForRest));
+					let clusterStatus: AppStatusReport | undefined;
+
+					if (this.queryParams.includeClusterStatus === 'true') {
+						clusterStatus = await fetchAppsStatusFromCluster();
+					}
+
+					const formatted = await Promise.all(apps.map((app) => formatAppInstanceForRest(app, clusterStatus)));
+
 					return API.v1.success({ apps: formatted });
 				},
 			},
@@ -219,7 +233,7 @@ export class AppsRestApi {
 
 					// Gets the Apps from the marketplace
 					if ('marketplace' in this.queryParams && this.queryParams.marketplace) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/marketplace to get the apps list.');
 
 						try {
 							const apps = await fetchMarketplaceApps();
@@ -229,7 +243,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 							}
 
-							if (e instanceof MarketplaceAppsError) {
+							if (e instanceof MarketplaceAppsError || e instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: e.message });
 							}
 
@@ -243,7 +257,7 @@ export class AppsRestApi {
 					}
 
 					if ('categories' in this.queryParams && this.queryParams.categories) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/categories to get the categories list.');
 						try {
 							const categories = await fetchMarketplaceCategories();
 							return API.v1.success(categories);
@@ -253,7 +267,7 @@ export class AppsRestApi {
 								return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 							}
 
-							if (err instanceof MarketplaceAppsError) {
+							if (err instanceof MarketplaceAppsError || err instanceof MarketplaceUnsupportedVersionError) {
 								return API.v1.failure({ error: err.message });
 							}
 
@@ -272,7 +286,7 @@ export class AppsRestApi {
 						this.queryParams.buildExternalUrl &&
 						this.queryParams.appId
 					) {
-						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
+						apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -294,10 +308,10 @@ export class AppsRestApi {
 							}?workspaceId=${workspaceId}&token=${token.token}&seats=${seats}`,
 						});
 					}
-					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
+					apiDeprecationLogger.endpoint(this.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
 					const proxiedApps = await manager.get();
-					const apps = await Promise.all(proxiedApps.map(formatAppInstanceForRest));
+					const apps = await Promise.all(proxiedApps.map((app) => formatAppInstanceForRest(app)));
 
 					return API.v1.success({ apps });
 				},
@@ -407,7 +421,12 @@ export class AppsRestApi {
 						?.get('users')
 						?.convertToApp(await Meteor.userAsync());
 
-					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
+					const aff = await manager.add(buff, {
+						...(marketplaceInfo && { marketplaceInfo }),
+						permissionsGranted,
+						enable: false,
+						user,
+					});
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -817,7 +836,7 @@ export class AppsRestApi {
 					}
 
 					return API.v1.success({
-						app: formatAppInstanceForRest(app),
+						app: await formatAppInstanceForRest(app),
 					});
 				},
 				async post() {
@@ -1073,7 +1092,7 @@ export class AppsRestApi {
 					return {
 						statusCode: 200,
 						headers: {
-							'Content-Length': buf.length,
+							'Content-Length': String(buf.length),
 							'Content-Type': imageData[0].replace('data:', ''),
 						},
 						body: buf,
@@ -1117,34 +1136,6 @@ export class AppsRestApi {
 						const languages = prl.getStorageItem().languageContent || {};
 
 						return API.v1.success({ languages });
-					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
-				},
-			},
-		);
-
-		this.api.addRoute(
-			':id/logs',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
-			{
-				async get() {
-					const prl = manager.getOneById(this.urlParams.id);
-
-					if (prl) {
-						const { offset, count } = await getPaginationItems(this.queryParams);
-						const { sort, fields, query } = await this.parseJsonQuery();
-
-						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
-						const options = {
-							sort: sort || { _updatedAt: -1 },
-							skip: offset,
-							limit: count,
-							fields,
-						};
-
-						const logs = await orchestrator?.getLogStorage()?.find(ourQuery, options);
-
-						return API.v1.success({ logs });
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
@@ -1261,13 +1252,26 @@ export class AppsRestApi {
 			':id/status',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
-					const prl = manager.getOneById(this.urlParams.id);
+				async get() {
+					const app = manager.getOneById(this.urlParams.id);
 
-					if (prl) {
-						return API.v1.success({ status: prl.getStatus() });
+					if (!app) {
+						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
-					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+
+					const response: { status: AppStatus; clusterStatus?: AppStatusReport[string] } = { status: await app.getStatus() };
+
+					try {
+						const clusterStatus = await fetchAppsStatusFromCluster();
+
+						if (clusterStatus?.[app.getID()]) {
+							response.clusterStatus = clusterStatus[app.getID()];
+						}
+					} catch (e) {
+						orchestrator.getRocketChatLogger().warn('App status endpoint: could not fetch status across cluster', e);
+					}
+
+					return API.v1.success(response);
 				},
 				async post() {
 					const { id: appId } = this.urlParams;
