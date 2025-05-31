@@ -30,6 +30,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -194,40 +195,118 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
-		async post() {
-			const { text, attachments } = this.bodyParams;
-			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+		authRequired: true,
+		validateParams: isChatPostMessageProps,
+		body: isChatPostMessageProps,
+		response: {
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					status: { type: 'string' },
+					message: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['message', 'status', 'success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					ts: { type: 'number' },
+					channel: { type: 'string' },
+					message: {
+						// ? Accepts any type for message
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							rid: { type: 'string' },
+							alias: { type: 'string' },
+							msg: { type: 'string' },
+							parseUrls: { type: 'boolean' },
+							groupable: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							ts: {
+								type: 'object',
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							_updatedAt: {
+								type: 'object',
+							},
+						},
+						required: ['msg', '_updatedAt'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['ts', 'channel', 'message', 'success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function () {
+		const { text, attachments } = this.bodyParams;
+		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
-			if (text && text.length > maxAllowedSize) {
-				return API.v1.failure('error-message-size-exceeded');
-			}
+		if (text && text.length > maxAllowedSize) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
 
-			if (attachments && attachments.length > 0) {
-				for (const attachment of attachments) {
-					if (attachment.text && attachment.text.length > maxAllowedSize) {
-						return API.v1.failure('error-message-size-exceeded');
-					}
+		if (attachments && attachments.length > 0) {
+			for (const attachment of attachments) {
+				if (attachment.text && attachment.text.length > maxAllowedSize) {
+					return API.v1.failure('error-message-size-exceeded');
 				}
 			}
+		}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+		const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
-			if (!messageReturn) {
-				return API.v1.failure('unknown-error');
-			}
+		if (!messageReturn) {
+			return API.v1.failure('unknown-error');
+		}
 
-			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
+		const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
 
-			return API.v1.success({
-				ts: Date.now(),
-				channel: messageReturn.channel,
-				message,
-			});
-		},
+		return API.v1.success({
+			ts: Date.now(),
+			channel: messageReturn.channel,
+			message,
+		});
 	},
 );
 
