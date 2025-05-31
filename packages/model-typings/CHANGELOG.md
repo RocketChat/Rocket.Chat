@@ -1,5 +1,16 @@
 # @rocket.chat/model-typings
 
+## 1.6.3
+
+### Patch Changes
+
+- ([#35797](https://github.com/RocketChat/Rocket.Chat/pull/35797)) Fixes the room history pruning behavior when filesOnly is true to ensure only file-type attachments are removed, preserving quotes and non-file attachments.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0
+  </details>
+
 ## 1.6.3-rc.6
 
 ### Patch Changes
