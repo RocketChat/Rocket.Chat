@@ -1,5 +1,6 @@
+import { createComparatorFromSort, type Filter } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
-import type { CountDocumentsOptions, Filter, UpdateFilter } from 'mongodb';
+import type { CountDocumentsOptions, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { Cursor } from './Cursor';
@@ -9,7 +10,6 @@ import type { IdMap } from './IdMap';
 import { Matcher } from './Matcher';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
-import { Sorter } from './Sorter';
 import { SynchronousQueue } from './SynchronousQueue';
 import {
 	hasOwn,
@@ -140,11 +140,11 @@ export class LocalCollection<T extends { _id: string }> {
 		delete fields._id;
 
 		if (query.ordered) {
-			if (!query.sorter) {
+			if (!query.comparator) {
 				query.addedBefore(doc._id, query.projectionFn(fields), null);
 				query.results.push(doc);
 			} else {
-				const i = this._insertInSortedList(query.sorter.getComparator(), query.results, doc);
+				const i = this._insertInSortedList(query.comparator, query.results, doc);
 
 				const next = query.results[i + 1]?._id ?? null;
 
@@ -164,11 +164,11 @@ export class LocalCollection<T extends { _id: string }> {
 		delete fields._id;
 
 		if (query.ordered) {
-			if (!query.sorter) {
+			if (!query.comparator) {
 				await query.addedBefore(doc._id, query.projectionFn(fields), null);
 				query.results.push(doc);
 			} else {
-				const i = this._insertInSortedList(query.sorter.getComparator(), query.results, doc);
+				const i = this._insertInSortedList(query.comparator, query.results, doc);
 
 				const next = query.results[i + 1]?._id ?? null;
 
@@ -1043,13 +1043,13 @@ export class LocalCollection<T extends { _id: string }> {
 			query.changed(doc._id, changedFields);
 		}
 
-		if (!query.sorter) {
+		if (!query.comparator) {
 			return;
 		}
 
 		query.results.splice(oldIdx, 1);
 
-		const newIdx = this._insertInSortedList(query.sorter.getComparator(), query.results, doc);
+		const newIdx = this._insertInSortedList(query.comparator, query.results, doc);
 
 		if (oldIdx !== newIdx) {
 			const next = query.results[newIdx + 1]?._id ?? null;
@@ -1081,13 +1081,13 @@ export class LocalCollection<T extends { _id: string }> {
 			await query.changed(doc._id, changedFields);
 		}
 
-		if (!query.sorter) {
+		if (!query.comparator) {
 			return;
 		}
 
 		query.results.splice(oldIdx, 1);
 
-		const newIdx = this._insertInSortedList(query.sorter.getComparator(), query.results, doc);
+		const newIdx = this._insertInSortedList(query.comparator, query.results, doc);
 
 		if (oldIdx !== newIdx) {
 			const next = query.results[newIdx + 1]?._id ?? null;
@@ -1290,7 +1290,7 @@ const MODIFIERS = {
 				throw new MinimongoError('$sort requires $slice to be present', { field });
 			}
 
-			sortFunction = new Sorter(arg.$sort).getComparator();
+			sortFunction = createComparatorFromSort(arg.$sort);
 
 			for (const element of toPush) {
 				if (_f._type(element) !== 3) {

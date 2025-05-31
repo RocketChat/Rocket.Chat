@@ -1,5 +1,5 @@
+import { createComparatorFromSort, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
 import { Tracker } from 'meteor/tracker';
-import type { Filter, Sort } from 'mongodb';
 
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
@@ -9,7 +9,6 @@ import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
 import type { Query, OrderedQuery, IncompleteQuery, UnorderedQuery } from './Query';
-import { Sorter } from './Sorter';
 import { _isPlainObject, clone, hasOwn, isEqual, isPromiseLike } from './common';
 
 type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
@@ -22,7 +21,7 @@ type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args
 export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
 	private readonly matcher: Matcher<T>;
 
-	private readonly sorter: Sorter<T> | null;
+	private readonly comparator: ((a: T, b: T) => number) | null;
 
 	readonly skip: number;
 
@@ -42,7 +41,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		options?: TOptions,
 	) {
 		this.matcher = new Matcher(selector);
-		this.sorter = options?.sort ? new Sorter(options.sort) : null;
+		this.comparator = options?.sort ? createComparatorFromSort(options.sort) : null;
 		this.skip = options?.skip ?? 0;
 		this.limit = options?.limit;
 		this.fields = options?.projection ?? options?.fields;
@@ -364,7 +363,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					ordered,
 					projectionFn: this._projectionFn,
 					resultsSnapshot: null,
-					sorter: this.sorter,
+					comparator: this.comparator,
 				}
 			: {
 					cursor: this,
@@ -373,7 +372,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 					ordered,
 					projectionFn: this._projectionFn,
 					resultsSnapshot: null,
-					sorter: null,
+					comparator: null,
 				};
 
 		query.results = this._getRawObjects({ ordered });
@@ -500,15 +499,15 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 				continue;
 			}
 
-			if ((!this.limit || !!this.skip || !!this.sorter || (results as T[]).length !== this.limit) === false) break;
+			if ((!this.limit || !!this.skip || !!this.comparator || (results as T[]).length !== this.limit) === false) break;
 		}
 
 		if (!options.ordered) {
 			return results;
 		}
 
-		if (this.sorter) {
-			(results as T[]).sort(this.sorter.getComparator());
+		if (this.comparator) {
+			(results as T[]).sort(this.comparator);
 		}
 
 		if (!applySkipLimit || (!this.limit && !this.skip)) {

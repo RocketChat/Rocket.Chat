@@ -458,7 +458,7 @@ function everythingMatcher(_docOrBranchedValues: any) {
 	return { result: true };
 }
 
-export function expandArraysInBranches<T>(
+function expandArraysInBranches<T>(
 	branches: { value: T | T[]; dontIterate?: boolean; arrayIndices?: (number | 'x')[] }[],
 	skipTheArrays?: boolean,
 ) {
@@ -636,7 +636,7 @@ function makeInequality(cmpValueComparator: any) {
 	};
 }
 
-export function makeLookupFunction<T>(key: string, options: any = {}) {
+function makeLookupFunction<T>(key: string, options: any = {}) {
 	const parts = key.split('.');
 	const firstPart = parts.length ? parts[0] : '';
 	const lookupRest = parts.length > 1 && makeLookupFunction(parts.slice(1).join('.'), options);
