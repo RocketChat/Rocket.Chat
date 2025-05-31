@@ -9,6 +9,14 @@ export class TestLivechatBridge extends LivechatBridge {
         throw new Error('Method not implemented.');
     }
 
+    protected getInquiry(roomId: string, appId: string): Promise<any> {
+        throw new Error('Method not implemented.');
+    }
+
+    protected takeInquiry(agentId: string, inquiryId: string, appId: string): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
     public isOnline(departmentId?: string): boolean {
         throw new Error('Method not implemented');
     }
