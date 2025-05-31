@@ -20,7 +20,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		queryKey: ['custom-sounds', _id],
 
 		queryFn: async () => {
-			const { sounds } = await getSounds({ query: JSON.stringify({ _id }) });
+			const { sounds } = await getSounds({ _id });
 
 			if (sounds.length === 0) {
 				throw new Error(t('No_results_found'));

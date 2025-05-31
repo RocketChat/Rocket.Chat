@@ -65,11 +65,12 @@ API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 		const { sort, query } = await this.parseJsonQuery();
 
-		const { name } = this.queryParams;
+		const { name, _id } = this.queryParams;
 
 		const filter = {
 			...query,
 			...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+			...(_id ? { _id } : {}),
 		};
 
 		const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
