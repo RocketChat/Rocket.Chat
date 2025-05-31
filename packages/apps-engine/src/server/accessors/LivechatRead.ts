@@ -33,6 +33,10 @@ export class LivechatRead implements ILivechatRead {
         return this.livechatBridge.doFindRooms(visitor, departmentId, this.appId);
     }
 
+    public getLivechatRoomById(roomId: string): Promise<ILivechatRoom | undefined> {
+        return this.livechatBridge.doFindRoomById(roomId, this.appId);
+    }
+
     public getLivechatTotalOpenRoomsByAgentId(agentId: string): Promise<number> {
         return this.livechatBridge.doCountOpenRoomsByAgentId(agentId, this.appId);
     }
