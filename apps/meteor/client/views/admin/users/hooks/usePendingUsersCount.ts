@@ -3,6 +3,8 @@ import type { DefaultUserInfo, UsersListStatusParamsGET } from '@rocket.chat/res
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
+const select = (data: { total: number }) => data.total;
+
 const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) => {
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
@@ -12,16 +14,15 @@ const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) 
 		queryFn: async () => {
 			const payload: UsersListStatusParamsGET = {
 				hasLoggedIn: false,
-				status: 'deactivated',
+				status: 'active',
 				type: 'user',
 				count: 1,
 			};
 
 			return getUsers(payload);
 		},
-
 		enabled: !!users,
-		select: (data) => data?.total,
+		select,
 	});
 };
 
