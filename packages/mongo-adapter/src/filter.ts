@@ -1,7 +1,7 @@
 import { compareBSONValues, getBSONType } from './bson';
 import { equals, flatSome, isObject, some } from './comparisons';
 import { createLookupFunction } from './lookups';
-import type { BSONType, FieldExpression, Query } from './types';
+import type { BSONType, FieldExpression, Filter } from './types';
 
 const isArrayOfFields = <T>(values: unknown[]): values is T[] =>
 	values.every((value) => ['number', 'string', 'symbol'].includes(typeof value));
@@ -116,8 +116,8 @@ const $regex = <T>(operand: string | RegExp, options: string): ((value: T) => bo
 	};
 };
 
-const $elemMatch = <T>(operand: Query<T>, _options: undefined): ((value: T) => boolean) => {
-	const matcher = compileDocumentSelector(operand);
+const $elemMatch = <T>(operand: Filter<T>, _options: undefined): ((value: T) => boolean) => {
+	const matcher = compileFilter(operand);
 
 	return (value: T): boolean => {
 		if (!Array.isArray(value)) {
@@ -163,18 +163,18 @@ const valueOperators = {
 	$geoIntersects,
 } as const;
 
-const $and = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $and = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.every((f) => f(doc));
 };
 
-const $or = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $or = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.some((f) => f(doc));
 };
 
-const $nor = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $nor = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.every((f) => !f(doc));
 };
 
@@ -265,8 +265,8 @@ const compileValueSelector = <T>(valueSelector: FieldExpression<T>[keyof FieldEx
 	return (value: T): boolean => flatSome(value, (x) => equals(valueSelector, x as unknown as object));
 };
 
-export const compileDocumentSelector = <T>(docSelector: Query<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
-	const perKeySelectors = Object.entries(docSelector).map(([key, subSelector]) => {
+export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
+	const perKeySelectors = Object.entries(filter).map(([key, subSelector]) => {
 		if (subSelector === undefined) {
 			return (): boolean => true;
 		}

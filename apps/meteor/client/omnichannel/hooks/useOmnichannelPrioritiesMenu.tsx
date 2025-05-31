@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 import { dispatchToastMessage } from '../../lib/toast';
 import { PRIORITY_ICONS } from '../priorities/PriorityIcon';
 
@@ -19,12 +20,8 @@ export const useOmnichannelPrioritiesMenu = (rid: string) => {
 	const handlePriorityChange = useEffectEvent((priorityId: string) => async () => {
 		try {
 			priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
-			queryClient.invalidateQueries({
-				queryKey: ['current-chats'],
-			});
-			queryClient.invalidateQueries({
-				queryKey: ['/v1/rooms.info', rid],
-			});
+			queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
