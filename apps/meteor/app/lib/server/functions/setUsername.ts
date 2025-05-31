@@ -49,7 +49,7 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	}
 
 	if (!(await checkUsernameAvailability(username))) {
-		throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
+		throw new Meteor.Error('error-field-unavailable', `**${_.escape(username)}** is already in use 😞`, {
 			method: 'setUsername',
 			field: username,
 		});
