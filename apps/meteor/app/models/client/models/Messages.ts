@@ -4,12 +4,13 @@ import { Mongo } from 'meteor/mongo';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 class ChatMessageCollection
-	extends Mongo.Collection<IMessage & { ignored?: boolean }>
+extends Mongo.Collection<IMessage & { ignored?: boolean }>
 	implements MinimongoCollection<IMessage & { ignored?: boolean }>
 {
 	constructor() {
 		super(null);
 	}
+
 
 	public declare _collection: MinimongoCollection<IMessage & { ignored?: boolean }>['_collection'];
 
