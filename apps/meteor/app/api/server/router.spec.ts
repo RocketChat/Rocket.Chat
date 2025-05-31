@@ -128,6 +128,41 @@ describe('Router use method', () => {
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
 	});
 
+	it('should fail if the body response is not valid', async () => {
+		process.env.NODE_ENV = 'test';
+		process.env.TEST_MODE = 'true';
+		const ajv = new Ajv();
+		const app = express();
+		const api = new Router('/api');
+		const test = new Router('/test').get(
+			'/',
+			{
+				typed: true,
+				response: {
+					200: ajv.compile({
+						type: 'object',
+						properties: {
+							customProperty: { type: 'string' },
+						},
+						additionalProperties: false,
+					}),
+				},
+			},
+			async () => {
+				return {
+					statusCode: 200,
+					body: { asda: 1 }, // This body is invalid according to the schema
+				};
+			},
+		);
+		app.use(api.use(test).router);
+		const response = await request(app).get('/api/test');
+		expect(response.statusCode).toBe(400);
+		expect(response.body).toHaveProperty(
+			'error',
+			'Invalid response for endpoint GET - http://localhost/api/test. Error: must NOT have additional properties',
+		);
+	});
 	it('middleware should be applied only on the right path', async () => {
 		const ajv = new Ajv();
 		const app = express();
@@ -146,14 +181,16 @@ describe('Router use method', () => {
 						properties: {
 							customProperty: { type: 'string' },
 						},
+						additionalProperties: false,
+						required: ['customProperty'],
 					}),
 				},
 			},
-			async (request) => {
+			async () => {
 				return {
 					statusCode: 200,
 					body: {
-						customProperty: (request as any).customProperty,
+						customProperty: 'customProperty',
 					},
 				};
 			},
@@ -182,18 +219,26 @@ describe('Router use method', () => {
 				outerProperty: { type: 'object', properties: { innerProperty: { type: 'string' } } },
 			},
 			additionalProperties: false,
+			required: ['outerProperty'],
 		});
 
 		const api = new Router('/api').get(
 			'/test',
 			{
 				response: {
-					200: isTestQueryParams,
+					200: ajv.compile({
+						type: 'object',
+						properties: {
+							outerProperty: { type: 'object', properties: { innerProperty: { type: 'string' } } },
+						},
+						additionalProperties: false,
+						required: ['outerProperty'],
+					}),
 				},
 				query: isTestQueryParams,
 			},
-			async function action() {
-				const { outerProperty } = this.queryParams as any;
+			async function action(this: { queryParams: { outerProperty: { innerProperty: string } } }) {
+				const { outerProperty } = this.queryParams;
 				return {
 					statusCode: 200,
 					body: {

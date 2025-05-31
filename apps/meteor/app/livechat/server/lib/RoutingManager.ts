@@ -28,6 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -264,14 +265,7 @@ export const RoutingManager: Routing = {
 		}
 
 		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-		callbacks.runAsync(
-			'livechat.afterTakeInquiry',
-			{
-				inquiry: returnedInquiry,
-				room: roomAfterUpdate,
-			},
-			agent,
-		);
+		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
@@ -301,7 +295,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await beforeDelegateAgent(agent, {
 			department: inquiry?.department,
 		});
 

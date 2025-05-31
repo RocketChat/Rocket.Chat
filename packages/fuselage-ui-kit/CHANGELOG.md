@@ -1,11 +1,61 @@
 # Change Log
 
-## 18.0.2
+## 19.0.0-rc.6
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
 
+  - @rocket.chat/core-typings@7.7.0-rc.6
+  - @rocket.chat/gazzodown@19.0.0-rc.6
+  - @rocket.chat/ui-contexts@19.0.0-rc.6
+  - @rocket.chat/ui-avatar@15.0.0-rc.6
+  - @rocket.chat/ui-video-conf@19.0.0-rc.6
+  </details>
+
+## 19.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.5
+  - @rocket.chat/gazzodown@19.0.0-rc.5
+  - @rocket.chat/ui-contexts@19.0.0-rc.5
+  - @rocket.chat/ui-avatar@15.0.0-rc.5
+  - @rocket.chat/ui-video-conf@19.0.0-rc.5
+  </details>
+
+## 19.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1-rc.4
+  - @rocket.chat/gazzodown@19.0.0-rc.4
+  - @rocket.chat/ui-contexts@19.0.0-rc.4
+  - @rocket.chat/ui-avatar@15.0.0-rc.4
+  - @rocket.chat/ui-video-conf@19.0.0-rc.4
+  </details>
+
+## 19.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.0-rc.3
+  - @rocket.chat/gazzodown@19.0.0-rc.3
+  - @rocket.chat/ui-contexts@19.0.0-rc.3
+  - @rocket.chat/ui-avatar@15.0.0-rc.3
+  - @rocket.chat/ui-video-conf@19.0.0-rc.3
+  </details>
+
+## 18.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
   - @rocket.chat/core-typings@7.6.2
   - @rocket.chat/gazzodown@18.0.2
   - @rocket.chat/ui-contexts@18.0.2

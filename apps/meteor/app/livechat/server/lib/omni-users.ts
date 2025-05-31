@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms, Users } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 
@@ -8,7 +8,6 @@ import { afterAgentAdded, afterRemoveAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { settings } from '../../../settings/server';
 
 export async function notifyAgentStatusChanged(userId: string, status?: UserStatus) {
@@ -21,22 +20,19 @@ export async function notifyAgentStatusChanged(userId: string, status?: UserStat
 		return;
 	}
 
-	await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+	for await (const room of LivechatRooms.findOpenByAgent(userId, { projection: { _id: 1 } })) {
 		void api.broadcast('omnichannel.room', room._id, {
 			type: 'agentStatus',
 			status,
 		});
-	});
+	}
 }
 
 export async function addManager(username: string) {
-	// TODO: remove 'check' function call
-	check(username, String);
-
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 
 	if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
@@ -47,12 +43,10 @@ export async function addManager(username: string) {
 }
 
 export async function addAgent(username: string) {
-	check(username, String);
-
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user');
+		throw new Error('error-invalid-user');
 	}
 
 	if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
@@ -62,14 +56,12 @@ export async function addAgent(username: string) {
 	return false;
 }
 
-export async function removeAgent(username: string) {
-	// TODO: we already validated user exists at this point, remove this check
-	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
+export async function removeAgent(id: IUser['_id']) {
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1, username: 1 } });
 
 	if (!user) {
 		throw new Error('error-invalid-user');
 	}
-
 	const { _id } = user;
 
 	if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
@@ -79,9 +71,8 @@ export async function removeAgent(username: string) {
 	return false;
 }
 
-export async function removeManager(username: string) {
-	// TODO: we already validated user exists at this point, remove this check
-	const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+export async function removeManager(id: IUser['_id']) {
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(id, { projection: { _id: 1 } });
 
 	if (!user) {
 		throw new Error('error-invalid-user');
@@ -91,16 +82,6 @@ export async function removeManager(username: string) {
 }
 
 export async function saveAgentInfo(_id: string, agentData: any, agentDepartments: string[]) {
-	// TODO: check if these 'check' functions are necessary
-	check(_id, String);
-	check(agentData, Object);
-	check(agentDepartments, [String]);
-
-	const user = await Users.findOneById(_id);
-	if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
-		throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent');
-	}
-
 	await Users.setLivechatData(_id, removeEmpty(agentData));
 
 	const currentDepartmentsForAgent = await LivechatDepartmentAgents.findByAgentId(_id).toArray();

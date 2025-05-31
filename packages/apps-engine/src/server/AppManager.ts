@@ -721,8 +721,13 @@ export class AppManager {
             implemented: result.implemented.getValues(),
             ...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
             ...(old.sourcePath && { sourcePath: old.sourcePath }),
-            ...(permissionsGranted && { permissionsGranted }),
         };
+
+        if (!permissionsGranted) {
+            delete descriptor.permissionsGranted;
+        } else {
+            descriptor.permissionsGranted = permissionsGranted;
+        }
 
         try {
             descriptor.sourcePath = await this.appSourceStorage.update(descriptor, appPackage);

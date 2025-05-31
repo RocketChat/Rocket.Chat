@@ -43,8 +43,16 @@ export class AutoTransferChatSchedulerClass {
 		this.logger.info('Service started');
 	}
 
-	private async getSchedulerUser(): Promise<IUser | null> {
-		return Users.findOneById('rocket.cat');
+	private async getSchedulerUser(): Promise<IUser & { userType: 'user' }> {
+		const user = await Users.findOneById('rocket.cat');
+		if (!user) {
+			this.logger.error('Error while transferring room: user not found');
+			throw new Error('error-no-cat');
+		}
+		return {
+			...user,
+			userType: 'user',
+		};
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
@@ -109,14 +117,9 @@ export class AutoTransferChatSchedulerClass {
 
 		const transferredBy = await this.getSchedulerUser();
 
-		if (!transferredBy) {
-			this.logger.error(`Error while transferring room ${room._id}: user not found`);
-			return;
-		}
-
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy: { ...transferredBy, userType: 'user' },
+			transferredBy,
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,
