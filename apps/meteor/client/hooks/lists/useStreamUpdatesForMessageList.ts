@@ -5,18 +5,18 @@ import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import type { MessageList } from '../../lib/lists/MessageList';
+import { modifyMessageOnFilesDelete } from '../../lib/utils/modifyMessageOnFilesDelete';
 
-type NotifyRoomRidDeleteMessageBulkEvent = {
+type NotifyRoomRidDeleteBulkEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
 	ignoreDiscussion: boolean;
 	ts: FieldExpression<Date>;
 	users: string[];
 	ids?: string[]; // message ids have priority over ts
-	showDeletedStatus?: boolean;
 };
 
-const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
+const createDeleteCriteria = (params: NotifyRoomRidDeleteBulkEvent): ((message: IMessage) => boolean) => {
 	const query: Query<IMessage> = {};
 
 	if (params.ids) {
@@ -59,6 +59,13 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
 			const matchDeleteCriteria = createDeleteCriteria(params);
+			if (params.filesOnly) {
+				const items = messageList.items.filter(matchDeleteCriteria).map((message) => {
+					return modifyMessageOnFilesDelete(message, params.replaceFileAttachmentsWith);
+				});
+
+				return messageList.batchHandle(() => Promise.resolve({ items }));
+			}
 			messageList.prune(matchDeleteCriteria);
 		});
 
