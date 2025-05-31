@@ -29,6 +29,7 @@ export interface ILivechatRead {
     getLivechatVisitorByEmail(email: string): Promise<IVisitor | undefined>;
     getLivechatVisitorByToken(token: string): Promise<IVisitor | undefined>;
     getLivechatVisitorByPhoneNumber(phoneNumber: string): Promise<IVisitor | undefined>;
+    getLivechatVisitorByUsername(username: string): Promise<IVisitor | undefined>;
     getLivechatDepartmentByIdOrName(value: string): Promise<IDepartment | undefined>;
     /**
      * @experimental we do not encourage the wider usage of this method,

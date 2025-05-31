@@ -48,6 +48,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
 
+	findOneVisitorByUsername(username: string): Promise<ILivechatVisitor | null>;
+
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
 	getNextVisitorUsername(): Promise<string>;
