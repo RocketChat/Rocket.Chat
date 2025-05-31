@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatDepartment,
@@ -13,16 +14,17 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepareLivechatRoom } from './Helper';
-import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
-import { getOnlineAgents } from './getOnlineAgents';
+import { checkOnlineForDepartment } from './departmentsLib';
+import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, onNewRoom } from './hooks';
+import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
@@ -41,7 +43,7 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 		return;
 	}
 
-	await callbacks.run('livechat.afterInquiryQueued', queuedInquiry);
+	await afterInquiryQueued(queuedInquiry);
 
 	void notifyOnLivechatInquiryChanged(queuedInquiry, 'updated', {
 		status: LivechatInquiryStatus.QUEUED,
@@ -69,7 +71,7 @@ const getDepartment = async (department: string): Promise<string | undefined> =>
 		return;
 	}
 
-	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+	if (await checkOnlineForDepartment(department)) {
 		return department;
 	}
 
@@ -143,6 +145,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.READY;
 		}
 
+		if (settings.get('Livechat_Routing_Method') === 'Manual_Selection' && agent) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (!agent) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -166,9 +172,12 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
-			await callbacks.run('livechat.afterInquiryQueued', inquiry);
+			await Promise.all([afterInquiryQueued(inquiry), afterRoomQueued(room)]);
 
-			void callbacks.run('livechat.chatQueued', room);
+			if (defaultAgent) {
+				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
+				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			}
 
 			return this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 		}
@@ -286,7 +295,7 @@ export class QueueManager {
 		);
 
 		const defaultAgent =
-			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
 
@@ -319,7 +328,7 @@ export class QueueManager {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 
-			if (!agent && !guest.department && !(await Livechat.checkOnlineAgents())) {
+			if (!agent && !guest.department && !(await checkOnlineAgents())) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}
@@ -329,11 +338,21 @@ export class QueueManager {
 			...(Boolean(customFields) && { customFields }),
 		});
 
+		try {
+			await Apps.self?.triggerEvent(AppEvents.IPreLivechatRoomCreatePrevent, insertionRoom);
+		} catch (error: any) {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
+
 		// Transactional start of the conversation. This should prevent rooms from being created without inquiries and viceversa.
 		// All the actions that happened inside createLivechatRoom are now outside this transaction
 		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		await callbacks.run('livechat.newRoom', room);
+		await onNewRoom(room);
 		await Message.saveSystemMessageAndNotifyUser(
 			'livechat-started',
 			rid,

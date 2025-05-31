@@ -1,4 +1,5 @@
-import { UserStatus, type ILivechatVisitor } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatContactVisitorAssociation, IOmnichannelSource, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatDepartment, LivechatVisitors, Users } from '@rocket.chat/models';
 
@@ -17,6 +18,16 @@ export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' 
 export const Visitors = {
 	isValidObject(obj: unknown): obj is Record<string, any> {
 		return typeof obj === 'object' && obj !== null;
+	},
+
+	makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
+		return {
+			visitorId,
+			source: {
+				type: roomInfo.type,
+				id: roomInfo.id,
+			},
+		};
 	},
 
 	async registerGuest({
@@ -53,7 +64,7 @@ export const Visitors = {
 				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, {
 					projection: { _id: 1, username: 1, name: 1, emails: 1 },
 				});
-				if (agent && agent.username && agent.name && agent.emails) {
+				if (agent?.username && agent.name && agent.emails) {
 					visitorDataToUpdate.contactManager = {
 						_id: agent._id,
 						username: agent.username,

@@ -1,11 +1,15 @@
 import dns from 'dns';
 import * as util from 'util';
 
-import type { ILivechatVisitor, AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
 
+import type { ILivechatMessage } from './localTypes';
+import { getRoom } from './rooms';
+import { showConnecting } from './utils';
 import { callbacks } from '../../../../lib/callbacks';
 import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
+import { sendMessage as sendMessageFunc } from '../../../lib/server/functions/sendMessage';
 import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -76,20 +80,16 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 	const fromText = `${name} - ${email} <${from}>`;
 	const replyTo = `${name} <${email}>`;
 	const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-	await sendEmail(fromText, emailTo, replyTo, subject, html);
-
-	setImmediate(() => {
-		void callbacks.run('livechat.offlineMessage', data);
-	});
-}
-
-async function sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): Promise<void> {
 	await Mailer.send({
-		to,
-		from,
+		to: emailTo,
+		from: fromText,
 		replyTo,
 		subject,
 		html,
+	});
+
+	setImmediate(() => {
+		void callbacks.run('livechat.offlineMessage', data);
 	});
 }
 
@@ -129,4 +129,23 @@ export async function deleteMessage({ guest, message }: { guest: ILivechatVisito
 	await deleteMessageFunc(message, guest as unknown as IUser);
 
 	return true;
+}
+
+export async function sendMessage({
+	guest,
+	message,
+	roomInfo,
+	agent,
+}: {
+	guest: ILivechatVisitor;
+	message: ILivechatMessage;
+	roomInfo: IOmnichannelRoomInfo;
+	agent?: SelectedAgent;
+}) {
+	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
+	return {
+		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
+		newRoom,
+		showConnecting: showConnecting(),
+	};
 }

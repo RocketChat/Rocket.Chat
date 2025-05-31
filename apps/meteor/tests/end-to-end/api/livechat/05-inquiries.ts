@@ -1,22 +1,25 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatInquiryRecord, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	createAgent,
 	createDepartment,
 	createLivechatRoom,
 	createVisitor,
+	deleteVisitor,
 	fetchInquiry,
 	getLivechatRoomInfo,
 	makeAgentAvailable,
+	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
-import { parseMethodResponse } from '../../../data/livechat/utils';
+import { parseMethodResponse, sleep } from '../../../data/livechat/utils';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
@@ -454,6 +457,131 @@ describe('LIVECHAT - inquiries', () => {
 			const depInq = body.inquiries.filter((inq: { _id: string }) => inq._id === inquiry._id);
 
 			expect(depInq.length).to.be.equal(1);
+		});
+	});
+
+	describe('keep inquiry last message updated', () => {
+		let room: any;
+		let visitor: any;
+		let agent: any;
+
+		before(async () => {
+			agent = await createAgent();
+			visitor = await createVisitor();
+
+			await makeAgentAvailable();
+			room = await createLivechatRoom(visitor.token);
+		});
+
+		after(async () => {
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should update inquiry last message', async () => {
+			const msgText = `update inquiry ${Date.now()}`;
+
+			await request.post(api('livechat/message')).send({ token: visitor.token, rid: room._id, msg: msgText }).expect(200);
+
+			const inquiry = await fetchInquiry(room._id);
+
+			expect(inquiry).to.have.property('_id', inquiry._id);
+			expect(inquiry).to.have.property('rid', room._id);
+			expect(inquiry).to.have.property('lastMessage');
+			expect(inquiry.lastMessage).to.have.property('msg', msgText);
+		});
+
+		it('should update room last message after inquiry is taken', async () => {
+			const msgText = `update room ${Date.now()}`;
+
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(credentials)
+				.send({
+					inquiryId: inquiry._id,
+					userId: agent._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request.post(api('livechat/message')).send({ token: visitor.token, rid: room._id, msg: msgText }).expect(200);
+
+			// check room
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo).to.have.property('lastMessage');
+			expect(roomInfo.lastMessage).to.have.property('msg', msgText);
+		});
+
+		it('should have the correct last message when room is returned to queue', async () => {
+			const msgText = `return to queue ${Date.now()}`;
+
+			await request.post(api('livechat/message')).send({ token: visitor.token, rid: room._id, msg: msgText }).expect(200);
+
+			await request
+				.post(methodCall('livechat:returnAsInquiry'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:returnAsInquiry',
+						params: [room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const inquiry = await fetchInquiry(room._id);
+
+			expect(inquiry).to.have.property('_id', inquiry._id);
+			expect(inquiry).to.have.property('rid', room._id);
+			expect(inquiry).to.have.property('lastMessage');
+			expect(inquiry.lastMessage).to.have.property('msg', msgText);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('Auto Transfer Scheduler - Manual_Selection', () => {
+		let testRoom: IOmnichannelRoom;
+		let testDepartment: ILivechatDepartment;
+		before(async () => {
+			// seconds
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', 3),
+				createAgent(),
+				updateSetting('Omnichannel_enable_department_removal', true),
+			]);
+			testDepartment = await createDepartment([{ agentId: 'rocketchat.internal.admin.test' }]);
+		});
+
+		after(async () => {
+			await deleteDepartment(testDepartment._id);
+			await Promise.all([
+				updateSetting('Livechat_auto_transfer_chat_timeout', 0),
+				updateSetting('Omnichannel_enable_department_removal', false),
+			]);
+		});
+
+		it('should create a room and schedule it for transfer', async () => {
+			const { room } = await startANewLivechatRoomAndTakeIt({ departmentId: testDepartment._id });
+			// The room returned is not updated :(
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+
+			expect(updatedRoom).to.have.property('servedBy').that.is.an('object');
+			testRoom = updatedRoom;
+		});
+		it('should return a chat to the queue when not answered after 3 seconds', async () => {
+			await sleep(3000);
+			const inquiry = await fetchInquiry(testRoom._id);
+			const room = await getLivechatRoomInfo(testRoom._id);
+
+			expect(room).to.not.have.property('servedBy');
+			expect(inquiry).to.have.property('status', 'queued');
+
+			await closeOmnichannelRoom(testRoom._id);
 		});
 	});
 });

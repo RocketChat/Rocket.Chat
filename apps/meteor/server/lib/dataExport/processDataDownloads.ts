@@ -71,7 +71,7 @@ const generateUserFile = async (exportOperation: IExportOperation, userData?: IU
 		return;
 	}
 
-	return new Promise((resolve, reject) => {
+	return new Promise<void>((resolve, reject) => {
 		const stream = createWriteStream(fileName, { encoding: 'utf8' });
 
 		stream.on('finish', resolve);

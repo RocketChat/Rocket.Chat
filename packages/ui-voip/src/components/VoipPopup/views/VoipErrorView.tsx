@@ -1,5 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useMemo } from 'react';
+import { useMemo, forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipActions as Actions, VoipContactId as CallContactId } from '../..';
@@ -14,9 +14,10 @@ import Header from '../components/VoipPopupHeader';
 type VoipErrorViewProps = {
 	session: VoipErrorSession;
 	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
 };
 
-const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
+const VoipErrorView = forwardRef<HTMLDivElement, VoipErrorViewProps>(function VoipErrorView({ session, position, ...props }, ref) {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 
@@ -24,6 +25,8 @@ const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
 
 	const title = useMemo(() => {
 		switch (status) {
+			case 488:
+				return t('Unable_to_negotiate_call_params');
 			case 487:
 				return t('Call_terminated');
 			case 486:
@@ -31,12 +34,12 @@ const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
 			case 480:
 				return t('Temporarily_unavailable');
 			default:
-				return t('Unable_to_complete_call');
+				return t('Unable_to_complete_call__code', { statusCode: status });
 		}
 	}, [status, t]);
 
 	return (
-		<Container data-testid='vc-popup-error' position={position}>
+		<Container ref={ref} data-testid='vc-popup-error' position={position} {...props}>
 			<Header hideSettings>
 				<Box fontScale='p2' color='danger' fontWeight={700}>
 					<Icon name='warning' size={16} /> {title}
@@ -52,6 +55,6 @@ const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
 			</Footer>
 		</Container>
 	);
-};
+});
 
 export default VoipErrorView;

@@ -72,7 +72,7 @@ const mocks = {
 	},
 	'../../../../../app/livechat/server/lib/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
 	'../../../../../app/livechat/server/lib/Helper': { forwardRoomToAgent },
-	'../../../../../app/livechat/server/lib/LivechatTyped': { Livechat: { returnRoomAsInquiry: returnRoomAsInquiryMock } },
+	'../../../../../app/livechat/server/lib/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
 	'../../../../../app/settings/server': { settings: { get: settingsGet } },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {
@@ -91,7 +91,7 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			mockUsers.findOneById.resolves({ _id: 'rocket.cat' });
 			const user = await scheduler.getSchedulerUser();
-			expect(user).to.be.deep.equal({ _id: 'rocket.cat' });
+			expect(user).to.be.deep.equal({ _id: 'rocket.cat', userType: 'user' });
 			expect(mockUsers.findOneById.calledWith('rocket.cat')).to.be.true;
 		});
 	});
@@ -221,10 +221,9 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			const r = await scheduler.transferRoom('roomId');
+			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-no-cat');
 
 			expect(getNextAgent.calledWith(undefined, 2)).to.be.true;
-			expect(r).to.be.undefined;
 			expect(mockUsers.findOneById.called).to.be.true;
 			expect(forwardRoomToAgent.notCalled).to.be.true;
 		});

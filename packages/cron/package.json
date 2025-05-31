@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.17",
+	"version": "0.1.24",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

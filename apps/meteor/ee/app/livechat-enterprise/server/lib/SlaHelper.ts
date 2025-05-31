@@ -4,8 +4,8 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 
-export const removeSLAFromRooms = async (slaId: string) => {
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+export const removeSLAFromRooms = async (slaId: string, userId: string) => {
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 	const openRooms = await LivechatRooms.findOpenBySlaId(slaId, { projection: { _id: 1 } }, extraQuery).toArray();
 	if (openRooms.length) {
 		const openRoomIds: string[] = openRooms.map(({ _id }) => _id);

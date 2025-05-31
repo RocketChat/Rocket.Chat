@@ -617,6 +617,8 @@ export class AppManager {
             return aff;
         }
 
+        app.getStorageItem()._id = created._id;
+
         this.apps.set(app.getID(), app);
         aff.setApp(app);
 
@@ -717,10 +719,15 @@ export class AppManager {
             languageContent: result.languageContent,
             settings: old.settings,
             implemented: result.implemented.getValues(),
-            marketplaceInfo: old.marketplaceInfo,
-            sourcePath: old.sourcePath,
-            permissionsGranted,
+            ...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
+            ...(old.sourcePath && { sourcePath: old.sourcePath }),
         };
+
+        if (!permissionsGranted) {
+            delete descriptor.permissionsGranted;
+        } else {
+            descriptor.permissionsGranted = permissionsGranted;
+        }
 
         try {
             descriptor.sourcePath = await this.appSourceStorage.update(descriptor, appPackage);
