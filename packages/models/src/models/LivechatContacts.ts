@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
+	ILivechatContactConflictingField,
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
@@ -124,6 +125,26 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id: contactId }, update, options);
+	}
+
+	async updateContactCustomFields(
+		contactId: string,
+		dataToUpdate: { customFields: Record<string, unknown>; conflictingFields: ILivechatContactConflictingField[] },
+		options?: FindOneAndUpdateOptions,
+	): Promise<ILivechatContact> {
+		if (!dataToUpdate.customFields && !dataToUpdate.conflictingFields) {
+			throw new Error('At least one of customFields or conflictingFields must be provided');
+		}
+
+		const updatedResult = await this.findOneAndUpdate(
+			{ _id: contactId },
+			{
+				$set: { ...dataToUpdate },
+			},
+			{ returnDocument: 'after', ...options },
+		);
+
+		return updatedResult as ILivechatContact;
 	}
 
 	findPaginatedContacts(
