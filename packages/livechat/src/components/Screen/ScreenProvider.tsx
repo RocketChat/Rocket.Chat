@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
-import { createOrUpdateGuest, evaluateChangesAndLoadConfigByFields } from '../../lib/hooks';
+import { createOrUpdateGuest, evaluateChangesAndLoadConfigByFields, setDepartment } from '../../lib/hooks';
 import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
@@ -128,7 +128,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	};
 
 	const handleOpenWindow = () => {
-		parentCall('openPopout', store.token);
+		parentCall('openPopout', store.token, department || iframe.defaultDepartment);
 		dispatch({ undocked: true, minimized: false });
 	};
 
@@ -140,23 +140,31 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 
 	const checkPoppedOutWindow = useCallback(async () => {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
-		const poppedOut = parse(window.location.search).mode === 'popout';
-		const { token = '' } = parse(window.location.search);
+		const { token = '', mode, department } = parse(window.location.search);
+		const poppedOut = mode === 'popout';
+
+		const isValidString = (param: unknown): param is string => typeof param === 'string' && param.trim() !== '';
+
 		setPopedOut(poppedOut);
 
 		if (poppedOut) {
 			dispatch({ minimized: false, undocked: true });
 		}
 
-		if (token && typeof token === 'string') {
-			if (registrationForm && !name && !email) {
-				dispatch({ token });
-				return;
+		await evaluateChangesAndLoadConfigByFields(async () => {
+			if (isValidString(department)) {
+				await setDepartment(department);
 			}
-			await evaluateChangesAndLoadConfigByFields(async () => {
+
+			if (isValidString(token)) {
+				if (registrationForm && !name && !email) {
+					dispatch({ token });
+					return;
+				}
+
 				await createOrUpdateGuest({ token });
-			});
-		}
+			}
+		});
 	}, [dispatch, email, name, registrationForm]);
 
 	useEffect(() => {
