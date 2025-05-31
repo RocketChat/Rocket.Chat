@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 
 import type { IServiceMetrics } from '@rocket.chat/core-services';
 import { MeteorService, isMeteorError, MeteorError } from '@rocket.chat/core-services';
-import { Logger } from '@rocket.chat/logger';
 import ejson from 'ejson';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
@@ -10,9 +9,8 @@ import WebSocket from 'ws';
 import type { Client } from './Client';
 import { Publication } from './Publication';
 import { DDP_EVENTS } from './constants';
+import { logger } from './logger';
 import type { IPacket } from './types/IPacket';
-
-const logger = new Logger('DDP-Streamer');
 
 type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
 type MethodFn = (this: Client, ...args: any[]) => any;
@@ -20,14 +18,13 @@ type Methods = {
 	[k: string]: MethodFn;
 };
 
-const handleInternalException = (err: unknown, msg: string): MeteorError => {
+const handleInternalException = (err: unknown, details: Record<string, unknown>): MeteorError => {
 	if (err instanceof MeteorError) {
 		return err;
 	}
 
 	// default errors are logged to the console and redacted from the client
-	// TODO switch to using the logger (ideally broker.logger)
-	logger.error({ msg, err });
+	logger.error({ ...details, err });
 
 	return new MeteorError(500, 'Internal server error');
 };
@@ -83,7 +80,7 @@ export class Server extends EventEmitter {
 			const result = await fn.apply(client, packet.params);
 			return this.result(client, packet, result);
 		} catch (err: unknown) {
-			return this.result(client, packet, null, handleInternalException(err, 'Method call error'));
+			return this.result(client, packet, null, handleInternalException(err, { method: packet.method, msg: 'Method call error' }));
 		}
 	}
 
@@ -118,7 +115,7 @@ export class Server extends EventEmitter {
 
 			end?.();
 		} catch (err: unknown) {
-			return this.nosub(client, packet, handleInternalException(err, 'Subscription error'));
+			return this.nosub(client, packet, handleInternalException(err, { subscription: packet.name, msg: 'Subscription error' }));
 		}
 	}
 
