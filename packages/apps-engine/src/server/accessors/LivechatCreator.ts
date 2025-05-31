@@ -13,8 +13,8 @@ export class LivechatCreator implements ILivechatCreator {
         private readonly appId: string,
     ) {}
 
-    public createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
-        return this.bridges.getLivechatBridge().doCreateRoom(visitor, agent, this.appId, extraParams);
+    public createRoom(visitor: IVisitor, agent?: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
+        return this.bridges.getLivechatBridge().doCreateRoom(visitor, this.appId, agent, extraParams);
     }
 
     /**
