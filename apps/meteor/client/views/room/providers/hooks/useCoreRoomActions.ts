@@ -1,3 +1,5 @@
+'use no memo';
+
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 
 import { roomActionHooks } from '../../../../ui';
