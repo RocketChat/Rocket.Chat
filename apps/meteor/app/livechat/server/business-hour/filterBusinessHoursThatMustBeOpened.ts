@@ -3,9 +3,8 @@ import moment from 'moment';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
+	currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss'),
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
-	const currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss');
-
 	return businessHours
 		.filter(
 			(businessHour) =>
