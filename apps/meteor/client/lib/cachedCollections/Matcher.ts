@@ -1,16 +1,16 @@
-import type { Filter } from 'mongodb';
+import type { Filter } from '@rocket.chat/mongo-adapter';
 
 import { _selectorIsId, compileDocumentSelector, hasOwn, isBinary, isEqual, nothingMatcher } from './common';
 
 /** @deprecated internal use only */
 export class Matcher<T extends { _id: string }> {
-	private _paths: Record<string, boolean>;
+	private readonly _paths: Record<string, boolean>;
 
 	_hasWhere: boolean;
 
 	_isSimple: boolean;
 
-	private _docMatcher: (doc: T) => { result: boolean; arrayIndices?: (number | 'x')[] };
+	private readonly _docMatcher: (doc: T) => { result: boolean; arrayIndices?: (number | 'x')[] };
 
 	constructor(selector: Filter<T> | T['_id'] | ((this: T) => boolean)) {
 		this._paths = {};
@@ -27,15 +27,7 @@ export class Matcher<T extends { _id: string }> {
 		return this._docMatcher(doc);
 	}
 
-	hasWhere(): boolean {
-		return this._hasWhere;
-	}
-
-	isSimple(): boolean {
-		return this._isSimple;
-	}
-
-	_compileSelector(
+	private _compileSelector(
 		selector: ((this: T) => boolean) | string | { _id: undefined | null | false } | Record<string, unknown>,
 	): (doc: T) => { result: boolean } {
 		if (typeof selector === 'function') {
@@ -61,10 +53,6 @@ export class Matcher<T extends { _id: string }> {
 		}
 
 		return compileDocumentSelector(selector, this);
-	}
-
-	_getPaths(): string[] {
-		return Object.keys(this._paths);
 	}
 
 	_recordPathUsed(path: string): void {
