@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { useCallLoginMethod } from './hooks/useCallLoginMethod';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { loginServices } from '../../lib/loginServices';
 
@@ -16,10 +15,19 @@ type AuthenticationProviderProps = {
 	children: ReactNode;
 };
 
+const callLoginMethod = (
+	options: { loginToken?: string; token?: string; iframe?: boolean },
+	userCallback: ((err?: any) => void) | undefined,
+) => {
+	Accounts.callLoginMethod({
+		methodArguments: [options],
+		userCallback,
+	});
+};
+
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
-	const callLoginMethod = useCallLoginMethod();
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
@@ -112,7 +120,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
 			},
 		}),
-		[callLoginMethod, loginMethod],
+		[loginMethod],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;
