@@ -35,8 +35,7 @@
 		"test": "jest",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"build": "rm -rf dist && tsc && run copy-svg",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/test"
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
