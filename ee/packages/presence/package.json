@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.2.22-rc.0",
+	"version": "0.2.22-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.0",
@@ -13,7 +13,7 @@
 		"babel-jest": "^29.7.0",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint src",

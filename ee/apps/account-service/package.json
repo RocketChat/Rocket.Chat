@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.4.22-rc.0",
+	"version": "0.4.22-rc.2",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -47,7 +47,7 @@
 		"@types/polka": "^0.5.7",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/account-service/src/service.js",
 	"files": [
