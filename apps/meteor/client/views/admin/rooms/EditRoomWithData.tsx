@@ -4,13 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarSkeleton,
-} from '../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
 
@@ -31,7 +25,7 @@ const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => 
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	const handleChange = (): void => {
@@ -44,13 +38,13 @@ const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => 
 	};
 
 	return data ? (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<EditRoom room={data as IRoom} onChange={handleChange} onDelete={handleDelete} onClose={onClose} />
-		</Contextualbar>
+		</>
 	) : null;
 };
 

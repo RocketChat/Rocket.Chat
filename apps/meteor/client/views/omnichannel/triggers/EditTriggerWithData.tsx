@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditTrigger from './EditTrigger';
-import { ContextualbarSkeleton } from '../../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 const EditTriggerWithData = ({ triggerId, onClose }: { triggerId: ILivechatTrigger['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
@@ -17,7 +17,7 @@ const EditTriggerWithData = ({ triggerId, onClose }: { triggerId: ILivechatTrigg
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {

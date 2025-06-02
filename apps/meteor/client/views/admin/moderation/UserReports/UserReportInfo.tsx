@@ -10,7 +10,6 @@ import {
 	Field,
 	FieldLabel,
 	FieldRow,
-	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +17,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
-import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarSkeletonBody } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
@@ -73,7 +72,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoading && <ContextualbarSkeleton />}
+				{isLoading && <ContextualbarSkeletonBody />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (

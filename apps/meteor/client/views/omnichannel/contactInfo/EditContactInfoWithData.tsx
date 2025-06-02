@@ -19,7 +19,7 @@ const EditContactInfoWithData = ({ id, onClose, onCancel }: EditContactInfoWithD
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError) {

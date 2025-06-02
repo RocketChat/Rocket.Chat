@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
 const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
@@ -19,7 +19,7 @@ const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClo
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {

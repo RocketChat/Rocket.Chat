@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
 const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
@@ -43,7 +43,7 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 	});
 
 	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError || unitMonitorsError || unitDepartmentsError) {

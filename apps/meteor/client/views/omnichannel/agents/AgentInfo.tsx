@@ -10,7 +10,7 @@ import {
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
-	ContextualbarSkeleton,
+	ContextualbarSkeletonBody,
 } from '../../../components/Contextualbar';
 import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
@@ -36,7 +36,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const handleDelete = useRemoveAgent(uid);
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
