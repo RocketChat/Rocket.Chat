@@ -242,13 +242,25 @@ API.v1.post(
 						properties: {
 							_id: { type: 'string' },
 							rid: { type: 'string' },
-							alias: { type: 'string' },
 							msg: { type: 'string' },
-							parseUrls: { type: 'boolean' },
-							groupable: { type: 'boolean' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
 							// ? Set this as a string type with date-time as a format, instead of using an object type
 							ts: {
 								type: 'object',
+							},
+							mentions: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							groupable: { type: 'boolean' },
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
 							},
 							u: {
 								type: 'object',
@@ -260,13 +272,15 @@ API.v1.post(
 								required: ['_id', 'name', 'username'],
 								additionalProperties: false,
 							},
+							alias: { type: 'string' },
+							parseUrls: { type: 'boolean' },
 							// ? Set this as a string type with date-time as a format, instead of using an object type
 							_updatedAt: {
 								type: 'object',
 							},
 						},
 						required: ['msg', '_updatedAt'],
-						additionalProperties: false,
+						// additionalProperties: false,
 					},
 					success: {
 						type: 'boolean',
