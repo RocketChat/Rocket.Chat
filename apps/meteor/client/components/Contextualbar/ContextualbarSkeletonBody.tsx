@@ -1,6 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { memo } from 'react';
 
 import ContextualbarHeader from './ContextualbarHeader';
 
@@ -20,4 +19,4 @@ const ContextualbarSkeletonBody = (): ReactElement => (
 	</>
 );
 
-export default memo(ContextualbarSkeletonBody);
+export default ContextualbarSkeletonBody;
