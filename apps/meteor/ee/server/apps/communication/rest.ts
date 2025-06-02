@@ -68,15 +68,15 @@ export class AppsRestApi {
 			version: 'apps',
 		});
 
-		this.addManagementRoutes();
 		const logger = new Logger('APPS');
-
-		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
-		API.api
+		this.api.router
 			.use(loggerMiddleware(logger))
 			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
-			.use(tracerSpanMiddleware)
-			.use(this.api.router);
+			.use(tracerSpanMiddleware);
+
+		this.addManagementRoutes();
+		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
+		API.api.use(this.api.router);
 	}
 
 	addManagementRoutes() {
