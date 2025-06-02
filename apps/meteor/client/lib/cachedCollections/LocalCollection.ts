@@ -1,4 +1,4 @@
-import { createComparatorFromSort, type Filter } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter, type Filter } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -80,9 +80,7 @@ export class LocalCollection<T extends { _id: string }> {
 		for (const query of this.queries) {
 			if (query.dirty) continue;
 
-			const matchResult = query.matcher.documentMatches(doc);
-
-			if (matchResult.result) {
+			if (query.predicate(doc)) {
 				if (query.cursor.skip || query.cursor.limit) {
 					queriesToRecompute.add(query);
 				} else {
@@ -109,9 +107,7 @@ export class LocalCollection<T extends { _id: string }> {
 		for await (const query of this.queries) {
 			if (query.dirty) continue;
 
-			const matchResult = query.matcher.documentMatches(doc);
-
-			if (matchResult.result) {
+			if (query.predicate(doc)) {
 				if (query.cursor.skip || query.cursor.limit) {
 					queriesToRecompute.add(query);
 				} else {
@@ -211,11 +207,11 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private prepareRemove(selector: Filter<T>) {
-		const matcher = new Matcher(selector);
+		const predicate = createPredicateFromFilter(selector);
 		const remove = new Set<T>();
 
 		this._eachPossiblyMatchingDoc(selector, (doc) => {
-			if (matcher.documentMatches(doc).result) {
+			if (predicate(doc)) {
 				remove.add(doc);
 			}
 		});
@@ -227,7 +223,7 @@ export class LocalCollection<T extends { _id: string }> {
 			for (const query of this.queries) {
 				if (query.dirty) continue;
 
-				if (query.matcher.documentMatches(removeDoc).result) {
+				if (query.predicate(removeDoc)) {
 					if (query.cursor.skip || query.cursor.limit) {
 						queriesToRecompute.add(query);
 					} else {
@@ -689,7 +685,7 @@ export class LocalCollection<T extends { _id: string }> {
 			if (query.dirty) continue;
 
 			if (query.ordered) {
-				matchedBefore.set(query, query.matcher.documentMatches(doc).result);
+				matchedBefore.set(query, query.predicate(doc));
 			} else {
 				matchedBefore.set(query, query.results.has(doc._id));
 			}
@@ -712,8 +708,7 @@ export class LocalCollection<T extends { _id: string }> {
 		for (const query of this.queries) {
 			if (query.dirty) continue;
 
-			const afterMatch = query.matcher.documentMatches(doc);
-			const after = afterMatch.result;
+			const after = query.predicate(doc);
 			const before = matchedBefore.get(query);
 
 			if (query.cursor.skip || query.cursor.limit) {
@@ -744,8 +739,7 @@ export class LocalCollection<T extends { _id: string }> {
 		for await (const query of this.queries) {
 			if (query.dirty) continue;
 
-			const afterMatch = query.matcher.documentMatches(doc);
-			const after = afterMatch.result;
+			const after = query.predicate(doc);
 			const before = matchedBefore.get(query);
 
 			if (query.cursor.skip || query.cursor.limit) {
@@ -939,21 +933,18 @@ export class LocalCollection<T extends { _id: string }> {
 		modifier = clone(modifier);
 
 		const isModifier = isOperatorObject(modifier);
-		const newDoc = isModifier ? clone(doc) : (modifier as T);
 
 		if (isModifier) {
-			for (const operator of Object.keys(modifier)) {
-				const setOnInsert = options.isInsert && operator === '$setOnInsert';
-				const modFunc = MODIFIERS[(setOnInsert ? '$set' : operator) as keyof typeof MODIFIERS];
-				const operand = modifier[operator];
+			const newDoc = clone(doc);
+
+			for (const [operator, operand] of Object.entries(modifier)) {
+				const modFunc = MODIFIERS[options.isInsert && operator === '$setOnInsert' ? '$set' : (operator as keyof typeof MODIFIERS)];
 
 				if (!modFunc) {
 					throw new MinimongoError(`Invalid modifier specified ${operator}`);
 				}
 
-				for (const keypath of Object.keys(operand)) {
-					const arg = operand[keypath];
-
+				for (const [keypath, arg] of Object.entries(operand)) {
 					if (keypath === '') {
 						throw new MinimongoError('An empty update path is not valid.');
 					}
@@ -981,15 +972,17 @@ export class LocalCollection<T extends { _id: string }> {
 						`_id: "${newDoc._id}"`,
 				);
 			}
-		} else {
-			if (doc._id && modifier._id && doc._id !== modifier._id) {
-				throw new MinimongoError(`The _id field cannot be changed from {_id: "${doc._id}"} to {_id: "${modifier._id}"}`);
-			}
 
-			assertHasValidFieldNames(modifier);
+			return newDoc;
 		}
 
-		return newDoc;
+		if (doc._id && modifier._id && doc._id !== modifier._id) {
+			throw new MinimongoError(`The _id field cannot be changed from {_id: "${doc._id}"} to {_id: "${modifier._id}"}`);
+		}
+
+		assertHasValidFieldNames(modifier);
+
+		return modifier as T;
 	}
 
 	private _removeFromResults(query: Query<T>, doc: T) {
@@ -1205,7 +1198,7 @@ const MODIFIERS = {
 			throw new MinimongoError('$rename target field invalid', { field });
 		}
 
-		target2[keyparts.pop() as string] = object;
+		target2[keyparts.pop() as keyof typeof target2] = object;
 	},
 	$set(target: Record<string, unknown>, field: string, arg: any) {
 		if (target !== Object(target)) {
@@ -1410,9 +1403,9 @@ const MODIFIERS = {
 
 		let out;
 		if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
-			const matcher = new Matcher(arg);
+			const predicate = createPredicateFromFilter(arg);
 
-			out = toPull.filter((element) => !matcher.documentMatches(element).result);
+			out = toPull.filter((element) => !predicate(element));
 		} else {
 			out = toPull.filter((element) => !_f._equal(element, arg));
 		}
@@ -1479,7 +1472,7 @@ function assertIsValidFieldName(key: string) {
 }
 
 function findModTarget(
-	doc: Record<string, any>,
+	doc: Record<string, any> | unknown[],
 	keyparts: (number | string)[],
 	options: {
 		noCreate?: boolean;
@@ -1562,9 +1555,7 @@ function findModTarget(
 			}
 		}
 
-		if (last) {
-			return doc as { [index: string | number]: any };
-		}
+		if (last) return doc;
 
 		doc = doc[keypart as keyof typeof doc];
 	}

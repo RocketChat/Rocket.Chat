@@ -1,10 +1,9 @@
-import { createComparatorFromSort, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
 import { Tracker } from 'meteor/tracker';
 
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
 import type { LocalCollection } from './LocalCollection';
-import { Matcher } from './Matcher';
 import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
@@ -19,7 +18,7 @@ type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args
 
 /** @deprecated internal use only */
 export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
-	private readonly matcher: Matcher<T>;
+	private readonly predicate: (doc: T) => boolean;
 
 	private readonly comparator: ((a: T, b: T) => number) | null;
 
@@ -40,7 +39,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		selector: Filter<T> | T['_id'],
 		options?: TOptions,
 	) {
-		this.matcher = new Matcher(selector);
+		this.predicate = createPredicateFromFilter(typeof selector === 'string' ? ({ _id: selector } as Filter<T>) : selector);
 		this.comparator = options?.sort ? createComparatorFromSort(options.sort) : null;
 		this.skip = options?.skip ?? 0;
 		this.limit = options?.limit;
@@ -359,19 +358,19 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			? {
 					cursor: this,
 					dirty: false,
-					matcher: this.matcher,
 					ordered,
 					projectionFn: this._projectionFn,
 					resultsSnapshot: null,
+					predicate: this.predicate,
 					comparator: this.comparator,
 				}
 			: {
 					cursor: this,
 					dirty: false,
-					matcher: this.matcher,
 					ordered,
 					projectionFn: this._projectionFn,
 					resultsSnapshot: null,
+					predicate: this.predicate,
 					comparator: null,
 				};
 
@@ -486,8 +485,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		const results: T[] | IdMap<T['_id'], T> = options.ordered ? [] : new IdMap<T['_id'], T>();
 
 		for (const doc of this.collection.store.getState().records) {
-			const matchResult = this.matcher.documentMatches(doc);
-			if (matchResult.result) {
+			if (this.predicate(doc)) {
 				if (options.ordered) {
 					(results as T[]).push(doc);
 				} else {

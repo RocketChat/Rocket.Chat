@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import type { Cursor, Options } from './Cursor';
 import type { IdMap } from './IdMap';
-import type { Matcher } from './Matcher';
 
 interface BaseQuery<T extends { _id: string }, TOptions extends Options<T> = Options<T>, TProjection extends T = any> {
 	readonly cursor: Cursor<T, TOptions, TProjection>;
 	dirty: boolean;
-	readonly matcher: Matcher<T>;
+	readonly predicate: (doc: T) => boolean;
 	readonly projectionFn: (doc: T | Omit<T, '_id'>) => TProjection;
 }
 

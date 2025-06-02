@@ -1,8 +1,8 @@
 /** @deprecated internal use only */
 export class MinimongoError extends Error {
-	constructor(message: string, context?: { field: string }) {
+	constructor(message: string, context?: { field: number | string | symbol }) {
 		if (typeof message === 'string' && context?.field) {
-			message += ` for field '${context.field}'`;
+			message += ` for field '${String(context.field)}'`;
 		}
 
 		super(message);

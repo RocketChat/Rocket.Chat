@@ -246,10 +246,15 @@ describe('saveOriginals/retrieveOriginals', () => {
 describe('internal error/edge cases', () => {
 	it('throws on invalid modifier', () => {
 		collection.insert({ ...docA });
-		expect(() => collection.update({ _id: 'a' }, { $bad: { foo: 1 } } as any)).toThrow();
+		expect(() => collection.update({ _id: 'a' }, { $bad: { foo: 1 } })).toThrow();
 	});
 
 	it('throws on forbidden field names', () => {
 		expect(() => collection.insert({ _id: 'x', $bad: 1 } as any)).toThrow();
+	});
+
+	it('throws on changing _id', () => {
+		collection.insert({ ...docA });
+		expect(() => collection.update({ _id: 'a' }, { _id: 'newId' })).toThrow();
 	});
 });
