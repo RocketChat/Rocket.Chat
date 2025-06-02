@@ -135,10 +135,7 @@ export const useIframeLogin = (): string | undefined => {
 		};
 	}, [loginWithToken, tryLogin]);
 
-	useEffect(() => {
-		const cleanup = unstoreLoginToken(tryLogin);
-		return () => cleanup();
-	}, [tryLogin, unstoreLoginToken]);
+	useEffect(() => unstoreLoginToken(tryLogin), [tryLogin, unstoreLoginToken]);
 
 	return reactiveIframeUrl;
 };
