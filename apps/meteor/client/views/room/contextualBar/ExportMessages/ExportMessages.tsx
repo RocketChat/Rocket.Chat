@@ -126,7 +126,7 @@ const ExportMessages = () => {
 			setValue('format', 'json');
 		}
 
-		setValue('messagesCount', messageCount);
+		setValue('messagesCount', messageCount, { shouldDirty: true });
 	}, [type, setValue, messageCount]);
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
