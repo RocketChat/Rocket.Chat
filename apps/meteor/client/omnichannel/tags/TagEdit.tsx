@@ -13,7 +13,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
@@ -75,7 +74,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 	const departmentsField = useId();
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Tag') : t('New_Tag')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose}></ContextualbarClose>
@@ -137,7 +136,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
-import { Contextualbar, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
+import { ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 
 type ModConsoleReportDetailsProps = {
 	userId: IUser['_id'];
@@ -25,22 +25,20 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 
 	return (
 		<ContextualbarDialog onClose={handleCloseContextualbar}>
-			<Contextualbar>
-				<ContextualbarHeader>
-					<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
-					<ContextualbarClose onClick={handleCloseContextualbar} />
-				</ContextualbarHeader>
-				<Tabs paddingBlockStart={8}>
-					<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
-						{t('Messages')}
-					</TabsItem>
-					<TabsItem selected={tab === 'users'} onClick={() => setTab('users')}>
-						{t('User')}
-					</TabsItem>
-				</Tabs>
-				{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
-				{tab === 'users' && <UserReportInfo userId={userId} />}
-			</Contextualbar>
+			<ContextualbarHeader>
+				<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
+				<ContextualbarClose onClick={handleCloseContextualbar} />
+			</ContextualbarHeader>
+			<Tabs paddingBlockStart={8}>
+				<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
+					{t('Messages')}
+				</TabsItem>
+				<TabsItem selected={tab === 'users'} onClick={() => setTab('users')}>
+					{t('User')}
+				</TabsItem>
+			</Tabs>
+			{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
+			{tab === 'users' && <UserReportInfo userId={userId} />}
 		</ContextualbarDialog>
 	);
 };

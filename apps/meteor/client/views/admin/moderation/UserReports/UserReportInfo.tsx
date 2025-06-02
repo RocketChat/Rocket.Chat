@@ -69,10 +69,13 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	}
 
+	if (isLoading) {
+		return <ContextualbarSkeletonBody />;
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoading && <ContextualbarSkeletonBody />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (

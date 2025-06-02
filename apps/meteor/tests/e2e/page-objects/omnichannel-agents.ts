@@ -14,8 +14,8 @@ export class OmnichannelAgents {
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
-		this.editCtxBar = page.locator('[data-qa-id="agent-edit-contextual-bar"]');
-		this.infoCtxBar = page.locator('[data-qa-id="agent-info-contextual-bar"]');
+		this.editCtxBar = page.getByRole('dialog', { name: 'Edit User' });
+		this.infoCtxBar = page.getByRole('dialog', { name: 'User Info' });
 	}
 
 	get inputUsername(): Locator {

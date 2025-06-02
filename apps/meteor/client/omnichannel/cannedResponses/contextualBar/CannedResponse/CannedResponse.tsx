@@ -5,12 +5,12 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarAction,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
@@ -41,7 +41,7 @@ const CannedResponse = ({
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<Contextualbar color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+		<ContextualbarDialog color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
 				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
@@ -100,7 +100,7 @@ const CannedResponse = ({
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 

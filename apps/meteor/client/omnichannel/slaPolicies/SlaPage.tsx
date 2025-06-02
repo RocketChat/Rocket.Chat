@@ -7,13 +7,7 @@ import { useTranslation } from 'react-i18next';
 import SlaEditWithData from './SlaEditWithData';
 import SlaNew from './SlaNew';
 import SlaTable from './SlaTable';
-import {
-	Contextualbar,
-	ContextualbarTitle,
-	ContextualbarHeader,
-	ContextualbarClose,
-	ContextualbarDialog,
-} from '../../components/Contextualbar';
+import { ContextualbarTitle, ContextualbarHeader, ContextualbarClose, ContextualbarDialog } from '../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../components/Page';
 
 const SlaPage = () => {
@@ -52,17 +46,15 @@ const SlaPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					<Contextualbar>
-						<ContextualbarHeader>
-							<ContextualbarTitle>
-								{context === 'edit' && t('Edit_SLA_Policy')}
-								{context === 'new' && t('New_SLA_Policy')}
-							</ContextualbarTitle>
-							<ContextualbarClose onClick={handleCloseContextualbar} />
-						</ContextualbarHeader>
-						{context === 'edit' && id && <SlaEditWithData slaId={id} reload={handleReload} />}
-						{context === 'new' && <SlaNew reload={handleReload} />}
-					</Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>
+							{context === 'edit' && t('Edit_SLA_Policy')}
+							{context === 'new' && t('New_SLA_Policy')}
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					{context === 'edit' && id && <SlaEditWithData slaId={id} reload={handleReload} />}
+					{context === 'new' && <SlaNew reload={handleReload} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

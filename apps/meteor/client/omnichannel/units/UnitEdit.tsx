@@ -14,7 +14,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
@@ -116,7 +115,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose }: UnitEdit
 	const monitorsField = useId();
 
 	return (
-		<Contextualbar data-qa-id='units-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Unit') : t('New_Unit')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose}></ContextualbarClose>
@@ -258,7 +257,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onClose }: UnitEdit
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

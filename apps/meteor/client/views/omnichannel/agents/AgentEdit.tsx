@@ -23,7 +23,6 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
@@ -136,7 +135,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 	const voipExtensionField = useId();
 
 	return (
-		<Contextualbar data-qa-id='agent-edit-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -262,7 +261,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

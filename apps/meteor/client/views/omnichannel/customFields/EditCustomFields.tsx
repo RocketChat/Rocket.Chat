@@ -20,7 +20,6 @@ import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
@@ -109,7 +108,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 	const regexpField = useId();
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{customFieldData?._id ? t('Edit_Custom_Field') : t('New_Custom_Field')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
@@ -232,7 +231,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

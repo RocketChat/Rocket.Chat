@@ -20,13 +20,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -167,32 +161,30 @@ const AdminUsersPage = (): ReactElement => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
-					<Contextualbar>
-						<ContextualbarHeader>
-							{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
-							<ContextualbarTitle>
-								{context === 'info' && t('User_Info')}
-								{context === 'edit' && t('Edit_User')}
-								{(context === 'new' || context === 'created') && (
-									<>
-										<Icon name='user-plus' size={20} /> {t('New_user')}
-									</>
-								)}
-								{context === 'invite' && t('Invite_Users')}
-							</ContextualbarTitle>
-							<ContextualbarClose onClick={handleCloseContextualbar} />
-						</ContextualbarHeader>
-						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
-						{context === 'edit' && id && (
-							<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
-						)}
-						{!isRoutePrevented && context === 'new' && (
-							<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
-						)}
-						{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
-						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
-						{isRoutePrevented && <AdminUserUpgrade />}
-					</Contextualbar>
+					<ContextualbarHeader>
+						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
+						<ContextualbarTitle>
+							{context === 'info' && t('User_Info')}
+							{context === 'edit' && t('Edit_User')}
+							{(context === 'new' || context === 'created') && (
+								<>
+									<Icon name='user-plus' size={20} /> {t('New_user')}
+								</>
+							)}
+							{context === 'invite' && t('Invite_Users')}
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
+					{context === 'edit' && id && (
+						<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'new' && (
+						<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
+					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+					{isRoutePrevented && <AdminUserUpgrade />}
 				</ContextualbarDialog>
 			)}
 		</Page>

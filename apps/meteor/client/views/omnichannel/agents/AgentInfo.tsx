@@ -5,7 +5,6 @@ import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
@@ -46,7 +45,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<Contextualbar data-qa-id='agent-info-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -80,7 +79,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
 				</Margins>
 			</ContextualbarScrollableContent>
-		</Contextualbar>
+		</>
 	);
 };
 

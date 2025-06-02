@@ -6,13 +6,7 @@ import { useTranslation } from 'react-i18next';
 import AddCustomSound from './AddCustomSound';
 import CustomSoundsTable from './CustomSoundsTable';
 import EditCustomSound from './EditCustomSound';
-import {
-	ContextualbarTitle,
-	Contextualbar,
-	ContextualbarClose,
-	ContextualbarHeader,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+import { ContextualbarTitle, ContextualbarClose, ContextualbarHeader, ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const CustomSoundsPage = () => {
@@ -59,17 +53,15 @@ const CustomSoundsPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog onClose={handleClose}>
-					<Contextualbar>
-						<ContextualbarHeader>
-							<ContextualbarTitle>
-								{context === 'edit' && t('Custom_Sound_Edit')}
-								{context === 'new' && t('Custom_Sound_Add')}
-							</ContextualbarTitle>
-							<ContextualbarClose onClick={handleClose} />
-						</ContextualbarHeader>
-						{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
-						{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
-					</Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>
+							{context === 'edit' && t('Custom_Sound_Edit')}
+							{context === 'new' && t('Custom_Sound_Add')}
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleClose} />
+					</ContextualbarHeader>
+					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
+					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

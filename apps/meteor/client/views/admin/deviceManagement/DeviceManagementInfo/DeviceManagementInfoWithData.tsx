@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 import DeviceManagementInfo from './DeviceManagementInfo';
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarContent,
@@ -41,7 +40,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 
 	if (error || !data) {
 		return (
-			<Contextualbar>
+			<>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 					<ContextualbarClose />
@@ -56,7 +55,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 						</States>
 					</Box>
 				</ContextualbarContent>
-			</Contextualbar>
+			</>
 		);
 	}
 

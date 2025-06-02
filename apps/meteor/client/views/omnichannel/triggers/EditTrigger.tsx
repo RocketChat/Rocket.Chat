@@ -12,7 +12,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarTitle,
 	ContextualbarFooter,
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
@@ -134,7 +133,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 	};
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{triggerData?._id ? t('Edit_Trigger') : t('New_Trigger')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
@@ -217,7 +216,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 
