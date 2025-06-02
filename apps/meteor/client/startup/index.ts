@@ -10,7 +10,6 @@ import './iframeCommands';
 import './incomingMessages';
 import './messageObserve';
 import './messageTypes';
-import './reloadRoomAfterLogin';
 import './roles';
 import './routes';
 import './slashCommands';

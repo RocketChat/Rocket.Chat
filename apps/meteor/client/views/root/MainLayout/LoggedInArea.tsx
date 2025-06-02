@@ -5,6 +5,7 @@ import { useCustomEmoji } from '../../../hooks/customEmoji/useCustomEmoji';
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
 import { useFingerprintChange } from '../../../hooks/useFingerprintChange';
+import { useFontStylePreference } from '../../../hooks/useFontStylePreference';
 import { useRestrictedRoles } from '../../../hooks/useRestrictedRoles';
 import { useRootUrlChange } from '../../../hooks/useRootUrlChange';
 import { useTwoFactorAuthSetupCheck } from '../../../hooks/useTwoFactorAuthSetupCheck';
@@ -22,6 +23,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 		throw new Error('User not logged');
 	}
 
+	useFontStylePreference();
 	useUnread();
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
