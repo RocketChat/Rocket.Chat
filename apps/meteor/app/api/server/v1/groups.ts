@@ -404,8 +404,8 @@ API.v1.addRoute(
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const filter = {
-				rid: findResult.rid,
 				...query,
+				rid: findResult.rid,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 			};

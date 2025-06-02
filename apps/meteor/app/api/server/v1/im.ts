@@ -238,8 +238,8 @@ API.v1.addRoute(
 			}
 
 			const filter = {
-				rid: room._id,
 				...query,
+				rid: room._id,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 			};
