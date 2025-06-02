@@ -41,7 +41,7 @@ export const processWebhookMessage = async function (
 	user: IUser & { username: RequiredField<IUser, 'username'> },
 	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
 ) {
-	const sentData = [];
+	const sentData: Array<{ channel: string; message: any }> = [];
 
 	const channels: Array<string> = [...new Set(ensureArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
 
