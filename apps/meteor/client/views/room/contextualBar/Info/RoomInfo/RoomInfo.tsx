@@ -3,6 +3,9 @@ import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
+import { useReactiveValue } from '/client/hooks/useReactiveValue';
+import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
+import {  useCallback, useEffect,useState } from 'react';
 
 import RoomInfoActions from './RoomInfoActions';
 import {
@@ -44,11 +47,16 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 	const roomTitle = fname || name;
 	const isDiscussion = 'prid' in room;
-
+	const [member,setMember]=useState(false)
 	const retentionPolicy = useRetentionPolicy(room);
+	const reactiveIsMember = useReactiveValue( useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]) );
 	const actions = useRoomActions(room, { onClickEnterRoom, onClickEdit, resetState });
+	
+	useEffect(()=>{
+		if(reactiveIsMember==true){
+		setMember(!member)}
+	},[reactiveIsMember])
 	const { buttons, menu } = useSplitRoomActions(actions);
-
 	return (
 		<>
 			<ContextualbarHeader>
