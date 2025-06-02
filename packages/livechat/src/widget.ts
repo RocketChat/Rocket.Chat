@@ -7,7 +7,6 @@ import type { HooksWidgetAPI } from './lib/hooks';
 import type { StoreState } from './store';
 
 type InternalWidgetAPI = {
-	popup: Window | null;
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
@@ -61,6 +60,7 @@ let ready = false;
 let smallScreen = false;
 let scrollPosition: number;
 let widgetHeight: number;
+let popoutWindow: Window | null = null;
 
 export const VALID_CALLBACKS = [
 	'chat-maximized',
@@ -461,8 +461,6 @@ function initialize(initParams: Partial<InitializeParams>) {
 }
 
 const api: InternalWidgetAPI = {
-	popup: null,
-
 	openWidget,
 
 	resizeWidget,
@@ -475,11 +473,10 @@ const api: InternalWidgetAPI = {
 	minimizeWindow() {
 		closeWidget();
 	},
-
 	restoreWindow() {
-		if (api.popup && api.popup.closed !== true) {
-			api.popup.close();
-			api.popup = null;
+		if (popoutWindow && popoutWindow.closed !== true) {
+			popoutWindow.close();
+			popoutWindow = null;
 		}
 		openWidget();
 	},
@@ -491,7 +488,7 @@ const api: InternalWidgetAPI = {
 		}
 		const urlToken = token && `&token=${token}`;
 
-		api.popup = window.open(
+		popoutWindow = window.open(
 			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout${urlToken}`,
 			'livechat-popout',
 			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
