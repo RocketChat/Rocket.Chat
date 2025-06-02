@@ -18,6 +18,7 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/fuselage": "^0.62.2",
 		"@rocket.chat/icons": "^0.43.0",
+		"@storybook/react": "^8.6.14",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
@@ -26,7 +27,7 @@
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
-		"@storybook/react": "^8.6.14",
+		"@storybook/react": "*",
 		"react": "*"
 	},
 	"scripts": {
