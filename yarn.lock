@@ -9673,7 +9673,6 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
     "@storybook/blocks": "npm:^8.6.14"
     "@storybook/preview-api": "npm:^8.6.14"
-    "@storybook/react": "npm:^8.6.14"
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/theming": "npm:^8.6.14"
     eslint: "npm:~8.45.0"
@@ -9684,6 +9683,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
+    "@storybook/react": ^8.6.14
     react: "*"
   languageName: unknown
   linkType: soft
