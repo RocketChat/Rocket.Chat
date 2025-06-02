@@ -34,14 +34,18 @@
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
-		"build": "rm -rf dist && tsc && npm run copy-svg -s",
+		"build": "rm -rf dist && tsc && run copy-svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/test"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
-		"/dist"
+		"/dist",
+		"/main.js",
+		"/main.d.ts",
+		"/preview.js",
+		"/preview.d.ts"
 	],
 	"volta": {
 		"extends": "../../package.json"
