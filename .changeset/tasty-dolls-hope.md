@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Improves Profile page responsiveness
+Improves form fields layout for mobile screens in profile page
