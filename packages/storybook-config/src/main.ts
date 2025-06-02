@@ -1,4 +1,4 @@
-import { dirname, join, resolve } from 'path';
+import { dirname, join } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
@@ -21,16 +21,6 @@ export const config: StorybookConfig = {
 	},
 	typescript: {
 		reactDocgen: 'react-docgen',
-	},
-	docs: {},
-	webpackFinal: async (config) => {
-		// This is only needed because of Fontello
-		config.resolve = {
-			...config.resolve,
-			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
-		};
-
-		return config;
 	},
 };
 
