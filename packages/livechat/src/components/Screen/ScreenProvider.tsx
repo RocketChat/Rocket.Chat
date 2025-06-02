@@ -63,7 +63,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 
 export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	const store = useContext(StoreContext);
-	const { token, dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe, customFieldQueue } = store;
+	const { token, dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe, customFieldsQueue } = store;
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
 	const { livechatLogo, hideWatermark = false } = config.settings || {};
@@ -117,7 +117,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	};
 
 	const handleOpenWindow = () => {
-		parentCall('openPopout', { token, iframe, customFieldQueue });
+		parentCall('openPopout', { token, iframe, customFieldsQueue });
 		dispatch({ undocked: true, minimized: false });
 	};
 

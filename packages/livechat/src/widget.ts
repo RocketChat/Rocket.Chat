@@ -10,7 +10,7 @@ type InternalWidgetAPI = {
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
-	openPopout: (state?: StoreState) => void;
+	openPopout: (state: StoreState) => void;
 	openWidget: () => void;
 	resizeWidget: (height: number) => void;
 	removeWidget: () => void;
@@ -483,8 +483,9 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout(state?: Partial<StoreState>) {
+	openPopout(state: Partial<StoreState>) {
 		closeWidget();
+
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
 		}
@@ -666,7 +667,7 @@ function listenForMessageOnce<K extends keyof InternalWidgetAPI>(
 	callback: (data: LivechatMessageEventData<InternalWidgetAPI, K>) => void,
 ): void {
 	const listener = (event: MessageEvent<LivechatMessageEventData<InternalWidgetAPI, K>>) => {
-		if (!isValidMessage(event) && event.data.fn !== key) {
+		if (!isValidMessage(event) || event.data.fn !== key) {
 			return;
 		}
 

@@ -193,6 +193,10 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('visibilitychange', () => {
+	if (store.state.undocked) {
+		return;
+	}
+
 	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
 	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
 });
