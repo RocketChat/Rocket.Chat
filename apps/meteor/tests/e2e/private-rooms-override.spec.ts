@@ -4,11 +4,11 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { TestUser } from '../data/users.helper';
 import { createUser, deleteUser, login } from '../data/users.helper';
 import { createRoom, deleteRoom } from '../data/rooms.helper';
-import { password } from '../data/user';
 
 import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { Directory } from './page-objects/directory';
+import { password } from '../data/user';
 //import { Users } from './fixtures/userStates';
 //import { createTargetChannel, createTargetPrivateChannel } from './utils';
 
@@ -22,21 +22,21 @@ test.describe.serial('private-rooms-override', () => {
 
     test.beforeAll(async ({ api }) => {
         // Create test users
-        testUser = await createUser({ 
-            username: faker.internet.userName(),
-            roles: ['user']
-        });
+        // testUser = await createUser({ 
+        //     username: faker.internet.userName(),
+        //     password: faker.internet.password(),
+        //     roles: ['admin']
+        // });
+        testUser = await createUser();
+		testUserCredentials = await login(testUser.username, password);
         
         // Set required permission
         await api.post('/permissions.update', {
             permissions: [{
                 _id: 'view-all-private-rooms',
-                roles: ['user']
+                roles: ['admin']
             }]
         });
-
-        // Get user credentials
-        testUserCredentials = await login(testUser.username, password);
 
         // Create a private room for testing
         privateRoom = (await createRoom({
@@ -69,18 +69,55 @@ test.describe.serial('private-rooms-override', () => {
     });
 
     test('should show all private rooms in directory regardless of membership', async ({ page }) => {
-        // Visit the directory page as the test user
-        // Navigate to channels tab
-        // Verify private room is visible in the list
+        // Navigate to directory page
+        await poDirectory.goto();
+        
+        // Switch to channels tab
+        await poDirectory.toggleChannelsTab();
+        
+        // Verify private room is visible
+        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).toBeVisible();
+        
         // Verify room details are correctly displayed
-        // Try to access the room
-        // Verify appropriate access level is granted
+        const roomRow = page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`);
+        await expect(roomRow.locator('[data-qa="directory-channel-name"]')).toHaveText(privateRoom.name!);
+        await expect(roomRow.locator('[data-qa="directory-channel-type"]')).toHaveText('Private');
+        
+        // Attempt to access the room
+        await roomRow.click();
+        
+        // Verify room is accessible
+        await expect(page).toHaveURL(`/group/${privateRoom.name}`);
     });
 
-    test('should respect view-all-private-rooms permission', async ({ page }) => {
+    test('should respect view-all-private-rooms permission', async ({ page, api }) => {
         // Remove view-all-private-rooms permission
-        // Verify private room is no longer visible
-        // Add back view-all-private-rooms permission
-        // Verify private room becomes visible again
+        await api.post('/permissions.update', {
+            permissions: [{
+                _id: 'view-all-private-rooms',
+                roles: []
+            }]
+        });
+        
+        // Navigate to directory page
+        await poDirectory.goto();
+        await poDirectory.toggleChannelsTab();
+        
+        // Verify private room is not visible
+        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).not.toBeVisible();
+        
+        // Restore permission
+        await api.post('/permissions.update', {
+            permissions: [{
+                _id: 'view-all-private-rooms',
+                roles: ['admin']
+            }]
+        });
+        
+        // Refresh the page
+        await page.reload();
+        
+        // Verify private room is visible again
+        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).toBeVisible();
     });
 });
