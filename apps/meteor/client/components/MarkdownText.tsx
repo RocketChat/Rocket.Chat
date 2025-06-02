@@ -91,12 +91,15 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
-const getRegexp = (schemeSetting: string): RegExp => {
-	const schemes = schemeSetting ? schemeSetting.split(',').join('|') : '';
-	return new RegExp(`^(${schemes}):`, 'gim');
+const getRegexp = (supportedURISchemes: string[]): RegExp => {
+	const schemes = supportedURISchemes.join('|');
+
+	return new RegExp(`^(${schemes}):`, 'im');
 };
 
 type MarkdownTextProps = Partial<MarkdownTextParams>;
+
+export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'tel', 'mailto', 'sms', 'cid'];
 
 const MarkdownText = ({
 	content,
@@ -109,8 +112,6 @@ const MarkdownText = ({
 	const sanitizer = dompurify.sanitize;
 	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
-
-	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
 
 	switch (variant) {
 		case 'inline':
@@ -176,8 +177,8 @@ const MarkdownText = ({
 			}
 		});
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t, schemes]);
+		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
 
 	return __html ? (
 		<Box
