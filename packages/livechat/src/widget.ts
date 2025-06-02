@@ -10,7 +10,7 @@ type InternalWidgetAPI = {
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
-	openPopout: (token?: string) => void;
+	openPopout: (state?: StoreState) => void;
 	openWidget: () => void;
 	resizeWidget: (height: number) => void;
 	removeWidget: () => void;
@@ -22,10 +22,10 @@ type InternalWidgetAPI = {
 	setWidgetPosition: (position: 'left' | 'right') => void;
 };
 
-export type LivechatMessageEventData<ApiType extends Record<string, any>> = {
+export type LivechatMessageEventData<ApiType extends Record<string, any>, Fn extends keyof ApiType = keyof ApiType> = {
 	src?: string;
-	fn: keyof ApiType;
-	args: Parameters<ApiType[keyof ApiType]>;
+	fn: Fn;
+	args: Parameters<ApiType[Fn]>;
 };
 
 type InitializeParams = {
@@ -103,6 +103,12 @@ function clearAllCallbacks() {
 	});
 }
 
+const formatMessage = (action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidgetAPI[keyof HooksWidgetAPI]>) => ({
+	src: 'rocketchat',
+	fn: action,
+	args: params,
+});
+
 // hooks
 function callHook(action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidgetAPI[keyof HooksWidgetAPI]>) {
 	if (!ready) {
@@ -113,11 +119,7 @@ function callHook(action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidge
 		throw new Error('Widget is not initialized');
 	}
 
-	const data = {
-		src: 'rocketchat',
-		fn: action,
-		args: params,
-	};
+	const data = formatMessage(action, ...params);
 
 	iframe.contentWindow?.postMessage(data, '*');
 }
@@ -481,18 +483,20 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout(token = '') {
+	openPopout(state?: Partial<StoreState>) {
 		closeWidget();
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
 		}
-		const urlToken = token && `&token=${token}`;
 
-		popoutWindow = window.open(
-			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout${urlToken}`,
-			'livechat-popout',
-			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
-		);
+		const url = new URL(config.url);
+		url.searchParams.append('mode', 'popout');
+
+		listenForMessageOnce('ready', () => {
+			popoutWindow?.postMessage(formatMessage('syncState', state), '*');
+		});
+
+		popoutWindow = window.open(url, 'livechat-popout', `width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`);
 	},
 
 	removeWidget() {
@@ -625,16 +629,24 @@ const currentPage: { href: string | null; title: string | null } = {
 	title: null,
 };
 
-function onNewMessage(event: MessageEvent<LivechatMessageEventData<Omit<InternalWidgetAPI, 'popup'>>>) {
+function isValidMessage(event: MessageEvent<LivechatMessageEventData<InternalWidgetAPI>>) {
 	if (event.source === event.target) {
-		return;
+		return false;
 	}
 
 	if (!event.data || typeof event.data !== 'object') {
-		return;
+		return false;
 	}
 
 	if (!event.data.src || event.data.src !== 'rocketchat') {
+		return false;
+	}
+
+	return true;
+}
+
+function onNewMessage(event: MessageEvent<LivechatMessageEventData<InternalWidgetAPI>>) {
+	if (!isValidMessage(event)) {
 		return;
 	}
 
@@ -647,6 +659,22 @@ function onNewMessage(event: MessageEvent<LivechatMessageEventData<Omit<Internal
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
 	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
 	api[fn](...args);
+}
+
+function listenForMessageOnce<K extends keyof InternalWidgetAPI>(
+	key: K,
+	callback: (data: LivechatMessageEventData<InternalWidgetAPI, K>) => void,
+): void {
+	const listener = (event: MessageEvent<LivechatMessageEventData<InternalWidgetAPI, K>>) => {
+		if (!isValidMessage(event) && event.data.fn !== key) {
+			return;
+		}
+
+		callback(event.data);
+		window.removeEventListener('message', listener);
+	};
+
+	window.addEventListener('message', listener);
 }
 
 const attachMessageListener = () => {
