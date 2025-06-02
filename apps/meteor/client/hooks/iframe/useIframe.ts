@@ -1,4 +1,4 @@
-import { useLoginWithIframe, useSetting } from '@rocket.chat/ui-contexts';
+import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 export const useIframe = () => {
@@ -10,6 +10,7 @@ export const useIframe = () => {
 	const apiMethod = useSetting('Accounts_Iframe_api_method', '');
 
 	const iframeLogin = useLoginWithIframe();
+	const tokenLogin = useLoginWithToken();
 
 	const loginWithToken = useCallback(
 		(tokenData: string | { loginToken: string } | { token: string }, callback?: (error: Error | null | undefined) => void) => {
@@ -21,12 +22,14 @@ export const useIframe = () => {
 			console.log('loginWithToken');
 
 			if ('loginToken' in tokenData) {
-				return Meteor.loginWithToken(tokenData.loginToken, callback);
+				tokenLogin(tokenData.loginToken);
 			}
 
-			iframeLogin(tokenData.token, callback);
+			if ('token' in tokenData) {
+				iframeLogin(tokenData.token, callback);
+			}
 		},
-		[iframeLogin],
+		[iframeLogin, tokenLogin],
 	);
 
 	const tryLogin = useCallback(
