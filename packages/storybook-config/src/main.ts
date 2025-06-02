@@ -6,22 +6,25 @@ function getAbsolutePath(value: any): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-export const config: StorybookConfig = {
-	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: [
-		getAbsolutePath('@storybook/addon-a11y'),
-		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('storybook-dark-mode'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
-		getAbsolutePath('@storybook/addon-styling-webpack'),
-	],
-	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
-		options: {},
-	},
-	typescript: {
-		reactDocgen: 'react-docgen',
-	},
+const baseConfig = ({ customConfig }: { customConfig?: StorybookConfig }): StorybookConfig => {
+	return {
+		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
+		addons: [
+			getAbsolutePath('@storybook/addon-a11y'),
+			getAbsolutePath('@storybook/addon-essentials'),
+			getAbsolutePath('storybook-dark-mode'),
+			getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+			getAbsolutePath('@storybook/addon-styling-webpack'),
+		],
+		framework: {
+			name: getAbsolutePath('@storybook/react-webpack5'),
+			options: {},
+		},
+		typescript: {
+			reactDocgen: 'react-docgen',
+		},
+		...customConfig,
+	};
 };
 
-export default config;
+export default baseConfig;
