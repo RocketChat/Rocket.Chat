@@ -89,6 +89,7 @@ export type StoreState = {
 			background?: string;
 			hideGuestAvatar?: boolean;
 			hideAgentAvatar?: boolean;
+			hideExpandChat?: boolean;
 		};
 		visible?: boolean;
 		department?: string;

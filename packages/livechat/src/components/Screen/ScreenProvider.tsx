@@ -40,6 +40,7 @@ export type ScreenContextValue = {
 		background?: string;
 		hideGuestAvatar?: boolean;
 		hideAgentAvatar?: boolean;
+		hideExpandChat?: boolean;
 	};
 };
 
@@ -50,6 +51,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		iconColor: '',
 		hideAgentAvatar: false,
 		hideGuestAvatar: true,
+		hideExpandChat: false,
 	},
 	notificationsEnabled: true,
 	minimized: true,
@@ -78,6 +80,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		background: customBackground,
 		hideAgentAvatar = false,
 		hideGuestAvatar = true,
+		hideExpandChat = false,
 	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
@@ -147,6 +150,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			background: customBackground || background,
 			hideAgentAvatar,
 			hideGuestAvatar,
+			hideExpandChat,
 		},
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),
