@@ -3152,7 +3152,7 @@ describe('[Users]', () => {
 					.post(api('users.generatePersonalAccessToken'))
 					.set(credentials)
 					.send({
-						tokenName,
+						tokenName: 'test',
 						loginToken: '1234567890',
 					})
 					.expect('Content-Type', 'application/json')
