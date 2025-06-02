@@ -6,7 +6,7 @@ function getAbsolutePath(value: any): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const baseConfig = ({ customConfig }: { customConfig?: StorybookConfig }): StorybookConfig => {
+const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
 	return {
 		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 		addons: [
