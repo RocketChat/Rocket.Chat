@@ -13,9 +13,8 @@ const TagsPage = () => {
 	const router = useRouter();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
-	const handleCloseContextualbar = useEffectEvent(() => {
-		router.navigate('/omnichannel/tags');
-	});
+
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/tags'));
 
 	return (
 		<Page flexDirection='row'>
