@@ -1,8 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Filter } from '@rocket.chat/mongo-adapter';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from '../../../../client/lib/RoomManager';
@@ -31,8 +29,6 @@ type OpenedRoom = {
 };
 
 const openedRooms: Record<string, OpenedRoom> = {};
-
-const openedRoomsDependency = new Tracker.Dependency();
 
 function close(typeName: string) {
 	if (openedRooms[typeName]) {
@@ -70,7 +66,6 @@ async function closeAllRooms() {
 }
 
 function getOpenedRoomByRid(rid: IRoom['_id']) {
-	openedRoomsDependency.depend();
 	return Object.keys(openedRooms)
 		.map((typeName) => openedRooms[typeName])
 		.find((openedRoom) => openedRoom.rid === rid);
@@ -200,7 +195,6 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 
 	void streamRoomMessages.ready().then(() => {
 		record.streamActive = true;
-		openedRoomsDependency.changed();
 	});
 
 	record.stream = {
@@ -210,7 +204,6 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 	};
 
 	record.ready = true;
-	openedRoomsDependency.changed();
 };
 
 function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
