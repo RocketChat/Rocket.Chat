@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.9.0",
+	"version": "0.9.3",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.0",
@@ -15,7 +15,7 @@
 		"jest": "~29.7.0",
 		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"prettier": "~3.3.3",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

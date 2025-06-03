@@ -8,12 +8,14 @@ import GenericModal from './GenericModal';
 type FingerprintChangeModalConfirmationProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
+	onClose: () => void;
 	newWorkspace: boolean;
 };
 
 const FingerprintChangeModalConfirmation = ({
 	onConfirm,
 	onCancel,
+	onClose,
 	newWorkspace,
 }: FingerprintChangeModalConfirmationProps): ReactElement => {
 	const { t } = useTranslation();
@@ -25,6 +27,7 @@ const FingerprintChangeModalConfirmation = ({
 			onCancel={onCancel}
 			cancelText={t('Back')}
 			confirmText={newWorkspace ? t('Confirm_new_workspace') : t('Confirm_configuration_update')}
+			onClose={onClose}
 		>
 			<Box
 				is='p'
