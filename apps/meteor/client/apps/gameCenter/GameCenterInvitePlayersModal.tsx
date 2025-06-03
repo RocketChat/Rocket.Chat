@@ -1,5 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +9,7 @@ import { useTranslation } from 'react-i18next';
 import type { IGame } from './GameCenter';
 import GenericModal from '../../components/GenericModal';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { callWithErrorHandling } from '../../lib/utils/callWithErrorHandling';
 
 type Username = Exclude<IUser['username'], undefined>;
 
@@ -18,39 +18,45 @@ interface IGameCenterInvitePlayersModalProps {
 	onClose: () => void;
 }
 
-const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayersModalProps): ReactElement => {
+const GameCenterInvitePlayersModal = ({ game: { name }, onClose }: IGameCenterInvitePlayersModalProps): ReactElement => {
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const [users, setUsers] = useState<Array<Username>>([]);
-	const { name } = game;
 
-	const openedRoom = useOpenedRoom();
+	const createPrivateGroup = useMethod('createPrivateGroup');
+	const sendMessage = useMethod('sendMessage');
 
-	const sendInvite = async () => {
-		const privateGroupName = `${name.replace(/\s/g, '-')}-${Random.id(10)}`;
-
-		try {
-			const result = await callWithErrorHandling('createPrivateGroup' as any, privateGroupName, users);
-
-			roomCoordinator.openRouteLink(result.t, result);
-
-			Tracker.autorun((c) => {
-				if (openedRoom !== result.rid) {
-					return;
-				}
-
-				callWithErrorHandling('sendMessage', {
-					_id: Random.id(),
-					rid: result.rid,
-					msg: t('Apps_Game_Center_Play_Game_Together', { name }),
-				});
-
-				c.stop();
-			});
+	const { mutate: sendInvite } = useMutation({
+		mutationKey: ['createPrivateGroup', name],
+		mutationFn: () => {
+			const privateGroupName = `${name.replace(/\s/g, '-')}-${Math.random().toString(16)}`;
+			return createPrivateGroup(privateGroupName, users);
+		},
+		onSuccess: (data) => {
+			roomCoordinator.openRouteLink(data.t, data);
+		},
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+		onSettled(data) {
+			if (!data) {
+				onClose();
+				return;
+			}
+			sendMessageMutation(data.rid);
 			onClose();
-		} catch (err) {
-			console.warn(err);
-		}
-	};
+		},
+	});
+
+	const { mutate: sendMessageMutation } = useMutation({
+		mutationKey: ['sendMessage', name],
+		mutationFn: (rid: string) => {
+			return sendMessage({
+				_id: Math.random().toString(36),
+				rid,
+				msg: t('Apps_Game_Center_Play_Game_Together', { name }),
+			});
+		},
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
 
 	return (
 		<>
