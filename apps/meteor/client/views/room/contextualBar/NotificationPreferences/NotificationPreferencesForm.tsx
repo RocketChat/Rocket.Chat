@@ -1,11 +1,14 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
 import NotificationToggle from './components/NotificationToggle';
+import { isKeyboardNavigationActive } from '../../../../lib/utils/isKeyboardNavigationActive';
 
 type NotificationPreferencesFormProps = {
 	notificationOptions: {
@@ -20,13 +23,22 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 
 	const { showCounter } = watch();
 
+	const shouldAutoFocus = useMemo(() => isKeyboardNavigationActive(), []);
+	const autoFocusRef = useAutoFocus<HTMLInputElement>(shouldAutoFocus);
+
 	return (
 		<>
 			<Controller
 				control={control}
 				name='turnOn'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={onChange} defaultChecked={value} />
+					<NotificationToggle
+						label={t('Turn_ON')}
+						description={t('Receive_alerts')}
+						onChange={onChange}
+						defaultChecked={value}
+						ref={autoFocusRef}
+					/>
 				)}
 			/>
 			<Controller
