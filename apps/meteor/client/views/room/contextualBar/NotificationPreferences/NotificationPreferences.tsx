@@ -12,6 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 
 type NotificationPreferencesProps = {
@@ -36,7 +37,7 @@ const NotificationPreferences = ({
 	} = useFormContext();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='bell' />
 				<ContextualbarTitle>{t('Notifications_Preferences')}</ContextualbarTitle>
@@ -55,7 +56,7 @@ const NotificationPreferences = ({
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
