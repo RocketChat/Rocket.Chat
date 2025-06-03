@@ -1,16 +1,5 @@
 import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import {
-	Field,
-	FieldLabel,
-	FieldGroup,
-	FieldRow,
-	TextInput,
-	Button,
-	Box,
-	Icon,
-	Select,
-	ButtonGroup,
-} from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
