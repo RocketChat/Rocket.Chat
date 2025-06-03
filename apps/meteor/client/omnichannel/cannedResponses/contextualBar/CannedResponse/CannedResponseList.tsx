@@ -13,7 +13,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
-	ContextualbarInnerContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
@@ -66,13 +65,25 @@ const CannedResponseList = ({
 
 	const cannedItem = cannedItems.find((canned) => canned._id === cannedId);
 
+	if (cannedItem) {
+		return (
+			<WrapCannedResponse
+				allowUse={!isRoomOverMacLimit}
+				cannedItem={cannedItem}
+				onClickBack={onClickItem}
+				onClickUse={onClickUse}
+				onClose={onClose}
+				reload={reload}
+			/>
+		);
+	}
+
 	return (
-		<ContextualbarDialog onClose={onClose}>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -115,19 +126,6 @@ const CannedResponseList = ({
 					</Box>
 				)}
 			</ContextualbarContent>
-
-			{cannedItem && (
-				<ContextualbarInnerContent>
-					<WrapCannedResponse
-						allowUse={!isRoomOverMacLimit}
-						cannedItem={cannedItem}
-						onClickBack={onClickItem}
-						onClickUse={onClickUse}
-						reload={reload}
-					/>
-				</ContextualbarInnerContent>
-			)}
-
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClickCreate}>{t('Create')}</Button>

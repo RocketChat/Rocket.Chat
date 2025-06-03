@@ -11,6 +11,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ContextualbarClose,
 } from '../../../../components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
@@ -27,6 +28,7 @@ type CannedResponseProps = {
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
+	onClose: () => void;
 };
 
 const CannedResponse = ({
@@ -36,15 +38,17 @@ const CannedResponse = ({
 	onClickBack,
 	onClickEdit,
 	onClickUse,
+	onClose,
 }: CannedResponseProps) => {
 	const { t } = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<ContextualbarDialog color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
+				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_canned_responses')} name='arrow-back' />}
 				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
+				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
 				<Box pb='24px'>
