@@ -240,27 +240,14 @@ API.v1.post(
 						// ? Accepts any type for message
 						type: 'object',
 						properties: {
-							_id: { type: 'string' },
-							rid: { type: 'string' },
+							alias: { type: 'string' },
 							msg: { type: 'string' },
-							tmid: { type: 'string' },
-							tshow: { type: 'boolean' },
+							attachments: { type: 'array' },
+							parseUrls: { type: 'boolean' },
+							groupable: { type: 'boolean' },
 							// ? Set this as a string type with date-time as a format, instead of using an object type
 							ts: {
-								type: 'object',
-							},
-							mentions: {
-								type: 'array',
-								items: {
-									type: 'object',
-								},
-							},
-							groupable: { type: 'boolean' },
-							channels: {
-								type: 'array',
-								items: {
-									type: 'object',
-								},
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
 							},
 							u: {
 								type: 'object',
@@ -272,15 +259,38 @@ API.v1.post(
 								required: ['_id', 'name', 'username'],
 								additionalProperties: false,
 							},
-							alias: { type: 'string' },
-							parseUrls: { type: 'boolean' },
+							rid: { type: 'string' },
+							_id: { type: 'string' },
 							// ? Set this as a string type with date-time as a format, instead of using an object type
 							_updatedAt: {
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
+							},
+							urls: { type: 'array', items: { type: 'string' } },
+							mentions: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							md: { type: 'array' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
+							emoji: { type: 'string' },
+							// ? Should customFields have properties implement in the IMessageCustomFields interface and ensure it is not empty?
+							customFields: {
 								type: 'object',
+								properties: {},
+								additionalProperties: true,
 							},
 						},
 						required: ['msg', '_updatedAt'],
-						// additionalProperties: false,
+						additionalProperties: false,
 					},
 					success: {
 						type: 'boolean',
