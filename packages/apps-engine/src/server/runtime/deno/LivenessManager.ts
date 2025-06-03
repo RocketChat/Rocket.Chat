@@ -73,7 +73,7 @@ export class LivenessManager {
             if (reason instanceof Error && reason.message.startsWith('DECODE_ERROR')) {
                 await this.restartProcess('Decode error', 'controller');
             }
-        })
+        });
     }
 
     public getRuntimeData() {
