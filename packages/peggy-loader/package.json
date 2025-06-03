@@ -50,7 +50,7 @@
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
     "rimraf": "^6.0.1",
-    "typescript": "~5.7.2",
+    "typescript": "~5.8.3",
     "webpack": "~5.96.1"
   },
   "volta": {
