@@ -156,4 +156,36 @@ export class AccountProfile {
 	get required2faModalSetUpButton(): Locator {
 		return this.page.locator('dialog >> button');
 	}
+
+	get btnDeleteMyAccount(): Locator {
+		return this.page.getByText('Delete my account');
+	}
+
+	get deleteAccountDialog(): Locator {
+		return this.page.getByRole('dialog').filter({ hasText: 'Delete account?' });
+	}
+
+	get deleteAccountDialogMessage(): Locator {
+		return this.deleteAccountDialog.getByText('Enter your username to delete your account. This cannot be undone.');
+	}
+
+	get deleteAccountUsernameInput(): Locator {
+		return this.deleteAccountDialog.getByRole('textbox');
+	}
+
+	get btnDeleteAccountConfirm(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Delete Account' });
+	}
+
+	get btnDeleteAccountCancel(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Cancel' });
+	}
+
+	get deleteAccountErrorMessage(): Locator {
+		return this.page.getByText('Invalid password [error-invalid-password]');
+	}
+
+	get profileTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Profile' });
+	}
 }
