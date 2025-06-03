@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Field,
 	FieldGroup,
@@ -20,6 +21,7 @@ import {
 	useEndpoint,
 	useUser,
 	useMethod,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
@@ -39,6 +41,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
@@ -157,8 +160,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-				<Box display='flex' flexDirection='row' justifyContent='space-between'>
-					<Field mie={8} flexShrink={1}>
+				<Box
+					display='flex'
+					flexDirection={isMobile ? 'column' : 'row'}
+					alignItems='stretch'
+					justifyContent='space-between'
+					className={[
+						css`
+							gap: 16px;
+						`,
+					]}
+				>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
 						</FieldLabel>
@@ -189,7 +202,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
-					<Field mis={8} flexShrink={1}>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
 						</FieldLabel>
@@ -303,7 +316,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
 					</FieldLabel>
-					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
+					<FieldRow
+						display='flex'
+						flexDirection={isMobile ? 'column' : 'row'}
+						alignItems='stretch'
+						justifyContent='space-between'
+						className={css`
+							gap: 8px;
+						`}
+					>
 						<Controller
 							control={control}
 							name='email'
@@ -326,7 +347,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							)}
 						/>
 						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
+							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
 								{t('Resend_verification_email')}
 							</Button>
 						)}
