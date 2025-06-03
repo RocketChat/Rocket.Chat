@@ -15,9 +15,7 @@ const UnitsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleCloseContextualbar = useEffectEvent(() => {
-		router.navigate('/omnichannel/units');
-	});
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/omnichannel/units'));
 
 	return (
 		<Page flexDirection='row'>
