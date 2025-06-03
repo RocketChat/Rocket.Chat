@@ -13,7 +13,6 @@ import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfi
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
-import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAction';
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
@@ -52,7 +51,6 @@ export const roomActionHooks = [
 	useDiscussionsRoomAction,
 	useE2EERoomAction,
 	useExportMessagesRoomAction,
-	useGameCenterRoomAction,
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,
