@@ -33,8 +33,14 @@ const NotificationPreferences = ({
 	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },
+		reset, 
+		getValues, 
 	} = useFormContext();
 
+	function handleSaveHandler() {
+		handleSave();
+		reset(getValues());
+	}
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
@@ -48,7 +54,7 @@ const NotificationPreferences = ({
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
-					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
+					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSaveHandler}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
