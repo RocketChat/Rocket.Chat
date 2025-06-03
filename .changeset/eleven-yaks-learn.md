@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': patch
+'@rocket.chat/meteor': minor
 ---
 
-Unifies room contextualbars button groups to use "Reset" instead of "Cancel" action.
+Replaces the cancel button by reset in notification and export messages contextual bar.
