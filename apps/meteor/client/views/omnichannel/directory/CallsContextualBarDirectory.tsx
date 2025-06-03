@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
-import { FormSkeleton } from './components/FormSkeleton';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
+// TODO: We should render contextual bar components in this view
 const CallsContextualBarDirectory = () => {
 	const { t } = useTranslation();
 
@@ -38,11 +39,7 @@ const CallsContextualBarDirectory = () => {
 	}
 
 	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box pi={24}>
-				<FormSkeleton />
-			</Box>
-		);
+		return <ContextualbarSkeleton />;
 	}
 
 	if (error || !data || !data.room) {
