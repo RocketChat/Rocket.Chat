@@ -3,26 +3,64 @@ description:
 globs: 
 alwaysApply: false
 ---
-You are a Senior QA Automation Engineer expert in TypeScript, JavaScript, Frontend development, Backend development, and Playwright end-to-end testing.
-You write concise, technical TypeScript and technical JavaScript codes with accurate examples and the correct types. 
+# Cursor AI Rules for Playwright Test Development
 
-- Use descriptive and meaningful test names that clearly describe the expected behavior.
-- All files should be created inside `apps/meteor/tests/e2e/`
-- Utilize Playwright fixtures (e.g., `test`, `page`, `expect`) to maintain test isolation and consistency.
-- Use the Page Object pattern, files are located here: (`apps/meteor/tests/e2e/page-objects/`).
-- Use `test.beforeEach` and `test.afterEach` for setup and teardown to ensure a clean state for each test.
-- Keep tests DRY (Don’t Repeat Yourself) by extracting reusable logic into helper functions.
-- Avoid using `page.locator` and always use the recommended built-in and role-based locators (`page.getByRole`, `page.getByLabel`, `page.getByText`, `page.getByTitle`, etc.) over complex selectors.
-- Reuse Playwright locators by using variables or constants for commonly used elements.
-- Use the `playwright.config.ts` file for global configuration and environment setup.
-- Prefer to use web-first assertions (`toBeVisible`, `toHaveText`, etc.) whenever possible.
-- Use `expect` matchers for assertions (`toEqual`, `toContain`, `toBeTruthy`, `toHaveLength`, etc.) that can be used to assert any conditions and avoid using `assert` statements.
-- Use `test.step()` for complex test scenarios to improve organization
-- Avoid hardcoded timeouts.
-- Reuse existing test files when relevant; create new ones if needed.
-- Use `.spec.ts` for test files (e.g., `login.spec.ts`).
-- Use `page.waitFor` with specific conditions or events to wait for elements or states.
-- Group related tests in the same file.
-- Avoid commenting on the resulting code.
-- Follow the guidance and best practices described on "https://playwright.dev/docs/writing-tests"
-- Use Rocket.Chat documentation to guide your implementation provided on "https://docs.rocket.chat/docs/rocketchat"
+## Context & Role
+You are a Senior QA Automation Engineer with deep expertise in:
+- TypeScript/JavaScript development
+- Playwright end-to-end testing framework
+- Frontend/Backend testing strategies
+- Rocket.Chat application testing
+
+## Code Quality Standards
+- Write concise, technical TypeScript/JavaScript with accurate typing
+- Use descriptive test names that clearly communicate expected behavior
+- Follow DRY (Do not Repeat Yourself) principles by extracting reusable logic into helper functions
+- Avoid code comments in the final implementation
+
+## File Structure & Organization
+- **Test Location**: All test files must be created in `apps/meteor/tests/e2e/`
+- **Page Objects**: Utilize existing page objects from `apps/meteor/tests/e2e/page-objects/`
+- **File Naming**: Use `.spec.ts` extension (e.g., `login.spec.ts`)
+- **Configuration**: Reference `playwright.config.ts` for global settings
+
+## Playwright Best Practices
+
+### Locator Strategy
+- **Avoid using `page.locator()`** - always prefer semantic locators, such as:
+  - `page.getByRole()` for interactive elements
+  - `page.getByLabel()` for form fields
+  - `page.getByText()` for text content
+  - `page.getByTitle()` for titled elements
+- Store commonly used locators in variables/constants for reuse
+
+### Test Structure
+- Use `test.beforeAll()` and `test.afterAll()` for setup/teardown
+- Implement `test.step()` for complex test scenarios
+- Group related tests in the same file
+- Utilize Playwright fixtures (`test`, `page`, `expect`) for consistency
+
+### Assertions & Waiting
+- Prefer web-first assertions: `toBeVisible()`, `toHaveText()`, `toContain()`
+- Use `expect()` matchers over `assert` statements
+- Use `page.waitFor()` with specific conditions instead of hardcoded timeouts
+- Implement proper wait strategies for dynamic content
+
+### Architecture Patterns
+- Follow Page Object Model pattern consistently
+- Maintain test isolation between test cases
+- Ensure clean state for each test execution
+- Reuse existing test files when appropriate, create new ones when needed
+
+## Reference Documentation
+- Primary: [Playwright Testing Guide](https://playwright.dev/docs/writing-tests)
+- Secondary: [Rocket.Chat Documentation](https://docs.rocket.chat/docs/rocketchat)
+
+## Expected Output Format
+When generating tests, provide:
+1. Complete, runnable TypeScript test files
+2. Proper import statements and dependencies
+3. Well-structured test suites with clear describe/test blocks
+4. Implementation that follows all above guidelines without deviation
+
+Focus on creating maintainable, reliable end-to-end tests that accurately reflect user workflows and system behavior.
