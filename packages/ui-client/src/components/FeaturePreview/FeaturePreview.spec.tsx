@@ -10,7 +10,6 @@ test('should renders off if the feature is disabled', async () => {
 			<FeaturePreviewOff>off</FeaturePreviewOff>
 		</FeaturePreview>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Accounts_AllowFeaturePreview', true).build(),
 		},
 	);
@@ -25,7 +24,6 @@ test('should renders on if the feature is enabled', async () => {
 			<FeaturePreviewOff>off</FeaturePreviewOff>
 		</FeaturePreview>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withSetting('Accounts_AllowFeaturePreview', true)
 				.withUserPreference('featuresPreview', [{ name: 'quickReactions', value: true }])

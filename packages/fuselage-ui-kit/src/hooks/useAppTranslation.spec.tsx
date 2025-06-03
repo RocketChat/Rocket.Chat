@@ -31,7 +31,6 @@ beforeEach(async () => {
 
 it('should work with normal app ID (`test`)', async () => {
   const { result } = renderHook(() => useAppTranslation().t('test'), {
-    legacyRoot: true,
     wrapper: ({ children }) => (
       <I18nextProvider i18n={i18n}>
         <AppIdProvider appId='test'>{children}</AppIdProvider>
@@ -44,7 +43,6 @@ it('should work with normal app ID (`test`)', async () => {
 
 it('should work with core app ID (`test-core`)', async () => {
   const { result } = renderHook(() => useAppTranslation().t('test'), {
-    legacyRoot: true,
     wrapper: ({ children }) => (
       <I18nextProvider i18n={i18n}>
         <AppIdProvider appId='test-core'>{children}</AppIdProvider>
@@ -96,7 +94,6 @@ describe('with suspense', () => {
 
   it('should work with normal app ID (`test`)', async () => {
     const { result } = renderHook(() => useAppTranslation().t('test'), {
-      legacyRoot: true,
       wrapper: ({ children }) => (
         <I18nextProvider i18n={i18n}>
           <AppIdProvider appId='test'>
@@ -113,7 +110,6 @@ describe('with suspense', () => {
 
   it('should work with core app ID (`test-core`)', async () => {
     const { result } = renderHook(() => useAppTranslation().t('test'), {
-      legacyRoot: true,
       wrapper: ({ children }) => (
         <I18nextProvider i18n={i18n}>
           <AppIdProvider appId='test-core'>

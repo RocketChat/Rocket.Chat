@@ -24,12 +24,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await handleTranscript();
 	}
 
-	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
-
-	if (!room) {
-		console.warn('closeChat called without a room');
-		return;
-	}
+	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
 
 	await store.setState({ room: null, renderedTriggers: [] });
 

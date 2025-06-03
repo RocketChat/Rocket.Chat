@@ -70,7 +70,7 @@ export abstract class AbstractFederationApplicationService {
 			return;
 		}
 		if (federatedUser.shouldUpdateDisplayName(displayName)) {
-			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReference(), displayName);
+			await this.internalUserAdapter.updateRealName(federatedUser.getInternalReferenceCopy(), displayName);
 		}
 	}
 

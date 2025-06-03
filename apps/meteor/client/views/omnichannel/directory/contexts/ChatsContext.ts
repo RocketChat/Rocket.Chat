@@ -1,25 +1,28 @@
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import type { RefObject, SetStateAction } from 'react';
 import { createContext, useContext } from 'react';
 
 export type ChatsFiltersQuery = {
 	guest: string;
-	servedBy: string;
+	servedBy: PaginatedMultiSelectOption[];
 	status: string;
-	department: string;
+	department: PaginatedMultiSelectOption[];
 	from: string;
 	to: string;
 	tags: { _id: string; label: string; value: string }[];
+	units?: PaginatedMultiSelectOption[];
 	[key: string]: unknown;
 };
 
 export const initialValues: ChatsFiltersQuery = {
 	guest: '',
-	servedBy: 'all',
+	servedBy: [],
 	status: 'all',
-	department: 'all',
+	department: [],
 	from: '',
 	to: '',
 	tags: [],
+	units: [],
 };
 
 export type ChatsContextValue = {

@@ -94,7 +94,10 @@ export interface IRoom extends IRocketChatRecord {
 		items: [SidepanelItem, SidepanelItem?];
 	};
 
-	rolePrioritiesCreated?: boolean;
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
+	rolePrioritiesCreated?: number | boolean;
 }
 
 export const isSidepanelItem = (item: any): item is SidepanelItem => {
@@ -289,9 +292,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
 
-	// Signals if the room already has a pdf transcript requested
-	// This prevents the user from requesting a transcript multiple times
-	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
 	pdfTranscriptFileId?: string;
@@ -422,6 +422,7 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 
 export const ROOM_ROLE_PRIORITY_MAP = {
 	owner: 0,
+	leader: 250,
 	moderator: 500,
 	default: 10000,
 };

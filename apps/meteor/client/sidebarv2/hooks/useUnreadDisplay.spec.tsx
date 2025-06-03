@@ -107,7 +107,6 @@ const wrapper = mockAppRoot()
 
 it('should return correct unread data for [Direct message unread]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(dmUnread), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('secondary');
@@ -121,7 +120,6 @@ it('should return correct unread data for [Direct message unread]', async () => 
 
 it('should return correct unread data for [Direct message with thread unread]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(dmThread), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('primary');
@@ -135,7 +133,6 @@ it('should return correct unread data for [Direct message with thread unread]', 
 
 it('should return correct unread data for [Channel with unread messages alert only]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(alert), {
-		legacyRoot: true,
 		wrapper,
 	});
 
@@ -150,7 +147,6 @@ it('should return correct unread data for [Channel with unread messages alert on
 
 it('should return correct unread data for [Mention and group mention]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(mentionAndGroupMention), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('danger');
@@ -164,7 +160,6 @@ it('should return correct unread data for [Mention and group mention]', async ()
 
 it('should return correct unread data for [Group mention]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(groupMention), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('warning');
@@ -178,7 +173,6 @@ it('should return correct unread data for [Group mention]', async () => {
 
 it('should return correct unread data for [Thread unread]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(tunread), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('primary');
@@ -192,7 +186,6 @@ it('should return correct unread data for [Thread unread]', async () => {
 
 it('should return correct unread data for [Thread and thread user mention]', async () => {
 	const { result } = renderHook(() => useUnreadDisplay(tunreadUser), {
-		legacyRoot: true,
 		wrapper,
 	});
 	expect(result.current.unreadVariant).toBe('danger');
@@ -205,27 +198,21 @@ it('should return correct unread data for [Thread and thread user mention]', asy
 });
 
 it('should not highlight unread if hideUnreadStatus is enabled', async () => {
-	const { result } = renderHook(() => useUnreadDisplay(hideUnreadStatus), {
-		legacyRoot: true,
-	});
+	const { result } = renderHook(() => useUnreadDisplay(hideUnreadStatus));
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(true);
 });
 
 it('should not show unread if hideUnreadStatus and hideMentionStatus is enabled', async () => {
-	const { result } = renderHook(() => useUnreadDisplay(hideUnreadAndMention), {
-		legacyRoot: true,
-	});
+	const { result } = renderHook(() => useUnreadDisplay(hideUnreadAndMention));
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(false);
 });
 
 it("should not show unread if there isn't any unread message", async () => {
-	const { result } = renderHook(() => useUnreadDisplay(noUnread), {
-		legacyRoot: true,
-	});
+	const { result } = renderHook(() => useUnreadDisplay(noUnread));
 
 	expect(result.current.highlightUnread).toBe(false);
 	expect(result.current.showUnread).toBe(false);

@@ -17,10 +17,9 @@ import {
 	FieldRow,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -64,20 +63,20 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const channelField = useUniqueId();
-	const usernameField = useUniqueId();
-	const aliasField = useUniqueId();
-	const avatarField = useUniqueId();
-	const emojiField = useUniqueId();
-	const overrideDestinationChannelEnabledField = useUniqueId();
-	const scriptEnabledField = useUniqueId();
-	const scriptEngineField = useUniqueId();
-	const scriptField = useUniqueId();
-	const webhookUrlField = useUniqueId();
-	const tokenField = useUniqueId();
-	const curlField = useUniqueId();
+	const enabledField = useId();
+	const nameField = useId();
+	const channelField = useId();
+	const usernameField = useId();
+	const aliasField = useId();
+	const avatarField = useId();
+	const emojiField = useId();
+	const overrideDestinationChannelEnabledField = useId();
+	const scriptEnabledField = useId();
+	const scriptEngineField = useId();
+	const scriptField = useId();
+	const webhookUrlField = useId();
+	const tokenField = useId();
+	const curlField = useId();
 
 	return (
 		<Box maxWidth='x600' alignSelf='center' w='full'>

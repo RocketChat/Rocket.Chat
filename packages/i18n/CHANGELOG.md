@@ -1,5 +1,185 @@
 # @rocket.chat/i18n
 
+## 1.7.0
+
+### Minor Changes
+
+- ([#35830](https://github.com/RocketChat/Rocket.Chat/pull/35830)) Introduces a new feature which enables dragging the VoIP call widget to change its position on the screen.
+
+- ([#35996](https://github.com/RocketChat/Rocket.Chat/pull/35996)) Improves the alert shown after pruning messages to reflect that files have been pruned when the "files only" option was selected.
+
+- ([#35776](https://github.com/RocketChat/Rocket.Chat/pull/35776)) Improves handling of errors during voice calls
+
+### Patch Changes
+
+- ([#35815](https://github.com/RocketChat/Rocket.Chat/pull/35815)) Fixes some warnings on delete user modal when deleting a user who has owner role in some rooms.
+
+- ([#35903](https://github.com/RocketChat/Rocket.Chat/pull/35903)) fixes a typo in "High scalability" word
+
+## 1.7.0-rc.0
+
+### Minor Changes
+
+- ([#35830](https://github.com/RocketChat/Rocket.Chat/pull/35830)) Introduces a new feature which enables dragging the VoIP call widget to change its position on the screen.
+
+- ([#35996](https://github.com/RocketChat/Rocket.Chat/pull/35996)) Improves the alert shown after pruning messages to reflect that files have been pruned when the "files only" option was selected.
+
+- ([#35776](https://github.com/RocketChat/Rocket.Chat/pull/35776)) Improves handling of errors during voice calls
+
+### Patch Changes
+
+- ([#35815](https://github.com/RocketChat/Rocket.Chat/pull/35815)) Fixes some warnings on delete user modal when deleting a user who has owner role in some rooms.
+
+- ([#35903](https://github.com/RocketChat/Rocket.Chat/pull/35903)) fixes a typo in "High scalability" word
+
+## 1.6.0
+
+### Minor Changes
+
+- ([#35717](https://github.com/RocketChat/Rocket.Chat/pull/35717)) Adds new settings to allow configuring custom variables with string manipulation functions on the LDAP data mapper
+
+- ([#35613](https://github.com/RocketChat/Rocket.Chat/pull/35613)) Replaces the parent room tag in room header in favor of a button to back to the parent room
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#35218](https://github.com/RocketChat/Rocket.Chat/pull/35218)) Adds a new admin page to audit settings changes in a server
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#35718](https://github.com/RocketChat/Rocket.Chat/pull/35718)) Adds a new setting to allow syncing federated users data through LDAP
+
+- ([#35807](https://github.com/RocketChat/Rocket.Chat/pull/35807)) Moves the room search functionality from the sidebar to the navbar and reorganize their relative actions
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#35703](https://github.com/RocketChat/Rocket.Chat/pull/35703)) Adds close action to contact unknown callout displayed within Livechat rooms
+
+### Patch Changes
+
+- ([#35568](https://github.com/RocketChat/Rocket.Chat/pull/35568)) Fixes an issue with the leave room confirmation modal not displaying the room's name.
+
+- ([#35832](https://github.com/RocketChat/Rocket.Chat/pull/35832)) Fixes an issue where Voice Calls were unable to gather Ice Servers
+
+- ([#35709](https://github.com/RocketChat/Rocket.Chat/pull/35709)) Improves UX for users with mandatory 2FA roles by clarifying required actions
+
+- ([#35733](https://github.com/RocketChat/Rocket.Chat/pull/35733) by [@Gustrb](https://github.com/Gustrb)) Fixes a typo in the app update success toast
+
+## 1.6.0-rc.0
+
+### Minor Changes
+
+- ([#35717](https://github.com/RocketChat/Rocket.Chat/pull/35717)) Adds new settings to allow configuring custom variables with string manipulation functions on the LDAP data mapper
+
+- ([#35613](https://github.com/RocketChat/Rocket.Chat/pull/35613)) Replaces the parent room tag in room header in favor of a button to back to the parent room
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#35218](https://github.com/RocketChat/Rocket.Chat/pull/35218)) Adds a new admin page to audit settings changes in a server
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#35718](https://github.com/RocketChat/Rocket.Chat/pull/35718)) Adds a new setting to allow syncing federated users data through LDAP
+
+- ([#35807](https://github.com/RocketChat/Rocket.Chat/pull/35807)) Moves the room search functionality from the sidebar to the navbar and reorganize their relative actions
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+- ([#35703](https://github.com/RocketChat/Rocket.Chat/pull/35703)) Adds close action to contact unknown callout displayed within Livechat rooms
+
+### Patch Changes
+
+- ([#35568](https://github.com/RocketChat/Rocket.Chat/pull/35568)) Fixes an issue with the leave room confirmation modal not displaying the room's name.
+
+- ([#35832](https://github.com/RocketChat/Rocket.Chat/pull/35832)) Fixes an issue where Voice Calls were unable to gather Ice Servers
+
+- ([#35709](https://github.com/RocketChat/Rocket.Chat/pull/35709)) Improves UX for users with mandatory 2FA roles by clarifying required actions
+
+- ([#35733](https://github.com/RocketChat/Rocket.Chat/pull/35733)) Fixes a typo in the app update success toast
+
+## 1.5.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+### Patch Changes
+
+- ([#35545](https://github.com/RocketChat/Rocket.Chat/pull/35545)) Fixes an issue where video conference popup not displaying properly when trying to call again in direct messages
+
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+### Patch Changes
+
+- ([#35545](https://github.com/RocketChat/Rocket.Chat/pull/35545)) Fixes an issue where video conference popup not displaying properly when trying to call again in direct messages
+
+## 1.4.0
+
+### Minor Changes
+
+- ([#34208](https://github.com/RocketChat/Rocket.Chat/pull/34208)) Adds a new endpoint `rooms.hide` to hide rooms of any type when provided with the room's ID
+
+- ([#34274](https://github.com/RocketChat/Rocket.Chat/pull/34274)) Adds a new setting that if enabled, will not count bot messages in the average response time metrics
+
+- ([#34957](https://github.com/RocketChat/Rocket.Chat/pull/34957)) Implements a modal to let users know about VoIP calls in direct messages and missing configurations.
+
+- ([#35208](https://github.com/RocketChat/Rocket.Chat/pull/35208)) Adds the Leader group to rooms' members list for better role visibility and consistency.
+
+### Patch Changes
+
+- ([#35189](https://github.com/RocketChat/Rocket.Chat/pull/35189)) fixes toast with empty error messages when a private app installation fails
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#34926](https://github.com/RocketChat/Rocket.Chat/pull/34926)) Enables control of video conference ringing and dialing sounds through the call ringer volume user preference, preventing video conf calls from always playing at maximum volume.
+
+- ([#34975](https://github.com/RocketChat/Rocket.Chat/pull/34975)) Fixes issue where a invalid `Accounts_CustomFieldsToShowInUserInfo` value would break the ui
+
+- ([#33141](https://github.com/RocketChat/Rocket.Chat/pull/33141)) Fixes an issue where video conf message block wasn't considering display avatars preference
+
+## 1.4.0-rc.0
+
+### Minor Changes
+
+- ([#34208](https://github.com/RocketChat/Rocket.Chat/pull/34208)) Adds a new endpoint `rooms.hide` to hide rooms of any type when provided with the room's ID
+
+- ([#34274](https://github.com/RocketChat/Rocket.Chat/pull/34274)) Adds a new setting that if enabled, will not count bot messages in the average response time metrics
+
+- ([#34957](https://github.com/RocketChat/Rocket.Chat/pull/34957)) Implements a modal to let users know about VoIP calls in direct messages and missing configurations.
+
+- ([#35208](https://github.com/RocketChat/Rocket.Chat/pull/35208)) Adds the Leader group to rooms' members list for better role visibility and consistency.
+
+### Patch Changes
+
+- ([#35189](https://github.com/RocketChat/Rocket.Chat/pull/35189)) fixes toast with empty error messages when a private app installation fails
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- ([#34926](https://github.com/RocketChat/Rocket.Chat/pull/34926)) Enables control of video conference ringing and dialing sounds through the call ringer volume user preference, preventing video conf calls from always playing at maximum volume.
+
+- ([#34975](https://github.com/RocketChat/Rocket.Chat/pull/34975)) Fixes issue where a invalid `Accounts_CustomFieldsToShowInUserInfo` value would break the ui
+
+- ([#33141](https://github.com/RocketChat/Rocket.Chat/pull/33141)) Fixes an issue where video conf message block wasn't considering display avatars preference
+
+## 1.3.0
+
+### Minor Changes
+
+- ([#34153](https://github.com/RocketChat/Rocket.Chat/pull/34153)) Groups members by their roles in the room's member list for improved clarity
+
+- ([#34940](https://github.com/RocketChat/Rocket.Chat/pull/34940)) Allows agents and managers to close Omnichannel rooms that for some reason ended up in a bad state. This "bad state" could be a room that appears open but it's closed. Now, the endpoint `livechat/room.closeByUser` will accept an optional `forceClose` parameter that will allow users to bypass most state checks we do on rooms and perform the room closing again so its state can be recovered.
+
+- ([#34922](https://github.com/RocketChat/Rocket.Chat/pull/34922)) Fixes an issue where users without the "Preview public channel" permission would receive new messages sent to the channel
+
+### Patch Changes
+
+- ([#35009](https://github.com/RocketChat/Rocket.Chat/pull/35009)) Fix an issue with apps installations via Marketplace
+
+## 1.3.0-rc.0
+
+### Minor Changes
+
+- ([#34153](https://github.com/RocketChat/Rocket.Chat/pull/34153)) Groups members by their roles in the room's member list for improved clarity
+
+- ([#34940](https://github.com/RocketChat/Rocket.Chat/pull/34940)) Allows agents and managers to close Omnichannel rooms that for some reason ended up in a bad state. This "bad state" could be a room that appears open but it's closed. Now, the endpoint `livechat/room.closeByUser` will accept an optional `forceClose` parameter that will allow users to bypass most state checks we do on rooms and perform the room closing again so its state can be recovered.
+
+- ([#34922](https://github.com/RocketChat/Rocket.Chat/pull/34922)) Fixes an issue where users without the "Preview public channel" permission would receive new messages sent to the channel
+
 ## 1.2.0
 
 ### Minor Changes

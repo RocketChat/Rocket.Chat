@@ -11,7 +11,7 @@ export const uploadFileToWebdav = async (accountId: IWebdavAccount['_id'], fileD
 	}
 
 	const uploadFolder = 'Rocket.Chat Uploads/';
-	const buffer = Buffer.from(fileData);
+	const buffer = Buffer.isBuffer(fileData) ? fileData : Buffer.from(fileData);
 
 	const cred = getWebdavCredentials(account);
 	const client = new WebdavClientAdapter(account.serverURL, cred);

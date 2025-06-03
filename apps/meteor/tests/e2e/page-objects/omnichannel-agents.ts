@@ -14,8 +14,8 @@ export class OmnichannelAgents {
 	constructor(page: Page) {
 		this.page = page;
 		this.sidenav = new OmnichannelSidenav(page);
-		this.editCtxBar = page.locator('[data-qa-id="agent-edit-contextual-bar"]');
-		this.infoCtxBar = page.locator('[data-qa-id="agent-info-contextual-bar"]');
+		this.editCtxBar = page.getByRole('dialog', { name: 'Edit User' });
+		this.infoCtxBar = page.getByRole('dialog', { name: 'User Info' });
 	}
 
 	get inputUsername(): Locator {
@@ -54,6 +54,10 @@ export class OmnichannelAgents {
 		return this.infoCtxBar.locator('role=button[name="Remove"]');
 	}
 
+	get btnClose(): Locator {
+		return this.editCtxBar.getByRole('button', { name: 'Close', exact: true });
+	}
+
 	get btnSave(): Locator {
 		return this.editCtxBar.locator('[data-qa-id="agent-edit-save"]');
 	}
@@ -67,13 +71,31 @@ export class OmnichannelAgents {
 	}
 
 	get inputDepartment(): Locator {
-		return this.editCtxBar.locator('[data-qa-id="agent-edit-departments"]');
+		return this.editCtxBar.getByLabel('Departments').getByRole('textbox');
+	}
+
+	get scrollContainer(): Locator {
+		return this.page.locator('#position-container').getByTestId('virtuoso-scroller');
+	}
+
+	findOption(name: string) {
+		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
+	}
+
+	scrollToListBottom() {
+		return this.scrollContainer.evaluate((el) => {
+			el.scrollTop = el.scrollHeight;
+			el.dispatchEvent(new Event('scroll'));
+		});
 	}
 
 	async selectDepartment(name: string) {
 		await this.inputDepartment.click();
-		await this.inputDepartment.press(name[0]); // department input doesn't accept text, this only makes it focus on the first element that begins with that letter
-		await this.page.locator(`.rcx-option__content:has-text("${name}")`).click();
+		await this.inputDepartment.fill(name);
+		await this.findOption(name).click();
+		// TODO: This is necessary due to the PaginatedMultiSelectFiltered not closing the list when an option is selected nor when close is clicked.
+		// The line below can be removed once the component is adjusted in Fuselage
+		await this.editCtxBar.click();
 	}
 
 	async selectStatus(status: string) {
@@ -95,6 +117,6 @@ export class OmnichannelAgents {
 	}
 
 	findSelectedDepartment(name: string) {
-		return this.page.locator(`role=option[name="${name}"]`);
+		return this.editCtxBar.getByLabel('Departments', { exact: true }).getByRole('option', { name });
 	}
 }

@@ -21,14 +21,15 @@ export class AppLicenseManager {
         this.userBridge = this.manager.getBridges().getUserBridge();
     }
 
-    public async validate(validationResult: AppLicenseValidationResult, appMarketplaceInfo?: IMarketplaceInfo): Promise<void> {
-        if (!appMarketplaceInfo || appMarketplaceInfo.purchaseType !== MarketplacePurchaseType.PurchaseTypeSubscription) {
+    public async validate(validationResult: AppLicenseValidationResult, appMarketplaceInfo?: IMarketplaceInfo[]): Promise<void> {
+        const marketplaceInfo = appMarketplaceInfo?.[0];
+        if (!marketplaceInfo || marketplaceInfo.purchaseType !== MarketplacePurchaseType.PurchaseTypeSubscription) {
             return;
         }
 
         validationResult.setValidated(true);
 
-        const encryptedLicense = appMarketplaceInfo.subscriptionInfo.license.license;
+        const encryptedLicense = marketplaceInfo.subscriptionInfo.license.license;
 
         if (!encryptedLicense) {
             validationResult.addError('license', 'License for app is invalid');
@@ -47,7 +48,7 @@ export class AppLicenseManager {
 
         switch (license.version) {
             case LicenseVersion.v1:
-                await this.validateV1(appMarketplaceInfo, license, validationResult);
+                await this.validateV1(marketplaceInfo, license, validationResult);
                 break;
         }
     }

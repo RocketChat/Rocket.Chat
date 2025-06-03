@@ -16,10 +16,12 @@ import {
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { getErrorMessage } from '../../../../lib/errorHandling';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
@@ -117,7 +119,7 @@ const ThreadList = () => {
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='thread' />
 				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
@@ -144,7 +146,7 @@ const ThreadList = () => {
 
 				{error && (
 					<Callout mi={24} type='danger'>
-						{error.toString()}
+						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
 
@@ -152,36 +154,37 @@ const ThreadList = () => {
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							totalCount={itemCount}
-							endReached={
-								phase === AsyncStatePhase.LOADING
-									? (): void => undefined
-									: (start): void => {
-											loadMoreItems(start, Math.min(50, itemCount - start));
-										}
-							}
-							overscan={25}
-							data={items}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_index, data: IThreadMainMessage): ReactElement => (
-								<ThreadListItem
-									thread={data}
-									unread={subscription?.tunread ?? []}
-									unreadUser={subscription?.tunreadUser ?? []}
-									unreadGroup={subscription?.tunreadGroup ?? []}
-									onClick={handleThreadClick}
-								/>
-							)}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={itemCount}
+								endReached={
+									phase === AsyncStatePhase.LOADING
+										? (): void => undefined
+										: (start): void => {
+												loadMoreItems(start, Math.min(50, itemCount - start));
+											}
+								}
+								overscan={25}
+								data={items}
+								itemContent={(_index, data: IThreadMainMessage): ReactElement => (
+									<ThreadListItem
+										thread={data}
+										unread={subscription?.tunread ?? []}
+										unreadUser={subscription?.tunreadUser ?? []}
+										unreadGroup={subscription?.tunreadGroup ?? []}
+										onClick={handleThreadClick}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

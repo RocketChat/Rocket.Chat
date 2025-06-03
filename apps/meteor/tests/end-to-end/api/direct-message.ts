@@ -1,5 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -462,23 +463,33 @@ describe('[Direct Messages]', () => {
 
 	describe('/im.messages', () => {
 		let testUser: IUser;
+		let testUser2: IUser;
 		let testUserDMRoom: IRoom;
 		let testUserCredentials: Credentials;
+		let testUser2Credentials: Credentials;
+
+		let messages: Pick<IMessage, 'rid' | 'msg' | 'mentions'>[] = [];
 
 		before(async () => {
-			testUser = await createUser({ joinDefaultChannels: false, roles: ['admin'] });
+			[testUser, testUser2] = await Promise.all([
+				createUser({ joinDefaultChannels: false, roles: ['admin'], username: `a_${Random.id()}` }),
+				createUser({ joinDefaultChannels: false, username: `b_${Random.id()}` }),
+			]);
 
-			testUserCredentials = await login(testUser.username, password);
+			[testUserCredentials, testUser2Credentials] = await Promise.all([
+				login(testUser.username, password),
+				login(testUser2.username, password),
+			]);
 			await setUserStatus(testUserCredentials);
 
 			testUserDMRoom = (
 				await request
 					.post(api('im.create'))
 					.set(testUserCredentials)
-					.send({ username: `${testUser.username}` })
+					.send({ username: `${testUser2.username}` })
 			).body.room;
 
-			const messages = [
+			messages = [
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${adminUsername} youre being mentioned`,
@@ -499,15 +510,22 @@ describe('[Direct Messages]', () => {
 				},
 			];
 
-			const [, , starredMessage, pinnedMessage] = await Promise.all(
-				messages.map((message) => sendMessage({ message, requestCredentials: testUserCredentials })),
-			);
+			/**
+			 * We are not using `Promise.all` here because we want to ensure that each message is sent sequentially.
+			 * This approach helps in maintaining the order of messages by ts.
+			 */
+			const starredMessage = await sendMessage({ message: messages[0], requestCredentials: testUserCredentials });
+			const pinnedMessage = await sendMessage({ message: messages[1], requestCredentials: testUser2Credentials });
+			await sendMessage({ message: messages[2], requestCredentials: testUserCredentials });
+			await sendMessage({ message: messages[3], requestCredentials: testUser2Credentials });
 
 			await Promise.all([
 				starMessage({ messageId: starredMessage.body.message._id, requestCredentials: testUserCredentials }),
 				pinMessage({ messageId: pinnedMessage.body.message._id, requestCredentials: testUserCredentials }),
 			]);
 		});
+
+		after(async () => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
 
 		it('should return all DM messages that were sent to yourself using your username', (done) => {
 			void request
@@ -523,6 +541,57 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
+		});
+
+		it('should sort by ts by default', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						res.body.messages
+							.sort((a: IMessage, b: IMessage) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+							.map((m: IMessage) => m.u.username),
+					);
+				});
+		});
+
+		it('should allow custom sorting', async () => {
+			const { messages } = (
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({
+						roomId: testUserDMRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+			).body;
+
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					sort: '{"u.username":-1}',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						messages.map((m: IMessage) => m.u.username).sort((a: string, b: string) => b.localeCompare(a)),
+					);
+				});
 		});
 
 		it('should return an error when trying to access a DM that does not belong to the current user', async () => {

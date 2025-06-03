@@ -20,7 +20,7 @@ export class HomeFlextabChannels {
 	}
 
 	get inputChannels(): Locator {
-		return this.page.locator('#modal-root input').first();
+		return this.page.locator('#modal-root').getByRole('dialog').getByRole('textbox');
 	}
 
 	get btnAdd(): Locator {
@@ -29,6 +29,10 @@ export class HomeFlextabChannels {
 
 	get channelsList(): Locator {
 		return this.channelsTab.getByRole('list');
+	}
+
+	getListboxOption(name: string): Locator {
+		return this.page.getByRole('listbox').getByRole('option', { name });
 	}
 
 	channelOption(name: string) {

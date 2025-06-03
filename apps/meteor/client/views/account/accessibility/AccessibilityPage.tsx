@@ -16,11 +16,10 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -48,13 +47,13 @@ const AccessibilityPage = () => {
 		[t],
 	);
 
-	const pageFormId = useUniqueId();
-	const fontSizeId = useUniqueId();
-	const mentionsWithSymbolId = useUniqueId();
-	const clockModeId = useUniqueId();
-	const hideUsernamesId = useUniqueId();
-	const hideRolesId = useUniqueId();
-	const linkListId = useUniqueId();
+	const pageFormId = useId();
+	const fontSizeId = useId();
+	const mentionsWithSymbolId = useId();
+	const clockModeId = useId();
+	const hideUsernamesId = useId();
+	const hideRolesId = useId();
+	const linkListId = useId();
 
 	const {
 		formState: { isDirty, dirtyFields, isSubmitting },
@@ -152,7 +151,7 @@ const AccessibilityPage = () => {
 								</Field>
 								<Field>
 									<FieldRow>
-										<FieldLabel htmlFor={fontSizeId}>{t('Mentions_with_@_symbol')}</FieldLabel>
+										<FieldLabel htmlFor={mentionsWithSymbolId}>{t('Mentions_with_@_symbol')}</FieldLabel>
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'

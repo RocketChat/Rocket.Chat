@@ -4,17 +4,26 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { Rooms } from '../../../../../app/models/client';
+import { RoomNotFoundError } from '../../../../lib/errors/RoomNotFoundError';
 import { queueMicrotask } from '../../../../lib/utils/queueMicrotask';
 
 export function useRoomQuery(
 	rid: IRoom['_id'],
-	options?: UseQueryOptions<IRoom | null, Error, IRoom | null, readonly ['rooms', IRoom['_id']]>,
-): UseQueryResult<IRoom | null, Error> {
+	options?: UseQueryOptions<IRoom, Error, IRoom, readonly ['rooms', IRoom['_id']]>,
+): UseQueryResult<IRoom, Error> {
 	const queryKey = ['rooms', rid] as const;
 
 	const queryResult = useQuery({
 		queryKey,
-		queryFn: async (): Promise<IRoom | null> => Rooms.findOne({ _id: rid }, { reactive: false }) ?? null,
+		queryFn: async () => {
+			const room = Rooms.findOne({ _id: rid }, { reactive: false });
+
+			if (!room) {
+				throw new RoomNotFoundError(undefined, { rid });
+			}
+
+			return room;
+		},
 		staleTime: Infinity,
 		...options,
 	});

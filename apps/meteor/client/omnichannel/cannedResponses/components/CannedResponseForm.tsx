@@ -1,8 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -31,12 +30,12 @@ const CannedResponseForm = () => {
 	const { text, scope } = watch();
 	const [preview, setPreview] = useState(false);
 
-	const shortcutField = useUniqueId();
-	const messageField = useUniqueId();
-	const publicRadioField = useUniqueId();
-	const departmentRadioField = useUniqueId();
-	const privateRadioField = useUniqueId();
-	const departmentField = useUniqueId();
+	const shortcutField = useId();
+	const messageField = useId();
+	const publicRadioField = useId();
+	const departmentRadioField = useId();
+	const privateRadioField = useId();
+	const departmentField = useId();
 
 	return (
 		<FieldGroup>
@@ -100,7 +99,11 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<Controller name='tags' control={control} render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value} />} />
+				<Controller
+					name='tags'
+					control={control}
+					render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value as unknown as string[]} />} // FIXME: fix types
+				/>
 			</Field>
 			{(hasManagerPermission || hasMonitorPermission) && (
 				<>

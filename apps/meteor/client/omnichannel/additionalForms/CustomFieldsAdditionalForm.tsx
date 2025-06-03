@@ -1,8 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint, ToggleSwitch, TextInput, Select } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -36,11 +35,11 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 		[t],
 	);
 
-	const requiredField = useUniqueId();
-	const typeField = useUniqueId();
-	const defaultValueField = useUniqueId();
-	const optionsField = useUniqueId();
-	const publicField = useUniqueId();
+	const requiredField = useId();
+	const typeField = useId();
+	const defaultValueField = useId();
+	const optionsField = useId();
+	const publicField = useId();
 
 	if (!hasLicense) {
 		return null;

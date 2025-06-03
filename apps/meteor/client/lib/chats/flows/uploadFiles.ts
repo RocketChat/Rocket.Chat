@@ -159,12 +159,12 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									size: file.size,
 									// "format": "png"
 								},
-							];
+							] as IMessage['files'];
 
 							return e2eRoom.encryptMessageContent({
 								attachments,
 								files,
-								file: files[0],
+								file: files?.[0],
 							});
 						};
 

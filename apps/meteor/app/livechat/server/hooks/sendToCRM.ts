@@ -5,7 +5,8 @@ import { LivechatRooms, Messages } from '@rocket.chat/models';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { getLivechatRoomGuestInfo } from '../lib/guests';
+import { sendRequest } from '../lib/webhooks';
 
 type AdditionalFields =
 	| Record<string, unknown>
@@ -87,7 +88,7 @@ export const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoo
 	}
 };
 
-async function sendToCRM(
+export async function sendToCRM(
 	type: CRMActions,
 	room: OmnichannelRoomWithExtraFields,
 	includeMessages: boolean | IOmnichannelSystemMessage[] = true,
@@ -96,11 +97,11 @@ async function sendToCRM(
 		return room;
 	}
 
-	const postData: Awaited<ReturnType<typeof LivechatTyped.getLivechatRoomGuestInfo>> & {
+	const postData: Awaited<ReturnType<typeof getLivechatRoomGuestInfo>> & {
 		type: string;
 		messages: IOmnichannelSystemMessage[];
 	} = {
-		...(await LivechatTyped.getLivechatRoomGuestInfo(room)),
+		...(await getLivechatRoomGuestInfo(room)),
 		type,
 		messages: [],
 	};
@@ -139,7 +140,7 @@ async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await LivechatTyped.sendRequest(responseData);
+	const response = await sendRequest(responseData);
 
 	if (response) {
 		const responseData = await response.text();
@@ -163,45 +164,6 @@ callbacks.add(
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-close-room',
-);
-
-callbacks.add(
-	'livechat.newRoom',
-	async (room) => {
-		if (!settings.get('Livechat_webhook_on_start')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionStart', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-start-room',
-);
-
-callbacks.add(
-	'livechat.afterTakeInquiry',
-	async ({ inquiry, room }) => {
-		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		return sendToCRM('LivechatSessionTaken', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-taken',
-);
-
-callbacks.add(
-	'livechat.chatQueued',
-	(room) => {
-		if (!settings.get('Livechat_webhook_on_chat_queued')) {
-			return room;
-		}
-
-		return sendToCRM('LivechatSessionQueued', room);
-	},
-	callbacks.priority.MEDIUM,
-	'livechat-send-crm-room-queued',
 );
 
 callbacks.add(

@@ -13,8 +13,9 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +31,7 @@ type EditRoomProps = {
 	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
+	onClose: () => void;
 };
 
 type EditRoomFormData = {
@@ -62,9 +64,8 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormD
 	roomAvatar: undefined,
 });
 
-const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
+const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -110,7 +111,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 			onChange();
-			router.navigate('/admin/rooms');
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -120,19 +121,19 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
-	const formId = useUniqueId();
-	const roomNameField = useUniqueId();
-	const ownerField = useUniqueId();
-	const roomDescription = useUniqueId();
-	const roomAnnouncement = useUniqueId();
-	const roomTopicField = useUniqueId();
-	const roomTypeField = useUniqueId();
-	const readOnlyField = useUniqueId();
-	const reactWhenReadOnly = useUniqueId();
-	const archivedField = useUniqueId();
-	const isDefaultField = useUniqueId();
-	const favoriteField = useUniqueId();
-	const featuredField = useUniqueId();
+	const formId = useId();
+	const roomNameField = useId();
+	const ownerField = useId();
+	const roomDescription = useId();
+	const roomAnnouncement = useId();
+	const roomTopicField = useId();
+	const roomTypeField = useId();
+	const readOnlyField = useId();
+	const reactWhenReadOnly = useId();
+	const archivedField = useId();
+	const isDefaultField = useId();
+	const favoriteField = useId();
+	const featuredField = useId();
 
 	return (
 		<>

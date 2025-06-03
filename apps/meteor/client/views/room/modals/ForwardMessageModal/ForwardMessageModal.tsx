@@ -1,15 +1,15 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useClipboard, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useClipboard } from '@rocket.chat/fuselage-hooks';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 type ForwardMessageProps = {
@@ -23,7 +23,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { copy, hasCopied } = useClipboard(permalink);
-	const usersAndRoomsField = useUniqueId();
+	const usersAndRoomsField = useId();
 
 	const { control, watch } = useForm({
 		defaultValues: {

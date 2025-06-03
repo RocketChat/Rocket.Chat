@@ -17,8 +17,9 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {
@@ -80,7 +81,7 @@ const TeamsChannels = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='hash' />
 				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
@@ -111,15 +112,17 @@ const TeamsChannels = ({
 							</Box>
 						</Box>
 						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
-							<Virtuoso
-								totalCount={total}
-								data={channels}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-								itemContent={(index, data) => (
-									<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<Virtuoso
+									totalCount={total}
+									data={channels}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+									itemContent={(index, data) => (
+										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}
@@ -140,7 +143,7 @@ const TeamsChannels = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

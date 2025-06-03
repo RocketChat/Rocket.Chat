@@ -20,9 +20,7 @@ describe('state function', () => {
       actionId: 'action-id',
     };
 
-    const { result } = renderHook(() => useUiKitState(element, context), {
-      legacyRoot: true,
-    });
+    const { result } = renderHook(() => useUiKitState(element, context));
 
     await act(async () => {
       const [, state] = result.current;
@@ -51,9 +49,7 @@ describe('action function', () => {
       actionId: 'action-id',
     };
 
-    const { result } = renderHook(() => useUiKitState(element, context), {
-      legacyRoot: true,
-    });
+    const { result } = renderHook(() => useUiKitState(element, context));
 
     await act(async () => {
       const [, action] = result.current;

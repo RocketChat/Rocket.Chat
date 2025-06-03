@@ -14,9 +14,9 @@ import {
 	FieldRow,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -41,6 +41,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
+// TODO: Replace `Modal` in favor of `GenericModal`
 const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
@@ -84,20 +85,21 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		});
 	};
 
-	const parentRoomId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const discussionNameId = useUniqueId();
-	const membersId = useUniqueId();
-	const firstMessageId = useUniqueId();
-	const topicId = useUniqueId();
+	const parentRoomId = useId();
+	const encryptedId = useId();
+	const discussionNameId = useId();
+	const membersId = useId();
+	const firstMessageId = useId();
+	const topicId = useId();
+	const modalId = useId();
 
 	return (
 		<Modal
-			data-qa='create-discussion-modal'
+			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
 			<Modal.Header>
-				<Modal.Title>{t('Discussion_title')}</Modal.Title>
+				<Modal.Title id={`${modalId}-title`}>{t('Discussion_title')}</Modal.Title>
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>

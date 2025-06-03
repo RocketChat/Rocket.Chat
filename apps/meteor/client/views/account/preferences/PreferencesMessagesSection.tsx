@@ -1,7 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldRow, FieldLink, FieldHint, FieldLabel, AccordionItem, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -27,17 +26,17 @@ const PreferencesMessagesSection = () => {
 		[t],
 	);
 
-	const unreadAlertId = useUniqueId();
-	const showThreadsInMainChannelId = useUniqueId();
-	const alsoSendThreadToChannelId = useUniqueId();
-	const useEmojisId = useUniqueId();
-	const convertAsciiEmojiId = useUniqueId();
-	const autoImageLoadId = useUniqueId();
-	const saveMobileBandwidthId = useUniqueId();
-	const collapseMediaByDefaultId = useUniqueId();
-	const hideFlexTabId = useUniqueId();
-	const displayAvatarsId = useUniqueId();
-	const sendOnEnterId = useUniqueId();
+	const unreadAlertId = useId();
+	const showThreadsInMainChannelId = useId();
+	const alsoSendThreadToChannelId = useId();
+	const useEmojisId = useId();
+	const convertAsciiEmojiId = useId();
+	const autoImageLoadId = useId();
+	const saveMobileBandwidthId = useId();
+	const collapseMediaByDefaultId = useId();
+	const hideFlexTabId = useId();
+	const displayAvatarsId = useId();
+	const sendOnEnterId = useId();
 
 	return (
 		<AccordionItem title={t('Messages')}>

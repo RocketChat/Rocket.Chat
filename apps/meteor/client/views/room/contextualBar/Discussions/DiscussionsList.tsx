@@ -16,8 +16,9 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarTitle,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type DiscussionsListProps = {
@@ -55,7 +56,7 @@ function DiscussionsList({
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
 				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
@@ -87,23 +88,24 @@ function DiscussionsList({
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-								overflow: 'hidden',
-							}}
-							totalCount={total}
-							endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
-							overscan={25}
-							data={discussions}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+									overflow: 'hidden',
+								}}
+								totalCount={total}
+								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
+								overscan={25}
+								data={discussions}
+								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 }
 

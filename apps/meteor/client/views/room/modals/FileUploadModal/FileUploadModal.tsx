@@ -1,9 +1,9 @@
 import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
@@ -73,9 +73,16 @@ const FileUploadModal = ({
 		}
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
-	const fileUploadFormId = useUniqueId();
-	const fileNameField = useUniqueId();
-	const fileDescriptionField = useUniqueId();
+	const fileUploadFormId = useId();
+	const fileNameField = useId();
+	const fileDescriptionField = useId();
+	const autoFocusRef = useAutoFocus();
+
+	const { ref, ...descriptionField } = register('description', {
+		validate: (value) => isDescriptionValid(value || ''),
+	});
+
+	const descriptionRef = useMergedRefs(ref, autoFocusRef);
 
 	return (
 		<Modal
@@ -87,7 +94,7 @@ const FileUploadModal = ({
 			<Box display='flex' flexDirection='column' height='100%'>
 				<Modal.Header>
 					<Modal.Title id={`${fileUploadFormId}-title`}>{t('FileUpload')}</Modal.Title>
-					<Modal.Close tabIndex={-1} onClick={onClose} />
+					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
@@ -116,9 +123,8 @@ const FileUploadModal = ({
 								<FieldRow>
 									<TextInput
 										id={fileDescriptionField}
-										{...register('description', {
-											validate: (value) => isDescriptionValid(value || ''),
-										})}
+										ref={descriptionRef}
+										{...descriptionField}
 										error={errors.description?.message}
 										aria-invalid={errors.description ? 'true' : 'false'}
 										aria-describedby={`${fileDescriptionField}-error`}

@@ -55,6 +55,12 @@ export interface VoIPUserConfiguration {
 	 * The url of the rocket.chat workspace this user is connecting from
 	 */
 	siteUrl: string;
+
+	/**
+	 * Time to wait for Ice Gathering to complete
+	 * @defaultValue 5000
+	 */
+	iceGatheringTimeout?: number;
 }
 
 export interface IMediaStreamRenderer {

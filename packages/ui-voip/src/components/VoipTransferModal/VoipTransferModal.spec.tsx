@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { act, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import VoipTransferModal from './VoipTransferModal';
@@ -51,17 +51,16 @@ it('should be able to select transfer target', async () => {
 				success: true,
 			}))
 			.build(),
-		legacyRoot: true,
 	});
 	const hangUpAnTransferButton = screen.getByRole('button', { name: 'Hang_up_and_transfer_call' });
 
 	expect(hangUpAnTransferButton).toBeDisabled();
 
-	await act(async () => {
-		await userEvent.type(screen.getByRole('textbox', { name: 'Transfer_to' }), 'Jane Doe');
-		const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
-		await userEvent.click(userOption);
-	});
+	await userEvent.type(screen.getByRole('textbox', { name: 'Transfer_to' }), 'Jane Doe');
+
+	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
+
+	await userEvent.click(userOption);
 
 	expect(hangUpAnTransferButton).toBeEnabled();
 	await userEvent.click(hangUpAnTransferButton);
@@ -74,7 +73,6 @@ it('should call onCancel when Cancel is clicked', async () => {
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -87,7 +85,6 @@ it('should call onCancel when X is clicked', async () => {
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	await userEvent.click(screen.getByRole('button', { name: 'Close' }));

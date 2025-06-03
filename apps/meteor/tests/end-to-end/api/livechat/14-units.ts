@@ -17,10 +17,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updatePermission('manage-livechat-departments', ['livechat-manager', 'livechat-monitor', 'admin']);
+		await updateSetting('Omnichannel_enable_department_removal', true);
+	});
+	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 
 	describe('[GET] livechat/units', () => {
-		it('should fail if manage-livechat-units permission is missing', async () => {
+		it('should return empty if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
 			return request
 				.get(api('livechat/units'))
@@ -33,7 +37,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 					unitMonitors: [],
 					unitDepartments: [],
 				})
-				.expect(403);
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('units').that.is.an('array').with.lengthOf(0);
+				});
 		});
 		it('should return a list of units', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);

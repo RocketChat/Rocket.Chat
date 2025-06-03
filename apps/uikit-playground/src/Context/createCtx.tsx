@@ -13,7 +13,7 @@ export default function createCtx<ActionType>(
     dispatch: defaultDispatch,
   });
   const Provider = (props: { children: ReactElement }) => {
-    const [state, dispatch] = useReducer<Reducer<initialStateType, ActionType>>(
+    const [state, dispatch] = useReducer(
       reducer,
       initialState
     );

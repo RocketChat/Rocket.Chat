@@ -79,6 +79,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				unique: false,
 			},
 			{
+				key: { activity: 1 },
+				sparse: true,
+			},
+			{
 				key: { channels: 1 },
 				unique: false,
 			},
@@ -169,6 +173,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		};
 
 		return this.findOne(query);
+	}
+
+	async findContactByEmailAndContactManager(email: string): Promise<Pick<ILivechatContact, 'contactManager'> | null> {
+		return this.findOne(
+			{ emails: { $elemMatch: { address: email } }, contactManager: { $exists: true } },
+			{ projection: { contactManager: 1 } },
+		);
 	}
 
 	private makeQueryForVisitor(
@@ -281,6 +292,34 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedContact;
 	}
 
+	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number> {
+		const query = {
+			...this.makeQueryForVisitor(visitor),
+			activity: period,
+		};
+
+		return this.countDocuments(query);
+	}
+
+	markContactActiveForPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<UpdateResult> {
+		const update = {
+			$push: {
+				activity: {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(this.makeQueryForVisitor(visitor), update);
+	}
+
+	countContactsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
+	}
+
 	countByContactInfo({ contactId, email, phone }: { contactId?: string; email?: string; phone?: string }): Promise<number> {
 		const filter = {
 			...(email && { 'emails.address': email }),
@@ -334,5 +373,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			],
 			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 		);
+	}
+
+	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult> {
+		return this.updateOne({ 'channels.visitor.visitorId': visitorId }, update, options);
 	}
 }

@@ -17,7 +17,6 @@ it('should open modal when open method is called', () => {
 				Cancel__planName__subscription: 'Cancel {{planName}} subscription',
 			})
 			.build(),
-		legacyRoot: true,
 	});
 
 	expect(screen.queryByText('Cancel Starter subscription')).not.toBeInTheDocument();
@@ -34,7 +33,6 @@ it('should close modal cancel is clicked', async () => {
 				Cancel__planName__subscription: 'Cancel {{planName}} subscription',
 			})
 			.build(),
-		legacyRoot: true,
 	});
 
 	act(() => result.current.open());
@@ -55,7 +53,6 @@ it('should call remove license endpoint when confirm is clicked', async () => {
 				Cancel__planName__subscription: 'Cancel {{planName}} subscription',
 			})
 			.build(),
-		legacyRoot: true,
 	});
 
 	act(() => result.current.open());

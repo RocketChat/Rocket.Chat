@@ -2,8 +2,18 @@ import fs from 'fs';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRole, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, SettingValue } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRole,
+	IRoom,
+	ITeam,
+	IUpload,
+	IUser,
+	ImageAttachmentProps,
+	MessageAttachment,
+	SettingValue,
+} from '@rocket.chat/core-typings';
+import { isFileAttachment, isQuoteAttachment, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
@@ -1176,6 +1186,116 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+
+		it('should remove only files and file attachments when filesOnly is set to true', async () => {
+			const message1Response = await sendSimpleMessage({ roomId: publicChannel._id });
+
+			const mediaUploadResponse = await request
+				.post(api(`rooms.media/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect(200);
+
+			const message2Response = await request
+				.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaUploadResponse.body.file._id}`))
+				.set(credentials)
+				.send({ msg: 'message with file only' })
+				.expect(200);
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					filesOnly: true,
+				})
+				.expect(200);
+
+			const res = await request.get(api('channels.messages')).set(credentials).query({ roomId: publicChannel._id }).expect(200);
+
+			expect(res.body.messages).to.be.an('array');
+			const messageIds = res.body.messages.map((m: IMessage) => m._id);
+			expect(messageIds).to.contain(message1Response.body.message._id);
+			expect(messageIds).to.contain(message2Response.body.message._id);
+			const cleanedMessage = res.body.messages.find((m: { _id: any }) => m._id === message2Response.body.message._id);
+			expect(cleanedMessage).to.exist;
+			expect(cleanedMessage.file).to.be.undefined;
+			expect(cleanedMessage.files?.length ?? 0).to.equal(0);
+			expect((cleanedMessage.attachments ?? []).find((a: MessageAttachment) => isFileAttachment(a))).to.be.undefined;
+
+			await request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					expect(res.body.files).to.have.lengthOf(0);
+				});
+		});
+
+		it('should not remove quote attachments when filesOnly is set to true', async () => {
+			const siteUrl = await getSettingValueById('Site_Url');
+			const message1Response = await sendSimpleMessage({ roomId: publicChannel._id });
+			const mediaResponse = await request
+				.post(api(`rooms.media/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const message2Response = await request
+				.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+				.set(credentials)
+				.send({
+					msg: new URL(`/${publicChannel.fname}?msg=${message1Response.body.message._id}`, siteUrl as string).toString(),
+				})
+				.expect(200);
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					filesOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const message = (res.body.messages.find((m: { _id: any }) => m._id === message2Response.body.message._id) as IMessage) || null;
+					expect(message).not.to.be.null;
+					expect(message).to.have.property('attachments');
+					const fileAttachment = message.attachments?.find((f) => isFileAttachment(f)) || null;
+					expect(fileAttachment, 'Expected file attachments to be removed').to.be.null;
+					const quoteAttachment = message.attachments?.find((f) => isQuoteAttachment(f)) || null;
+					expect(quoteAttachment, 'Expected quote attachments to be present').not.to.be.null;
+					expect(message.file).to.be.undefined;
+					expect(message.files).to.satisfy((files: IMessage['files']) => files === undefined || files.length === 0);
+				});
+		});
+
 		it('should return success when send a valid private channel', (done) => {
 			void request
 				.post(api('rooms.cleanHistory'))
@@ -3642,22 +3762,30 @@ describe('[Rooms]', () => {
 
 		let testChannel: IRoom;
 		let ownerUser: IUser;
+		let leaderUser: IUser;
 		let moderatorUser: IUser;
 		let memberUser1: IUser;
 		let memberUser2: IUser;
 		let customRole: IRole;
 
 		let ownerCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let memberUser1Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+		let memberUser2Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 
 		before(async () => {
-			[ownerUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
+			[ownerUser, leaderUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
 				createUser({ username: `a_${Random.id()}`, roles: ['admin'] }),
 				createUser({ username: `b_${Random.id()}` }),
 				createUser({ username: `c_${Random.id()}` }),
 				createUser({ username: `d_${Random.id()}` }),
+				createUser({ username: `e_${Random.id()}` }),
 			]);
 
-			ownerCredentials = await login(ownerUser.username, password);
+			[ownerCredentials, memberUser1Credentials, memberUser2Credentials] = await Promise.all([
+				login(ownerUser.username, password),
+				login(memberUser1.username, password),
+				login(memberUser2.username, password),
+			]);
 
 			customRole = await createCustomRole({
 				name: `customRole.${Random.id()}`,
@@ -3674,7 +3802,7 @@ describe('[Rooms]', () => {
 			testChannel = roomCreationResponse.body.channel;
 
 			await Promise.all(
-				[moderatorUser._id, memberUser1._id, memberUser2._id].map((userId) =>
+				[leaderUser._id, moderatorUser._id, memberUser1._id, memberUser2._id].map((userId) =>
 					request
 						.post(api('channels.invite'))
 						.set(ownerCredentials)
@@ -3686,14 +3814,24 @@ describe('[Rooms]', () => {
 				),
 			);
 
-			await request
-				.post(api('channels.addModerator'))
-				.set(ownerCredentials)
-				.send({
-					roomId: testChannel._id,
-					userId: moderatorUser._id,
-				})
-				.expect(200);
+			await Promise.all([
+				request
+					.post(api('channels.addLeader'))
+					.set(ownerCredentials)
+					.send({
+						roomId: testChannel._id,
+						userId: leaderUser._id,
+					})
+					.expect(200),
+				request
+					.post(api('channels.addModerator'))
+					.set(ownerCredentials)
+					.send({
+						roomId: testChannel._id,
+						userId: moderatorUser._id,
+					})
+					.expect(200),
+			]);
 		});
 
 		after(async () => {
@@ -3704,7 +3842,7 @@ describe('[Rooms]', () => {
 			}
 		});
 
-		it('should return a list of members ordered by owner, moderator, then members by default', async () => {
+		it('should return a list of members ordered by owner, leader, moderator, then members by default', async () => {
 			const response = await request
 				.get(api('rooms.membersOrderedByRole'))
 				.set(credentials)
@@ -3717,16 +3855,17 @@ describe('[Rooms]', () => {
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.members).to.be.an('array');
 
-			const [first, second, ...rest] = response.body.members;
+			const [first, second, third, ...rest] = response.body.members;
 			expect(first.username).to.equal(ownerUser.username);
-			expect(second.username).to.equal(moderatorUser.username);
+			expect(second.username).to.equal(leaderUser.username);
+			expect(third.username).to.equal(moderatorUser.username);
 
 			const memberUsernames = rest.map((m: any) => m.username);
 			expect(memberUsernames).to.include(memberUser1.username);
 			expect(memberUsernames).to.include(memberUser2.username);
 
 			expect(response.body).to.have.property('total');
-			expect(response.body.total).to.be.gte(4);
+			expect(response.body.total).to.be.eq(5);
 		});
 
 		it('should support sorting by role in descending priority', async () => {
@@ -3741,12 +3880,13 @@ describe('[Rooms]', () => {
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			const [first, second, third, fourth] = response.body.members;
+			const [first, second, third, fourth, fifth] = response.body.members;
 
 			expect(first.username).to.equal(memberUser1.username);
 			expect(second.username).to.equal(memberUser2.username);
 			expect(third.username).to.equal(moderatorUser.username);
-			expect(fourth.username).to.equal(ownerUser.username);
+			expect(fourth.username).to.equal(leaderUser.username);
+			expect(fifth.username).to.equal(ownerUser.username);
 		});
 
 		it('should support pagination', async () => {
@@ -3763,7 +3903,7 @@ describe('[Rooms]', () => {
 
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.members).to.have.lengthOf(2);
-			expect(response.body.total).to.be.gte(4);
+			expect(response.body.total).to.be.eq(5);
 		});
 
 		it('should return matched members when using filter param', async () => {
@@ -3813,6 +3953,7 @@ describe('[Rooms]', () => {
 
 			const expected = [
 				ownerUser.username, // since owner
+				leaderUser.username, // since leader
 				moderatorUser.username, // since moderator
 				memberUser2.username,
 				memberUser1.username,
@@ -3840,12 +3981,49 @@ describe('[Rooms]', () => {
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			const [first, second, third, fourth] = response.body.members;
+			const [first, second, third, fourth, fifth] = response.body.members;
 
 			expect(first.username).to.equal(ownerUser.username);
-			expect(second.username).to.equal(moderatorUser.username);
-			expect(third.username).to.equal(memberUser1.username);
-			expect(fourth.username).to.equal(memberUser2.username);
+			expect(second.username).to.equal(leaderUser.username);
+			expect(third.username).to.equal(moderatorUser.username);
+			expect(fourth.username).to.equal(memberUser1.username);
+			expect(fifth.username).to.equal(memberUser2.username);
+		});
+
+		describe('Sort by user status', () => {
+			before(async () => {
+				await request.post(api('settings/Accounts_AllowUserStatusMessageChange')).set(credentials).send({ value: true }).expect(200);
+
+				await Promise.all([
+					request.post(api('users.setStatus')).set(memberUser1Credentials).send({ status: 'offline', userId: memberUser1._id }).expect(200),
+					request.post(api('users.setStatus')).set(memberUser2Credentials).send({ status: 'online', userId: memberUser2._id }).expect(200),
+				]);
+			});
+
+			// Skipping resetting setting Accounts_AllowUserStatusMessageChange as default value is true
+			after(() =>
+				request.post(api('users.setStatus')).set(memberUser2Credentials).send({ status: 'offline', userId: memberUser2._id }).expect(200),
+			);
+
+			it('should sort by user status after user role', async () => {
+				const response = await request
+					.get(api('rooms.membersOrderedByRole'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				const [first, second, third, fourth, fifth] = response.body.members;
+
+				expect(first.username).to.equal(ownerUser.username); // since owner
+				expect(second.username).to.equal(leaderUser.username); // since leader
+				expect(third.username).to.equal(moderatorUser.username); // since moderator
+				expect(fourth.username).to.equal(memberUser2.username); // since online
+				expect(fifth.username).to.equal(memberUser1.username); // since offline
+			});
 		});
 
 		describe('Additional Visibility Tests', () => {
@@ -4161,6 +4339,96 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
+		});
+	});
+
+	describe('/rooms.hide', () => {
+		let roomA: IRoom;
+		let roomB: IRoom;
+		const roomName = `rooms.hide.test.${Date.now()}`;
+		let memberA: TestUser<IUser>;
+		let memberB: TestUser<IUser>;
+		let nonMember: TestUser<IUser>;
+		let nonMemberCredentials: Credentials;
+
+		before(async () => {
+			memberA = await createUser();
+			memberB = await createUser();
+			nonMember = await createUser();
+			nonMemberCredentials = await login(nonMember.username, password);
+		});
+
+		before(async () => {
+			roomA = (await createRoom({ type: 'c', name: roomName, members: [memberA.username, memberB.username] })).body.channel;
+			roomB = (await createRoom({ type: 'd', username: memberB.username })).body.room;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: roomA._id });
+			await deleteRoom({ type: 'd', roomId: roomB._id });
+			await deleteUser(memberA);
+			await deleteUser(memberB);
+			await deleteUser(nonMember);
+		});
+
+		it('should hide the room', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send({ roomId: roomA._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should be already hidden', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send({ roomId: roomA._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `error-room-already-hidden`);
+				});
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return 401 if user is not logged in', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should return forbidden if user does not have access to the room', async () => {
+			await request
+				.post(api('rooms.hide'))
+				.set(nonMemberCredentials)
+				.send({ roomId: roomB._id })
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 });

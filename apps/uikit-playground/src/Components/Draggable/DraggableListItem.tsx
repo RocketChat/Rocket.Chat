@@ -1,4 +1,4 @@
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 
 import DeleteElementBtn from '../Preview/Display/UiKitElementWrapper/DeleteElementBtn';
 import UiKitElementWrapper from '../Preview/Display/UiKitElementWrapper/UiKitElementWrapper';

@@ -16,7 +16,7 @@ export function createUserFixture(user: IUserState): UserFixture {
 		_id: `${username}`,
 		type: 'user',
 		active: true,
-		emails: [{ address: `${username}@email.com`, verified: false }],
+		emails: [{ address: `${username}@email.com`, verified: true }],
 		roles: ['user'],
 		name: username,
 		lastLogin: new Date(),

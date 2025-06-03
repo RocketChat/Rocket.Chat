@@ -5,7 +5,6 @@ import { useAdministrationMenu } from './useAdministrationMenu';
 
 it('should return omnichannel item if has `view-livechat-manager` permission ', async () => {
 	const { result } = renderHook(() => useAdministrationMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock
@@ -21,7 +20,7 @@ it('should return omnichannel item if has `view-livechat-manager` permission ', 
 	});
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[0]).toEqual(
+		expect(result.current.items[0]).toEqual(
 			expect.objectContaining({
 				id: 'omnichannel',
 			}),
@@ -31,7 +30,6 @@ it('should return omnichannel item if has `view-livechat-manager` permission ', 
 
 it('should show administration item if has at least one admin permission', async () => {
 	const { result } = renderHook(() => useAdministrationMenu(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock
@@ -47,7 +45,7 @@ it('should show administration item if has at least one admin permission', async
 	});
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[0]).toEqual(
+		expect(result.current.items[0]).toEqual(
 			expect.objectContaining({
 				id: 'workspace',
 			}),

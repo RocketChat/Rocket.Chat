@@ -39,7 +39,7 @@ import { AppInstallationSource } from './storage/IAppStorageItem';
 
 export interface IAppInstallParameters {
     enable: boolean;
-    marketplaceInfo?: IMarketplaceInfo;
+    marketplaceInfo?: IMarketplaceInfo[];
     permissionsGranted?: Array<IPermission>;
     user: IUser;
 }
@@ -617,6 +617,8 @@ export class AppManager {
             return aff;
         }
 
+        app.getStorageItem()._id = created._id;
+
         this.apps.set(app.getID(), app);
         aff.setApp(app);
 
@@ -717,10 +719,15 @@ export class AppManager {
             languageContent: result.languageContent,
             settings: old.settings,
             implemented: result.implemented.getValues(),
-            marketplaceInfo: old.marketplaceInfo,
-            sourcePath: old.sourcePath,
-            permissionsGranted,
+            ...(old.marketplaceInfo && { marketplaceInfo: old.marketplaceInfo }),
+            ...(old.sourcePath && { sourcePath: old.sourcePath }),
         };
+
+        if (!permissionsGranted) {
+            delete descriptor.permissionsGranted;
+        } else {
+            descriptor.permissionsGranted = permissionsGranted;
+        }
 
         try {
             descriptor.sourcePath = await this.appSourceStorage.update(descriptor, appPackage);
@@ -877,13 +884,13 @@ export class AppManager {
                 }
 
                 const appStorageItem = app.getStorageItem();
-                const subscriptionInfo = appStorageItem.marketplaceInfo?.subscriptionInfo;
+                const { subscriptionInfo } = appStorageItem.marketplaceInfo?.[0] || {};
 
                 if (subscriptionInfo && subscriptionInfo.license.license === appInfo.subscriptionInfo.license.license) {
                     return;
                 }
 
-                appStorageItem.marketplaceInfo.subscriptionInfo = appInfo.subscriptionInfo;
+                appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
 
                 return this.appMetadataStorage.update(appStorageItem);
             }),

@@ -17,21 +17,53 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const deleteUserOwnAccount = async (fromUserId: string, password: string, confirmRelinquish = false): Promise<boolean> => {
+	if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'deleteUserOwnAccount',
+		});
+	}
+
+	if (!fromUserId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'deleteUserOwnAccount',
+		});
+	}
+
+	const user = await Users.findOneById(fromUserId);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'deleteUserOwnAccount',
+		});
+	}
+
+	if (user.services?.password && trim(user.services.password.bcrypt)) {
+		const result = await Accounts._checkPasswordAsync(user as Meteor.User, {
+			digest: password.toLowerCase(),
+			algorithm: 'sha-256',
+		});
+		if (result.error) {
+			throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+				method: 'deleteUserOwnAccount',
+			});
+		}
+	} else if (!user.username || SHA256(user.username) !== password.trim()) {
+		throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			method: 'deleteUserOwnAccount',
+		});
+	}
+
+	await deleteUser(fromUserId, confirmRelinquish);
+
+	// App IPostUserDeleted event hook
+	await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user });
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
 		check(password, String);
-
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'deleteUserOwnAccount',
-			});
-		}
-
-		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'deleteUserOwnAccount',
-			});
-		}
 
 		const uid = Meteor.userId();
 		if (!uid) {
@@ -40,34 +72,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = await Users.findOneById(uid);
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'deleteUserOwnAccount',
-			});
-		}
-
-		if (user.services?.password && trim(user.services.password.bcrypt)) {
-			const result = await Accounts._checkPasswordAsync(user as Meteor.User, {
-				digest: password.toLowerCase(),
-				algorithm: 'sha-256',
-			});
-			if (result.error) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'deleteUserOwnAccount',
-				});
-			}
-		} else if (!user.username || SHA256(user.username) !== password.trim()) {
-			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
-				method: 'deleteUserOwnAccount',
-			});
-		}
-
-		await deleteUser(uid, confirmRelinquish);
-
-		// App IPostUserDeleted event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user });
-
-		return true;
+		return deleteUserOwnAccount(uid, password, confirmRelinquish);
 	},
 });

@@ -36,6 +36,7 @@ import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeMana
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import { EventEmitter } from 'stream';
 
 export class TestInfastructureSetup {
     private appStorage: TestsAppStorage;
@@ -475,7 +476,7 @@ export class TestData {
     }
 
     public static getMockApp(id: string, name: string): ProxiedApp {
-        return new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN, info: { id, name } } as IAppStorageItem, {} as DenoRuntimeSubprocessController);
+        return new ProxiedApp({} as AppManager, { status: AppStatus.UNKNOWN, info: { id, name } } as IAppStorageItem, new EventEmitter() as DenoRuntimeSubprocessController);
     }
 }
 

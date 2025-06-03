@@ -9,6 +9,7 @@ export interface IAppMessagesConverter {
 	convertMessage(message: IMessage | undefined | null): Promise<IAppsMessage | undefined>;
 	convertAppMessage(message: undefined | null): Promise<undefined>;
 	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
+	convertAppMessage(message: IAppsMessage, isPartial: boolean): Promise<Partial<IMessage>>;
 	convertAppMessage(message: IAppsMessage | undefined | null): Promise<IMessage | undefined>;
 	convertMessageRaw(message: IMessage): Promise<IAppsMesssageRaw>;
 	convertMessageRaw(message: IMessage | undefined | null): Promise<IAppsMesssageRaw | undefined>;

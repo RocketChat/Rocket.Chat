@@ -88,10 +88,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	const handleClick = useCallback(
 		(username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => {
-			if (!username) {
-				return;
-			}
-
+			if (!username) return;
 			if (e.type === 'click' || (e as KeyboardEvent).key === 'Enter') {
 				directRoute.push({ rid: username });
 			}
