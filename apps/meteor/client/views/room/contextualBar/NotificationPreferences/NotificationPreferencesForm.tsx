@@ -40,13 +40,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 				control={control}
 				name='showCounter'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle
-						label={t('Show_counter')}
-						description={t('Display_unread_counter')}
-						onChange={onChange}
-						defaultChecked={value}
-						checked={value}
-					/>
+					<NotificationToggle label={t('Show_counter')} description={t('Display_unread_counter')} onChange={onChange} checked={value} />
 				)}
 			/>
 			{!showCounter && (
