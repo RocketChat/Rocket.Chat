@@ -208,6 +208,7 @@ API.v1.post(
 					error: { type: 'string' },
 					errorType: { type: 'string' },
 					stack: { type: 'string' },
+					details: { type: 'object' },
 					success: {
 						type: 'boolean',
 						enum: [false],
