@@ -62,8 +62,6 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 		}
 
 		CachedChatSubscription.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
-
-		LegacyRoomManager.computation.invalidate();
 	}, [subscriptionData]);
 
 	useEffect(() => {
