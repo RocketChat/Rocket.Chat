@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/queue-worker",
 	"private": true,
-	"version": "0.4.19-rc.5",
+	"version": "0.4.24",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -45,7 +45,7 @@
 		"@types/polka": "^0.5.7",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/queue-worker/src/service.js",
 	"files": [

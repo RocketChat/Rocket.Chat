@@ -5,8 +5,8 @@ import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
 import { OmnichannelQueue } from './queue';
-import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
+import { notifyAgentStatusChanged } from '../../../app/livechat/server/lib/omni-users';
 import { settings } from '../../../app/settings/server';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
@@ -27,7 +27,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
 			if (hasRole) {
 				// TODO change `Livechat.notifyAgentStatusChanged` to a service call
-				await Livechat.notifyAgentStatusChanged(user._id, user.status);
+				await notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
 	}

@@ -74,8 +74,7 @@ test.describe.serial('embedded-layout', () => {
 		});
 	});
 
-	// TODO: Fix intermittent failure where direct messages sometimes shows "channel not joined" screen
-	test.fixme('direct message', () => {
+	test.describe('direct message', () => {
 		test('should allow sending messages', async ({ page, api }) => {
 			await createDirectMessage(api);
 			await page.goto('/home');

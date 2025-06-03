@@ -31,6 +31,12 @@ export function useChatMessagesInstance({
 	}, [rid, tmid, uid, encrypted, e2eRoomState]);
 
 	useEffect(() => {
+		if (subscription?.rid) {
+			return chatMessages?.readStateManager.subscribeToMessages();
+		}
+	}, [subscription?.rid, chatMessages?.readStateManager]);
+
+	useEffect(() => {
 		if (subscription) {
 			chatMessages?.readStateManager.updateSubscription(subscription);
 		}

@@ -23,11 +23,12 @@ import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { closeRoom } from '../../lib/closeRoom';
+import { saveGuest } from '../../lib/guests';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
 import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -43,7 +44,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-			const extraCheckParams = await onCheckRoomParams({
+			const extraCheckParams = onCheckRoomParams({
 				token: String,
 				rid: Match.Maybe(String),
 				agentId: Match.Maybe(String),
@@ -78,7 +79,7 @@ API.v1.addRoute(
 				const roomInfo = {
 					source: {
 						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
 							: { type: OmnichannelSourceType.API }),
 					},
 				};
@@ -243,7 +244,7 @@ API.v1.addRoute(
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
 
-			if (!(await LivechatTyped.transfer(room, guest, { departmentId: department, transferredBy }))) {
+			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
 				return API.v1.failure();
 			}
 
@@ -339,7 +340,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const chatForwardedResult = await LivechatTyped.transfer(room, guest, transferData);
+			const chatForwardedResult = await transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
 			}
@@ -410,7 +411,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([saveGuest(guestData, this.userId), saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

@@ -81,22 +81,15 @@ test.describe.serial('settings-account-profile', () => {
 			expect(results.violations).toEqual([]);
 		});
 
-		test('expect to disable email 2FA', async () => {
+		test('should disable and enable email 2FA', async () => {
 			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
-			await poAccountProfile.disableEmail2FAButton.click();
-
+			await expect(poAccountProfile.email2FASwitch).toBeVisible();
+			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-		});
+			await poHomeChannel.dismissToast();
 
-		test('expect to enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-			await poAccountProfile.enableEmail2FAButton.click();
-
+			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
 		});
 	});
 
