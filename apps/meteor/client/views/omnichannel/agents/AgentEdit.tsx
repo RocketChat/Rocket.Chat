@@ -10,7 +10,6 @@ import {
 	MultiSelect,
 	Icon,
 	Select,
-	ContextualbarFooter,
 	ButtonGroup,
 	CheckOption,
 } from '@rocket.chat/fuselage';
@@ -27,6 +26,7 @@ import {
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
+	ContextualbarFooter,
 } from '../../../components/Contextualbar';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';

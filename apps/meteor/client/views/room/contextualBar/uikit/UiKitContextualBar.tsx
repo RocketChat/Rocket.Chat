@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
+import { Avatar, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
@@ -12,7 +12,14 @@ import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
-import { ContextualbarClose, ContextualbarDialog, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../components/Contextualbar';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';

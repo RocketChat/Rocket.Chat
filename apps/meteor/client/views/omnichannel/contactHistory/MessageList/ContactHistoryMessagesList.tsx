@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	ContextualbarFooter,
 	Icon,
 	Margins,
 	States,
@@ -29,6 +28,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
+	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';

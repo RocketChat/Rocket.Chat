@@ -5,7 +5,6 @@ import {
 	StatesActions,
 	StatesIcon,
 	StatesTitle,
-	ContextualbarFooter,
 	FieldGroup,
 	Field,
 	FieldLabel,
@@ -17,7 +16,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
-import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
