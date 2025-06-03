@@ -25,6 +25,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 	UserPresenceContext,
+	AuthenticationContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -192,6 +193,16 @@ export class MockedAppRootBuilder {
 			has: () => false,
 			once: () => () => undefined,
 		},
+	};
+
+	private authentication: ContextType<typeof AuthenticationContext> = {
+		loginWithPassword: () => Promise.resolve(),
+		loginWithToken: () => Promise.resolve(),
+		loginWithService: () => () => Promise.resolve(true),
+		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
+		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		queryLoginServices: () => [() => () => undefined, () => undefined],
+		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -534,6 +545,7 @@ export class MockedAppRootBuilder {
 			wrappers,
 			audioInputDevices,
 			audioOutputDevices,
+			authentication,
 		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
@@ -609,51 +621,53 @@ export class MockedAppRootBuilder {
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
 											<UserContext.Provider value={user}>
-												<MockedDeviceContext
-													availableAudioInputDevices={audioInputDevices}
-													availableAudioOutputDevices={audioOutputDevices}
-												>
-													<ModalContext.Provider value={modal}>
-														<AuthorizationContext.Provider value={authorization}>
-															{/* <EmojiPickerProvider>
+												<AuthenticationContext.Provider value={authentication}>
+													<MockedDeviceContext
+														availableAudioInputDevices={audioInputDevices}
+														availableAudioOutputDevices={audioOutputDevices}
+													>
+														<ModalContext.Provider value={modal}>
+															<AuthorizationContext.Provider value={authorization}>
+																{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-															<UserPresenceContext.Provider value={userPresence}>
-																<ActionManagerContext.Provider
-																	value={{
-																		generateTriggerId: () => '',
-																		emitInteraction: () => Promise.reject(new Error('not implemented')),
-																		getInteractionPayloadByViewId: () => undefined,
-																		handleServerInteraction: () => undefined,
-																		off: () => undefined,
-																		on: () => undefined,
-																		openView: () => undefined,
-																		disposeView: () => undefined,
-																		notifyBusy: () => undefined,
-																		notifyIdle: () => undefined,
-																	}}
-																>
-																	<VideoConfContext.Provider value={videoConf}>
-																		{/* <CallProvider>
+																<UserPresenceContext.Provider value={userPresence}>
+																	<ActionManagerContext.Provider
+																		value={{
+																			generateTriggerId: () => '',
+																			emitInteraction: () => Promise.reject(new Error('not implemented')),
+																			getInteractionPayloadByViewId: () => undefined,
+																			handleServerInteraction: () => undefined,
+																			off: () => undefined,
+																			on: () => undefined,
+																			openView: () => undefined,
+																			disposeView: () => undefined,
+																			notifyBusy: () => undefined,
+																			notifyIdle: () => undefined,
+																		}}
+																	>
+																		<VideoConfContext.Provider value={videoConf}>
+																			{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																		{wrappers.reduce<ReactNode>(
-																			(children, wrapper) => wrapper(children),
-																			<>
-																				{children}
-																				{modal.currentModal.component}
-																			</>,
-																		)}
-																		{/* </OmnichannelProvider>
+																			{wrappers.reduce<ReactNode>(
+																				(children, wrapper) => wrapper(children),
+																				<>
+																					{children}
+																					{modal.currentModal.component}
+																				</>,
+																			)}
+																			{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																	</VideoConfContext.Provider>
-																</ActionManagerContext.Provider>
-															</UserPresenceContext.Provider>
-															{/*
+																		</VideoConfContext.Provider>
+																	</ActionManagerContext.Provider>
+																</UserPresenceContext.Provider>
+																{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-														</AuthorizationContext.Provider>
-													</ModalContext.Provider>
-												</MockedDeviceContext>
+															</AuthorizationContext.Provider>
+														</ModalContext.Provider>
+													</MockedDeviceContext>
+												</AuthenticationContext.Provider>
 											</UserContext.Provider>
 											{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
