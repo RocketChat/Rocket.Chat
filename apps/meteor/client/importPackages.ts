@@ -4,7 +4,6 @@ import '../app/autotranslate/client';
 import '../app/emoji/client';
 import '../app/emoji-emojione/client';
 import '../app/gitlab/client';
-import '../app/iframe-login/client';
 import '../app/license/client';
 import '../app/lib/client';
 import '../app/livechat-enterprise/client';
