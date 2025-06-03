@@ -59,6 +59,9 @@ test.describe.parallel('Login', () => {
 	test('Should correctly display switch language button', async ({ page, api }) => {
 		expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
 
+		const buttonDefault = page.getByRole('button', { name: 'Change to Default' });
+		await expect(buttonDefault).not.toBeVisible();
+
 		const button = page.getByRole('button', { name: 'Alterar para português (Brasil)' });
 		await button.click();
 
