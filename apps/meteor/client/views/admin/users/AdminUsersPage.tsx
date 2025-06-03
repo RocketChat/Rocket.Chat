@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { ExternalLink } from '@rocket.chat/ui-client';
@@ -162,15 +162,11 @@ const AdminUsersPage = (): ReactElement => {
 			{context && (
 				<ContextualbarDialog onClose={handleCloseContextualbar}>
 					<ContextualbarHeader>
-						{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
+						{['new', 'created', 'upgrade'].includes(context) && <ContextualbarIcon name='user-plus' />}
 						<ContextualbarTitle>
 							{context === 'info' && t('User_Info')}
 							{context === 'edit' && t('Edit_User')}
-							{(context === 'new' || context === 'created') && (
-								<>
-									<Icon name='user-plus' size={20} /> {t('New_user')}
-								</>
-							)}
+							{(context === 'new' || context === 'created') && t('New_user')}
 							{context === 'invite' && t('Invite_Users')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={handleCloseContextualbar} />
