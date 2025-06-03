@@ -246,23 +246,38 @@ export class Router<
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
 				if (responseValidatorFn && !responseValidatorFn(body)) {
-					return c.json(
-						{
-							success: false,
-							errorType: 'error-invalid-body',
-							error: [
-								`Invalid response for endpoint ${req.method} - ${req.url}.`,
-								`Status code: ${statusCode}`,
-								`Expected schema: ${JSON.stringify(responseValidatorFn.schema, null, 2)}`,
-								`Actual response: ${JSON.stringify(body, null, 2)}`,
-								`Validation errors:`,
-								...(responseValidatorFn.errors?.map(
-									(error: any) => `- [${error.instancePath || '/'}] ${error.message} (schema path: ${error.schemaPath})`,
-								) ?? ['<no errors>']),
-							].join('\n\t'),
-						},
-						400,
-					);
+					// Pull out the first validation‐error message (e.g. “must be string”)
+					const firstErr = responseValidatorFn.errors?.[0];
+					const firstErrMsg = firstErr ? `${firstErr.instancePath || '/'} ${firstErr.message}`.trim() : '<no errors>';
+
+					// Build a structured array of all validation errors
+					const validationErrors = (responseValidatorFn.errors ?? []).map((err: any) => ({
+						instancePath: String(err.instancePath ?? '/'),
+						message: String(err.message ?? '<no message>'),
+						schemaPath: String(err.schemaPath ?? '<no schema path>'),
+					}));
+
+					const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' || process.env.TEST_MODE;
+
+					const errorResponse = isDev
+						? {
+								success: false,
+								errorType: 'error-invalid-body',
+								error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${firstErrMsg}`,
+								details: {
+									statusCode,
+									expectedSchema: responseValidatorFn.schema,
+									actualResponse: body,
+									validationErrors,
+								},
+							}
+						: {
+								success: false,
+								errorType: 'error-invalid-body',
+								error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${validationErrors.map((err) => err.message).join('\n ')}`,
+							};
+
+					return c.json(errorResponse, 400);
 				}
 			}
 
