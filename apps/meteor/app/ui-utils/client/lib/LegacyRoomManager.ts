@@ -1,4 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Filter } from '@rocket.chat/mongo-adapter';
 
@@ -13,6 +14,25 @@ import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
+class UnreadSince extends Emitter<{
+	changed: Date | undefined;
+}> {
+	private unreadSince: Date | undefined;
+
+	set(since: Date | undefined) {
+		if (this.unreadSince === since) {
+			return;
+		}
+
+		this.unreadSince = since;
+		this.emit('changed', since);
+	}
+
+	get() {
+		return this.unreadSince;
+	}
+}
+
 type OpenedRoom = {
 	typeName: string;
 	rid: IRoom['_id'];
@@ -20,7 +40,7 @@ type OpenedRoom = {
 	active: boolean;
 	dom?: Node;
 	streamActive?: boolean;
-	unreadSince: ReactiveVar<Date | undefined>;
+	unreadSince: UnreadSince;
 	lastSeen: Date;
 	unreadFirstId?: string;
 	stream?: {
@@ -213,7 +233,7 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 			rid,
 			active: false,
 			ready: false,
-			unreadSince: new ReactiveVar(undefined),
+			unreadSince: new UnreadSince(),
 			lastSeen: new Date(),
 		};
 	}
