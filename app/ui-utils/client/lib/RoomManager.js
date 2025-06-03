@@ -24,7 +24,7 @@ import { getConfig } from "../config";
 import { ROOM_DATA_STREAM } from "../../../utils/stream/constants";
 
 import { call } from "..";
-import webSocketHandler from "../../../ws/client";
+import webSocketHandler, { webSocketConnected } from "../../../ws/client";
 
 const maxRoomsOpen = parseInt(getConfig("maxRoomsOpen")) || 5;
 
@@ -368,7 +368,7 @@ const loadMissedMessages = async function (rid) {
 
 let connectionWasOnline = true;
 Tracker.autorun(function () {
-	const { connected } = Meteor.connection.status();
+	const connected = webSocketConnected.get();
 
 	if (
 		connected === true &&

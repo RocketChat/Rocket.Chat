@@ -5,19 +5,19 @@ import { io } from "socket.io-client";
 const webSokcetUrl =
   process.env.WEB_SOCKET_SERVICE_URL || "http://localhost:3002";
 
+export const webSocketConnected = new ReactiveVar(false);
+
 const connectToWebSocket = (url: string, options = {}) => {
   const socket = io(url, options);
 
   socket.on("connect", () => {
     console.log("WebSocket connected:", socket.id);
-    socket.emit("new connection", {
-      userId: Meteor.userId(),
-      token: Accounts._storedLoginToken(),
-    });
+    webSocketConnected.set(true);
   });
 
   socket.on("disconnect", () => {
     console.log("WebSocket disconnected");
+    webSocketConnected.set(false);
   });
 
   socket.on("connect_error", (error) => {
