@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 
+import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
@@ -107,8 +108,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		}
 	};
 
-	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+	const quoteMessage = async (message: IMessage, quoteChainLimit = 2): Promise<void> => {
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};

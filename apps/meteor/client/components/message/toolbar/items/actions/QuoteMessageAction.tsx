@@ -1,4 +1,5 @@
 import type { ITranslatedMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
@@ -13,6 +14,7 @@ type QuoteMessageActionProps = {
 const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) => {
 	const chat = useChat();
 	const autoTranslateOptions = useMessageListAutoTranslate();
+	const quoteChainLimit = Number(useSetting('Message_QuoteChainLimit'));
 	const { t } = useTranslation();
 
 	if (!chat || !subscription) {
@@ -33,7 +35,7 @@ const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) 
 							: message.msg;
 				}
 
-				chat?.composer?.quoteMessage(message);
+				chat?.composer?.quoteMessage(message, quoteChainLimit);
 			}}
 		/>
 	);
