@@ -29,6 +29,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -167,7 +168,7 @@ const ExportMessages = () => {
 	const subjectField = useId();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
@@ -350,7 +351,7 @@ const ExportMessages = () => {
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

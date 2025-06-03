@@ -12,6 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
@@ -43,7 +44,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 	const total = calendarEvents?.length || 0;
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='calendar' />
 				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
@@ -100,7 +101,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

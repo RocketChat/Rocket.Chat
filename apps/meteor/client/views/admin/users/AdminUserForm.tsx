@@ -12,7 +12,6 @@ import {
 	ToggleSwitch,
 	Icon,
 	FieldGroup,
-	ContextualbarFooter,
 	Button,
 	Callout,
 	Skeleton,
@@ -40,7 +39,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';

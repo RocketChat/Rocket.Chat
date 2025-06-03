@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentEdit from './AgentEdit';
-import { FormSkeleton } from '../../../components/Skeleton';
+import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
 	const { t } = useTranslation();
@@ -31,7 +31,7 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 	});
 
 	if (isPending || agentDepartmentsLoading || !agentDepartments) {
-		return <FormSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (error || agentsDepartmentsError || !data?.user) {
