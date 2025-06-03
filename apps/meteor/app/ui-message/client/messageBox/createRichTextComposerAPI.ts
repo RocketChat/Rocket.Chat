@@ -31,8 +31,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.innerText) {
-			Accounts.storageLocation.setItem(storageID, input.innerText);
+		// Store the value entirely as HTML with the DOM structure intact
+		if (input.innerHTML) {
+			Accounts.storageLocation.setItem(storageID, input.innerHTML);
 			return;
 		}
 
@@ -59,8 +60,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 	): void => {
 		!skipFocus && focus();
 
+		// Use innerHTML to set the value in RichTextComposer instead of innerText
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		const textAreaTxt = input.innerText;
+		const textAreaTxt = input.innerHTML;
 
 		if (typeof selection === 'function') {
 			selection = selection({ start: selectionStart, end: selectionEnd });
@@ -68,14 +70,14 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
-				input.innerText = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
+				input.innerHTML = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
 				!skipFocus && focus();
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		}
 
 		if (!selection) {
-			input.innerText = text;
+			input.innerHTML = text;
 		}
 
 		triggerEvent(input, 'input');
