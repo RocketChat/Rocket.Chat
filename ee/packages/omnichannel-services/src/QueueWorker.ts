@@ -11,7 +11,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	protected retryCount = 5;
 
 	// Default delay is 5 seconds
-	protected retryDelay = Number(process.env.RETRY_DELAY) || 5000;
+	protected retryDelay = Number(process.env.RETRY_DELAY) || 10000;
 
 	protected queue: MessageQueue;
 
@@ -26,7 +26,11 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		// eslint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
-		this.queue.pollingInterval = Number(process.env.POLLING_INTERVAL) || 5000;
+		this.queue.pollingInterval = Number(process.env.POLLING_INTERVAL) || 10000;
+
+		// We won't use the default processing timeout of 30 seconds, as it is too short for some operations
+		// This makes each queue item to be processed for as long as it needs.
+		this.queue.processingTimeout = 1000000000000000;
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {

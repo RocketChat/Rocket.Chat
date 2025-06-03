@@ -32,5 +32,7 @@ declare module 'mongo-message-queue' {
 		stopPolling(): void;
 
 		pollingInterval?: number;
+
+		processingTimeout?: number;
 	}
 }

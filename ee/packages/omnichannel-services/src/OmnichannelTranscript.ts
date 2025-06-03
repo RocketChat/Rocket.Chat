@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 
 import {
 	ServiceClass,
@@ -14,7 +14,7 @@ import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
-import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
 import type i18n from 'i18next';
 
 import { getAllSystemMessagesKeys, getSystemMessage } from './livechatSystemMessages';
@@ -139,6 +139,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		};
 	}
 
+	// Copied from core, move to tools
+	async streamToBuffer(stream: Readable): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			const chunks: Array<Buffer> = [];
+
+			stream
+				.on('data', (data) => chunks.push(data))
+				.on('end', () => resolve(Buffer.concat(chunks)))
+				.on('error', (error) => reject(error))
+				// force stream to resume data flow in case it was explicitly paused before
+				.resume();
+		});
+	}
+
 	async getMessagesData(messages: IMessage[], serverLanguage: string): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
@@ -217,7 +231,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				try {
-					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					const stream = await uploadService.streamUploadedFile({ file: uploadedFile });
+					const fileBuffer = await this.streamToBuffer(stream);
+
 					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
 				} catch (e: unknown) {
 					this.log.error(`Failed to get file ${file._id}`, e);
@@ -362,13 +378,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const transcriptText = this.translator.t('Transcript', { lng: data.serverLanguage });
 
 		const stream = await this.worker.renderToStream({ data });
-		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
 			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
-				details,
-				buffer: outBuff,
+				// From NodeJS.ReadableStream to Stream.Readable
+				stream: Readable.from(stream),
 				roomIds: [rid, details.rid],
 				data,
 				transcriptText,
@@ -409,23 +424,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async uploadFiles({
-		details,
-		buffer,
+		stream,
 		roomIds,
 		data,
 		transcriptText,
 	}: {
-		details: WorkDetailsWithSource;
-		buffer: Buffer;
+		stream: Readable;
 		roomIds: string[];
 		data: any;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
 		return Promise.all(
 			roomIds.map((roomId) => {
-				return uploadService.uploadFile({
-					userId: details.userId,
-					buffer,
+				return uploadService.uploadFileFromStream({
+					stream,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
 						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
@@ -435,7 +447,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						rid: roomId,
 						// Rocket.cat is the goat
 						userId: 'rocket.cat',
-						size: buffer.length,
+						// We don't have the file size from the stream unless we read it, so we'll not set and let the receiver do the calculation.
 					},
 				});
 			}),
