@@ -1,5 +1,3 @@
-import { useContext } from 'react';
+import { useAuthenticationContext } from '../AuthenticationContext';
 
-import { AuthenticationContext } from '../AuthenticationContext';
-
-export const useLoginWithToken = (): ((token: string) => Promise<void>) => useContext(AuthenticationContext).loginWithToken;
+export const useLoginWithToken = () => useAuthenticationContext().loginWithToken;
