@@ -14,6 +14,7 @@ type ProviderMetadata = {
 export interface IOutboundPhoneMessageProvider {
     type: 'phone';
     name: string;
+    documentationUrl?: string;
     sendOutboundMessage(message: IOutboundMessage): Promise<void>;
     getProviderMetadata(): Promise<ProviderMetadata>;
 }
@@ -24,5 +25,6 @@ export interface IOutboundPhoneMessageProvider {
 export interface IOutboundEmailMessageProvider {
     type: 'email';
     name: string;
+    documentationUrl?: string;
     sendOutboundMessage(message: IOutboundMessage): Promise<boolean>;
 }
