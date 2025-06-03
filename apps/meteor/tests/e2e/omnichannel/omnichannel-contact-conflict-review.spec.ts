@@ -83,7 +83,7 @@ test.describe.serial('OC - Contact Review', () => {
 
 		await poHomeChannel.content.contactReviewModal.getFieldByName(customFieldName).click();
 		await poHomeChannel.content.contactReviewModal.findOption('custom-field-value-2').click();
-		const responseListener = page.waitForResponse('**/api/v1/omnichannel/contacts.update');
+		const responseListener = page.waitForResponse('**/api/v1/omnichannel/contacts.conflicts');
 		await poHomeChannel.content.contactReviewModal.btnSave.click();
 		const response = await responseListener;
 		await expect(response.status()).toBe(200);

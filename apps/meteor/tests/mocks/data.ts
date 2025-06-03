@@ -13,6 +13,9 @@ import type {
 	Serialized,
 	ILivechatAgent,
 	ILivechatTag,
+	IOmnichannelBusinessUnit,
+	ILivechatDepartment,
+	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -372,6 +375,52 @@ export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Se
 		description: 'description',
 		numDepartments: 0,
 		departments: [],
+		...overrides,
+	};
+}
+
+export function createFakeBusinessUnit(overrides?: Partial<Serialized<IOmnichannelBusinessUnit>>): Serialized<IOmnichannelBusinessUnit> {
+	return {
+		_id: faker.string.uuid(),
+		name: faker.commerce.department(),
+		visibility: 'public',
+		type: 'u',
+		numMonitors: 1,
+		numDepartments: 1,
+		_updatedAt: new Date().toISOString(),
+		...overrides,
+	};
+}
+
+export const createFakeDepartment = (overrides: Partial<Serialized<ILivechatDepartment>> = {}): Serialized<ILivechatDepartment> => ({
+	_id: faker.string.uuid(),
+	name: `${faker.commerce.department()} ${faker.string.uuid()}`,
+	enabled: true,
+	email: faker.internet.email(),
+	showOnRegistration: false,
+	showOnOfflineForm: false,
+	type: 'd',
+	_updatedAt: new Date().toISOString(),
+	offlineMessageChannelName: '',
+	numAgents: 0,
+	ancestors: undefined,
+	parentId: undefined,
+	...overrides,
+});
+
+export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonitor>>): Serialized<ILivechatMonitor> {
+	const firstName = faker.person.firstName();
+	const lastName = faker.person.lastName();
+	const username = faker.internet.userName({ firstName, lastName });
+
+	return {
+		_id: faker.string.uuid(),
+		username,
+		name: `${firstName} ${lastName}`,
+		type: '',
+		enabled: true,
+		numMonitors: 0,
+		visibility: 'visible',
 		...overrides,
 	};
 }
