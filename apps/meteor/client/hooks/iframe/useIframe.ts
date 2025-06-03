@@ -19,12 +19,9 @@ export const useIframe = () => {
 					token: tokenData,
 				};
 			}
-			console.log('loginWithToken');
-
 			if ('loginToken' in tokenData) {
 				tokenLogin(tokenData.loginToken);
 			}
-
 			if ('token' in tokenData) {
 				iframeLogin(tokenData.token, callback);
 			}
@@ -34,8 +31,6 @@ export const useIframe = () => {
 
 	const tryLogin = useCallback(
 		async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
-			console.log('tryLogin');
-
 			let url = accountIframeUrl;
 			let separator = '?';
 			if (url.indexOf('?') > -1) {
