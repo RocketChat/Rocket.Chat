@@ -158,18 +158,18 @@ export class AccountProfile {
 	}
 
 	get btnDeleteMyAccount(): Locator {
-		return this.page.getByText('Delete my account');
+		return this.page.getByRole('button', { name: 'Delete my account' });
 	}
 
 	get deleteAccountDialog(): Locator {
-		return this.page.getByRole('dialog').filter({ hasText: 'Delete account?' });
+		return this.page.getByRole('dialog', { name: 'Delete account?' });
 	}
 
 	get deleteAccountDialogMessage(): Locator {
 		return this.deleteAccountDialog.getByText('Enter your username to delete your account. This cannot be undone.');
 	}
 
-	get deleteAccountUsernameInput(): Locator {
+	get inputDeleteAccountUsername(): Locator {
 		return this.deleteAccountDialog.getByRole('textbox');
 	}
 

@@ -1,28 +1,20 @@
-import { faker } from '@faker-js/faker';
-import type { IUser } from '@rocket.chat/core-typings';
-
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { AccountProfile, Registration, Utils } from './page-objects';
 import { test, expect } from './utils/test';
+import { createTestUser, type ITestUser } from './utils/user-helpers';
 
 test.describe('Delete Own Account', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
 	let poUtils: Utils;
-	let userToDelete: IUser & { username: string };
+	let testUser: ITestUser;
+	let testUser2: ITestUser;
 
 	test.beforeAll(async ({ api }) => {
-		await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: true });
-
-		const response = await api.post('/users.create', {
-			email: faker.internet.email(),
-			name: faker.person.fullName(),
-			password: DEFAULT_USER_CREDENTIALS.password,
-			username: 'user-to-delete',
-		});
+		const response = await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: true });
 		expect(response.status()).toBe(200);
-		const json = await response.json();
-		userToDelete = json.user;
+		testUser = await createTestUser(api, { username: 'user-to-delete' });
+		testUser2 = await createTestUser(api, { username: 'user-with-invalid-username' });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -33,17 +25,15 @@ test.describe('Delete Own Account', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false }),
-			api.post('/users.delete', { userId: userToDelete._id }).catch((error) => {
-				console.error(error);
-			}),
-		]);
+		const response = await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
+		expect(response.status()).toBe(200);
+		await testUser.delete();
+		await testUser2.delete();
 	});
 
 	test('should not delete account when invalid username is provided', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
-			await poRegistration.username.type('user-to-delete');
+			await poRegistration.username.type(testUser2.data.username);
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 			await expect(poUtils.mainContent).toBeVisible();
@@ -57,8 +47,8 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('enter invalid username in the confirmation field and click delete account', async () => {
-			await poAccountProfile.deleteAccountUsernameInput.fill('invalid-username');
-			await expect(poAccountProfile.deleteAccountUsernameInput).toHaveValue('invalid-username');
+			await poAccountProfile.inputDeleteAccountUsername.fill('invalid-username');
+			await expect(poAccountProfile.inputDeleteAccountUsername).toHaveValue('invalid-username');
 			await poAccountProfile.btnDeleteAccountConfirm.click();
 		});
 
@@ -74,7 +64,7 @@ test.describe('Delete Own Account', () => {
 	// TODO: Remove test.fail() when functionality is fixed
 	test.fail('should delete account when valid username is provided and permission is enabled', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
-			await poRegistration.username.type('user-to-delete');
+			await poRegistration.username.type(testUser.data.username);
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 			await expect(poUtils.mainContent).toBeVisible();
@@ -89,34 +79,32 @@ test.describe('Delete Own Account', () => {
 
 		await test.step('verify delete confirmation dialog appears', async () => {
 			await expect(poAccountProfile.deleteAccountDialogMessage).toBeVisible();
-			await expect(poAccountProfile.deleteAccountUsernameInput).toBeVisible();
+			await expect(poAccountProfile.inputDeleteAccountUsername).toBeVisible();
 			await expect(poAccountProfile.btnDeleteAccountConfirm).toBeVisible();
 			await expect(poAccountProfile.btnDeleteAccountCancel).toBeVisible();
 		});
 
 		await test.step('enter username in the confirmation field and click delete account', async () => {
-			await poAccountProfile.deleteAccountUsernameInput.fill('user-to-delete');
-			await expect(poAccountProfile.deleteAccountUsernameInput).toHaveValue('user-to-delete');
+			await poAccountProfile.inputDeleteAccountUsername.fill(testUser.data.username);
+			await expect(poAccountProfile.inputDeleteAccountUsername).toHaveValue(testUser.data.username);
 			await poAccountProfile.btnDeleteAccountConfirm.click();
 		});
 
 		await test.step('verify user is redirected to login page', async () => {
 			await expect(poRegistration.btnLogin).toBeVisible();
+			testUser.markAsDeleted();
 		});
 	});
 
 	test.describe('Delete Own Account - Permission Disabled', () => {
 		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
-		});
-
-		test.afterAll(async ({ api }) => {
-			await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: true });
+			const response = await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
+			expect(response.status()).toBe(200);
 		});
 
 		test('should not show delete account button when permission is disabled', async ({ page }) => {
 			await test.step('login with the user to delete', async () => {
-				await poRegistration.username.type('user-to-delete');
+				await poRegistration.username.type(testUser.data.username);
 				await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 				await poRegistration.btnLogin.click();
 				await expect(poUtils.mainContent).toBeVisible();
