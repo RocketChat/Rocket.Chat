@@ -5,7 +5,7 @@ import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { AccountProfile, Registration, Utils } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.describe('User can delete own account when permission is enabled', () => {
+test.describe('Delete Own Account', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
 	let poUtils: Utils;
@@ -41,7 +41,7 @@ test.describe('User can delete own account when permission is enabled', () => {
 		]);
 	});
 
-	test('should not be able to delete own account with invalid username', async ({ page }) => {
+	test('should not delete account when invalid username is provided', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type('user-to-delete');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
@@ -72,7 +72,7 @@ test.describe('User can delete own account when permission is enabled', () => {
 	});
 
 	// TODO: Remove test.fail() when functionality is fixed
-	test.fail('should be able to delete own account with valid username', async ({ page }) => {
+	test.fail('should delete account when valid username is provided and permission is enabled', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type('user-to-delete');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
@@ -104,52 +104,29 @@ test.describe('User can delete own account when permission is enabled', () => {
 			await expect(poRegistration.btnLogin).toBeVisible();
 		});
 	});
-});
 
-test.describe('User can not delete own account when permission is disabled', () => {
-	let poAccountProfile: AccountProfile;
-	let poRegistration: Registration;
-	let poUtils: Utils;
-	let userToDelete: IUser & { username: string };
-
-	test.beforeAll(async ({ api }) => {
-		await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
-		const response = await api.post('/users.create', {
-			email: faker.internet.email(),
-			name: faker.person.fullName(),
-			password: DEFAULT_USER_CREDENTIALS.password,
-			username: 'user-to-delete',
-		});
-		expect(response.status()).toBe(200);
-		const json = await response.json();
-		userToDelete = json.user;
-	});
-	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
-		poRegistration = new Registration(page);
-		poUtils = new Utils(page);
-		await page.goto('/home');
-	});
-
-	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
-		await api.post('/users.delete', { userId: userToDelete._id }).catch((error) => {
-			console.error(error);
-		});
-	});
-
-	test('should not be able to delete own account', async ({ page }) => {
-		await test.step('login with the user to delete', async () => {
-			await poRegistration.username.type('user-to-delete');
-			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
-			await expect(poUtils.mainContent).toBeVisible();
+	test.describe('Delete Own Account - Permission Disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
 		});
 
-		await test.step('should not be able to see the Delete My Account button', async () => {
-			await page.goto('/account/profile');
-			await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
-			await expect(poAccountProfile.btnDeleteMyAccount).not.toBeVisible();
+		test.afterAll(async ({ api }) => {
+			await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: true });
+		});
+
+		test('should not show delete account button when permission is disabled', async ({ page }) => {
+			await test.step('login with the user to delete', async () => {
+				await poRegistration.username.type('user-to-delete');
+				await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+				await poRegistration.btnLogin.click();
+				await expect(poUtils.mainContent).toBeVisible();
+			});
+
+			await test.step('navigate to profile and locate Delete My Account button', async () => {
+				await page.goto('/account/profile');
+				await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
+				await expect(poAccountProfile.btnDeleteMyAccount).not.toBeVisible();
+			});
 		});
 	});
 });
