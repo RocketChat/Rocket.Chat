@@ -14,7 +14,7 @@ import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
-import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
+import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 import type i18n from 'i18next';
 
 import { getAllSystemMessagesKeys, getSystemMessage } from './livechatSystemMessages';
@@ -139,20 +139,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		};
 	}
 
-	// Copied from core, move to tools
-	async streamToBuffer(stream: Readable): Promise<Buffer> {
-		return new Promise((resolve, reject) => {
-			const chunks: Array<Buffer> = [];
-
-			stream
-				.on('data', (data) => chunks.push(data))
-				.on('end', () => resolve(Buffer.concat(chunks)))
-				.on('error', (error) => reject(error))
-				// force stream to resume data flow in case it was explicitly paused before
-				.resume();
-		});
-	}
-
 	async getMessagesData(messages: IMessage[], serverLanguage: string): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
@@ -232,7 +218,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 				try {
 					const stream = await uploadService.streamUploadedFile({ file: uploadedFile });
-					const fileBuffer = await this.streamToBuffer(stream);
+					const fileBuffer = await streamToBuffer(stream);
 
 					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
 				} catch (e: unknown) {

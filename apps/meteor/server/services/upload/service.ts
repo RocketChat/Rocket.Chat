@@ -3,6 +3,7 @@ import type Stream from 'stream';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import { streamToBuffer } from '@rocket.chat/tools';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
@@ -57,12 +58,4 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		details.size = buffer.length;
 		return fileStore.insert(details, buffer);
 	}
-}
-
-async function streamToBuffer(stream: Stream.Readable) {
-	const chunks = [];
-	for await (const chunk of stream) {
-		chunks.push(chunk);
-	}
-	return Buffer.concat(chunks);
 }
