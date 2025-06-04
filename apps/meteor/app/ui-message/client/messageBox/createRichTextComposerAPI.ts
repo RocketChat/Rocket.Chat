@@ -32,7 +32,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 	const persist = withDebouncing({ wait: 300 })(() => {
 		// Store the value entirely as HTML with the DOM structure intact
-		if (input.innerHTML) {
+		if (input.innerHTML !== '<br>') {
 			Accounts.storageLocation.setItem(storageID, input.innerHTML);
 			return;
 		}

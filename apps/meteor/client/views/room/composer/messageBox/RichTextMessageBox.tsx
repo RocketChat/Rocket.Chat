@@ -50,10 +50,32 @@ import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 
-const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): boolean => {
-	const target = event.target as HTMLDivElement;
+// The first boolean will be used to enable/disable the send button
+// The second boolean will be used to show/hide the placeholder
+type TypingState = {
+	isTyping: boolean;
+	hidePlaceholder: boolean;
+};
 
-	return Boolean(target.innerText.trim());
+const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
+	const target = event.target as HTMLDivElement;
+	const { childNodes } = target;
+
+	// Normalize <div><br></div> to just <br>
+	if (childNodes.length === 1 && childNodes[0].nodeName === 'DIV' && (childNodes[0] as HTMLElement).innerHTML === '<br>') {
+		target.innerHTML = '<br>';
+	}
+
+	// Normalize empty DOM to <br>
+	if (target.innerHTML === '') {
+		target.innerHTML = '<br>';
+	}
+
+	return {
+		isTyping: Boolean(target.innerText.trim()),
+		// Show placeholder only if there's exactly one <br> and nothing else
+		hidePlaceholder: Boolean(childNodes.length !== 1 || childNodes[0].nodeName !== 'BR'),
+	};
 };
 
 const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
@@ -120,7 +142,8 @@ const RichTextMessageBox = ({
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
-	const [typing, setTyping] = useReducer(reducer, false);
+	const [stateTyping, setTyping] = useReducer(reducer, { isTyping: false, hidePlaceholder: false });
+	const { isTyping: typing, hidePlaceholder } = stateTyping;
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -457,6 +480,7 @@ const RichTextMessageBox = ({
 					onInput={setTyping}
 					/* style={textAreaStyle} */
 					placeholder={composerPlaceholder}
+					hidePlaceholder={hidePlaceholder}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 					onBlur={setLastCursorPosition}
