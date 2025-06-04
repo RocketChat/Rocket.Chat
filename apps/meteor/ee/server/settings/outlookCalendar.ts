@@ -18,12 +18,14 @@ export function addSettings(): void {
 					type: 'string',
 					public: true,
 					invalidValue: '',
+					placeholder: 'https://example.com/',
 				});
 
 				await this.add('Outlook_Calendar_Outlook_Url', '', {
 					type: 'string',
 					public: true,
 					invalidValue: '',
+					placeholder: 'https://example.com/owa/#path=/calendar/view/Month',
 				});
 
 				await this.add(
@@ -40,6 +42,15 @@ export function addSettings(): void {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
+				});
+
+				await this.add('Outlook_Calendar_Url_Mapping', '{}', {
+					type: 'code',
+					multiline: true,
+					public: true,
+					code: 'application/json',
+					invalidValue: '{}',
+					placeholder: '{\n\t"example.com": "https://exchange.example.com/"\n}',
 				});
 			},
 		);
