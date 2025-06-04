@@ -2,15 +2,13 @@ import { faker } from '@faker-js/faker';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { Users } from './fixtures/userStates';
-import { AccountProfile, Registration } from './page-objects';
+import { AccountProfile, Registration, Utils } from './page-objects';
 import { test, expect } from './utils/test';
-
-test.use({ storageState: Users.admin.state });
 
 test.describe('User can delete own account when permission is enabled', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
+	let poUtils: Utils;
 	let userToDelete: IUser & { username: string };
 
 	test.beforeAll(async ({ api }) => {
@@ -26,9 +24,12 @@ test.describe('User can delete own account when permission is enabled', () => {
 		const json = await response.json();
 		userToDelete = json.user;
 	});
+
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poRegistration = new Registration(page);
+		poUtils = new Utils(page);
+		await page.goto('/home');
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -40,11 +41,12 @@ test.describe('User can delete own account when permission is enabled', () => {
 		]);
 	});
 
-	test.fail('should not be able to delete own account with invalid username', async ({ page }) => {
+	test('should not be able to delete own account with invalid username', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type('user-to-delete');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
+			await expect(poUtils.mainContent).toBeVisible();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
@@ -69,11 +71,13 @@ test.describe('User can delete own account when permission is enabled', () => {
 		});
 	});
 
+	// TODO: Remove test.fail() when functionality is fixed
 	test.fail('should be able to delete own account with valid username', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type('user-to-delete');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
+			await expect(poUtils.mainContent).toBeVisible();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
@@ -105,6 +109,7 @@ test.describe('User can delete own account when permission is enabled', () => {
 test.describe('User can not delete own account when permission is disabled', () => {
 	let poAccountProfile: AccountProfile;
 	let poRegistration: Registration;
+	let poUtils: Utils;
 	let userToDelete: IUser & { username: string };
 
 	test.beforeAll(async ({ api }) => {
@@ -122,6 +127,8 @@ test.describe('User can not delete own account when permission is disabled', () 
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poRegistration = new Registration(page);
+		poUtils = new Utils(page);
+		await page.goto('/home');
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -131,11 +138,12 @@ test.describe('User can not delete own account when permission is disabled', () 
 		});
 	});
 
-	test.fail('should not be able to delete own account', async ({ page }) => {
+	test('should not be able to delete own account', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type('user-to-delete');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
+			await expect(poUtils.mainContent).toBeVisible();
 		});
 
 		await test.step('should not be able to see the Delete My Account button', async () => {
