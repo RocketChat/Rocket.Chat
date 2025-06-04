@@ -27,9 +27,12 @@ type FileItemProps = {
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
 	focused: boolean;
+	focusedItem: number;
+	setFocusedItem: (index: number) => void;
+	index: number;
 };
 
-const FileItem = ({ fileData, onClickDelete, focused }: FileItemProps) => {
+const FileItem = ({ fileData, onClickDelete, focusedItem, setFocusedItem, index }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
@@ -38,11 +41,34 @@ const FileItem = ({ fileData, onClickDelete, focused }: FileItemProps) => {
 	const containerRef = useRef<HTMLLIElement>(null);
 
 	useEffect(() => {
-		if (focused && containerRef.current) {
+		if (!containerRef.current) {
+			return;
+		}
+
+		if (index === focusedItem) {
 			containerRef.current.focus();
 		}
-	}
-	, [focused]);
+	}, [index, focusedItem]);
+
+	useEffect(() => {
+		if (!containerRef.current) {
+			return;
+		}
+
+		const handleFocus = () => {
+			if (focusedItem === index) {
+				return;
+			}
+
+			setFocusedItem(index);
+		};
+
+		containerRef.current.addEventListener('focus', handleFocus);
+
+		return () => {
+			containerRef.current?.removeEventListener('focus', handleFocus);
+		};
+	}, [focusedItem, index, setFocusedItem]);
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (!ref.current) {

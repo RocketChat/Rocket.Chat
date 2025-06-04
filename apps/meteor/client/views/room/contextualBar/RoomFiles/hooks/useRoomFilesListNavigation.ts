@@ -1,43 +1,8 @@
 import { useCallback, useState } from 'react';
-import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).getAttribute('role') === 'listitem';
 
-export const useRoomFilesNavigation = () => {
-	const roomFilesFocusManager = useFocusManager();
-
-	// const roomFilesRef = useCallback(
-	// 	(node: HTMLDivElement | null) => {
-	// 		if (!node) {
-	// 			return;
-	// 		}
-
-	// 		node.addEventListener('keydown', (e) => {
-	// 			if (!e.target) {
-	// 				return;
-	// 			}
-
-	// 			if (!isListItem(e.target)) {
-	// 				return;
-	// 			}
-
-	// 			if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-	// 				e.preventDefault();
-	// 				e.stopPropagation();
-
-	// 				if (e.key === 'ArrowUp') {
-	// 					roomFilesFocusManager?.focusPrevious({ accept: (node) => isListItem(node) });
-	// 				}
-
-	// 				if (e.key === 'ArrowDown') {
-	// 					roomFilesFocusManager?.focusNext({ accept: (node) => isListItem(node) });
-	// 				}
-	// 			}
-	// 		});
-	// 	},
-	// 	[roomFilesFocusManager],
-	// );
-
+export const useRoomFilesNavigation = (maxItems: number) => {
 	const [focusedItem, setFocusedItem] = useState(-1);
 
 	const roomFilesRef = useCallback(
@@ -56,24 +21,20 @@ export const useRoomFilesNavigation = () => {
 				}
 
 				if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-					console.log('arrow up or down');
 					e.preventDefault();
 					e.stopPropagation();
-
 					if (e.key === 'ArrowUp') {
-						// roomFilesFocusManager?.focusPrevious({ accept: (node) => isListItem(node) });
-						setFocusedItem((prev) => (prev > 0 ? prev - 1 : prev));
+						setFocusedItem((prev) => Math.max(0, prev - 1));
 					}
 
 					if (e.key === 'ArrowDown') {
-						// roomFilesFocusManager?.focusNext({ accept: (node) => isListItem(node) });
-						setFocusedItem((prev) => prev + 1);
+						setFocusedItem((prev) => Math.min(maxItems - 1, prev + 1));
 					}
 				}
 			});
 		},
-		[roomFilesFocusManager, setFocusedItem],
+		[setFocusedItem, maxItems],
 	);
 
-	return {roomFilesRef, focusedItem, setFocusedItem};
+	return { roomFilesRef, focusedItem, setFocusedItem };
 };

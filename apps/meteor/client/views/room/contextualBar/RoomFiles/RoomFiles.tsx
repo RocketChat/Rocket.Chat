@@ -62,7 +62,7 @@ const RoomFiles = ({
 		console.log('filesItems', filesItems);
 	}, [filesItems]);
 
-	const {roomFilesRef, setFocusedItem, focusedItem} = useRoomFilesNavigation();
+	const { roomFilesRef, focusedItem, setFocusedItem } = useRoomFilesNavigation(total);
 
 	return (
 		<ContextualbarDialog>
@@ -102,7 +102,16 @@ const RoomFiles = ({
 								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
 								overscan={100}
 								data={filesItems}
-								itemContent={(index, data) => <FileItem fileData={data} onClickDelete={onClickDelete} focused={index === focusedItem}/>}
+								itemContent={(index, data) => (
+									<FileItem
+										fileData={data}
+										onClickDelete={onClickDelete}
+										focused={index === focusedItem}
+										focusedItem={focusedItem}
+										setFocusedItem={setFocusedItem}
+										index={index}
+									/>
+								)}
 								components={{
 									// eslint-disable-next-line react/no-multi-comp
 									List: forwardRef(function List(props, ref) {
