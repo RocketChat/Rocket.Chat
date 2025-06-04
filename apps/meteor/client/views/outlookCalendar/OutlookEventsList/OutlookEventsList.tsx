@@ -1,6 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -28,6 +28,13 @@ type OutlookEventsListProps = {
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
 	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
+	const user = useUser();
+	const outlookUrlMapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
+	const outlookUrlMappingParsed = JSON.parse(outlookUrlMapping) as Record<string, string>;
+	const outlookUrlMap = Object.assign({ default: outlookUrl }, outlookUrlMappingParsed);
+	const userEmail = user?.emails?.find((email) => email.verified)?.address || '';
+	const userDomain = userEmail.split('@')[1];
+	const outlookUrlForUser = outlookUrlMap[userDomain] || outlookUrlMap.default;
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -85,8 +92,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
-					{outlookUrl && (
-						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
+					{outlookUrlForUser && (
+						<Button icon='new-window' onClick={() => window.open(`${outlookUrlForUser}#path=/calendar`, '_blank')}>
 							{t('Open_Outlook')}
 						</Button>
 					)}
