@@ -36,7 +36,7 @@ export async function createTestUser(api: BaseTest['api'], options: ICreateUserO
 	const response = await api.post('/users.create', userData);
 
 	if (response.status() !== 200) {
-		throw new Error(`Failed to create user: ${response.status()}`);
+		throw new Error(`Failed to create user: ${response.status()}, response: ${await response.text()}`);
 	}
 
 	const { user } = await response.json();

@@ -37,8 +37,7 @@ test.describe('Delete Own Account', () => {
 		await userWithoutPermissions.delete();
 	});
 
-	// TODO: Remove test.fail() when functionality is fixed, the modal is asking for username instead of password
-	test.fail('should not delete account when invalid password is provided', async ({ page }) => {
+	test('should not delete account when invalid password is provided', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type(userWithInvalidPassword.data.username);
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
@@ -76,8 +75,7 @@ test.describe('Delete Own Account', () => {
 		});
 	});
 
-	// TODO: Remove test.fail() when functionality is fixed - same as above
-	test.fail('should delete account when valid password is provided and permission is enabled', async ({ page }) => {
+	test('should delete account when valid password is provided and permission is enabled', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
 			await poRegistration.username.type(userToDelete.data.username);
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
