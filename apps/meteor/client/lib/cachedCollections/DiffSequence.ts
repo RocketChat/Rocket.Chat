@@ -1,5 +1,6 @@
 import type { IdMap } from './IdMap';
-import { clone, hasOwn, isEqual } from './common';
+import { clone, entriesOf, hasOwn, isEqual } from './common';
+import type { Observer, OrderedObserver, UnorderedObserver } from './observers';
 
 function isObjEmpty(obj: Record<string, unknown>): boolean {
 	for (const key in Object(obj)) {
@@ -10,63 +11,56 @@ function isObjEmpty(obj: Record<string, unknown>): boolean {
 	return true;
 }
 
-type Observer<T extends { _id: string }> = {
-	added?: <TFields>(id: T['_id'], fields: TFields) => void;
-	changed?: <TFields>(id: T['_id'], fields: TFields) => void;
-	removed?: (id: T['_id']) => void;
-	movedBefore?: (id: T['_id'], before: T['_id'] | null) => void;
-	addedBefore?: <TFields>(id: T['_id'], fields: TFields, before: T['_id'] | null) => void;
-};
-
-/** @deprecated internal use only */
 export class DiffSequence {
-	static diffQueryChanges<T extends { _id: string }, TProjection extends T = T>(
+	static diffQueryChanges<T extends { _id: string }>(
 		ordered: true,
 		oldResults: T[],
 		newResults: T[],
-		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		observer: OrderedObserver<T>,
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void;
 
-	static diffQueryChanges<T extends { _id: string }, TProjection extends T = T>(
+	static diffQueryChanges<T extends { _id: string }>(
 		ordered: false,
 		oldResults: IdMap<T['_id'], T>,
 		newResults: IdMap<T['_id'], T>,
-		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		observer: UnorderedObserver<T>,
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void;
 
-	static diffQueryChanges<T extends { _id: string }, TProjection extends T = T>(
+	static diffQueryChanges<T extends { _id: string }>(
 		ordered: boolean,
 		oldResults: T[] | IdMap<T['_id'], T>,
 		newResults: T[] | IdMap<T['_id'], T>,
 		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void;
 
-	static diffQueryChanges<T extends { _id: string }, TProjection extends T = T>(
+	static diffQueryChanges<T extends { _id: string }>(
 		ordered: boolean,
 		oldResults: T[] | IdMap<T['_id'], T>,
 		newResults: T[] | IdMap<T['_id'], T>,
 		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void {
-		if (ordered) DiffSequence.diffQueryOrderedChanges(oldResults as T[], newResults as T[], observer, options);
-		else DiffSequence.diffQueryUnorderedChanges(oldResults as IdMap<T['_id'], T>, newResults as IdMap<T['_id'], T>, observer, options);
+		if (ordered) DiffSequence.diffQueryOrderedChanges(oldResults as T[], newResults as T[], observer as OrderedObserver<T>, options);
+		else
+			DiffSequence.diffQueryUnorderedChanges(
+				oldResults as IdMap<T['_id'], T>,
+				newResults as IdMap<T['_id'], T>,
+				observer as UnorderedObserver<T>,
+				options,
+			);
 	}
 
-	private static diffQueryUnorderedChanges<T extends { _id: string }, TProjection extends T = T>(
+	private static diffQueryUnorderedChanges<T extends { _id: string }>(
 		oldResults: IdMap<T['_id'], T>,
 		newResults: IdMap<T['_id'], T>,
-		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		observer: UnorderedObserver<T>,
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void {
 		options = options || {};
 		const projectionFn = options.projectionFn || clone;
-
-		if (observer.movedBefore) {
-			throw new Error('_diffQueryUnordered called with a movedBefore observer!');
-		}
 
 		newResults.forEach((newDoc, id) => {
 			const oldDoc = oldResults.get(id);
@@ -74,15 +68,15 @@ export class DiffSequence {
 				if (observer.changed && !isEqual(oldDoc, newDoc as any)) {
 					const projectedNew = projectionFn(newDoc);
 					const projectedOld = projectionFn(oldDoc);
-					const changedFields = DiffSequence.makeChangedFields<unknown, unknown>(projectedNew, projectedOld);
+					const changedFields = DiffSequence.makeChangedFields(projectedNew, projectedOld);
 					if (!isObjEmpty(changedFields)) {
-						observer.changed(id, changedFields as TProjection);
+						observer.changed(id, changedFields as Partial<T>);
 					}
 				}
 			} else if (observer.added) {
-				const fields = projectionFn(newDoc) as Omit<TProjection, '_id'> & { _id?: string };
+				const fields = projectionFn(newDoc) as Omit<Partial<T>, '_id'> & { _id?: string };
 				delete fields._id;
-				observer.added(newDoc._id, fields);
+				observer.added(newDoc._id, fields as Partial<T>);
 			}
 		});
 
@@ -93,11 +87,11 @@ export class DiffSequence {
 		}
 	}
 
-	private static diffQueryOrderedChanges<T extends { _id: string }, TProjection extends T = T>(
+	private static diffQueryOrderedChanges<T extends { _id: string }>(
 		oldResults: T[],
 		newResults: T[],
-		observer: Observer<T>,
-		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => TProjection },
+		observer: OrderedObserver<T>,
+		options?: { projectionFn?: (doc: T | Omit<T, '_id'>) => Partial<T> },
 	): void {
 		options = options || {};
 		const projectionFn = options.projectionFn || clone;
@@ -164,10 +158,10 @@ export class DiffSequence {
 			for (let i = startOfGroup; i < endOfGroup; i++) {
 				newDoc = newResults[i];
 				if (!hasOwn.call(oldIndexOfId, newDoc._id)) {
-					fields = projectionFn(newDoc) as Omit<TProjection, '_id'> & { _id?: string };
+					fields = projectionFn(newDoc) as Omit<Partial<T>, '_id'> & { _id?: string };
 					delete fields._id;
-					observer.addedBefore?.(newDoc._id, fields, groupId);
-					observer.added?.(newDoc._id, fields);
+					if ('addedBefore' in observer) observer.addedBefore?.(newDoc._id, fields as Partial<T>, groupId);
+					observer.added?.(newDoc._id, fields as Partial<T>);
 				} else {
 					oldDoc = oldResults[oldIndexOfId.get(newDoc._id)!];
 					projectedNew = projectionFn(newDoc);
@@ -176,7 +170,7 @@ export class DiffSequence {
 					if (!isObjEmpty(fields)) {
 						observer.changed?.(newDoc._id, fields);
 					}
-					observer.movedBefore?.(newDoc._id, groupId);
+					if ('movedBefore' in observer) observer.movedBefore?.(newDoc._id, groupId);
 				}
 			}
 			if (groupId) {
@@ -193,18 +187,17 @@ export class DiffSequence {
 		});
 	}
 
-	private static diffObjects<TLeft, TRight>(
-		left: Record<string, TLeft>,
-		right: Record<string, TRight>,
+	private static diffObjects<T extends object>(
+		left: T,
+		right: T,
 		callbacks: {
-			leftOnly?: (key: string, leftValue: TLeft) => void;
-			rightOnly?: (key: string, rightValue: TRight) => void;
-			both?: (key: string, leftValue: TLeft, rightValue: TRight) => void;
+			leftOnly?: (key: keyof T, leftValue: T[keyof T]) => void;
+			rightOnly?: (key: keyof T, rightValue: T[keyof T]) => void;
+			both?: (key: keyof T, leftValue: T[keyof T], rightValue: T[keyof T]) => void;
 		},
 	): void {
-		Object.keys(left).forEach((key) => {
-			const leftValue = left[key];
-			if (hasOwn.call(right, key)) {
+		entriesOf(left).forEach(([key, leftValue]) => {
+			if (key in right) {
 				callbacks.both?.(key, leftValue, right[key]);
 			} else {
 				callbacks.leftOnly?.(key, leftValue);
@@ -212,21 +205,17 @@ export class DiffSequence {
 		});
 
 		if (callbacks.rightOnly) {
-			Object.keys(right).forEach((key) => {
-				const rightValue = right[key];
-				if (!hasOwn.call(left, key)) {
+			entriesOf(right).forEach(([key, rightValue]) => {
+				if (!(key in left)) {
 					callbacks.rightOnly?.(key, rightValue);
 				}
 			});
 		}
 	}
 
-	static makeChangedFields<TLeft, TRight>(
-		newDoc: Record<string, TRight>,
-		oldDoc: Record<string, TLeft>,
-	): Record<string, TRight | undefined> {
-		const fields: Record<string, TRight | undefined> = {};
-		DiffSequence.diffObjects<TLeft, TRight>(oldDoc, newDoc, {
+	static makeChangedFields<T extends object>(newDoc: T, oldDoc: T): Partial<T> {
+		const fields: Partial<T> = {};
+		DiffSequence.diffObjects(oldDoc, newDoc, {
 			leftOnly(key) {
 				fields[key] = undefined;
 			},
@@ -234,15 +223,14 @@ export class DiffSequence {
 				fields[key] = value;
 			},
 			both(key, leftValue, rightValue) {
-				if (!isEqual(leftValue as any, rightValue as any)) fields[key] = rightValue;
+				if (!isEqual(leftValue, rightValue)) fields[key] = rightValue;
 			},
 		});
 		return fields;
 	}
 
-	static applyChanges(doc: Record<string, any>, changeFields: Record<string, any>): void {
-		Object.keys(changeFields).forEach((key) => {
-			const value = changeFields[key];
+	static applyChanges<T extends object>(doc: T, changeFields: T): void {
+		entriesOf(changeFields).forEach(([key, value]) => {
 			if (typeof value === 'undefined') {
 				delete doc[key];
 			} else {

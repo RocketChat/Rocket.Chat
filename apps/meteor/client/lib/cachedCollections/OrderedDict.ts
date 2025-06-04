@@ -19,7 +19,6 @@ function element<TKey, TValue>(
 	};
 }
 
-/** @deprecated internal use only */
 export class OrderedDict<TKey extends string, TValue> {
 	private _dict: Record<string, ElementType<TKey, TValue>> = Object.create(null);
 
@@ -183,7 +182,7 @@ export class OrderedDict<TKey extends string, TValue> {
 		return null;
 	}
 
-	moveBefore(key: TKey, before: TKey): void {
+	moveBefore(key: TKey, before: TKey | null): void {
 		const elt = this._dict[this._k(key)];
 		const eltBefore = before ? this._dict[this._k(before)] : null;
 		if (typeof elt === 'undefined') {

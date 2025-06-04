@@ -28,7 +28,6 @@ type BranchedMatcher = (branches: Branch[]) => Result;
 
 type ElementMatcher = (value: unknown) => boolean | number;
 
-/** @deprecated internal use only */
 export class Matcher<T extends { _id: string }> {
 	private readonly _docMatcher: DocumentMatcher<T>;
 

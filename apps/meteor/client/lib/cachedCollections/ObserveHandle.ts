@@ -3,7 +3,6 @@ import { Tracker } from 'meteor/tracker';
 import type { LocalCollection } from './LocalCollection';
 import type { Query } from './Query';
 
-/** @deprecated internal use only */
 export class ObserveHandle<T extends { _id: string }> {
 	isReady: boolean;
 

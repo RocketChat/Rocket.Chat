@@ -1,4 +1,5 @@
-import { createComparatorFromSort, createPredicateFromFilter, type Filter } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -23,7 +24,6 @@ import {
 	clone,
 } from './common';
 
-/** @deprecated internal use only */
 export class LocalCollection<T extends { _id: string }> {
 	readonly observeQueue = new SynchronousQueue();
 
@@ -399,7 +399,7 @@ export class LocalCollection<T extends { _id: string }> {
 	async updateAsync(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options?:
+		_options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -411,7 +411,7 @@ export class LocalCollection<T extends { _id: string }> {
 								insertedId?: T['_id'];
 						  },
 			  ) => void),
-		callback?: (
+		_callback?: (
 			error: Error | null,
 			result:
 				| number
@@ -421,14 +421,8 @@ export class LocalCollection<T extends { _id: string }> {
 				  },
 		) => void,
 	) {
-		if (!callback && typeof options === 'function') {
-			callback = options as unknown as typeof callback;
-			options = null;
-		}
-
-		if (!options) {
-			options = {};
-		}
+		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
+		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
 		const matcher = new Matcher(selector);
 
@@ -447,7 +441,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 				++updateCount;
 
-				if (!(options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).multi) {
+				if (!options.multi) {
 					return false;
 				}
 			}
@@ -462,10 +456,10 @@ export class LocalCollection<T extends { _id: string }> {
 		await this.observeQueue.drain();
 
 		let insertedId;
-		if (updateCount === 0 && (options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).upsert) {
+		if (updateCount === 0 && options.upsert) {
 			const doc = this._createUpsertDocument(selector, mod);
-			if (!doc._id && (options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).insertedId) {
-				doc._id = (options as { multi?: boolean; upsert?: boolean; insertedId: T['_id']; _returnObject?: boolean }).insertedId;
+			if (!doc._id && options.insertedId) {
+				doc._id = options.insertedId;
 			}
 
 			insertedId = await this.insertAsync(doc);
@@ -473,7 +467,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		return this.finishUpdate({
-			options: options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean },
+			options,
 			insertedId,
 			updateCount,
 			callback,
@@ -483,7 +477,7 @@ export class LocalCollection<T extends { _id: string }> {
 	update(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options?:
+		_options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -495,7 +489,7 @@ export class LocalCollection<T extends { _id: string }> {
 								insertedId?: T['_id'];
 						  },
 			  ) => void),
-		callback?: (
+		_callback?: (
 			error: Error | null,
 			result:
 				| number
@@ -505,22 +499,8 @@ export class LocalCollection<T extends { _id: string }> {
 				  },
 		) => void,
 	) {
-		if (!callback && typeof options === 'function') {
-			callback = options as (
-				error: Error | null,
-				result:
-					| number
-					| {
-							numberAffected: number;
-							insertedId?: T['_id'];
-					  },
-			) => void;
-			options = null;
-		}
-
-		if (!options) {
-			options = {};
-		}
+		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
+		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
 		const matcher = new Matcher(selector);
 
@@ -539,7 +519,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 				++updateCount;
 
-				if (!(options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).multi) {
+				if (!options.multi) {
 					return false;
 				}
 			}
@@ -553,10 +533,10 @@ export class LocalCollection<T extends { _id: string }> {
 
 		this.observeQueue.drain();
 
-		if (updateCount === 0 && (options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).upsert) {
+		if (updateCount === 0 && options.upsert) {
 			const doc = this._createUpsertDocument(selector, mod);
-			if (!doc._id && (options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }).insertedId) {
-				doc._id = (options as { multi?: boolean; upsert?: boolean; insertedId: T['_id']; _returnObject?: boolean }).insertedId;
+			if (!doc._id && options.insertedId) {
+				doc._id = options.insertedId;
 			}
 
 			this.insert(doc);
@@ -564,7 +544,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		return this.finishUpdate({
-			options: options as { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean },
+			options,
 			updateCount,
 			callback,
 			selector,
@@ -575,7 +555,7 @@ export class LocalCollection<T extends { _id: string }> {
 	upsert(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options?:
+		_options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -587,7 +567,7 @@ export class LocalCollection<T extends { _id: string }> {
 								insertedId?: T['_id'];
 						  },
 			  ) => void),
-		callback?: (
+		_callback?: (
 			error: Error | null,
 			result:
 				| number
@@ -597,10 +577,8 @@ export class LocalCollection<T extends { _id: string }> {
 				  },
 		) => void,
 	) {
-		if (!callback && typeof options === 'function') {
-			callback = options;
-			options = {};
-		}
+		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
+		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
 		return this.update(selector, mod, Object.assign({}, options, { upsert: true, _returnObject: true }), callback);
 	}
@@ -608,7 +586,7 @@ export class LocalCollection<T extends { _id: string }> {
 	upsertAsync(
 		selector: Filter<T>,
 		mod: UpdateFilter<T>,
-		options?:
+		_options?:
 			| { multi?: boolean; upsert?: boolean; insertedId?: T['_id']; _returnObject?: boolean }
 			| null
 			| ((
@@ -620,7 +598,7 @@ export class LocalCollection<T extends { _id: string }> {
 								insertedId?: T['_id'];
 						  },
 			  ) => void),
-		callback?: (
+		_callback?: (
 			error: Error | null,
 			result:
 				| number
@@ -630,10 +608,8 @@ export class LocalCollection<T extends { _id: string }> {
 				  },
 		) => void,
 	) {
-		if (!callback && typeof options === 'function') {
-			callback = options;
-			options = {};
-		}
+		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
+		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
 		return this.updateAsync(selector, mod, Object.assign({}, options, { upsert: true, _returnObject: true }), callback);
 	}
@@ -866,11 +842,11 @@ export class LocalCollection<T extends { _id: string }> {
 
 			if (
 				selector._id &&
-				Array.isArray((selector._id as any).$in) &&
-				(selector._id as any).$in.length &&
-				(selector._id as any).$in.every(_selectorIsId)
+				Array.isArray((selector._id as FieldExpression<T['_id']>).$in) &&
+				(selector._id as FieldExpression<T['_id']>).$in?.length &&
+				(selector._id as FieldExpression<T['_id']>).$in?.every(_selectorIsId)
 			) {
-				return (selector._id as any).$in;
+				return (selector._id as FieldExpression<T['_id']>).$in!;
 			}
 
 			return null;

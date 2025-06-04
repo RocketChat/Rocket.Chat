@@ -7,17 +7,61 @@ import type { LocalCollection } from './LocalCollection';
 import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
-import type { Query, OrderedQuery, IncompleteQuery, UnorderedQuery } from './Query';
-import { _isPlainObject, clone, hasOwn, isEqual, isPromiseLike } from './common';
+import type { Query, OrderedQuery, UnorderedQuery } from './Query';
+import { _isPlainObject, clone, hasOwn } from './common';
+import type { OrderedObserver, UnorderedObserver } from './observers';
 
-type DispatchTransform<TTransform, T, TProjection> = TTransform extends (...args: any) => any
+type Transform<T> = ((doc: T) => any) | null | undefined;
+
+type FieldSpecifier = {
+	[id: string]: number | boolean;
+};
+
+export type Options<T> = {
+	/** Sort order (default: natural order) */
+	sort?: Sort | undefined;
+	/** Number of results to skip at the beginning */
+	skip?: number | undefined;
+	/** Maximum number of results to return */
+	limit?: number | undefined;
+	/**
+	 * Dictionary of fields to return or exclude.
+	 * @deprecated use projection instead
+	 */
+	fields?: FieldSpecifier | undefined;
+	/** Dictionary of fields to return or exclude. */
+	projection?: FieldSpecifier | undefined;
+	/** Default `true`; pass `false` to disable reactivity */
+	reactive?: boolean | undefined;
+	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
+	transform?: Transform<Partial<T>> | null | undefined;
+};
+
+type DispatchTransform<TTransform, T> = TTransform extends (...args: any) => any
 	? ReturnType<TTransform>
 	: TTransform extends null
 		? T
-		: TProjection;
+		: Partial<T>;
 
-/** @deprecated internal use only */
-export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TProjection extends T = T> {
+type ObserveChangesOptions<T extends { _id: string }> = Partial<OrderedObserver<T, ICachingChangeObserver<T>>> & {
+	_allow_unordered?: boolean;
+	_suppress_initial?: boolean;
+	_fromObserve?: boolean;
+};
+
+type ObserveOptions<T> = {
+	addedAt?: (document: T, atIndex: number | null, before: unknown) => void;
+	added?: (document: T) => void;
+	changedAt?: (newDocument: T, oldDocument: T, atIndex: number) => void;
+	changed?: (newDocument: T, oldDocument: T) => void;
+	removedAt?: (document: T, atIndex: number) => void;
+	removed?: (document: T) => void;
+	movedTo?: (document: T, oldIndex: number, newIndex: number, before: unknown) => void;
+	_suppress_initial?: boolean;
+	_no_indices?: boolean;
+};
+
+export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 	private readonly predicate: (doc: T) => boolean;
 
 	private readonly comparator: ((a: T, b: T) => number) | null;
@@ -28,9 +72,9 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 	private readonly fields: FieldSpecifier | undefined;
 
-	private readonly _projectionFn: (doc: T | Omit<T, '_id'>) => TProjection;
+	private readonly _projectionFn: (doc: T | Omit<T, '_id'>) => Partial<T>;
 
-	private readonly _transform: TOptions['transform'];
+	private readonly _transform: Transform<Partial<T>> | null;
 
 	private readonly reactive: boolean;
 
@@ -55,23 +99,21 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		const _idProjection = fields._id === undefined ? true : fields._id;
 		const details = this.projectionDetails(fields);
 
-		const transform = (doc: any, ruleTree: any): any => {
+		const transform = (doc: any, ruleTree: Record<string, unknown>): any => {
 			if (Array.isArray(doc)) {
 				return doc.map((subdoc) => transform(subdoc, ruleTree));
 			}
 
 			const result = details.including ? {} : clone(doc);
 
-			Object.keys(ruleTree).forEach((key) => {
+			Object.entries(ruleTree).forEach(([key, rule]) => {
 				if (doc == null || !hasOwn.call(doc, key)) {
 					return;
 				}
 
-				const rule = ruleTree[key];
-
 				if (rule === Object(rule)) {
 					if (doc[key as keyof typeof doc] === Object(doc[key as keyof typeof doc])) {
-						result[key as keyof typeof doc] = transform(doc[key as keyof typeof doc], rule);
+						result[key as keyof typeof doc] = transform(doc[key as keyof typeof doc], rule as Record<string, unknown>);
 					}
 				} else if (details.including) {
 					result[key as keyof typeof doc] = clone(doc[key as keyof typeof doc]);
@@ -103,12 +145,10 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			throw new MinimongoError('fields option must be an object');
 		}
 
-		Object.keys(fields).forEach((keyPath) => {
+		Object.entries(fields).forEach(([keyPath, value]) => {
 			if (keyPath.split('.').includes('$')) {
 				throw new MinimongoError("Minimongo doesn't support $ operator in projections yet.");
 			}
-
-			const value = fields[keyPath];
 
 			if (typeof value === 'object' && ['$elemMatch', '$meta', '$slice'].some((key) => key in value)) {
 				throw new MinimongoError("Minimongo doesn't support operators in projections yet.");
@@ -195,7 +235,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return root;
 	}
 
-	private wrapTransform(transform: (Transform<T> & { __wrappedTransform__?: boolean }) | null | undefined) {
+	private wrapTransform(transform: (Transform<Partial<T>> & { __wrappedTransform__?: boolean }) | null | undefined) {
 		if (!transform) {
 			return null;
 		}
@@ -204,7 +244,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			return transform;
 		}
 
-		const wrapped = (doc: any) => {
+		const wrapped = (doc: Partial<T>) => {
 			if (!('_id' in doc)) {
 				throw new MinimongoError('can only transform documents with _id');
 			}
@@ -218,7 +258,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			}
 
 			if (hasOwn.call(transformed, '_id')) {
-				if (!isEqual(transformed._id, id)) {
+				if (transformed._id !== id) {
 					throw new MinimongoError("transformed document can't have different _id");
 				}
 			} else {
@@ -241,8 +281,8 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return this._getRawObjects({ ordered: true }).length;
 	}
 
-	fetch(): DispatchTransform<TOptions['transform'], T, TProjection>[] {
-		const result: DispatchTransform<TOptions['transform'], T, TProjection>[] = [];
+	fetch(): DispatchTransform<TOptions['transform'], T>[] {
+		const result: DispatchTransform<TOptions['transform'], T>[] = [];
 
 		this.forEach((doc) => {
 			result.push(doc);
@@ -251,7 +291,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return result;
 	}
 
-	[Symbol.iterator](): Iterator<DispatchTransform<TOptions['transform'], T, TProjection>> {
+	[Symbol.iterator](): Iterator<DispatchTransform<TOptions['transform'], T>> {
 		if (this.reactive) {
 			this._depend({
 				addedBefore: true,
@@ -281,7 +321,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		};
 	}
 
-	[Symbol.asyncIterator](): AsyncIterator<DispatchTransform<TOptions['transform'], T, TProjection>> {
+	[Symbol.asyncIterator](): AsyncIterator<DispatchTransform<TOptions['transform'], T>> {
 		const syncResult = this[Symbol.iterator]();
 		return {
 			async next() {
@@ -290,7 +330,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		};
 	}
 
-	forEach<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void>(
+	forEach<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => void>(
 		callback: TIterationCallback,
 		thisArg?: ThisParameterType<TIterationCallback>,
 	): void {
@@ -311,7 +351,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 				return;
 			}
 
-			callback.call(thisArg, projection as DispatchTransform<TOptions['transform'], T, TProjection>, i, this);
+			callback.call(thisArg, projection as DispatchTransform<TOptions['transform'], T>, i, this);
 		});
 	}
 
@@ -319,7 +359,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return this._transform;
 	}
 
-	map<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => unknown>(
+	map<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => unknown>(
 		callback: TIterationCallback,
 		thisArg?: ThisParameterType<TIterationCallback>,
 	): ReturnType<TIterationCallback>[] {
@@ -332,15 +372,134 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return result;
 	}
 
-	observe(options: ObserveCallbacks<TProjection>) {
+	observe(options: ObserveOptions<T>) {
 		return this._observeFromObserveChanges(options);
 	}
 
-	observeAsync(options: ObserveCallbacks<TProjection>) {
+	observeAsync(options: ObserveOptions<T>) {
 		return Promise.resolve(this.observe(options));
 	}
 
-	observeChanges(options: ObserveChangesCallbacks<TProjection>) {
+	private _observeFromObserveChanges(observeCallbacks: ObserveOptions<T>) {
+		const transform = this.getTransform() || ((doc: Partial<T>) => doc);
+		let suppressed = !!observeCallbacks._suppress_initial;
+
+		let changeObserver: ICachingChangeObserver<T>;
+
+		if (this._observeCallbacksAreOrdered(observeCallbacks)) {
+			const indices = !observeCallbacks._no_indices;
+
+			changeObserver = new _CachingChangeOrderedObserver<T>({
+				addedBefore(id, fields, before) {
+					const check = suppressed || !(observeCallbacks.addedAt || observeCallbacks.added);
+					if (check) {
+						return;
+					}
+
+					const doc = transform(Object.assign(fields, { _id: id }));
+
+					if (observeCallbacks.addedAt) {
+						observeCallbacks.addedAt(
+							doc,
+							// eslint-disable-next-line no-nested-ternary
+							indices ? (before ? this.docs.indexOf(before) : this.docs.size()) : -1,
+							before,
+						);
+					} else {
+						observeCallbacks.added?.(doc);
+					}
+				},
+				changed(id, fields) {
+					if (!(observeCallbacks.changedAt || observeCallbacks.changed)) {
+						return;
+					}
+
+					const doc = clone(this.docs.get(id));
+					if (!doc) {
+						throw new MinimongoError(`Unknown id for changed: ${id}`);
+					}
+
+					const oldDoc = transform(clone(doc));
+
+					DiffSequence.applyChanges(doc, fields);
+
+					if (observeCallbacks.changedAt) {
+						observeCallbacks.changedAt(transform(doc), oldDoc, indices ? this.docs.indexOf(id) : -1);
+					} else {
+						observeCallbacks.changed?.(transform(doc), oldDoc);
+					}
+				},
+				movedBefore(id, before) {
+					if (!observeCallbacks.movedTo) {
+						return;
+					}
+
+					const from = indices ? this.docs.indexOf(id) : -1;
+					// eslint-disable-next-line no-nested-ternary
+					let to = indices ? (before ? this.docs.indexOf(before) : this.docs.size()) : -1;
+
+					if (to > from) {
+						--to;
+					}
+
+					observeCallbacks.movedTo(transform(clone(this.docs.get(id)!)), from, to, before || null);
+				},
+				removed(id) {
+					if (!(observeCallbacks.removedAt || observeCallbacks.removed)) {
+						return;
+					}
+
+					const doc = transform(this.docs.get(id)!);
+
+					if (observeCallbacks.removedAt) {
+						observeCallbacks.removedAt(doc, indices ? this.docs.indexOf(id) : -1);
+					} else {
+						observeCallbacks.removed?.(doc);
+					}
+				},
+			});
+		} else {
+			changeObserver = new _CachingChangeUnorderedObserver<T>({
+				added(id, fields) {
+					if (!suppressed && observeCallbacks.added) {
+						observeCallbacks.added(transform(Object.assign(fields, { _id: id })));
+					}
+				},
+				changed(id, fields) {
+					if (observeCallbacks.changed) {
+						const oldDoc = this.docs.get(id)!;
+						const doc = clone(oldDoc);
+
+						DiffSequence.applyChanges(doc, fields);
+
+						observeCallbacks.changed(transform(doc), transform(clone(oldDoc)));
+					}
+				},
+				removed(id) {
+					if (observeCallbacks.removed) {
+						observeCallbacks.removed(transform(this.docs.get(id)!));
+					}
+				},
+			});
+		}
+
+		changeObserver.applyChange._fromObserve = true;
+		const handle = this.observeChanges(changeObserver.applyChange);
+
+		const setSuppressed = (h: ObserveHandle<T>) => {
+			if (h.isReady) suppressed = false;
+			else
+				h.isReadyPromise?.then(() => {
+					suppressed = false;
+				});
+		};
+
+		setSuppressed(handle);
+
+		return handle;
+	}
+
+	observeChanges(options: ObserveChangesOptions<T>) {
 		const ordered = Cursor._observeChangesCallbacksAreOrdered(options);
 
 		if (!options._allow_unordered && !ordered && (this.skip || this.limit)) {
@@ -354,7 +513,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 			throw new MinimongoError('You may not observe a cursor with {fields: {_id: 0}}');
 		}
 
-		const query: IncompleteQuery<T, TOptions, TProjection> = ordered
+		const query: Partial<Query<T, TOptions>> = ordered
 			? {
 					cursor: this,
 					dirty: false,
@@ -408,7 +567,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		}
 
 		if (this.reactive) {
-			this.collection.queries.add(query as Query<T, TOptions, TProjection>);
+			this.collection.queries.add(query as Query<T, TOptions>);
 		}
 
 		if (!options._suppress_initial && !this.collection.paused) {
@@ -418,20 +577,20 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 				delete fields._id;
 
 				if (query.ordered) {
-					(query as OrderedQuery<T, TOptions, TProjection>).addedBefore(doc._id, this._projectionFn(fields), null);
+					(query as OrderedQuery<T, TOptions>).addedBefore(doc._id, this._projectionFn(fields), null);
 				}
 
-				(query as OrderedQuery<T, TOptions, TProjection>).added(doc._id, this._projectionFn(fields));
+				(query as OrderedQuery<T, TOptions>).added(doc._id, this._projectionFn(fields));
 			};
 
-			if ((query as OrderedQuery<T, TOptions, TProjection>).results.length) {
-				for (const doc of (query as OrderedQuery<T, TOptions, TProjection>).results) {
+			if ((query as OrderedQuery<T, TOptions>).results.length) {
+				for (const doc of (query as OrderedQuery<T, TOptions>).results) {
 					handler(doc);
 				}
 			}
 
-			if ((query as UnorderedQuery<T, TOptions, TProjection>).results.size()) {
-				(query as UnorderedQuery<T, TOptions, TProjection>).results.forEach(handler);
+			if ((query as UnorderedQuery<T, TOptions>).results.size()) {
+				(query as UnorderedQuery<T, TOptions>).results.forEach(handler);
 			}
 		}
 
@@ -442,7 +601,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return new ObserveHandle(this.collection);
 	}
 
-	async observeChangesAsync(options: ObserveChangesCallbacks<TProjection>) {
+	async observeChangesAsync(options: ObserveChangesOptions<T>) {
 		const handle = this.observeChanges(options);
 		await handle.isReadyPromise;
 		return handle;
@@ -458,7 +617,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 
 			dependency.depend();
 
-			const options: ObserveChangesCallbacks<TProjection> = {
+			const options: ObserveChangesOptions<T> = {
 				_allow_unordered: _allowUnordered,
 				_suppress_initial: true,
 			};
@@ -523,7 +682,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		}
 	}
 
-	fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T, TProjection>[]> {
+	fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T>[]> {
 		try {
 			return Promise.resolve(this.fetch());
 		} catch (error) {
@@ -531,9 +690,10 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		}
 	}
 
-	forEachAsync<
-		TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => void,
-	>(callback: TIterationCallback, thisArg: ThisParameterType<TIterationCallback>): Promise<void> {
+	forEachAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => void>(
+		callback: TIterationCallback,
+		thisArg: ThisParameterType<TIterationCallback>,
+	): Promise<void> {
 		try {
 			return Promise.resolve(this.forEach(callback, thisArg));
 		} catch (error) {
@@ -541,7 +701,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		}
 	}
 
-	mapAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T, TProjection>, index: number, cursor: this) => any>(
+	mapAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => any>(
 		callback: TIterationCallback,
 		thisArg: ThisParameterType<TIterationCallback>,
 	): Promise<ReturnType<TIterationCallback>[]> {
@@ -552,131 +712,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		}
 	}
 
-	private _observeFromObserveChanges(observeCallbacks: ObserveCallbacks<TProjection>) {
-		const transform = this.getTransform() || ((doc: T) => doc);
-		let suppressed = !!observeCallbacks._suppress_initial;
-
-		let observeChangesCallbacks: ObserveChangesCallbacks<T>;
-		if (this._observeCallbacksAreOrdered(observeCallbacks)) {
-			const indices = !observeCallbacks._no_indices;
-
-			observeChangesCallbacks = {
-				addedBefore(id, fields, before) {
-					const check = suppressed || !(observeCallbacks.addedAt || observeCallbacks.added);
-					if (check) {
-						return;
-					}
-
-					const doc = transform(Object.assign(fields, { _id: id }));
-
-					if (observeCallbacks.addedAt) {
-						observeCallbacks.addedAt(
-							doc,
-							// eslint-disable-next-line no-nested-ternary
-							indices ? (before ? (this.docs as OrderedDict<T['_id'], T>).indexOf(before) : this.docs.size()) : -1,
-							before,
-						);
-					} else {
-						observeCallbacks.added?.(doc);
-					}
-				},
-				changed(id, fields) {
-					if (!(observeCallbacks.changedAt || observeCallbacks.changed)) {
-						return;
-					}
-
-					const doc = clone(this.docs.get(id));
-					if (!doc) {
-						throw new MinimongoError(`Unknown id for changed: ${id}`);
-					}
-
-					const oldDoc = transform(clone(doc));
-
-					DiffSequence.applyChanges(doc, fields);
-
-					if (observeCallbacks.changedAt) {
-						observeCallbacks.changedAt(transform(doc), oldDoc, indices ? (this.docs as OrderedDict<T['_id'], T>).indexOf(id) : -1);
-					} else {
-						observeCallbacks.changed?.(transform(doc), oldDoc);
-					}
-				},
-				movedBefore(id, before) {
-					if (!observeCallbacks.movedTo) {
-						return;
-					}
-
-					const from = indices ? (this.docs as OrderedDict<T['_id'], T>).indexOf(id) : -1;
-					// eslint-disable-next-line no-nested-ternary
-					let to = indices ? (before ? (this.docs as OrderedDict<T['_id'], T>).indexOf(before) : this.docs.size()) : -1;
-
-					if (to > from) {
-						--to;
-					}
-
-					observeCallbacks.movedTo(transform(clone(this.docs.get(id)!)), from, to, before || null);
-				},
-				removed(id) {
-					if (!(observeCallbacks.removedAt || observeCallbacks.removed)) {
-						return;
-					}
-
-					const doc = transform(this.docs.get(id)!);
-
-					if (observeCallbacks.removedAt) {
-						observeCallbacks.removedAt(doc, indices ? (this.docs as OrderedDict<T['_id'], T>).indexOf(id) : -1);
-					} else {
-						observeCallbacks.removed?.(doc);
-					}
-				},
-			};
-		} else {
-			observeChangesCallbacks = {
-				added(id, fields) {
-					if (!suppressed && observeCallbacks.added) {
-						observeCallbacks.added(transform(Object.assign(fields, { _id: id })));
-					}
-				},
-				changed(id, fields) {
-					if (observeCallbacks.changed) {
-						const oldDoc = this.docs.get(id)!;
-						const doc = clone(oldDoc);
-
-						DiffSequence.applyChanges(doc, fields);
-
-						observeCallbacks.changed(transform(doc), transform(clone(oldDoc)));
-					}
-				},
-				removed(id) {
-					if (observeCallbacks.removed) {
-						observeCallbacks.removed(transform(this.docs.get(id)!));
-					}
-				},
-			};
-		}
-
-		const changeObserver = new _CachingChangeObserver({
-			callbacks: observeChangesCallbacks,
-		});
-
-		changeObserver.applyChange._fromObserve = true;
-		const handle = this.observeChanges(changeObserver.applyChange);
-
-		const setSuppressed = (h: any) => {
-			if (h.isReady) suppressed = false;
-			else
-				h.isReadyPromise?.then(() => {
-					suppressed = false;
-				});
-		};
-		if (isPromiseLike(handle)) {
-			handle.then(setSuppressed);
-		} else {
-			setSuppressed(handle);
-		}
-		return handle;
-	}
-
-	private _observeCallbacksAreOrdered(callbacks: ObserveCallbacks<TProjection>) {
+	private _observeCallbacksAreOrdered(callbacks: ObserveOptions<T>) {
 		if (callbacks.added && callbacks.addedAt) {
 			throw new MinimongoError('Please specify only one of added() and addedAt()');
 		}
@@ -692,7 +728,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 		return !!(callbacks.addedAt || callbacks.changedAt || callbacks.movedTo || callbacks.removedAt);
 	}
 
-	static _observeChangesCallbacksAreOrdered<T extends { _id: string }>(callbacks: ObserveChangesCallbacks<T>) {
+	static _observeChangesCallbacksAreOrdered<T extends { _id: string }>(callbacks: ObserveChangesOptions<T>) {
 		if (callbacks.added && callbacks.addedBefore) {
 			throw new MinimongoError('Please specify only one of added() and addedBefore()');
 		}
@@ -701,144 +737,85 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>, TPro
 	}
 }
 
-export class _CachingChangeObserver<T extends { _id: string }> {
-	private ordered: boolean;
+interface ICachingChangeObserver<T extends { _id: string }> {
+	readonly applyChange: ObserveChangesOptions<T>;
+}
 
-	docs: IdMap<T['_id'], T> | OrderedDict<T['_id'], T>;
+class _CachingChangeOrderedObserver<T extends { _id: string }> implements ICachingChangeObserver<T> {
+	readonly docs = new OrderedDict<T['_id'], Partial<T>>();
 
-	applyChange: any;
+	readonly applyChange: ObserveChangesOptions<T>;
 
-	constructor(options: any = {}) {
-		const orderedFromCallbacks = options.callbacks && Cursor._observeChangesCallbacksAreOrdered(options.callbacks);
+	constructor({ addedBefore, changed, movedBefore, removed }: Omit<OrderedObserver<T, _CachingChangeOrderedObserver<T>>, 'added'>) {
+		this.docs = new OrderedDict<T['_id'], T>();
 
-		if (hasOwn.call(options, 'ordered')) {
-			this.ordered = options.ordered;
+		this.applyChange = {
+			addedBefore: (id, fields, before) => {
+				const doc = { ...fields };
 
-			if (options.callbacks && options.ordered !== orderedFromCallbacks) {
-				throw new MinimongoError("ordered option doesn't match callbacks");
-			}
-		} else if (options.callbacks) {
-			this.ordered = orderedFromCallbacks;
-		} else {
-			throw new MinimongoError('must provide ordered or callbacks');
-		}
+				doc._id = id;
 
-		const callbacks = options.callbacks || {};
+				addedBefore.call(this, id, clone(fields), before);
 
-		if (this.ordered) {
-			this.docs = new OrderedDict<T['_id'], T>();
-			this.applyChange = {
-				addedBefore: (id: any, fields: any, before: any) => {
-					const doc = { ...fields };
+				this.docs.putBefore(id, doc, before || null);
+			},
+			movedBefore: (id, before) => {
+				movedBefore.call(this, id, before);
 
-					doc._id = id;
+				this.docs.moveBefore(id, before || null);
+			},
+			changed: (id, fields) => {
+				const doc = this.docs.get(id);
 
-					if (callbacks.addedBefore) {
-						callbacks.addedBefore.call(this, id, clone(fields), before);
-					}
+				if (!doc) {
+					throw new MinimongoError(`Unknown id for changed: ${id}`);
+				}
 
-					if (callbacks.added) {
-						callbacks.added.call(this, id, clone(fields));
-					}
+				changed.call(this, id, clone(fields));
 
-					(this.docs as OrderedDict<T['_id'], T>).putBefore(id, doc, before || null);
-				},
-				movedBefore: (id: any, before: any) => {
-					if (callbacks.movedBefore) {
-						callbacks.movedBefore.call(this, id, before);
-					}
+				DiffSequence.applyChanges(doc, fields);
+			},
+			removed: (id) => {
+				removed.call(this, id);
 
-					(this.docs as OrderedDict<T['_id'], T>).moveBefore(id, before || null);
-				},
-			};
-		} else {
-			this.docs = new IdMap<T['_id'], T>();
-			this.applyChange = {
-				added: (id: any, fields: any) => {
-					const doc = { ...fields };
-
-					if (callbacks.added) {
-						callbacks.added.call(this, id, clone(fields));
-					}
-
-					doc._id = id;
-
-					(this.docs as IdMap<T['_id'], T>).set(id, doc);
-				},
-			};
-		}
-
-		this.applyChange.changed = (id: any, fields: any) => {
-			const doc = this.docs.get(id);
-
-			if (!doc) {
-				throw new MinimongoError(`Unknown id for changed: ${id}`);
-			}
-
-			if (callbacks.changed) {
-				callbacks.changed.call(this, id, clone(fields));
-			}
-
-			DiffSequence.applyChanges(doc, fields);
-		};
-
-		this.applyChange.removed = (id: any) => {
-			if (callbacks.removed) {
-				callbacks.removed.call(this, id);
-			}
-
-			this.docs.remove(id);
+				this.docs.remove(id);
+			},
 		};
 	}
 }
 
-type ObserveCallbacks<T> = {
-	addedAt?: (document: T, atIndex: number | null, before: unknown) => void;
-	added?: (document: T) => void;
-	changedAt?: (newDocument: T, oldDocument: T, atIndex: number) => void;
-	changed?: (newDocument: T, oldDocument: T) => void;
-	removedAt?: (document: T, atIndex: number) => void;
-	removed?: (document: T) => void;
-	movedTo?: (document: T, oldIndex: number, newIndex: number, before: unknown) => void;
-	addedBefore?: (document: T, before: unknown) => void;
-	movedBefore?: (document: T, before: unknown) => void;
-	_suppress_initial?: boolean;
-	_no_indices?: boolean;
-	_allow_unordered?: boolean;
-};
+class _CachingChangeUnorderedObserver<T extends { _id: string }> implements ICachingChangeObserver<T> {
+	readonly docs = new IdMap<T['_id'], Partial<T>>();
 
-type ObserveChangesCallbacks<T extends { _id: string }> = {
-	addedBefore?: (this: _CachingChangeObserver<T>, id: T['_id'], fields: T, before: T['_id'] | null) => void;
-	changed?: (this: _CachingChangeObserver<T>, id: T['_id'], fields: T) => void;
-	movedBefore?: (this: _CachingChangeObserver<T>, id: T['_id'], before: T['_id'] | null) => void;
-	removed?: (this: _CachingChangeObserver<T>, id: T['_id']) => void;
-	added?: (this: _CachingChangeObserver<T>, id: T['_id'], fields: T) => void;
-	_allow_unordered?: boolean;
-	_suppress_initial?: boolean;
-};
+	readonly applyChange: ObserveChangesOptions<T>;
 
-export type Transform<T> = ((doc: T) => any) | null | undefined;
+	constructor({ added, changed, removed }: UnorderedObserver<T, _CachingChangeUnorderedObserver<T>>) {
+		this.applyChange = {
+			added: (id, fields) => {
+				const doc = { ...fields };
 
-export type FieldSpecifier = {
-	[id: string]: number | boolean;
-};
+				added.call(this, id, clone(fields));
 
-export type Options<T> = {
-	/** Sort order (default: natural order) */
-	sort?: Sort | undefined;
-	/** Number of results to skip at the beginning */
-	skip?: number | undefined;
-	/** Maximum number of results to return */
-	limit?: number | undefined;
-	/**
-	 * Dictionary of fields to return or exclude.
-	 * @deprecated use projection instead
-	 */
-	fields?: FieldSpecifier | undefined;
-	/** Dictionary of fields to return or exclude. */
-	projection?: FieldSpecifier | undefined;
-	/** Default `true`; pass `false` to disable reactivity */
-	reactive?: boolean | undefined;
-	/**  Overrides `transform` on the  [`Collection`](#collections) for this cursor.  Pass `null` to disable transformation. */
-	transform?: Transform<T> | null | undefined;
-};
+				doc._id = id;
+
+				this.docs.set(id, doc);
+			},
+			changed: (id, fields) => {
+				const doc = this.docs.get(id);
+
+				if (!doc) {
+					throw new MinimongoError(`Unknown id for changed: ${id}`);
+				}
+
+				changed.call(this, id, clone(fields));
+
+				DiffSequence.applyChanges(doc, fields);
+			},
+			removed: (id) => {
+				removed.call(this, id);
+
+				this.docs.remove(id);
+			},
+		};
+	}
+}

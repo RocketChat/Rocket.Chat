@@ -318,3 +318,7 @@ export function _selectorIsId(selector: unknown): selector is string | number {
 export function isBinary(x: unknown): x is Uint8Array {
 	return typeof x === 'object' && x !== null && x instanceof Uint8Array;
 }
+
+export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {
+	return Object.entries(obj) as [keyof T, T[keyof T]][];
+}

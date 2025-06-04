@@ -1,4 +1,3 @@
-/** @deprecated internal use only */
 export class MinimongoError extends Error {
 	constructor(message: string, context?: { field: number | string | symbol }) {
 		if (typeof message === 'string' && context?.field) {
