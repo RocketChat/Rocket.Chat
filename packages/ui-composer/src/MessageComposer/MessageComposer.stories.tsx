@@ -52,22 +52,27 @@ export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const _MessageComposerNew: StoryFn<typeof MessageComposer> = (args) => (
-	<MessageComposer>
-		<MessageComposerInput placeholder={args.placeholder || 'Placeholder text'} />
-		<RichTextComposerInput placeholder='RealTimeEditor' />
-		<MessageComposerToolbar>
-			<MessageToolbarActions />
-			<MessageComposerToolbarSubmit>
-				<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
-			</MessageComposerToolbarSubmit>
-		</MessageComposerToolbar>
-	</MessageComposer>
+export const RichTextComposer: StoryFn<typeof MessageComposer> = (args) => (
+	<>
+		<MessageComposerHint icon='flask' helperText=''>
+			Experiment: Real Time Composer
+		</MessageComposerHint>
+		<MessageComposer>
+			<RichTextComposerInput placeholder={args.placeholder || 'Placeholder text'} hidePlaceholder={args.hidePlaceholder} />
+			<MessageComposerToolbar>
+				<MessageToolbarActions />
+				<MessageComposerToolbarSubmit>
+					<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+				</MessageComposerToolbarSubmit>
+			</MessageComposerToolbar>
+		</MessageComposer>
+	</>
 );
 
-_MessageComposerNew.args = {
+RichTextComposer.args = {
 	// Define the props (args) you want to control
 	placeholder: 'Type a message...',
+	hidePlaceholder: false,
 };
 
 export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
