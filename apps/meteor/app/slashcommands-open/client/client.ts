@@ -1,5 +1,5 @@
 import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { router } from '../../../client/providers/RouterProvider';
@@ -18,7 +18,7 @@ slashCommands.add({
 		const room = params.trim().replace(/#|@/, '');
 		const type = dict[params.trim()[0]] || [];
 
-		const query: Mongo.Selector<ISubscription> = {
+		const query: Filter<ISubscription> = {
 			name: room,
 			...(type && { t: { $in: type } }),
 		};
