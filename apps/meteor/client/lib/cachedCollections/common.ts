@@ -1,3 +1,4 @@
+import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 import { EJSON } from 'meteor/ejson';
 
 import { MinimongoError } from './MinimongoError';
@@ -16,10 +17,6 @@ export function isEqual<T>(
 	},
 ): boolean {
 	return EJSON.equals(a as any, b as any, options);
-}
-
-export function isPromiseLike(p: unknown): p is PromiseLike<unknown> {
-	return typeof p === 'object' && p !== null && typeof (p as PromiseLike<unknown>).then === 'function';
 }
 
 function insertIntoDocument(document: any, key: any, value: any) {
@@ -45,14 +42,17 @@ export function isNumericKey(s: string) {
 	return /^[0-9]+$/.test(s);
 }
 
-export function isOperatorObject(valueSelector: any, inconsistentOK = false) {
+export function isOperatorObject<TOperators extends `$${string}`>(
+	valueSelector: unknown,
+	inconsistentOK = false,
+): valueSelector is Record<TOperators, any> {
 	if (!_isPlainObject(valueSelector)) {
 		return false;
 	}
 
-	let theseAreOperators: any = undefined;
-	Object.keys(valueSelector).forEach((selKey) => {
-		const thisIsOperator = selKey.substr(0, 1) === '$' || selKey === 'diff';
+	let theseAreOperators: boolean | undefined = undefined;
+	for (const selKey of Object.keys(valueSelector)) {
+		const thisIsOperator = selKey.slice(0, 1) === '$' || selKey === 'diff';
 
 		if (theseAreOperators === undefined) {
 			theseAreOperators = thisIsOperator;
@@ -63,12 +63,12 @@ export function isOperatorObject(valueSelector: any, inconsistentOK = false) {
 
 			theseAreOperators = false;
 		}
-	});
+	}
 
-	return !!theseAreOperators;
+	return theseAreOperators ?? true;
 }
 
-function populateDocumentWithKeyValue(document: any, key: any, value: any) {
+function populateDocumentWithKeyValue<T extends { _id: string }>(document: Partial<T>, key: string, value: unknown) {
 	if (value && Object.getPrototypeOf(value) === Object.prototype) {
 		populateDocumentWithObject(document, key, value);
 	} else if (!(value instanceof RegExp)) {
@@ -76,7 +76,7 @@ function populateDocumentWithKeyValue(document: any, key: any, value: any) {
 	}
 }
 
-function populateDocumentWithObject(document: any, key: any, value: any) {
+function populateDocumentWithObject<T extends { _id: string }>(document: Partial<T>, key: string, value: FieldExpression<T>) {
 	const keys = Object.keys(value);
 	const unprefixedKeys = keys.filter((op) => op[0] !== '$');
 
@@ -88,36 +88,33 @@ function populateDocumentWithObject(document: any, key: any, value: any) {
 		validateObject(value, key);
 		insertIntoDocument(document, key, value);
 	} else {
-		Object.keys(value).forEach((op) => {
-			const object = value[op];
-
+		entriesOf(value).forEach(([op, object]) => {
 			if (op === '$eq') {
-				populateDocumentWithKeyValue(document, key, object);
+				populateDocumentWithKeyValue(document, key, object as NonNullable<FieldExpression<T>['$eq']>);
 			} else if (op === '$all') {
-				object.forEach((element: any) => populateDocumentWithKeyValue(document, key, element));
+				(object as NonNullable<FieldExpression<T>['$all']>).forEach((element: any) => populateDocumentWithKeyValue(document, key, element));
 			}
 		});
 	}
 }
 
-export function populateDocumentWithQueryFields(query: any, document: any = {}): any {
-	if (Object.getPrototypeOf(query) === Object.prototype) {
-		Object.keys(query).forEach((key) => {
-			const value = query[key];
-
-			if (key === '$and') {
-				value.forEach((element: any) => populateDocumentWithQueryFields(element, document));
-			} else if (key === '$or') {
-				if (value.length === 1) {
-					populateDocumentWithQueryFields(value[0], document);
-				}
-			} else if (key[0] !== '$') {
-				populateDocumentWithKeyValue(document, key, value);
-			}
-		});
-	} else if (_selectorIsId(query)) {
+export function populateDocumentWithQueryFields<T extends { _id: string }>(query: T['_id'] | Filter<T>, document: Partial<T> = {}) {
+	if (_selectorIsId(query)) {
 		insertIntoDocument(document, '_id', query);
+		return document;
 	}
+
+	entriesOf(query).forEach(([key, value]) => {
+		if (key === '$and') {
+			(value as NonNullable<Filter<T>['$and']>).forEach((element) => populateDocumentWithQueryFields(element, document));
+		} else if (key === '$or') {
+			if ((value as NonNullable<Filter<T>['$or']>).length === 1) {
+				populateDocumentWithQueryFields((value as NonNullable<Filter<T>['$or']>)[0], document);
+			}
+		} else if (typeof key === 'string' && key[0] !== '$') {
+			populateDocumentWithKeyValue(document, key, value);
+		}
+	});
 
 	return document;
 }
@@ -322,3 +319,27 @@ export function isBinary(x: unknown): x is Uint8Array {
 export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {
 	return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
+
+const invalidCharMsg = {
+	'$': "start with '$'",
+	'.': "contain '.'",
+	'\0': 'contain null bytes',
+};
+
+export function assertHasValidFieldNames(doc: unknown) {
+	if (doc && typeof doc === 'object') {
+		JSON.stringify(doc, (key, value) => {
+			assertIsValidFieldName(key);
+			return value;
+		});
+	}
+}
+
+export function assertIsValidFieldName(key: string) {
+	let match;
+	if (typeof key === 'string' && (match = key.match(/^\$|\.|\0/))) {
+		throw new MinimongoError(`Key ${key} must not ${invalidCharMsg[match[0] as keyof typeof invalidCharMsg]}`);
+	}
+}
+
+export type ArrayIndices = (number | 'x')[];

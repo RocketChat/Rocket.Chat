@@ -1,10 +1,9 @@
 import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 
 import { MinimongoError } from './MinimongoError';
+import type { ArrayIndices } from './common';
 import { _f, _isPlainObject, isBinary, isEqual, isIndexable, isNumericKey, isOperatorObject } from './common';
 import { isTruthy } from '../../../lib/isTruthy';
-
-type ArrayIndices = (number | 'x')[];
 
 type Result =
 	| {
