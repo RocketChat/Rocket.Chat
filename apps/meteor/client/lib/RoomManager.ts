@@ -158,12 +158,9 @@ export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStor
 export const useOpenedRoomUnreadSince = (): Date | undefined => {
 	const rid = useOpenedRoom();
 
-	if (!rid) {
-		throw new Error('No room opened');
-	}
 	return useSyncExternalStore(
-		(callback) => LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.on('changed', callback) ?? (() => undefined),
-		() => LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.get(),
+		(callback) => (rid && LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.on('changed', callback)) || (() => undefined),
+		() => (rid ? LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.get() : undefined),
 	);
 };
 
