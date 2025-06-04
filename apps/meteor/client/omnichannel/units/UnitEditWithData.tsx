@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
-const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
+const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
 
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
@@ -43,7 +43,7 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 	});
 
 	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError || unitMonitorsError || unitDepartmentsError) {
@@ -54,7 +54,9 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 		);
 	}
 
-	return <UnitEdit unitData={unitData} unitMonitors={unitMonitors?.monitors} unitDepartments={unitDepartments?.departments} />;
+	return (
+		<UnitEdit unitData={unitData} unitMonitors={unitMonitors?.monitors} unitDepartments={unitDepartments?.departments} onClose={onClose} />
+	);
 };
 
 export default UnitEditWithData;
