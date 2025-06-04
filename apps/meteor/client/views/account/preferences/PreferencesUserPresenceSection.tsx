@@ -15,14 +15,14 @@ const PreferencesUserPresenceSection = () => {
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={enableAutoAwayId}>
+						<FieldLabel is='span' id={enableAutoAwayId}>
 							{t('Enable_Auto_Away')}
 						</FieldLabel>
 						<Controller
 							name='enableAutoAway'
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
-								<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
+								<ToggleSwitch ref={ref} aria-labelledby={enableAutoAwayId} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>

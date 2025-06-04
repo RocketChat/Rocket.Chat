@@ -19,7 +19,7 @@ const PreferencesLocalizationSection = () => {
 		<AccordionItem title={t('Localization')} defaultExpanded>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='legend' htmlFor={languageId}>
+					<FieldLabel is='span' id={languageId}>
 						{t('Language')}
 					</FieldLabel>
 					<FieldRow>
@@ -27,7 +27,7 @@ const PreferencesLocalizationSection = () => {
 							control={control}
 							name='language'
 							render={({ field: { value, onChange } }) => (
-								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
+								<Select aria-labelledby={languageId} value={value} onChange={onChange} options={languageOptions} />
 							)}
 						/>
 					</FieldRow>

@@ -98,22 +98,18 @@ const PreferencesNotificationsSection = () => {
 		<AccordionItem title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel>{t('Desktop_Notifications')}</FieldLabel>
+					<FieldLabel is='span'>{t('Desktop_Notifications')}</FieldLabel>
 					<FieldRow>
 						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
 						{notificationsPermission === 'granted' && (
-							<>
-								<Button primary onClick={onSendNotification}>
-									{t('Test_Desktop_Notifications')}
-								</Button>
-							</>
+							<Button primary onClick={onSendNotification}>
+								{t('Test_Desktop_Notifications')}
+							</Button>
 						)}
 						{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
-							<>
-								<Button primary onClick={onAskNotificationPermission}>
-									{t('Enable_Desktop_Notifications')}
-								</Button>
-							</>
+							<Button primary onClick={onAskNotificationPermission}>
+								{t('Enable_Desktop_Notifications')}
+							</Button>
 						)}
 					</FieldRow>
 				</Field>
@@ -137,31 +133,37 @@ const PreferencesNotificationsSection = () => {
 					<FieldHint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={desktopNotificationsId}>{t('Notification_Desktop_Default_For')}</FieldLabel>
+					<FieldLabel is='span' id={desktopNotificationsId}>
+						{t('Notification_Desktop_Default_For')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='desktopNotifications'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
+								<Select aria-labelledby={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={pushNotificationsId}>{t('Notification_Push_Default_For')}</FieldLabel>
+					<FieldLabel is='span' id={pushNotificationsId}>
+						{t('Notification_Push_Default_For')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='pushNotifications'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
+								<Select aria-labelledby={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={emailNotificationModeId}>{t('Email_Notification_Mode')}</FieldLabel>
+					<FieldLabel is='span' id={emailNotificationModeId}>
+						{t('Email_Notification_Mode')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='emailNotificationMode'
@@ -169,7 +171,7 @@ const PreferencesNotificationsSection = () => {
 							render={({ field: { value, onChange } }) => (
 								<Select
 									aria-describedby={`${emailNotificationModeId}-hint`}
-									id={emailNotificationModeId}
+									aria-labelledby={emailNotificationModeId}
 									disabled={!canChangeEmailNotification}
 									value={value}
 									onChange={onChange}
@@ -221,7 +223,7 @@ const PreferencesNotificationsSection = () => {
 				{showMobileRinging && (
 					<Field>
 						<FieldRow>
-							<FieldLabel is='legend' htmlFor={enableMobileRingingId}>
+							<FieldLabel htmlFor={enableMobileRingingId}>
 								{t('VideoConf_Mobile_Ringing')}
 							</FieldLabel>
 							<Controller

@@ -23,7 +23,7 @@ const PreferencesSoundSection = () => {
 		<AccordionItem title={t('Sound')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='legend' aria-describedby={`${masterVolumeId}-hint`}>
+					<FieldLabel is='span' aria-describedby={`${masterVolumeId}-hint`}>
 						{t('Master_volume')}
 					</FieldLabel>
 					<FieldHint id={`${masterVolumeId}-hint`} mbe={4}>
@@ -47,7 +47,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel is='legend' id={notificationsSoundVolumeId}>
+					<FieldLabel is='span' id={notificationsSoundVolumeId}>
 						{t('Notification_volume')}
 					</FieldLabel>
 					<FieldHint id={`${notificationsSoundVolumeId}-hint`} mbe={4}>
@@ -75,7 +75,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel is='legend' aria-describedby={`${voipRingerVolumeId}-hint`}>
+					<FieldLabel is='span' aria-describedby={`${voipRingerVolumeId}-hint`}>
 						{t('Call_ringer_volume')}
 					</FieldLabel>
 					<FieldHint id={`${voipRingerVolumeId}-hint`} mbe={4}>
@@ -103,14 +103,16 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={newRoomNotificationId}>{t('New_Room_Notification')}</FieldLabel>
+					<FieldLabel is='span' id={newRoomNotificationId}>
+						{t('New_Room_Notification')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='newRoomNotification'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={newRoomNotificationId}
+									aria-labelledby={newRoomNotificationId}
 									value={value}
 									options={soundsList}
 									onChange={(value) => {
@@ -123,14 +125,16 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={newMessageNotificationId}>{t('New_Message_Notification')}</FieldLabel>
+					<FieldLabel is='span' id={newMessageNotificationId}>
+						{t('New_Message_Notification')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='newMessageNotification'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={newMessageNotificationId}
+									aria-labelledby={newMessageNotificationId}
 									value={value}
 									options={soundsList}
 									onChange={(value) => {

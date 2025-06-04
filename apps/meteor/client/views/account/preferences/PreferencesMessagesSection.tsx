@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldRow, FieldLink, FieldHint, FieldLabel, AccordionItem, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldLink, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +43,7 @@ const PreferencesMessagesSection = () => {
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
+						<FieldLabel htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
 						<Controller
 							name='unreadAlert'
 							control={control}
@@ -55,7 +55,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</FieldLabel>
+						<FieldLabel htmlFor={showThreadsInMainChannelId}>{t('Always_show_thread_replies_in_main_channel')}</FieldLabel>
 						<Controller
 							name='showThreadsInMainChannel'
 							control={control}
@@ -75,14 +75,16 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel is='legend' htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
+					<FieldLabel is='span' id={alsoSendThreadToChannelId}>
+						{t('Also_send_thread_message_to_channel_behavior')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='alsoSendThreadToChannel'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={alsoSendThreadToChannelId}
+									aria-labelledby={alsoSendThreadToChannelId}
 									aria-describedby={`${alsoSendThreadToChannelId}-hint`}
 									value={value}
 									onChange={onChange}
@@ -96,12 +98,12 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
+					<FieldLabel is='span'>{t('Message_TimeFormat')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={useEmojisId}>{t('Use_Emojis')}</FieldLabel>
+						<FieldLabel htmlFor={useEmojisId}>{t('Use_Emojis')}</FieldLabel>
 						<Controller
 							name='useEmojis'
 							control={control}
@@ -113,7 +115,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</FieldLabel>
+						<FieldLabel htmlFor={convertAsciiEmojiId}>{t('Convert_Ascii_Emojis')}</FieldLabel>
 						<Controller
 							name='convertAsciiEmoji'
 							control={control}
@@ -125,7 +127,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</FieldLabel>
+						<FieldLabel htmlFor={autoImageLoadId}>{t('Auto_Load_Images')}</FieldLabel>
 						<Controller
 							name='autoImageLoad'
 							control={control}
@@ -137,7 +139,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</FieldLabel>
+						<FieldLabel htmlFor={saveMobileBandwidthId}>{t('Save_Mobile_Bandwidth')}</FieldLabel>
 						<Controller
 							name='saveMobileBandwidth'
 							control={control}
@@ -149,7 +151,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</FieldLabel>
+						<FieldLabel htmlFor={collapseMediaByDefaultId}>{t('Collapse_Embedded_Media_By_Default')}</FieldLabel>
 						<Controller
 							name='collapseMediaByDefault'
 							control={control}
@@ -160,16 +162,16 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
+					<FieldLabel is='span'>{t('Hide_usernames')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_roles')}</FieldLabel>
+					<FieldLabel is='span'>{t('Hide_roles')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={hideFlexTabId}>{t('Hide_flextab')}</FieldLabel>
+						<FieldLabel htmlFor={hideFlexTabId}>{t('Hide_flextab')}</FieldLabel>
 						<Controller
 							name='hideFlexTab'
 							control={control}
@@ -181,7 +183,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel is='legend' htmlFor={displayAvatarsId}>{t('Display_avatars')}</FieldLabel>
+						<FieldLabel htmlFor={displayAvatarsId}>{t('Display_avatars')}</FieldLabel>
 						<Controller
 							name='displayAvatars'
 							control={control}
@@ -192,13 +194,15 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel is='legend' htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
+					<FieldLabel is='span' id={sendOnEnterId}>
+						{t('Enter_Behaviour')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='sendOnEnter'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
+								<Select aria-labelledby={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
 							)}
 						/>
 					</FieldRow>

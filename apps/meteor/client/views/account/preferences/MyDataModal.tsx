@@ -1,4 +1,4 @@
-import { Button, Box, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
