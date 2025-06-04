@@ -29,7 +29,7 @@ export class OmnichannelContacts {
 	}
 
 	get btnFilters(): Locator {
-		return this.page.getByText('Filters');
+		return this.page.getByRole('button', { name: 'Filters' });
 	}
 
 	get btnCloseChip(): Locator {
