@@ -18,7 +18,7 @@ const PreferencesGlobalSection = () => {
 		<AccordionItem title={t('Global')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='legend' htmlFor={dontAskAgainListId}>
+					<FieldLabel is='span' htmlFor={dontAskAgainListId}>
 						{t('Dont_ask_me_again_list')}
 					</FieldLabel>
 					<FieldRow>
