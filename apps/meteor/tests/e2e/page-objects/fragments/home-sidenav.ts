@@ -74,10 +74,17 @@ export class HomeSidenav {
 		return this.sidebarToolbar.getByRole('button', { name: 'Administration' });
 	}
 
+	get menuDisplay(): Locator {
+		return this.page.getByRole('menu', { name: 'Display' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.page.keyboard.press('Escape');
+		const menuItem = this.menuDisplay.getByRole('menuitemcheckbox', { name: mode });
+
+		// clicking in the label input wrapper as a hack to click in the custom radio button
+		await menuItem.locator('label').click();
+		await menuItem.press('Escape');
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
@@ -98,23 +105,15 @@ export class HomeSidenav {
 	}
 
 	get menuItemSwitchAvatars(): Locator {
-		return this.page.getByRole('menuitemcheckbox', { name: 'Avatars' });
-	}
-
-	getSidebarItemMessage(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('.message-body--unstyled');
-	}
-
-	getSidebarChannelName(name: string): Locator {
-		return this.page.getByRole('listitem').filter({ has: this.page.getByText(name, { exact: true }) });
-	}
-
-	getSidebarAvatars(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"]:has-text("${name}")`).locator('figure.rcx-avatar');
+		return this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: 'Avatars' });
 	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarItemAvatar(name: string): Locator {
+		return this.getSidebarItemByName(name).getByRole('figure');
 	}
 
 	getSearchItemByName(name: string): Locator {
