@@ -286,24 +286,24 @@ export class Router<
 				} as any,
 				[request],
 			);
-
-			const responseValidatorFn = options?.response?.[statusCode];
-			/* c8 ignore next 3 */
-			if (!responseValidatorFn && options.typed) {
-				throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
+				const responseValidatorFn = options?.response?.[statusCode];
+				/* c8 ignore next 3 */
+				if (!responseValidatorFn && options.typed) {
+					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+				}
+				if (responseValidatorFn && !responseValidatorFn(body)) {
+					return c.json(
+						buildValidationErrorResponse({
+							req,
+							errorType: 'error-invalid-body',
+							validatorFn: responseValidatorFn,
+							params: (req as any).bodyParams || bodyParams,
+						}),
+						400,
+					);
+				}
 			}
-			if (responseValidatorFn && !responseValidatorFn(body)) {
-				return c.json(
-					buildValidationErrorResponse({
-						req,
-						errorType: 'error-invalid-body',
-						validatorFn: responseValidatorFn,
-						params: (req as any).bodyParams || bodyParams,
-					}),
-					400,
-				);
-			}
-
 			const responseHeaders = Object.fromEntries(
 				Object.entries({
 					...res.headers,
