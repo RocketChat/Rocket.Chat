@@ -77,7 +77,6 @@ const FileItem = ({ fileData, onClickDelete, focusedItem, setFocusedItem, index 
 
 		if (event.code === 'Enter' || event.code === 'Space') {
 			event.preventDefault();
-			console.log('click');
 			ref.current.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
 		}
 	};
