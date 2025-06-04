@@ -40,9 +40,12 @@ export class NetworkBroker implements IBroker {
 		const context = asyncLocalStorage.getStore();
 
 		if (context?.ctx?.call) {
-			if (data[0]?.stream) {
+			if (data?.[0]?.stream) {
 				// If the first item on the data is an stream, pass the stream as the whole `params` and the rest of data on `meta.details`
-				return context.ctx.call(method, data[0].stream, { ...options, meta: { details: data[0].details } });
+				return context.ctx.call(method, data[0].stream, {
+					...options,
+					meta: { ...((options as any)?.meta || {}), details: data[0].details },
+				});
 			}
 			return context.ctx.call(method, data, options);
 		}
@@ -55,6 +58,16 @@ export class NetworkBroker implements IBroker {
 			return new Error('method-not-available');
 		}
 
+		// We're assuming that if Data is an object containing an `stream` key, the intent is to pass an stream or to receive an stream.
+		if (data?.[0]?.stream) {
+			return this.broker.call(method, data[0].stream, {
+				...options,
+				meta: {
+					optl: injectCurrentContext(),
+					details: data?.[0]?.details,
+				},
+			});
+		}
 		return this.broker.call(method, data, {
 			...options,
 			meta: {
@@ -139,7 +152,7 @@ export class NetworkBroker implements IBroker {
 			}
 
 			// TODO: better convention for these names
-			if (method.startsWith('uploadFileFromStream')) {
+			if (method.includes('Stream')) {
 				service.actions[method] = async (ctx: Context<[], { optl?: unknown; details?: unknown }>): Promise<any> => {
 					return tracerSpan(
 						`action ${name}:${method}:stream`,
