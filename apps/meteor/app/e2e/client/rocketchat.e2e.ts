@@ -716,9 +716,10 @@ class E2E extends Emitter {
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
-		});
+		await Messages.store.updateAsync(
+			(record) => record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
