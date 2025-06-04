@@ -3146,6 +3146,31 @@ describe('[Users]', () => {
 			before(() => updatePermission('create-personal-access-tokens', ['admin']));
 			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
+			it('should accept loginToken when we call /me', async () => {
+				let loginToken = '';
+				await request
+					.post(api('users.generatePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName: 'test',
+						loginToken: '1234567890',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('token');
+						loginToken = res.body.token;
+					});
+
+				await request
+					.get(api('me')) // it does not really matter what we call here, we just want to test that the loginToken is accepted
+					.set({
+						'X-Auth-Token': loginToken,
+						'X-User-Id': credentials['X-User-Id'],
+					})
+					.expect(200);
+			});
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
 					void request
