@@ -16,7 +16,7 @@ type RichTextComposerInputProps = ComponentProps<typeof Box> & {
 	hidePlaceholder?: boolean;
 };
 
-const RichTextComposerInput = forwardRef<HTMLTextAreaElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
+const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
 	// The whitespace pre-wrap style is passed into the div contenteditable as without it, additional whitespace gets collapsed
 	// This would then interfere with .innerText a LOT and should now be fixed
 	return (
@@ -57,9 +57,7 @@ const RichTextComposerInput = forwardRef<HTMLTextAreaElement, RichTextComposerIn
 				is='div'
 				contentEditable
 				suppressContentEditableWarning
-				style={{ whiteSpace: 'pre-wrap',
-					cursor: 'text',
-				}}
+				style={{ whiteSpace: 'pre-wrap', cursor: 'text' }}
 				{...props}
 			/>
 		</Box>
