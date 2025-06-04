@@ -20,6 +20,51 @@ function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
 	return [rest, last as U];
 }
 
+function isDevEnv() {
+	return process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' || process.env.TEST_MODE;
+}
+
+function buildValidationErrorResponse({
+	req,
+	errorType,
+	validatorFn,
+	params,
+}: {
+	req: HonoRequest;
+	errorType: string;
+	validatorFn: any;
+	params: any;
+}) {
+	const validationErrors = (validatorFn.errors ?? []).map((err: any) => ({
+		instancePath: String(err.instancePath ?? '/'),
+		message: String(err.message ?? '<no message>'),
+		schemaPath: String(err.schemaPath ?? '<no schema path>'),
+	}));
+	const firstErr = validatorFn.errors?.[0];
+	const firstErrMsg = firstErr ? `${firstErr.instancePath || '/'} ${firstErr.message}`.trim() : '<no errors>';
+
+	if (isDevEnv()) {
+		return {
+			success: false,
+			errorType,
+			error: `Invalid ${errorType === 'error-invalid-params' ? 'params' : 'body'} for endpoint ${req.method} - ${req.url}. Error: ${firstErrMsg}`,
+			details: {
+				expectedSchema: validatorFn.schema,
+				actualParams: params,
+				validationErrors,
+			},
+		};
+	}
+	return {
+		success: false,
+		errorType,
+		error:
+			errorType === 'error-invalid-params'
+				? 'Invalid parameters. Please check your request and try again.'
+				: 'Invalid request body. Please check your request and try again.',
+	};
+}
+
 export type Route = {
 	responses: Record<
 		number,
@@ -194,11 +239,12 @@ export class Router<
 				const validatorFn = options.query;
 				if (typeof options.query === 'function' && !validatorFn(queryParams)) {
 					return c.json(
-						{
-							success: false,
+						buildValidationErrorResponse({
+							req,
 							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-						},
+							validatorFn,
+							params: queryParams,
+						}),
 						400,
 					);
 				}
@@ -210,11 +256,12 @@ export class Router<
 				const validatorFn = options.body;
 				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
 					return c.json(
-						{
-							success: false,
+						buildValidationErrorResponse({
+							req,
 							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
-						},
+							validatorFn,
+							params: (req as any).bodyParams || bodyParams,
+						}),
 						400,
 					);
 				}
@@ -239,46 +286,22 @@ export class Router<
 				} as any,
 				[request],
 			);
-			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
-				const responseValidatorFn = options?.response?.[statusCode];
-				/* c8 ignore next 3 */
-				if (!responseValidatorFn && options.typed) {
-					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
-				}
-				if (responseValidatorFn && !responseValidatorFn(body)) {
-					// Pull out the first validation‐error message (e.g. “must be string”)
-					const firstErr = responseValidatorFn.errors?.[0];
-					const firstErrMsg = firstErr ? `${firstErr.instancePath || '/'} ${firstErr.message}`.trim() : '<no errors>';
 
-					// Build a structured array of all validation errors
-					const validationErrors = (responseValidatorFn.errors ?? []).map((err: any) => ({
-						instancePath: String(err.instancePath ?? '/'),
-						message: String(err.message ?? '<no message>'),
-						schemaPath: String(err.schemaPath ?? '<no schema path>'),
-					}));
-
-					const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' || process.env.TEST_MODE;
-
-					const errorResponse = isDev
-						? {
-								success: false,
-								errorType: 'error-invalid-body',
-								error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${firstErrMsg}`,
-								details: {
-									statusCode,
-									expectedSchema: responseValidatorFn.schema,
-									actualResponse: body,
-									validationErrors,
-								},
-							}
-						: {
-								success: false,
-								errorType: 'error-invalid-body',
-								error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${validationErrors.map((err) => err.message).join('\n ')}`,
-							};
-
-					return c.json(errorResponse, 400);
-				}
+			const responseValidatorFn = options?.response?.[statusCode];
+			/* c8 ignore next 3 */
+			if (!responseValidatorFn && options.typed) {
+				throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
+			}
+			if (responseValidatorFn && !responseValidatorFn(body)) {
+				return c.json(
+					buildValidationErrorResponse({
+						req,
+						errorType: 'error-invalid-body',
+						validatorFn: responseValidatorFn,
+						params: (req as any).bodyParams || bodyParams,
+					}),
+					400,
+				);
 			}
 
 			const responseHeaders = Object.fromEntries(
