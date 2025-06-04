@@ -165,12 +165,12 @@ export class AccountProfile {
 		return this.page.getByRole('dialog', { name: 'Delete account?' });
 	}
 
-	get deleteAccountDialogMessage(): Locator {
-		return this.deleteAccountDialog.getByText('Enter your username to delete your account. This cannot be undone.');
+	get deleteAccountDialogMessageWithPassword(): Locator {
+		return this.deleteAccountDialog.getByText('Enter your password to delete your account. This cannot be undone.');
 	}
 
-	get inputDeleteAccountUsername(): Locator {
-		return this.deleteAccountDialog.getByRole('textbox');
+	get inputDeleteAccountPassword(): Locator {
+		return this.deleteAccountDialog.getByRole('textbox', { name: 'Enter your password to delete your account. This cannot be undone.' });
 	}
 
 	get btnDeleteAccountConfirm(): Locator {
@@ -179,10 +179,6 @@ export class AccountProfile {
 
 	get btnDeleteAccountCancel(): Locator {
 		return this.deleteAccountDialog.getByRole('button', { name: 'Cancel' });
-	}
-
-	get deleteAccountErrorMessage(): Locator {
-		return this.page.getByText('Invalid password [error-invalid-password]');
 	}
 
 	get profileTitle(): Locator {
