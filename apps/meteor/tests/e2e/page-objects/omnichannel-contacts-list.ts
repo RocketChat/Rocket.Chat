@@ -68,8 +68,12 @@ export class OmnichannelContacts {
 		return this.page.getByRole('button', { name: 'Clear filters' });
 	}
 
+        get filtersContextualBar(): Locator {
+            return this.page.getByRole('dialog', { name: 'Filters' });
+        }
+        
 	get btnClose(): Locator {
-		return this.page.locator('[data-qa="ContextualbarActionClose"]');
+		return this.filtersContextualBar.getByRole('button', { name: 'Close' })
 	}
 
 	get chipServedBy(): Locator {
