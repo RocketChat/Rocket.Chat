@@ -27,6 +27,10 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 					nullable: true,
 				},
+				typeGroup: {
+					type: 'string',
+					nullable: true,
+				},
 				query: {
 					type: 'string',
 				},
@@ -50,6 +54,10 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 					type: 'string',
 				},
 				name: {
+					type: 'string',
+					nullable: true,
+				},
+				typeGroup: {
 					type: 'string',
 					nullable: true,
 				},

@@ -235,8 +235,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const queryParamsAny = this.queryParams as any;
-			const name = typeof queryParamsAny.name === 'string' ? queryParamsAny.name : undefined;
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -252,6 +252,7 @@ API.v1.addRoute(
 				rid: room._id,
 				...query,
 				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
 			};
 
 			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {

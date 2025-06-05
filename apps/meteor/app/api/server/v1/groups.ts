@@ -393,16 +393,15 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const queryParamsAny = this.queryParams as any;
-			const groupRoomId = typeof queryParamsAny.roomId === 'string' ? queryParamsAny.roomId : undefined;
-			const groupRoomName = typeof queryParamsAny.roomName === 'string' ? queryParamsAny.roomName : undefined;
-			const groupName = typeof queryParamsAny.name === 'string' ? decodeURIComponent(queryParamsAny.name) : undefined;
-			const groupTypeGroup = typeof queryParamsAny.typeGroup === 'string' ? queryParamsAny.typeGroup : undefined;
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const roomName = typeof this.queryParams.roomName === 'string' ? this.queryParams.roomName : undefined;
 
 			const findResult = await findPrivateGroupByIdOrName({
 				params: {
-					...(groupRoomId ? { roomId: groupRoomId } : {}),
-					...(groupRoomName ? { roomName: groupRoomName } : {}),
+					...(roomId ? { roomId } : {}),
+					...(roomName ? { roomName } : {}),
 				},
 				userId: this.userId,
 				checkedArchived: false,
@@ -414,12 +413,8 @@ API.v1.addRoute(
 			const filter = {
 				rid: findResult.rid,
 				...query,
-				...(groupName
-					? {
-							name: { $regex: groupName.includes('*') || groupName.includes('?') ? wildcardToRegex(groupName) : groupName, $options: 'iu' },
-						}
-					: {}),
-				...(groupTypeGroup ? { typeGroup: groupTypeGroup } : {}),
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
