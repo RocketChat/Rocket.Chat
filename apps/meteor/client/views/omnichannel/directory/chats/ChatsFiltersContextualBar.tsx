@@ -148,12 +148,14 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={tagsFieldId}>{t('Tags')}</FieldLabel>
+					<FieldLabel id={tagsFieldId}>{t('Tags')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='tags'
 							control={control}
-							render={({ field: { value, onChange } }) => <CurrentChatTags id={tagsFieldId} value={value} handler={onChange} viewAll />}
+							render={({ field: { value, onChange } }) => (
+								<CurrentChatTags aria-labelledby={tagsFieldId} value={value} handler={onChange} viewAll />
+							)}
 						/>
 					</FieldRow>
 				</Field>
