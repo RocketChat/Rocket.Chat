@@ -158,8 +158,8 @@ export interface IUserEmail {
 }
 
 export interface IUserSettings {
-	profile: Record<string, unknown>;
-	preferences: unknown;
+	profile?: Record<string, unknown>;
+	preferences?: Record<string, any>;
 }
 
 export interface IGetRoomRoles {
@@ -203,7 +203,7 @@ export interface IUser extends IRocketChatRecord {
 		public_key: string;
 	};
 	customFields?: Record<string, any>;
-	settings?: Partial<IUserSettings>;
+	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
