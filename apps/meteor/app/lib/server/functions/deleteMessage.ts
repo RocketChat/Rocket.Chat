@@ -7,9 +7,9 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
+import { triggerHandler } from '../../../integrations/server/lib/triggerHandler';
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
-import { triggerHandler } from '../../../integrations/server/lib/triggerHandler';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
