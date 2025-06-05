@@ -50,11 +50,12 @@ export class UIActionButtonManager {
 		for (const [appId, appButtons] of this.registeredActionButtons) {
 			const app = this.manager.getOneById(appId);
 
-			// Skip if app doesn't exist or is disabled
+			// Skip if app doesn't exist
 			if (!app) {
 				continue;
 			}
 
+			// or if it is not enabled
 			try {
 				const appStatus = await app.getStatus();
 				if (!AppStatusUtils.isEnabled(appStatus)) {
