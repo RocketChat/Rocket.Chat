@@ -1,7 +1,8 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { Filter } from '@rocket.chat/mongo-adapter';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { Filter } from 'mongodb';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
@@ -168,14 +169,21 @@ const computation = Tracker.autorun(() => {
 								query['u.username'] = { $in: users };
 							}
 
+							const predicate = createPredicateFromFilter(query);
+
 							if (showDeletedStatus) {
-								return Messages.update(
-									query,
-									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
-									{ multi: true },
-								);
+								return Messages.state.update(predicate, (record) => ({
+									...record,
+									t: 'rm',
+									msg: '',
+									urls: [],
+									mentions: [],
+									attachments: [],
+									reactions: {},
+								}));
 							}
-							return Messages.remove(query);
+
+							return Messages.state.remove(predicate);
 						},
 					);
 

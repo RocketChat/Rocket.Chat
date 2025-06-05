@@ -19,7 +19,10 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		records: [],
 		has: (id: T['_id']) => get().records.some((record) => record._id === id),
 		get: (id: T['_id']) => get().records.find((record) => record._id === id),
+		some: (predicate: (record: T) => boolean) => get().records.some(predicate),
 		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
+		findFirst: (predicate: (record: T) => boolean, comparator: (a: T, b: T) => number) =>
+			get().records.filter(predicate).sort(comparator)[0], // TODO: optimize this
 		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
 		replaceAll: (records: T[]) => {
 			set({ records: records.map<T>(Object.freeze) });
