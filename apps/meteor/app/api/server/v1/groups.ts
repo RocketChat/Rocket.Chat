@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -392,8 +393,17 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			const queryParamsAny = this.queryParams as any;
+			const groupRoomId = typeof queryParamsAny.roomId === 'string' ? queryParamsAny.roomId : undefined;
+			const groupRoomName = typeof queryParamsAny.roomName === 'string' ? queryParamsAny.roomName : undefined;
+			const groupName = typeof queryParamsAny.name === 'string' ? decodeURIComponent(queryParamsAny.name) : undefined;
+			const groupTypeGroup = typeof queryParamsAny.typeGroup === 'string' ? queryParamsAny.typeGroup : undefined;
+
 			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
+				params: {
+					...(groupRoomId ? { roomId: groupRoomId } : {}),
+					...(groupRoomName ? { roomName: groupRoomName } : {}),
+				},
 				userId: this.userId,
 				checkedArchived: false,
 			});
@@ -401,9 +411,18 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const filter = {
+				rid: findResult.rid,
+				...query,
+				...(groupName
+					? {
+							name: { $regex: groupName.includes('*') || groupName.includes('?') ? wildcardToRegex(groupName) : groupName, $options: 'iu' },
+						}
+					: {}),
+				...(groupTypeGroup ? { typeGroup: groupTypeGroup } : {}),
+			};
 
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,

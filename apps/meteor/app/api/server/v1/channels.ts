@@ -25,6 +25,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -806,7 +807,10 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
-			const { typeGroup, name, roomId, roomName } = this.queryParams;
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const roomName = typeof this.queryParams.roomName === 'string' ? this.queryParams.roomName : undefined;
 
 			const findResult = await findChannelByIdOrName({
 				params: {
@@ -826,7 +830,7 @@ API.v1.addRoute(
 			const filter = {
 				rid: findResult._id,
 				...query,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 			};
 

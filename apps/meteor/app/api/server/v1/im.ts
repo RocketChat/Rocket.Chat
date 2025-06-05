@@ -15,6 +15,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -234,17 +235,24 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			const queryParamsAny = this.queryParams as any;
+			const name = typeof queryParamsAny.name === 'string' ? queryParamsAny.name : undefined;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+
 			if (!canAccess) {
 				return API.v1.forbidden();
 			}
 
-			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
+			const ourQuery = {
+				rid: room._id,
+				...query,
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
+			};
 
 			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
