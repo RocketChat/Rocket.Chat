@@ -211,7 +211,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		}
 
 		if (action === 'removed') {
-			this.collection.state.delete(newRecord);
+			this.collection.state.delete(newRecord._id);
 		} else {
 			const { _id } = newRecord;
 			if (!_id) return;
@@ -280,7 +280,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.state.delete(newRecord);
+						this.collection.state.delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}

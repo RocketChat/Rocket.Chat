@@ -104,7 +104,8 @@ const computation = Tracker.autorun(() => {
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
 								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
-								const isNew = !Messages.findOne({ _id: msg._id, temp: { $ne: true } });
+								const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
+								({ _id: msg._id, temp: { $ne: true } });
 								await upsertMessage({ msg, subscription });
 
 								if (isNew) {
@@ -137,10 +138,13 @@ const computation = Tracker.autorun(() => {
 					});
 
 					sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
-						Messages.remove({ _id: msg._id });
+						Messages.state.delete(msg._id);
 
 						// remove thread refenrece from deleted message
-						Messages.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+						Messages.state.update(
+							(record) => record.tmid === msg._id,
+							({ tmid: _, ...record }) => record,
+						);
 					});
 
 					sdk.stream(
@@ -177,31 +181,16 @@ const computation = Tracker.autorun(() => {
 
 					sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
 						if (tmid) {
-							return Messages.update(
-								{
-									tmid,
-									unread: true,
-								},
-								{ $unset: { unread: 1 } },
-								{ multi: true },
+							Messages.state.update(
+								(record) => record.tmid === tmid && record.unread === true,
+								({ unread: _, ...record }) => record,
 							);
+							return;
 						}
-						Messages.update(
-							{
-								rid: record.rid,
-								unread: true,
-								ts: { $lt: until },
-								$or: [
-									{
-										tmid: { $exists: false },
-									},
-									{
-										tshow: true,
-									},
-								],
-							},
-							{ $unset: { unread: 1 } },
-							{ multi: true },
+						Messages.state.update(
+							(r) =>
+								r.rid === record.rid && r.unread === true && r.ts.getTime() < until.getTime() && (r.tmid === undefined || r.tshow === true),
+							({ unread: _, ...r }) => r,
 						);
 					});
 				}
