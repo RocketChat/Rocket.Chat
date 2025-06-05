@@ -5,24 +5,24 @@ import type { IUIKitIncomingInteractionActionButton } from './IUIKitIncomingInte
 import type { IUIKitIncomingInteractionMessageContainer, IUIKitIncomingInteractionModalContainer } from './UIKitIncomingInteractionContainer';
 
 export enum UIKitIncomingInteractionType {
-    BLOCK = 'blockAction',
-    VIEW_SUBMIT = 'viewSubmit',
-    VIEW_CLOSED = 'viewClosed',
-    ACTION_BUTTON = 'actionButton',
+	BLOCK = 'blockAction',
+	VIEW_SUBMIT = 'viewSubmit',
+	VIEW_CLOSED = 'viewClosed',
+	ACTION_BUTTON = 'actionButton',
 }
 
 /** @deprecated use UIKitIncomingInteraction instead */
 
 export interface IUIKitIncomingInteraction {
-    type: 'blockAction' | 'viewSubmit' | 'viewClosed';
-    container: IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer;
-    user: IUser;
-    appId: string;
-    payload: object;
-    actionId?: string;
-    triggerId?: string;
-    room?: IRoom;
-    message?: IMessage;
+	type: 'blockAction' | 'viewSubmit' | 'viewClosed';
+	container: IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer;
+	user: IUser;
+	appId: string;
+	payload: object;
+	actionId?: string;
+	triggerId?: string;
+	room?: IRoom;
+	message?: IMessage;
 }
 
 export type UIKitIncomingInteraction = IUIKitIncomingInteraction | IUIKitIncomingInteractionActionButton;

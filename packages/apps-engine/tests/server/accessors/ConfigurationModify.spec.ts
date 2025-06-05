@@ -4,25 +4,25 @@ import type { ISchedulerModify, IServerSettingsModify, ISlashCommandsModify } fr
 import { ConfigurationModify } from '../../../src/server/accessors';
 
 export class ConfigurationExtendTestFixture {
-    private ssm: IServerSettingsModify;
+	private ssm: IServerSettingsModify;
 
-    private scm: ISlashCommandsModify;
+	private scm: ISlashCommandsModify;
 
-    private scheduler: ISchedulerModify;
+	private scheduler: ISchedulerModify;
 
-    @SetupFixture
-    public setupFixture() {
-        this.ssm = {} as IServerSettingsModify;
-        this.scm = {} as ISlashCommandsModify;
-        this.scheduler = {} as ISchedulerModify;
-    }
+	@SetupFixture
+	public setupFixture() {
+		this.ssm = {} as IServerSettingsModify;
+		this.scm = {} as ISlashCommandsModify;
+		this.scheduler = {} as ISchedulerModify;
+	}
 
-    @Test()
-    public useConfigurationModify() {
-        Expect(() => new ConfigurationModify(this.ssm, this.scm, this.scheduler)).not.toThrow();
+	@Test()
+	public useConfigurationModify() {
+		Expect(() => new ConfigurationModify(this.ssm, this.scm, this.scheduler)).not.toThrow();
 
-        const sm = new ConfigurationModify(this.ssm, this.scm, this.scheduler);
-        Expect(sm.serverSettings).toBeDefined();
-        Expect(sm.slashCommands).toBeDefined();
-    }
+		const sm = new ConfigurationModify(this.ssm, this.scm, this.scheduler);
+		Expect(sm.serverSettings).toBeDefined();
+		Expect(sm.slashCommands).toBeDefined();
+	}
 }
