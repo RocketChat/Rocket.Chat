@@ -30,7 +30,7 @@ const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscript
 };
 
 export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
-	Messages.store.store(await processMessage(msg, { subscription }));
+	Messages.state.store(await processMessage(msg, { subscription }));
 }
 
 export async function upsertMessageBulk({
@@ -41,7 +41,7 @@ export async function upsertMessageBulk({
 	subscription?: ISubscription;
 }) {
 	const processedMsgs = await Promise.all(msgs.map(async (msg) => processMessage(msg, { subscription })));
-	Messages.store.storeMany(processedMsgs);
+	Messages.state.storeMany(processedMsgs);
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
