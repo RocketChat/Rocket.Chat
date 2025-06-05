@@ -15,10 +15,6 @@ Meteor.methods<ServerMethods>({
 	loadLocale(locale) {
 		check(locale, String);
 
-		try {
-			return getMomentLocale(locale);
-		} catch (error: any) {
-			throw new Meteor.Error(error.message, `Moment locale not found: ${locale}`);
-		}
+		return getMomentLocale(locale);
 	},
 });
