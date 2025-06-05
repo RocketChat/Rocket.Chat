@@ -1,8 +1,8 @@
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
+import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -15,7 +15,7 @@ import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccountPreferencesPage = (): ReactElement => {
