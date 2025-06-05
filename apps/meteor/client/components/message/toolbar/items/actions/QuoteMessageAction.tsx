@@ -14,7 +14,7 @@ type QuoteMessageActionProps = {
 const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) => {
 	const chat = useChat();
 	const autoTranslateOptions = useMessageListAutoTranslate();
-	const quoteChainLimit = Number(useSetting('Message_QuoteChainLimit'));
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const { t } = useTranslation();
 
 	if (!chat || !subscription) {
