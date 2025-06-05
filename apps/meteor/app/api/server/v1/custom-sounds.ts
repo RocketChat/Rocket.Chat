@@ -4,8 +4,8 @@ import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typing
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
-import type { ExtractRoutesFromAPI } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 type CustomSoundsList = PaginatedRequest<{ name?: string }>;
