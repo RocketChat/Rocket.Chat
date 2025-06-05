@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import './status.html';
-import { webSocketConnected } from '/app/ws/client';
+import webSocketHandler, { loggedIn, reconnectionTimer, webSocketConnected } from '/app/ws/client';
 
 const retryTime = new ReactiveVar(0);
 let attempts = 0
@@ -21,13 +21,16 @@ const clearRetryInterval = function() {
 	attempts = 0;
 };
 
+const showReconnect = ()=> loggedIn.get() && !webSocketConnected.get();
+
 const trackStatus = function() {
-	if (!webSocketConnected.get()) {
-		lastRetryTime = Date.now() +  Math.min(300000, Math.pow(2, attempts) * 1000); ;
-		retryHandle = retryHandle || setInterval(function() {			const timeDiff = lastRetryTime - new Date().getTime(); 
+	const maxTimeout = 300000 // TODO-HI add setting
+	if (showReconnect()) {
+		lastRetryTime = Date.now() +  Math.min(maxTimeout, Math.pow(2, attempts) * 1000); ;
+		retryHandle = retryHandle || setInterval(function() {const timeDiff = lastRetryTime - new Date().getTime(); 
 			if (timeDiff <= 0) {
 				attempts ++;
-				lastRetryTime = Date.now() +  Math.min(30000, Math.pow(2, attempts) * 1000); ;
+				lastRetryTime = Date.now() +  Math.min(maxTimeout, Math.pow(2, attempts) * 1000); ;
 			}
 			const _retryTime = (timeDiff > 0 && Math.round(timeDiff / 1000)) || 0;
 
@@ -48,9 +51,6 @@ Template.status.onCreated(function() {
 });
 
 Template.status.helpers({
-	connected() {
-		return webSocketConnected.get();
-	},
 
 	message() {
 		return ''
@@ -58,13 +58,13 @@ Template.status.helpers({
 	},
 
 	extraMessage() {
-		if (!webSocketConnected.get()) {
-			return TAPi18n.__('meteor_status_reconnect_in', { count: retryTime.get() });
+		if (showReconnect()) {
+			return TAPi18n.__('meteor_status_reconnect_in', { count: reconnectionTimer.get() });
 		}
 	},
 
 	showReconnect() {
-		return (!webSocketConnected.get());
+		return (showReconnect());
 	},
 
 	reconnectLabel() {
@@ -72,9 +72,11 @@ Template.status.helpers({
 	},
 });
 
+
 Template.status.events({
 	'click a.alert-link'(e) {
 		e.preventDefault();
 		//Meteor.reconnect();
+		webSocketHandler.reconnect();
 	},
 });
