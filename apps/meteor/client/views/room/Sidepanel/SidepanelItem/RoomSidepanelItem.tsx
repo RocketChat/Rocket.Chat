@@ -1,3 +1,4 @@
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
@@ -17,7 +18,11 @@ const RoomSidepanelItem = ({ room, openedRoom, viewMode }: RoomSidepanelItemProp
 
 	const itemData = useItemData(room, { viewMode, openedRoom });
 
-	return <SidepanelItem onClick={goToRoomById} {...itemData} />;
+	const handleClick = useEffectEvent(() => {
+		goToRoomById(room._id);
+	});
+
+	return <SidepanelItem onClick={handleClick} {...itemData} />;
 };
 
 export default memo(RoomSidepanelItem);
