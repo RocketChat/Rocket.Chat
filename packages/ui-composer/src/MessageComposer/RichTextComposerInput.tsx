@@ -6,8 +6,9 @@ import { forwardRef } from 'react';
 const RichTextComposerInputStyle = css`
 	resize: none;
 
-	&::placeholder {
-		color: ${Palette.text['font-annotation']};
+	&::-webkit-scrollbar-thumb {
+		background-color: ${Palette.stroke['stroke-dark']};
+		border-radius: 4px;
 	}
 `;
 
@@ -57,7 +58,11 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				is='div'
 				contentEditable
 				suppressContentEditableWarning
-				style={{ whiteSpace: 'pre-wrap', cursor: 'text' }}
+				style={{
+					whiteSpace: 'pre-wrap',
+					cursor: 'text',
+					overflowY: 'scroll',
+				}}
 				{...props}
 			/>
 		</Box>
