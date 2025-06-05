@@ -1,15 +1,11 @@
-import { isOAuthUser, type IUser, type IUserEmail } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser, type IUserInfo } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 
-const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
-	if (!me || !Array.isArray(me.emails)) {
-		return false;
-	}
-
-	return me.emails.find((email) => email.verified);
+const isVerifiedEmail = (me: IUser) => {
+	return me?.emails?.find((email) => email.verified);
 };
 
 const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> => {
@@ -25,23 +21,14 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	return accumulator;
 };
 
-export async function getUserInfo(me: IUser): Promise<
-	IUser & {
-		email?: string;
-		settings?: {
-			profile: Record<string, unknown>;
-			preferences: unknown;
-		};
-		avatarUrl: string;
-	}
-> {
+export async function getUserInfo(me: IUser): Promise<IUserInfo> {
 	const verifiedEmail = isVerifiedEmail(me);
 
 	const userPreferences = me.settings?.preferences ?? {};
 
 	return {
 		...me,
-		email: verifiedEmail ? verifiedEmail.address : undefined,
+		email: verifiedEmail?.address,
 		settings: {
 			profile: {},
 			preferences: {

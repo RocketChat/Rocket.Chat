@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUserInfo } from '@rocket.chat/core-typings';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
@@ -27,7 +27,7 @@ export type FindOptions<TSchema extends Document = Document> = {
 
 export type UserContextValue = {
 	userId: string | null;
-	user: IUser | null;
+	user: IUserInfo | null;
 	queryPreference: <T>(
 		key: string | ObjectId,
 		defaultValue?: T,

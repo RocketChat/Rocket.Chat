@@ -158,10 +158,8 @@ export interface IUserEmail {
 }
 
 export interface IUserSettings {
-	profile?: any;
-	preferences?: {
-		[key: string]: any;
-	};
+	profile: Record<string, unknown>;
+	preferences: unknown;
 }
 
 export interface IGetRoomRoles {
@@ -205,7 +203,7 @@ export interface IUser extends IRocketChatRecord {
 		public_key: string;
 	};
 	customFields?: Record<string, any>;
-	settings?: IUserSettings;
+	settings?: Partial<IUserSettings>;
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
@@ -246,6 +244,10 @@ export interface IRegisterUser extends IUser {
 	username: string;
 	name: string;
 }
+
+export type IUserInfo = IUser & {
+	email?: string;
+};
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;

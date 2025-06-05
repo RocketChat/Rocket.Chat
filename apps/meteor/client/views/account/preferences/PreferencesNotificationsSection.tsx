@@ -2,7 +2,7 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useId, useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,21 @@ const PreferencesNotificationsSection = () => {
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
+	const showCalendarPreferenceDefault = useSetting('Outlook_Calendar_Enabled');
+	const mapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
+	const user = useUser();
+	const domain = user?.email?.split('@')?.pop() ?? '';
+	const mappingParsed = JSON.parse(mapping) as Record<
+		string,
+		{
+			Enabled?: boolean;
+			Exchange_Url?: string;
+			Outlook_Url?: string;
+			MeetingUrl_Regex?: string;
+			BusyStatus_Enabled?: string;
+		}
+	>;
+	const showCalendarPreference = mappingParsed[domain]?.Enabled ?? showCalendarPreferenceDefault;
 	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
 	const notify = useNotification();
 

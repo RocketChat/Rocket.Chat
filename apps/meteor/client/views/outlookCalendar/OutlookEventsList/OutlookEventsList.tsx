@@ -27,14 +27,22 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
+	const outlookUrlDefault = useSetting('Outlook_Calendar_Outlook_Url', '');
+	const mapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
 	const user = useUser();
-	const outlookUrlMapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
-	const outlookUrlMappingParsed = JSON.parse(outlookUrlMapping) as Record<string, string>;
-	const outlookUrlMap = Object.assign({ default: outlookUrl }, outlookUrlMappingParsed);
-	const userEmail = user?.emails?.find((email) => email.verified)?.address || '';
-	const userDomain = userEmail.split('@')[1];
-	const outlookUrlForUser = outlookUrlMap[userDomain] || outlookUrlMap.default;
+	const domain = user?.email?.split('@').pop() ?? '';
+	const mappingParsed = JSON.parse(mapping) as Record<
+		string,
+		{
+			Enabled?: boolean;
+			Exchange_Url?: string;
+			Outlook_Url?: string;
+			MeetingUrl_Regex?: string;
+			BusyStatus_Enabled?: string;
+		}
+	>;
+
+	const outlookUrl = mappingParsed[domain]?.Outlook_Url ?? outlookUrlDefault;
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -92,8 +100,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
-					{outlookUrlForUser && (
-						<Button icon='new-window' onClick={() => window.open(`${outlookUrlForUser}#path=/calendar`, '_blank')}>
+					{outlookUrl && (
+						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
 							{t('Open_Outlook')}
 						</Button>
 					)}
