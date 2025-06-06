@@ -16,7 +16,9 @@ export class LivechatRead implements ILivechatRead {
 	 * In the next major, this method will be `async`
 	 */
 	public isOnline(departmentId?: string): boolean {
-		console.warn("The `LivechatRead.isOnline` method is deprecated and won't behave as intended. Please use `LivechatRead.isOnlineAsync` instead");
+		console.warn(
+			"The `LivechatRead.isOnline` method is deprecated and won't behave as intended. Please use `LivechatRead.isOnlineAsync` instead",
+		);
 
 		return this.livechatBridge.doIsOnline(departmentId, this.appId);
 	}

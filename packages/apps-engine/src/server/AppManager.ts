@@ -963,7 +963,12 @@ export class AppManager {
 		return this.apps.get(item.id);
 	}
 
-	private async runStartUpProcess(storageItem: IAppStorageItem, app: ProxiedApp, isManual: boolean, silenceStatus: boolean): Promise<boolean> {
+	private async runStartUpProcess(
+		storageItem: IAppStorageItem,
+		app: ProxiedApp,
+		isManual: boolean,
+		silenceStatus: boolean,
+	): Promise<boolean> {
 		if ((await app.getStatus()) !== AppStatus.INITIALIZED) {
 			const isInitialized = await this.initializeApp(storageItem, app, true, silenceStatus);
 			if (!isInitialized) {
@@ -1096,7 +1101,13 @@ export class AppManager {
 		return result;
 	}
 
-	private async enableApp(storageItem: IAppStorageItem, app: ProxiedApp, saveToDb = true, isManual: boolean, silenceStatus = false): Promise<boolean> {
+	private async enableApp(
+		storageItem: IAppStorageItem,
+		app: ProxiedApp,
+		saveToDb = true,
+		isManual: boolean,
+		silenceStatus = false,
+	): Promise<boolean> {
 		let enable: boolean;
 		let status = AppStatus.ERROR_DISABLED;
 

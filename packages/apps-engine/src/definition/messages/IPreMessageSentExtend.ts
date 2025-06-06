@@ -25,5 +25,11 @@ export interface IPreMessageSentExtend {
 	 * @param persistence An accessor to the App's persistence storage
 	 * @returns the resulting message
 	 */
-	executePreMessageSentExtend(message: IMessage, extend: IMessageExtender, read: IRead, http: IHttp, persistence: IPersistence): Promise<IMessage>;
+	executePreMessageSentExtend(
+		message: IMessage,
+		extend: IMessageExtender,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+	): Promise<IMessage>;
 }

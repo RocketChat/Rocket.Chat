@@ -39,7 +39,8 @@ export class AppSettingsManager {
 			throw new Error('No setting found for the App by the provided id.');
 		}
 
-		const decoratedSetting = (await rl.call(AppMethod.ON_PRE_SETTING_UPDATE, { oldSetting, newSetting: setting } as ISettingUpdateContext)) || setting;
+		const decoratedSetting =
+			(await rl.call(AppMethod.ON_PRE_SETTING_UPDATE, { oldSetting, newSetting: setting } as ISettingUpdateContext)) || setting;
 
 		decoratedSetting.updatedAt = new Date();
 		rl.getStorageItem().settings[decoratedSetting.id] = decoratedSetting;

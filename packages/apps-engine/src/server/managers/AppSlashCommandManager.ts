@@ -340,7 +340,12 @@ export class AppSlashCommandManager {
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
-		await appCmd.runExecutorOrPreviewer(AppMethod._COMMAND_EXECUTOR, this.ensureContext(context), this.manager.getLogStorage(), this.accessors);
+		await appCmd.runExecutorOrPreviewer(
+			AppMethod._COMMAND_EXECUTOR,
+			this.ensureContext(context),
+			this.manager.getLogStorage(),
+			this.accessors,
+		);
 	}
 
 	public async getPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview> {

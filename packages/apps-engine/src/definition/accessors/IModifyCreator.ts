@@ -102,5 +102,7 @@ export interface IModifyCreator {
 	 * @param builder the builder instance
 	 * @return the resulting `id` of the resulting object
 	 */
-	finish(builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder): Promise<string>;
+	finish(
+		builder: IMessageBuilder | ILivechatMessageBuilder | IRoomBuilder | IDiscussionBuilder | IVideoConferenceBuilder | IUserBuilder,
+	): Promise<string>;
 }

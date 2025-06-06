@@ -1,4 +1,9 @@
-import type { INetworkingPermission, IPermission, IReadSettingPermission, IWorkspaceTokenPermission } from '../../definition/permissions/IPermission';
+import type {
+	INetworkingPermission,
+	IPermission,
+	IReadSettingPermission,
+	IWorkspaceTokenPermission,
+} from '../../definition/permissions/IPermission';
 
 /**
  * @description
@@ -17,46 +22,46 @@ import type { INetworkingPermission, IPermission, IReadSettingPermission, IWorks
  * AppPermissions.upload.read // { name: 'upload.read', domains: [] }
  */
 export const AppPermissions = {
-	user: {
+	'user': {
 		read: { name: 'user.read' },
 		write: { name: 'user.write' },
 	},
-	upload: {
+	'upload': {
 		read: { name: 'upload.read' },
 		write: { name: 'upload.write' },
 	},
-	email: {
+	'email': {
 		send: { name: 'email.send' },
 	},
-	ui: {
+	'ui': {
 		interaction: { name: 'ui.interact' },
 		registerButtons: { name: 'ui.registerButtons' },
 	},
-	setting: {
+	'setting': {
 		read: { name: 'server-setting.read', hiddenSettings: [] } as IReadSettingPermission,
 		write: { name: 'server-setting.write' },
 	},
-	room: {
+	'room': {
 		read: { name: 'room.read' },
 		write: { name: 'room.write' },
 	},
-	role: {
+	'role': {
 		read: { name: 'role.read' },
 		write: { name: 'role.write' },
 	},
-	message: {
+	'message': {
 		read: { name: 'message.read' },
 		write: { name: 'message.write' },
 	},
-	moderation: {
+	'moderation': {
 		read: { name: 'moderation.read' },
 		write: { name: 'moderation.write' },
 	},
-	contact: {
+	'contact': {
 		read: { name: 'contact.read' },
 		write: { name: 'contact.write' },
 	},
-	threads: {
+	'threads': {
 		read: { name: 'threads.read' },
 	},
 	'livechat-status': {
@@ -83,31 +88,31 @@ export const AppPermissions = {
 		write: { name: 'livechat-department.write' },
 		multiple: { name: 'livechat-department.multiple' },
 	},
-	env: {
+	'env': {
 		read: { name: 'env.read' },
 	},
-	cloud: {
+	'cloud': {
 		'workspace-token': { name: 'cloud.workspace-token', scopes: [] } as IWorkspaceTokenPermission,
 	},
 	// Internal permissions
-	scheduler: {
+	'scheduler': {
 		default: { name: 'scheduler' },
 	},
-	networking: {
+	'networking': {
 		default: { name: 'networking', domains: [] } as INetworkingPermission,
 	},
-	persistence: {
+	'persistence': {
 		default: { name: 'persistence' },
 	},
-	command: {
+	'command': {
 		default: { name: 'slashcommand' },
 	},
-	videoConference: {
+	'videoConference': {
 		read: { name: 'video-conference.read' },
 		write: { name: 'video-conference.write' },
 		provider: { name: 'video-conference-provider' },
 	},
-	apis: {
+	'apis': {
 		default: { name: 'api' },
 	},
 	'oauth-app': {

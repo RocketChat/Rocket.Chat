@@ -10,7 +10,12 @@ import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { PathAlreadyExistsError } from '../../../src/server/errors';
 import { AppConsole } from '../../../src/server/logging';
-import type { AppExternalComponentManager, AppSchedulerManager, AppSlashCommandManager, AppVideoConfProviderManager } from '../../../src/server/managers';
+import type {
+	AppExternalComponentManager,
+	AppSchedulerManager,
+	AppSlashCommandManager,
+	AppVideoConfProviderManager,
+} from '../../../src/server/managers';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { AppApi } from '../../../src/server/managers/AppApi';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
@@ -153,7 +158,10 @@ export class AppApiManagerTestFixture {
 
 		Expect(() => ascm.addApi('testing', api)).toThrowError(PathAlreadyExistsError, 'The api path "apipath" already exists in the system.');
 
-		Expect(() => ascm.addApi('failMePlease', TestData.getApi('yet-another'))).toThrowError(Error, 'App must exist in order for an api to be added.');
+		Expect(() => ascm.addApi('failMePlease', TestData.getApi('yet-another'))).toThrowError(
+			Error,
+			'App must exist in order for an api to be added.',
+		);
 		Expect(() => ascm.addApi('testing', TestData.getApi('another-api'))).not.toThrow();
 		Expect((ascm as any).providedApis.size).toBe(1);
 		Expect((ascm as any).providedApis.get('testing').size).toBe(2);

@@ -1,7 +1,11 @@
 import type { IUIController } from '../../definition/accessors';
 import type { IUIKitErrorInteractionParam, IUIKitInteractionParam, IUIKitSurfaceViewParam } from '../../definition/accessors/IUIController';
 import { UIKitInteractionType, UIKitSurfaceType } from '../../definition/uikit';
-import { formatContextualBarInteraction, formatErrorInteraction, formatModalInteraction } from '../../definition/uikit/UIKitInteractionPayloadFormatter';
+import {
+	formatContextualBarInteraction,
+	formatErrorInteraction,
+	formatModalInteraction,
+} from '../../definition/uikit/UIKitInteractionPayloadFormatter';
 import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from '../../definition/uikit/UIKitInteractionResponder';
 import type { IUser } from '../../definition/users';
 import type { AppBridges, UiInteractionBridge } from '../bridges';
@@ -79,7 +83,12 @@ export class UIController implements IUIController {
 		return this.uiInteractionBridge.doNotifyUser(user, formatErrorInteraction(errorInteraction, interactionContext), this.appId);
 	}
 
-	private openContextualBar(view: IUIKitContextualBarViewParam, context: IUIKitInteractionParam, user: IUser, isUpdate = false): Promise<void> {
+	private openContextualBar(
+		view: IUIKitContextualBarViewParam,
+		context: IUIKitInteractionParam,
+		user: IUser,
+		isUpdate = false,
+	): Promise<void> {
 		let type = UIKitInteractionType.CONTEXTUAL_BAR_OPEN;
 		if (isUpdate) {
 			type = UIKitInteractionType.CONTEXTUAL_BAR_UPDATE;

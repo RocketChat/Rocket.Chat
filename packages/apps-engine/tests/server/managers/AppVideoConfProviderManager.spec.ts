@@ -94,7 +94,10 @@ export class AppVideoConfProviderManagerTestFixture {
 
 		Expect(() => manager.addProvider('testing', provider)).not.toThrow();
 		Expect((manager as any).videoConfProviders.size).toBe(1);
-		Expect(() => manager.addProvider('failMePlease', provider)).toThrowError(Error, 'App must exist in order for a video conference provider to be added.');
+		Expect(() => manager.addProvider('failMePlease', provider)).toThrowError(
+			Error,
+			'App must exist in order for a video conference provider to be added.',
+		);
 		Expect((manager as any).videoConfProviders.size).toBe(1);
 	}
 

@@ -8,7 +8,13 @@ export class ContactCreator implements IContactCreator {
 		private readonly appId: string,
 	) {}
 
-	verifyContact(verifyContactChannelParams: { contactId: string; field: string; value: string; visitorId: string; roomId: string }): Promise<void> {
+	verifyContact(verifyContactChannelParams: {
+		contactId: string;
+		field: string;
+		value: string;
+		visitorId: string;
+		roomId: string;
+	}): Promise<void> {
 		return this.bridges.getContactBridge().doVerifyContact(verifyContactChannelParams, this.appId);
 	}
 

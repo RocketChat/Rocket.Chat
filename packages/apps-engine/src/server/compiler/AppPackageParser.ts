@@ -55,7 +55,8 @@ export class AppPackageParser {
 		// Load all of the TypeScript only files
 		const files: { [s: string]: string } = {};
 
-		zip.getEntries()
+		zip
+			.getEntries()
 			.filter((entry) => !entry.isDirectory && entry.entryName.endsWith('.js'))
 			.forEach((entry) => {
 				const norm = path.normalize(entry.entryName);
@@ -98,7 +99,8 @@ export class AppPackageParser {
 	private getLanguageContent(zip: AdmZip): { [key: string]: object } {
 		const languageContent: { [key: string]: object } = {};
 
-		zip.getEntries()
+		zip
+			.getEntries()
 			.filter((entry) => !entry.isDirectory && entry.entryName.startsWith('i18n/') && entry.entryName.endsWith('.json'))
 			.forEach((entry) => {
 				const entrySplit = entry.entryName.split('/');

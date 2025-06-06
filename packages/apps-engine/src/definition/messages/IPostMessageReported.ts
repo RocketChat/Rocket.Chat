@@ -14,5 +14,11 @@ export interface IPostMessageReported {
 	 * @param persistence An accessor to the App's persistence
 	 * @param modify An accessor to the modifier
 	 */
-	executePostMessageReported(context: IMessageReportContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void>;
+	executePostMessageReported(
+		context: IMessageReportContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
 }

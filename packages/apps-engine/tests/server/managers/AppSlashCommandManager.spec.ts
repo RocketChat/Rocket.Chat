@@ -10,7 +10,12 @@ import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../../../src/server/errors';
 import { AppConsole } from '../../../src/server/logging';
-import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, AppVideoConfProviderManager } from '../../../src/server/managers';
+import type {
+	AppApiManager,
+	AppExternalComponentManager,
+	AppSchedulerManager,
+	AppVideoConfProviderManager,
+} from '../../../src/server/managers';
 import { AppAccessorManager, AppSlashCommandManager } from '../../../src/server/managers';
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
@@ -203,7 +208,10 @@ export class AppSlashCommandManagerTestFixture {
 			CommandHasAlreadyBeenTouchedError,
 			'The command "my-cmd" has already been touched by another App.',
 		);
-		await Expect(() => ascm.addCommand('testing', cmd)).toThrowErrorAsync(CommandAlreadyExistsError, 'The command "my-cmd" already exists in the system.');
+		await Expect(() => ascm.addCommand('testing', cmd)).toThrowErrorAsync(
+			CommandAlreadyExistsError,
+			'The command "my-cmd" already exists in the system.',
+		);
 		await Expect(() => ascm.addCommand('failMePlease', TestData.getSlashCommand('yet-another'))).toThrowErrorAsync(
 			Error,
 			'App must exist in order for a command to be added.',
@@ -264,7 +272,10 @@ export class AppSlashCommandManagerTestFixture {
 	public async enableMyCommand() {
 		const ascm = new AppSlashCommandManager(this.mockManager);
 
-		await Expect(() => ascm.enableCommand('testing', 'doesnt-exist')).toThrowErrorAsync(Error, 'The command "doesnt-exist" does not exist to enable.');
+		await Expect(() => ascm.enableCommand('testing', 'doesnt-exist')).toThrowErrorAsync(
+			Error,
+			'The command "doesnt-exist" does not exist to enable.',
+		);
 		await ascm.addCommand('testing', TestData.getSlashCommand('command'));
 		await Expect(() => ascm.enableCommand('testing', 'command')).not.toThrowAsync();
 		Expect((ascm as any).providedCommands.get('testing').get('command').isDisabled).toBe(false);
@@ -299,7 +310,10 @@ export class AppSlashCommandManagerTestFixture {
 	public async disableMyCommand() {
 		const ascm = new AppSlashCommandManager(this.mockManager);
 
-		await Expect(() => ascm.disableCommand('testing', 'doesnt-exist')).toThrowErrorAsync(Error, 'The command "doesnt-exist" does not exist to disable.');
+		await Expect(() => ascm.disableCommand('testing', 'doesnt-exist')).toThrowErrorAsync(
+			Error,
+			'The command "doesnt-exist" does not exist to disable.',
+		);
 		await ascm.addCommand('testing', TestData.getSlashCommand('command'));
 		await Expect(() => ascm.disableCommand('testing', 'command')).not.toThrowAsync();
 		Expect((ascm as any).providedCommands.get('testing').get('command').isDisabled).toBe(true);

@@ -22,7 +22,10 @@ export class MessageExtenderAccessorTestFixture {
 		Expect(msg.customFields).toBeDefined();
 		Expect(msg.customFields.thing).toBe('value');
 		Expect(() => me.addCustomField('thing', 'second')).toThrowError(Error, 'The message already contains a custom field by the key: thing');
-		Expect(() => me.addCustomField('thing.', 'second')).toThrowError(Error, 'The given key contains a period, which is not allowed. Key: thing.');
+		Expect(() => me.addCustomField('thing.', 'second')).toThrowError(
+			Error,
+			'The given key contains a period, which is not allowed. Key: thing.',
+		);
 
 		Expect(me.addAttachment({})).toBe(me);
 		Expect(msg.attachments.length).toBe(1);

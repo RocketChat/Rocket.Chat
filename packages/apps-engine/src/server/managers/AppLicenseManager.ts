@@ -53,7 +53,11 @@ export class AppLicenseManager {
 		}
 	}
 
-	private async validateV1(appMarketplaceInfo: IMarketplaceInfo, license: any, validationResult: AppLicenseValidationResult): Promise<void> {
+	private async validateV1(
+		appMarketplaceInfo: IMarketplaceInfo,
+		license: any,
+		validationResult: AppLicenseValidationResult,
+	): Promise<void> {
 		if (license.isBundle && !appMarketplaceInfo.bundledIn?.find((value) => value.bundleId === license.appId)) {
 			validationResult.addError('bundle', 'License issued for a bundle that does not contain the app');
 		} else if (!license.isBundle && license.appId !== appMarketplaceInfo.id) {
@@ -71,7 +75,10 @@ export class AppLicenseManager {
 		const currentActiveUsers = await (this.userBridge as UserBridge & IInternalUserBridge).getActiveUserCount();
 
 		if (license.maxSeats < currentActiveUsers) {
-			validationResult.addError('maxSeats', 'License does not accomodate the current amount of active users. Please increase the number of seats');
+			validationResult.addError(
+				'maxSeats',
+				'License does not accomodate the current amount of active users. Please increase the number of seats',
+			);
 		}
 
 		if (validationResult.hasErrors) {

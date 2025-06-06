@@ -177,14 +177,26 @@ export abstract class App implements IApp {
 	 * This method will NOT be called when an App is getting disabled manually, ONLY when
 	 * it's being uninstalled from Rocket.Chat.
 	 */
-	public async onUninstall(context: IAppUninstallationContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void> {}
+	public async onUninstall(
+		context: IAppUninstallationContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {}
 
 	/**
 	 * Method which is called when the App is installed and it is called one single time.
 	 *
 	 * This method is NOT called when the App is updated.
 	 */
-	public async onInstall(context: IAppInstallationContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void> {}
+	public async onInstall(
+		context: IAppInstallationContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {}
 
 	/**
 	 * Method which is called when the App is updated and it is called one single time.
@@ -213,7 +225,12 @@ export abstract class App implements IApp {
 	 * @param reader the reader accessor
 	 * @param http an accessor to the outside world
 	 */
-	public async onPreSettingUpdate(context: ISettingUpdateContext, configurationModify: IConfigurationModify, read: IRead, http: IHttp): Promise<ISetting> {
+	public async onPreSettingUpdate(
+		context: ISettingUpdateContext,
+		configurationModify: IConfigurationModify,
+		read: IRead,
+		http: IHttp,
+	): Promise<ISetting> {
 		return context.newSetting;
 	}
 

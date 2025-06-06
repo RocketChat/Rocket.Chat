@@ -25,7 +25,10 @@ export interface IUIKitBlockIncomingInteraction extends IUIKitBaseIncomingIntera
 	actionId: string;
 	blockId: string;
 	room: IUIKitBaseIncomingInteraction['room'];
-	container: IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionContextualBarContainer | IUIKitIncomingInteractionMessageContainer;
+	container:
+		| IUIKitIncomingInteractionModalContainer
+		| IUIKitIncomingInteractionContextualBarContainer
+		| IUIKitIncomingInteractionMessageContainer;
 }
 
 export interface IUIKitViewSubmitIncomingInteraction extends IUIKitBaseIncomingInteraction {

@@ -1,6 +1,15 @@
 import { v1 as uuid } from 'uuid';
 
-import type { IActionsBlock, IBlock, IConditionalBlock, IConditionalBlockFilters, IContextBlock, IImageBlock, IInputBlock, ISectionBlock } from './Blocks';
+import type {
+	IActionsBlock,
+	IBlock,
+	IConditionalBlock,
+	IConditionalBlockFilters,
+	IContextBlock,
+	IImageBlock,
+	IInputBlock,
+	ISectionBlock,
+} from './Blocks';
 import { BlockType } from './Blocks';
 import type {
 	IBlockElement,

@@ -8,7 +8,10 @@ export class TestsCommandBridge extends CommandBridge {
 
 	constructor() {
 		super();
-		this.commands = new Map<string, (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence) => void>();
+		this.commands = new Map<
+			string,
+			(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence) => void
+		>();
 		this.commands.set('it-exists', TestData.getSlashCommand('it-exists').executor);
 	}
 

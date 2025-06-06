@@ -10,7 +10,13 @@ export class TestContactBridge extends ContactBridge {
 		throw new Error('Method not implemented.');
 	}
 
-	protected verifyContact(verifyContactChannelParams: { contactId: string; field: string; value: string; visitorId: string; roomId: string }): Promise<void> {
+	protected verifyContact(verifyContactChannelParams: {
+		contactId: string;
+		field: string;
+		value: string;
+		visitorId: string;
+		roomId: string;
+	}): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 }

@@ -36,7 +36,10 @@ export class ServerSettingReadAccessorTestFixture {
 		Expect(await ssr.getValueById('testing')).toEqual(this.setting.packageValue);
 		this.setting.value = 'theValue';
 		Expect(await ssr.getValueById('testing')).toBe('theValue');
-		await Expect(async () => ssr.getValueById('fake')).toThrowErrorAsync(Error, 'No Server Setting found, or it is unaccessible, by the id of "fake".');
+		await Expect(async () => ssr.getValueById('fake')).toThrowErrorAsync(
+			Error,
+			'No Server Setting found, or it is unaccessible, by the id of "fake".',
+		);
 		await Expect(() => ssr.getAll()).toThrowErrorAsync(Error, 'Method not implemented.');
 		Expect(await ssr.isReadableById('testing')).toBe(true);
 	}

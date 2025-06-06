@@ -55,7 +55,9 @@ export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
 export function getRuntimeTimeout() {
 	const defaultTimeout = 30000;
-	const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any) ? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT) : defaultTimeout;
+	const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any)
+		? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT)
+		: defaultTimeout;
 
 	if (envValue < 0) {
 		console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');
@@ -498,7 +500,9 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
 	}
 
-	private async handleBridgeMessage({ payload: { method, id, params } }: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
+	private async handleBridgeMessage({
+		payload: { method, id, params },
+	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
 		const [bridgeName, bridgeMethod] = method.substring(8).split(':');
 
 		this.debug('Handling bridge message %s().%s() with params %o', bridgeName, bridgeMethod, params);

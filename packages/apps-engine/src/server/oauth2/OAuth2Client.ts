@@ -77,7 +77,11 @@ export class OAuth2Client implements IOAuth2Client {
 
 		const { authUri } = this.config;
 
-		const clientId = await this.app.getAccessors().reader.getEnvironmentReader().getSettings().getValueById(`${this.config.alias}-oauth-client-id`);
+		const clientId = await this.app
+			.getAccessors()
+			.reader.getEnvironmentReader()
+			.getSettings()
+			.getValueById(`${this.config.alias}-oauth-client-id`);
 
 		const url = new URL(authUri, siteUrl);
 
@@ -123,7 +127,11 @@ export class OAuth2Client implements IOAuth2Client {
 				config: { refreshTokenUri },
 			} = this;
 
-			const clientId = await this.app.getAccessors().reader.getEnvironmentReader().getSettings().getValueById(`${this.config.alias}-oauth-client-id`);
+			const clientId = await this.app
+				.getAccessors()
+				.reader.getEnvironmentReader()
+				.getSettings()
+				.getValueById(`${this.config.alias}-oauth-client-id`);
 
 			const clientSecret = await this.app
 				.getAccessors()
@@ -243,7 +251,11 @@ export class OAuth2Client implements IOAuth2Client {
 
 			const redirectUri = this.app.getAccessors().providedApiEndpoints[0].computedPath.substring(1);
 
-			const clientId = await this.app.getAccessors().reader.getEnvironmentReader().getSettings().getValueById(`${this.config.alias}-oauth-client-id`);
+			const clientId = await this.app
+				.getAccessors()
+				.reader.getEnvironmentReader()
+				.getSettings()
+				.getValueById(`${this.config.alias}-oauth-client-id`);
 
 			const clientSecret = await this.app
 				.getAccessors()

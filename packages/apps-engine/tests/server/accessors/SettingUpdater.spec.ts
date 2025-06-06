@@ -70,7 +70,10 @@ export class SettingUpdaterAccessorTestFixture {
 	public async updateValueThrowsErrorForNonExistentSetting() {
 		const settingUpdater = new SettingUpdater(this.mockProxiedApp, this.mockSettingsManager);
 
-		await Expect(() => settingUpdater.updateValue('nonExistent', 'value')).toThrowErrorAsync(Error, 'Setting "nonExistent" not found for app test-app-id');
+		await Expect(() => settingUpdater.updateValue('nonExistent', 'value')).toThrowErrorAsync(
+			Error,
+			'Setting "nonExistent" not found for app test-app-id',
+		);
 	}
 
 	@AsyncTest()

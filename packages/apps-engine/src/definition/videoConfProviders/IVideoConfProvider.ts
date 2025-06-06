@@ -32,7 +32,14 @@ export interface IVideoConfProvider {
 	onVideoConferenceChanged?(call: VideoConference, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void>;
 
 	// Optional function to run when a new user joins a video conference from this provider
-	onUserJoin?(call: VideoConference, user: IVideoConferenceUser | undefined, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void>;
+	onUserJoin?(
+		call: VideoConference,
+		user: IVideoConferenceUser | undefined,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<void>;
 
 	// Optional function to run when the 'info' button of a video conference is clicked - must return blocks for a UiKit modal
 	getVideoConferenceInfo?(

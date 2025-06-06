@@ -127,7 +127,10 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 			},
 		});
 
-		Expect(this.manager.getBridges().getUserBridge().doGetByUsername).toHaveBeenCalledWith('rocket.cat', '9c1d62ca-e40f-456f-8601-17c823a16c68');
+		Expect(this.manager.getBridges().getUserBridge().doGetByUsername).toHaveBeenCalledWith(
+			'rocket.cat',
+			'9c1d62ca-e40f-456f-8601-17c823a16c68',
+		);
 
 		Expect(id).toBe('test');
 		Expect((result as any).username).toEqual('rocket.cat');
@@ -221,7 +224,10 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 		});
 		const { id, result } = response as SuccessObject;
 
-		Expect(this.manager.getBridges().getMessageBridge().doCreate).toHaveBeenCalledWith(messageParam, '9c1d62ca-e40f-456f-8601-17c823a16c68');
+		Expect(this.manager.getBridges().getMessageBridge().doCreate).toHaveBeenCalledWith(
+			messageParam,
+			'9c1d62ca-e40f-456f-8601-17c823a16c68',
+		);
 
 		Expect(id).toBe('requestId');
 		Expect(result).toEqual('random-message-id');

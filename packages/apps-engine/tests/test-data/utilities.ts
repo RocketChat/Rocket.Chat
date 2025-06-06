@@ -15,10 +15,20 @@ import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
 import { SettingType } from '../../src/definition/settings';
-import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem, SlashCommandContext } from '../../src/definition/slashcommands';
+import type {
+	ISlashCommand,
+	ISlashCommandPreview,
+	ISlashCommandPreviewItem,
+	SlashCommandContext,
+} from '../../src/definition/slashcommands';
 import type { IUser } from '../../src/definition/users';
 import { UserStatusConnection, UserType } from '../../src/definition/users';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../src/definition/videoConfProviders';
+import type {
+	IVideoConferenceOptions,
+	IVideoConfProvider,
+	VideoConfData,
+	VideoConfDataExtended,
+} from '../../src/definition/videoConfProviders';
 import type { AppVideoConference } from '../../src/definition/videoConferences/AppVideoConference';
 import type { VideoConference } from '../../src/definition/videoConferences/IVideoConference';
 import { VideoConferenceStatus } from '../../src/definition/videoConferences/IVideoConference';
@@ -277,7 +287,13 @@ export class TestData {
 			executor: (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void> => {
 				return Promise.resolve();
 			},
-			previewer: (context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<ISlashCommandPreview> => {
+			previewer: (
+				context: SlashCommandContext,
+				read: IRead,
+				modify: IModify,
+				http: IHttp,
+				persis: IPersistence,
+			): Promise<ISlashCommandPreview> => {
 				return Promise.resolve({
 					i18nTitle: 'my i18nTitle',
 					items: [],
@@ -296,7 +312,11 @@ export class TestData {
 		};
 	}
 
-	public static getApi(path = 'testing-path', visibility: ApiVisibility = ApiVisibility.PUBLIC, security: ApiSecurity = ApiSecurity.UNSECURE): IApi {
+	public static getApi(
+		path = 'testing-path',
+		visibility: ApiVisibility = ApiVisibility.PUBLIC,
+		security: ApiSecurity = ApiSecurity.UNSECURE,
+	): IApi {
 		return {
 			visibility,
 			security,
@@ -330,7 +350,11 @@ export class TestData {
 				return `${name}/${call._id}`;
 			},
 
-			async customizeUrl(call: VideoConfDataExtended, user: IVideoConferenceUser | undefined, options: IVideoConferenceOptions): Promise<string> {
+			async customizeUrl(
+				call: VideoConfDataExtended,
+				user: IVideoConferenceUser | undefined,
+				options: IVideoConferenceOptions,
+			): Promise<string> {
 				return `${name}/${call._id}#${user ? user.username : ''}`;
 			},
 		};
@@ -348,7 +372,11 @@ export class TestData {
 				return ``;
 			},
 
-			async customizeUrl(call: VideoConfDataExtended, user: IVideoConferenceUser | undefined, options: IVideoConferenceOptions): Promise<string> {
+			async customizeUrl(
+				call: VideoConfDataExtended,
+				user: IVideoConferenceUser | undefined,
+				options: IVideoConferenceOptions,
+			): Promise<string> {
 				return ``;
 			},
 		};
@@ -372,7 +400,11 @@ export class TestData {
 				return `${name}/${call._id}`;
 			},
 
-			async customizeUrl(call: VideoConfDataExtended, user: IVideoConferenceUser | undefined, options: IVideoConferenceOptions): Promise<string> {
+			async customizeUrl(
+				call: VideoConfDataExtended,
+				user: IVideoConferenceUser | undefined,
+				options: IVideoConferenceOptions,
+			): Promise<string> {
 				return `${name}/${call._id}#${user ? user.username : ''}`;
 			},
 		};

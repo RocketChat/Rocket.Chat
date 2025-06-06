@@ -15,5 +15,11 @@ export interface IPostLivechatRoomClosed {
 	 * @param persis An accessor to the App's persistence
 	 * @param modify An accessor to the modifier
 	 */
-	[AppMethod.EXECUTE_POST_LIVECHAT_ROOM_CLOSED](room: ILivechatRoom, read: IRead, http: IHttp, persis: IPersistence, modify?: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_LIVECHAT_ROOM_CLOSED](
+		room: ILivechatRoom,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify?: IModify,
+	): Promise<void>;
 }

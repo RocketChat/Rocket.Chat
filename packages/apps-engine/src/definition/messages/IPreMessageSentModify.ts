@@ -25,5 +25,11 @@ export interface IPreMessageSentModify {
 	 * @param persistence An accessor to the App's persistence
 	 * @returns the resulting message
 	 */
-	executePreMessageSentModify(message: IMessage, builder: IMessageBuilder, read: IRead, http: IHttp, persistence: IPersistence): Promise<IMessage>;
+	executePreMessageSentModify(
+		message: IMessage,
+		builder: IMessageBuilder,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+	): Promise<IMessage>;
 }

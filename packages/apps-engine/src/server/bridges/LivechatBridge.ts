@@ -149,7 +149,10 @@ export abstract class LivechatBridge extends BaseBridge {
 		}
 	}
 
-	public async doSetCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
+	public async doSetCustomFields(
+		data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean },
+		appId: string,
+	): Promise<number> {
 		if (this.hasWritePermission(appId, 'livechat-custom-fields')) {
 			return this.setCustomFields(data, appId);
 		}
@@ -210,7 +213,10 @@ export abstract class LivechatBridge extends BaseBridge {
 
 	protected abstract _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>>;
 
-	protected abstract setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number>;
+	protected abstract setCustomFields(
+		data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean },
+		appId: string,
+	): Promise<number>;
 
 	private hasReadPermission(appId: string, scope: LivechatReadPermissions): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions[scope].read)) {

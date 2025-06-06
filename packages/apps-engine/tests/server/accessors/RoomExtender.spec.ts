@@ -21,7 +21,10 @@ export class RoomExtenderAccessorTestFixture {
 		Expect(room.customFields).toBeDefined();
 		Expect(room.customFields.thing as any).toBe('value');
 		Expect(() => re.addCustomField('thing', 'second')).toThrowError(Error, 'The room already contains a custom field by the key: thing');
-		Expect(() => re.addCustomField('thing.', 'second')).toThrowError(Error, 'The given key contains a period, which is not allowed. Key: thing.');
+		Expect(() => re.addCustomField('thing.', 'second')).toThrowError(
+			Error,
+			'The given key contains a period, which is not allowed. Key: thing.',
+		);
 
 		Expect(room.usernames).not.toBeDefined();
 		Expect(re.addMember(TestData.getUser('theId', 'bradley'))).toBe(re);

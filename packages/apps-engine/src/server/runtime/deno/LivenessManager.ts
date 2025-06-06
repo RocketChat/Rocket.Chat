@@ -142,7 +142,10 @@ export class LivenessManager {
 				}
 
 				if (reason === 'timeout' && this.pingTimeoutConsecutiveCount >= this.options.consecutiveTimeoutLimit) {
-					this.debug('Subprocess failed to respond to pings %d consecutive times. Attempting restart...', this.options.consecutiveTimeoutLimit);
+					this.debug(
+						'Subprocess failed to respond to pings %d consecutive times. Attempting restart...',
+						this.options.consecutiveTimeoutLimit,
+					);
 					this.restartProcess('Too many pings timed out');
 					return false;
 				}

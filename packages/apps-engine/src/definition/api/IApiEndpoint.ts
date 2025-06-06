@@ -37,11 +37,60 @@ export interface IApiEndpoint {
 	 * Called whenever the publically accessible url for this App is called,
 	 * if you handle the methods differently then split it out so your code doesn't get too big.
 	 */
-	get?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	post?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	put?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	delete?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	head?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	options?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
-	patch?(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse>;
+	get?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	post?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	put?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	delete?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	head?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	options?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
+	patch?(
+		request: IApiRequest,
+		endpoint: IApiEndpointInfo,
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persis: IPersistence,
+	): Promise<IApiResponse>;
 }

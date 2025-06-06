@@ -53,7 +53,12 @@ export abstract class PersistenceBridge extends BaseBridge {
 		}
 	}
 
-	public async doUpdateByAssociations(associations: Array<RocketChatAssociationRecord>, data: object, upsert: boolean, appId: string): Promise<string> {
+	public async doUpdateByAssociations(
+		associations: Array<RocketChatAssociationRecord>,
+		data: object,
+		upsert: boolean,
+		appId: string,
+	): Promise<string> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.updateByAssociations(associations, data, upsert, appId);
 		}
@@ -120,7 +125,10 @@ export abstract class PersistenceBridge extends BaseBridge {
 	 * @argument appId the id of the app calling this
 	 * @returns the data of the removed records
 	 */
-	protected abstract removeByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object> | undefined>;
+	protected abstract removeByAssociations(
+		associations: Array<RocketChatAssociationRecord>,
+		appId: string,
+	): Promise<Array<object> | undefined>;
 
 	/**
 	 * Updates the record in the database, with the option of creating a new one if it doesn't exist.
@@ -142,7 +150,12 @@ export abstract class PersistenceBridge extends BaseBridge {
 	 * @argument appId the id of the app calling this
 	 * @returns the id, whether the new one or the existing one
 	 */
-	protected abstract updateByAssociations(associations: Array<RocketChatAssociationRecord>, data: object, upsert: boolean, appId: string): Promise<string>;
+	protected abstract updateByAssociations(
+		associations: Array<RocketChatAssociationRecord>,
+		data: object,
+		upsert: boolean,
+		appId: string,
+	): Promise<string>;
 
 	private hasDefaultPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.persistence.default)) {

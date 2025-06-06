@@ -1,5 +1,10 @@
 import type { IBlock } from '../../definition/uikit';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../definition/videoConfProviders';
+import type {
+	IVideoConferenceOptions,
+	IVideoConfProvider,
+	VideoConfData,
+	VideoConfDataExtended,
+} from '../../definition/videoConfProviders';
 import type { VideoConference } from '../../definition/videoConferences';
 import type { IVideoConferenceUser } from '../../definition/videoConferences/IVideoConferenceUser';
 import type { AppManager } from '../AppManager';
@@ -135,7 +140,11 @@ export class AppVideoConfProviderManager {
 		return providerInfo.runOnUserJoin(call, user, this.manager.getLogStorage(), this.accessors);
 	}
 
-	public async getVideoConferenceInfo(providerName: string, call: VideoConference, user?: IVideoConferenceUser): Promise<Array<IBlock> | undefined> {
+	public async getVideoConferenceInfo(
+		providerName: string,
+		call: VideoConference,
+		user?: IVideoConferenceUser,
+	): Promise<Array<IBlock> | undefined> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
 			throw new VideoConfProviderNotRegisteredError(providerName);

@@ -118,7 +118,9 @@ export class ModifyCreator implements IModifyCreator {
 			const { roles } = data;
 
 			if (roles?.length) {
-				const hasRole = roles.map((role) => role.toLocaleLowerCase()).some((role) => role === 'admin' || role === 'owner' || role === 'moderator');
+				const hasRole = roles
+					.map((role) => role.toLocaleLowerCase())
+					.some((role) => role === 'admin' || role === 'owner' || role === 'moderator');
 
 				if (hasRole) {
 					throw new Error('Invalid role assigned to the user. Should not be admin, owner or moderator.');

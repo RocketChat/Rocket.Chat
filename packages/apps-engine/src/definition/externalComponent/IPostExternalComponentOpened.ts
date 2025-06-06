@@ -12,5 +12,10 @@ export interface IPostExternalComponentOpened {
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 */
-	executePostExternalComponentOpened(externalComponent: IExternalComponent, read: IRead, http: IHttp, persistence: IPersistence): Promise<void>;
+	executePostExternalComponentOpened(
+		externalComponent: IExternalComponent,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+	): Promise<void>;
 }

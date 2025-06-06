@@ -90,7 +90,10 @@ export class TestLivechatBridge extends LivechatBridge {
 		throw new Error('Method not implemented');
 	}
 
-	public setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
+	public setCustomFields(
+		data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean },
+		appId: string,
+	): Promise<number> {
 		throw new Error('Method not implemented');
 	}
 }

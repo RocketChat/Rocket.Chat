@@ -14,7 +14,10 @@ export abstract class AppLogStorage {
 		return this.engine;
 	}
 
-	public abstract find(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<{ logs: ILoggerStorageEntry[]; total: number }>;
+	public abstract find(
+		query: { [field: string]: any },
+		options?: IAppLogStorageFindOptions,
+	): Promise<{ logs: ILoggerStorageEntry[]; total: number }>;
 
 	public abstract storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry>;
 
