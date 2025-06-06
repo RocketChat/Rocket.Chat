@@ -1,6 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -27,22 +27,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrlDefault = useSetting('Outlook_Calendar_Outlook_Url', '');
-	const mapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
 	const user = useUser();
-	const domain = user?.email?.split('@').pop() ?? '';
-	const mappingParsed = JSON.parse(mapping) as Record<
-		string,
-		{
-			Enabled?: boolean;
-			Exchange_Url?: string;
-			Outlook_Url?: string;
-			MeetingUrl_Regex?: string;
-			BusyStatus_Enabled?: string;
-		}
-	>;
-
-	const outlookUrl = mappingParsed[domain]?.Outlook_Url ?? outlookUrlDefault;
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -57,6 +42,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
+
+	const outlookUrl = user?.settings?.calendar?.outlook?.outlookUrl;
 
 	return (
 		<ContextualbarDialog>

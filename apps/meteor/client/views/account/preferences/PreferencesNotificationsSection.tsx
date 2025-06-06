@@ -22,6 +22,7 @@ const emailNotificationOptionsLabelMap = {
 
 const PreferencesNotificationsSection = () => {
 	const { t, i18n } = useTranslation();
+	const user = useUser();
 
 	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
 
@@ -36,21 +37,6 @@ const PreferencesNotificationsSection = () => {
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showCalendarPreferenceDefault = useSetting('Outlook_Calendar_Enabled');
-	const mapping = useSetting('Outlook_Calendar_Url_Mapping', '{}');
-	const user = useUser();
-	const domain = user?.email?.split('@')?.pop() ?? '';
-	const mappingParsed = JSON.parse(mapping) as Record<
-		string,
-		{
-			Enabled?: boolean;
-			Exchange_Url?: string;
-			Outlook_Url?: string;
-			MeetingUrl_Regex?: string;
-			BusyStatus_Enabled?: string;
-		}
-	>;
-	const showCalendarPreference = mappingParsed[domain]?.Enabled ?? showCalendarPreferenceDefault;
 	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
 	const notify = useNotification();
 
@@ -104,6 +90,8 @@ const PreferencesNotificationsSection = () => {
 	const receiveLoginDetectionEmailId = useId();
 	const notifyCalendarEventsId = useId();
 	const enableMobileRingingId = useId();
+
+	const showCalendarPreference = user?.settings?.calendar?.outlook?.enabled;
 
 	return (
 		<AccordionItem title={t('Notifications')}>

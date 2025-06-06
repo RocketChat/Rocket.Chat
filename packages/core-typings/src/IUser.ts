@@ -157,9 +157,18 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IUserCalendar {
+	outlook?: {
+		enabled: boolean;
+		exchangeUrl: string;
+		outlookUrl: string;
+	};
+}
+
 export interface IUserSettings {
 	profile?: Record<string, unknown>;
 	preferences?: Record<string, any>;
+	calendar?: IUserCalendar;
 }
 
 export interface IGetRoomRoles {
@@ -247,6 +256,7 @@ export interface IRegisterUser extends IUser {
 
 export type IUserInfo = IUser & {
 	email?: string;
+	domain?: string;
 };
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
