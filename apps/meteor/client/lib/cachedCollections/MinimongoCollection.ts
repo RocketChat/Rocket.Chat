@@ -89,7 +89,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 *
 	 * It's a convenience method to access the Zustand store directly i.e. outside of React components.
 	 */
-	get store() {
+	get state() {
 		return this.use.getState();
 	}
 
