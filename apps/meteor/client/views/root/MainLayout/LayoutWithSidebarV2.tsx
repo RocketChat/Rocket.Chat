@@ -8,6 +8,8 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../NavBarV2';
 import Sidebar from '../../../sidebarv2';
+import SidePanel from '../../../sidepanel';
+import RoomsNavigationContextProvider from '../../navigation/providers/RoomsNavigationProvider';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -50,7 +52,12 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				{!removeSidenav && <Sidebar />}
+				{!removeSidenav && (
+					<RoomsNavigationContextProvider>
+						<Sidebar />
+						<SidePanel />
+					</RoomsNavigationContextProvider>
+				)}
 				<main
 					id='main-content'
 					className={['main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}

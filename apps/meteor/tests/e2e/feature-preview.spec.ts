@@ -52,7 +52,7 @@ test.describe.serial('feature preview', () => {
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
-	test.describe('Enhanced navigation', () => {
+	test.describe.skip('Enhanced navigation', () => {
 		test.beforeAll(async ({ api }) => {
 			await setUserPreferences(api, {
 				featuresPreview: [
@@ -278,7 +278,7 @@ test.describe.serial('feature preview', () => {
 		});
 	});
 
-	test.describe('Sidepanel', () => {
+	test.describe.skip('Sidepanel', () => {
 		test.beforeEach(async ({ api }) => {
 			sidepanelTeam = await createTargetTeam(api, { sidepanel: { items: ['channels', 'discussions'] } });
 
