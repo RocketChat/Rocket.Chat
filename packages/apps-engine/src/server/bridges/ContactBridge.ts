@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { ILivechatContact } from '../../definition/livechat/ILivechatContact';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export type VerifyContactChannelParams = {
     contactId: string;
