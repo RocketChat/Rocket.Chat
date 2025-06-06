@@ -1,6 +1,8 @@
 import { renderHook } from '@testing-library/react-hooks';
 
 import { useAppsContextualBar } from './useAppsContextualBar';
+import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouteParameter: jest.fn((param: string) => {
@@ -17,21 +19,18 @@ jest.mock('../contexts/RoomToolboxContext', () => ({
 	useRoomToolbox: jest.fn(),
 }));
 
-const useUiKitActionManager = jest.fn();
-const useRoomToolbox = jest.fn();
-
 const mockGetInteractionPayloadByViewId = jest.fn();
 const mockOn = jest.fn();
 const mockOff = jest.fn();
 const mockCloseTab = jest.fn();
 
 beforeEach(() => {
-	useUiKitActionManager.mockReturnValue({
+	(useUiKitActionManager as jest.Mock).mockReturnValue({
 		getInteractionPayloadByViewId: mockGetInteractionPayloadByViewId,
 		on: mockOn,
 		off: mockOff,
 	});
-	useRoomToolbox.mockReturnValue({ closeTab: mockCloseTab });
+	(useRoomToolbox as jest.Mock).mockReturnValue({ closeTab: mockCloseTab });
 });
 
 afterEach(() => {
