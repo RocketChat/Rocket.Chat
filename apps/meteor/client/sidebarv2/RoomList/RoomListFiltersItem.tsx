@@ -20,7 +20,7 @@ const RoomListFiltersItem = ({ title, selected, icon, onClick }: SidebarFiltersI
 	// const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item is='a' selected={selected} onClick={onClick}>
+		<SidebarV2Item tabIndex={0} role='tab' selected={selected} onClick={onClick}>
 			<Icon size='x20' name={icon} />
 			<SidebarV2ItemTitle>{t(title)}</SidebarV2ItemTitle>
 			{/* {showUnread && (

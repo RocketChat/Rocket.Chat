@@ -29,7 +29,7 @@ const SidePanel = ({ headerTitle, onlyUnreads, toggleOnlyUnreads, rooms }: SideP
 	usePreventDefault(ref);
 
 	return (
-		<Sidepanel>
+		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
 				<SidepanelHeaderTitle>{t(headerTitle)}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>

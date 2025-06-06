@@ -37,7 +37,7 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 
 	return (
 		<Box ref={ref} display='flex' flexDirection='column'>
-			<Box role='group' mbs={8}>
+			<Box role='tablist' aria-orientation='vertical' mbs={8}>
 				{Object.values(TEAM_COLLAB_GROUPS).map((group) => (
 					<RoomListFiltersItem
 						key={group}
@@ -51,7 +51,7 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 			<Divider borderColor='stroke-light' mb={4} mi={16} />
 			{showOmnichannel && (
 				<>
-					<Box>
+					<Box role='tablist' aria-orientation='vertical'>
 						{Object.values(OMNICHANNEL_GROUPS).map((group) => (
 							<RoomListFiltersItem
 								key={group}
