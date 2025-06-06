@@ -48,6 +48,8 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
+	private reconnecting = false;
+
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
