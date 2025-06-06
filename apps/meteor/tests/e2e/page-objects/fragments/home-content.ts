@@ -172,6 +172,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
 	}
 
+	get lastMessageTextAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-attachment"]');
+	}
+
 	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
@@ -198,6 +202,10 @@ export class HomeContent {
 
 	get lastThreadMessageFileName(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
+	}
+
+	get lastThreadMessageTextAttachment(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-attachment"]');
 	}
 
 	get btnOptionEditMessage(): Locator {
