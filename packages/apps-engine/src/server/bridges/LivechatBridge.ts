@@ -131,6 +131,12 @@ export abstract class LivechatBridge extends BaseBridge {
         }
     }
 
+    public async doFindRoomById(roomId: string, appId: string): Promise<ILivechatRoom | undefined> {
+        if (this.hasReadPermission(appId, 'livechat-room')) {
+            return this.findRoomById(roomId, appId);
+        }
+    }
+
     public async doFindDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
         if (this.hasReadPermission(appId, 'livechat-department') || this.hasMultiplePermission(appId, 'livechat-department')) {
             return this.findDepartmentByIdOrName(value, appId);
@@ -203,6 +209,8 @@ export abstract class LivechatBridge extends BaseBridge {
     protected abstract findOpenRoomsByAgentId(agentId: string, appId: string): Promise<Array<ILivechatRoom>>;
 
     protected abstract findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>>;
+
+    protected abstract findRoomById(roomId: string, appId: string): Promise<ILivechatRoom | undefined>;
 
     protected abstract findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined>;
 
