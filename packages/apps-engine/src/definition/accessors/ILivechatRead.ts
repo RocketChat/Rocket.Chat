@@ -16,6 +16,7 @@ export interface ILivechatRead {
      */
     isOnlineAsync(departmentId?: string): Promise<boolean>;
     getDepartmentsEnabledWithAgents(): Promise<Array<IDepartment>>;
+    getLivechatInquiry(roomId: string): Promise<any>;
     getLivechatRooms(visitor: IVisitor, departmentId?: string): Promise<Array<ILivechatRoom>>;
     getLivechatOpenRoomsByAgentId(agentId: string): Promise<Array<ILivechatRoom>>;
     getLivechatTotalOpenRoomsByAgentId(agentId: string): Promise<number>;
