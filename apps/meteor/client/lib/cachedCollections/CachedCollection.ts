@@ -197,13 +197,13 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	}
 
 	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
+		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
 		const newRecord = this.handleReceived(record, action);
 
 		if (!hasId(newRecord)) {
@@ -217,6 +217,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			if (!_id) return;
 			this.collection.state.store(newRecord);
 		}
+
 		await this.save();
 	}
 
