@@ -61,16 +61,49 @@ const getChannelsAndGroups = async (
 		return;
 	}
 
+	const canViewAllPrivateRooms = await hasPermissionAsync(user._id, 'view-all-p-room');
+
 	const teams = await Team.getAllPublicTeams();
 	const publicTeamIds = teams.map(({ _id }) => _id);
 
 	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userRooms = user.__rooms ?? [];
+	const userSubscriptions = await Subscriptions.find(
+		{ 'u._id': user._id,
+			t: 'p'
+		},
+		{ projection: { rid: 1} }
+	).toArray();
+	
+	const userRooms = userSubscriptions.map(({ rid }) => rid);
+
+	let additionalRooms: IRoom['_id'][] = [];
+	if (canViewAllPrivateRooms) {
+		
+		try {
+			const cursor = await Rooms.find(
+				{
+					t: 'p', 
+					_id: { $nin: userRooms || [] },
+					_hidden: { $ne: true },
+					archived: { $ne: true }
+				},
+				{
+					projection: { _id: 1, t: 1, name: 1 }
+				}
+			);
+			
+			const rooms = await cursor.toArray();
+			
+			additionalRooms = rooms.map(room => room._id);
+		} catch (error) {
+			additionalRooms = [];
+		}
+	}
 
 	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
 		[...userTeamsIds, ...publicTeamIds],
-		userRooms,
+		[...userRooms, ...additionalRooms],
 		{
 			...pagination,
 			sort: {
