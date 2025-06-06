@@ -1,5 +1,16 @@
 # @rocket.chat/pdf-worker
 
+## 0.2.18
+
+### Patch Changes
+
+- ([#36126](https://github.com/RocketChat/Rocket.Chat/pull/36126) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with PDF generation process that caused the server to hang when a single message consisted of too many (+30) markdown elements and was followed and preceded by more messages.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.2
+  </details>
+
 ## 0.2.17
 
 ### Patch Changes
