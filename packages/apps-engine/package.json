@@ -11,6 +11,7 @@
         ".:test:deno": "cd deno-runtime && deno task test",
         ".:lint:eslint": "eslint .",
         ".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
+        "lint": "yarn .:lint:eslint && yarn .:lint:deno",
         "fix-lint": "eslint . --fix",
         "build": "run-s .:build:clean .:build:default .:build:deno-cache",
         ".:build:clean": "rimraf client definition server",
