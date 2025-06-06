@@ -93,6 +93,10 @@ interface IListenerExecutor {
         args: [IMessageStarContext];
         result: void;
     };
+    [AppInterface.IPostMessageSaved]: {
+        args: [IMessage];
+        result: void;
+    };
     [AppInterface.IPostMessageReported]: {
         args: [IMessageReportContext];
         result: void;
@@ -381,6 +385,8 @@ export class AppListenerManager {
                 return this.executePostMessagePinned(data as IMessagePinContext);
             case AppInterface.IPostMessageStarred:
                 return this.executePostMessageStarred(data as IMessageStarContext);
+            case AppInterface.IPostMessageSaved:
+                return this.executePostMessageSaved(data as IMessage);
             case AppInterface.IPostMessageReported:
                 return this.executePostMessageReported(data as IMessageReportContext);
             // Rooms
@@ -1219,6 +1225,14 @@ export class AppListenerManager {
             const app = this.manager.getOneById(appId);
 
             await app.call(AppMethod.EXECUTE_POST_MESSAGE_STARRED, data);
+        }
+    }
+
+    private async executePostMessageSaved(data: IMessage): Promise<void> {
+        for (const appId of this.listeners.get(AppInterface.IPostMessageSaved)) {
+            const app = this.manager.getOneById(appId);
+
+            await app.call(AppMethod.EXECUTE_POST_MESSAGE_SAVED, data);
         }
     }
 
