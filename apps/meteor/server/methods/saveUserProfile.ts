@@ -10,6 +10,7 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
@@ -158,6 +159,9 @@ async function saveUserProfile(
 
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
+
+	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser!._id, diff: updatedUser! });
+
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
