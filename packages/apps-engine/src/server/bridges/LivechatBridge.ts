@@ -101,9 +101,9 @@ export abstract class LivechatBridge extends BaseBridge {
         }
     }
 
-    public async doCreateRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
+    public async doCreateRoom(visitor: IVisitor, appId: string, agent?: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
         if (this.hasWritePermission(appId, 'livechat-room')) {
-            return this.createRoom(visitor, agent, appId, extraParams);
+            return this.createRoom(visitor, appId, agent, extraParams);
         }
     }
 
@@ -194,7 +194,7 @@ export abstract class LivechatBridge extends BaseBridge {
 
     protected abstract transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean>;
 
-    protected abstract createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
+    protected abstract createRoom(visitor: IVisitor, appId: string, agent?: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
 
     protected abstract closeRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean>;
 

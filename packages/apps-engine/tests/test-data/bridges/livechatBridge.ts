@@ -62,7 +62,7 @@ export class TestLivechatBridge extends LivechatBridge {
         throw new Error('Method not implemented');
     }
 
-    public createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
+    public createRoom(visitor: IVisitor, appId: string, agent?: IUser,  extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
         throw new Error('Method not implemented');
     }
 

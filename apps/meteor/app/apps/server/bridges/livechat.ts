@@ -99,8 +99,8 @@ export class AppLivechatBridge extends LivechatBridge {
 
 	protected async createRoom(
 		visitor: IVisitor,
-		agent: IUser,
 		appId: string,
+		agent?: IUser,
 		{ source, customFields }: IExtraRoomParams = {},
 	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
