@@ -1,15 +1,15 @@
-import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
+	ContextualbarSkeletonBody,
 } from '../../../components/Contextualbar';
 import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
@@ -35,7 +35,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const handleDelete = useRemoveAgent(uid);
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
@@ -45,7 +45,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<Contextualbar data-qa-id='agent-info-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -79,7 +79,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
 				</Margins>
 			</ContextualbarScrollableContent>
-		</Contextualbar>
+		</>
 	);
 };
 

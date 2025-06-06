@@ -64,7 +64,7 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.btnExportMessages.click();
 
 		await poHomeChannel.content.getMessageByText('hello world').click();
-		await poHomeChannel.tabs.exportMessages.btnCancel.click();
+		await poHomeChannel.btnContextualbarClose.click();
 		await poHomeChannel.content.sendMessage('hello export');
 
 		await expect(poHomeChannel.content.getMessageByText('hello export')).toBeVisible();

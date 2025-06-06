@@ -1,7 +1,7 @@
 import { compareBSONValues, getBSONType } from './bson';
 import { equals, flatSome, isObject, some } from './comparisons';
 import { createLookupFunction } from './lookups';
-import type { BSONType, FieldExpression, Query } from './types';
+import type { BSONType, FieldExpression, Filter } from './types';
 
 const isArrayOfFields = <T>(values: unknown[]): values is T[] =>
 	values.every((value) => ['number', 'string', 'symbol'].includes(typeof value));
@@ -45,6 +45,16 @@ const $all =
 		}
 
 		return operand.every((operandElement) => value.some((valueElement) => equals(operandElement, valueElement)));
+	};
+
+const $eq =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean => {
+		if (value === undefined) {
+			return false;
+		}
+
+		return flatSome(value, (x) => equals(x, operand));
 	};
 
 const $lt =
@@ -116,8 +126,8 @@ const $regex = <T>(operand: string | RegExp, options: string): ((value: T) => bo
 	};
 };
 
-const $elemMatch = <T>(operand: Query<T>, _options: undefined): ((value: T) => boolean) => {
-	const matcher = compileDocumentSelector(operand);
+const $elemMatch = <T>(operand: Filter<T>, _options: undefined): ((value: T) => boolean) => {
+	const matcher = compileFilter(operand);
 
 	return (value: T): boolean => {
 		if (!Array.isArray(value)) {
@@ -130,7 +140,9 @@ const $elemMatch = <T>(operand: Query<T>, _options: undefined): ((value: T) => b
 
 const $not = <T>(operand: FieldExpression<T>, _options: undefined): ((value: T) => boolean) => {
 	const matcher = compileValueSelector(operand);
-	return (value: T): boolean => !matcher(value);
+	return (value: T): boolean => {
+		return !matcher(value);
+	};
 };
 
 const dummyOperator =
@@ -143,6 +155,7 @@ const $near = dummyOperator;
 const $geoIntersects = dummyOperator;
 
 const valueOperators = {
+	$eq,
 	$in,
 	$nin,
 	$all,
@@ -163,24 +176,24 @@ const valueOperators = {
 	$geoIntersects,
 } as const;
 
-const $and = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $and = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.every((f) => f(doc));
 };
 
-const $or = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $or = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.some((f) => f(doc));
 };
 
-const $nor = <T>(subSelector: Query<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileDocumentSelector);
+const $nor = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
+	const subSelectorFunctions = subSelector.map(compileFilter);
 	return (doc: T): boolean => subSelectorFunctions.every((f) => !f(doc));
 };
 
 const $where = <T>(selectorValue: string | ((doc: T) => boolean)): ((doc: T) => boolean) => {
-	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${selectorValue}`);
-	return (doc: T): boolean => !!fn.call(doc);
+	const fn = selectorValue instanceof Function ? selectorValue : Function(`doc`, `return ${selectorValue}`);
+	return (doc: T): boolean => !!fn.call(doc, doc);
 };
 
 const logicalOperators = {
@@ -265,8 +278,8 @@ const compileValueSelector = <T>(valueSelector: FieldExpression<T>[keyof FieldEx
 	return (value: T): boolean => flatSome(value, (x) => equals(valueSelector, x as unknown as object));
 };
 
-export const compileDocumentSelector = <T>(docSelector: Query<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
-	const perKeySelectors = Object.entries(docSelector).map(([key, subSelector]) => {
+export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
+	const perKeySelectors = Object.entries(filter).map(([key, subSelector]) => {
 		if (subSelector === undefined) {
 			return (): boolean => true;
 		}
@@ -285,6 +298,10 @@ export const compileDocumentSelector = <T>(docSelector: Query<T> | FieldExpressi
 				case '$where':
 					return $where(subSelector);
 			}
+		}
+
+		if (key.slice(0, 1) === '$') {
+			throw new Error(`Unrecognized logical operator: ${key}`);
 		}
 
 		const lookUpByIndex = createLookupFunction(key);
