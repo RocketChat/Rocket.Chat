@@ -1,5 +1,46 @@
 # @rocket.chat/meteor
 
+## 7.4.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#35896](https://github.com/RocketChat/Rocket.Chat/pull/35896) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where the incoming webhooks integration allowed messages to be sent to public channels under private teams by users who were not members of the team.
+
+- ([#36140](https://github.com/RocketChat/Rocket.Chat/pull/36140) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with REST API metrics sent to Prometheus not grouping endpoints by route
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.3
+  - @rocket.chat/rest-typings@7.4.3
+  - @rocket.chat/license@1.0.11
+  - @rocket.chat/omnichannel-services@0.3.17
+  - @rocket.chat/pdf-worker@0.2.17
+  - @rocket.chat/presence@0.2.20
+  - @rocket.chat/api-client@0.2.20
+  - @rocket.chat/apps@0.3.3
+  - @rocket.chat/core-services@0.7.12
+  - @rocket.chat/cron@0.1.20
+  - @rocket.chat/freeswitch@1.2.7
+  - @rocket.chat/fuselage-ui-kit@16.0.3
+  - @rocket.chat/gazzodown@16.0.3
+  - @rocket.chat/model-typings@1.4.3
+  - @rocket.chat/ui-contexts@16.0.3
+  - @rocket.chat/models@1.3.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.12
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@12.0.3
+  - @rocket.chat/ui-client@16.0.3
+  - @rocket.chat/ui-video-conf@16.0.3
+  - @rocket.chat/ui-voip@6.0.3
+  - @rocket.chat/web-ui-registration@16.0.3
+  - @rocket.chat/instance-status@0.1.20
+  </details>
+
 ## 7.4.2
 
 ### Patch Changes
