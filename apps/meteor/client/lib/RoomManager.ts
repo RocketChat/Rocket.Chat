@@ -3,6 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useSyncExternalStore } from 'react';
 
 import { getConfig } from './utils/getConfig';
+import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
@@ -153,5 +154,14 @@ const subscribeOpenedSecondLevelRoom = [
 ] as const;
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
+
+export const useOpenedRoomUnreadSince = (): Date | undefined => {
+	const rid = useOpenedRoom();
+
+	return useSyncExternalStore(
+		(callback) => (rid && LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.on('changed', callback)) || (() => undefined),
+		() => (rid ? LegacyRoomManager.getOpenedRoomByRid(rid)?.unreadSince.get() : undefined),
+	);
+};
 
 export const useSecondLevelOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedSecondLevelRoom);
