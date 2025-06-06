@@ -39,7 +39,6 @@ const CustomSoundsListSchema = {
 };
 
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
-// import type { ExtractRouterEndpoints } from '../router';
 
 const customSoundsEndpoints = API.v1.get(
 	'custom-sounds.list',
