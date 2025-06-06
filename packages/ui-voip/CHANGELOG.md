@@ -1,5 +1,16 @@
 # @rocket.chat/ui-voip
 
+## 8.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@18.0.3
+  - @rocket.chat/ui-avatar@14.0.3
+  - @rocket.chat/ui-client@18.0.3
+  </details>
+
 ## 8.0.2
 
 ### Patch Changes
