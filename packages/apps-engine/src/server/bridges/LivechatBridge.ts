@@ -95,6 +95,12 @@ export abstract class LivechatBridge extends BaseBridge {
         }
     }
 
+    public async doFindVisitorByUsername(username: string, appId: string): Promise<IVisitor | undefined> {
+        if (this.hasReadPermission(appId, 'livechat-visitor')) {
+            return this.findVisitorByUsername (username, appId);
+        }
+    }
+
     public async doTransferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
         if (this.hasWritePermission(appId, 'livechat-visitor')) {
             return this.transferVisitor(visitor, transferData, appId);
@@ -191,6 +197,8 @@ export abstract class LivechatBridge extends BaseBridge {
     protected abstract findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined>;
 
     protected abstract findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined>;
+
+    protected abstract findVisitorByUsername(username: string, appId: string): Promise<IVisitor | undefined>;
 
     protected abstract transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean>;
 
