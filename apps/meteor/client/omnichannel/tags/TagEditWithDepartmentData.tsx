@@ -4,9 +4,9 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import TagEdit from './TagEdit';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
-const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
+const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: ILivechatTag; onClose: () => void }) => {
 	const t = useTranslation();
 
 	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');
@@ -17,7 +17,7 @@ const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
@@ -28,7 +28,7 @@ const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 		);
 	}
 
-	return <TagEdit tagData={tagData} currentDepartments={data?.departments} />;
+	return <TagEdit tagData={tagData} currentDepartments={data?.departments} onClose={onClose} />;
 };
 
 export default TagEditWithDepartmentData;

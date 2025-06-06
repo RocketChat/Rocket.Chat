@@ -2,10 +2,12 @@ import type { ChildProcess } from 'child_process';
 
 import type { JsonRpc } from 'jsonrpc-lite';
 
-import { Encoder, newEncoder } from './codec';
+import type { Encoder } from './codec';
+import { newEncoder } from './codec';
 
 export class ProcessMessenger {
     private deno: ChildProcess | undefined;
+
     private encoder: Encoder | undefined;
 
     private _sendStrategy: (message: JsonRpc) => void;
