@@ -23,6 +23,14 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 				roomId: {
 					type: 'string',
 				},
+				name: {
+					type: 'string',
+					nullable: true,
+				},
+				typeGroup: {
+					type: 'string',
+					nullable: true,
+				},
 				query: {
 					type: 'string',
 				},
@@ -37,13 +45,21 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 				},
 			},
 			required: ['roomId'],
-			additionalProperties: false,
+			additionalProperties: true,
 		},
 		{
 			type: 'object',
 			properties: {
 				username: {
 					type: 'string',
+				},
+				name: {
+					type: 'string',
+					nullable: true,
+				},
+				typeGroup: {
+					type: 'string',
+					nullable: true,
 				},
 				query: {
 					type: 'string',
@@ -59,7 +75,7 @@ export const isDmFileProps = ajv.compile<DmFileProps>({
 				},
 			},
 			required: ['username'],
-			additionalProperties: false,
+			additionalProperties: true,
 		},
 	],
 });
