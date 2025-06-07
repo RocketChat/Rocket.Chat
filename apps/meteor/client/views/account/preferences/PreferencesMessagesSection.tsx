@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldRow, FieldLink, FieldHint, FieldLabel, AccordionItem, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldLink, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -75,14 +75,16 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
+					<FieldLabel is='span' id={alsoSendThreadToChannelId}>
+						{t('Also_send_thread_message_to_channel_behavior')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='alsoSendThreadToChannel'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={alsoSendThreadToChannelId}
+									aria-labelledby={alsoSendThreadToChannelId}
 									aria-describedby={`${alsoSendThreadToChannelId}-hint`}
 									value={value}
 									onChange={onChange}
@@ -96,7 +98,7 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
+					<FieldLabel is='span'>{t('Message_TimeFormat')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
@@ -160,11 +162,11 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
+					<FieldLabel is='span'>{t('Hide_usernames')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_roles')}</FieldLabel>
+					<FieldLabel is='span'>{t('Hide_roles')}</FieldLabel>
 					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
 				</Field>
 				<Field>
@@ -192,13 +194,15 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
+					<FieldLabel is='span' id={sendOnEnterId}>
+						{t('Enter_Behaviour')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='sendOnEnter'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
+								<Select aria-labelledby={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
 							)}
 						/>
 					</FieldRow>
