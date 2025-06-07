@@ -8,7 +8,7 @@ import { useItemData } from '../hooks/useItemData';
 type RoomSidepanelItemProps = {
 	openedRoom?: string;
 	room: SubscriptionWithRoom;
-	parentRid: string;
+	parentRid?: string;
 	viewMode?: 'extended' | 'medium' | 'condensed';
 };
 
