@@ -178,12 +178,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.state.records;
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: data,
+			records: Array.from(this.collection.state.records.values()),
 		});
 		this.log('saving cache (done)');
 	});
@@ -197,13 +196,13 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	}
 
 	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
+		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
 		const newRecord = this.handleReceived(record, action);
 
 		if (!hasId(newRecord)) {
@@ -211,12 +210,13 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		}
 
 		if (action === 'removed') {
-			this.collection.state.delete(newRecord);
+			this.collection.state.delete(newRecord._id);
 		} else {
 			const { _id } = newRecord;
 			if (!_id) return;
 			this.collection.state.store(newRecord);
 		}
+
 		await this.save();
 	}
 
@@ -280,7 +280,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.state.delete(newRecord);
+						this.collection.state.delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
