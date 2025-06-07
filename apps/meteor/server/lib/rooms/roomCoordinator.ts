@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { settings } from '../../../app/settings/server';
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
+import { i18n } from '../i18n';
 
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
@@ -41,14 +42,29 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
 				userId: string,
+				language?: string,
 			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
-				const title = `#${await this.roomName(room, userId)}`;
-				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
-				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
+				const showPushMessage = settings.get<boolean>('Push_show_message');
+				const showUserOrRoomName = settings.get<boolean>('Push_show_username_room');
+				const lng = language || settings.get('Language') || 'en';
 
-				const text = `${senderName}: ${notificationMessage}`;
+				let text;
+				let title;
+				let name;
+				if (showPushMessage) {
+					const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+					const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
+					text = `${senderName}: ${notificationMessage}`;
+				} else {
+					text = i18n.t('You_have_a_new_message', { lng });
+				}
 
-				return { title, text, name: room.name };
+				if (showUserOrRoomName) {
+					title = `#${await this.roomName(room, userId)}`;
+					name = room.name;
+				}
+
+				return { title, text, name };
 			},
 			getMsgSender(message: IMessage): Promise<IUser | null> {
 				return Users.findOneById(message.u._id);
