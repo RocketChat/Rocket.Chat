@@ -1,49 +1,46 @@
 import { faker } from '@faker-js/faker';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import type { Credentials } from '@rocket.chat/api-client';
-import type { TestUser } from '../data/users.helper';
-import { createUser, deleteUser, login } from '../data/users.helper';
-import { createRoom, deleteRoom } from '../data/rooms.helper';
-
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Users } from './fixtures/userStates';
 import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { Directory } from './page-objects/directory';
-import { password } from '../data/user';
-//import { Users } from './fixtures/userStates';
-//import { createTargetChannel, createTargetPrivateChannel } from './utils';
 
-test.describe.serial('private-rooms-override', () => {
+// Use admin state - this user is already created in global settings
+test.use({ storageState: Users.admin.state });
+
+test.describe('private-rooms-override', () => {
     let poHomeChannel: HomeChannel;
     let poDirectory: Directory;
-    let testUser: TestUser<IUser>;
-    let adminUser: TestUser<IUser>;
-    let testUserCredentials: Credentials;
     let privateRoom: IRoom;
+    let otherPrivateRoom: IRoom;
 
-    test.beforeAll(async ({ api }) => {
-        // Create test users
-        // testUser = await createUser({ 
-        //     username: faker.internet.userName(),
-        //     password: faker.internet.password(),
-        //     roles: ['admin']
-        // });
-        testUser = await createUser();
-		testUserCredentials = await login(testUser.username, password);
-        
-        // Set required permission
+    test.beforeAll('Create private rooms', async ({ api }) => {
+        // Create user1 API client
+        const user1Api = await api.login({ username: 'user1', password: 'password' });
+
+        // Set permissions
         await api.post('/permissions.update', {
             permissions: [{
-                _id: 'view-all-private-rooms',
+                _id: 'view-all-p-room',
                 roles: ['admin']
             }]
         });
 
-        // Create a private room for testing
-        privateRoom = (await createRoom({
-            type: 'p',
-            name: `private-room-${faker.string.uuid()}`,
-            credentials: testUserCredentials
-        })).body.group;
+        // Create first private room (admin is a member)
+        const createRoomResponse = await api.post('/groups.create', {
+            name: `private-room-${faker.string.uuid()}`
+        });
+        expect(createRoomResponse.status()).toBe(200);
+        privateRoom = (await createRoomResponse.json()).group;
+
+        // Create second private room with user1 (admin is NOT a member)
+        const createOtherRoomResponse = await user1Api.post('/api/v1/groups.create', {
+            data: {
+                name: `other-room-${faker.string.uuid()}`
+            }
+        });
+        expect(createOtherRoomResponse.status()).toBe(200);
+        otherPrivateRoom = (await createOtherRoomResponse.json()).group;
     });
 
     test.beforeEach(async ({ page }) => {
@@ -52,72 +49,90 @@ test.describe.serial('private-rooms-override', () => {
         await page.goto('/home');
     });
 
-    test.afterAll(async ({ api }) => {
+    test.afterAll('Cleanup rooms', async ({ api }) => {
+        // Create user1 API client
+        const user1Api = await api.login({ username: 'user1', password: 'password' });
+
+        // Clean up test data（channels）
         await Promise.all([
-            // Delete test room
-            deleteRoom({ type: 'p', roomId: privateRoom._id }),
-            // Delete test user
-            deleteUser(testUser),
-            // Reset permission
-            api.post('/permissions.update', {
-                permissions: [{
-                    _id: 'view-all-private-rooms',
-                    roles: ['admin']
-                }]
-            })
+            api.post('/groups.delete', { roomId: privateRoom._id }),
+            user1Api.post('/api/v1/groups.delete', { data: { roomId: otherPrivateRoom._id } }),
         ]);
     });
 
-    test('should show all private rooms in directory regardless of membership', async ({ page }) => {
-        // Navigate to directory page
-        await poDirectory.goto();
-        
-        // Switch to channels tab
-        await poDirectory.toggleChannelsTab();
-        
-        // Verify private room is visible
-        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).toBeVisible();
-        
-        // Verify room details are correctly displayed
-        const roomRow = page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`);
-        await expect(roomRow.locator('[data-qa="directory-channel-name"]')).toHaveText(privateRoom.name!);
-        await expect(roomRow.locator('[data-qa="directory-channel-type"]')).toHaveText('Private');
-        
-        // Attempt to access the room
-        await roomRow.click();
-        
-        // Verify room is accessible
-        await expect(page).toHaveURL(`/group/${privateRoom.name}`);
-    });
+    test('should handle private rooms visibility based on permissions', async ({ page, api }) => {
+        await test.step('Navigate to directory', async () => {
+            await poDirectory.goto();
+            await page.waitForLoadState('networkidle');
+        });
 
-    test('should respect view-all-private-rooms permission', async ({ page, api }) => {
-        // Remove view-all-private-rooms permission
-        await api.post('/permissions.update', {
-            permissions: [{
-                _id: 'view-all-private-rooms',
-                roles: []
-            }]
+        await test.step('Search and verify own private room is visible', async () => {
+            // Use search function to isolate target channel - following mentor's advice
+            await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            
+            const roomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
+            await expect(roomRow).toBeVisible();
+            
+            // Test room access
+            await roomRow.click();
+            await expect(page).toHaveURL(`/group/${privateRoom.name}`);
+            
+            // Return to directory page
+            await poDirectory.goto();
         });
-        
-        // Navigate to directory page
-        await poDirectory.goto();
-        await poDirectory.toggleChannelsTab();
-        
-        // Verify private room is not visible
-        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).not.toBeVisible();
-        
-        // Restore permission
-        await api.post('/permissions.update', {
-            permissions: [{
-                _id: 'view-all-private-rooms',
-                roles: ['admin']
-            }]
+
+        await test.step('Search and verify other private room is visible with view-all-p-room permission', async () => {
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).toBeVisible();
         });
-        
-        // Refresh the page
-        await page.reload();
-        
-        // Verify private room is visible again
-        await expect(page.locator(`[data-qa="directory-channel-row=${privateRoom.name}"]`)).toBeVisible();
+
+        await test.step('Remove view-all-p-room permission', async () => {
+            await api.post('/permissions.update', {
+                permissions: [{
+                    _id: 'view-all-p-room',
+                    roles: []
+                }]
+            });
+        });
+
+        await test.step('Verify permission change - own room still visible, other room hidden', async () => {
+            await poDirectory.goto();
+            await page.waitForLoadState('networkidle');
+            
+            // Own room should still be visible (because user is a member)
+            await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            const ownRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
+            await expect(ownRoomRow).toBeVisible();
+            
+            // Other room should not be visible (no permission and not a member)
+            await page.getByRole('textbox', { name: 'Search' }).clear();
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).not.toBeVisible();
+        });
+
+        await test.step('Restore permission and verify both rooms visible again', async () => {
+            await api.post('/permissions.update', {
+                permissions: [{
+                    _id: 'view-all-p-room',
+                    roles: ['admin']
+                }]
+            });
+            
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            
+            // Search and verify other room is visible again
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).toBeVisible();
+        });
     });
 });
