@@ -2,11 +2,12 @@ import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
-import { useMemo } from 'react';
+import { forwardRef, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import FileItem from './components/FileItem';
+import { useRoomFilesNavigation } from './hooks/useRoomFilesListNavigation';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -57,6 +58,8 @@ const RoomFiles = ({
 		[t],
 	);
 
+	const { roomFilesRef, focusedItem, setFocusedItem } = useRoomFilesNavigation(total);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
@@ -85,7 +88,7 @@ const RoomFiles = ({
 				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-						<VirtualizedScrollbars>
+						<VirtualizedScrollbars ref={roomFilesRef}>
 							<Virtuoso
 								style={{
 									height: '100%',
@@ -93,9 +96,25 @@ const RoomFiles = ({
 								}}
 								totalCount={total}
 								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
-								overscan={50}
+								overscan={100}
 								data={filesItems}
-								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
+								itemContent={(index, data) => (
+									<FileItem
+										fileData={data}
+										onClickDelete={onClickDelete}
+										focused={index === focusedItem}
+										focusedItem={focusedItem}
+										setFocusedItem={setFocusedItem}
+										index={index}
+									/>
+								)}
+								components={{
+									// eslint-disable-next-line react/no-multi-comp
+									List: forwardRef(function List(props, ref) {
+										return <Box is='ul' {...props} ref={ref} role='list' />;
+									}),
+								}}
+								tabIndex={-1}
 							/>
 						</VirtualizedScrollbars>
 					</Box>
@@ -105,4 +124,4 @@ const RoomFiles = ({
 	);
 };
 
-export default RoomFiles;
+export default memo(RoomFiles);
