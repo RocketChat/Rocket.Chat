@@ -20,7 +20,7 @@ export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFree
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { UUID: 1 } }, { key: { channels: 1 } }, { key: { direction: 1, startedAt: 1 } }];
+		return [{ key: { UUID: 1 } }, { key: { 'channels.uniqueId': 1 } }, { key: { direction: 1, startedAt: 1 } }];
 	}
 
 	public async registerCall(call: WithoutId<InsertionModel<IFreeSwitchCall>>): Promise<void> {
@@ -30,7 +30,7 @@ export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFree
 	public findAllByChannelUniqueIds<T extends IFreeSwitchCall>(uniqueIds: string[], options?: FindOptions<IFreeSwitchCall>): FindCursor<T> {
 		return this.find<T>(
 			{
-				channels: { $in: uniqueIds },
+				'channels.uniqueId': { $in: uniqueIds },
 			},
 			options,
 		);

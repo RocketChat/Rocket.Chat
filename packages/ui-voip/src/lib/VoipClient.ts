@@ -48,8 +48,6 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
-	private reconnecting = false;
-
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
@@ -139,6 +137,18 @@ class VoipClient extends Emitter<VoipEvents> {
 		});
 	}
 
+	protected getCustomHeaders(extraData?: Record<string, string | undefined>): string[] {
+		const data = {
+			userId: this.config.userId,
+			contact: this.userAgent?.contact.uri.user?.toString(),
+			extension: this.config.authUserName,
+			workspaceUrl: this.config.siteUrl,
+			...extraData,
+		};
+
+		return [`X-RocketChat-User-${this.config.userId}: ${JSON.stringify(data)}`];
+	}
+
 	public register = async (): Promise<void> => {
 		await this.registerer?.register({
 			requestDelegate: {
@@ -184,6 +194,7 @@ class VoipClient extends Emitter<VoipEvents> {
 					video: false,
 				},
 			},
+			extraHeaders: this.getCustomHeaders({ calleeExtension: calleeURI }),
 		});
 
 		await this.sendInvite(inviter);
@@ -212,6 +223,9 @@ class VoipClient extends Emitter<VoipEvents> {
 			requestDelegate: {
 				onAccept: () => this.sendContactUpdateMessage(target),
 			},
+			requestOptions: {
+				extraHeaders: this.getCustomHeaders(),
+			},
 		});
 	};
 
@@ -227,6 +241,7 @@ class VoipClient extends Emitter<VoipEvents> {
 					video: false,
 				},
 			},
+			extraHeaders: this.getCustomHeaders(),
 		};
 
 		return this.session.accept(invitationAcceptOptions);
@@ -241,7 +256,9 @@ class VoipClient extends Emitter<VoipEvents> {
 			return Promise.reject(new Error('Session not instance of Invitation.'));
 		}
 
-		return this.session.reject();
+		return this.session.reject({
+			extraHeaders: this.getCustomHeaders(),
+		});
 	};
 
 	public endCall = async (): Promise<OutgoingByeRequest | void> => {
@@ -253,16 +270,20 @@ class VoipClient extends Emitter<VoipEvents> {
 			case SessionState.Initial:
 			case SessionState.Establishing:
 				if (this.session instanceof Inviter) {
-					return this.session.cancel();
+					return this.session.cancel({
+						extraHeaders: this.getCustomHeaders(),
+					});
 				}
 
 				if (this.session instanceof Invitation) {
-					return this.session.reject();
+					return this.session.reject({
+						extraHeaders: this.getCustomHeaders(),
+					});
 				}
 
 				throw new Error('Unknown session type.');
 			case SessionState.Established:
-				return this.session.bye();
+				return this.session.bye({ requestOptions: { extraHeaders: this.getCustomHeaders() } });
 			case SessionState.Terminating:
 			case SessionState.Terminated:
 				break;
@@ -302,6 +323,9 @@ class VoipClient extends Emitter<VoipEvents> {
 						this.toggleMediaStreamTracks('receiver', !this.muted);
 						this.emit('muteerror');
 					},
+				},
+				requestOptions: {
+					extraHeaders: this.getCustomHeaders(),
 				},
 			};
 
@@ -358,6 +382,9 @@ class VoipClient extends Emitter<VoipEvents> {
 						this.emit('holderror');
 					},
 				},
+				requestOptions: {
+					extraHeaders: this.getCustomHeaders(),
+				},
 			};
 
 			await this.session.invite(options);
@@ -391,7 +418,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			contentType: 'application/dtmf-relay',
 			content: `Signal=${dtmf}\r\nDuration=${duration}`,
 		};
-		const requestOptions = { body };
+		const requestOptions = { body, extraHeaders: this.getCustomHeaders() };
 
 		return this.session.info({ requestOptions }).then(() => undefined);
 	};
@@ -694,6 +721,9 @@ class VoipClient extends Emitter<VoipEvents> {
 			requestDelegate: {
 				onReject: this.onInviteRejected,
 			},
+			requestOptions: {
+				extraHeaders: this.getCustomHeaders(),
+			},
 		});
 
 		this.emit('stateChanged');
@@ -747,7 +777,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 		this.session.message({
 			requestOptions: {
-				extraHeaders: ['X-Message-Type: contactUpdate'],
+				extraHeaders: ['X-Message-Type: contactUpdate', ...this.getCustomHeaders()],
 				body: {
 					contentDisposition: 'render',
 					contentType: 'application/json',
@@ -855,7 +885,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private onIncomingCall = async (invitation: Invitation): Promise<void> => {
 		if (!this.isRegistered() || this.session) {
-			await invitation.reject();
+			await invitation.reject({ extraHeaders: this.getCustomHeaders() });
 			return;
 		}
 
