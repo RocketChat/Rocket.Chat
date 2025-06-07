@@ -165,8 +165,8 @@ export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<Livech
 );
 
 type LivechatDepartmentDepartmentIdAgentsPOST = {
-	upsert: { agentId: string; username: string; count?: number; order?: number }[];
-	remove: { agentId: string; username: string; count?: number; order?: number }[];
+	upsert: { agentId: string; username: string; name?: string; count?: number; order?: number }[];
+	remove: { agentId: string; username: string; name?: string; count?: number; order?: number }[];
 };
 
 const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
@@ -183,6 +183,7 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					username: {
 						type: 'string',
 					},
+					name: { type: 'string' },
 					count: {
 						type: 'number',
 					},
@@ -203,6 +204,9 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 						type: 'string',
 					},
 					username: {
+						type: 'string',
+					},
+					name: {
 						type: 'string',
 					},
 					count: {
