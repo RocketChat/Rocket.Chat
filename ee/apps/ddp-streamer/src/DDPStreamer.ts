@@ -11,6 +11,7 @@ import { Client, clientMap } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
+import { logger } from './logger';
 import { proxy } from './proxy';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
@@ -174,19 +175,23 @@ export class DDPStreamer extends ServiceClass {
 				throw new Error('User not logged in');
 			}
 
-			await Presence.newConnection(userId, connection.id, nodeID);
+			try {
+				await Presence.newConnection(userId, connection.id, nodeID);
 
-			this.updateConnections();
+				this.updateConnections();
 
-			// mimic Meteor's default publication that sends user data after login
-			await sendUserData(info, userId);
+				// mimic Meteor's default publication that sends user data after login
+				await sendUserData(info, userId);
 
-			server.emit('presence', { userId, connection });
+				server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', { userId, connection });
+				this.api?.broadcast('accounts.login', { userId, connection });
+			} catch (err) {
+				logger.error({ msg: 'Error while handling user login', err });
+			}
 		});
 
-		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
+		server.on(DDP_EVENTS.LOGGEDOUT, async (info) => {
 			const { userId, connection } = info;
 
 			this.api?.broadcast('accounts.logout', { userId, connection });
@@ -196,10 +201,14 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			try {
+				await Presence.removeConnection(userId, connection.id, nodeID);
+			} catch (err) {
+				logger.error({ msg: 'Error while handling user logout', err });
+			}
 		});
 
-		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
+		server.on(DDP_EVENTS.DISCONNECTED, async (info) => {
 			const { userId, connection } = info;
 
 			this.api?.broadcast('socket.disconnected', connection);
@@ -209,7 +218,12 @@ export class DDPStreamer extends ServiceClass {
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+
+			try {
+				await Presence.removeConnection(userId, connection.id, nodeID);
+			} catch (err) {
+				logger.error({ msg: 'Error while handling user disconnect', err });
+			}
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
