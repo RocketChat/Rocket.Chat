@@ -1,17 +1,5 @@
 import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import {
-	Field,
-	FieldLabel,
-	FieldGroup,
-	FieldRow,
-	TextInput,
-	Button,
-	Box,
-	Icon,
-	Select,
-	ContextualbarFooter,
-	ButtonGroup,
-} from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -22,11 +10,11 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
+	ContextualbarFooter,
 } from '../../../components/Contextualbar';
 import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
@@ -120,7 +108,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const voipExtensionField = useId();
 
 	return (
-		<Contextualbar data-qa-id='agent-edit-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Edit_User')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -237,7 +225,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

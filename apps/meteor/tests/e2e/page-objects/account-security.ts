@@ -1,7 +1,13 @@
 import type { Page } from '@playwright/test';
 
+import { ToastMessages } from './fragments/toast-messages';
+
 export class AccountSecurityPage {
-	constructor(protected readonly page: Page) {}
+	private readonly toastMessages: ToastMessages;
+
+	constructor(protected readonly page: Page) {
+		this.toastMessages = new ToastMessages(page);
+	}
 
 	goto() {
 		return this.page.goto('/account/security');
@@ -34,6 +40,7 @@ export class AccountSecurityPage {
 	async resetE2EEPassword() {
 		await this.expandE2EESectionButton.click();
 		await this.resetE2EEPasswordButton.click();
+		await this.toastMessages.dismissToast('success');
 		// Logged out
 	}
 
@@ -43,6 +50,7 @@ export class AccountSecurityPage {
 		await this.newE2EEPasswordInput.fill(newPassword);
 		await this.confirmNewE2EEPasswordInput.fill(newPassword);
 		await this.saveChangesButton.click();
+		await this.toastMessages.dismissToast('success');
 	}
 
 	async close() {

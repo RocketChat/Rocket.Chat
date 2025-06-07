@@ -11,5 +11,5 @@ import type { IUser } from './IUser';
  * user logged into Rocket.chat
  */
 export interface IPostUserLoggedIn {
-    [AppMethod.EXECUTE_POST_USER_LOGGED_IN](context: IUser, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_USER_LOGGED_IN](context: IUser, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
 }
