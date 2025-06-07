@@ -6,6 +6,9 @@ import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 
 export type ComposerAPI = {
+	tshow: boolean | undefined;
+	previewUrls: string[] | undefined;
+	isSlashCommandAllowed: boolean | undefined;
 	release(): void;
 	readonly text: string;
 	readonly selection: { readonly start: number; readonly end: number };

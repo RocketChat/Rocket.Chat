@@ -44,6 +44,8 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { imperativeModal } from '/client/lib/imperativeModal';
+import ScheduleComposerModal from './ScheduleComposerModal/ScheduleComposerModal';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -358,6 +360,36 @@ const MessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
+	const scheduleAction = {
+		label: 'Schedule' as const, // Temporary until 'Schedule' is added to translations
+		icon: 'clock' as const,
+		prompt: (composerApi: ComposerAPI) => {
+		  const onClose = () => {
+			imperativeModal.close();
+			composerApi.focus();
+		  };
+	
+		  const onConfirm = () => {
+			// Clear the composer after scheduling
+			composerApi.clear();
+		  };
+	
+		  imperativeModal.open({
+			component: ScheduleComposerModal,
+			props: {
+			  onConfirm,
+			  onClose,
+			  value: composerApi.text ?? '', // Pass the message text
+			  rid: room._id, // Pass the room ID
+			  tmid, // Pass the thread ID (if any)
+			  tshow: composerApi.tshow, // Pass tshow
+			  previewUrls: composerApi.previewUrls, // Pass previewUrls
+			  isSlashCommandAllowed: composerApi.isSlashCommandAllowed, // Pass isSlashCommandAllowed
+			},
+		  });
+		},
+	  };
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -445,6 +477,15 @@ const MessageBox = ({
 						{canSend && (
 							<>
 								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								{/* Add the Schedule (clock) icon before the send button */}
+								<MessageComposerAction
+									aria-label={scheduleAction.label}
+									icon={scheduleAction.icon}
+									disabled={!canSend || (!typing && !isEditing)}
+									onClick={() => scheduleAction.prompt?.(chat.composer!)}
+									secondary={typing || isEditing}
+									info={typing || isEditing}
+								/>
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
