@@ -2,7 +2,7 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useId, useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ const emailNotificationOptionsLabelMap = {
 
 const PreferencesNotificationsSection = () => {
 	const { t, i18n } = useTranslation();
+	const user = useUser();
 
 	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
 
@@ -36,7 +37,6 @@ const PreferencesNotificationsSection = () => {
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
 	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
 	const notify = useNotification();
 
@@ -90,6 +90,8 @@ const PreferencesNotificationsSection = () => {
 	const receiveLoginDetectionEmailId = useId();
 	const notifyCalendarEventsId = useId();
 	const enableMobileRingingId = useId();
+
+	const showCalendarPreference = user?.settings?.calendar?.outlook?.enabled;
 
 	return (
 		<AccordionItem title={t('Notifications')}>

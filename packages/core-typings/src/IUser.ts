@@ -157,11 +157,18 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
-export interface IUserSettings {
-	profile?: any;
-	preferences?: {
-		[key: string]: any;
+export interface IUserCalendar {
+	outlook?: {
+		enabled: boolean;
+		exchangeUrl: string;
+		outlookUrl: string;
 	};
+}
+
+export interface IUserSettings {
+	profile?: Record<string, unknown>;
+	preferences?: Record<string, any>;
+	calendar?: IUserCalendar;
 }
 
 export interface IGetRoomRoles {
@@ -246,6 +253,11 @@ export interface IRegisterUser extends IUser {
 	username: string;
 	name: string;
 }
+
+export type IUserInfo = IUser & {
+	email?: string;
+	domain?: string;
+};
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
