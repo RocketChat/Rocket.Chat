@@ -1,11 +1,11 @@
 import type { IRoom, IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { Messages } from '../../../../../app/models/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useRoom } from '../../contexts/RoomContext';
 
 const mergeHideSysMessages = (
@@ -23,27 +23,18 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 
 	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
-	const query: Mongo.Selector<IMessage> = useMemo(
-		() => ({
-			rid,
-			_hidden: { $ne: true },
-			t: { $nin: hideSysMessages },
-			...(!showThreadsInMainChannel && {
-				$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+	const predicate = useMemo(
+		() =>
+			createPredicateFromFilter<IMessage>({
+				rid,
+				_hidden: { $ne: true },
+				t: { $nin: hideSysMessages },
+				...(!showThreadsInMainChannel && {
+					$or: [{ tmid: { $exists: false } }, { tshow: { $eq: true } }],
+				}),
 			}),
-		}),
 		[rid, hideSysMessages, showThreadsInMainChannel],
 	);
 
-	return useReactiveValue(
-		useCallback(
-			() =>
-				Messages.find(query, {
-					sort: {
-						ts: 1,
-					},
-				}).fetch(),
-			[query],
-		),
-	);
+	return Messages.use(useShallow((state) => state.filter(predicate).sort((a, b) => a.ts.getTime() - b.ts.getTime())));
 };

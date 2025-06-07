@@ -1,6 +1,6 @@
-import { compileDocumentSelector } from './query';
+import { compileFilter } from './filter';
 import { compileSort } from './sort';
 
-export const createFilterFromQuery = compileDocumentSelector;
+export const createPredicateFromFilter = compileFilter;
 export const createComparatorFromSort = compileSort;
-export { FieldExpression, Query, Sort } from './types';
+export { FieldExpression, Filter, Sort } from './types';

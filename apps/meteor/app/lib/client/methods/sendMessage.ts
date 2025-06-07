@@ -16,7 +16,7 @@ Meteor.methods<ServerMethods>({
 		if (!uid || trim(message.msg) === '') {
 			return false;
 		}
-		const messageAlreadyExists = message._id && Messages.findOne({ _id: message._id });
+		const messageAlreadyExists = message._id && Messages.state.get(message._id);
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
-			Messages.insert(message);
+			Messages.state.store(message);
 			return callbacks.run('afterSaveMessage', message, { room });
 		});
 	},
