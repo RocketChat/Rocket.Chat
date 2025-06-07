@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,6 +37,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string
 
 Meteor.methods<ServerMethods>({
 	async getRoomRoles(rid) {
+		methodDeprecationLogger.method('getRoomRoles', '8.0.0', 'Use the /v1/chat.getRoomRoles endpoint instead');
 		const fromUserId = Meteor.userId();
 
 		return executeGetRoomRoles(rid, fromUserId);

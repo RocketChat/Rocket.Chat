@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -30,6 +30,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -43,6 +44,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
@@ -56,6 +58,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -845,3 +848,43 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const isChatGetRoomRolesPropsSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+	},
+	additionalProperties: false,
+	required: ['rid'],
+};
+export const chatEndpoints = API.v1.get(
+	'chat.getRoomRoles',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			rid: string;
+		}>(isChatGetRoomRolesPropsSchema),
+		response: {
+			200: ajv.compile<{
+				roles: ISubscription[];
+			}>({
+				type: 'object',
+			}),
+		},
+	},
+	async function () {
+		const { rid } = this.queryParams;
+		const roles = await executeGetRoomRoles(rid, this.userId);
+
+		return API.v1.success({
+			roles,
+		});
+	},
+);
+
+type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatEndpoints {}
+}
