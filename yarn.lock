@@ -9075,7 +9075,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.46"
-    mongo-message-queue: "npm:^1.1.0"
+    mongo-message-queue: "patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     nats: "npm:^2.28.2"
     node-dogstatsd: "npm:^0.0.7"
@@ -9295,7 +9295,7 @@ __metadata:
     jest: "npm:~29.7.0"
     mem: "npm:^8.1.1"
     moment-timezone: "npm:^0.5.46"
-    mongo-message-queue: "npm:^1.1.0"
+    mongo-message-queue: "patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     pino: "npm:^8.21.0"
     typescript: "npm:~5.8.3"
@@ -9335,7 +9335,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     moment-timezone: "npm:^0.5.46"
-    mongo-message-queue: "npm:^1.1.0"
+    mongo-message-queue: "patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
@@ -9541,7 +9541,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     moment-timezone: "npm:^0.5.46"
-    mongo-message-queue: "npm:^1.1.0"
+    mongo-message-queue: "patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     nats: "npm:^2.28.2"
     pino: "npm:^8.21.0"
@@ -28256,7 +28256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongo-message-queue@npm:^1.1.0":
+"mongo-message-queue@npm:1.1.0":
   version: 1.1.0
   resolution: "mongo-message-queue@npm:1.1.0"
   dependencies:
@@ -28264,6 +28264,17 @@ __metadata:
   peerDependencies:
     mongodb: ">= 4.0.0 < 7"
   checksum: 10/6607ae93118664d522f99d480519ef0a9b4259c0366a4665b4e63647681dcac1c25454bd248578cdec6b7849d360963bf917f17fdfb3589308dfb6935321499a
+  languageName: node
+  linkType: hard
+
+"mongo-message-queue@patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch":
+  version: 1.1.0
+  resolution: "mongo-message-queue@patch:mongo-message-queue@npm%3A1.1.0#~/.yarn/patches/mongo-message-queue-npm-1.1.0-1890f42299.patch::version=1.1.0&hash=cc9a72"
+  dependencies:
+    lodash: "npm:>=3.8.0"
+  peerDependencies:
+    mongodb: ">= 4.0.0 < 7"
+  checksum: 10/563bae3ef7000f2ba544896a4ff57507be12bfd61ce5c5fa9bd8bd310bd0cb5f9843b5f08df7e5f4db2896232edab504e3bfefffb16094be76438cb6a60f90d6
   languageName: node
   linkType: hard
 
