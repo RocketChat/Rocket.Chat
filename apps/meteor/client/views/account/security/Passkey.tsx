@@ -85,6 +85,7 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 
 	const isSeenFromThisBrowser = async (credentialIdBase64) => {
 		try {
+			console.log(credentialIdBase64);
 			const credentialId = base64URLStringToBuffer(credentialIdBase64);
 			await navigator.credentials.get({
 				publicKey: {
@@ -113,9 +114,10 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 			const results = await Promise.all(
 				passkeys.map(async (passkey) => ({
 					...passkey,
-					seenFromThisBrowser: await isSeenFromThisBrowser(passkey.credentialId),
+					seenFromThisBrowser: await isSeenFromThisBrowser(passkey.id),
 				})),
 			);
+			console.log(results);
 
 			setPasskeys(results);
 		} catch (error) {
