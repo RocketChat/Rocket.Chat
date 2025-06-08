@@ -22,6 +22,8 @@ import {
 	FederationServersRaw,
 	FreeSwitchCallRaw,
 	FreeSwitchEventRaw,
+	FreeSwitchChannelRaw,
+	FreeSwitchChannelEventRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -106,6 +108,8 @@ registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
 registerModel('IFederationServersModel', new FederationServersRaw(db));
 registerModel('IFreeSwitchCallModel', new FreeSwitchCallRaw(db));
 registerModel('IFreeSwitchEventModel', new FreeSwitchEventRaw(db));
+registerModel('IFreeSwitchChannelEventModel', new FreeSwitchChannelEventRaw(db));
+registerModel('IFreeSwitchChannelModel', new FreeSwitchChannelRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));

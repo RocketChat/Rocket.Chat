@@ -1,96 +1,109 @@
-import type { IFreeSwitchEvent, IFreeSwitchEventCallUser } from '@rocket.chat/core-typings';
+import type { IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
 
-import { filterOutMissingData } from './filterOutMissingData';
-import { getEventType } from './getCallEventType';
-import { getDetailedEventName } from './getDetailedEventName';
-import { parseEventCallData } from './parseEventCallData';
-import { parseEventCallee } from './parseEventCallee';
-import { parseEventCaller } from './parseEventCaller';
-import { parseEventChannel } from './parseEventChannel';
-import { parseEventLinkedChannels } from './parseEventLinkedChannels';
-import { parseRocketChatVariables } from './parseRocketChatVariables';
+import { filterOutEmptyValues } from './filterOutMissingData';
+import { filterStringList } from './filterStringList';
+import { parseEventCallId } from './parseEventCallId';
+import { parseEventLeg } from './parseEventLeg';
+import { parseEventUsername } from './parseEventUsername';
 import { parseTimestamp } from './parseTimestamp';
 
-export async function parseEventData(
+export function parseEventData(
 	eventName: string,
-	rawData: Record<string, string | undefined>,
-): Promise<Omit<IFreeSwitchEvent, '_id' | '_updatedAt'> | undefined> {
-	const eventData: Record<string, string> = Object.fromEntries(
-		Object.entries(rawData).filter(([_, value]) => value !== undefined && value !== '0'),
-	) as Record<string, string>;
+	eventData: Record<string, string | undefined>,
+): Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'> | undefined {
+	const {
+		'Channel-Name': channelName = '',
+		'Channel-State': channelState = '',
+		'Channel-Call-State': channelCallState = '',
+		'Original-Channel-Call-State': originalChannelCallState,
+		'Event-Sequence': sequence,
+		'Event-Date-Timestamp': timestamp,
+		'Unique-ID': channelUniqueId,
 
-	const state = eventData['Channel-State'];
-	const callState = eventData['Channel-Call-State'];
-	const eventType = getEventType(eventName, state, callState);
+		'Call-Direction': callDirection,
+		'Channel-HIT-Dialplan': channelHitDialplan,
+		'Answer-State': answerState,
 
-	if (
-		![
-			'INIT',
-			'CREATE',
-			'RINGING',
-			'OUTGOING',
-			'ORIGINATE',
-			'ANSWER',
-			'EARLY',
-			'ACTIVE',
-			'BRIDGE',
-			'UNBRIDGE',
-			'HANGUP',
-			'DESTROY',
-			'HANGUP_COMPLETE',
-			'RING_WAIT',
-		].includes(eventType)
-	) {
+		'Hangup-Cause': hangupCause,
+
+		'Bridge-A-Unique-ID': bridgeA,
+		'Bridge-B-Unique-ID': bridgeB,
+
+		...rawEventData
+	} = eventData;
+
+	if (!channelUniqueId || !sequence) {
+		// #ToDo: Log as error
 		return;
 	}
 
-	// Ignore direct calls to voicemail
-	const direction = eventData['Call-Direction'] || eventData['Caller-Direction'];
-	if (
-		direction === 'inbound' &&
-		(eventData['Caller-Destination-Number'] === 'voicemail' || eventData['Channel-Name']?.includes('voicemail'))
-	) {
-		return;
-	}
+	const callUniqueId = parseEventCallId(eventData) || channelUniqueId;
+	const channelUsername = parseEventUsername(eventData);
+	const firedAt = parseTimestamp(timestamp) || new Date();
 
-	const detaildEventName = getDetailedEventName(eventName, eventData);
+	const callerLeg = parseEventLeg('Caller', rawEventData);
+	const otherLeg = parseEventLeg('Other-Leg', rawEventData);
+	const bridgeUniqueIds = [bridgeA, bridgeB].filter((bridgeId) => bridgeId) as string[];
 
-	const otherLegUniqueId = eventData['Other-Leg-Unique-ID'];
-	const loopbackLegUniqueId = eventData.variable_other_loopback_leg_uuid;
-	const loopbackFromUniqueId = eventData.variable_other_loopback_from_uuid;
-	const oldUniqueId = eventData['Old-Unique-ID'];
+	const legs = [callerLeg, otherLeg].filter((leg) => leg) as IFreeSwitchChannelEvent['legs'];
 
-	const referencedIds = [otherLegUniqueId, loopbackLegUniqueId, loopbackFromUniqueId, oldUniqueId].filter((id) => Boolean(id)) as string[];
-	const firedAt = parseTimestamp(eventData['Event-Date-Timestamp']);
+	const variables = filterStringList(
+		rawEventData,
+		(key) => key.startsWith('variable_'),
+		([key, value]) => {
+			return [key.replace('variable_', ''), value || ''];
+		},
+	);
+	const metadata = filterStringList(eventData, (key) => key.startsWith('Event-') || key.startsWith('FreeSWITCH-'));
+	const unusedRawData = filterStringList(rawEventData, (key) => {
+		if (key.startsWith('Event-') || key.startsWith('FreeSWITCH-')) {
+			return false;
+		}
+		if (key.startsWith('variable_')) {
+			return false;
+		}
 
-	const loadUsers = eventName !== 'CHANNEL_DESTROY';
+		for (const { legName } of legs) {
+			if (key.startsWith(`${legName}-`)) {
+				return false;
+			}
+		}
 
-	const channel = parseEventChannel(eventData);
-	const otherChannels = parseEventLinkedChannels(eventData);
-	const call = parseEventCallData(eventData);
-	const caller = (loadUsers && parseEventCaller(eventData)) || undefined;
-	const callee = (loadUsers && parseEventCallee(eventData)) || undefined;
-	const users = [caller, callee].filter((u) => u) as IFreeSwitchEventCallUser[];
+		if (otherLeg && key === 'Other-Type') {
+			return false;
+		}
 
-	const rocketChatVariables = parseRocketChatVariables(eventData, users);
+		if (key === 'Channel-Call-UUID') {
+			return rawEventData['Channel-Call-UUID'] !== callUniqueId;
+		}
 
-	return filterOutMissingData({
+		return true;
+	});
+
+	const event: Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'> = {
+		channelUniqueId,
 		eventName,
-		detaildEventName,
-		sequence: eventData['Event-Sequence'],
+		sequence,
 		firedAt,
-		referencedIds,
 		receivedAt: new Date(),
-		callerContext: eventData['Caller-Context'],
-		callerName: eventData['Caller-Caller-ID-Name'],
+		callUniqueId,
+		channelName,
+		channelState,
+		channelCallState,
 
-		channel,
-		caller,
-		callee,
-		call,
-		users,
-		raw: eventData,
-		rocketChatVariables,
-		...(otherChannels.length && { otherChannels }),
-	}) as Omit<IFreeSwitchEvent, '_id' | '_updatedAt'>;
+		originalChannelCallState,
+		channelUsername,
+		answerState,
+		callDirection,
+		channelHitDialplan,
+		hangupCause,
+
+		...(bridgeUniqueIds.length && { bridgeUniqueIds }),
+		legs,
+		metadata: filterOutEmptyValues(metadata),
+		...(Object.keys(variables).length && { variables }),
+		raw: filterOutEmptyValues(unusedRawData),
+	};
+
+	return Object.fromEntries(Object.entries(event).filter(([key]) => event[key as keyof typeof event])) as typeof event;
 }

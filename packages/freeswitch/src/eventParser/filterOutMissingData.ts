@@ -18,3 +18,7 @@ export function filterOutMissingData<T extends Record<string, any>>(data: T): De
 		true,
 	) as DeepPartial<T>;
 }
+
+export function filterOutEmptyValues<T extends Record<string, string | undefined>>(data: T): Record<keyof T, string> {
+	return filterOutMissingData(data) as Record<keyof T, string>;
+}

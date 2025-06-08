@@ -16,6 +16,8 @@ export * from './models/IFederationKeysModel';
 export * from './models/IFederationServersModel';
 export * from './models/IFreeSwitchCallModel';
 export * from './models/IFreeSwitchEventModel';
+export * from './models/IFreeSwitchChannelModel';
+export * from './models/IFreeSwitchChannelEventModel';
 export * from './models/IInstanceStatusModel';
 export * from './models/IIntegrationHistoryModel';
 export * from './models/IIntegrationsModel';

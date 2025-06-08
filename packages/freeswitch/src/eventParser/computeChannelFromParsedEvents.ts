@@ -1,15 +1,16 @@
-import type { IFreeSwitchCall, IFreeSwitchCallEvent, IFreeSwitchEvent, IFreeSwitchEventCallUser } from '@rocket.chat/core-typings';
+import type { IFreeSwitchChannel, IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
 
 import { computeCallDuration } from './computeCallDuration';
-import { getCallEventType } from './getCallEventType';
+// import { getCallEventType } from './getCallEventType';
 import { getPreferableUserFromUserList } from './getPreferableUserFromUserList';
 import { getRelevantRawData } from './getRelevantRawData';
 import { mergeCallChannelData } from './mergeCallChannelData';
 import { mergeCallUserData } from './mergeCallUserData';
+import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
-function sortEvents(allEvents: IFreeSwitchEvent[]): IFreeSwitchEvent[] {
+function sortEvents(allEvents: IFreeSwitchChannelEvent[]): IFreeSwitchChannelEvent[] {
 	// Sort events by both sequence and timestamp, but only when they are present
-	return allEvents.sort((event1: IFreeSwitchEvent, event2: IFreeSwitchEvent) => {
+	return allEvents.sort((event1: IFreeSwitchChannelEvent, event2: IFreeSwitchChannelEvent) => {
 		if (event1.sequence && event2.sequence) {
 			return event1.sequence.localeCompare(event2.sequence);
 		}
@@ -26,14 +27,14 @@ function sortEvents(allEvents: IFreeSwitchEvent[]): IFreeSwitchEvent[] {
 	});
 }
 
-async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
+async function iterateOverEvents(sortedEvents: IFreeSwitchChannelEvent[]): Promise<{
 	isValidCall: boolean;
 	callEvents: IFreeSwitchCallEvent[];
 	startedAt: Date | undefined;
 }> {
 	const callEvents: IFreeSwitchCallEvent[] = [];
 	let startedAt: Date | undefined;
-	let isValidCall = false;
+	// let isValidCall = false;
 
 	for await (const event of sortedEvents) {
 		if (event.firedAt && (!startedAt || (event.firedAt && event.firedAt < startedAt))) {
@@ -41,14 +42,14 @@ async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
 		}
 
 		const workspaces = [...new Set((event.users || []).map(({ workspaceUrl }) => workspaceUrl).filter((w) => w) as string[])];
-		const eventType = getCallEventType(event);
+		// const eventType = getCallEventType(event);
 
-		if (['RINGING', 'ANSWER', 'CREATE', 'BRIDGE', 'RING_WAIT'].includes(eventType)) {
-			isValidCall = true;
-		}
+		// if (['RINGING', 'ANSWER', 'CREATE', 'BRIDGE', 'RING_WAIT'].includes(eventType)) {
+		// 	isValidCall = true;
+		// }
 
 		const eventData: IFreeSwitchCallEvent = {
-			type: eventType,
+			type: 'INIT',
 			eventName: event.eventName,
 			sequence: event.sequence,
 			firedAt: event.firedAt,
@@ -63,45 +64,45 @@ async function iterateOverEvents(sortedEvents: IFreeSwitchEvent[]): Promise<{
 			eventId: event._id,
 		};
 
-		const lastEvent = (callEvents.length && callEvents[callEvents.length - 1]) || undefined;
-		if (lastEvent?.type === eventType && lastEvent.channel?.uniqueId === event.channel?.uniqueId) {
-			lastEvent.extraEvents = [...(lastEvent.extraEvents || []), eventData];
-			continue;
-		}
+		// const lastEvent = (callEvents.length && callEvents[callEvents.length - 1]) || undefined;
+		// if (lastEvent?.type === eventType && lastEvent.channel?.uniqueId === event.channel?.uniqueId) {
+		// 	lastEvent.extraEvents = [...(lastEvent.extraEvents || []), eventData];
+		// 	continue;
+		// }
 
 		callEvents.push(eventData);
 	}
 
 	return {
-		isValidCall,
+		isValidCall: true,
 		callEvents,
 		startedAt,
 	};
 }
 
-export async function computeCallFromParsedEvents(
+export async function computeChannelFromParsedEvents(
 	callUUID: string,
-	allEvents: IFreeSwitchEvent[],
+	allEvents: IFreeSwitchChannelEvent[],
 	workspaceUrl: string,
-): Promise<
-	| (Omit<IFreeSwitchCall, '_id' | '_updatedAt' | 'to' | 'from' | 'forwardedFrom'> & {
-			caller?: IFreeSwitchEventCallUser;
-			callee?: IFreeSwitchEventCallUser;
-	  })
-	| undefined
-> {
+): Promise<Omit<IFreeSwitchChannel, '_id' | '_updatedAt'> | undefined> {
 	const sortedEvents = sortEvents(allEvents);
 
-	const callers = mergeCallUserData(sortedEvents.map(({ caller }) => caller));
-	const callees = mergeCallUserData(sortedEvents.map(({ callee }) => callee));
-	const directChannels = sortedEvents.map(({ channel }) => channel);
-	const linkedChannels = sortedEvents.map(({ otherChannels }) => otherChannels).flat();
-	const channels = mergeCallChannelData(directChannels, linkedChannels);
+	sortedEvents.reduce(
+		(state: Record<string, any>, nextEvent: IFreeSwitchChannelEvent): Record<string, any> => {
+			const { _id, channelUniqueId, _updatedAt, ...eventData } = nextEvent;
 
-	const caller = getPreferableUserFromUserList(callers);
-	const callee = getPreferableUserFromUserList(callees);
+			const eventValues = convertSubObjectsIntoPaths(eventData);
+			// Comparar o eventValues com o state, gerando um objeto novo com o que tiver de diferente 
+			// Depois aplicar essas diferenças no state pra poder comparar o próximo
+			// Arrays precisam de atenção especial
 
-	const users = [...callers, ...callees];
+			// Cuidado, o `variables` pode ter arrays tb.
+
+
+			return prev;
+		},
+		{} as Record<string, any>,
+	);
 
 	// when a call enters the voicemail, freeswitch creates separate channels for it, with 'voicemail' in their names
 	const hasVoicemailChannel = channels.some(({ name }) => name?.includes('voicemail'));

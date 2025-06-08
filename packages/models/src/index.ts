@@ -22,6 +22,8 @@ import type {
 	IFederationServersModel,
 	IFreeSwitchCallModel,
 	IFreeSwitchEventModel,
+	IFreeSwitchChannelModel,
+	IFreeSwitchChannelEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -156,6 +158,8 @@ export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysMode
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const FreeSwitchCall = proxify<IFreeSwitchCallModel>('IFreeSwitchCallModel');
 export const FreeSwitchEvent = proxify<IFreeSwitchEventModel>('IFreeSwitchEventModel');
+export const FreeSwitchChannel = proxify<IFreeSwitchChannelModel>('IFreeSwitchChannelModel');
+export const FreeSwitchChannelEvent = proxify<IFreeSwitchChannelEventModel>('IFreeSwitchChannelEventModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');

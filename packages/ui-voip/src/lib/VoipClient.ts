@@ -50,6 +50,8 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private reconnecting = false;
 
+	private contactName: string | null = null;
+
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
@@ -74,6 +76,8 @@ class VoipClient extends Emitter<VoipEvents> {
 		const debug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
 
 		this.userAgent = new UserAgent({
+			contactName: this.getContactName(),
+			viaHost: this.getContactHostName(),
 			authorizationPassword: authPassword,
 			authorizationUsername: authUserName,
 			uri: UserAgent.makeURI(`sip:${authUserName}@${sipRegistrarHostnameOrIP}`),
@@ -139,18 +143,6 @@ class VoipClient extends Emitter<VoipEvents> {
 		});
 	}
 
-	protected getCustomHeaders(extraData?: Record<string, string | undefined>): string[] {
-		const data = {
-			userId: this.config.userId,
-			contact: this.userAgent?.contact.uri.user?.toString(),
-			extension: this.config.authUserName,
-			workspaceUrl: this.config.siteUrl,
-			...extraData,
-		};
-
-		return [`X-RocketChat-User-${this.config.userId}: ${JSON.stringify(data)}`];
-	}
-
 	public register = async (): Promise<void> => {
 		await this.registerer?.register({
 			requestDelegate: {
@@ -196,7 +188,6 @@ class VoipClient extends Emitter<VoipEvents> {
 					video: false,
 				},
 			},
-			extraHeaders: this.getCustomHeaders({ calleeExtension: calleeURI }),
 		});
 
 		await this.sendInvite(inviter);
@@ -225,9 +216,6 @@ class VoipClient extends Emitter<VoipEvents> {
 			requestDelegate: {
 				onAccept: () => this.sendContactUpdateMessage(target),
 			},
-			requestOptions: {
-				extraHeaders: this.getCustomHeaders(),
-			},
 		});
 	};
 
@@ -243,7 +231,6 @@ class VoipClient extends Emitter<VoipEvents> {
 					video: false,
 				},
 			},
-			extraHeaders: this.getCustomHeaders(),
 		};
 
 		return this.session.accept(invitationAcceptOptions);
@@ -258,9 +245,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			return Promise.reject(new Error('Session not instance of Invitation.'));
 		}
 
-		return this.session.reject({
-			extraHeaders: this.getCustomHeaders(),
-		});
+		return this.session.reject();
 	};
 
 	public endCall = async (): Promise<OutgoingByeRequest | void> => {
@@ -272,22 +257,21 @@ class VoipClient extends Emitter<VoipEvents> {
 			case SessionState.Initial:
 			case SessionState.Establishing:
 				if (this.session instanceof Inviter) {
-					return this.session.cancel({
-						extraHeaders: this.getCustomHeaders(),
-					});
+					return this.session.cancel();
 				}
 
 				if (this.session instanceof Invitation) {
-					return this.session.reject({
-						extraHeaders: this.getCustomHeaders(),
-					});
+					return this.session.reject();
 				}
 
 				throw new Error('Unknown session type.');
 			case SessionState.Established:
-				return this.session.bye({ requestOptions: { extraHeaders: this.getCustomHeaders() } });
+				return this.session.bye();
 			case SessionState.Terminating:
+				console.warn('Trying to end a call that is already Terminating.');
+				break;
 			case SessionState.Terminated:
+				console.warn('Trying to end a call that is already Terminated.');
 				break;
 			default:
 				throw new Error('Unknown state');
@@ -325,9 +309,6 @@ class VoipClient extends Emitter<VoipEvents> {
 						this.toggleMediaStreamTracks('receiver', !this.muted);
 						this.emit('muteerror');
 					},
-				},
-				requestOptions: {
-					extraHeaders: this.getCustomHeaders(),
 				},
 			};
 
@@ -384,9 +365,6 @@ class VoipClient extends Emitter<VoipEvents> {
 						this.emit('holderror');
 					},
 				},
-				requestOptions: {
-					extraHeaders: this.getCustomHeaders(),
-				},
 			};
 
 			await this.session.invite(options);
@@ -420,7 +398,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			contentType: 'application/dtmf-relay',
 			content: `Signal=${dtmf}\r\nDuration=${duration}`,
 		};
-		const requestOptions = { body, extraHeaders: this.getCustomHeaders() };
+		const requestOptions = { body };
 
 		return this.session.info({ requestOptions }).then(() => undefined);
 	};
@@ -723,9 +701,6 @@ class VoipClient extends Emitter<VoipEvents> {
 			requestDelegate: {
 				onReject: this.onInviteRejected,
 			},
-			requestOptions: {
-				extraHeaders: this.getCustomHeaders(),
-			},
 		});
 
 		this.emit('stateChanged');
@@ -779,7 +754,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 		this.session.message({
 			requestOptions: {
-				extraHeaders: ['X-Message-Type: contactUpdate', ...this.getCustomHeaders()],
+				extraHeaders: ['X-Message-Type: contactUpdate'],
 				body: {
 					contentDisposition: 'render',
 					contentType: 'application/json',
@@ -887,7 +862,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private onIncomingCall = async (invitation: Invitation): Promise<void> => {
 		if (!this.isRegistered() || this.session) {
-			await invitation.reject({ extraHeaders: this.getCustomHeaders() });
+			await invitation.reject();
 			return;
 		}
 
@@ -968,6 +943,33 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.networkEmitter.emit('localnetworkoffline');
 		this.emit('stateChanged');
 	};
+
+	private getContactHostName(): string | undefined {
+		try {
+			const url = new URL(this.config.siteUrl);
+			return url.hostname;
+		} catch {
+			//
+		}
+	}
+
+	private createRandomToken(size: number): string {
+		let token = '';
+		for (let i = 0; i < size; i++) {
+			const r = Math.floor(Math.random() * 32);
+			token += r.toString(32);
+		}
+		return token;
+	}
+
+	private getContactName(): string {
+		if (!this.contactName) {
+			const randomName = this.createRandomToken(8);
+			this.contactName = `${this.config.authUserName}-${this.config.userId}-${randomName}`;
+		}
+
+		return this.contactName;
+	}
 }
 
 export default VoipClient;
