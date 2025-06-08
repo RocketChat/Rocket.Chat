@@ -3393,7 +3393,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	async findPasskeysByUserId(userId: IUser['_id']) {
 		const query = {
-			_id: userId
+			_id: userId,
 		};
 
 		const options = {
@@ -3402,45 +3402,53 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		const user = await this.findOne(query, options)
+		const user = await this.findOne(query, options);
 		return user?.passkeys;
 	}
 
 	async findPasskeysByUserIdForUser(userId: IUser['_id']) {
 		const query = {
-			_id: userId
+			_id: userId,
 		};
 
 		const options = {
 			projection: {
 				'passkeys.id': 1,
 				'passkeys.name': 1,
-				'passkeys.datetime': 1,
+				'passkeys.createdAt': 1,
+				'passkeys.lastUsedAt': 1,
+				'passkeys.resident': 1,
 			},
 		};
 
-		const user = await this.findOne(query, options)
+		const user = await this.findOne(query, options);
 		return user?.passkeys;
 	}
 
-	async setPasskeys(userId: IUser['_id'], passkeys: Passkey[]) {
+	async createPasskey(userId: IUser['_id'], rawPasskey: Passkey) {
+		const passkey: Passkey = {
+			...rawPasskey,
+			createdAt: new Date(),
+			lastUsedAt: new Date(),
+		};
+
 		const query = {
 			_id: userId,
 		};
 
 		const update = {
-			$set: {
-				passkeys: passkeys,
+			$push: {
+				passkeys: passkey,
 			},
 		};
 
-		return await this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 
 	async updatePasskey(userId: IUser['_id'], passkeyId: Passkey['id'], newName: string) {
 		const query = {
 			_id: userId,
-			passkeys: { $elemMatch: { id: passkeyId } }
+			passkeys: { $elemMatch: { id: passkeyId } },
 		};
 
 		const update = {
@@ -3449,7 +3457,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return await this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 
 	async deletePasskey(userId: IUser['_id'], passkeyId: Passkey['id']) {
@@ -3463,19 +3471,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		};
 
-		return await this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 
 	async updatePasskeyCounter(userId: IUser['_id'], passkeyId: Passkey['id'], newCounter: Passkey['counter']) {
-		const query =
-				{ _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
+		const query = { _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
 
-			const update = {
+		const update = {
 			$set: {
 				'passkeys.$.count': newCounter,
+				'passkeys.$.lastUsedAt': new Date(),
 			},
 		};
 
-		return await this.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 }
