@@ -158,10 +158,13 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
-export type Passkey = WebAuthnCredential & { // TODO fzh075 Should the position be changed?
+export type Passkey = WebAuthnCredential & {
+	// TODO fzh075 Should the position be changed?
 	name?: string;
-	createTime?: number;
-}
+	createdAt: Date;
+	lastUsedAt: Date | null;
+	resident?: boolean;
+};
 
 export interface IUser extends IRocketChatRecord {
 	_id: string;

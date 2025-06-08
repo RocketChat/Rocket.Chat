@@ -71,17 +71,9 @@ import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import {
-	generateRegistrationOptions,
-	VerifiedRegistrationResponse,
-	verifyRegistrationResponse,
-} from '@simplewebauthn/server';
+import { generateRegistrationOptions, VerifiedRegistrationResponse, verifyRegistrationResponse } from '@simplewebauthn/server';
 import { log } from '/tests/data/api-data';
-import {
-	generateAuthenticationOptions,
-	VerifiedAuthenticationResponse,
-	verifyAuthenticationResponse,
-} from '@simplewebauthn/server/esm';
+import { generateAuthenticationOptions, VerifiedAuthenticationResponse, verifyAuthenticationResponse } from '@simplewebauthn/server/esm';
 import { Random } from 'meteor/random';
 import { passkey } from '/app/passkey/server';
 
@@ -890,8 +882,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			console.log(this.user.passkeys);
-			const result = await passkey.generateRegistrationOptions(this.user)
+			console.log(this.connection.clientAddress);
+
+			const result = await passkey.generateRegistrationOptions(this.user);
 			return API.v1.success(result);
 		},
 	},
@@ -902,7 +895,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			await passkey.verifyRegistrationResponse(this.user, this.bodyParams.id, this.bodyParams.registrationResponse)
+			console.log(this.bodyParams.registrationResponse);
+
+			await passkey.verifyRegistrationResponse(this.user, this.bodyParams.id, this.bodyParams.registrationResponse);
 			return API.v1.success();
 		},
 	},
@@ -913,7 +908,7 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const result = await passkey.generateAuthenticationOptions()
+			const result = await passkey.generateAuthenticationOptions();
 			return API.v1.success(result);
 		},
 	},
@@ -924,7 +919,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const passkeys = await passkey.findPasskeys(this.userId)
+			const passkeys = await passkey.findPasskeys(this.userId);
 			return API.v1.success({ passkeys });
 		},
 	},
@@ -940,9 +935,7 @@ API.v1.addRoute(
 			// 	return API.v1.failure("The 'tokenName' param is required");
 			// }
 
-			console.log(this);
-			console.log(this.bodyParams);
-			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name)
+			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name);
 
 			return API.v1.success();
 		},
@@ -959,7 +952,7 @@ API.v1.addRoute(
 			// 	return API.v1.failure("The 'tokenName' param is required");
 			// }
 
-			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId)
+			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId);
 
 			return API.v1.success();
 		},
