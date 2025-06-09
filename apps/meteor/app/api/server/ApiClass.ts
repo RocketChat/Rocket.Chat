@@ -618,7 +618,7 @@ export class APIClass<
 		method: Method,
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
@@ -635,7 +635,7 @@ export class APIClass<
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
@@ -652,7 +652,7 @@ export class APIClass<
 	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
@@ -667,7 +667,7 @@ export class APIClass<
 	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
@@ -682,7 +682,7 @@ export class APIClass<
 	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		action: TypedAction<TOptions>,
+		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
