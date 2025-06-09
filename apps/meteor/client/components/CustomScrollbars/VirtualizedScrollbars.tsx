@@ -38,7 +38,7 @@ const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps
 		return () => osInstance()?.destroy();
 	}, [initialize, osInstance, ref, scroller]);
 
-	return <BaseScrollbars ref={mergedRef}>{cloneElement(props.children, { scrollerRef: setScroller })}</BaseScrollbars>;
+	return <BaseScrollbars ref={mergedRef}>{cloneElement(props.children, { tabIndex: -1, scrollerRef: setScroller })}</BaseScrollbars>;
 });
 
 export default memo(VirtualizedScrollbars);
