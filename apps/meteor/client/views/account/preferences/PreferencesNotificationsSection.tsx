@@ -93,21 +93,24 @@ const PreferencesNotificationsSection = () => {
 	const receiveLoginDetectionEmailId = useId();
 	const notifyCalendarEventsId = useId();
 	const enableMobileRingingId = useId();
+	const desktopNotificationsLabelId = useId();
 
 	return (
 		<AccordionItem title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='span'>{t('Desktop_Notifications')}</FieldLabel>
+					<FieldLabel is='span' id={desktopNotificationsLabelId}>
+						{t('Desktop_Notifications')}
+					</FieldLabel>
 					<FieldRow>
 						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
 						{notificationsPermission === 'granted' && (
-							<Button primary onClick={onSendNotification}>
+							<Button primary onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
 								{t('Test_Desktop_Notifications')}
 							</Button>
 						)}
 						{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
-							<Button primary onClick={onAskNotificationPermission}>
+							<Button primary onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
 								{t('Enable_Desktop_Notifications')}
 							</Button>
 						)}
@@ -223,9 +226,7 @@ const PreferencesNotificationsSection = () => {
 				{showMobileRinging && (
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={enableMobileRingingId}>
-								{t('VideoConf_Mobile_Ringing')}
-							</FieldLabel>
+							<FieldLabel htmlFor={enableMobileRingingId}>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
 							<Controller
 								name='enableMobileRinging'
 								control={control}
