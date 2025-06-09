@@ -1,11 +1,13 @@
 import type { IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
 
-import { filterOutEmptyValues } from './filterOutMissingData';
+import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
+import { isMetadata } from './isMetadata';
+import { parseChannelUsername } from './parseChannelUsername';
 import { parseEventCallId } from './parseEventCallId';
 import { parseEventLeg } from './parseEventLeg';
-import { parseEventUsername } from './parseEventUsername';
 import { parseTimestamp } from './parseTimestamp';
+import { logger } from '../logger';
 
 export function parseEventData(
 	eventName: string,
@@ -15,8 +17,10 @@ export function parseEventData(
 		'Channel-Name': channelName = '',
 		'Channel-State': channelState = '',
 		'Channel-Call-State': channelCallState = '',
+		'Channel-State-Number': channelStateNumber,
+		'Channel-Call-State-Number': channelCallStateNumber,
 		'Original-Channel-Call-State': originalChannelCallState,
-		'Event-Sequence': sequence,
+		'Event-Sequence': sequenceStr,
 		'Event-Date-Timestamp': timestamp,
 		'Unique-ID': channelUniqueId,
 
@@ -29,23 +33,35 @@ export function parseEventData(
 		'Bridge-A-Unique-ID': bridgeA,
 		'Bridge-B-Unique-ID': bridgeB,
 
+		'Presence-Call-Direction': presenceCallDirection,
+		'Channel-Presence-ID': channelPresenceId,
+
 		...rawEventData
 	} = eventData;
 
-	if (!channelUniqueId || !sequence) {
-		// #ToDo: Log as error
+	if (!channelUniqueId || !sequenceStr) {
+		logger.error({ msg: 'Channel Event is missing either the Unique-ID or Event-Sequence', eventData });
+		return;
+	}
+
+	const sequence = parseInt(sequenceStr);
+	if (!sequence || typeof sequence !== 'number' || !Number.isInteger(sequence)) {
+		logger.error({ msg: 'Failed to parse Event-Sequence', eventData });
 		return;
 	}
 
 	const callUniqueId = parseEventCallId(eventData) || channelUniqueId;
-	const channelUsername = parseEventUsername(eventData);
+	const channelUsername = parseChannelUsername(channelName);
 	const firedAt = parseTimestamp(timestamp) || new Date();
 
 	const callerLeg = parseEventLeg('Caller', rawEventData);
 	const otherLeg = parseEventLeg('Other-Leg', rawEventData);
 	const bridgeUniqueIds = [bridgeA, bridgeB].filter((bridgeId) => bridgeId) as string[];
 
-	const legs = [callerLeg, otherLeg].filter((leg) => leg) as IFreeSwitchChannelEvent['legs'];
+	const legs: IFreeSwitchChannelEvent['legs'] = {
+		...(callerLeg?.uniqueId && { [callerLeg.uniqueId]: callerLeg }),
+		...(otherLeg?.uniqueId && { [otherLeg.uniqueId]: otherLeg }),
+	};
 
 	const variables = filterStringList(
 		rawEventData,
@@ -54,16 +70,16 @@ export function parseEventData(
 			return [key.replace('variable_', ''), value || ''];
 		},
 	);
-	const metadata = filterStringList(eventData, (key) => key.startsWith('Event-') || key.startsWith('FreeSWITCH-'));
+	const metadata = filterStringList(eventData, (key) => isMetadata(key));
 	const unusedRawData = filterStringList(rawEventData, (key) => {
-		if (key.startsWith('Event-') || key.startsWith('FreeSWITCH-')) {
+		if (isMetadata(key)) {
 			return false;
 		}
 		if (key.startsWith('variable_')) {
 			return false;
 		}
 
-		for (const { legName } of legs) {
+		for (const { legName } of Object.values(legs)) {
 			if (key.startsWith(`${legName}-`)) {
 				return false;
 			}
@@ -89,6 +105,8 @@ export function parseEventData(
 		callUniqueId,
 		channelName,
 		channelState,
+		channelStateNumber,
+		channelCallStateNumber,
 		channelCallState,
 
 		originalChannelCallState,
@@ -103,7 +121,10 @@ export function parseEventData(
 		metadata: filterOutEmptyValues(metadata),
 		...(Object.keys(variables).length && { variables }),
 		raw: filterOutEmptyValues(unusedRawData),
+
+		presenceCallDirection,
+		channelPresenceId,
 	};
 
-	return Object.fromEntries(Object.entries(event).filter(([key]) => event[key as keyof typeof event])) as typeof event;
+	return filterOutMissingData(event) as typeof event;
 }

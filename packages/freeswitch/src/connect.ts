@@ -9,7 +9,7 @@ const defaultPassword = 'ClueCon';
 export type EventNames = Parameters<FreeSwitchResponse['event_json']>;
 
 export async function connect(
-	options?: { host?: string; port?: number; password?: string },
+	options?: { host?: string; port?: number; password?: string; helpers?: { bgapi?: boolean; execute?: boolean } },
 	customEventNames: EventNames = [],
 ): Promise<FreeSwitchResponse> {
 	const host = options?.host ?? '127.0.0.1';
@@ -31,7 +31,16 @@ export async function connect(
 					await currentCall.onceAsync('freeswitch_auth_request', 20_000, 'FreeSwitchClient expected authentication request');
 					await currentCall.auth(password);
 					currentCall.auto_cleanup();
-					await currentCall.event_json('CHANNEL_EXECUTE_COMPLETE', 'BACKGROUND_JOB', ...customEventNames);
+
+					const eventsToListen: EventNames = [
+						...(options?.helpers?.bgapi ? ['BACKGROUND_JOB' as const] : []),
+						...(options?.helpers?.execute ? ['CHANNEL_EXECUTE_COMPLETE' as const] : []),
+						...customEventNames,
+					];
+
+					if (eventsToListen.length) {
+						await currentCall.event_json(...eventsToListen);
+					}
 				} catch (error) {
 					logger.error('FreeSwitchClient: connect error', error);
 					reject(error);

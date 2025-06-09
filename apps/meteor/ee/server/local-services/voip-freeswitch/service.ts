@@ -1,22 +1,16 @@
 import { type IVoipFreeSwitchService, ServiceClassInternal, ServiceStarter } from '@rocket.chat/core-services';
-import type {
-	FreeSwitchExtension,
-	IFreeSwitchCall,
-	IFreeSwitchEventCallUser,
-	IUser,
-	IFreeSwitchChannelEvent,
-} from '@rocket.chat/core-typings';
+import type { FreeSwitchExtension, IFreeSwitchChannelEvent, IFreeSwitchChannel } from '@rocket.chat/core-typings';
 import {
 	getDomain,
 	getUserPassword,
 	getExtensionList,
 	getExtensionDetails,
 	listenToEvents,
-	computeCallFromParsedEvents,
 	parseEventData,
+	computeChannelFromParsedEvents,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { FreeSwitchCall, FreeSwitchChannelEvent, FreeSwitchEvent, Users } from '@rocket.chat/models';
+import { FreeSwitchChannel, FreeSwitchChannelEvent } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { WithoutId } from 'mongodb';
 import { MongoError } from 'mongodb';
@@ -97,9 +91,23 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchChannelEvent>>): Promise<void> {
 		try {
 			await FreeSwitchChannelEvent.registerEvent(event);
-			// if (event.eventName === 'CHANNEL_DESTROY' && event.call?.UUID) {
-			// 	await this.computeCall(event.call?.UUID);
-			// }
+			if (event.eventName === 'CHANNEL_DESTROY' && event.channelUniqueId) {
+				await this.computeChannel(event.channelUniqueId);
+			}
+		} catch (error) {
+			// avoid logging that an event was duplicated from mongo
+			if (error instanceof MongoError && error.code === 11000) {
+				return;
+			}
+
+			console.log(error);
+			throw error;
+		}
+	}
+
+	private async registerChannel(channel: InsertionModel<WithoutId<IFreeSwitchChannel>>): Promise<void> {
+		try {
+			await FreeSwitchChannel.registerChannel(channel);
 		} catch (error) {
 			// avoid logging that an event was duplicated from mongo
 			if (error instanceof MongoError && error.code === 11000) {
@@ -114,7 +122,12 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	private async computeChannel(channelUniqueId: string): Promise<void> {
 		// #ToDo: Wait a few seconds before computing the channel
 
-		const allEvents = await FreeSwitchChannelEvent.findAllByChannelUniqueIds([channelUniqueId]).toArray();
+		const allEvents = await FreeSwitchChannelEvent.findAllByChannelUniqueId(channelUniqueId).toArray();
+
+		const channel = await computeChannelFromParsedEvents(allEvents);
+		if (channel) {
+			await this.registerChannel(channel);
+		}
 	}
 
 	// private async getUserDataForCall(user: IFreeSwitchEventCallUser): Promise<IUser | null> {

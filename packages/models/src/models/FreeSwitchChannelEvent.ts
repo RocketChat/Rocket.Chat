@@ -1,5 +1,6 @@
 import type { IFreeSwitchChannelEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFreeSwitchChannelEventModel, InsertionModel } from '@rocket.chat/model-typings';
+import { convertFromDaysToSeconds } from '@rocket.chat/tools';
 import type { IndexDescription, Collection, Db, FindOptions, FindCursor, WithoutId, InsertOneResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -12,9 +13,9 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
-			{ key: { callUniqueId: 1 } },
+			// { key: { callUniqueId: 1 } },
 			// Allow 3 days of events to be saved
-			{ key: { receivedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 3 },
+			{ key: { receivedAt: 1 }, expireAfterSeconds: convertFromDaysToSeconds(3) },
 		];
 	}
 
@@ -22,22 +23,23 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 		return this.insertOne(event);
 	}
 
-	public findAllByCallUniqueId<T extends IFreeSwitchChannelEvent>(
-		callUniqueId: string,
+	public findAllByChannelUniqueId<T extends IFreeSwitchChannelEvent>(
+		channelUniqueId: string,
 		options?: FindOptions<IFreeSwitchChannelEvent>,
 	): FindCursor<T> {
-		return this.find<T>({ callUniqueId }, options);
-	}
+		const theOptions: FindOptions<IFreeSwitchChannelEvent> = {
+			sort: {
+				channelUniqueId: 1,
+				sequence: 1,
+			},
+			...options,
+		};
 
-	public findAllByChannelUniqueIds<T extends IFreeSwitchChannelEvent>(
-		uniqueIds: string[],
-		options?: FindOptions<IFreeSwitchChannelEvent>,
-	): FindCursor<T> {
 		return this.find<T>(
 			{
-				channelUniqueId: { $in: uniqueIds },
+				channelUniqueId,
 			},
-			options,
+			theOptions,
 		);
 	}
 }

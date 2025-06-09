@@ -1,12 +1,12 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { DeepPartial } from '../utils';
-import type { IFreeSwitchChannelEvent } from './IFreeSwitchChannelEvent';
+import type { IFreeSwitchChannelEventParsedMutable, IFreeSwitchChannelEventDelta } from './IFreeSwitchChannelEvent';
 
 export interface IFreeSwitchChannel extends IRocketChatRecord {
 	uniqueId: string;
-	channelName: string;
+	name: string;
 
-	freeSwitchUser: string;
+	freeSwitchUser?: string;
 
 	rocketChatUser?: string;
 	rocketChatHostname?: string;
@@ -22,7 +22,11 @@ export interface IFreeSwitchChannel extends IRocketChatRecord {
 	// isVoicemail?: boolean;
 	// reached?: boolean;
 
-	events: DeepPartial<Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt' | 'channelUniqueId'>>[];
+	// events: DeepPartial<Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt' | 'channelUniqueId'>>[];
+	events: Record<number, DeepPartial<IFreeSwitchChannelEventDelta>>;
+
+	finalState: IFreeSwitchChannelEventParsedMutable;
+
 	// calls: IFreeSwitchChannelCall[];
 }
 

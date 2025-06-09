@@ -11,7 +11,7 @@ export async function runCallback<T>(
 ): Promise<T> {
 	const { host, port, password, timeout } = options;
 
-	const call = await connect({ host, port, password });
+	const call = await connect({ host, port, password, helpers: { bgapi: true } });
 	try {
 		// Await result so it runs within the try..finally scope
 		const result = await cb(async (command) => {

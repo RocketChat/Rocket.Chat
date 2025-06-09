@@ -1,6 +1,6 @@
 import type { AtLeast, IFreeSwitchChannelEventLeg, ValueOf } from '@rocket.chat/core-typings';
 
-import { filterOutEmptyValues } from './filterOutMissingData';
+import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
 import { parseTimestamp } from './parseTimestamp';
 
@@ -38,6 +38,26 @@ export function parseEventLeg(
 		'Source': source,
 		'Context': context,
 		'Channel-Name': channelName,
+
+		'Dialplan': dialplan,
+		'Profile-Index': profileIndex,
+		'ANI': ani,
+		'RDNIS': rdnis,
+		'Transfer-Source': transferSource,
+		'Screen-Bit': screenBit,
+		'Privacy-Hide-Name': privacyHideName,
+		'Privacy-Hide-Number': privacyHideNumber,
+
+		'Profile-Created-Time': profileCreatedTime,
+		'Channel-Created-Time': channelCreatedTime,
+		'Channel-Answered-Time': channelAnsweredTime,
+		'Channel-Progress-Time': channelProgressTime,
+		'Channel-Bridged-Time': channelBridgedTime,
+		'Channel-Progress-Media-Time': channelProgressMediaTime,
+		'Channel-Hangup-Time': channelHangupTime,
+		'Channel-Transfer-Time': channelTransferTime,
+		'Channel-Resurrect-Time': channelRessurectTime,
+		'Channel-Last-Hold': channelLastHold,
 		...rawLegData
 	} = legData;
 
@@ -46,13 +66,16 @@ export function parseEventLeg(
 	}
 
 	const timestamps: Partial<IFreeSwitchChannelEventLeg> = {
-		profileCreatedTime: parseTimestamp(rawLegData['Profile-Created-Time']),
-		channelCreatedTime: parseTimestamp(rawLegData['Channel-Created-Time']),
-		channelAnsweredTime: parseTimestamp(rawLegData['Channel-Answered-Time']),
-		channelProgressTime: parseTimestamp(rawLegData['Channel-Progress-Time']),
-		channelBridgedTime: parseTimestamp(rawLegData['Channel-Bridged-Time']),
-		channelProgressMediaTime: parseTimestamp(rawLegData['Channel-Progress-Media-Time']),
-		channelHangupTime: parseTimestamp(rawLegData['Channel-Hangup-Time']),
+		profileCreatedTime: parseTimestamp(profileCreatedTime),
+		channelCreatedTime: parseTimestamp(channelCreatedTime),
+		channelAnsweredTime: parseTimestamp(channelAnsweredTime),
+		channelProgressTime: parseTimestamp(channelProgressTime),
+		channelBridgedTime: parseTimestamp(channelBridgedTime),
+		channelProgressMediaTime: parseTimestamp(channelProgressMediaTime),
+		channelHangupTime: parseTimestamp(channelHangupTime),
+		channelTransferTime: parseTimestamp(channelTransferTime),
+		channelRessurectTime: parseTimestamp(channelRessurectTime),
+		channelLastHold: parseTimestamp(channelLastHold),
 	};
 
 	const leg: AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'> = {
@@ -73,9 +96,20 @@ export function parseEventLeg(
 		source,
 		context,
 		channelName,
+		profileIndex,
+		transferSource,
+
 		...timestamps,
+
+		dialplan,
+		ani,
+		rdnis,
+		screenBit,
+		privacyHideName,
+		privacyHideNumber,
+
 		raw: filterOutEmptyValues(rawLegData),
 	};
 
-	return Object.fromEntries(Object.entries(leg).filter(([key]) => leg[key as keyof typeof leg])) as typeof leg;
+	return filterOutMissingData(leg) as typeof leg;
 }

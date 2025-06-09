@@ -9,8 +9,11 @@ function shouldUseOtherLegId(eventData: Record<string, string | undefined>): boo
 		return false;
 	}
 
-	// #ToDo: Confirm if these conditions hold up on calls with extra legs (voicemail, transfered calls...)
-	if (eventData['Caller-Direction'] !== 'outbound' || eventData['Other-Leg-Direction'] !== 'inbound') {
+	// #ToDo: Confirm if these conditions hold up on calls with extra legs (eg. voicemail)
+	if (
+		eventData['Caller-Direction'] !== 'outbound' ||
+		(eventData['Other-Leg-Direction'] !== 'inbound' && eventData['Other-Leg-Logical-Direction'])
+	) {
 		return false;
 	}
 

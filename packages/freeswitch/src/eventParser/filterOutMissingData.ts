@@ -5,8 +5,10 @@ export function filterOutMissingData<T extends Record<string, any>>(data: T): De
 	return objectMap(
 		data,
 		({ key, value }) => {
-			if (!value || value === '0') {
-				return;
+			if (typeof value !== 'boolean') {
+				if (!value || value === '0') {
+					return;
+				}
 			}
 
 			if (typeof value === 'object' && !(value instanceof Date) && !Array.isArray(value) && !Object.keys(value).length) {
