@@ -9233,7 +9233,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mongo-adapter@workspace:packages/mongo-adapter"
   dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
     eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
