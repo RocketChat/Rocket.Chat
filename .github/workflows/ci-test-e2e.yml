@@ -48,7 +48,7 @@ on:
         required: true
         type: string
       db-watcher-disabled:
-        default: 'false'
+        default: 'true'
         required: false
         type: string
     secrets:
@@ -198,20 +198,8 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
-      - name: Cache Playwright binaries
+      - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
-        uses: actions/cache@v4
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.48.2
-
-      - name: Install Playwright
-        if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
-        working-directory: ./apps/meteor
-        run: npx playwright install --with-deps
 
       - name: Wait for Rocket.Chat to start up
         uses: cygnetdigital/wait_for_response@v2.0.0

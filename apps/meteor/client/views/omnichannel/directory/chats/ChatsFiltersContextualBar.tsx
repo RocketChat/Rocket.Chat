@@ -15,6 +15,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import AutoCompleteUnits from '../../../../omnichannel/additionalForms/AutoCompleteUnits';
@@ -60,7 +61,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const formId = useUniqueId();
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='customize' />
 				<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
@@ -114,7 +115,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 							name='department'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments withCheckbox={false} />
+								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments />
 							)}
 						/>
 					</FieldRow>
@@ -188,7 +189,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -5,21 +5,21 @@ import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 
 export class AppSlashCommandRegistrationTestFixture {
-    private mockApp: ProxiedApp;
+	private mockApp: ProxiedApp;
 
-    @SetupFixture
-    public setupFixture() {
-        this.mockApp = {} as ProxiedApp;
-    }
+	@SetupFixture
+	public setupFixture() {
+		this.mockApp = {} as ProxiedApp;
+	}
 
-    @Test()
-    public ensureAppVideoConfManager() {
-        Expect(() => new AppVideoConfProvider(this.mockApp, {} as IVideoConfProvider)).not.toThrow();
+	@Test()
+	public ensureAppVideoConfManager() {
+		Expect(() => new AppVideoConfProvider(this.mockApp, {} as IVideoConfProvider)).not.toThrow();
 
-        const ascr = new AppVideoConfProvider(this.mockApp, {} as IVideoConfProvider);
-        Expect(ascr.isRegistered).toBe(false);
+		const ascr = new AppVideoConfProvider(this.mockApp, {} as IVideoConfProvider);
+		Expect(ascr.isRegistered).toBe(false);
 
-        ascr.hasBeenRegistered();
-        Expect(ascr.isRegistered).toBe(true);
-    }
+		ascr.hasBeenRegistered();
+		Expect(ascr.isRegistered).toBe(true);
+	}
 }

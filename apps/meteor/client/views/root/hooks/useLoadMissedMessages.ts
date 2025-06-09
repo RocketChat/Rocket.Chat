@@ -11,7 +11,10 @@ import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling'
  * @param rid - Room ID
  */
 const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
-	const lastMessage = Messages.findOne({ rid, _hidden: { $ne: true }, temp: { $exists: false } }, { sort: { ts: -1 }, limit: 1 });
+	const lastMessage = Messages.state.findFirst(
+		(record) => record.rid === rid && record._hidden !== true && !record.temp,
+		(a, b) => b.ts.getTime() - a.ts.getTime(),
+	);
 
 	if (!lastMessage) {
 		return;
