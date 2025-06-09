@@ -9,13 +9,13 @@ import { AppSlashCommandManager } from './AppSlashCommandManager';
 import { AppVideoConfProviderManager } from './AppVideoConfProviderManager';
 
 export {
-    AppAccessorManager,
-    AppLicenseManager,
-    AppListenerManager,
-    AppExternalComponentManager,
-    AppSettingsManager,
-    AppSlashCommandManager,
-    AppApiManager,
-    AppSchedulerManager,
-    AppVideoConfProviderManager,
+	AppAccessorManager,
+	AppLicenseManager,
+	AppListenerManager,
+	AppExternalComponentManager,
+	AppSettingsManager,
+	AppSlashCommandManager,
+	AppApiManager,
+	AppSchedulerManager,
+	AppVideoConfProviderManager,
 };

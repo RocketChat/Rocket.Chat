@@ -16,6 +16,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -118,7 +119,7 @@ const ThreadList = () => {
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='thread' />
 				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
@@ -183,7 +184,7 @@ const ThreadList = () => {
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
