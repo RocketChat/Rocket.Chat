@@ -157,12 +157,14 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IOutlook {
+	Enabled: boolean;
+	Exchange_Url: string;
+	Outlook_Url: string;
+}
+
 export interface IUserCalendar {
-	outlook?: {
-		enabled: boolean;
-		exchangeUrl: string;
-		outlookUrl: string;
-	};
+	outlook?: IOutlook;
 }
 
 export interface IUserSettings {
@@ -253,11 +255,6 @@ export interface IRegisterUser extends IUser {
 	username: string;
 	name: string;
 }
-
-export type IUserInfo = IUser & {
-	email?: string;
-	domain?: string;
-};
 
 export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;

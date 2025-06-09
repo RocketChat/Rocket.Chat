@@ -9,7 +9,7 @@ export const useOutlookCalenderRoomAction = () => {
 	const user = useUser();
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!user?.settings?.calendar?.outlook?.enabled) {
+		if (!user?.settings?.calendar?.outlook?.Enabled) {
 			return undefined;
 		}
 
@@ -21,5 +21,5 @@ export const useOutlookCalenderRoomAction = () => {
 			tabComponent: OutlookEventsRoute,
 			order: 999,
 		};
-	}, [user?.settings?.calendar?.outlook?.enabled]);
+	}, [user?.settings?.calendar?.outlook?.Enabled]);
 };

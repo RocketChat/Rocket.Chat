@@ -91,7 +91,7 @@ const PreferencesNotificationsSection = () => {
 	const notifyCalendarEventsId = useId();
 	const enableMobileRingingId = useId();
 
-	const showCalendarPreference = user?.settings?.calendar?.outlook?.enabled;
+	const showCalendarPreference = user?.settings?.calendar?.outlook?.Enabled;
 
 	return (
 		<AccordionItem title={t('Notifications')}>

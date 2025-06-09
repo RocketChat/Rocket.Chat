@@ -1,8 +1,16 @@
-import { isOAuthUser, type IUser, type IUserInfo, type IUserCalendar } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
+
+const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
+	if (!me || !Array.isArray(me.emails)) {
+		return false;
+	}
+
+	return me.emails.find((email) => email.verified);
+};
 
 const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> => {
 	const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
@@ -17,65 +25,50 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	return accumulator;
 };
 
-const getUserCalendar = async (me: IUser): Promise<IUserCalendar> => {
+const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar => {
 	const calendarSettings: IUserCalendar = {};
-	const outlook = {
-		enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
-		exchangeUrl: settings.get<string>('Outlook_Calendar_Exchange_Url'),
-		outlookUrl: settings.get<string>('Outlook_Calendar_Outlook_Url'),
+	const domain = email ? (email.address.split('@').pop() ?? 'default') : 'default';
+	const mapping = {
+		default: {
+			Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
+			Exchange_Url: settings.get<string>('Outlook_Calendar_Exchange_Url'),
+			Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
+		},
+		[domain]: {},
 	};
 
-	const mapping = settings.get<string>('Outlook_Calendar_Url_Mapping');
-	const domain = me.emails
-		?.find((e) => e.verified)
-		?.address?.split('@')
-		?.pop();
-	if (mapping && domain && typeof mapping === 'string' && mapping.trim() !== '') {
-		try {
-			const mappingParsed = JSON.parse(mapping) as Record<
-				string,
-				{
-					Enabled?: boolean;
-					Exchange_Url?: string;
-					Outlook_Url?: string;
-					MeetingUrl_Regex?: string;
-					BusyStatus_Enabled?: string;
-				}
-			>;
+	Object.assign(mapping, JSON.parse(settings.get<string>('Outlook_Calendar_Url_Mapping') || '{}'));
 
-			if (mappingParsed[domain]) {
-				outlook.enabled = mappingParsed[domain].Enabled ?? outlook.enabled;
-				outlook.exchangeUrl = mappingParsed[domain].Exchange_Url ?? outlook.exchangeUrl;
-				outlook.outlookUrl = mappingParsed[domain].Outlook_Url ?? outlook.outlookUrl;
-			}
-		} catch (error) {
-			console.error('Error parsing Outlook Calendar URL mapping:', error);
-		}
+	if (mapping[domain].Enabled ?? mapping.default.Enabled) {
+		calendarSettings.outlook = {
+			Enabled: mapping[domain].Enabled ?? mapping.default.Enabled,
+			Exchange_Url: mapping[domain].Exchange_Url ?? mapping.default.Exchange_Url,
+			Outlook_Url: mapping[domain].Outlook_Url ?? mapping.default.Outlook_Url,
+		};
 	}
-
-	if (outlook.enabled) {
-		calendarSettings.outlook = outlook;
-	}
-
 	return calendarSettings;
 };
 
-export async function getUserInfo(me: IUser): Promise<IUserInfo> {
-	const verifiedEmail = me.emails?.find((e) => e.verified);
-	const calendar = await getUserCalendar(me);
+export async function getUserInfo(me: IUser): Promise<
+	IUser & {
+		email?: string;
+		avatarUrl: string;
+	}
+> {
+	const verifiedEmail = isVerifiedEmail(me);
 
 	const userPreferences = me.settings?.preferences ?? {};
 
 	return {
 		...me,
-		email: verifiedEmail?.address,
+		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
 			preferences: {
 				...(await getUserPreferences(me)),
 				...userPreferences,
 			},
-			calendar,
+			calendar: getUserCalendar(verifiedEmail),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 		isOAuthUser: isOAuthUser(me),

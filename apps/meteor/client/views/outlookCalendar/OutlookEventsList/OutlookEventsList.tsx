@@ -43,7 +43,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
 
-	const outlookUrl = user?.settings?.calendar?.outlook?.outlookUrl;
+	const outlookUrl = user?.settings?.calendar?.outlook?.Outlook_Url;
 
 	return (
 		<ContextualbarDialog>
