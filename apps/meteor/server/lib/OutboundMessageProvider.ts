@@ -1,99 +1,43 @@
-export interface IOutboundMessage {
-	to: string;
-	type: 'template';
-	templateProviderPhoneNumber: string;
-	template: {
-		name: string;
-		language: {
-			code: string;
-			policy?: 'deterministic' | 'fallback';
-		};
-		components?: TemplateComponent[];
-		namespace?: string;
-	};
-}
-
-export type TemplateComponent = {
-	type: 'header' | 'body' | 'footer' | 'button';
-	parameters: TemplateParameter[];
-};
-
-export type TemplateParameter =
-	| {
-			type: 'text';
-			text: string;
-	  }
-	| {
-			type: 'currency';
-			currency: {
-				fallback_value: string;
-				code: string;
-				amount_1000: number;
-			};
-	  }
-	| {
-			type: 'date_time';
-			date_time: {
-				fallback_value: string;
-				timestamp?: number;
-				day_of_week?: number;
-				day_of_month?: number;
-				year?: number;
-				month?: number;
-				hour?: number;
-				minute?: number;
-			};
-	  }
-	| {
-			type: 'media';
-			link: string;
-	  };
-
-export type ProviderMetadata = {
-	appId: string;
-	appName: string;
-	providerType: 'phone' | 'email';
-	usesTemplates: boolean;
-	templates: Record<string, IOutboundMessageTemplate[]>;
-};
-
-export interface IOutboundMessagePhoneProvider {
-	type: 'phone';
-	name: string;
-	sendOutboundMessage(message: IOutboundMessage): Promise<void>;
-	getProviderMetadata(): Promise<ProviderMetadata>;
-}
-
-/*
- * @ignore - Not implemented yet
- */
-export interface IOutboundMessageEmailProvider {
-	type: 'email';
-	name: string;
-	sendOutboundMessage(message: IOutboundMessage): Promise<boolean>;
-}
+import type { OutboundComms } from '@rocket.chat/core-typings';
 
 export interface IOutboundMessageProvider {
-	registerProvider(provider: any): void;
-	unregisterProvider(provider: any): void;
-	// providePhoneNumber(provider: IOutboundPhoneMessagePrpvoder): void;
-	// provideEmail(provider: IOutboudEmailMessageProvider): void;
-	// getOutboundMessageProviders(): IOutboundMessageProvider[];
+	providePhoneNumber(provider: OutboundComms.IOutboundMessagePhoneProvider): void;
+	provideEmail(provider: OutboundComms.IOutboundMessageEmailProvider): void;
+	// getOutboundMessageProviders(type?: 'phone' | 'email'): IOutboundMessageProvider[];
+	unregisterProvider(appId: string, providerType: string): void;
 }
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {
-	private readonly outboundMessageProviders: Map<'phone' | 'email', (IOutboundMessagePhoneProvider | IOutboundMessageEmailProvider)[]>;
+	private readonly outboundMessageProviders: Map<
+		'phone' | 'email',
+		(OutboundComms.IOutboundMessagePhoneProvider | OutboundComms.IOutboundMessageEmailProvider)[]
+	>;
 
-	public registerProvider(provider: any): void {
+	public providePhoneNumber(provider: OutboundComms.IOutboundMessagePhoneProvider) {
 		this.outboundMessageProviders.set('phone', [...(this.outboundMessageProviders.get('phone') || []), provider]);
 	}
 
-	public unregisterProvider(provider: any): void {
-		const index = this.outboundMessageProviders.get(provider);
-		if (!index) {
+	public provideEmail(provider: OutboundComms.IOutboundMessageEmailProvider) {
+		this.outboundMessageProviders.set('email', [...(this.outboundMessageProviders.get('email') || []), provider]);
+	}
+
+	// public getOutboundMessageProviders(type?: 'phone' | 'email'): IOutboundMessageProvider[] {
+	// 	if (type) {
+	// 		return this.outboundMessageProviders.get(type);
+	// 	}
+	//
+	// 	return Array.from(this.outboundMessageProviders.values()).flat();
+	// }
+
+	public unregisterProvider(appId: string, providerType: 'phone' | 'email'): void {
+		const providers = this.outboundMessageProviders.get(providerType);
+		if (!providers) {
 			return;
 		}
 
-		this.outboundMessageProviders.delete(provider);
+		const index = providers.findIndex((provider) => provider.appId === appId);
+		if (index === -1) {
+			providers.splice(index, 1);
+		}
 	}
 }
