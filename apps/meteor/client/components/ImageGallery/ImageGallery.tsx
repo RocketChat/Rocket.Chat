@@ -122,7 +122,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	return createPortal(
 		<>
 			<PaletteStyleTag theme='dark' selector='.swiper-container.image-gallery' tagId='image-gallery-palette' />
-			<FocusScope contain autoFocus restoreFocus>
+			<FocusScope contain autoFocus>
 				<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
 					<div role='presentation' className='swiper-container image-gallery' onClick={onClose}>
 						<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>

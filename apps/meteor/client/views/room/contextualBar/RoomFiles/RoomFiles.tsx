@@ -2,7 +2,7 @@ import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -111,4 +111,4 @@ const RoomFiles = ({
 	);
 };
 
-export default memo(RoomFiles);
+export default RoomFiles;

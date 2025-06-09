@@ -1,6 +1,5 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { memo } from 'react';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -61,4 +60,4 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	);
 };
 
-export default memo(FileItem);
+export default FileItem;

@@ -1,6 +1,4 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import { forwardRef } from 'react';
 
 type ImageItemProps = {
 	id: string;
@@ -8,11 +6,11 @@ type ImageItemProps = {
 	name: string | undefined;
 	timestamp: string;
 	username?: string;
-} & ComponentProps<typeof Box>;
+};
 
-const ImageItem = forwardRef<HTMLElement, ImageItemProps>(function ImageItem({ id, url, name, timestamp, username }: ImageItemProps, ref) {
+const ImageItem = ({ id, url, name, timestamp, username }: ImageItemProps) => {
 	return (
-		<Box minWidth={0} data-id={id} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1} ref={ref}>
+		<Box minWidth={0} data-id={id} className='gallery-item-container' title={name} display='flex' flexGrow={1} flexShrink={1}>
 			{url && (
 				<Box minWidth='x48'>
 					<Avatar size='x48' url={url} className='gallery-item' />
@@ -35,6 +33,6 @@ const ImageItem = forwardRef<HTMLElement, ImageItemProps>(function ImageItem({ i
 			</Box>
 		</Box>
 	);
-});
+};
 
 export default ImageItem;
