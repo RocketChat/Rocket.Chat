@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Box,
 	Button,
@@ -16,6 +17,7 @@ import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useEndpoint,
+	useLayout,
 	useMethod,
 	useToastMessageDispatch,
 	useTranslation,
@@ -35,21 +37,18 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { BIO_TEXT_MAX_LENGTH, USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
-function getAriaDescribedbyForName(nameError: boolean, allowRealNameChange: boolean, nameId: string) {
-	const errors = [];
-	if (nameError) {
-		errors.push(`${nameId}-error`);
-	}
-	if (!allowRealNameChange) {
-		errors.push(`${nameId}-hint`);
-	}
-	return errors.length ? errors.join(' ') : undefined;
+function getAriaDescribedByList(data: { include: boolean; name: string }[]) {
+	return data
+		.filter((item) => item.include)
+		.map((item) => item.name)
+		.join(' ');
 }
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
@@ -168,8 +167,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-				<Box display='flex' flexDirection='row' justifyContent='space-between'>
-					<Field mie={8} flexShrink={1}>
+				<Box
+					display='flex'
+					flexDirection={isMobile ? 'column' : 'row'}
+					alignItems='stretch'
+					justifyContent='space-between'
+					className={[
+						css`
+							gap: 16px;
+						`,
+					]}
+				>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
 						</FieldLabel>
@@ -188,7 +197,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 										disabled={!allowRealNameChange}
 										aria-required='true'
 										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={getAriaDescribedbyForName(!!errors.name, allowRealNameChange, nameId)}
+										aria-describedby={getAriaDescribedByList([
+											{
+												include: !!errors.name,
+												name: `${nameId}-error`,
+											},
+											{ include: !allowRealNameChange, name: `${nameId}-hint` },
+										])}
 									/>
 								)}
 							/>
@@ -200,7 +215,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
-					<Field mis={8} flexShrink={1}>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
 						</FieldLabel>
@@ -221,7 +236,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 										addon={<Icon name='at' size='x20' />}
 										aria-required='true'
 										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${usernameId}-error ${usernameId}-hint`}
+										aria-describedby={getAriaDescribedByList([
+											{
+												include: !!errors?.username,
+												name: `${usernameId}-error`,
+											},
+											{ include: !canChangeUsername, name: `${usernameId}-hint` },
+										])}
 									/>
 								)}
 							/>
@@ -255,7 +276,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									flexGrow={1}
 									placeholder={t('StatusMessage_Placeholder')}
 									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
+									aria-describedby={getAriaDescribedByList([
+										{
+											include: !!errors?.statusText,
+											name: `${statusTextId}-error`,
+										},
+										{ include: !allowUserStatusMessageChange, name: `${statusTextId}-hint` },
+									])}
 									addon={
 										<Controller
 											control={control}
@@ -270,11 +297,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						/>
 					</FieldRow>
 					{errors?.statusText && (
-						<FieldError aria-live='assertive' id={`${statusTextId}-error`}>
+						<FieldError aria-live='assertive' id={`${statusTextId} - error`}>
 							{errors?.statusText.message}
 						</FieldError>
 					)}
-					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId}-hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
+					{!allowUserStatusMessageChange && <FieldHint id={`${statusTextId} - hint`}>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
 				<Field>
 					<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
@@ -304,7 +331,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									flexGrow={1}
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
 									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${bioId}-error`}
+									aria-describedby={getAriaDescribedByList([{ include: !!errors?.bio, name: `${bioId}-error` }])}
 								/>
 							)}
 						/>
@@ -319,7 +346,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
 					</FieldLabel>
-					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
+					<FieldRow
+						display='flex'
+						flexDirection={isMobile ? 'column' : 'row'}
+						alignItems='stretch'
+						justifyContent='space-between'
+						className={css`
+							gap: 8px;
+						`}
+					>
 						<Controller
 							control={control}
 							name='email'
@@ -337,12 +372,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									disabled={!allowEmailChange}
 									aria-required='true'
 									aria-invalid={errors.email ? 'true' : 'false'}
-									aria-describedby={`${emailId}-error ${emailId}-hint`}
+									aria-describedby={getAriaDescribedByList([
+										{
+											include: !!errors.email,
+											name: `${emailId}-error`,
+										},
+										{ include: !allowEmailChange, name: `${emailId}-hint` },
+									])}
 								/>
 							)}
 						/>
 						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
+							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
 								{t('Resend_verification_email')}
 							</Button>
 						)}
