@@ -48,7 +48,7 @@ export const processWebhookMessage = async function (
 	for await (const channel of channels) {
 		const channelType = channel[0];
 
-		let channelValue = channel.substr(1);
+		let channelValue = channel.slice(1);
 		let room;
 
 		switch (channelType) {
