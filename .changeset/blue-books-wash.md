@@ -3,4 +3,4 @@
 "@rocket.chat/rest-typings": patch
 ---
 
-Fixes the AJV schema for `departmentId/agents` endpoint that's missing the `name` property
+Fixes an issue that prevented the action of saving an agent when editing a department to work.
