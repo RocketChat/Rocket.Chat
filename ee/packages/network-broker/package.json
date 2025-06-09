@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.2.1-rc.0",
+	"version": "0.2.3",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -12,7 +12,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"sinon": "^19.0.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint src",

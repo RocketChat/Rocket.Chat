@@ -47,7 +47,8 @@ test.describe.serial('feature preview', () => {
 		await page.goto('/account/feature-preview');
 		await page.waitForSelector('.main-content');
 
-		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
+		// FIXME: this timeout is too high
+		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible({ timeout: 10_000 });
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 

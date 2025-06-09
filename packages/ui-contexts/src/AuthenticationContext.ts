@@ -11,6 +11,9 @@ export type AuthenticationContextValue = {
 	loginWithToken: (user: string) => Promise<void>;
 
 	loginWithService<T extends LoginServiceConfiguration>(service: T): () => Promise<true>;
+	loginWithIframe: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
+	loginWithTokenRoute: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
+	unstoreLoginToken: (callback: () => void) => () => void;
 
 	queryLoginServices: {
 		getCurrentValue: () => LoginService[];
@@ -22,6 +25,9 @@ export const AuthenticationContext = createContext<AuthenticationContextValue>({
 	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
 	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
 	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
+	loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
+	loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+	unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 
 	queryLoginServices: {
 		getCurrentValue: () => [],

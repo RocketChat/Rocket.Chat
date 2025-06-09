@@ -13,7 +13,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -91,7 +90,6 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		AssetsEndpoints,
-		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		MailerEndpoints,
 		WebdavEndpoints,
@@ -227,7 +225,6 @@ export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customUserStatus';
-export * from './v1/customSounds';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';

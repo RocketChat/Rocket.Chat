@@ -48,7 +48,7 @@ on:
         required: true
         type: string
       db-watcher-disabled:
-        default: 'false'
+        default: 'true'
         required: false
         type: string
     secrets:

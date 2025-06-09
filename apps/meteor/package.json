@@ -214,7 +214,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.26.0",
@@ -248,7 +248,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",
-		"@rocket.chat/fuselage": "^0.62.2",
+		"@rocket.chat/fuselage": "^0.62.3",
 		"@rocket.chat/fuselage-hooks": "~0.35.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-toastbar": "^0.35.0",
@@ -259,7 +259,7 @@
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/instance-status": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
-		"@rocket.chat/layout": "^0.32.1",
+		"@rocket.chat/layout": "^0.33.0",
 		"@rocket.chat/license": "workspace:^",
 		"@rocket.chat/log-format": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
@@ -436,7 +436,7 @@
 		"tinykeys": "^1.4.0",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "~6.12.2",
+		"typia": "~9.3.1",
 		"ua-parser-js": "^1.0.39",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

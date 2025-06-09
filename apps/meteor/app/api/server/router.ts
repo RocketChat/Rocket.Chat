@@ -144,6 +144,9 @@ export class Router<
 				parsedBody = await request.raw.clone().json();
 			} else if (contentType?.includes('multipart/form-data')) {
 				parsedBody = await request.raw.clone().formData();
+			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
+				const req = await request.raw.clone().formData();
+				parsedBody = Object.fromEntries(req.entries());
 			} else {
 				parsedBody = await request.raw.clone().text();
 			}

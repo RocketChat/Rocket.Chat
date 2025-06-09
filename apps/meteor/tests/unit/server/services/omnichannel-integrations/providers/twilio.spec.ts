@@ -89,10 +89,9 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.true;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});
 
 	it('should validate a request when query string is present', async () => {
@@ -109,7 +108,7 @@ describe('Twilio Request Validation', () => {
 		};
 
 		const request = {
-			url: '/api/v1/livechat/sms-incoming/twilio?department=1',
+			url: 'https://example.com/api/v1/livechat/sms-incoming/twilio?department=1',
 			headers: {
 				get: (param: string) => {
 					const headers: Record<string, any> = {
@@ -119,10 +118,9 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.true;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});
 
 	it('should reject a request where signature doesnt match', async () => {
@@ -146,10 +144,9 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.false;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
 
 	it('should reject a request where signature is missing', async () => {
@@ -167,10 +164,9 @@ describe('Twilio Request Validation', () => {
 			headers: {
 				get: () => null,
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.false;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
 
 	it('should reject a request where the signature doesnt correspond body', async () => {
@@ -194,10 +190,9 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.false;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
 
 	it('should return false if URL is not provided', async () => {
@@ -223,10 +218,9 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.false;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
 
 	it('should return false if authToken is not provided', async () => {
@@ -252,9 +246,38 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-			json: () => requestBody,
 		};
 
-		expect(await twilio.validateRequest(request)).to.be.false;
+		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
+	});
+
+	// Twilio signature will always use the workspace public URL, which may difer from the request URL in some circumstances.
+	it('should use siteURL instead of request.url hostname', async () => {
+		process.env.TEST_MODE = 'false';
+
+		settingsStub.get.withArgs('SMS_Twilio_authToken').returns('test');
+		settingsStub.get.withArgs('Site_Url').returns('https://ngrok.barn.com');
+
+		const twilio = new Twilio();
+		const requestBody = {
+			To: 'test',
+			From: 'test',
+			Body: 'test',
+		};
+
+		const request = {
+			url: 'https://example.com/api/v1/livechat/sms-incoming/twilio',
+			headers: {
+				get: (param: string) => {
+					const headers: Record<string, any> = {
+						'x-twilio-signature': getSignature('test', 'https://ngrok.barn.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+					};
+
+					return headers[param];
+				},
+			},
+		};
+
+		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});
 });

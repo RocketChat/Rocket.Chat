@@ -1,4 +1,5 @@
-import i18nDict, { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
+import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
+import i18nDict from '@rocket.chat/i18n/dist/resources';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 

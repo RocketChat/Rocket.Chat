@@ -5,19 +5,19 @@ import type { IUser } from './IUser';
  * - IPostUserStatusChanged
  */
 export interface IUserStatusContext {
-    /**
-     * The user that the status
-     * was changed
-     */
-    user: IUser;
-    /**
-     * The new status set by the
-     * user
-     */
-    currentStatus: string;
-    /**
-     * The status previous the
-     * change
-     */
-    previousStatus: string;
+	/**
+	 * The user that the status
+	 * was changed
+	 */
+	user: IUser;
+	/**
+	 * The new status set by the
+	 * user
+	 */
+	currentStatus: string;
+	/**
+	 * The status previous the
+	 * change
+	 */
+	previousStatus: string;
 }
