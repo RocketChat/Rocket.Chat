@@ -227,7 +227,10 @@ class RoomHistoryManagerClass extends Emitter {
 
 		room.isLoading.set(true);
 
-		const lastMessage = Messages.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
+		const lastMessage = Messages.state.findFirst(
+			(record) => record.rid === rid && record._hidden !== true,
+			(a, b) => b.ts.getTime() - a.ts.getTime(),
+		);
 
 		const subscription = Subscriptions.findOne({ rid });
 
@@ -278,13 +281,13 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public close(rid: IRoom['_id']) {
-		Messages.remove({ rid });
+		Messages.state.remove((record) => record.rid === rid);
 		delete this.histories[rid];
 	}
 
 	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		Messages.remove({ rid });
+		Messages.state.remove((record) => record.rid === rid);
 		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
@@ -297,7 +300,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const messageAlreadyLoaded = Boolean(Messages.findOne({ _id: message._id, _hidden: { $ne: true } }));
+		const messageAlreadyLoaded = Messages.state.some((record) => record._id === message._id && record._hidden !== true);
 
 		if (messageAlreadyLoaded) {
 			return;
