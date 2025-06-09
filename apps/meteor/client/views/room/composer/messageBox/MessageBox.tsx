@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -45,7 +46,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -123,9 +123,8 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -279,7 +278,7 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
+	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
 
@@ -351,7 +350,14 @@ const MessageBox = ({
 		),
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(
+		popup.callbackRef,
+		textareaRef,
+		autoGrowRef,
+		callbackRef,
+		autofocusRef,
+		keyDownHandlerCallbackRef,
+	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 	const shouldDisableDueUploads = !hasUploads || isUploading;
@@ -407,7 +413,6 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
-				<div ref={shadowRef} style={shadowStyle} />
 				{hasUploads && (
 					<MessageComposerFileArea
 						uploads={uploads}

@@ -1,5 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { Filter } from '@rocket.chat/mongo-adapter';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
@@ -50,7 +51,7 @@ function close(typeName: string) {
 
 		if (rid) {
 			RoomManager.close(rid);
-			return RoomHistoryManager.clear(rid);
+			return RoomHistoryManager.close(rid);
 		}
 	}
 }
@@ -93,8 +94,6 @@ const computation = Tracker.autorun(() => {
 
 			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
 
-			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
-
 			if (room) {
 				if (record.streamActive !== true) {
 					void sdk
@@ -106,7 +105,8 @@ const computation = Tracker.autorun(() => {
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
 								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
-								const isNew = !Messages.findOne({ _id: msg._id, temp: { $ne: true } });
+								const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
+								({ _id: msg._id, temp: { $ne: true } });
 								await upsertMessage({ msg, subscription });
 
 								if (isNew) {
@@ -139,17 +139,20 @@ const computation = Tracker.autorun(() => {
 					});
 
 					sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
-						Messages.remove({ _id: msg._id });
+						Messages.state.delete(msg._id);
 
 						// remove thread refenrece from deleted message
-						Messages.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+						Messages.state.update(
+							(record) => record.tmid === msg._id,
+							({ tmid: _, ...record }) => record,
+						);
 					});
 
 					sdk.stream(
 						'notify-room',
 						[`${record.rid}/deleteMessageBulk`],
 						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-							const query: Mongo.Selector<IMessage> = { rid };
+							const query: Filter<IMessage> = { rid };
 
 							if (ids) {
 								query._id = { $in: ids };
@@ -166,44 +169,36 @@ const computation = Tracker.autorun(() => {
 								query['u.username'] = { $in: users };
 							}
 
+							const predicate = createPredicateFromFilter(query);
+
 							if (showDeletedStatus) {
-								return Messages.update(
-									query,
-									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
-									{ multi: true },
-								);
+								return Messages.state.update(predicate, (record) => ({
+									...record,
+									t: 'rm',
+									msg: '',
+									urls: [],
+									mentions: [],
+									attachments: [],
+									reactions: {},
+								}));
 							}
-							return Messages.remove(query);
+
+							return Messages.state.remove(predicate);
 						},
 					);
 
 					sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
 						if (tmid) {
-							return Messages.update(
-								{
-									tmid,
-									unread: true,
-								},
-								{ $unset: { unread: 1 } },
-								{ multi: true },
+							Messages.state.update(
+								(record) => record.tmid === tmid && record.unread === true,
+								({ unread: _, ...record }) => record,
 							);
+							return;
 						}
-						Messages.update(
-							{
-								rid: record.rid,
-								unread: true,
-								ts: { $lt: until },
-								$or: [
-									{
-										tmid: { $exists: false },
-									},
-									{
-										tshow: true,
-									},
-								],
-							},
-							{ $unset: { unread: 1 } },
-							{ multi: true },
+						Messages.state.update(
+							(r) =>
+								r.rid === record.rid && r.unread === true && r.ts.getTime() < until.getTime() && (r.tmid === undefined || r.tshow === true),
+							({ unread: _, ...r }) => r,
 						);
 					});
 				}

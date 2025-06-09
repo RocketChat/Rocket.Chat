@@ -34,7 +34,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 			<Box display='flex' flexDirection='column' height='100%'>
 				<Modal.Header>
 					<Modal.Title id={`${fileUploadFormId}-title`}>{t('FileUpload')}</Modal.Title>
-					<Modal.Close tabIndex={-1} onClick={onClose} />
+					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>

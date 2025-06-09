@@ -27,7 +27,7 @@ test.describe.serial('file-upload', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('should cancel upload', async () => {
+	test('should successfully cancel upload', async () => {
 		const fileName = 'any_file.txt';
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.getFileComposerByName(fileName).getByRole('button', { name: 'Close' }).click();
@@ -35,7 +35,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.getFileComposerByName(fileName)).not.toBeVisible();
 	});
 
-	test('should dismiss edit upload modal', async () => {
+	test('should not display modal when clicking in send file', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
 		await poHomeChannel.content.btnCancelUpdateFileUpload.click();
