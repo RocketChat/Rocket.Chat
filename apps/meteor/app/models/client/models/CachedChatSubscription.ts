@@ -33,7 +33,7 @@ class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoo
 	}
 
 	private mergeWithRoom(subscription: ISubscription): SubscriptionWithRoom {
-		const room = CachedChatRoom.collection.store.find((record) => record._id === subscription.rid);
+		const room = CachedChatRoom.collection.state.find((record) => record._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
