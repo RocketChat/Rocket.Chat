@@ -1,6 +1,6 @@
 import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
-import type Moleculer from 'moleculer';
+import Moleculer from 'moleculer';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
@@ -144,6 +144,8 @@ export function startBroker(options: Moleculer.BrokerOptions = {}): NetworkBroke
 			maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
 		},
 
+		// eslint-disable-next-line new-cap
+		middlewares: [Moleculer.Middlewares.Transmit.Compression({ method: 'gzip' })],
 		errorRegenerator: new CustomRegenerator(),
 		started(): void {
 			console.log('NetworkBroker started successfully.');
