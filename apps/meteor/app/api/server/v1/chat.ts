@@ -269,7 +269,6 @@ const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
 		authRequired: true,
-		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
 		response: {
 			400: ajv.compile({
