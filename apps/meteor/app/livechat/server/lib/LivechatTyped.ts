@@ -117,7 +117,10 @@ class LivechatClass {
 		}
 
 		if (department) {
-			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(
+				department,
+				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			);
 			if (onlineForDep || skipFallbackCheck) {
 				return onlineForDep;
 			}

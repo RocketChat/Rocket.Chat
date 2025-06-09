@@ -37,8 +37,13 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 
 		return undefined;
 	}
-
-	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
+	return normalizeDefaultAgent(
+		await Users.findOneOnlineAgentByUserList(
+			username || [],
+			{ projection: { _id: 1, username: 1 } },
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		),
+	);
 };
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
@@ -152,7 +157,11 @@ callbacks.add(
 			return undefined;
 		}
 		const lastRoomAgent = normalizeDefaultAgent(
-			await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
+			await Users.findOneOnlineAgentByUserList(
+				usernameByRoom,
+				{ projection: { _id: 1, username: 1 } },
+				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			),
 		);
 		return lastRoomAgent;
 	},
