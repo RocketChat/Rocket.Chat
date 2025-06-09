@@ -5,12 +5,10 @@ import {
 	StatesActions,
 	StatesIcon,
 	StatesTitle,
-	ContextualbarFooter,
 	FieldGroup,
 	Field,
 	FieldLabel,
 	FieldRow,
-	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,8 +16,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
-import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
+import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
@@ -70,10 +69,13 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	}
 
+	if (isLoading) {
+		return <FormSkeleton />;
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoading && <ContextualbarSkeleton />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (

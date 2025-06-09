@@ -2,33 +2,33 @@ import type { RocketChatAssociationModel } from '../metadata';
 import type { AppVideoConference } from '../videoConferences';
 
 export interface IVideoConferenceBuilder {
-    kind: RocketChatAssociationModel.VIDEO_CONFERENCE;
+	kind: RocketChatAssociationModel.VIDEO_CONFERENCE;
 
-    setData(call: Partial<AppVideoConference>): IVideoConferenceBuilder;
+	setData(call: Partial<AppVideoConference>): IVideoConferenceBuilder;
 
-    setRoomId(rid: string): IVideoConferenceBuilder;
+	setRoomId(rid: string): IVideoConferenceBuilder;
 
-    getRoomId(): string;
+	getRoomId(): string;
 
-    setCreatedBy(userId: string): IVideoConferenceBuilder;
+	setCreatedBy(userId: string): IVideoConferenceBuilder;
 
-    getCreatedBy(): string;
+	getCreatedBy(): string;
 
-    setProviderName(name: string): IVideoConferenceBuilder;
+	setProviderName(name: string): IVideoConferenceBuilder;
 
-    getProviderName(): string;
+	getProviderName(): string;
 
-    setProviderData(data: Record<string, any>): IVideoConferenceBuilder;
+	setProviderData(data: Record<string, any>): IVideoConferenceBuilder;
 
-    getProviderData(): Record<string, any>;
+	getProviderData(): Record<string, any>;
 
-    setTitle(name: string): IVideoConferenceBuilder;
+	setTitle(name: string): IVideoConferenceBuilder;
 
-    getTitle(): string;
+	getTitle(): string;
 
-    setDiscussionRid(rid: string | undefined): IVideoConferenceBuilder;
+	setDiscussionRid(rid: string | undefined): IVideoConferenceBuilder;
 
-    getDiscussionRid(): string | undefined;
+	getDiscussionRid(): string | undefined;
 
-    getVideoConference(): AppVideoConference;
+	getVideoConference(): AppVideoConference;
 }

@@ -1,22 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarSkeleton,
-} from '../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
-type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
+type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
 
-const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
+const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
@@ -32,7 +25,7 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	const handleChange = (): void => {
@@ -45,13 +38,13 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 	};
 
 	return data ? (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<EditRoom room={data as IRoom} onChange={handleChange} onDelete={handleDelete} />
-		</Contextualbar>
+			<EditRoom room={data as IRoom} onChange={handleChange} onDelete={handleDelete} onClose={onClose} />
+		</>
 	) : null;
 };
 

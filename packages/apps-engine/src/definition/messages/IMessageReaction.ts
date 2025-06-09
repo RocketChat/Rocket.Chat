@@ -5,9 +5,9 @@ export type Reaction = `:${string}:`;
  */
 // Note: keeping it as string for compatibility
 export interface IMessageReactions {
-    [emoji: string]: Array<IMessageReaction>;
+	[emoji: string]: Array<IMessageReaction>;
 }
 
 export interface IMessageReaction {
-    usernames?: Array<string>;
+	usernames?: Array<string>;
 }

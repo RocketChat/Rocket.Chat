@@ -3,11 +3,17 @@ import { useEffect, useRef } from 'react';
 
 const events = ['mousemove', 'mousedown', 'touchend', 'touchstart', 'keypress'];
 
-type UseIdleDetectionOptions = {
+export type UseIdleDetectionOptions = {
 	id?: string;
 	time?: number;
 	awayOnWindowBlur?: boolean;
 };
+
+export const DEFAULT_IDLE_DETECTION_OPTIONS = Object.freeze({
+	id: 'useIdleDetection',
+	time: 600_000, // 10 minutes
+	awayOnWindowBlur: false,
+});
 
 /**
  * A hook that detects when the user is idle.
@@ -21,7 +27,11 @@ type UseIdleDetectionOptions = {
  * @param options.time - The time in milliseconds to consider the user idle. Defaults to 600000 ms (10 minutes).
  * @param options.awayOnWindowBlur - A boolean flag to trigger the idle state when the window loses focus. Defaults to false.
  */
-export const useIdleDetection = ({ id = 'useIdleDetection', time = 600000, awayOnWindowBlur = false }: UseIdleDetectionOptions = {}) => {
+export const useIdleDetection = ({
+	id = DEFAULT_IDLE_DETECTION_OPTIONS.id,
+	time = DEFAULT_IDLE_DETECTION_OPTIONS.time,
+	awayOnWindowBlur = DEFAULT_IDLE_DETECTION_OPTIONS.awayOnWindowBlur,
+}: UseIdleDetectionOptions = {}) => {
 	const idleRef = useRef(false);
 
 	const dispatchIdle = useEffectEvent(() => {

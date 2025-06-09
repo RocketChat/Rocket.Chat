@@ -7,12 +7,12 @@ import type { ISlashCommandsModify } from './ISlashCommandsModify';
  * of Rocket.Chat. It is provided during "onEnable" of your App.
  */
 export interface IConfigurationModify {
-    /** Accessor for modifying the settings inside of Rocket.Chat. */
-    readonly serverSettings: IServerSettingsModify;
+	/** Accessor for modifying the settings inside of Rocket.Chat. */
+	readonly serverSettings: IServerSettingsModify;
 
-    /** Accessor for modifying the slash commands inside of Rocket.Chat. */
-    readonly slashCommands: ISlashCommandsModify;
+	/** Accessor for modifying the slash commands inside of Rocket.Chat. */
+	readonly slashCommands: ISlashCommandsModify;
 
-    /** Accessor for modifying schedulers */
-    readonly scheduler: ISchedulerModify;
+	/** Accessor for modifying schedulers */
+	readonly scheduler: ISchedulerModify;
 }

@@ -12,6 +12,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useRoom } from '../../contexts/RoomContext';
 
@@ -95,7 +96,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 	};
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='stopwatch' />
 				<ContextualbarTitle>{t('OTR')}</ContextualbarTitle>
@@ -105,7 +106,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{renderOTRBody()}
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

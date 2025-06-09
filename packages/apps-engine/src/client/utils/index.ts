@@ -3,16 +3,16 @@
  * @param length the length for the generated random string.
  */
 export function randomString(length: number): string {
-    const buffer: Array<string> = [];
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	const buffer: Array<string> = [];
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    for (let i = 0; i < length; i++) {
-        buffer.push(chars[getRandomInt(chars.length)]);
-    }
+	for (let i = 0; i < length; i++) {
+		buffer.push(chars[getRandomInt(chars.length)]);
+	}
 
-    return buffer.join('');
+	return buffer.join('');
 }
 
 function getRandomInt(max: number): number {
-    return Math.floor(Math.random() * Math.floor(max));
+	return Math.floor(Math.random() * Math.floor(max));
 }

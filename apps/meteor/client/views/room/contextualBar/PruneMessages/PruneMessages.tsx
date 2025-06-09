@@ -11,6 +11,7 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarClose,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
@@ -33,7 +34,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 	const attachedCheckboxId = useId();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='eraser' />
 				<ContextualbarTitle>{t('Prune_Messages')}</ContextualbarTitle>
@@ -112,7 +113,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

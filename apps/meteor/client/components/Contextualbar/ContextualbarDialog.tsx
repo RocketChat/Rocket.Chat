@@ -9,18 +9,18 @@ import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
 import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
-type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;
+type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar> & { onClose?: () => void };
 
 /**
- * TODO: inside administration it should have a mechanism to display the contextualbar programmatically
- * @prop closeTab only work inside a room
+ * @prop onClose can be used to close contextualbar outside the room context with ESC key
  * */
-const ContextualbarDialog = (props: ContextualbarDialogProps) => {
+const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) => {
 	const ref = useRef<HTMLElement | null>(null);
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
 	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
+	const closeContextualbar = onClose ?? closeTab;
 
 	const callbackRef = useCallback(
 		(node: HTMLElement | null) => {
@@ -31,11 +31,11 @@ const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 			ref.current = node;
 			node.addEventListener('keydown', (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
-					closeTab();
+					closeContextualbar();
 				}
 			});
 		},
-		[closeTab],
+		[closeContextualbar],
 	);
 
 	return (

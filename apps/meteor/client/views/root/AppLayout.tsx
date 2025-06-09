@@ -19,6 +19,7 @@ import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
+import { useIframeLoginListener } from '../../hooks/iframe/useIframeLoginListener';
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
@@ -37,6 +38,7 @@ const AppLayout = () => {
 		};
 	}, []);
 
+	useIframeLoginListener();
 	useMessageLinkClicks();
 	useGoogleTagManager();
 	useAnalytics();

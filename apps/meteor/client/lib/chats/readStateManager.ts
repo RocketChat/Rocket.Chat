@@ -74,21 +74,10 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		const firstUnreadRecord = Messages.findOne(
-			{
-				'rid': this.subscription.rid,
-				'ts': {
-					$gt: this.subscription.ls,
-				},
-				'u._id': {
-					$ne: Meteor.userId() ?? undefined,
-				},
-			},
-			{
-				sort: {
-					ts: 1,
-				},
-			},
+		const firstUnreadRecord = Messages.state.findFirst(
+			(record) =>
+				record.rid === this.subscription?.rid && record.ts.getTime() > this.subscription.ls.getTime() && record.u._id !== Meteor.userId(),
+			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 
 		this.setFirstUnreadRecordId(firstUnreadRecord?._id);

@@ -88,9 +88,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterAll(async () => {
-			await agent.delete();
-			await poAuxContext.page.close();
-			await page.close();
+			await Promise.all([poAuxContext.page.close(), agent.delete(), page.close()]);
 		});
 
 		test('OC - Livechat API - Open and Close widget', async () => {
@@ -255,9 +253,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterEach(async () => {
-			await poAuxContext.page.close();
-			await page.close();
-			await pageContext?.close();
+			await Promise.all([poAuxContext.page.close(), page.close(), pageContext?.close()]);
 		});
 
 		test.afterAll(async ({ api }) => {
