@@ -12,7 +12,7 @@ export enum AppMethod {
 	_VIDEOCONF_CHANGED = 'onVideoConferenceChanged',
 	_VIDEOCONF_USER_JOINED = 'onUserJoin',
 	_VIDEOCONF_GET_INFO = 'getVideoConferenceInfo',
- 	// Outbound communication provider methods
+	// Outbound communication provider methods
 	_OUTBOUND_GET_PROVIDER_METADATA = 'getProviderMetadata',
 	_OUTBOUND_SEND_MESSAGE = 'sendOutboundMessage',
 
