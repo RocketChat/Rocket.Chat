@@ -8,8 +8,8 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../NavBarV2';
 import Sidebar from '../../../sidebarv2';
-import SidePanel from '../../../sidepanel';
-import RoomsNavigationContextProvider from '../../navigation/providers/RoomsNavigationProvider';
+import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
+import SidePanel from '../../navigation/sidepanel';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -53,10 +53,10 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 			>
 				<MainLayoutStyleTags />
 				{!removeSidenav && (
-					<RoomsNavigationContextProvider>
+					<RoomsNavigationProvider>
 						<Sidebar />
 						<SidePanel />
-					</RoomsNavigationContextProvider>
+					</RoomsNavigationProvider>
 				)}
 				<main
 					id='main-content'
