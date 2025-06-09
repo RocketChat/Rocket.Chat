@@ -3,11 +3,15 @@ import { License } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
+import { HomeserverService } from '../../../server/services/homeserver/service';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
-import { FederationServiceEE } from '../local-services/federation/service';
 import '../api/federation';
+import '../api/homeserver';
+import { startHomeserverIntegration } from './homeserver';
+import { FederationServiceEE } from '../local-services/federation/service';
+import { HomeserverServiceEE } from '../local-services/homeserver/service';
 import { InstanceService } from '../local-services/instance/service';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { MessageReadsService } from '../local-services/message-reads/service';
@@ -42,3 +46,23 @@ export const startFederationService = async (): Promise<void> => {
 		api.registerService(federationServiceEE);
 	});
 };
+
+export const startHomeserverService = async (): Promise<void> => {
+	let homeserverService: HomeserverService;
+
+	if (!License.hasValidLicense()) {
+		homeserverService = await HomeserverService.createHomeserverService();
+		api.registerService(homeserverService);
+	}
+
+	void License.onLicense('federation', async () => {
+		const homeserverServiceEE = await HomeserverServiceEE.createHomeserverService();
+		if (homeserverService) {
+			await api.destroyService(homeserverService);
+		}
+		api.registerService(homeserverServiceEE);
+	});
+};
+
+// Start the TSyringe-based homeserver integration
+void startHomeserverIntegration();

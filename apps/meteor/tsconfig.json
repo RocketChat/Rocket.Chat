@@ -24,13 +24,13 @@
 			"/*": ["*"],
 			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
 		},
-		"preserveSymlinks": true
+		"preserveSymlinks": true,
 
 		// "sourceMap": true,
 		// "declaration": true,
 		// "removeComments": false,
-		// "emitDecoratorMetadata": true,
-		// "experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
 	},
 	"include": [
 		"./**/*",

@@ -1,5 +1,7 @@
-import './tracing';
+import 'reflect-metadata';
+
 import './models';
+import './tracing';
 
 /**
  * ./settings uses top level await, in theory the settings creation
@@ -7,22 +9,22 @@ import './models';
  */
 import './settings';
 
-import { configureServer } from './configuration';
-import { registerServices } from './services/startup';
-import { startup } from './startup';
 import { startRestAPI } from '../app/api/server/api';
 import { settings } from '../app/settings/server';
 import { startupApp } from '../ee/server';
 import { startRocketChat } from '../startRocketChat';
+import { configureServer } from './configuration';
+import { registerServices } from './services/startup';
+import { startup } from './startup';
 
-import './routes';
 import '../app/lib/server/startup';
+import '../lib/oauthRedirectUriServer';
+import './features/EmailInbox/index';
 import './importPackages';
+import './lib/pushConfig';
 import './methods';
 import './publications';
-import '../lib/oauthRedirectUriServer';
-import './lib/pushConfig';
-import './features/EmailInbox/index';
+import './routes';
 
 await Promise.all([configureServer(settings), registerServices(), startup()]);
 

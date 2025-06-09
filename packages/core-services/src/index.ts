@@ -11,6 +11,7 @@ import type { ICalendarService } from './types/ICalendarService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
+import type { IHomeserverService, IHomeserverServiceEE } from './types/IHomeserverService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
@@ -66,6 +67,12 @@ export {
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from './types/IFederationService';
+
+export {
+	IHomeserverService,
+	IHomeserverServiceEE,
+	IHomeserverConfigurationStatus,
+} from './types/IHomeserverService';
 
 export {
 	ConversationData,
@@ -178,6 +185,8 @@ export const Settings = proxify<ISettingsService>('settings');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');
 export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
+export const Homeserver = proxify<IHomeserverService>('homeserver');
+export const HomeserverEE = proxify<IHomeserverServiceEE>('homeserver-enterprise');
 export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
