@@ -37,6 +37,12 @@ const PreferencesMessagesSection = () => {
 	const hideFlexTabId = useId();
 	const displayAvatarsId = useId();
 	const sendOnEnterId = useId();
+	const messageTimeFormatLabelId = useId();
+	const messageTimeFormatLinkId = useId();
+	const hideUsernamesLabelId = useId();
+	const hideUsernamesLinkId = useId();
+	const hideRolesLabelId = useId();
+	const hideRolesLinkId = useId();
 
 	return (
 		<AccordionItem title={t('Messages')}>
@@ -98,8 +104,16 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel is='span'>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={messageTimeFormatLabelId}>
+						{t('Message_TimeFormat')}
+					</FieldLabel>
+					<FieldLink
+						id={messageTimeFormatLinkId}
+						aria-labelledby={`${messageTimeFormatLabelId} ${messageTimeFormatLinkId}`}
+						href='/account/accessibility-and-appearance'
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
@@ -162,12 +176,28 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel is='span'>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={hideUsernamesLabelId}>
+						{t('Hide_usernames')}
+					</FieldLabel>
+					<FieldLink
+						href='/account/accessibility-and-appearance'
+						id={hideUsernamesLinkId}
+						aria-labelledby={`${hideUsernamesLabelId} ${hideUsernamesLinkId}`}
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
-					<FieldLabel is='span'>{t('Hide_roles')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={hideRolesLabelId}>
+						{t('Hide_roles')}
+					</FieldLabel>
+					<FieldLink
+						id={hideRolesLinkId}
+						aria-labelledby={`${hideRolesLabelId} ${hideRolesLinkId}`}
+						href='/account/accessibility-and-appearance'
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
