@@ -88,7 +88,7 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 			: []),
 	] as GenericMenuItemProps[];
 
-	return <GenericMenu title={t('More')} items={menuOptions} />;
+	return <GenericMenu title={t('More')} aria-label={t('More')} items={menuOptions} placement='bottom-end' />;
 };
 
 export default memo(FileItemMenu);
