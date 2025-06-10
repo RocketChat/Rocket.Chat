@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Improves room files contextualbar web accessibility.
+Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
