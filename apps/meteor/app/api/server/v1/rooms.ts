@@ -44,6 +44,7 @@ import { applyAirGappedRestrictionsValidation } from '../../../license/server/ai
 import type { NotificationFieldType } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { saveNotificationSettingsMethod } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -373,7 +374,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.post(
+const roomsFavoriteEndpoints = API.v1.post(
 	'rooms.favorite',
 	{
 		authRequired: true,
@@ -408,6 +409,7 @@ API.v1.post(
 				properties: {
 					error: { type: 'string' },
 					errorType: { type: 'string' },
+					details: { type: 'object' },
 					success: {
 						type: 'boolean',
 						enum: [false],
@@ -447,6 +449,8 @@ API.v1.post(
 		return API.v1.success();
 	},
 );
+
+export type RoomsFavoriteEndpoints = ExtractRoutesFromAPI<typeof roomsFavoriteEndpoints>;
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
@@ -1061,3 +1065,8 @@ API.v1.addRoute(
 		},
 	},
 );
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RoomsFavoriteEndpoints {}
+}
