@@ -1,12 +1,12 @@
 import type { StoryFn } from '@storybook/react';
 
-import { Collapse } from './Collapse';
 import { CollapseButton } from './CollapseButton';
+import { CollapsiblePanel } from './CollapsiblePanel';
 import { CollapsibleRegion } from './CollapsibleRegion';
 
 export default {
-	title: 'Components/Collapse',
-	component: Collapse,
+	title: 'Components/CollapsiblePanel',
+	component: CollapsiblePanel,
 
 	args: {
 		expanded: true,
@@ -19,7 +19,7 @@ export default {
 
 const Template: StoryFn = (args) => {
 	return (
-		<Collapse>
+		<CollapsiblePanel>
 			<CollapseButton
 				onClick={() => {
 					args.expanded = !args.expanded;
@@ -34,7 +34,7 @@ const Template: StoryFn = (args) => {
 				<button>Click Me</button>
 				<p>More content can go here.</p>
 			</CollapsibleRegion>
-		</Collapse>
+		</CollapsiblePanel>
 	);
 };
 

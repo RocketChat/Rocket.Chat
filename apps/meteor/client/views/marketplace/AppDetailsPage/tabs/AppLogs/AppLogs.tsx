@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
-import { Collapse } from './Components/Collapse';
+import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import AccordionLoading from '../../../components/AccordionLoading';
@@ -26,9 +26,9 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			)}
 			{isSuccess && (
 				<CustomScrollbars>
-					<Collapse width='100%' alignSelf='center'>
+					<CollapsiblePanel width='100%' alignSelf='center'>
 						{data?.logs?.map((log) => <AppLogsItem collapseId={collapseId} key={log._createdAt} {...log} />)}
-					</Collapse>
+					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
 			<Pagination

@@ -2,12 +2,12 @@ import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
 import AppLogsItem from './AppLogsItem';
-import { Collapse } from './Components/Collapse';
+import { CollapsiblePanel } from './Components/CollapsiblePanel';
 
 export default {
 	title: 'Components/AppLogsItem',
 	component: AppLogsItem,
-	decorators: [(fn) => <Collapse style={{ padding: 24 }}>{fn()}</Collapse>],
+	decorators: [(fn) => <CollapsiblePanel style={{ padding: 24 }}>{fn()}</CollapsiblePanel>],
 	args: {
 		_id: '683da1e32025cfca7b3d8238',
 		appId: 'ce0e318b-ffc0-4ce4-832b-f1b464beb22a',
