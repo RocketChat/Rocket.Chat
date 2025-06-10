@@ -1,3 +1,4 @@
+import { is } from './../../../../../../packages/apps-engine/deno-runtime/acorn.d';
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
@@ -374,24 +375,30 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite = {
+	favorite: boolean;
+	roomId?: string;
+	roomName?: string;
+};
+
+const RoomsFavoriteSchema = {
+	type: 'object',
+	properties: {
+		favorite: { type: 'boolean' },
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+	},
+	required: ['favorite'],
+	additionalProperties: false,
+};
+
+export const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
 const roomsFavoriteEndpoints = API.v1.post(
 	'rooms.favorite',
 	{
 		authRequired: true,
-		body: ajv.compile<{
-			favorite: boolean;
-			roomId?: string;
-			roomName?: string;
-		}>({
-			type: 'object',
-			properties: {
-				favorite: { type: 'boolean' },
-				roomId: { type: 'string' },
-				roomName: { type: 'string' },
-			},
-			required: ['favorite'],
-			additionalProperties: false,
-		}),
+		body: isRoomsFavoriteProps,
 		response: {
 			200: ajv.compile({
 				type: 'object',
@@ -435,7 +442,7 @@ const roomsFavoriteEndpoints = API.v1.post(
 			}),
 		},
 	},
-	async function () {
+	async function action() {
 		const { favorite } = this.bodyParams;
 
 		if (!this.bodyParams.hasOwnProperty('favorite')) {
