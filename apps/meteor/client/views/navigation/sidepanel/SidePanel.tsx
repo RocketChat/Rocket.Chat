@@ -1,25 +1,26 @@
 import { Box, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import SidePanelNoResults from './SidePanelNoResults';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
-import GenericNoResults from '../../../components/GenericNoResults';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import RoomSidepanelListWrapper from '../../room/Sidepanel/RoomSidepanelListWrapper';
 import RoomSidepanelItem from '../../room/Sidepanel/SidepanelItem';
+import type { SidePanelFiltersKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
-	headerTitle: TranslationKey;
+	currentTab: SidePanelFiltersKeys;
 	onlyUnreads: boolean;
 	toggleOnlyUnreads: () => void;
 	// TODO: This can also be of type ILivechatInquiryRecord[]
 	rooms: SubscriptionWithRoom[];
 };
 
-const SidePanel = ({ headerTitle, onlyUnreads, toggleOnlyUnreads, rooms }: SidePanelProps) => {
+const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -31,7 +32,7 @@ const SidePanel = ({ headerTitle, onlyUnreads, toggleOnlyUnreads, rooms }: SideP
 	return (
 		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
-				<SidepanelHeaderTitle>{t(headerTitle)}</SidepanelHeaderTitle>
+				<SidepanelHeaderTitle>{t(currentTab)}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
@@ -40,7 +41,7 @@ const SidePanel = ({ headerTitle, onlyUnreads, toggleOnlyUnreads, rooms }: SideP
 				</Box>
 			</SidepanelHeader>
 			<Box pb={8} h='full' ref={ref}>
-				{rooms && rooms.length === 0 && <GenericNoResults />}
+				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} onlyUnreads={onlyUnreads} />}
 				<VirtualizedScrollbars>
 					<Virtuoso
 						totalCount={rooms.length}

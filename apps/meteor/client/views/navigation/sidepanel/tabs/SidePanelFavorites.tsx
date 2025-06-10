@@ -4,7 +4,7 @@ import type { SidePanelFiltersKeys } from '../../contexts/RoomsNavigationContext
 import { useSidePanelRoomsListTab, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
 
-const SidePanelAll = ({ currentTab }: { currentTab: SidePanelFiltersKeys }) => {
+const SidePanelFavorites = ({ currentTab }: { currentTab: SidePanelFiltersKeys }) => {
 	const rooms = useSidePanelRoomsListTab(currentTab);
 	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
 
@@ -18,4 +18,4 @@ const SidePanelAll = ({ currentTab }: { currentTab: SidePanelFiltersKeys }) => {
 	);
 };
 
-export default SidePanelAll;
+export default SidePanelFavorites;
