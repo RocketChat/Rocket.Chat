@@ -44,13 +44,13 @@ type RoomListRowProps = {
 			icon: ReactNode;
 			title: ReactNode;
 			avatar: ReactNode;
-			actions: unknown;
+			actions: ReactNode;
 			href: string;
 			time?: Date;
 			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
-			titleIcon?: string;
+			titleIcon?: ReactNode;
 			badges?: ReactNode;
 			threadUnread?: boolean;
 			unread?: boolean;
