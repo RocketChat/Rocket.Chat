@@ -1,4 +1,3 @@
-import { is } from './../../../../../../packages/apps-engine/deno-runtime/acorn.d';
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
