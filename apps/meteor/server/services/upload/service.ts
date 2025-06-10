@@ -55,16 +55,16 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 			throw new Error('File not found');
 		}
 
-		// if (file?.type?.includes('image') && imageResizeOpts) {
-		// 	const { width, height } = imageResizeOpts;
-		// 	return stream.pipe(
-		// 		sharp()
-		// 			.resize({ width, height, fit: 'contain' })
-		// 			.on('error', (error) => {
-		// 				throw new Error(`Error resizing image: ${error.message}`);
-		// 			}),
-		// 	);
-		// }
+		if (file?.type?.includes('image') && imageResizeOpts) {
+		const { width, height } = imageResizeOpts;
+		return stream.pipe(
+			sharp()
+				.resize({ width, height, fit: 'contain' })
+				.on('error', (error) => {
+					throw new Error(`Error resizing image: ${error.message}`);
+				}),
+		);
+		}
 
 		return stream;
 	}
