@@ -7,90 +7,90 @@ import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { Logger } from '../logger.ts';
 
 describe('Messenger', () => {
-    beforeEach(() => {
-        AppObjectRegistry.clear();
-        AppObjectRegistry.set('logger', new Logger('test'));
-        AppObjectRegistry.set('id', 'test');
-        Messenger.Transport.selectTransport('noop');
-    });
+	beforeEach(() => {
+		AppObjectRegistry.clear();
+		AppObjectRegistry.set('logger', new Logger('test'));
+		AppObjectRegistry.set('id', 'test');
+		Messenger.Transport.selectTransport('noop');
+	});
 
-    afterAll(() => {
-        AppObjectRegistry.clear();
-        Messenger.Transport.selectTransport('stdout');
-    });
+	afterAll(() => {
+		AppObjectRegistry.clear();
+		Messenger.Transport.selectTransport('stdout');
+	});
 
-    it('should add logs to success responses', async () => {
-        const theSpy = spy(Messenger.Queue, 'enqueue');
+	it('should add logs to success responses', async () => {
+		const theSpy = spy(Messenger.Queue, 'enqueue');
 
-        const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
+		const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
 
-        logger.info('test');
+		logger.info('test');
 
-        await Messenger.successResponse({ id: 'test', result: 'test' });
+		await Messenger.successResponse({ id: 'test', result: 'test' });
 
-        assertEquals(theSpy.calls.length, 1);
+		assertEquals(theSpy.calls.length, 1);
 
-        const [responseArgument] = theSpy.calls[0].args;
+		const [responseArgument] = theSpy.calls[0].args;
 
-        assertObjectMatch(responseArgument, {
-            jsonrpc: '2.0',
-            id: 'test',
-            result: {
-                value: 'test',
-                logs: {
-                    appId: 'test',
-                    method: 'test',
-                    entries: [
-                        {
-                            severity: 'info',
-                            method: 'test',
-                            args: ['test'],
-                            caller: 'anonymous OR constructor',
-                        },
-                    ],
-                },
-            },
-        });
+		assertObjectMatch(responseArgument, {
+			jsonrpc: '2.0',
+			id: 'test',
+			result: {
+				value: 'test',
+				logs: {
+					appId: 'test',
+					method: 'test',
+					entries: [
+						{
+							severity: 'info',
+							method: 'test',
+							args: ['test'],
+							caller: 'anonymous OR constructor',
+						},
+					],
+				},
+			},
+		});
 
-        theSpy.restore();
-    });
+		theSpy.restore();
+	});
 
-    it('should add logs to error responses', async () => {
-        const theSpy = spy(Messenger.Queue, 'enqueue');
+	it('should add logs to error responses', async () => {
+		const theSpy = spy(Messenger.Queue, 'enqueue');
 
-        const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
+		const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
 
-        logger.info('test');
+		logger.info('test');
 
-        await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' } });
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' } });
 
-        assertEquals(theSpy.calls.length, 1);
+		assertEquals(theSpy.calls.length, 1);
 
-        const [responseArgument] = theSpy.calls[0].args;
+		const [responseArgument] = theSpy.calls[0].args;
 
-        assertObjectMatch(responseArgument, {
-            jsonrpc: '2.0',
-            id: 'test',
-            error: {
-                code: -32000,
-                message: 'test',
-                data: {
-                    logs: {
-                        appId: 'test',
-                        method: 'test',
-                        entries: [
-                            {
-                                severity: 'info',
-                                method: 'test',
-                                args: ['test'],
-                                caller: 'anonymous OR constructor',
-                            },
-                        ],
-                    },
-                },
-            },
-        });
+		assertObjectMatch(responseArgument, {
+			jsonrpc: '2.0',
+			id: 'test',
+			error: {
+				code: -32000,
+				message: 'test',
+				data: {
+					logs: {
+						appId: 'test',
+						method: 'test',
+						entries: [
+							{
+								severity: 'info',
+								method: 'test',
+								args: ['test'],
+								caller: 'anonymous OR constructor',
+							},
+						],
+					},
+				},
+			},
+		});
 
-        theSpy.restore();
-    });
+		theSpy.restore();
+	});
 });

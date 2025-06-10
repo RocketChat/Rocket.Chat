@@ -109,7 +109,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection.store.replaceAll(deserializedRecords.filter(hasId));
+		this.collection.state.replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -155,7 +155,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 		});
 
-		this.collection.store.storeMany(newRecords);
+		this.collection.state.storeMany(newRecords);
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
@@ -178,7 +178,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.store.records;
+		const data = this.collection.state.records;
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
@@ -193,7 +193,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.store.replaceAll([]);
+		this.collection.state.replaceAll([]);
 	}
 
 	protected async setupListener() {
@@ -211,11 +211,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		}
 
 		if (action === 'removed') {
-			this.collection.store.delete(newRecord);
+			this.collection.state.delete(newRecord._id);
 		} else {
 			const { _id } = newRecord;
 			if (!_id) return;
-			this.collection.store.store(newRecord);
+			this.collection.state.store(newRecord);
 		}
 		await this.save();
 	}
@@ -257,7 +257,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						this.collection.store.store(newRecord);
+						this.collection.state.store(newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -280,7 +280,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.store.delete(newRecord);
+						this.collection.state.delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
