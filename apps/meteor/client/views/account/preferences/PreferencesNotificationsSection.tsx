@@ -122,6 +122,7 @@ const PreferencesNotificationsSection = () => {
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
 								<ToggleSwitch
+									is='div'
 									aria-describedby={`${notificationRequireId}-hint`}
 									id={notificationRequireId}
 									ref={ref}
@@ -189,6 +190,7 @@ const PreferencesNotificationsSection = () => {
 								control={control}
 								render={({ field: { ref, value, onChange } }) => (
 									<ToggleSwitch
+										is='div'
 										aria-describedby={`${receiveLoginDetectionEmailId}-hint`}
 										id={receiveLoginDetectionEmailId}
 										ref={ref}
@@ -209,7 +211,7 @@ const PreferencesNotificationsSection = () => {
 								name='notifyCalendarEvents'
 								control={control}
 								render={({ field: { ref, value, onChange } }) => (
-									<ToggleSwitch id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
+									<ToggleSwitch is='div' id={notifyCalendarEventsId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
 						</FieldRow>
@@ -223,7 +225,7 @@ const PreferencesNotificationsSection = () => {
 								name='enableMobileRinging'
 								control={control}
 								render={({ field: { ref, value, onChange } }) => (
-									<ToggleSwitch id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
+									<ToggleSwitch is='div' id={enableMobileRingingId} ref={ref} checked={value} onChange={onChange} />
 								)}
 							/>
 						</FieldRow>
