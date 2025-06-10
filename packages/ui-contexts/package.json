@@ -15,7 +15,7 @@
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"react": "~18.3.1",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
