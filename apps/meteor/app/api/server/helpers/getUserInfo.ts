@@ -25,27 +25,43 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	return accumulator;
 };
 
+/**
+ * Returns the user's calendar settings based on their email domain and the configured mapping.
+ * If the email is not provided or the domain is not found in the mapping,
+ * it returns the default Outlook calendar settings.
+ * @param email - The user's email object, which may contain the address and verification status.
+ * @returns The calendar settings for the user, including Outlook calendar settings if enabled.
+ */
 const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar => {
 	const calendarSettings: IUserCalendar = {};
-	const domain = email ? (email.address.split('@').pop() ?? 'default') : 'default';
-	const mapping = {
-		default: {
-			Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
-			Exchange_Url: settings.get<string>('Outlook_Calendar_Exchange_Url'),
-			Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
-		},
-		[domain]: {},
+
+	const outlook = {
+		Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
+		Exchange_Url: settings.get<string>('Outlook_Calendar_Exchange_Url'),
+		Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
 	};
 
-	Object.assign(mapping, JSON.parse(settings.get<string>('Outlook_Calendar_Url_Mapping') || '{}'));
+	const domain = email ? email.address.split('@').pop() : undefined;
+	const outlookCalendarUrlMapping = settings.get<string>('Outlook_Calendar_Url_Mapping');
 
-	if (mapping[domain].Enabled ?? mapping.default.Enabled) {
-		calendarSettings.outlook = {
-			Enabled: mapping[domain].Enabled ?? mapping.default.Enabled,
-			Exchange_Url: mapping[domain].Exchange_Url ?? mapping.default.Exchange_Url,
-			Outlook_Url: mapping[domain].Outlook_Url ?? mapping.default.Outlook_Url,
-		};
+	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
+		try {
+			const mappingObject = JSON.parse(outlookCalendarUrlMapping);
+			const mappedSettings = mappingObject[domain];
+			if (mappedSettings) {
+				outlook.Enabled = mappedSettings.Enabled ?? outlook.Enabled;
+				outlook.Exchange_Url = mappedSettings.Exchange_Url ?? outlook.Exchange_Url;
+				outlook.Outlook_Url = mappedSettings.Outlook_Url ?? outlook.Outlook_Url;
+			}
+		} catch (error) {
+			console.error('Invalid Outlook Calendar URL Mapping JSON:', error);
+		}
 	}
+
+	if (outlook.Enabled) {
+		calendarSettings.outlook = outlook;
+	}
+
 	return calendarSettings;
 };
 
