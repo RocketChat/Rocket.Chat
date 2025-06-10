@@ -5,7 +5,7 @@ import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		updateContact: sinon.stub(),
+		updateContactCustomFields: sinon.stub(),
 	},
 };
 
@@ -15,7 +15,7 @@ const { updateContactsCustomFields } = proxyquire.noCallThru().load('../../../..
 
 describe('[Custom Fields] updateContactsCustomFields', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.updateContact.reset();
+		modelsMock.LivechatContacts.updateContactCustomFields.reset();
 	});
 
 	it('should not add conflictingFields to the update data when its nullish', async () => {
@@ -26,13 +26,13 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 			},
 		};
 
-		modelsMock.LivechatContacts.updateContact.resolves({ ...contact, customFields: { customField: 'newValue' } });
+		modelsMock.LivechatContacts.updateContactCustomFields.resolves({ ...contact, customFields: { customField: 'newValue' } });
 
 		await updateContactsCustomFields(contact, 'customField', 'newValue', true);
 
-		expect(modelsMock.LivechatContacts.updateContact.calledOnce).to.be.true;
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.deep.equal({
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[0]).to.be.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[1]).to.deep.equal({
 			customFields: { customField: 'newValue' },
 		});
 	});
@@ -45,16 +45,16 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 			},
 		};
 
-		modelsMock.LivechatContacts.updateContact.resolves({
+		modelsMock.LivechatContacts.updateContactCustomFields.resolves({
 			...contact,
 			conflictingFields: [{ field: 'customFields.customField', value: 'newValue' }],
 		});
 
 		await updateContactsCustomFields(contact, 'customField', 'newValue', false);
 
-		expect(modelsMock.LivechatContacts.updateContact.calledOnce).to.be.true;
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.deep.equal({
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[0]).to.be.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[1]).to.deep.equal({
 			conflictingFields: [{ field: 'customFields.customField', value: 'newValue' }],
 		});
 	});
