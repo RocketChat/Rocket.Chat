@@ -208,7 +208,6 @@ describe('LIVECHAT - Integrations', () => {
 					.to.have.property('json')
 					.that.has.property('type', 'LivechatSessionQueued');
 				await updateSetting('Livechat_webhook_on_chat_queued', false);
-				await closeOmnichannelRoom(room._id);
 			});
 			it('should send a notification on chat close', async () => {
 				await updateSetting('Livechat_webhook_on_close', true);
