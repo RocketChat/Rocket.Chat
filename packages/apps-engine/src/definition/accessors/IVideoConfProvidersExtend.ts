@@ -6,10 +6,10 @@ import type { IVideoConfProvider } from '../videoConfProviders';
  */
 
 export interface IVideoConfProvidersExtend {
-    /**
-     * Adds a videoconf provider
-     *
-     * @param provider the provider information
-     */
-    provideVideoConfProvider(provider: IVideoConfProvider): Promise<void>;
+	/**
+	 * Adds a videoconf provider
+	 *
+	 * @param provider the provider information
+	 */
+	provideVideoConfProvider(provider: IVideoConfProvider): Promise<void>;
 }
