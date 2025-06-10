@@ -15,5 +15,11 @@ import type { IRoomUserJoinedContext } from './IRoomUserJoinedContext';
  * - IPreRoomUserJoined
  */
 export interface IPostRoomUserJoined {
-    executePostRoomUserJoined(context: IRoomUserJoinedContext, read: IRead, http: IHttp, persistence: IPersistence, modify?: IModify): Promise<void>;
+	executePostRoomUserJoined(
+		context: IRoomUserJoinedContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify?: IModify,
+	): Promise<void>;
 }
