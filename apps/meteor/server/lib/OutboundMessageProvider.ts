@@ -8,16 +8,17 @@ interface IOutboundMessageProvider {
 }
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {
-	private readonly outboundMessageProviders: Map<
-		'phone' | 'email',
-		(OutboundComms.IOutboundMessagePhoneProvider | OutboundComms.IOutboundMessageEmailProvider)[]
-	>;
+	private readonly outboundMessageProviders: Map<'phone' | 'email', OutboundComms.IOutboundProviders[]>;
 
-	public registerPhoneProvider(provider: OutboundComms.IOutboundMessagePhoneProvider) {
+	constructor() {
+		this.outboundMessageProviders = new Map();
+	}
+
+	public registerPhoneProvider(provider: OutboundComms.IOutboundMessagePhoneProvider): void {
 		this.outboundMessageProviders.set('phone', [...(this.outboundMessageProviders.get('phone') || []), provider]);
 	}
 
-	public registerEmailProvider(provider: OutboundComms.IOutboundMessageEmailProvider) {
+	public registerEmailProvider(provider: OutboundComms.IOutboundMessageEmailProvider): void {
 		this.outboundMessageProviders.set('email', [...(this.outboundMessageProviders.get('email') || []), provider]);
 	}
 
@@ -36,9 +37,7 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 			return;
 		}
 
-		const index = providers.findIndex(
-			(provider: OutboundComms.IOutboundMessagePhoneProvider | OutboundComms.IOutboundMessageEmailProvider) => provider.appId === appId,
-		);
+		const index = providers.findIndex((provider: OutboundComms.IOutboundProviders) => provider.appId === appId);
 
 		if (index === -1) {
 			providers.splice(index, 1);
