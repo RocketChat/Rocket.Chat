@@ -63,7 +63,6 @@
 		"adm-zip": "0.5.9",
 		"underscore": "1.13.7",
 		"lodash": "4.17.21",
-		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch",
 		"mongodb": "6.10.0",
 		"cross-spawn": "7.0.6"
 	},
