@@ -217,7 +217,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				try {
-					const stream = await uploadService.streamUploadedFile({ file: uploadedFile });
+					const stream = await uploadService.streamUploadedFile({ file: uploadedFile, imageResizeOpts: { width: 400, height: 240 } });
 					const fileBuffer = await streamToBuffer(stream);
 
 					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
