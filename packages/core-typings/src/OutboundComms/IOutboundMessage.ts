@@ -2,6 +2,7 @@ import type { IOutboundProviderTemplate } from './IOutboundProviderTemplate';
 
 interface IOutboundMessageProviderBase {
 	type: 'phone' | 'email';
+	appId: string;
 	name: string;
 	sendOutboundMessage(message: IOutboundMessage): Promise<void | boolean>;
 }
@@ -17,6 +18,8 @@ export interface IOutboundMessagePhoneProvider extends IOutboundMessageProviderB
 export interface IOutboundMessageEmailProvider extends IOutboundMessageProviderBase {
 	type: 'email';
 }
+
+export type IOutboundProviders = IOutboundMessagePhoneProvider | IOutboundMessageEmailProvider;
 
 export type ProviderMetadata = {
 	appId: string;
