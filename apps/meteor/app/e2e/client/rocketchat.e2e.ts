@@ -716,7 +716,7 @@ class E2E extends Emitter {
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		await Messages.store.updateAsync(
+		await Messages.state.updateAsync(
 			(record) => record.t === 'e2e' && record.e2e === 'pending',
 			(record) => this.decryptMessage(record),
 		);

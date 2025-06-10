@@ -13,5 +13,11 @@ import type { IUserStatusContext } from './IUserStatusContext';
  * Does **not** trigger when the custom status is changed
  */
 export interface IPostUserStatusChanged {
-    [AppMethod.EXECUTE_POST_USER_STATUS_CHANGED](context: IUserStatusContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_USER_STATUS_CHANGED](
+		context: IUserStatusContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void>;
 }
