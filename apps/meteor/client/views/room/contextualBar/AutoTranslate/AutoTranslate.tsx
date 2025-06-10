@@ -9,6 +9,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useRoom } from '../../contexts/RoomContext';
 
@@ -33,7 +34,7 @@ const AutoTranslate = ({
 	const room = useRoom();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='language' />
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
@@ -71,7 +72,7 @@ const AutoTranslate = ({
 					</Field>
 				</FieldGroup>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

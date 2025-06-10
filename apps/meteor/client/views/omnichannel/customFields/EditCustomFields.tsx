@@ -14,13 +14,12 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarClose,
@@ -59,9 +58,8 @@ const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | un
 	public: !!customFieldData?.public,
 });
 
-const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<ILivechatCustomField> }) => {
+const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Serialized<ILivechatCustomField>; onClose: () => void }) => {
 	const t = useTranslation();
-	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -87,7 +85,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-customFields'],
 			});
-			router.navigate('/omnichannel/customfields');
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -110,10 +108,10 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 	const regexpField = useId();
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{customFieldData?._id ? t('Edit_Custom_Field') : t('New_Custom_Field')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => router.navigate('/omnichannel/customfields')} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<FormProvider {...methods}>
@@ -218,7 +216,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={() => router.navigate('/omnichannel/customfields')}>{t('Cancel')}</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button form={formId} data-qa-id='BtnSaveEditCustomFieldsPage' primary type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
@@ -233,7 +231,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

@@ -11,5 +11,5 @@ import type { IOAuth2ClientOptions } from './IOAuth2';
  * @returns OAuth2Client instance
  */
 export function createOAuth2Client(app: App, options: IOAuth2ClientOptions): OAuth2Client {
-    return new OAuth2Client(app, options);
+	return new OAuth2Client(app, options);
 }

@@ -1,9 +1,10 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import type { Meta, StoryObj } from '@storybook/react';
-import { within, fireEvent, waitFor, expect } from '@storybook/test';
-import { useEffect, useState, type Ref } from 'react';
+import { within, fireEvent, waitFor, expect, userEvent } from '@storybook/test';
+import { useEffect, useLayoutEffect, useState, type Ref } from 'react';
 
 import { useDraggable, DEFAULT_BOUNDING_ELEMENT_OPTIONS } from './DraggableCore';
+import VoipPopupPortal from '../VoipPopupPortal';
 
 class BoundingBoxResizeEvent extends Event {
 	constructor(
@@ -26,6 +27,48 @@ const isBoundingBoxResizeEvent = (event: unknown): event is BoundingBoxResizeEve
 };
 
 const BOUNDING_SIZE = 1000;
+
+const DraggableElement = ({
+	draggableRef,
+	handleRef,
+	onClick,
+	onClickResize,
+	backgroundColor,
+	height,
+	width,
+}: {
+	draggableRef: Ref<HTMLElement>;
+	handleRef: Ref<HTMLElement>;
+	onClick?: () => void;
+	onClickResize?: () => void;
+	backgroundColor?: string;
+	height?: number;
+	width?: number;
+}) => {
+	return (
+		<Box
+			display='block'
+			ref={draggableRef}
+			id='draggable-box'
+			width={width ?? 300}
+			height={height ?? 250}
+			backgroundColor={backgroundColor ?? 'blue'}
+			data-testid='draggable-box'
+		>
+			<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle' />
+			{!!onClick && (
+				<Button data-testid='change-view' onClick={onClick}>
+					Change view
+				</Button>
+			)}
+			{!!onClickResize && (
+				<Button data-testid='resize-box' onClick={onClickResize}>
+					Resize box
+				</Button>
+			)}
+		</Box>
+	);
+};
 
 const DraggableBase = ({
 	boundingRef,
@@ -75,27 +118,15 @@ const DraggableBase = ({
 			style={{ overflow: 'hidden' }}
 			data-testid='bounding-box'
 		>
-			<Box
-				display='block'
-				ref={draggableRef}
-				id='draggable-box'
-				width={width ?? 300}
-				height={height ?? 250}
-				backgroundColor={backgroundColor ?? 'blue'}
-				data-testid='draggable-box'
-			>
-				<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle' />
-				{!!onClick && (
-					<Button data-testid='change-view' onClick={onClick}>
-						Change view
-					</Button>
-				)}
-				{!!onClickResize && (
-					<Button data-testid='resize-box' onClick={onClickResize}>
-						Resize box
-					</Button>
-				)}
-			</Box>
+			<DraggableElement
+				draggableRef={draggableRef}
+				handleRef={handleRef}
+				onClick={onClick}
+				onClickResize={onClickResize}
+				backgroundColor={backgroundColor}
+				height={height}
+				width={width}
+			/>
 		</Box>
 	);
 };
@@ -166,6 +197,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+// TODO: test other pointer types (pen, touch, etc)
+// TODO: use `userEvent` for all tests
 const moveHelper = async (handle: HTMLElement, offset: { x: number; y: number }) => {
 	const handleRect = handle.getBoundingClientRect();
 	// Grab the middle of the handle
@@ -214,6 +247,36 @@ export const DraggingBehavior: Story = {
 			const initialRect = draggable.getBoundingClientRect();
 
 			await moveHelper(draggable, { x: 100, y: 100 });
+
+			await waitFor(() => {
+				const finalRect = draggable.getBoundingClientRect();
+				expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
+				expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
+			});
+		});
+
+		await step('should not allow dragging with right click', async () => {
+			const draggable = await canvas.findByTestId('draggable-box');
+			const handle = await canvas.findByTestId('drag-handle');
+
+			const initialRect = draggable.getBoundingClientRect();
+
+			// for some reason `fireEvent` and `userEvent` do not change the `button` property of the event
+			// so we need to create a new event manually
+			await fireEvent(
+				handle,
+				new PointerEvent('pointerdown', {
+					button: 2,
+					pointerType: 'mouse',
+				}),
+			);
+
+			await fireEvent.pointerMove(document.documentElement, {
+				clientX: 50,
+				clientY: 50,
+			});
+
+			await fireEvent.pointerUp(document.documentElement);
 
 			await waitFor(() => {
 				const finalRect = draggable.getBoundingClientRect();
@@ -345,6 +408,119 @@ export const ElementUpdates: Story = {
 				expect(positionAfterDrag.x).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
 				expect(positionAfterDrag.y).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
 			});
+		});
+	},
+};
+
+const getLorem = (size: number) => {
+	return Array.from({ length: size }, (_, i) => (
+		<Box display='block' pbe={12} key={i}>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+			minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+			reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+			culpa qui officia deserunt mollit anim id est laborum.
+		</Box>
+	));
+};
+
+// Mocked page with scrollable content and text
+const MockedPage = () => {
+	const [draggableRef, boundingRef, handleRef] = useDraggable();
+
+	useLayoutEffect(() => {
+		boundingRef(document.body);
+
+		// Storybook root grows to wrap the content
+		// This is needed in order to mock a page with a scrollbar
+		// There might be a better solution but it
+		const root = document.getElementById('storybook-root');
+		if (root) {
+			root.style.width = '100%';
+			root.style.height = '100%';
+		}
+	}, [boundingRef]);
+
+	const overflowBoxProps = {
+		display: 'flex',
+		h: 'full',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: '33%',
+		overflowY: 'scroll',
+		overflowX: 'hidden',
+	} as const;
+
+	return (
+		<>
+			<Box display='flex' flexDirection='row' height='100vh' width='100vw' overflow='hidden'>
+				<Box {...overflowBoxProps}>
+					<Box w='full' h='full' data-testid='scrollable-1'>
+						{getLorem(100)}
+					</Box>
+				</Box>
+				<Box {...overflowBoxProps}>
+					<Box w='full' h='full' data-testid='scrollable-2'>
+						{getLorem(100)}
+					</Box>
+				</Box>
+				<Box {...overflowBoxProps}>
+					<Box w='full' h='full' data-testid='scrollable-3'>
+						{getLorem(100)}
+					</Box>
+				</Box>
+			</Box>
+			<VoipPopupPortal>
+				<DraggableElement draggableRef={draggableRef} handleRef={handleRef} />
+			</VoipPopupPortal>
+		</>
+	);
+};
+
+export const ScrollablePage: Story = {
+	render: () => <MockedPage />,
+	play: async ({ canvasElement, step }) => {
+		const canvas = within(canvasElement.parentElement || canvasElement);
+
+		await step('should not allow selecting text when dragging an element', async () => {
+			const user = userEvent.setup({ delay: 0 });
+			const handle = await canvas.findByTestId('drag-handle');
+			const draggable = await canvas.findByTestId('draggable-box');
+
+			await expect(handle).toBeInTheDocument();
+			await expect(draggable).toBeInTheDocument();
+
+			const handleRect = handle.getBoundingClientRect();
+			// Grab the middle of the handle
+			const startX = handleRect.left + handleRect.width / 2;
+			const startY = handleRect.top + handleRect.height / 2;
+
+			await user.pointer([
+				{
+					target: handle,
+					keys: '[MouseLeft>]',
+					coords: {
+						x: startX,
+						y: startY,
+					},
+				},
+				{
+					// we need to set offset and target to trigger text selection
+					// if target or offset is not set, the issue doesn't happen
+					// I believe this is due to events being simulated and not exact mouse interaction
+					target: document.documentElement,
+					offset: 0,
+					pointerName: 'mouse',
+					coords: {
+						x: startX,
+						y: -10,
+					},
+				},
+				{
+					keys: '[/MouseLeft]',
+				},
+			]);
+
+			expect(document.getSelection()?.toString()).toBe('');
 		});
 	},
 };
