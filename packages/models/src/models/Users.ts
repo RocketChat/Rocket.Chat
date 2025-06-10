@@ -3486,4 +3486,27 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 		return this.updateOne(query, update);
 	}
+
+	async removeExpiredPasskeys(daysThreshold: number) {
+		const cutoffDate = new Date();
+		cutoffDate.setDate(cutoffDate.getDate() - daysThreshold);
+
+		const query = {
+			passkeys: {
+				$elemMatch: {
+					lastUsedAt: { $lt: cutoffDate },
+				},
+			},
+		};
+
+		const update = {
+			$pull: {
+				passkeys: {
+					lastUsedAt: { $lt: cutoffDate },
+				},
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
 }

@@ -158,14 +158,6 @@ export interface IGetRoomRoles {
 	roles: string[];
 }
 
-export type Passkey = WebAuthnCredential & {
-	// TODO fzh075 Should the position be changed?
-	name?: string;
-	createdAt: Date;
-	lastUsedAt: Date | null;
-	resident?: boolean;
-};
-
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
@@ -286,3 +278,10 @@ export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarService
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
+
+export type Passkey = WebAuthnCredential & {
+	name?: string;
+	createdAt: Date;
+	lastUsedAt: Date | null;
+	resident?: boolean;
+};

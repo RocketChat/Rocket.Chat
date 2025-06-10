@@ -164,3 +164,14 @@ class Passkey {
 }
 
 export const passkey = new Passkey();
+
+// TODO fzh075
+// Meteor.startup(() => {
+// 	Meteor.setInterval(async () => {
+// 		try {
+// 			await Users.removeUnusedPasskeys(120);
+// 		} catch (error) {
+// 			console.error('Error removing unused passkeys:', error);
+// 		}
+// 	}, 24 * 60 * 60 * 1000);
+// });
