@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/locale/af_ZA';
+import { faker } from '@faker-js/faker';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import type { AtLeast, IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 
