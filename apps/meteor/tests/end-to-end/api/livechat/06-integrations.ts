@@ -13,8 +13,8 @@ import {
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { sleep } from '../../../data/livechat/utils';
+import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
 	before((done) => getCredentials(done));
