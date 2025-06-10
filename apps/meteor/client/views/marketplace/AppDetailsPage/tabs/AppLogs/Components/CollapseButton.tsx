@@ -4,12 +4,12 @@ import type { CSSProperties, ReactNode } from 'react';
 
 type CollapseButtonProps = {
 	children: ReactNode;
-	_id: string;
+	regionId: string;
 	expanded?: boolean;
 	onClick: () => void;
 };
 
-export const CollapseButton = ({ _id, children, expanded, onClick }: CollapseButtonProps) => {
+export const CollapseButton = ({ regionId, children, expanded, onClick }: CollapseButtonProps) => {
 	const clickable = css`
 		background: ${Palette.surface['surface-light']};
 
@@ -26,7 +26,7 @@ export const CollapseButton = ({ _id, children, expanded, onClick }: CollapseBut
 				onClick={onClick}
 				className={clickable}
 				aria-expanded={expanded}
-				aria-controls={_id}
+				aria-controls={regionId}
 				display='flex'
 				flexDirection='row'
 				width='full'

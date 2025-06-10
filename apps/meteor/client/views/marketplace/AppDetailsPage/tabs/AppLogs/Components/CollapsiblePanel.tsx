@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-export const CollapsiblePanel = (props: ComponentProps<typeof Box>) => {
+type CollapsiblePanelProps = ComponentProps<typeof Box>;
+
+export const CollapsiblePanel = (props: CollapsiblePanelProps) => {
 	return (
 		<Box {...props} is='dl'>
 			{props.children}

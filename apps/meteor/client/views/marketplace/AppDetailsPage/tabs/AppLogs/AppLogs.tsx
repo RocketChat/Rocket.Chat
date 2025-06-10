@@ -1,5 +1,4 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +13,6 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { data, isSuccess, isError, isLoading } = useLogs({ appId: id, current, itemsPerPage });
-	const collapseId = useId();
 
 	return (
 		<>
@@ -27,7 +25,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			{isSuccess && (
 				<CustomScrollbars>
 					<CollapsiblePanel width='100%' alignSelf='center'>
-						{data?.logs?.map((log) => <AppLogsItem collapseId={collapseId} key={log._createdAt} {...log} />)}
+						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}

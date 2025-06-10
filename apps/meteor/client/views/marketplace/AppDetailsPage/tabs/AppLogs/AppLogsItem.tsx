@@ -10,22 +10,22 @@ import { CollapseButton } from './Components/CollapseButton';
 import { CollapsibleRegion } from './Components/CollapsibleRegion';
 
 export type AppLogsItemProps = {
-	collapseId: string;
+	regionId: string;
 } & ILogItem;
 
-const AppLogsItem = ({ collapseId, ...props }: AppLogsItemProps) => {
+const AppLogsItem = ({ regionId, ...props }: AppLogsItemProps) => {
 	const { t } = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const title = (
 		<>
-			{props.entries.map(({ severity, timestamp, caller, args }) => {
+			{props.entries.map(({ severity, timestamp, caller, args }, index) => {
 				const parsedArgs = args.map((arg) => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' ');
 				return (
 					<Box
 						lineHeight={20}
 						mbe={4}
 						fontFamily='mono'
-						key={`${severity}-${timestamp}-${caller}`}
+						key={`${index}-${severity}-${timestamp}-${caller}`}
 					>{`${timestamp} ${severity} ${caller} ${parsedArgs}`}</Box>
 				);
 			})}
@@ -36,11 +36,11 @@ const AppLogsItem = ({ collapseId, ...props }: AppLogsItemProps) => {
 
 	return (
 		<>
-			<CollapseButton _id={collapseId} expanded={expanded} onClick={() => setExpanded(!expanded)}>
+			<CollapseButton regionId={regionId} expanded={expanded} onClick={() => setExpanded(!expanded)}>
 				<Box ref={anchorRef}>{title}</Box>
 			</CollapseButton>
 
-			<CollapsibleRegion expanded={expanded} _id={collapseId} pbs={expanded ? 16 : '0px'} mis={36}>
+			<CollapsibleRegion expanded={expanded} id={regionId} pbs={expanded ? 16 : '0px'} mis={36}>
 				{props.instanceId && <AppsLogItemField mbs={0} field={props.instanceId} label='Instance' />}
 				{props.totalTime !== undefined && <AppsLogItemField field={`${props.totalTime}ms`} label={t('Total_time')} />}
 				{props.startTime && <AppsLogItemField field={format(parseISO(props.startTime), 'MMMM d, yyyy h:mm a')} label={t('Time')} />}
