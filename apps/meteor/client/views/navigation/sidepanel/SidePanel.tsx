@@ -4,12 +4,12 @@ import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtualizedScrollbars } from '../components/CustomScrollbars';
-import GenericNoResults from '../components/GenericNoResults';
-import { useOpenedRoom, useSecondLevelOpenedRoom } from '../lib/RoomManager';
-import { usePreventDefault } from '../sidebarv2/hooks/usePreventDefault';
-import RoomSidepanelListWrapper from '../views/room/Sidepanel/RoomSidepanelListWrapper';
-import RoomSidepanelItem from '../views/room/Sidepanel/SidepanelItem';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
+import GenericNoResults from '../../../components/GenericNoResults';
+import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
+import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
+import RoomSidepanelListWrapper from '../../room/Sidepanel/RoomSidepanelListWrapper';
+import RoomSidepanelItem from '../../room/Sidepanel/SidepanelItem';
 
 type SidePanelProps = {
 	headerTitle: TranslationKey;
@@ -43,7 +43,7 @@ const SidePanel = ({ headerTitle, onlyUnreads, toggleOnlyUnreads, rooms }: SideP
 				{rooms && rooms.length === 0 && <GenericNoResults />}
 				<VirtualizedScrollbars>
 					<Virtuoso
-						totalCount={30}
+						totalCount={rooms.length}
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
 						itemContent={(_, data) => <RoomSidepanelItem openedRoom={secondLevelOpenedRoom} room={data} />}

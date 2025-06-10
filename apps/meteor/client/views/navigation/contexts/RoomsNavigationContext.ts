@@ -63,7 +63,7 @@ export const useRoomsListContext = () => {
 	const contextValue = useContext(RoomsNavigationContext);
 
 	if (!contextValue) {
-		throw new Error('useRoomsListValue must be used within a RoomsNavigationContext');
+		throw new Error('useRoomsListContext must be used within a RoomsNavigationContext');
 	}
 
 	return contextValue;
