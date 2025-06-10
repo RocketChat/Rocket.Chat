@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -392,8 +393,16 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const roomName = typeof this.queryParams.roomName === 'string' ? this.queryParams.roomName : undefined;
+
 			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
+				params: {
+					...(roomId ? { roomId } : {}),
+					...(roomName ? { roomName } : {}),
+				},
 				userId: this.userId,
 				checkedArchived: false,
 			});
@@ -401,9 +410,14 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const filter = {
+				rid: findResult.rid,
+				...query,
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
+			};
 
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,

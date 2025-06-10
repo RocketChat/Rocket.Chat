@@ -10,23 +10,27 @@ const ajv = new Ajv({
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps>;
 
-const GroupsFilesPropsSchema = withGroupBaseProperties({
-	count: {
-		type: 'number',
-		nullable: true,
+const GroupsFilesPropsSchema = withGroupBaseProperties(
+	{
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
 	},
-	sort: {
-		type: 'string',
-		nullable: true,
-	},
-	query: {
-		type: 'string',
-		nullable: true,
-	},
-	offset: {
-		type: 'number',
-		nullable: true,
-	},
-});
+	[],
+	true,
+);
 
 export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);
