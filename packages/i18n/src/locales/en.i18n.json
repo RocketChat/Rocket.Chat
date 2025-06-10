@@ -4399,6 +4399,8 @@
   "SAML_Custom_Private_Key": "Private Key Contents",
   "SAML_Custom_Provider": "Custom Provider",
   "SAML_Custom_Public_Cert": "Public Cert Contents",
+  "SAML_Custom_Signature_Algorithm": "Signature Algorithm",
+  "SAML_Custom_Signature_Algorithm_description": "What Algorithm to use when signing requests and responses from Rocket.Chat",
   "SAML_Custom_Username_Field": "Username field name",
   "SAML_Custom_Username_Normalize": "Normalize username",
   "SAML_Custom_Username_Normalize_Lowercase": "To Lowercase",
