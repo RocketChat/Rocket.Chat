@@ -2,12 +2,12 @@ import type { IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
 
 import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
-import { isMetadata } from './isMetadata';
 import { parseChannelUsername } from './parseChannelUsername';
 import { parseEventCallId } from './parseEventCallId';
 import { parseEventLeg } from './parseEventLeg';
 import { parseTimestamp } from './parseTimestamp';
 import { logger } from '../logger';
+import { parseEventExtensions } from './parseEventExtensions';
 
 export function parseEventData(
 	eventName: string,
@@ -32,9 +32,15 @@ export function parseEventData(
 
 		'Bridge-A-Unique-ID': bridgeA,
 		'Bridge-B-Unique-ID': bridgeB,
+		'Bridged-To': bridgedTo,
 
 		'Presence-Call-Direction': presenceCallDirection,
 		'Channel-Presence-ID': channelPresenceId,
+
+		'Channel-Read-Codec-Name': codecReadName,
+		'Channel-Read-Codec-Rate': codecReadRate,
+		'Channel-Write-Codec-Name': codecWriteName,
+		'Channel-Write-Codec-Rate': codecWriteRate,
 
 		...rawEventData
 	} = eventData;
@@ -117,14 +123,42 @@ export function parseEventData(
 		hangupCause,
 
 		...(bridgeUniqueIds.length && { bridgeUniqueIds }),
+		bridgedTo,
 		legs,
 		metadata: filterOutEmptyValues(metadata),
 		...(Object.keys(variables).length && { variables }),
 		raw: filterOutEmptyValues(unusedRawData),
 
+		codecs: {
+			...{
+				read: {
+					...{
+						name: codecReadName,
+						rate: codecReadRate,
+					},
+				},
+				write: {
+					...{
+						nme: codecWriteName,
+						rate: codecWriteRate,
+					},
+				},
+			},
+		},
+
 		presenceCallDirection,
 		channelPresenceId,
 	};
 
-	return filterOutMissingData(event) as typeof event;
+	const filteredEvent = filterOutMissingData(event) as typeof event;
+	const extensions = parseEventExtensions(filteredEvent);
+
+	return {
+		...filteredEvent,
+		...extensions,
+	};
+}
+
+function isMetadata(key: string): boolean {
+	return key.startsWith('Event-') || key.startsWith('FreeSWITCH-') || key.startsWith('Core-');
 }

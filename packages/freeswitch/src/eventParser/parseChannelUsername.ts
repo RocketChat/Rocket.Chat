@@ -18,10 +18,15 @@ export function parseChannelUsername(channelName?: string): string | undefined {
 	// Example: sofia/internal/1001@voip.open.rocket.chat:9999
 
 	// Originatee channels will have the format 'sofia/internal/contact_uri', assigned by freeswitch itself
-	// Contact URI format is 'username-rocketchat_userid-random_key@rocketchat_hostname', assigned by the rocket.chat client on the REGISTER request
 	// Example: sofia/internal/1000-LJZ8A9MhHv4Eh6ZQH-spo254ol@open.rocket.chat
 
 	return channelName.match(/sofia\/internal\/(\d+)[\@\-]/)?.[1];
+}
+
+export function parseContactUsername(contactNameOrUri: string): string | undefined {
+	// Contact URI format is 'username-rocketchat_userid-random_key@rocketchat_hostname', assigned by the rocket.chat client on the REGISTER request
+	// Non-rocket.chat sessions will likely have a different format
+	return contactNameOrUri.match(/^(\d+)\-/)?.[1];
 }
 
 export function parseEventUsername(eventData: Record<string, string | undefined>): string | undefined {

@@ -1,4 +1,4 @@
 export * from './commands';
 export * from './listenToEvents';
 export * from './eventParser/parseEventData';
-export * from './eventParser/computeChannelFromParsedEvents';
+export * from './eventParser/computeChannelFromEvents';

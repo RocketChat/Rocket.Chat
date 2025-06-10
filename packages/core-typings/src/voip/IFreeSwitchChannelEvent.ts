@@ -1,5 +1,5 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { AtLeast, DeepPartial } from '../utils';
+import type { AtLeast } from '../utils';
 
 export interface IFreeSwitchChannelEventHeader {
 	sequence: number;
@@ -19,6 +19,10 @@ export interface IFreeSwitchChannelEventMutable {
 	// For valid calls this should be parsed to a valid freeswitch username that is represented by this channel
 	// Parsing might fail for voicemail, spam bots and more advanced features we implement in the future.
 	channelUsername?: string;
+
+	// Caller and Callee are calculated based on everything else, it's not any specific event attribute
+	caller?: string;
+	callee?: string;
 
 	// Expected: CS_NEW, CS_INIT, CS_ROUTING, CS_EXECUTE, CS_EXCHANGE_MEDIA, CS_CONSUME_MEDIA, CS_HANGUP, CS_REPORTING, CS_DESTROY
 	// Not Expected: CS_SOFT_EXECUTE, CS_PARK, CS_HIBERNATE, CS_RESET, CS_NONE
@@ -41,6 +45,8 @@ export interface IFreeSwitchChannelEventMutable {
 
 	hangupCause?: string;
 	bridgeUniqueIds?: string[];
+	// Sent only by CALL_UPDATE events, when two channels are bridged together
+	bridgedTo?: string;
 
 	legs: Record<string, AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'>>;
 
@@ -49,6 +55,17 @@ export interface IFreeSwitchChannelEventMutable {
 
 	// raw will include fields we received from freeswitch but didn't read
 	raw: Record<string, string>;
+
+	codecs?: {
+		read?: {
+			name?: string;
+			rate?: string;
+		};
+		write?: {
+			name?: string;
+			rate?: string;
+		};
+	};
 
 	// Presence is something I'm trying to not depend on, but the info here could be useful for identifying users if there's no other reliable field.
 	channelPresenceId?: string;
@@ -61,32 +78,26 @@ export interface IFreeSwitchChannelEvent extends IRocketChatRecord, IFreeSwitchC
 	metadata: Record<string, string>;
 }
 
-export type DeepModified<T> = {
-	[P in keyof T]?: T[P] extends Date | undefined
-		? { oldValue: T[P]; newValue: T[P]; delta: number } | undefined
-		: T[P] extends object | undefined
-			? DeepModified<T[P]>
-			: { oldValue: T[P]; newValue: T[P] } | undefined;
-};
+export interface IFreeSwitchChannelEventLegProfile {
+	// If profileIndex is a number higher than 1, then the channel is being reused for a second call
+	profileIndex?: string;
 
-export interface IFreeSwitchChannelEventCalculated {
+	profileCreatedTime?: Date;
+	channelCreatedTime?: Date;
+	channelAnsweredTime?: Date;
+	channelProgressTime?: Date;
+	channelBridgedTime?: Date;
+	channelProgressMediaTime?: Date;
+	channelHangupTime?: Date;
+	channelTransferTime?: Date;
+	channelRessurectTime?: Date;
+	channelLastHold?: Date;
+
+	// Those are pulled from other places so that the profile can be mapped to specific calls
+	// They'll never be present on the raw events, only on the channel.events and channel.finalState.events
+	bridgedTo?: string;
 	caller?: string;
 	callee?: string;
-
-	rang?: boolean;
-	answered?: boolean;
-	bridged?: boolean;
-	isTransfering?: boolean;
-	transfered?: boolean;
-}
-
-export interface IFreeSwitchChannelEventParsedMutable extends IFreeSwitchChannelEventMutable, IFreeSwitchChannelEventCalculated {
-	//
-}
-
-export interface IFreeSwitchChannelEventDelta extends IFreeSwitchChannelEventHeader {
-	newValues?: DeepPartial<IFreeSwitchChannelEventParsedMutable>;
-	modifiedValues?: DeepModified<IFreeSwitchChannelEventParsedMutable>;
 }
 
 export interface IFreeSwitchChannelEventLeg {
@@ -133,20 +144,9 @@ export interface IFreeSwitchChannelEventLeg {
 	// should match the context from the sip_profile ('default' for internal, 'public' for external), but I haven't tested it with external calls yet
 	context: string;
 
-	// If profileIndex is a number higher than 1, then the channel is being reused for a second call
-	profileIndex?: string;
 	transferSource?: string;
 
-	profileCreatedTime?: Date;
-	channelCreatedTime?: Date;
-	channelAnsweredTime?: Date;
-	channelProgressTime?: Date;
-	channelBridgedTime?: Date;
-	channelProgressMediaTime?: Date;
-	channelHangupTime?: Date;
-	channelTransferTime?: Date;
-	channelRessurectTime?: Date;
-	channelLastHold?: Date;
+	profiles: Record<string, IFreeSwitchChannelEventLegProfile>;
 
 	// always 'XML' in our current use case
 	dialplan?: string;

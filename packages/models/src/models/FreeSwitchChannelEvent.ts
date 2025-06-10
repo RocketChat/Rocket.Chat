@@ -13,7 +13,6 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
-			// { key: { callUniqueId: 1 } },
 			// Allow 3 days of events to be saved
 			{ key: { receivedAt: 1 }, expireAfterSeconds: convertFromDaysToSeconds(3) },
 		];

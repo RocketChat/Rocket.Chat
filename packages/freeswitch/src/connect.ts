@@ -33,9 +33,11 @@ export async function connect(
 					currentCall.auto_cleanup();
 
 					const eventsToListen: EventNames = [
-						...(options?.helpers?.bgapi ? ['BACKGROUND_JOB' as const] : []),
-						...(options?.helpers?.execute ? ['CHANNEL_EXECUTE_COMPLETE' as const] : []),
-						...customEventNames,
+						...new Set([
+							...(options?.helpers?.bgapi ? ['BACKGROUND_JOB' as const] : []),
+							...(options?.helpers?.execute ? ['CHANNEL_EXECUTE_COMPLETE' as const] : []),
+							...customEventNames,
+						]),
 					];
 
 					if (eventsToListen.length) {

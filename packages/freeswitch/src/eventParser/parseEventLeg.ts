@@ -1,12 +1,8 @@
-import type { AtLeast, IFreeSwitchChannelEventLeg, ValueOf } from '@rocket.chat/core-typings';
+import type { AtLeast, IFreeSwitchChannelEventLeg, IFreeSwitchChannelEventLegProfile } from '@rocket.chat/core-typings';
 
 import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
 import { parseTimestamp } from './parseTimestamp';
-
-export type PickType<T, K extends ValueOf<T>> = {
-	-readonly [p in keyof T]: T[p] extends keyof K ? T[p] : undefined;
-};
 
 export function parseEventLeg(
 	legName: string,
@@ -65,18 +61,23 @@ export function parseEventLeg(
 		return;
 	}
 
-	const timestamps: Partial<IFreeSwitchChannelEventLeg> = {
-		profileCreatedTime: parseTimestamp(profileCreatedTime),
-		channelCreatedTime: parseTimestamp(channelCreatedTime),
-		channelAnsweredTime: parseTimestamp(channelAnsweredTime),
-		channelProgressTime: parseTimestamp(channelProgressTime),
-		channelBridgedTime: parseTimestamp(channelBridgedTime),
-		channelProgressMediaTime: parseTimestamp(channelProgressMediaTime),
-		channelHangupTime: parseTimestamp(channelHangupTime),
-		channelTransferTime: parseTimestamp(channelTransferTime),
-		channelRessurectTime: parseTimestamp(channelRessurectTime),
-		channelLastHold: parseTimestamp(channelLastHold),
+	const profile: IFreeSwitchChannelEventLegProfile = {
+		...{
+			profileIndex,
+			profileCreatedTime: parseTimestamp(profileCreatedTime),
+			channelCreatedTime: parseTimestamp(channelCreatedTime),
+			channelAnsweredTime: parseTimestamp(channelAnsweredTime),
+			channelProgressTime: parseTimestamp(channelProgressTime),
+			channelBridgedTime: parseTimestamp(channelBridgedTime),
+			channelProgressMediaTime: parseTimestamp(channelProgressMediaTime),
+			channelHangupTime: parseTimestamp(channelHangupTime),
+			channelTransferTime: parseTimestamp(channelTransferTime),
+			channelRessurectTime: parseTimestamp(channelRessurectTime),
+			channelLastHold: parseTimestamp(channelLastHold),
+		},
 	};
+
+	const effectiveProfileIndex = profileIndex || '1';
 
 	const leg: AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'> = {
 		legName,
@@ -96,10 +97,10 @@ export function parseEventLeg(
 		source,
 		context,
 		channelName,
-		profileIndex,
 		transferSource,
 
-		...timestamps,
+		// If there's no profileIndex, default to '1', but do not save a profile if there's nothing in it
+		...(Object.keys(profile).length > 0 && { profiles: { [effectiveProfileIndex]: { ...profile, profileIndex: effectiveProfileIndex } } }),
 
 		dialplan,
 		ani,

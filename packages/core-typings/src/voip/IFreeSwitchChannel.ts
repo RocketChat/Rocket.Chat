@@ -1,43 +1,41 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { DeepPartial } from '../utils';
-import type { IFreeSwitchChannelEventParsedMutable, IFreeSwitchChannelEventDelta } from './IFreeSwitchChannelEvent';
+import type {
+	IFreeSwitchChannelEventHeader,
+	IFreeSwitchChannelEventLegProfile,
+	IFreeSwitchChannelEventMutable,
+} from './IFreeSwitchChannelEvent';
 
 export interface IFreeSwitchChannel extends IRocketChatRecord {
 	uniqueId: string;
 	name: string;
 
 	freeSwitchUser?: string;
+	callers?: string[];
+	callees?: string[];
+	bridgedTo: string[];
+	callDirection?: string;
 
-	rocketChatUser?: string;
-	rocketChatHostname?: string;
-
-	// type: string;
-	// context?: string;
-	// sipProfile?: string;
-
-	// originator?: string;
-	// originatees?: string[];
-	// bridgedTo?: string;
-
-	// isVoicemail?: boolean;
-	// reached?: boolean;
-
-	// events: DeepPartial<Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt' | 'channelUniqueId'>>[];
 	events: Record<number, DeepPartial<IFreeSwitchChannelEventDelta>>;
+	profiles: Record<string, IFreeSwitchChannelProfile>;
 
-	finalState: IFreeSwitchChannelEventParsedMutable;
-
-	// calls: IFreeSwitchChannelCall[];
+	finalState: IFreeSwitchChannelEventMutable;
 }
 
-export interface IFreeSwitchChannelCall {
-	UUID?: string;
-	answerState?: string;
-	state?: string;
-	previousState?: string;
-	sipId?: string;
-	authorized?: string;
-	hangupCause?: string;
-	duration?: number;
-	direction?: string;
+export interface IFreeSwitchChannelProfile extends IFreeSwitchChannelEventLegProfile {
+	// This value is pulled from the next profile
+	nextProfileCreatedTime?: Date;
+}
+
+export type DeepModified<T> = {
+	[P in keyof T]?: T[P] extends Date | undefined
+		? { oldValue: T[P]; newValue: T[P]; delta: number } | undefined
+		: T[P] extends object | undefined
+			? DeepModified<T[P]>
+			: { oldValue: T[P]; newValue: T[P] } | undefined;
+};
+
+export interface IFreeSwitchChannelEventDelta extends IFreeSwitchChannelEventHeader {
+	newValues?: DeepPartial<IFreeSwitchChannelEventMutable>;
+	modifiedValues?: DeepModified<IFreeSwitchChannelEventMutable>;
 }

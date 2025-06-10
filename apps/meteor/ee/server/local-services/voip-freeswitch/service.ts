@@ -7,7 +7,7 @@ import {
 	getExtensionDetails,
 	listenToEvents,
 	parseEventData,
-	computeChannelFromParsedEvents,
+	computeChannelFromEvents,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, FreeSwitchChannelEvent } from '@rocket.chat/models';
@@ -124,87 +124,11 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		const allEvents = await FreeSwitchChannelEvent.findAllByChannelUniqueId(channelUniqueId).toArray();
 
-		const channel = await computeChannelFromParsedEvents(allEvents);
+		const channel = await computeChannelFromEvents(allEvents);
 		if (channel) {
 			await this.registerChannel(channel);
 		}
 	}
-
-	// private async getUserDataForCall(user: IFreeSwitchEventCallUser): Promise<IUser | null> {
-	// 	const projection = { _id: 1, username: 1, name: 1, avatarETag: 1, freeSwitchExtension: 1 };
-
-	// 	if (user.uid) {
-	// 		return Users.findOneById(user.uid, { projection });
-	// 	}
-
-	// 	for await (const identifier of user.identifiers) {
-	// 		if (identifier.type !== 'extension' && identifier.type !== 'uid') {
-	// 			continue;
-	// 		}
-
-	// 		const user = await (identifier.type === 'uid'
-	// 			? Users.findOneById(identifier.value, { projection })
-	// 			: Users.findOneByFreeSwitchExtension(identifier.value, { projection }));
-
-	// 		if (user) {
-	// 			return user;
-	// 		}
-	// 	}
-
-	// 	return null;
-	// }
-
-	// private async computeCall(callUUID: string): Promise<void> {
-	// 	const allEvents = await FreeSwitchEvent.findAllByCallUUID(callUUID).toArray();
-	// 	const workspaceUrl = settings.get<string>('Site_Url');
-	// 	const call = await computeCallFromParsedEvents(callUUID, allEvents, workspaceUrl);
-
-	// 	if (!call) {
-	// 		return;
-	// 	}
-
-	// 	const { caller, callee, ...callData } = call;
-
-	// 	const fullCall: InsertionModel<IFreeSwitchCall> = {
-	// 		...callData,
-	// 	};
-
-	// 	if (caller?.workspaceUrl === workspaceUrl) {
-	// 		const user = await this.getUserDataForCall(caller);
-	// 		if (user) {
-	// 			fullCall.from = {
-	// 				_id: user._id,
-	// 				username: user.username,
-	// 				name: user.name,
-	// 				avatarETag: user.avatarETag,
-	// 				freeSwitchExtension: user.freeSwitchExtension,
-	// 			};
-	// 		}
-	// 	}
-
-	// 	if (callee && (callee.workspaceUrl === workspaceUrl || (caller?.workspaceUrl === workspaceUrl && call.direction === 'internal'))) {
-	// 		const user = await this.getUserDataForCall(callee);
-	// 		if (user) {
-	// 			fullCall.to = {
-	// 				_id: user._id,
-	// 				username: user.username,
-	// 				name: user.name,
-	// 				avatarETag: user.avatarETag,
-	// 				freeSwitchExtension: user.freeSwitchExtension,
-	// 			};
-	// 		}
-	// 	}
-
-	// 	// // A call has 2 channels at max
-	// 	// // If it has 3 or more channels, it's a forwarded call
-	// 	// if (call.channels.length >= 3) {
-	// 	// 	const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
-	// 	// 	if (originalCalls.length) {
-	// 	// 		call.forwardedFrom = originalCalls;
-	// 	// 	}
-	// 	// }
-	// 	await FreeSwitchCall.registerCall(fullCall);
-	// }
 
 	async getDomain(): Promise<string> {
 		const options = this.getConnectionSettings();
