@@ -23,12 +23,106 @@ describe('OutboundMessageProvider', () => {
 		outboundMessageProvider.registerPhoneProvider(phoneProvider);
 
 		const providers = outboundMessageProvider.getOutboundMessageProviders('phone');
+
 		expect(providers).to.have.lengthOf(1);
 		expect(providers[0]).to.deep.equal(phoneProvider);
 	});
 
-	it.skip('should successfully register a email provider');
-	it.skip('should list currently registered providers [unfiltered]');
-	it.skip('should list currently registered providers [filtered by type]');
-	it.skip('should unregister a provider');
+	it('should successfully register a email provider', () => {
+		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+			type: 'email',
+			appId: '123',
+			name: 'Test Email Provider',
+			sendOutboundMessage: sinon.stub(),
+		};
+
+		outboundMessageProvider.registerEmailProvider(emailProvider);
+
+		const providers = outboundMessageProvider.getOutboundMessageProviders('email');
+
+		expect(providers).to.have.lengthOf(1);
+		expect(providers[0]).to.deep.equal(emailProvider);
+	});
+
+	it('should list currently registered providers [unfiltered]', () => {
+		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+			type: 'phone',
+			appId: '123',
+			name: 'Test Phone Provider',
+			sendOutboundMessage: sinon.stub(),
+			getProviderMetadata: sinon.stub(),
+		};
+
+		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+			type: 'email',
+			appId: '123',
+			name: 'Test Email Provider',
+			sendOutboundMessage: sinon.stub(),
+		};
+
+		outboundMessageProvider.registerPhoneProvider(phoneProvider);
+		outboundMessageProvider.registerEmailProvider(emailProvider);
+
+		const providers = outboundMessageProvider.getOutboundMessageProviders();
+
+		expect(providers).to.have.lengthOf(2);
+		expect(providers.some((provider) => provider.type === 'phone')).to.be.true;
+		expect(providers.some((provider) => provider.type === 'email')).to.be.true;
+	});
+	it('should list currently registered providers [filtered by type]', () => {
+		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+			type: 'phone',
+			appId: '123',
+			name: 'Test Phone Provider',
+			sendOutboundMessage: sinon.stub(),
+			getProviderMetadata: sinon.stub(),
+		};
+
+		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+			type: 'email',
+			appId: '123',
+			name: 'Test Email Provider',
+			sendOutboundMessage: sinon.stub(),
+		};
+
+		outboundMessageProvider.registerPhoneProvider(phoneProvider);
+		outboundMessageProvider.registerEmailProvider(emailProvider);
+
+		const providers = outboundMessageProvider.getOutboundMessageProviders('phone');
+
+		expect(providers).to.have.lengthOf(1);
+		expect(providers[0].type).to.equal('phone');
+	});
+
+	it('should unregister a provider', () => {
+		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+			type: 'phone',
+			appId: '123',
+			name: 'Test Phone Provider',
+			sendOutboundMessage: sinon.stub(),
+			getProviderMetadata: sinon.stub(),
+		};
+
+		const phoneProvider2: OutboundComms.IOutboundMessagePhoneProvider = {
+			type: 'phone',
+			appId: '456',
+			name: 'Test Phone Provider 2',
+			sendOutboundMessage: sinon.stub(),
+			getProviderMetadata: sinon.stub(),
+		};
+
+		outboundMessageProvider.registerPhoneProvider(phoneProvider);
+		outboundMessageProvider.registerPhoneProvider(phoneProvider2);
+
+		let registeredProviders = outboundMessageProvider.getOutboundMessageProviders('phone');
+
+		expect(registeredProviders).to.have.lengthOf(2);
+
+		outboundMessageProvider.unregisterProvider('123', 'phone');
+
+		registeredProviders = outboundMessageProvider.getOutboundMessageProviders('phone');
+
+		expect(registeredProviders).to.have.lengthOf(1);
+		expect(registeredProviders.some((provider) => provider.appId !== '123')).to.be.true;
+	});
 });

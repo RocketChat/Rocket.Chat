@@ -11,7 +11,10 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 	private readonly outboundMessageProviders: Map<'phone' | 'email', OutboundComms.IOutboundProviders[]>;
 
 	constructor() {
-		this.outboundMessageProviders = new Map();
+		this.outboundMessageProviders = new Map([
+			['phone', []],
+			['email', []],
+		]);
 	}
 
 	public registerPhoneProvider(provider: OutboundComms.IOutboundMessagePhoneProvider): void {
@@ -37,10 +40,9 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 			return;
 		}
 
-		const index = providers.findIndex((provider: OutboundComms.IOutboundProviders) => provider.appId === appId);
-
-		if (index === -1) {
-			providers.splice(index, 1);
-		}
+		this.outboundMessageProviders.set(
+			providerType,
+			providers.filter((provider: OutboundComms.IOutboundProviders) => provider.appId !== appId),
+		);
 	}
 }
