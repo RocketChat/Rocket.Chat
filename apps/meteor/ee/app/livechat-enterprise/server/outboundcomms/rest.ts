@@ -12,7 +12,7 @@ declare module '@rocket.chat/rest-typings' {
 			GET: (params: GETOutboundProviderParams) => IOutboundProvider[];
 		};
 		'/v1/omnichannel/outbound/providers/:id/metadata': {
-			GET: () => IOutboundProviderMetadata[];
+			GET: () => IOutboundProviderMetadata;
 		};
 		'/v1/omnichannel/outbound/providers/:id/message': {
 			// Note: we may need to adapt this type when the API is implemented and UI starts to use it
