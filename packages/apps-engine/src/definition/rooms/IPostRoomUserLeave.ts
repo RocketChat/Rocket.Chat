@@ -15,5 +15,11 @@ import type { IRoomUserLeaveContext } from './IRoomUserLeaveContext';
  * - IPreRoomUserLeave
  */
 export interface IPostRoomUserLeave {
-    executePostRoomUserLeave(context: IRoomUserLeaveContext, read: IRead, http: IHttp, persistence: IPersistence, modify?: IModify): Promise<void>;
+	executePostRoomUserLeave(
+		context: IRoomUserLeaveContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify?: IModify,
+	): Promise<void>;
 }

@@ -1,8 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
+import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
 
-/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-export const Messages = new MinimongoCollection<
-	IMessage & { ignored?: boolean; autoTranslateFetching?: boolean; autoTranslateShowInverse?: boolean }
->();
+/** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
+export const Messages = {
+	use: createDocumentMapStore<IMessage & { ignored?: boolean; autoTranslateFetching?: boolean; autoTranslateShowInverse?: boolean }>(),
+	get state() {
+		return Messages.use.getState();
+	},
+};

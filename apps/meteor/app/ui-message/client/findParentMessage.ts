@@ -27,7 +27,7 @@ export const findParentMessage = (() => {
 	};
 
 	return async (tmid: IMessage['_id']) => {
-		const message = Messages.findOne({ _id: tmid });
+		const message = Messages.state.get(tmid);
 
 		if (message) {
 			return message;
