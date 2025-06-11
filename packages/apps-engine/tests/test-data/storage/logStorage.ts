@@ -7,7 +7,7 @@ export class TestsAppLogStorage extends AppLogStorage {
 		super('nothing');
 	}
 
-	public find(
+	public findPaginated(
 		query: { [field: string]: any },
 		options?: IAppLogStorageFindOptions,
 	): Promise<{ logs: ILoggerStorageEntry[]; total: number }> {
