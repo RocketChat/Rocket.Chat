@@ -99,4 +99,33 @@ test.describe('Quote Attachment', () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(threadQuoteMessage);
 		});
 	});
+
+	test('should quote a link with preview', async ({ page }) => {
+		const testLink = 'https://rocket.chat';
+
+		await test.step('Send link message in channel', async () => {
+			await poHomeChannel.content.sendMessage(testLink);
+			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
+			await expect(poHomeChannel.content.linkPreview).toBeVisible();
+		});
+
+		await test.step('Quote the link message', async () => {
+			await poHomeChannel.content.lastUserMessage.hover();
+			await poHomeChannel.content.btnQuoteMessage.click();
+
+			// Verify the quote preview shows the link
+			await expect(poHomeChannel.content.linkQuotePreview(testLink)).toBeVisible();
+
+			// Send the quoted message
+			await poHomeChannel.content.inputMessage.fill(quotedMessage);
+			await page.keyboard.press('Enter');
+		});
+
+		await test.step('Verify the quoted message appears correctly', async () => {
+			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
+		});
+	});
 });

@@ -184,6 +184,14 @@ export class HomeContent {
 		return this.page.getByRole('blockquote');
 	}
 
+	get linkPreview(): Locator {
+		return this.page.getByText('Link Preview');
+	}
+
+	linkQuotePreview(name: string): Locator {
+		return this.quotePreview.getByRole('link', { name: `${name}` });
+	}
+
 	get threadQuotePreview(): Locator {
 		return this.page.getByRole('dialog').getByRole('blockquote');
 	}
