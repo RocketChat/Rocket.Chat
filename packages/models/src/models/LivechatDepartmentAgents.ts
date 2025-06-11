@@ -226,14 +226,18 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
 
-	async checkOnlineForDepartment(departmentId: string): Promise<boolean> {
+	async checkOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<boolean> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
 		if (agents.length === 0) {
 			return false;
 		}
 
-		const onlineUser = await Users.findOneOnlineAgentByUserList(agents.map((agent) => agent.username));
+		const onlineUser = await Users.findOneOnlineAgentByUserList(
+			agents.map((agent) => agent.username),
+			{},
+			isLivechatEnabledWhenAgentIdle,
+		);
 
 		return Boolean(onlineUser);
 	}
