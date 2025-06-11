@@ -96,7 +96,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (favoritesEnabled && room.f) {
-					setGroupRoom(SIDE_PANEL_GROUPS.STARRED, room);
+					setGroupRoom(SIDE_PANEL_GROUPS.FAVORITES, room);
 				}
 
 				if (room.teamMain) {

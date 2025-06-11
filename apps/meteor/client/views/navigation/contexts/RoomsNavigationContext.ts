@@ -7,8 +7,8 @@ import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
 export const TEAM_COLLAB_GROUPS = {
 	ALL: 'All',
-	STARRED: 'Starred',
 	MENTIONS: 'Mentions',
+	FAVORITES: 'Favorites',
 	DISCUSSIONS: 'Discussions',
 } as const;
 

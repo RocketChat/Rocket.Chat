@@ -17,7 +17,7 @@ import {
 const filtersIcons: { [Key in SidePanelFiltersKeys]: IconName } = {
 	All: 'inbox',
 	Mentions: 'at',
-	Starred: 'star',
+	Favorites: 'star',
 	Discussions: 'baloons',
 	In_progress: 'user-arrow-right',
 	Queue: 'burger-arrow-left',
