@@ -1,7 +1,6 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
 import { useItemData } from '../hooks/useItemData';
 
@@ -17,7 +16,7 @@ const RoomSidepanelItem = ({ room, openedRoom, viewMode }: RoomSidepanelItemProp
 
 	const itemData = useItemData(room, { viewMode, openedRoom });
 
-	return <SidepanelItem onClick={goToRoomById} {...itemData} />;
+	return <SidepanelItem {...itemData} />;
 };
 
 export default memo(RoomSidepanelItem);
