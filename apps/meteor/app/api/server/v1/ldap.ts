@@ -60,18 +60,18 @@ API.v1
 		},
 		async function () {
 			if (!this.userId) {
-				return API.v1.unauthorized({ error: 'error-invalid-user' });
+				throw new Error('error-invalid-user');
 			}
 
 			if (settings.get<boolean>('LDAP_Enable') !== true) {
-				return API.v1.forbidden({ error: 'LDAP_disabled' });
+				throw new Error('LDAP_disabled');
 			}
 
 			try {
 				await LDAP.testConnection();
 			} catch (error) {
 				SystemLogger.error(error);
-				return API.v1.forbidden({ error: 'Connection_failed' });
+				throw new Error('Connection_failed');
 			}
 
 			return API.v1.success({
@@ -146,11 +146,11 @@ API.v1
 		},
 		async function () {
 			if (!this.userId) {
-				return API.v1.unauthorized({ error: 'error-invalid-user' });
+				throw new Error('error-invalid-user');
 			}
 
 			if (settings.get('LDAP_Enable') !== true) {
-				return API.v1.forbidden({ error: 'LDAP_disabled' });
+				throw new Error('LDAP_disabled');
 			}
 
 			await LDAP.testSearch(this.bodyParams.username);
