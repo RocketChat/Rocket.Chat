@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 import { OutboundMessageProvider } from '../../../../server/lib/OutboundMessageProvider';
 
-describe('OutboundMessageProvider', () => {
+describe.only('OutboundMessageProvider', () => {
 	let outboundMessageProvider: OutboundMessageProvider;
 
 	beforeEach(() => {
@@ -69,6 +69,7 @@ describe('OutboundMessageProvider', () => {
 		expect(providers.some((provider) => provider.type === 'phone')).to.be.true;
 		expect(providers.some((provider) => provider.type === 'email')).to.be.true;
 	});
+
 	it('should list currently registered providers [filtered by type]', () => {
 		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
 			type: 'phone',

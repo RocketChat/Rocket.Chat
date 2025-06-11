@@ -27,11 +27,10 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 
 	public getOutboundMessageProviders(type?: 'phone' | 'email'): OutboundComms.IOutboundProviders[] {
 		if (type) {
-			const providers = this.outboundMessageProviders.get(type);
-			return providers ? Array.from(providers.values()).flat() : [];
+			return Array.from(this.outboundMessageProviders.get(type)?.values() || []);
 		}
 
-		return Array.from(this.outboundMessageProviders.values()).flat();
+		return Array.from(this.outboundMessageProviders.values()).flatMap((providers) => providers);
 	}
 
 	public unregisterProvider(appId: string, providerType: 'phone' | 'email'): void {
