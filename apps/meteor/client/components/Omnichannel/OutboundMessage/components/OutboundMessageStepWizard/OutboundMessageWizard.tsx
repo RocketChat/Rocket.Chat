@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import MessageStep from './steps/MessageStep';
 import RecipientStep from './steps/RecipientStep';
+import RepliesStep from './steps/RepliesStep';
 import { StepsWizard } from '../../../../StepsWizard';
 
 type OutboundMessageWizardProps = {
@@ -37,6 +38,8 @@ export const OutboundMessageWizard = ({ defaultValues }: OutboundMessageWizardPr
 				<RecipientStep />
 
 				<MessageStep />
+
+				<RepliesStep />
 			</FormProvider>
 		</StepsWizard>
 	);
