@@ -6314,6 +6314,7 @@
   "message_pruned": "message pruned",
   "messages": "messages",
   "messages_pruned": "messages pruned",
+  "Message_preview": "Message preview",
   "meteor_status_connected": "Connected",
   "meteor_status_connecting": "Connecting...",
   "meteor_status_failed": "Connection attempt failed",
