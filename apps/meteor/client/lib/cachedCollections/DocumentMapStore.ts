@@ -22,7 +22,10 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	remove(predicate: (record: T) => boolean): void;
 }
 
-export const createDocumentMapStore = <T extends { _id: string }>({ onMutate }: { onMutate?: () => void } = {}) =>
+export const createDocumentMapStore = <T extends { _id: string }>({
+	onInvalidate,
+	onInvalidateAll,
+}: { onInvalidate?: (...docs: T[]) => void; onInvalidateAll?: () => void } = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
 		has: (id: T['_id']) => get().records.has(id),
@@ -60,11 +63,11 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onMutate }: 
 		},
 		replaceAll: (records: T[]) => {
 			set({ records: new Map(records.map((record) => [record._id, record])) });
-			onMutate?.();
+			onInvalidateAll?.();
 		},
 		store: (doc) => {
 			set((state) => ({ records: new Map(state.records).set(doc._id, doc) }));
-			onMutate?.();
+			onInvalidate?.(doc);
 		},
 		storeMany: (docs) => {
 			set((state) => {
@@ -76,47 +79,68 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onMutate }: 
 
 				return { records };
 			});
-			onMutate?.();
+			onInvalidate?.(...docs);
 		},
 		delete: (_id) => {
+			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
+				if (onInvalidate) affected.push(state.records.get(_id)!);
 				records.delete(_id);
 				return { records };
 			});
-			onMutate?.();
+			onInvalidate?.(...affected);
 		},
 		update: (predicate: (record: T) => boolean, modifier: (record: T) => T) => {
+			const affected: T[] = [];
+
 			set((state) => {
 				const records = new Map<T['_id'], T>();
 				for (const record of state.records.values()) {
-					records.set(record._id, predicate(record) ? modifier(record) : record);
+					if (predicate(record)) {
+						if (onInvalidate) affected.push(record);
+						records.set(record._id, modifier(record));
+					} else {
+						records.set(record._id, record);
+					}
 				}
 
 				return { records };
 			});
-			onMutate?.();
+			onInvalidate?.(...affected);
 		},
 		updateAsync: async (predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>) => {
+			const affected: T[] = [];
+
 			const records = new Map<T['_id'], T>();
 
 			for await (const record of get().records.values()) {
-				records.set(record._id, predicate(record) ? await modifier(record) : record);
+				if (predicate(record)) {
+					if (onInvalidate) affected.push(record);
+					records.set(record._id, await modifier(record));
+				} else {
+					records.set(record._id, record);
+				}
 			}
 
 			set({ records });
-			onMutate?.();
+			onInvalidate?.(...affected);
 		},
 		remove: (predicate: (record: T) => boolean) => {
+			const affected: T[] = [];
+
 			set((state) => {
 				const records = new Map<T['_id'], T>();
 				for (const record of state.records.values()) {
-					if (predicate(record)) continue;
+					if (predicate(record)) {
+						if (onInvalidate) affected.push(record);
+						continue;
+					}
 					records.set(record._id, record);
 				}
 
 				return { records };
 			});
-			onMutate?.();
+			onInvalidate?.(...affected);
 		},
 	}));

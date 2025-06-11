@@ -745,6 +745,10 @@ export class LocalCollection<T extends { _id: string }> {
 		return recomputeQueries;
 	}
 
+	recomputeQuery(query: Query<T>) {
+		this._recomputeResults(query);
+	}
+
 	private _recomputeResults(query: Query<T>, oldResults?: IdMap<T['_id'], T> | T[] | null) {
 		if (this.paused) {
 			query.dirty = true;
@@ -759,12 +763,6 @@ export class LocalCollection<T extends { _id: string }> {
 
 		if (!this.paused) {
 			DiffSequence.diffQueryChanges(query.ordered, oldResults!, query.results, query, { projectionFn: query.projectionFn });
-		}
-	}
-
-	recomputeAllResults() {
-		for (const query of this.queries) {
-			this._recomputeResults(query);
 		}
 	}
 
