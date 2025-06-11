@@ -7,7 +7,7 @@ export function convertEventDataIntoPaths(
 		IFreeSwitchChannelEvent,
 		'_id' | 'channelUniqueId' | '_updatedAt' | 'metadata' | 'eventName' | 'sequence' | 'firedAt' | 'receivedAt' | 'callee' | 'caller'
 	>,
-	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee' | 'caller'>>,
+	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee'>>,
 ): Record<string, any> {
 	const clonedData = { ...eventData };
 

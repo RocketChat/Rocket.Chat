@@ -1,8 +1,19 @@
 import type { IFreeSwitchChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFreeSwitchChannelModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { IndexDescription, Collection, Db, FindOptions, FindCursor, WithoutId, InsertOneResult } from 'mongodb';
+import type {
+	AggregateOptions,
+	Collection,
+	CountDocumentsOptions,
+	Db,
+	FindCursor,
+	FindOptions,
+	IndexDescription,
+	WithoutId,
+	InsertOneResult,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements IFreeSwitchChannelModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IFreeSwitchChannel>>) {
@@ -10,11 +21,7 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { uniqueId: 1 }, unique: true },
-			// Allow 15 days of events to be saved
-			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 15 },
-		];
+		return [{ key: { uniqueId: 1 }, unique: true }, { key: { kind: 1, startedAt: -1 } }, { key: { kind: 1, anyBridge: 1, startedAt: -1 } }];
 	}
 
 	public async registerChannel(channel: WithoutId<InsertionModel<IFreeSwitchChannel>>): Promise<InsertOneResult<IFreeSwitchChannel>> {
@@ -27,6 +34,59 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 				uniqueId: { $in: uniqueIds },
 			},
 			options,
+		);
+	}
+
+	public countChannelsByKind(kind: Required<IFreeSwitchChannel>['kind'], minDate?: Date, options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				kind,
+				...(minDate && { startedAt: { $gte: minDate } }),
+			},
+			{ readPreference: readSecondaryPreferred(), ...options },
+		);
+	}
+
+	public async sumChannelsDurationByKind(
+		kind: Required<IFreeSwitchChannel>['kind'],
+		minDate?: Date,
+		options?: AggregateOptions,
+	): Promise<number> {
+		return this.col
+			.aggregate(
+				[
+					{
+						$match: {
+							kind,
+							...(minDate && { startedAt: { $gte: minDate } }),
+						},
+					},
+					{
+						$group: {
+							_id: '1',
+							calls: { $sum: '$totalDuration' },
+						},
+					},
+				],
+				{ readPreference: readSecondaryPreferred(), ...options },
+			)
+			.toArray()
+			.then(([{ calls }]) => calls);
+	}
+
+	public countChannelsByKindAndSuccessState(
+		kind: Required<IFreeSwitchChannel>['kind'],
+		success: boolean,
+		minDate?: Date,
+		options?: CountDocumentsOptions,
+	): Promise<number> {
+		return this.countDocuments(
+			{
+				kind,
+				anyBridge: success,
+				...(minDate && { startedAt: { $gte: minDate } }),
+			},
+			{ readPreference: readSecondaryPreferred(), ...options },
 		);
 	}
 }

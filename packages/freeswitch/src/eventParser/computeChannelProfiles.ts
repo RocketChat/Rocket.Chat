@@ -1,7 +1,8 @@
+/* eslint-disable complexity */
 import type { IFreeSwitchChannelEventLegProfile, IFreeSwitchChannelProfile } from '@rocket.chat/core-typings';
 
 function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IFreeSwitchChannelEventLegProfile {
-	const { profileIndex, profileCreatedTime, bridgedTo, callee, caller, ...timestamps } = profile;
+	const { profileIndex, profileCreatedTime, channelCreatedTime, bridgedTo, callee, ...timestamps } = profile;
 
 	// Don't mutate anything if it's the first profile
 	if (!profileIndex || profileIndex === '1') {
@@ -9,10 +10,10 @@ function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IF
 	}
 
 	const newProfile: IFreeSwitchChannelEventLegProfile = {
+		channelCreatedTime,
 		profileIndex,
 		bridgedTo,
 		callee,
-		caller,
 	};
 
 	// If we don't know when the profile was created, drop every other timestamp
@@ -42,22 +43,118 @@ function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IF
 	return newProfile;
 }
 
-export function computeChannelProfiles(
-	legProfiles: Record<string, IFreeSwitchChannelEventLegProfile>,
-): Record<string, IFreeSwitchChannelProfile> {
-	const profiles: Record<string, IFreeSwitchChannelProfile> = Object.fromEntries(
-		Object.entries(legProfiles).map(([key, profile]) => [key, adjustProfileTimestamps(profile)]),
-	);
+type ProfileListAndSummary = {
+	profiles: IFreeSwitchChannelProfile[];
+	anyMedia: boolean;
+	anyAnswer: boolean;
+	anyBridge: boolean;
+	durationSum: number;
+	totalDuration: number;
 
-	// Sort profiles by createdTime:
-	const sortedProfiles = Object.values(profiles)
-		.filter(({ profileCreatedTime }) => profileCreatedTime)
-		.sort(({ profileCreatedTime: profile1 }, { profileCreatedTime: profile2 }) => (profile1?.valueOf() || 0) - (profile2?.valueOf() || 0));
+	startedAt?: Date;
+};
 
-	// From the first to the penultimate, set nextProfileCreatedTime to the profileCreatedTime of the next
-	for (let i = 0; i < sortedProfiles.length - 1; i++) {
-		sortedProfiles[i].nextProfileCreatedTime = sortedProfiles[i + 1].profileCreatedTime;
+export function computeChannelProfiles(legProfiles: Record<string, IFreeSwitchChannelEventLegProfile>): ProfileListAndSummary {
+	const profiles: IFreeSwitchChannelProfile[] = Object.values(legProfiles).map((profile) => adjustProfileTimestamps(profile));
+
+	// Sort profiles by createdTime, temporarily filter out the ones that do not have one:
+	const sortedProfiles = profiles
+		.filter(({ profileCreatedTime, channelCreatedTime }) => profileCreatedTime || channelCreatedTime)
+		.sort(
+			({ profileCreatedTime: profile1, channelCreatedTime: channel1 }, { profileCreatedTime: profile2, channelCreatedTime: channel2 }) =>
+				(profile1?.valueOf() || channel1?.valueOf() || 0) - (profile2?.valueOf() || channel2?.valueOf() || 0),
+		);
+
+	const adjustedProfiles: IFreeSwitchChannelProfile[] = [];
+	let anyAnswer = false;
+	let anyMedia = false;
+	let anyBridge = false;
+	let durationSum = 0;
+	let firstProfileCreate: Date | undefined;
+	// "first" because it's an array, but it's the same channel for all so there should only be one value
+	let firstChannelCreate: Date | undefined;
+
+	for (let i = 0; i < sortedProfiles.length; i++) {
+		const nextProfileCreatedTime = sortedProfiles[i + 1]?.profileCreatedTime || sortedProfiles[i + 1]?.channelCreatedTime || undefined;
+
+		const profile = sortedProfiles[i];
+
+		const {
+			channelBridgedTime,
+			channelAnsweredTime,
+			channelProgressMediaTime,
+			channelHangupTime,
+			bridgedTo,
+			profileCreatedTime,
+			channelCreatedTime,
+		} = profile;
+
+		const callEnd = channelHangupTime || nextProfileCreatedTime;
+
+		if (channelCreatedTime && (!firstChannelCreate || firstChannelCreate > channelCreatedTime)) {
+			firstChannelCreate = channelCreatedTime;
+		}
+
+		if (profileCreatedTime && (!firstProfileCreate || firstProfileCreate > profileCreatedTime)) {
+			firstProfileCreate = profileCreatedTime;
+		}
+
+		const callDuration = callEnd && channelBridgedTime ? callEnd.valueOf() - channelBridgedTime.valueOf() : 0;
+		const media = Boolean(channelProgressMediaTime) || sortedProfiles.length > 1;
+		const answered = Boolean(channelAnsweredTime) || media;
+		const bridged = Boolean(channelBridgedTime) || Boolean(bridgedTo);
+
+		anyMedia ||= media;
+		anyAnswer ||= answered;
+		anyBridge ||= bridged;
+		durationSum += callDuration;
+
+		adjustedProfiles.push({
+			...profile,
+			...{
+				nextProfileCreatedTime,
+				callDuration,
+				answered,
+				media,
+				bridged,
+			},
+		});
 	}
 
-	return profiles;
+	// Look for bridge and hangup on every channel, even if they didn't have a profile timestamp (in theory every profile will always have a created timestamp)
+	let firstBridge: Date | undefined;
+	let lastCallEnd: Date | undefined;
+	for (const profile of profiles) {
+		const { channelBridgedTime, channelHangupTime, nextProfileCreatedTime, bridgedTo } = profile;
+		const callEnd = channelHangupTime || nextProfileCreatedTime;
+
+		if (channelBridgedTime && (!firstBridge || firstBridge > channelBridgedTime)) {
+			firstBridge = channelBridgedTime;
+		}
+
+		if ((callEnd || 0) > (lastCallEnd || 0)) {
+			lastCallEnd = callEnd;
+		}
+
+		// If this profile was filtered out from the list used by the first process, add it back to the final list here
+		if (!sortedProfiles.includes(profile)) {
+			const bridged = Boolean(channelBridgedTime) || Boolean(bridgedTo);
+			anyBridge ||= bridged;
+
+			adjustedProfiles.push({ ...profile, ...{ bridged } });
+		}
+	}
+
+	const firstCallStart = firstBridge || firstProfileCreate || firstChannelCreate;
+	const totalDuration = lastCallEnd && firstCallStart ? lastCallEnd.valueOf() - firstCallStart.valueOf() : 0;
+
+	return {
+		profiles: adjustedProfiles,
+		anyMedia,
+		anyAnswer,
+		anyBridge,
+		durationSum,
+		totalDuration,
+		startedAt: firstCallStart,
+	};
 }

@@ -28,7 +28,6 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 	): FindCursor<T> {
 		const theOptions: FindOptions<IFreeSwitchChannelEvent> = {
 			sort: {
-				channelUniqueId: 1,
 				sequence: 1,
 			},
 			...options,

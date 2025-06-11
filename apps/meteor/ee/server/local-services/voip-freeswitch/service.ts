@@ -1,5 +1,10 @@
 import { type IVoipFreeSwitchService, ServiceClassInternal, ServiceStarter } from '@rocket.chat/core-services';
-import type { FreeSwitchExtension, IFreeSwitchChannelEvent, IFreeSwitchChannel } from '@rocket.chat/core-typings';
+import type {
+	FreeSwitchExtension,
+	IFreeSwitchChannelEvent,
+	IFreeSwitchChannel,
+	IFreeSwitchChannelEventDelta,
+} from '@rocket.chat/core-typings';
 import {
 	getDomain,
 	getUserPassword,
@@ -10,9 +15,9 @@ import {
 	computeChannelFromEvents,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { FreeSwitchChannel, FreeSwitchChannelEvent } from '@rocket.chat/models';
+import { FreeSwitchChannel, FreeSwitchChannelEvent, FreeSwitchChannelEventDelta } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import type { WithoutId } from 'mongodb';
+import type { InsertOneResult, WithoutId } from 'mongodb';
 import { MongoError } from 'mongodb';
 
 import { settings } from '../../../../app/settings/server';
@@ -88,12 +93,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		await this.registerEvent(event);
 	}
 
-	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchChannelEvent>>): Promise<void> {
+	private async registerRecord(registerFn: () => Promise<void | InsertOneResult>): Promise<void> {
 		try {
-			await FreeSwitchChannelEvent.registerEvent(event);
-			if (event.eventName === 'CHANNEL_DESTROY' && event.channelUniqueId) {
-				await this.computeChannel(event.channelUniqueId);
-			}
+			await registerFn();
 		} catch (error) {
 			// avoid logging that an event was duplicated from mongo
 			if (error instanceof MongoError && error.code === 11000) {
@@ -103,30 +105,42 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			console.log(error);
 			throw error;
 		}
+	}
+
+	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchChannelEvent>>): Promise<void> {
+		return this.registerRecord(async () => {
+			await FreeSwitchChannelEvent.registerEvent(event);
+
+			// #TODO: Use Agenda, so we can cover cases where the CHANNEL_DESTROY event is lost
+			if (event.eventName === 'CHANNEL_DESTROY' && event.channelUniqueId) {
+				setTimeout(async () => {
+					await this.computeChannel(event.channelUniqueId);
+				}, 1000);
+			}
+		});
 	}
 
 	private async registerChannel(channel: InsertionModel<WithoutId<IFreeSwitchChannel>>): Promise<void> {
-		try {
-			await FreeSwitchChannel.registerChannel(channel);
-		} catch (error) {
-			// avoid logging that an event was duplicated from mongo
-			if (error instanceof MongoError && error.code === 11000) {
-				return;
-			}
+		return this.registerRecord(() => FreeSwitchChannel.registerChannel(channel));
+	}
 
-			console.log(error);
-			throw error;
-		}
+	private async registerChannelDelta(record: InsertionModel<WithoutId<IFreeSwitchChannelEventDelta>>): Promise<void> {
+		return this.registerRecord(() => FreeSwitchChannelEventDelta.registerDelta(record));
 	}
 
 	private async computeChannel(channelUniqueId: string): Promise<void> {
-		// #ToDo: Wait a few seconds before computing the channel
-
 		const allEvents = await FreeSwitchChannelEvent.findAllByChannelUniqueId(channelUniqueId).toArray();
 
-		const channel = await computeChannelFromEvents(allEvents);
-		if (channel) {
+		const result = await computeChannelFromEvents(allEvents);
+		if (result?.channel) {
+			const { channel, deltas, finalState } = result;
+
 			await this.registerChannel(channel);
+			await this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: true, finalState });
+
+			await Promise.all(
+				deltas.map(async (delta) => this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: false, event: delta })),
+			);
 		}
 	}
 
