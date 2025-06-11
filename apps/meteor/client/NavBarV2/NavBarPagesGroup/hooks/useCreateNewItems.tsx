@@ -2,6 +2,7 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
+import { useOutboundMessageModal } from './useOutboundMessageModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import CreateChannelModal from '../actions/CreateChannelModal';
 import CreateDirectMessage from '../actions/CreateDirectMessage';
@@ -25,6 +26,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const createTeam = useCreateRoomModal(CreateTeamModal);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
+	const createOutboundMessage = useOutboundMessageModal();
 
 	const createChannelItem: GenericMenuItemProps = {
 		id: 'channel',
@@ -58,11 +60,20 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 			createDiscussion();
 		},
 	};
+	const createOutboundMessageItem: GenericMenuItemProps = {
+		id: 'outbound-message',
+		content: 'Outbound Message',
+		icon: 'send',
+		onClick: () => {
+			createOutboundMessage();
+		},
+	};
 
 	return [
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam ? [createTeamItem] : []),
+		createOutboundMessageItem,
 	];
 };
