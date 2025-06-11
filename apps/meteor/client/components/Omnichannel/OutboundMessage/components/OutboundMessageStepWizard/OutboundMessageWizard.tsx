@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { SubmitPayload } from './forms';
-import { RecipientStep } from './steps';
+import { RecipientStep, MessageStep } from './steps';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
 
 type OutboundMessageWizardProps = {
@@ -14,6 +14,9 @@ type OutboundMessageWizardProps = {
 export const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const { contact, sender, provider } = state;
+
+	const templates = sender ? provider?.templates[sender] : [];
 
 	const wizardApi = useWizard({
 		steps: [
@@ -41,7 +44,10 @@ export const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWiz
 					<RecipientStep defaultValues={state} onSubmit={handleSubmit} />
 				</WizardContent>
 
-				<WizardContent id='message'>Message Content</WizardContent>
+				<WizardContent id='message'>
+					<MessageStep defaultValues={state} contact={contact} templates={templates} onSubmit={handleSubmit} />
+				</WizardContent>
+
 				<WizardContent id='replies'>Replies Content</WizardContent>
 				<WizardContent id='preview'>Preview Content</WizardContent>
 			</Box>
