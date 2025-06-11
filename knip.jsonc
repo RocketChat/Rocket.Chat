@@ -1,0 +1,24 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
+	"workspaces": {
+		"packages/*": {
+			"entry": [
+				"src/index.ts"
+			]
+		},
+		"packages/base64": {
+			"entry": "src/base64.ts"
+		},
+		"apps/meteor": {
+			"entry": [
+				"client/main.ts",
+				"server/main.ts"
+			],
+			"project": [
+				"client/**/*.{ts,tsx}",
+				"server/**/*.ts"
+			],
+			"ignore": ".meteor/**"
+		}
+	}
+}

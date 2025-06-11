@@ -7,7 +7,7 @@ export default {
 		{
 			displayName: 'client',
 			preset: client.preset,
-			setupFilesAfterEnv: [...client.setupFilesAfterEnv],
+			setupFilesAfterEnv: client.setupFilesAfterEnv,
 
 			testMatch: [
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
