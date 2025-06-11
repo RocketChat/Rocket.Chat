@@ -69,7 +69,7 @@ const getDepartment = async (department: string): Promise<string | undefined> =>
 		return;
 	}
 
-	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) {
 		return department;
 	}
 
@@ -421,7 +421,10 @@ export class QueueManager {
 		};
 
 		let defaultAgent: SelectedAgent | undefined;
-		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
+		if (
+			servedBy?.username &&
+			(await Users.findOneOnlineAgentByUserList(servedBy.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle')))
+		) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
