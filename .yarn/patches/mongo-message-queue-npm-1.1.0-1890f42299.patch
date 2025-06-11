@@ -1,0 +1,23 @@
+diff --git a/lib/message-queue.js b/lib/message-queue.js
+index 0706c9935ffa338f576e3a564d59e281e6960b8d..a900deb3b2d256f5ead5270f7a1bf566898e810c 100644
+--- a/lib/message-queue.js
++++ b/lib/message-queue.js
+@@ -11,7 +11,6 @@ function MessageQueue() {
+   self.collectionName = '_queue';
+ 
+   self.pollingInterval = 1000;
+-  self.processingTimeout = 30 * 1000;
+   self.maxWorkers = 5;
+ 
+   const _workers = {};
+@@ -198,9 +197,7 @@ function MessageQueue() {
+         {
+           $or: [{nextReceivableTime: {$lt: new Date()}}, {nextReceivableTime: {$exists: false}}],
+         },
+-        {
+-          $or: [{receivedTime: {$lt: new Date(Date.now() - self.processingTimeout)}}, {receivedTime: {$exists: false}}],
+-        },
++	  	 { receivedTime: {$exists: false} }, // either released or rejected, rejection is filtered by { rejectedTime: { $exists: false } } already
+       ],
+     };
+     const update = {
