@@ -122,7 +122,7 @@ export const useRoomMenuActions = ({
 		return [
 			{
 				id: 'turnOnNotifications',
-				icon: isNotificationEnabled ? 'bell' : 'bell-off',
+				icon: isNotificationEnabled ? 'bell-off' : 'bell',
 				content: isNotificationEnabled ? t('Turn_ON') : t('Turn_OFF'),
 				onClick: handleToggleNotification,
 			},
