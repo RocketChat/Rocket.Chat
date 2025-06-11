@@ -2,6 +2,7 @@ import type { IOutboundProviderMetadata, Serialized } from '@rocket.chat/core-ty
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import MessageStep from './steps/MessageStep';
 import RecipientStep from './steps/RecipientStep';
 import { StepsWizard } from '../../../../StepsWizard';
 
@@ -34,6 +35,8 @@ export const OutboundMessageWizard = ({ defaultValues }: OutboundMessageWizardPr
 		<StepsWizard>
 			<FormProvider {...methods}>
 				<RecipientStep />
+
+				<MessageStep />
 			</FormProvider>
 		</StepsWizard>
 	);
