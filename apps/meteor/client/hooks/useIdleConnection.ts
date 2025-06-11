@@ -23,5 +23,5 @@ export const useIdleConnection = (uid: string | null) => {
 		}
 	});
 
-	useIdleActiveEvents({ id: 'useLoginPresence', time: 60 * 1000, awayOnWindowBlur: true }, disconnect, reconnect);
+	useIdleActiveEvents({ id: 'useLoginPresence', time: 60 * 1000 }, disconnect, reconnect);
 };
