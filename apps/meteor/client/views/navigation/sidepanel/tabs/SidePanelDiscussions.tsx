@@ -1,16 +1,15 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import type { SidePanelFiltersKeys } from '../../contexts/RoomsNavigationContext';
-import { useSidePanelRoomsListTab, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
+import { SIDE_PANEL_GROUPS, useSidePanelRoomsListTab, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
 
-const SidePanelDiscussions = ({ currentTab }: { currentTab: SidePanelFiltersKeys }) => {
-	const rooms = useSidePanelRoomsListTab(currentTab);
+const SidePanelDiscussions = () => {
+	const rooms = useSidePanelRoomsListTab(SIDE_PANEL_GROUPS.DISCUSSIONS);
 	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
 
 	return (
 		<SidePanel
-			currentTab={currentTab}
+			currentTab={SIDE_PANEL_GROUPS.DISCUSSIONS}
 			onlyUnreads={unreadOnly}
 			toggleOnlyUnreads={toggleOnlyUnreads}
 			rooms={rooms as SubscriptionWithRoom[]}

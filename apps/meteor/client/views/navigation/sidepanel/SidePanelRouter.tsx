@@ -10,13 +10,13 @@ const SidePanelRouter = () => {
 	// TODO: figure out if we need this switch
 	switch (currentTab) {
 		case SIDE_PANEL_GROUPS.ALL:
-			return <SidePanelAll currentTab={currentTab} />;
+			return <SidePanelAll />;
 		case SIDE_PANEL_GROUPS.MENTIONS:
-			return <SidePanelMentions currentTab={currentTab} />;
+			return <SidePanelMentions />;
 		case SIDE_PANEL_GROUPS.FAVORITES:
-			return <SidePanelFavorites currentTab={currentTab} />;
+			return <SidePanelFavorites />;
 		case SIDE_PANEL_GROUPS.DISCUSSIONS:
-			return <SidePanelDiscussions currentTab={currentTab} />;
+			return <SidePanelDiscussions />;
 		// case SIDE_PANEL_GROUPS.IN_PROGRESS:
 		// 	return null; // TODO implement tab
 		// case SIDE_PANEL_GROUPS.QUEUE:
