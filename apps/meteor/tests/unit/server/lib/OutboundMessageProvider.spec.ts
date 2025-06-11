@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 import { OutboundMessageProvider } from '../../../../server/lib/OutboundMessageProvider';
 
-describe.only('OutboundMessageProvider', () => {
+describe('OutboundMessageProvider', () => {
 	let outboundMessageProvider: OutboundMessageProvider;
 
 	beforeEach(() => {
