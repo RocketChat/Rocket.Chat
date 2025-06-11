@@ -59,7 +59,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 		extraQuery?: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
-	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
+	checkOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<boolean>;
 	getOnlineForDepartment(
 		departmentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
