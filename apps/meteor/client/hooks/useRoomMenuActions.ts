@@ -1,12 +1,13 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { Fields } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
+import type { Fields, LocationPathname } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
+import { useToggleNotificationAction } from './menuActions/useToggleNotificationsAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
@@ -15,6 +16,7 @@ const fields: Fields = {
 	f: true,
 	t: true,
 	name: true,
+	disableNotifications: true,
 };
 
 type RoomMenuActionsProps = {
@@ -25,6 +27,7 @@ type RoomMenuActionsProps = {
 	cl?: boolean;
 	roomOpen?: boolean;
 	hideDefaultOptions: boolean;
+	href: LocationPathname | false;
 };
 
 export const useRoomMenuActions = ({
@@ -35,14 +38,17 @@ export const useRoomMenuActions = ({
 	cl,
 	roomOpen,
 	hideDefaultOptions,
+	href,
 }: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid, fields);
+	const router = useRouter();
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const isNotificationEnabled = !!subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -58,6 +64,7 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -107,6 +114,27 @@ export const useRoomMenuActions = ({
 		],
 	);
 
+	const notificationsMenuOptions = useMemo(() => {
+		if (!subscription || hideDefaultOptions || isOmnichannelRoom || !href) {
+			return undefined;
+		}
+
+		return [
+			{
+				id: 'turnOnNotifications',
+				icon: isNotificationEnabled ? 'bell' : 'bell-off',
+				content: isNotificationEnabled ? t('Turn_ON') : t('Turn_OFF'),
+				onClick: handleToggleNotification,
+			},
+			{
+				id: 'notifications',
+				icon: 'customize',
+				content: t('Preferences'),
+				onClick: () => router.navigate(`${href}/push-notifications` as LocationPathname),
+			},
+		];
+	}, [hideDefaultOptions, isNotificationEnabled, subscription, t, router, href, handleToggleNotification, isOmnichannelRoom]);
+
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
 		return [
 			{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] },
@@ -114,5 +142,8 @@ export const useRoomMenuActions = ({
 		];
 	}
 
-	return [{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] }];
+	return [
+		{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] },
+		...(notificationsMenuOptions ? [{ title: t('Notifications'), items: notificationsMenuOptions as GenericMenuItemProps[] }] : []),
+	];
 };
