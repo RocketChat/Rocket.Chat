@@ -255,6 +255,7 @@
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
+		"@rocket.chat/homeserver": "workspace:^",
 		"@rocket.chat/i18n": "workspace:^",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/instance-status": "workspace:^",

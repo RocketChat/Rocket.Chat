@@ -8502,6 +8502,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/homeserver@workspace:^, @rocket.chat/homeserver@workspace:packages/homeserver":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/homeserver@workspace:packages/homeserver"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@types/node": "npm:^20.11.4"
+    typescript: "npm:~5.6.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/i18n@workspace:^, @rocket.chat/i18n@workspace:packages/i18n, @rocket.chat/i18n@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/i18n@workspace:packages/i18n"
@@ -8829,6 +8840,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
+    "@rocket.chat/homeserver": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/instance-status": "workspace:^"
@@ -13000,6 +13012,15 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.11.4":
+  version: 20.19.0
+  resolution: "@types/node@npm:20.19.0"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/76cc44487faa0bf5302c84e5317de4b9727ea4e4b86d59d18d25435f4ccd7e6c584614dea061256f24a097c25a1d82dac1cd134357b42ae28006ba113c97f490
   languageName: node
   linkType: hard
 
@@ -36730,6 +36751,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.6.3":
+  version: 5.6.3
+  resolution: "typescript@npm:5.6.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/c328e418e124b500908781d9f7b9b93cf08b66bf5936d94332b463822eea2f4e62973bfb3b8a745fdc038785cb66cf59d1092bac3ec2ac6a3e5854687f7833f1
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.8.3":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
@@ -36737,6 +36768,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~5.6.3#optional!builtin<compat/typescript>":
+  version: 5.6.3
+  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/00504c01ee42d470c23495426af07512e25e6546bce7e24572e72a9ca2e6b2e9bea63de4286c3cfea644874da1467dcfca23f4f98f7caf20f8b03c0213bb6837
   languageName: node
   linkType: hard
 

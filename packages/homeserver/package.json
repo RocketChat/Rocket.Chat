@@ -1,0 +1,28 @@
+{
+  "name": "@rocket.chat/homeserver",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/models": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.4",
+    "typescript": "~5.6.3"
+  },
+  "engines": {
+    "node": ">=20.11.4"
+  }
+}
