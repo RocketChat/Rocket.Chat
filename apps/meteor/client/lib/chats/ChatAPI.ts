@@ -39,7 +39,7 @@ export type ComposerAPI = {
 	setCursorToEnd(): void;
 	setCursorToStart(): void;
 	replyWith(text: string): Promise<void>;
-	quoteMessage(message: IMessage, quoteChainLimit?: number): Promise<void>;
+	quoteMessage(message: IMessage): Promise<void>;
 	dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
 	dismissAllQuotedMessages(): Promise<void>;
 	readonly quotedMessages: Subscribable<IMessage[]>;
