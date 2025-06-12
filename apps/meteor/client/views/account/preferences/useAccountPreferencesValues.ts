@@ -17,6 +17,7 @@ export type AccountPreferencesData = {
 	alsoSendThreadToChannel?: 'default' | 'always' | 'never';
 	useEmojis?: boolean;
 	convertAsciiEmoji?: boolean;
+	toggleFormatting?: boolean;
 	autoImageLoad?: boolean;
 	saveMobileBandwidth?: boolean;
 	collapseMediaByDefault?: boolean;
@@ -60,6 +61,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const alsoSendThreadToChannel = useUserPreference<'default' | 'always' | 'never'>('alsoSendThreadToChannel');
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 	const convertAsciiEmoji = useUserPreference<boolean>('convertAsciiEmoji');
+	const toggleFormatting = useUserPreference<boolean>('toggleFormatting');
 	const autoImageLoad = useUserPreference<boolean>('autoImageLoad');
 	const saveMobileBandwidth = useUserPreference<boolean>('saveMobileBandwidth');
 	const collapseMediaByDefault = useUserPreference<boolean>('collapseMediaByDefault');
@@ -94,6 +96,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		alsoSendThreadToChannel,
 		useEmojis,
 		convertAsciiEmoji,
+		toggleFormatting,
 		autoImageLoad,
 		saveMobileBandwidth,
 		collapseMediaByDefault,

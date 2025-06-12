@@ -104,6 +104,7 @@ const preferences = {
 		clockMode: 1,
 		useEmojis: true,
 		convertAsciiEmoji: true,
+		toggleFormatting: true,
 		saveMobileBandwidth: true,
 		collapseMediaByDefault: false,
 		autoImageLoad: true,

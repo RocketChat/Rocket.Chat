@@ -20,6 +20,7 @@ type UserPreferences = {
 	clockMode: number;
 	useEmojis: boolean;
 	convertAsciiEmoji: boolean;
+	toggleFormatting: boolean;
 	saveMobileBandwidth: boolean;
 	collapseMediaByDefault: boolean;
 	autoImageLoad: boolean;
@@ -94,6 +95,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		clockMode: Match.Optional(Number),
 		useEmojis: Match.Optional(Boolean),
 		convertAsciiEmoji: Match.Optional(Boolean),
+		toggleFormatting: Match.Optional(Boolean),
 		saveMobileBandwidth: Match.Optional(Boolean),
 		collapseMediaByDefault: Match.Optional(Boolean),
 		autoImageLoad: Match.Optional(Boolean),

@@ -1184,6 +1184,7 @@
   "Conversations_per_day": "Conversations per Day",
   "Convert": "Convert",
   "Convert_Ascii_Emojis": "Convert ASCII to Emoji",
+  "Toggle_Formatting": "Toggle markdown formatting",
   "Convert_to_channel": "Convert to Channel",
   "Converted__roomName__to_a_channel": "converted #{{roomName}} to channel",
   "Converted__roomName__to_a_team": "converted #{{roomName}} to a team",
