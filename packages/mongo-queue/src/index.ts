@@ -282,4 +282,4 @@ export class MessageQueue {
 	}
 }
 
-export { Actions, WorkerPromise, QueueItem, Work, ValidResult } from './types';
+export { Actions, WorkerPromise, Work, ValidResult } from './types';
