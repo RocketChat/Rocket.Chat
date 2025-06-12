@@ -4815,6 +4815,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:^1.1.5":
+  version: 1.8.0
+  resolution: "@noble/hashes@npm:1.8.0"
+  checksum: 10/474b7f56bc6fb2d5b3a42132561e221b0ea4f91e590f4655312ca13667840896b34195e2b53b7f097ec080a1fdd3b58d902c2a8d0fbdf51d2e238b53808a177e
+  languageName: node
+  linkType: hard
+
 "@node-oauth/formats@npm:1.0.0":
   version: 1.0.0
   resolution: "@node-oauth/formats@npm:1.0.0"
@@ -5392,6 +5399,15 @@ __metadata:
   version: 1.27.0
   resolution: "@opentelemetry/semantic-conventions@npm:1.27.0"
   checksum: 10/98166522f299e2fe3d43376adbdeb92679b75ebb172e2a3c4c71f2942bd91585e9537618efbbae6dc08177699e5719368edf66d7e69e8636f360b85217bbdbe1
+  languageName: node
+  linkType: hard
+
+"@paralleldrive/cuid2@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@paralleldrive/cuid2@npm:2.2.2"
+  dependencies:
+    "@noble/hashes": "npm:^1.1.5"
+  checksum: 10/40ee269d6e47b4fed7706a2e4da7c27c3c668ebc969110d6d112277b6b16a67cce0503b53b9943f2c55035a72d225f77ea5541e03396d6429eec9252137a53b7
   languageName: node
   linkType: hard
 
@@ -8502,6 +8518,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/http-router@workspace:^, @rocket.chat/http-router@workspace:packages/http-router":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/http-router@workspace:packages/http-router"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@types/express": "npm:^4.17.21"
+    "@types/jest": "npm:~29.5.14"
+    "@types/supertest": "npm:^6.0.3"
+    ajv: "npm:^8.17.1"
+    eslint: "npm:~8.45.0"
+    express: "npm:^4.21.2"
+    hono: "npm:^4.6.19"
+    jest: "npm:~29.7.0"
+    qs: "npm:^6.14.0"
+    supertest: "npm:^7.1.1"
+    ts-jest: "npm:~29.1.2"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/i18n@workspace:^, @rocket.chat/i18n@workspace:packages/i18n, @rocket.chat/i18n@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/i18n@workspace:packages/i18n"
@@ -8829,6 +8867,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
+    "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/instance-status": "workspace:^"
@@ -13412,6 +13451,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/supertest@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "@types/supertest@npm:6.0.3"
+  dependencies:
+    "@types/methods": "npm:^1.1.4"
+    "@types/superagent": "npm:^8.1.0"
+  checksum: 10/6ec05eb591c97bc856b0e78c12f5bec10545f3a749688f34232d189797a506d971bc95931718eb57b378d8513f6d2d12462383e6d68455fa72df35c19de6e89e
+  languageName: node
+  linkType: hard
+
 "@types/supports-color@npm:~7.2.1":
   version: 7.2.1
   resolution: "@types/supports-color@npm:7.2.1"
@@ -16366,7 +16415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bs-logger@npm:^0.2.6":
+"bs-logger@npm:0.x, bs-logger@npm:^0.2.6":
   version: 0.2.6
   resolution: "bs-logger@npm:0.2.6"
   dependencies:
@@ -22079,6 +22128,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"formidable@npm:^3.5.4":
+  version: 3.5.4
+  resolution: "formidable@npm:3.5.4"
+  dependencies:
+    "@paralleldrive/cuid2": "npm:^2.2.2"
+    dezalgo: "npm:^1.0.4"
+    once: "npm:^1.4.0"
+  checksum: 10/4645e6ce3d8bbefd3dd873dcd6211362da3bf8a04c8426d7f454c238be0142975f02e5bdbc792fdbd2be493fdcf5442fe01d9a246bd8c3fd8e779738290cc630
+  languageName: node
+  linkType: hard
+
 "forwarded@npm:0.2.0":
   version: 0.2.0
   resolution: "forwarded@npm:0.2.0"
@@ -26853,7 +26913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.memoize@npm:^4.1.2":
+"lodash.memoize@npm:4.x, lodash.memoize@npm:^4.1.2":
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
   checksum: 10/192b2168f310c86f303580b53acf81ab029761b9bd9caa9506a019ffea5f3363ea98d7e39e7e11e6b9917066c9d36a09a11f6fe16f812326390d8f3a54a1a6da
@@ -27176,7 +27236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-error@npm:^1.1.1, make-error@npm:^1.3.6":
+"make-error@npm:1.x, make-error@npm:^1.1.1, make-error@npm:^1.3.6":
   version: 1.3.6
   resolution: "make-error@npm:1.3.6"
   checksum: 10/b86e5e0e25f7f777b77fabd8e2cbf15737972869d852a22b7e73c17623928fccb826d8e46b9951501d3f20e51ad74ba8c59ed584f610526a48f8ccf88aaec402
@@ -35256,6 +35316,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"superagent@npm:^10.2.1":
+  version: 10.2.1
+  resolution: "superagent@npm:10.2.1"
+  dependencies:
+    component-emitter: "npm:^1.3.0"
+    cookiejar: "npm:^2.1.4"
+    debug: "npm:^4.3.4"
+    fast-safe-stringify: "npm:^2.1.1"
+    form-data: "npm:^4.0.0"
+    formidable: "npm:^3.5.4"
+    methods: "npm:^1.1.2"
+    mime: "npm:2.6.0"
+    qs: "npm:^6.11.0"
+  checksum: 10/fb91785361955e45d3be7d69f11b64b072678385acbd50ae38f713d6f4862384f138bd9842aff96f475c139b3afda96ea6b016dd544e9a984cf0bcc9e0c103b7
+  languageName: node
+  linkType: hard
+
 "superagent@npm:^9.0.1":
   version: 9.0.2
   resolution: "superagent@npm:9.0.2"
@@ -35280,6 +35357,16 @@ __metadata:
     methods: "npm:^1.1.2"
     superagent: "npm:^9.0.1"
   checksum: 10/73bf2a37e13856a1b3e6a37b9df5cec8e506aa0360a5f5ecd989d1f4b0edf168883e306012e81e371d5252c17d4c7bef4ba30633dbf3877cbf52fc7af51cca9b
+  languageName: node
+  linkType: hard
+
+"supertest@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "supertest@npm:7.1.1"
+  dependencies:
+    methods: "npm:^1.1.2"
+    superagent: "npm:^10.2.1"
+  checksum: 10/17e2db5d7aef36599f7fe526972e86ceccf3f52300d5d5ba56770a79a85b55172662d80b88591c6d7468e2018b4b75c418c4ffcd9a16d08645ce8f8ddf5f0c90
   languageName: node
   linkType: hard
 
@@ -36146,6 +36233,42 @@ __metadata:
   version: 2.2.0
   resolution: "ts-dedent@npm:2.2.0"
   checksum: 10/93ed8f7878b6d5ed3c08d99b740010eede6bccfe64bce61c5a4da06a2c17d6ddbb80a8c49c2d15251de7594a4f93ffa21dd10e7be75ef66a4dc9951b4a94e2af
+  languageName: node
+  linkType: hard
+
+"ts-jest@npm:~29.1.2":
+  version: 29.1.5
+  resolution: "ts-jest@npm:29.1.5"
+  dependencies:
+    bs-logger: "npm:0.x"
+    fast-json-stable-stringify: "npm:2.x"
+    jest-util: "npm:^29.0.0"
+    json5: "npm:^2.2.3"
+    lodash.memoize: "npm:4.x"
+    make-error: "npm:1.x"
+    semver: "npm:^7.5.3"
+    yargs-parser: "npm:^21.0.1"
+  peerDependencies:
+    "@babel/core": ">=7.0.0-beta.0 <8"
+    "@jest/transform": ^29.0.0
+    "@jest/types": ^29.0.0
+    babel-jest: ^29.0.0
+    jest: ^29.0.0
+    typescript: ">=4.3 <6"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@jest/transform":
+      optional: true
+    "@jest/types":
+      optional: true
+    babel-jest:
+      optional: true
+    esbuild:
+      optional: true
+  bin:
+    ts-jest: cli.js
+  checksum: 10/11a29a49130f1c9bef5aebe8007f6be3e630af6c2dea6b00ff5a86d649321854a43966b4990a43960d77a3f98d7a753b9b7e19c20c42a2d38341d6e67a3e48d1
   languageName: node
   linkType: hard
 
@@ -38571,7 +38694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs-parser@npm:^21.1.1":
+"yargs-parser@npm:^21.0.1, yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
   checksum: 10/9dc2c217ea3bf8d858041252d43e074f7166b53f3d010a8c711275e09cd3d62a002969a39858b92bbda2a6a63a585c7127014534a560b9c69ed2d923d113406e

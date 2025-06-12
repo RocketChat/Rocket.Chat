@@ -1,13 +1,13 @@
 import { Readable, PassThrough } from 'stream';
 
+import { honoAdapterForExpress } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
 import type { Request, Response as ExpressResponse } from 'express';
 import express from 'express';
 import type { Hono } from 'hono';
 import request from 'supertest';
 
-import { honoAdapter } from './middlewares/honoAdapter';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 
 // Helper to create a ReadableStream from a string
 const stringToReadableStream = (str: string): ReadableStream<Uint8Array> => {
@@ -54,8 +54,8 @@ describe('Router use method', () => {
 	it('should fail if the query request is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const test = new Router('/test').get(
+		const api = new RocketChatAPIRouter('/api');
+		const test = new RocketChatAPIRouter('/test').get(
 			'/',
 			{
 				typed: true,
@@ -92,8 +92,8 @@ describe('Router use method', () => {
 	it('should fail if the body request is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const test = new Router('/test').post(
+		const api = new RocketChatAPIRouter('/api');
+		const test = new RocketChatAPIRouter('/test').post(
 			'/',
 			{
 				typed: true,
@@ -133,8 +133,8 @@ describe('Router use method', () => {
 		process.env.TEST_MODE = 'true';
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const test = new Router('/test').get(
+		const api = new RocketChatAPIRouter('/api');
+		const test = new RocketChatAPIRouter('/test').get(
 			'/',
 			{
 				typed: true,
@@ -166,13 +166,13 @@ describe('Router use method', () => {
 	it('middleware should be applied only on the right path', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const v1 = new Router('/v1').use(async (x, next) => {
+		const api = new RocketChatAPIRouter('/api');
+		const v1 = new RocketChatAPIRouter('/v1').use(async (x, next) => {
 			x.header('x-api-version', 'v1');
 			await next();
 		});
-		const v2 = new Router('/v2');
-		const test = new Router('/test').get(
+		const v2 = new RocketChatAPIRouter('/v2');
+		const test = new RocketChatAPIRouter('/test').get(
 			'/',
 			{
 				response: {
@@ -222,7 +222,7 @@ describe('Router use method', () => {
 			required: ['outerProperty'],
 		});
 
-		const api = new Router('/api').get(
+		const api = new RocketChatAPIRouter('/api').get(
 			'/test',
 			{
 				response: {
@@ -259,8 +259,8 @@ describe('Router use method', () => {
 	it('should fail if the delete request body is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const test = new Router('/test').delete(
+		const api = new RocketChatAPIRouter('/api');
+		const test = new RocketChatAPIRouter('/test').delete(
 			'/',
 			{
 				typed: true,
@@ -298,8 +298,8 @@ describe('Router use method', () => {
 	it('should fail if the put request body is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
-		const test = new Router('/test').put(
+		const api = new RocketChatAPIRouter('/api');
+		const test = new RocketChatAPIRouter('/test').put(
 			'/',
 			{
 				typed: true,
@@ -366,7 +366,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes, getOutputString } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		await adapter(mockExpressRequest, mockRes);
 
@@ -395,7 +395,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes, getOutputString } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		await adapter(mockExpressRequest, mockRes);
 
@@ -414,7 +414,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes, getOutputBuffer } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		await adapter(mockExpressRequest, mockRes);
 
@@ -432,7 +432,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes, getOutputString } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		await adapter(mockExpressRequest, mockRes);
 
@@ -461,7 +461,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes, getOutputString } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		await adapter(mockPostRequest, mockRes);
 
@@ -487,7 +487,7 @@ describe('honoAdapter', () => {
 		(mockHono.request as jest.Mock).mockResolvedValue(mockHonoResponse);
 
 		const { mockRes } = createMockResponse();
-		const adapter = honoAdapter(mockHono);
+		const adapter = honoAdapterForExpress(mockHono);
 
 		mockExpressRequest.on = jest.fn();
 		Object.defineProperty(mockExpressRequest, 'readableFlowing', { value: null, writable: true });

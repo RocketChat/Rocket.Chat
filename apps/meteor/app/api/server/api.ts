@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { Route } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -44,8 +45,7 @@ import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
-import type { Route } from './router';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -158,7 +158,7 @@ export class APIClass<
 		inviteToken: number;
 	};
 
-	readonly router: Router<any>;
+	readonly router: RocketChatAPIRouter<any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		this.version = properties.version;
@@ -193,7 +193,7 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();
@@ -1153,7 +1153,7 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 };
 
 export const API: {
-	api: Router<'/api'>;
+	api: RocketChatAPIRouter<'/api'>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
@@ -1181,7 +1181,7 @@ export const API: {
 	};
 } = {
 	ApiClass: APIClass,
-	api: new Router('/api'),
+	api: new RocketChatAPIRouter('/api'),
 	v1: createApi({
 		version: 'v1',
 		useDefaultAuth: true,

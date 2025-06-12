@@ -4,13 +4,13 @@ import request from 'supertest';
 
 import { cors } from './cors';
 import { CachedSettings } from '../../../settings/server/CachedSettings';
-import { Router } from '../router';
+import { RocketChatAPIRouter } from '../router';
 
 describe('Cors middleware', () => {
 	it('should return allow-origin header for GET if CORS enabled', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
@@ -58,7 +58,7 @@ describe('Cors middleware', () => {
 	it('should return allow-origin header for GET if CORS disabled', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
@@ -102,7 +102,7 @@ describe('Cors middleware', () => {
 	it('should handle CORS if enabled to *', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
@@ -153,7 +153,7 @@ describe('Cors middleware', () => {
 	it('should handle CORS if enabled to specific origin', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
@@ -204,7 +204,7 @@ describe('Cors middleware', () => {
 	it('should not handle CORS if origin is not allowed', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
@@ -248,7 +248,7 @@ describe('Cors middleware', () => {
 	it('should not handle CORS if disabled', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new Router('/api');
+		const api = new RocketChatAPIRouter('/api');
 		const settings = new CachedSettings();
 
 		settings.set({
