@@ -1,3 +1,4 @@
+// Template from App to RC
 export interface IOutboundProviderTemplate {
 	id: string;
 	name: string;
@@ -6,23 +7,23 @@ export interface IOutboundProviderTemplate {
 	category: 'AUTHENTICATION' | 'UTILITY' | 'MARKETING' | string;
 	// Note: by default, the app will filter all the templates that are not APPROVED
 	status: 'APPROVED' | 'REJECTED' | 'PENDING' | string;
-	quality_score: {
+	qualityScore: {
 		score: 'GREEN' | 'YELLOW' | 'RED' | 'UNKNOWN' | string;
 		reasons: string[] | null;
 	};
 	components: Component[];
-	created_at: string; // ISO 8601 timestamp
-	created_by: string;
-	modified_at: string; // ISO 8601 timestamp
-	modified_by: string;
+	createdAt: string; // ISO 8601 timestamp
+	createdBy: string;
+	modifiedAt: string; // ISO 8601 timestamp
+	modifiedBy: string;
 	namespace: string;
-	waba_account_id: string;
+	wabaAccountId: string;
 	// This is the phone number that will be used to send the message.
-	phone_number: string;
-	partner_id: string;
-	external_id: string;
-	updated_external: string; // ISO 8601 timestamp
-	rejected_reason: string | null;
+	phoneNumber: string;
+	partnerId: string;
+	externalId: string;
+	updatedExternal: string; // ISO 8601 timestamp
+	rejectedReason: string | null;
 }
 
 type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
@@ -34,7 +35,7 @@ interface IHeaderComponent {
 	format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
 	text?: string;
 	example?: {
-		header_text?: string[];
+		headerText?: string[];
 	};
 }
 
@@ -42,7 +43,7 @@ interface IBodyComponent {
 	type: 'BODY';
 	text: string;
 	example?: {
-		body_text: string[][];
+		bodyText: string[][];
 	};
 }
 
