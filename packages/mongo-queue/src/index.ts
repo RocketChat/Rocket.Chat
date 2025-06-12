@@ -1,6 +1,6 @@
 import type { Db, Filter, ObjectId, UpdateFilter } from 'mongodb';
 
-import type { WorkerPromise, Actions, QueueItem } from './types';
+import type { WorkerPromise, Actions, Work } from './types';
 
 // TODO... what indexes should be created and should this be responsible for creating them?
 export class MessageQueue {
@@ -32,7 +32,7 @@ export class MessageQueue {
 	}
 
 	enqueue<T>(type: Actions, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<ObjectId> {
-		const queueItem: QueueItem<T> = {
+		const queueItem: Work<T> = {
 			dateCreated: new Date(),
 			type,
 			message,
@@ -49,7 +49,7 @@ export class MessageQueue {
 	}
 
 	async enqueueAndProcess<T>(type: Actions, message: T, _options?: { nextReceivableTime: Date; priority: number }): Promise<number> {
-		const queueItem: QueueItem<T> = {
+		const queueItem: Work<T> = {
 			dateCreated: new Date(),
 			type,
 			message,
@@ -116,7 +116,7 @@ export class MessageQueue {
 		}
 	}
 
-	async _process(queueItem: QueueItem<any>) {
+	async _process<T>(queueItem: Work<T>) {
 		const worker = this._workers[queueItem.type];
 		if (!worker) {
 			throw new Error(`No worker registered for type: ${queueItem.type}`);
@@ -135,15 +135,15 @@ export class MessageQueue {
 		}
 	}
 
-	async _enqueue<T>(queueItem: QueueItem<T>) {
+	async _enqueue<T>(queueItem: Work<T>) {
 		const collection = await this._getCollection();
 		const result = await collection.insertOne(queueItem);
 
 		return result?.insertedId;
 	}
 
-	_release<T>(queueItem: QueueItem<T>) {
-		const update: UpdateFilter<QueueItem<T>> = {
+	_release<T>(queueItem: Work<T>) {
+		const update: UpdateFilter<Work<T>> = {
 			$unset: {
 				receivedTime: '',
 			},
@@ -164,8 +164,8 @@ export class MessageQueue {
 		return this._updateOneById(queueItem._id!, update);
 	}
 
-	_reject<T>(queueItem: QueueItem<T>) {
-		const update: UpdateFilter<QueueItem<T>> = {
+	_reject<T>(queueItem: Work<T>) {
+		const update: UpdateFilter<Work<T>> = {
 			$unset: {
 				receivedTime: '',
 				nextReceivableTime: '',
@@ -246,7 +246,7 @@ export class MessageQueue {
 			throw new Error('No database configured');
 		}
 		const db = await this.databasePromise();
-		return db.collection<QueueItem<T>>(this.collectionName);
+		return db.collection<Work<T>>(this.collectionName);
 	}
 
 	async _removeOne(query: Filter<any>) {
@@ -265,13 +265,13 @@ export class MessageQueue {
 		return result.deletedCount;
 	}
 
-	async _updateOne<T>(query: Filter<any>, update: UpdateFilter<QueueItem<T>>) {
+	async _updateOne<T>(query: Filter<any>, update: UpdateFilter<Work<T>>) {
 		const collection = await this._getCollection();
 		const result = await collection.updateOne(query, update);
 		return result.modifiedCount;
 	}
 
-	_updateOneById<T>(id: ObjectId, update: UpdateFilter<QueueItem<T>>) {
+	_updateOneById<T>(id: ObjectId, update: UpdateFilter<Work<T>>) {
 		return this._updateOne({ _id: id }, update);
 	}
 

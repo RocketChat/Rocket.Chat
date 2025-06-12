@@ -27,4 +27,3 @@ export type ValidResult = 'Completed' | 'Rejected' | 'Retry';
 export type Actions = 'work' | 'workComplete';
 
 export type WorkerPromise<T> = (queueItem: Work<T>) => Promise<ValidResult>;
-export type QueueItem<T> = Work<T>;
