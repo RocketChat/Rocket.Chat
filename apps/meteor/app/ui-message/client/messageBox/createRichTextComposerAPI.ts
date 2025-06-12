@@ -44,7 +44,13 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		emitter.emit('quotedMessagesUpdate');
 	};
 
+	// Tracking position of text selection range for debugging purpose
+	const printSelection = (): void => {
+		console.log(getSelectionRange(input));
+	};
+
 	input.addEventListener('input', persist);
+	document.addEventListener('selectionchange', printSelection);
 
 	const setText = (
 		text: string,
@@ -214,14 +220,18 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
+		document.removeEventListener('selectionchange', printSelection);
 		stopFormatterTracker.stop();
 	};
 
 	const wrapSelection = (pattern: string): void => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		const initText = input.innerText.slice(0, selectionStart);
-		const selectedText = input.innerText.slice(selectionStart, selectionEnd);
-		const finalText = input.innerText.slice(selectionEnd, input.innerText.length);
+		// Sanitize the innerText by reducing multiple instances of linebreaks
+		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+
+		const initText = cleanedInitText.slice(0, selectionStart);
+		const selectedText = cleanedInitText.slice(selectionStart, selectionEnd);
+		const finalText = cleanedInitText.slice(selectionEnd, input.innerText.length);
 
 		focus();
 
@@ -240,16 +250,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 				/* Get current selection range */
 				const { selectionStart } = getSelectionRange(input);
 
-				/* This code is redundant! Probably ... */
-				/* input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length; */
-
 				if (!document.execCommand?.('insertText', false, selectedText)) {
 					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 				}
-
-				/* input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length; */
 
 				const newStart = selectionStart - startPattern.length;
 				const newEnd = newStart + selectedText.length;
