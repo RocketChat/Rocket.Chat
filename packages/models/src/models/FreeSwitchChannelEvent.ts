@@ -1,6 +1,5 @@
 import type { IFreeSwitchChannelEvent, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IFreeSwitchChannelEventModel, InsertionModel } from '@rocket.chat/model-typings';
-import { convertFromDaysToSeconds } from '@rocket.chat/tools';
 import type { IndexDescription, Collection, Db, FindOptions, FindCursor, WithoutId, InsertOneResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -14,7 +13,7 @@ export class FreeSwitchChannelEventRaw extends BaseRaw<IFreeSwitchChannelEvent> 
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
 			// Allow 3 days of events to be saved
-			{ key: { receivedAt: 1 }, expireAfterSeconds: convertFromDaysToSeconds(3) },
+			{ key: { receivedAt: 1 }, expireAfterSeconds: 3 * 24 * 60 * 60 },
 		];
 	}
 
