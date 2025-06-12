@@ -71,7 +71,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Security', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('account/security');
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 		});
 
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {

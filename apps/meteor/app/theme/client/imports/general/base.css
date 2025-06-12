@@ -79,13 +79,6 @@ button {
 
 @media print {
 	#rocket-chat.menu-nav,
-	.main-content {
-		overflow: visible !important; /* 1 */
-		height: auto !important; /* 1 */
-		max-height: none !important; /* 1 */
-		flex-shrink: 0 !important; /* 1 */
-	}
-
 	.messages-container .wrapper {
 		position: relative !important; /* 1 */
 	}
