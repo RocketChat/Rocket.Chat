@@ -107,6 +107,7 @@ export class MockedAppRootBuilder {
 
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
+		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => undefined],
