@@ -62,6 +62,7 @@ export const registerAppLogsExportHandler = ({ api, _manager, _orch }: AppsRestA
 					},
 				}),
 				400: isErrorResponse,
+				401: isErrorResponse,
 				404: isErrorResponse,
 			},
 		},
