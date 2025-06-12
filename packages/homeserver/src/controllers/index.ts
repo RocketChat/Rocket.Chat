@@ -55,8 +55,13 @@ export function getAllRoutes(): RouteHandler[] {
 	const routes: RouteHandler[] = [];
 	
 	for (const ControllerClass of controllerClasses) {
-		const controller = container.resolve(ControllerClass);
-		routes.push(...controller.getRoutes());
+		try {
+			console.log('Resolving controller:', ControllerClass.name);
+			const controller = container.resolve(ControllerClass);
+			routes.push(...controller.getRoutes());	
+		} catch (error) {
+			console.error(`Error resolving controller ${ControllerClass.name}:`, error);
+		}
 	}
 	
 	return routes;

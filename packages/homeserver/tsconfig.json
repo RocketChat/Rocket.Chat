@@ -12,7 +12,8 @@
     "module": "ES2020",
     "moduleResolution": "node",
     "downlevelIteration": true,
-    "lib": ["ES2020"]
+    "lib": ["ES2020"],
+    "types": ["reflect-metadata"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

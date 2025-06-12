@@ -1,6 +1,7 @@
 import type { ProtocolVersionKey } from '../../signJson';
 import { createLogger } from '../../utils/logger';
 import * as nacl from 'tweetnacl';
+import { injectable } from 'tsyringe';
 
 interface KeyData {
 	server_name: string;
@@ -17,6 +18,7 @@ interface KeyData {
 	};
 }
 
+@injectable()
 export class SignatureVerificationService {
 	private readonly logger = createLogger('SignatureVerificationService');
 	private cachedKeys = new Map<string, KeyData>();

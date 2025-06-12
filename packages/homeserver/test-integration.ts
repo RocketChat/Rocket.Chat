@@ -5,7 +5,7 @@ async function testIntegration() {
 	console.log('Testing homeserver integration...');
 	
 	const config = {
-		url: 'http://localhost:8080',
+		url: 'http://localhost:8448',
 		domain: 'test.local',
 		appServiceToken: 'test-token',
 		homeserverToken: 'test-token',
