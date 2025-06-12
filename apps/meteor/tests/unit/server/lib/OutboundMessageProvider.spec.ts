@@ -1,4 +1,7 @@
-import type { OutboundComms } from '@rocket.chat/core-typings';
+import type {
+	IOutboundEmailMessageProvider,
+	IOutboundPhoneMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundComunication';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -12,7 +15,7 @@ describe('OutboundMessageProvider', () => {
 	});
 
 	it('should successfully register a phone provider', () => {
-		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+		const phoneProvider: IOutboundPhoneMessageProvider = {
 			type: 'phone',
 			appId: '123',
 			name: 'Test Phone Provider',
@@ -29,7 +32,7 @@ describe('OutboundMessageProvider', () => {
 	});
 
 	it('should successfully register a email provider', () => {
-		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+		const emailProvider: IOutboundEmailMessageProvider = {
 			type: 'email',
 			appId: '123',
 			name: 'Test Email Provider',
@@ -45,7 +48,7 @@ describe('OutboundMessageProvider', () => {
 	});
 
 	it('should list currently registered providers [unfiltered]', () => {
-		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+		const phoneProvider: IOutboundPhoneMessageProvider = {
 			type: 'phone',
 			appId: '123',
 			name: 'Test Phone Provider',
@@ -53,7 +56,7 @@ describe('OutboundMessageProvider', () => {
 			getProviderMetadata: sinon.stub(),
 		};
 
-		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+		const emailProvider: IOutboundEmailMessageProvider = {
 			type: 'email',
 			appId: '123',
 			name: 'Test Email Provider',
@@ -71,7 +74,7 @@ describe('OutboundMessageProvider', () => {
 	});
 
 	it('should list currently registered providers [filtered by type]', () => {
-		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+		const phoneProvider: IOutboundPhoneMessageProvider = {
 			type: 'phone',
 			appId: '123',
 			name: 'Test Phone Provider',
@@ -79,7 +82,7 @@ describe('OutboundMessageProvider', () => {
 			getProviderMetadata: sinon.stub(),
 		};
 
-		const emailProvider: OutboundComms.IOutboundMessageEmailProvider = {
+		const emailProvider: IOutboundEmailMessageProvider = {
 			type: 'email',
 			appId: '123',
 			name: 'Test Email Provider',
@@ -96,7 +99,7 @@ describe('OutboundMessageProvider', () => {
 	});
 
 	it('should unregister a provider', () => {
-		const phoneProvider: OutboundComms.IOutboundMessagePhoneProvider = {
+		const phoneProvider: IOutboundPhoneMessageProvider = {
 			type: 'phone',
 			appId: '123',
 			name: 'Test Phone Provider',
@@ -104,7 +107,7 @@ describe('OutboundMessageProvider', () => {
 			getProviderMetadata: sinon.stub(),
 		};
 
-		const phoneProvider2: OutboundComms.IOutboundMessagePhoneProvider = {
+		const phoneProvider2: IOutboundPhoneMessageProvider = {
 			type: 'phone',
 			appId: '456',
 			name: 'Test Phone Provider 2',

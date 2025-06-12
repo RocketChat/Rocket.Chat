@@ -5,26 +5,27 @@ type ProviderMetadata = {
 	appId: string;
 	appName: string;
 	providerType: 'phone' | 'email';
-	// Indicates if the provider uses templates or not
-	supportsTemplates: boolean;
-	// Format: { '+1121221212': [{ template }] }
-	templates: Record<string, IOutboundProviderTemplate[]>;
+	supportsTemplates: boolean; // Indicates if the provider uses templates or not
+	templates: Record<string, IOutboundProviderTemplate[]>; // Format: { '+1121221212': [{ template }] }
 };
 
-export interface IOutboundPhoneMessageProvider {
-	type: 'phone';
+interface IOutboundMessageProviderBase {
+	appId: string;
 	name: string;
 	documentationUrl?: string;
 	sendOutboundMessage(message: IOutboundMessage): Promise<void>;
+}
+
+export interface IOutboundPhoneMessageProvider extends IOutboundMessageProviderBase {
+	type: 'phone';
 	getProviderMetadata(): Promise<ProviderMetadata>;
 }
 
 /*
  * @ignore - not implemented yet
  */
-export interface IOutboundEmailMessageProvider {
+export interface IOutboundEmailMessageProvider extends IOutboundMessageProviderBase {
 	type: 'email';
-	name: string;
-	documentationUrl?: string;
-	sendOutboundMessage(message: IOutboundMessage): Promise<boolean>;
 }
+
+export type IOutboundMessageProviders = IOutboundPhoneMessageProvider | IOutboundEmailMessageProvider;
