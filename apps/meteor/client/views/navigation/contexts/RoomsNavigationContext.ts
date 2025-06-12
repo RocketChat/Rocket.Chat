@@ -1,21 +1,53 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
+export const sidePanelFiltersConfig: { [Key in SidePanelFiltersKeys]: { title: TranslationKey; icon: IconName } } = {
+	all: {
+		title: 'All',
+		icon: 'inbox',
+	},
+	favorites: {
+		title: 'Favorites',
+		icon: 'star',
+	},
+	mentions: {
+		title: 'Mentions',
+		icon: 'at',
+	},
+	discussions: {
+		title: 'Discussions',
+		icon: 'balloon',
+	},
+	inProgress: {
+		title: 'In_progress',
+		icon: 'user-arrow-right',
+	},
+	queue: {
+		title: 'Queue',
+		icon: 'burger-arrow-left',
+	},
+	onHold: {
+		title: 'On_Hold',
+		icon: 'pause-unfilled',
+	},
+};
+
 export const TEAM_COLLAB_GROUPS = {
-	ALL: 'All',
-	MENTIONS: 'Mentions',
-	FAVORITES: 'Favorites',
-	DISCUSSIONS: 'Discussions',
+	ALL: 'all',
+	MENTIONS: 'mentions',
+	FAVORITES: 'favorites',
+	DISCUSSIONS: 'discussions',
 } as const;
 
 export const OMNICHANNEL_GROUPS = {
-	IN_PROGRESS: 'In_progress',
-	QUEUE: 'Queue',
-	ON_HOLD: 'On_Hold',
+	IN_PROGRESS: 'inProgress',
+	QUEUE: 'queue',
+	ON_HOLD: 'onHold',
 } as const;
 
 export const SIDE_PANEL_GROUPS = {
