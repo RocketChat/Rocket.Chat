@@ -643,7 +643,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 		const results: T[] | IdMap<T['_id'], T> = options.ordered ? [] : new IdMap<T['_id'], T>();
 
-		for (const doc of this.collection.store.getState().records) {
+		for (const doc of this.collection.store.getState().records.values()) {
 			if (this.predicate(doc)) {
 				if (options.ordered) {
 					(results as T[]).push(doc);
