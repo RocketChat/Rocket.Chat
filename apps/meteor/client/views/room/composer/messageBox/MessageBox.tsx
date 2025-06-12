@@ -112,7 +112,7 @@ const MessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
@@ -137,9 +137,9 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit));
 		},
-		[chat, storageID],
+		[chat, storageID, quoteChainLimit],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
