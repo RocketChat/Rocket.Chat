@@ -1,28 +1,17 @@
 import { Divider, Box } from '@rocket.chat/fuselage';
-import type { Keys as IconName } from '@rocket.chat/icons';
 import { forwardRef } from 'react';
 import type { Components } from 'react-virtuoso';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import type { SidePanelFiltersKeys } from '../../views/navigation/contexts/RoomsNavigationContext';
 import {
+	sidePanelFiltersConfig,
 	OMNICHANNEL_GROUPS,
 	SIDE_PANEL_GROUPS,
 	TEAM_COLLAB_GROUPS,
 	useSwitchSidePanelTab,
 	useSidePanelFilter,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
-
-const filtersIcons: { [Key in SidePanelFiltersKeys]: IconName } = {
-	All: 'inbox',
-	Mentions: 'at',
-	Favorites: 'star',
-	Discussions: 'baloons',
-	In_progress: 'user-arrow-right',
-	Queue: 'burger-arrow-left',
-	On_Hold: 'pause-unfilled',
-};
 
 const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrapper(_, ref) {
 	// const favoritesEnabled = useUserPreference('sidebarShowFavorites', true);
@@ -41,9 +30,9 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 				{Object.values(TEAM_COLLAB_GROUPS).map((group) => (
 					<RoomListFiltersItem
 						key={group}
-						title={group}
+						group={group}
 						selected={currentTab === group}
-						icon={filtersIcons[group]}
+						icon={sidePanelFiltersConfig[group].icon}
 						onClick={() => switchSidePanelTab(group)}
 					/>
 				))}
@@ -55,9 +44,9 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 						{Object.values(OMNICHANNEL_GROUPS).map((group) => (
 							<RoomListFiltersItem
 								key={group}
-								title={group}
+								group={group}
 								selected={currentTab === group}
-								icon={filtersIcons[group]}
+								icon={sidePanelFiltersConfig[group].icon}
 								onClick={() => switchSidePanelTab(group)}
 							/>
 						))}

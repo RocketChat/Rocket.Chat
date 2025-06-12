@@ -10,7 +10,7 @@ import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManage
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import RoomSidepanelListWrapper from '../../room/Sidepanel/RoomSidepanelListWrapper';
 import RoomSidepanelItem from '../../room/Sidepanel/SidepanelItem';
-import type { SidePanelFiltersKeys } from '../contexts/RoomsNavigationContext';
+import { type SidePanelFiltersKeys, sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
 	currentTab: SidePanelFiltersKeys;
@@ -32,7 +32,7 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 	return (
 		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
-				<SidepanelHeaderTitle>{t(currentTab)}</SidepanelHeaderTitle>
+				<SidepanelHeaderTitle>{t(sidePanelFiltersConfig[currentTab].title)}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
