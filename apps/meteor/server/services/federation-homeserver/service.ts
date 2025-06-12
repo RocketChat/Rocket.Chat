@@ -2,12 +2,14 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import type { IFederationHomeserverService, IFederationHomeserverBridge, IHomeserverConfig, HomeserverEvent } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/core-services';
 import { settings } from '../../../app/settings/server';
+import { FederationHomeserverHooks } from './infrastructure/rocket-chat/hooks';
 
-export class FederationHomeserverService extends ServiceClass implements IFederationHomeserverService {
+export class FederationHomeserverServiceClass extends ServiceClass implements IFederationHomeserverService {
 	protected name = 'federation-homeserver';
 	
 	private bridge?: IFederationHomeserverBridge;
 	private enabled = false;
+	private hooks?: FederationHomeserverHooks;
 	private config: IHomeserverConfig = {
 		enabled: false,
 		url: '',
@@ -76,6 +78,10 @@ export class FederationHomeserverService extends ServiceClass implements IFedera
 			this.bridge = this.createBridge();
 			await this.bridge.start();
 			
+			// Register hooks
+			this.hooks = FederationHomeserverHooks.getInstance();
+			this.hooks.register();
+			
 			this.enabled = true;
 			console.log('[FederationHomeserver] Federation enabled successfully');
 			
@@ -96,6 +102,13 @@ export class FederationHomeserverService extends ServiceClass implements IFedera
 
 		try {
 			console.log('[FederationHomeserver] Disabling federation');
+			
+			// Unregister hooks
+			if (this.hooks) {
+				this.hooks.unregister();
+				this.hooks = undefined;
+			}
+			
 			await this.bridge.stop();
 			this.bridge = undefined;
 			this.enabled = false;

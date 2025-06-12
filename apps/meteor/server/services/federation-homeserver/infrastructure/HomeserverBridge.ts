@@ -1,11 +1,46 @@
-import type { HomeserverUser, HomeserverRoom, HomeserverMessage, HomeserverEvent, IHomeserverConfig } from '@rocket.chat/core-services';
+import type { 
+	HomeserverUser, 
+	HomeserverRoom, 
+	HomeserverMessage, 
+	HomeserverEvent, 
+	IHomeserverConfig,
+	IFederationHomeserverBridge
+} from '@rocket.chat/core-services';
 import { HomeserverClient } from '@rocket.chat/homeserver';
-import type { IFederationHomeserverBridge } from '../domain/IFederationHomeserverBridge';
+import { RoomServiceReceiver } from '../application/room/receiver/RoomServiceReceiver';
+import { RoomServiceSender } from '../application/room/sender/RoomServiceSender';
+import { MessageServiceReceiver } from '../application/message/receiver/MessageServiceReceiver';
+import { MessageServiceSender } from '../application/message/sender/MessageServiceSender';
+import { UserServiceReceiver } from '../application/user/receiver/UserServiceReceiver';
+import { UserServiceSender } from '../application/user/sender/UserServiceSender';
+import { RoomAdapter, UserAdapter, MessageAdapter, NotificationAdapter } from './rocket-chat/adapters';
+import { RoomConverter } from './rocket-chat/converters/RoomConverter';
+import { MessageConverter } from './rocket-chat/converters/MessageConverter';
+import { UserConverter } from './rocket-chat/converters/UserConverter';
 
 export class HomeserverBridge implements IFederationHomeserverBridge {
 	private client: HomeserverClient;
 	private running = false;
 	private eventCallback?: (event: HomeserverEvent) => Promise<void>;
+	
+	// Service instances
+	private roomServiceReceiver?: RoomServiceReceiver;
+	private roomServiceSender?: RoomServiceSender;
+	private messageServiceReceiver?: MessageServiceReceiver;
+	private messageServiceSender?: MessageServiceSender;
+	private userServiceReceiver?: UserServiceReceiver;
+	private userServiceSender?: UserServiceSender;
+	
+	// Adapter instances
+	private roomAdapter?: RoomAdapter;
+	private userAdapter?: UserAdapter;
+	private messageAdapter?: MessageAdapter;
+	private notificationAdapter?: NotificationAdapter;
+	
+	// Converter instances
+	private roomConverter?: RoomConverter;
+	private messageConverter?: MessageConverter;
+	private userConverter?: UserConverter;
 
 	constructor(private config: IHomeserverConfig) {
 		this.client = new HomeserverClient({
@@ -24,8 +59,60 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 
 		console.log('[HomeserverBridge] Starting bridge on port', this.config.bridgePort);
 		
-		// Connect to homeserver
-		await this.client.connect();
+		try {
+			// Initialize adapters
+			this.roomAdapter = new RoomAdapter(this.config.domain);
+			this.userAdapter = new UserAdapter(this.config.domain);
+			this.messageAdapter = new MessageAdapter(this.config.domain);
+			this.notificationAdapter = new NotificationAdapter(this.config.domain);
+			
+			// Initialize converters
+			this.roomConverter = new RoomConverter(this.config.domain);
+			this.messageConverter = new MessageConverter(this.config.domain);
+			this.userConverter = new UserConverter(this.config.domain);
+			
+			// Initialize services with dependencies
+			this.roomServiceReceiver = new RoomServiceReceiver(
+				this.roomAdapter,
+				this.userAdapter,
+				this.roomConverter,
+			);
+			
+			this.roomServiceSender = new RoomServiceSender(
+				this.roomAdapter,
+				this.userAdapter,
+				this.roomConverter,
+				this,
+			);
+			
+			this.messageServiceReceiver = new MessageServiceReceiver(
+				this.messageAdapter,
+				this.roomAdapter,
+				this.userAdapter,
+				this.messageConverter,
+			);
+			
+			this.messageServiceSender = new MessageServiceSender(
+				this.messageAdapter,
+				this.roomAdapter,
+				this.userAdapter,
+				this.messageConverter,
+				this,
+			);
+			
+			this.userServiceReceiver = new UserServiceReceiver(
+				this.userAdapter,
+				this.userConverter,
+			);
+			
+			this.userServiceSender = new UserServiceSender(
+				this.userAdapter,
+				this.userConverter,
+				this,
+			);
+			
+			// Connect to homeserver
+			await this.client.connect();
 		
 		// Set up event handlers
 		this.client.onEvent({
@@ -85,6 +172,12 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 		
 		this.running = true;
 		console.log('[HomeserverBridge] Bridge started successfully');
+		} catch (error) {
+			console.error('[HomeserverBridge] Failed to start bridge:', error);
+			// Clean up on error
+			await this.cleanupServices();
+			throw error;
+		}
 	}
 
 	public async handleIncomingEvent(event: HomeserverEvent): Promise<void> {
@@ -106,12 +199,41 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 
 		console.log('[HomeserverBridge] Stopping bridge');
 		
-		await this.client.disconnect();
+		try {
+			await this.client.disconnect();
+			
+			// Clean up services
+			await this.cleanupServices();
+			
+			// Routes remain registered but will return disabled status
+			
+			this.running = false;
+			console.log('[HomeserverBridge] Bridge stopped successfully');
+		} catch (error) {
+			console.error('[HomeserverBridge] Failed to stop bridge:', error);
+			throw error;
+		}
+	}
+	
+	private async cleanupServices(): Promise<void> {
+		// Clean up services
+		this.roomServiceReceiver = undefined;
+		this.roomServiceSender = undefined;
+		this.messageServiceReceiver = undefined;
+		this.messageServiceSender = undefined;
+		this.userServiceReceiver = undefined;
+		this.userServiceSender = undefined;
 		
-		// Routes remain registered but will return disabled status
+		// Clean up adapters
+		this.roomAdapter = undefined;
+		this.userAdapter = undefined;
+		this.messageAdapter = undefined;
+		this.notificationAdapter = undefined;
 		
-		this.running = false;
-		console.log('[HomeserverBridge] Bridge stopped successfully');
+		// Clean up converters
+		this.roomConverter = undefined;
+		this.messageConverter = undefined;
+		this.userConverter = undefined;
 	}
 
 	public isRunning(): boolean {
@@ -205,5 +327,77 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 	public isRoomFromHomeserver(roomId: string): boolean {
 		const domain = this.extractHomeserverDomain(roomId);
 		return domain === this.config.domain || domain === 'local';
+	}
+	
+	// Get service instances
+	public getRoomServiceReceiver(): RoomServiceReceiver {
+		if (!this.roomServiceReceiver) {
+			throw new Error('Room service receiver not initialized');
+		}
+		return this.roomServiceReceiver;
+	}
+
+	public getRoomServiceSender(): RoomServiceSender {
+		if (!this.roomServiceSender) {
+			throw new Error('Room service sender not initialized');
+		}
+		return this.roomServiceSender;
+	}
+
+	public getMessageServiceReceiver(): MessageServiceReceiver {
+		if (!this.messageServiceReceiver) {
+			throw new Error('Message service receiver not initialized');
+		}
+		return this.messageServiceReceiver;
+	}
+
+	public getMessageServiceSender(): MessageServiceSender {
+		if (!this.messageServiceSender) {
+			throw new Error('Message service sender not initialized');
+		}
+		return this.messageServiceSender;
+	}
+
+	public getUserServiceReceiver(): UserServiceReceiver {
+		if (!this.userServiceReceiver) {
+			throw new Error('User service receiver not initialized');
+		}
+		return this.userServiceReceiver;
+	}
+
+	public getUserServiceSender(): UserServiceSender {
+		if (!this.userServiceSender) {
+			throw new Error('User service sender not initialized');
+		}
+		return this.userServiceSender;
+	}
+
+	// Get adapter instances (for direct access if needed)
+	public getRoomAdapter(): RoomAdapter {
+		if (!this.roomAdapter) {
+			throw new Error('Room adapter not initialized');
+		}
+		return this.roomAdapter;
+	}
+
+	public getUserAdapter(): UserAdapter {
+		if (!this.userAdapter) {
+			throw new Error('User adapter not initialized');
+		}
+		return this.userAdapter;
+	}
+
+	public getMessageAdapter(): MessageAdapter {
+		if (!this.messageAdapter) {
+			throw new Error('Message adapter not initialized');
+		}
+		return this.messageAdapter;
+	}
+
+	public getNotificationAdapter(): NotificationAdapter {
+		if (!this.notificationAdapter) {
+			throw new Error('Notification adapter not initialized');
+		}
+		return this.notificationAdapter;
 	}
 }

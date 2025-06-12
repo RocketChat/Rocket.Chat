@@ -3,6 +3,7 @@ import { License } from '@rocket.chat/license';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
+import { createFederationHomeserverService } from '../../../server/services/federation-homeserver';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
@@ -41,4 +42,9 @@ export const startFederationService = async (): Promise<void> => {
 		}
 		api.registerService(federationServiceEE);
 	});
+};
+
+export const startFederationHomeserverService = async (): Promise<void> => {
+	// Start the homeserver federation service
+	await createFederationHomeserverService();
 };
