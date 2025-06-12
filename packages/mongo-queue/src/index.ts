@@ -16,13 +16,13 @@ export class MessageQueue {
 
 	maxWorkers = 5;
 
-	_workers: Record<string, WorkerPromise> = {};
+	_workers: Record<string, WorkerPromise<any>> = {};
 
 	_numWorkers = 0;
 
 	_pollingIntervalId: NodeJS.Timeout | null = null;
 
-	registerWorker(type: Actions, worker: WorkerPromise) {
+	registerWorker<T>(type: Actions, worker: WorkerPromise<T>) {
 		this._workers[type] = worker;
 		this._startPolling();
 	}
@@ -281,3 +281,5 @@ export class MessageQueue {
 		return result.modifiedCount;
 	}
 }
+
+export { Actions, WorkerPromise, QueueItem, Work, ValidResult } from './types';
