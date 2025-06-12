@@ -1,5 +1,5 @@
 export enum MarketplacePricingStrategy {
-    PricingStrategyOnce = 'once',
-    PricingStrategyMonthly = 'monthly',
-    PricingStrategyYearly = 'yearly',
+	PricingStrategyOnce = 'once',
+	PricingStrategyMonthly = 'monthly',
+	PricingStrategyYearly = 'yearly',
 }
