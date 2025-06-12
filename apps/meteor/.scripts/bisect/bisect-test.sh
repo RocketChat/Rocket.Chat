@@ -55,7 +55,7 @@ if [[ "$SCRIPT_DIR" == *"apps/meteor/.scripts"* ]]; then
 fi
 
 REPO_ROOT_DIR="$SCRIPT_DIR"
-TEST_FILE="$REPO_ROOT_DIR/apps/meteor/tests/e2e/bisect.spec.ts"
+TEST_FILE="$REPO_ROOT_DIR/apps/meteor/tests/e2e/bisect.spec.ts.example"
 TEST_FILE_TO_COPY="$REPO_ROOT_DIR/apps/meteor/.scripts/bisect/bisect.spec.ts"
 
 if [ ! -e "$TEST_FILE" ]; then
