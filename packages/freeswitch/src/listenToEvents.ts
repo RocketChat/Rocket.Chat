@@ -44,7 +44,6 @@ export async function listenToEvents(
 
 	eventsToListen.forEach((eventName) =>
 		connection.on(eventName, (event) => {
-			// console.log(eventName, event.body['Event-Sequence']);
 			callback(eventName, event.body);
 		}),
 	);

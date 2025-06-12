@@ -35,13 +35,13 @@ export interface IFreeSwitchChannelEventMutable {
 	// DOWN, DIALING, RINGING, EARLY, ACTIVE, HELD, RING_WAIT, HANGUP, UNHELD
 	channelCallState: string;
 	channelCallStateNumber?: string;
-	// The previous value of channelState
+	// The previous value of channelCallState
 	originalChannelCallState?: string;
 	// early, ringing, confirmed, answered, hangup, terminated
 	answerState?: string;
 
-	// 'inbound' for the channel that initiated the call
-	// 'outbound' for the channel(s) that are receiving the call
+	// 'inbound' for the channel that initiated the call ("in" to freeswitch)
+	// 'outbound' for the channel(s) that are receiving the call ("out" from freeswitch)
 	callDirection?: string;
 	// will usually be true for the channel that initiated the call, if it is using the dialplan
 	channelHitDialplan?: string;
