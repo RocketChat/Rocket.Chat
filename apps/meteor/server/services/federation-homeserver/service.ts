@@ -22,6 +22,9 @@ export class FederationHomeserverService extends ServiceClass implements IFedera
 		console.log('[FederationHomeserver] Service created');
 		await this.loadConfig();
 		
+		// Import API routes - they self-register when imported
+		require('../../../app/api/server/v1/homeserver-federation');
+		
 		// Watch for setting changes
 		settings.watchMultiple<boolean>([
 			'Federation_Homeserver_enabled',
@@ -157,5 +160,21 @@ export class FederationHomeserverService extends ServiceClass implements IFedera
 			console.log('[FederationHomeserver] Received event:', event.type, event.id);
 			// Event handling will be implemented in later phases
 		});
+	}
+
+	public async processIncomingEvent(event: HomeserverEvent): Promise<void> {
+		if (!this.enabled || !this.bridge) {
+			throw new Error('Federation service is not enabled');
+		}
+
+		const handler = this.bridge as any;
+		if (handler.handleIncomingEvent) {
+			await handler.handleIncomingEvent(event);
+		} else if (handler.eventCallback) {
+			// Fallback to eventCallback if handleIncomingEvent not implemented
+			await handler.eventCallback(event);
+		} else {
+			throw new Error('No event handler available');
+		}
 	}
 }

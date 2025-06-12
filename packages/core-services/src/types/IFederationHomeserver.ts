@@ -37,6 +37,7 @@ export interface IFederationHomeserverService extends IServiceClass {
 	onDisable(): Promise<void>;
 	isEnabled(): boolean;
 	getConfig(): IHomeserverConfig;
+	processIncomingEvent(event: HomeserverEvent): Promise<void>;
 }
 
 export interface IFederationHomeserverBridge {

@@ -81,10 +81,21 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 			},
 		});
 
-		// TODO: Start HTTP server for webhook events on bridgePort
+		// Routes are registered by the service, no need for separate HTTP server
 		
 		this.running = true;
 		console.log('[HomeserverBridge] Bridge started successfully');
+	}
+
+	public async handleIncomingEvent(event: HomeserverEvent): Promise<void> {
+		console.log('[HomeserverBridge] Handling incoming event:', event.type, event.id);
+		
+		// Emit to registered event callback
+		if (this.eventCallback) {
+			await this.eventCallback(event);
+		} else {
+			console.warn('[HomeserverBridge] No event callback registered');
+		}
 	}
 
 	public async stop(): Promise<void> {
@@ -97,7 +108,7 @@ export class HomeserverBridge implements IFederationHomeserverBridge {
 		
 		await this.client.disconnect();
 		
-		// TODO: Stop HTTP server
+		// Routes remain registered but will return disabled status
 		
 		this.running = false;
 		console.log('[HomeserverBridge] Bridge stopped successfully');
