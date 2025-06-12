@@ -13,7 +13,8 @@ exports[`renders AppLogsItem without crashing 1`] = `
       >
         <button
           aria-expanded="false"
-          class="rcx-box rcx-box--full rcx-box--focusable rcx-css-wj27h8 rcx-css-ylkbm1"
+          class="rcx-box rcx-box--full rcx-css-wj27h8 rcx-css-ylkbm1"
+          focusable="true"
           role="button"
         >
           <span
@@ -48,8 +49,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
         </button>
       </dt>
       <dd
-        class="rcx-box rcx-box--full rcx-css-1i0jcrt"
-        style="transition: all 0.18s ease; overflow-y: hidden;"
+        class="rcx-box rcx-box--full rcx-css-1i9pl35 rcx-css-s21r8p"
       >
         <div
           class="rcx-box rcx-box--full"
