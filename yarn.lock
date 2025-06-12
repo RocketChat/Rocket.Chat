@@ -9240,6 +9240,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/mongo-queue@workspace:packages/mongo-queue":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/mongo-queue@workspace:packages/mongo-queue"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@types/jest": "npm:~29.5.12"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
+    mongodb: "npm:^6.17.0"
+    typescript: "npm:~5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/mp3-encoder@npm:^0.31.26":
   version: 0.31.26
   resolution: "@rocket.chat/mp3-encoder@npm:0.31.26"
@@ -12578,7 +12591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:~29.5.14":
+"@types/jest@npm:~29.5.12, @types/jest@npm:~29.5.14":
   version: 29.5.14
   resolution: "@types/jest@npm:29.5.14"
   dependencies:
@@ -36732,6 +36745,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.3.3":
+  version: 5.3.3
+  resolution: "typescript@npm:5.3.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/6e4e6a14a50c222b3d14d4ea2f729e79f972fa536ac1522b91202a9a65af3605c2928c4a790a4a50aa13694d461c479ba92cedaeb1e7b190aadaa4e4b96b8e18
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.8.3":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
@@ -36739,6 +36762,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~5.3.3#optional!builtin<compat/typescript>":
+  version: 5.3.3
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
   languageName: node
   linkType: hard
 
