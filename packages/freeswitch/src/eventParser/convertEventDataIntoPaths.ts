@@ -9,7 +9,11 @@ export function convertEventDataIntoPaths(
 	>,
 	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee'>>,
 ): Record<string, any> {
-	const clonedData = { ...eventData };
+	const clonedData = {
+		...eventData,
+		// Clone each leg individually, as we will be mutate it later
+		legs: Object.fromEntries(Object.entries(eventData.legs || {}).map(([key, leg]) => [key, { ...leg }])),
+	};
 
 	const leg = clonedData.legs?.[channelUniqueId];
 	if (leg?.profiles) {
