@@ -41,6 +41,7 @@ export default {
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
+				'<rootDir>/server/services/calendar/**/*.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

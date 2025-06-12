@@ -2,12 +2,16 @@
 	"$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
 	"workspaces": {
 		"packages/*": {
-			"entry": [
-				"src/index.ts"
-			]
+			"entry": "src/{main,index}.{js,ts}",
+			"project": "src/**/*.{js,ts,tsx}",
 		},
-		"packages/base64": {
-			"entry": "src/base64.ts"
+		"packages/random": {
+			"entry": ["src/main.client.ts", "src/main.server.ts"],
+			"project": "src/**/*.{js,ts,tsx}",
+		},
+		"packages/apps-engine": {
+			"entry": ["src/client/index.ts", "src/definition/App.ts"],
+			"project": "src/**/*.{js,ts,tsx}"
 		},
 		"apps/meteor": {
 			"entry": [
