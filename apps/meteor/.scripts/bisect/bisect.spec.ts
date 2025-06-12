@@ -4,6 +4,8 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+// Example test file for bisecting
+// Copy this file to the e2e tests folder or let the bisect script copy it.
 test.describe.only('bisect', () => {
 	let poHomeChannel: HomeChannel;
 
@@ -25,20 +27,18 @@ test.describe.only('bisect', () => {
 
 		// Expect the popup item to have a span with emoji class and correct background-image
 		const emojiSpan = popupItem.locator('span.emoji');
-		await expect(emojiSpan).toBeHidden();
-		// await expect(emojiSpan).toHaveAttribute('style', /point_left/);
-		// // await expect(emojiSpan).toHaveAttribute('style', 'background-image: url("/emoji-custom/point_left.png");');
+		await expect(emojiSpan).toBeVisible();
+		await expect(emojiSpan).toHaveAttribute('style', /point_left/);
 
-		// // Click the popup item
-		// await popupItem.click();
+		// Click the popup item
+		await popupItem.click();
 
-		// // Send the message
-		// await page.keyboard.press('Enter');
+		// Send the message
+		await page.keyboard.press('Enter');
 
-		// // Find the emoji span in the last message
-		// const messageEmojiSpan = poHomeChannel.content.lastUserMessage.locator('span[title=":point_left:"] .emoji');
-		// await expect(messageEmojiSpan).toBeVisible();
-		// await expect(messageEmojiSpan).toHaveAttribute('style', /point_left/);
-		// await expect(messageEmojiSpan).toHaveAttribute('style', 'background-image: url("/emoji-custom/point_left.png");');
+		// Find the emoji span in the last message
+		const messageEmojiSpan = poHomeChannel.content.lastUserMessage.locator('span[title=":point_left:"] .emoji');
+		await expect(messageEmojiSpan).toBeVisible();
+		await expect(messageEmojiSpan).toHaveAttribute('style', /point_left/);
 	});
 });
