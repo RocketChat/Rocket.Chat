@@ -44,3 +44,30 @@ export interface HomeserverEventCallbacks {
 	onMemberLeave?: (roomId: string, userId: string) => Promise<void>;
 	onUserUpdate?: (user: HomeserverUser) => Promise<void>;
 }
+
+// Additional types for the adapter
+export interface RouteHandler {
+	(req: any, res: any, next?: any): Promise<void> | void;
+}
+
+export interface RouteDefinition {
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+	path: string;
+	handler: RouteHandler;
+	options?: {
+		authRequired?: boolean;
+		rateLimit?: number;
+		validateParams?: any;
+		validateBody?: any;
+	};
+}
+
+export interface HomeserverInternalConfig {
+	serverName: string;
+	signingKey: string;
+	port?: number;
+	database?: {
+		url: string;
+		type: string;
+	};
+}

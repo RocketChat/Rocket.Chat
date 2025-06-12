@@ -53,8 +53,6 @@ export class FederationHomeserverServiceClass extends ServiceClass implements IF
 	}
 
 	public createBridge(): IFederationHomeserverBridge {
-		// Will be implemented in Phase 2
-		// For now, return a dummy implementation
 		const { HomeserverBridge } = require('./infrastructure/HomeserverBridge');
 		return new HomeserverBridge(this.config);
 	}
