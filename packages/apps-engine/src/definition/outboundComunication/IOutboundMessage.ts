@@ -6,11 +6,11 @@ export interface IOutboundMessage {
 		name: string;
 		language: {
 			code: string;
-			policy?: 'deterministic' | 'fallback'; // optional, only in some versions
+			policy?: 'deterministic' | 'fallback';
 		};
 		// Components is optional as some templates dont use any customizable string, they're just strings and can be sent with just the template name
 		components?: TemplateComponent[];
-		namespace?: string; // optional
+		namespace?: string;
 	};
 }
 
@@ -27,18 +27,18 @@ type TemplateParameter =
 	| {
 			type: 'currency';
 			currency: {
-				fallback_value: string;
+				fallbackValue: string;
 				code: string;
-				amount_1000: number;
+				amount1000: number;
 			};
 	  }
 	| {
 			type: 'date_time';
-			date_time: {
-				fallback_value: string;
+			dateTime: {
+				fallbackValue: string;
 				timestamp?: number;
-				day_of_week?: number;
-				day_of_month?: number;
+				dayOfWeek?: number;
+				dayOfMonth?: number;
 				year?: number;
 				month?: number;
 				hour?: number;

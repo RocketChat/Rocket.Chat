@@ -92,11 +92,11 @@ const POSTOutboundMessageSchema = {
 												type: { const: 'currency' },
 												currency: {
 													type: 'object',
-													required: ['fallback_value', 'code', 'amount_1000'],
+													required: ['fallbackValue', 'code', 'amount1000'],
 													properties: {
-														fallback_value: { type: 'string' },
+														fallbackValue: { type: 'string' },
 														code: { type: 'string' },
-														amount_1000: { type: 'number' },
+														amount1000: { type: 'number' },
 													},
 													additionalProperties: false,
 												},
@@ -105,17 +105,17 @@ const POSTOutboundMessageSchema = {
 										},
 										{
 											type: 'object',
-											required: ['type', 'date_time'],
+											required: ['type', 'dateTime'],
 											properties: {
 												type: { const: 'date_time' },
-												date_time: {
+												dateTime: {
 													type: 'object',
-													required: ['fallback_value'],
+													required: ['fallbackValue'],
 													properties: {
-														fallback_value: { type: 'string' },
+														fallbackValue: { type: 'string' },
 														timestamp: { type: 'number' },
-														day_of_week: { type: 'number' },
-														day_of_month: { type: 'number' },
+														dayOfWeek: { type: 'number' },
+														dayOfMonth: { type: 'number' },
 														year: { type: 'number' },
 														month: { type: 'number' },
 														hour: { type: 'number' },
