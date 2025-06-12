@@ -14,7 +14,7 @@ const redis = new Redis({
 	autoResubscribe: true,
 	maxRetriesPerRequest: 3,
 	enableOfflineQueue: true,
-	connectTimeout: 10000,  
+	connectTimeout: 10000,
 });
 console.log('Running redis startup');
 
@@ -23,6 +23,7 @@ redis.on('connect', async () => {
 	try {
 		await redis.subscribe('all');
 		await redis.subscribe('user-status');
+		await redis.subscribe('broadcast');
 		hasSubbedToAllChannel = true;
 	} catch (err) {
 		console.log("Couldn't sub to public channels ", err);

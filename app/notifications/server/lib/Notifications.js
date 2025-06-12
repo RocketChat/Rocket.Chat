@@ -1,11 +1,11 @@
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
+import { loginStream } from '../../../../../../../app/lib/server/lib/loginStream';
+import { publishToRedis } from '../../../../../../../app/redis/redisPublisher';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { WEB_RTC_EVENTS } from '../../../webrtc';
-
-import { loginStream } from '/app/lib/server/lib/loginStream';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -69,24 +69,10 @@ class Notifications {
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamBind = loginStream;
-		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new RoomStreamer('notify-user');
 		this.streamAll.allowWrite('none');
 		this.streamLogged.allowWrite('none');
 		this.streamRoom.allowWrite('none');
-		this.streamRoomUsers.allowWrite(function(eventName, ...args) {
-			const [roomId, e] = eventName.split('/');
-			// const user = Meteor.users.findOne(this.userId, {
-			// 	fields: {
-			// 		username: 1
-			// 	}
-			// });
-			if (Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId) != null) {
-				const subscriptions = Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId).fetch();
-				subscriptions.forEach((subscription) => self.notifyUser(subscription.u._id, e, ...args));
-			}
-			return false;
-		});
 		this.streamUser.allowWrite('logged');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('logged');
@@ -106,43 +92,77 @@ class Notifications {
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { fields: { _id: 1 } });
 			return subscription != null;
 		});
-		this.streamRoomUsers.allowRead('none');
 		this.streamUser.allowRead(function(eventName) {
 			const [userId] = eventName.split('/');
 			return (this.userId != null) && this.userId === userId;
 		});
 	}
 
-	notifyAll(eventName, ...args) {
+	notifyAll(eventName, data) {
+		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
-			console.log('notifyAll', [eventName, ...args]);
+			console.log('notifyAll', [eventName, data]);
 		}
-		args.unshift(eventName);
-		return this.streamAll.emit.apply(this.streamAll, args);
+
+		const body = {
+			funcName: 'notifyAllInThisInstance',
+			eventName,
+			data,
+		};
+
+		return publishToRedis('broadcast', body);
 	}
 
-	notifyLogged(eventName, ...args) {
+	notifyLogged(eventName, data) {
+		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
-			console.log('notifyLogged', [eventName, ...args]);
+			console.log('notifyLogged', [eventName, data]);
 		}
-		args.unshift(eventName);
-		return this.streamLogged.emit.apply(this.streamLogged, args);
+		const body = {
+			funcName: 'notifyLoggedInThisInstance',
+			eventName,
+			data,
+		};
+
+		return publishToRedis('broadcast', body);
 	}
 
-	notifyRoom(room, eventName, ...args) {
+	notifyRoom(room, eventName, data) {
+		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
-			console.log('notifyRoom', [room, eventName, ...args]);
+			console.log('notifyRoom', [room, eventName, data]);
 		}
-		args.unshift(`${ room }/${ eventName }`);
-		return this.streamRoom.emit.apply(this.streamRoom, args);
+		const body = {
+			funcName: 'notifyRoomInThisInstance',
+			broadcast: true,
+			key: room,
+			eventName,
+			data,
+		};
+
+		if (room.length === 17) {
+			publishToRedis(`room-${ room }`, body);
+		} else {
+			const userIds = [room.slice(0, 17), room.slice(17)];
+			userIds.forEach((userId) => {
+				publishToRedis(`user-${ userId }`, body);
+			});
+		}
 	}
 
-	notifyUser(userId, eventName, ...args) {
+	notifyUser(userId, eventName, data) {
+		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
-			console.log('notifyUser', [userId, eventName, ...args]);
+			console.log('notifyUser', [userId, eventName, data]);
 		}
-		args.unshift(`${ userId }/${ eventName }`);
-		return this.streamUser.emit.apply(this.streamUser, args);
+		const body = {
+			broadcast: true,
+			key: userId,
+			funcName: 'notifyUserInThisInstance',
+			eventName,
+			data,
+		};
+		return publishToRedis(`user-${ userId }`, body);
 	}
 
 	notifyAllInThisInstance(eventName, ...args) {
@@ -176,15 +196,25 @@ class Notifications {
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emitWithoutBroadcast.apply(this.streamUser, args);
 	}
+
+	pubsubAdapter(key, eventName, funcName, value) {
+		if (this[funcName]) {
+			if (key) {
+				return this[funcName](key, eventName, value);
+			}
+
+			return this[funcName](eventName, value);
+		}
+	}
 }
 
 const notifications = new Notifications();
 
-notifications.streamRoom.allowWrite(function(eventName, username, typing, extraData) {
+notifications.streamRoom.allowWrite(function(eventName, { username, typing, extraData }) {
 	const [roomId, e] = eventName.split('/');
 
 	if (isNaN(e) ? e === WEB_RTC_EVENTS.WEB_RTC : parseFloat(e) === WEB_RTC_EVENTS.WEB_RTC) {
-		return true;
+		return notifications.notifyRoom(roomId, 'typing', { username, typing, extraData });
 	}
 
 	if (e === 'typing') {
@@ -193,7 +223,7 @@ notifications.streamRoom.allowWrite(function(eventName, username, typing, extraD
 		if (extraData && extraData.token) {
 			const room = Rooms.findOneById(roomId);
 			if (room && room.t === 'l' && room.v.token === extraData.token) {
-				return true;
+				return notifications.notifyRoom(roomId, 'typing', { username, typing, extraData });
 			}
 		}
 
@@ -207,7 +237,9 @@ notifications.streamRoom.allowWrite(function(eventName, username, typing, extraD
 			return false;
 		}
 
-		return user[key] === username;
+		if (user[key] === username) {
+			return notifications.notifyRoom(roomId, 'typing', { username, typing, extraData });
+		}
 	}
 	return false;
 });

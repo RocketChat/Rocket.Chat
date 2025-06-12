@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
 import { Notifications } from '../../../notifications';
+import { settings } from '../../../settings';
 
 const shownName = function(user) {
 	if (!user) {
@@ -26,8 +26,8 @@ const rooms = {};
 const selfTyping = new ReactiveVar(false);
 const usersTyping = new ReactiveDict();
 
-const stopTyping = (rid) => Notifications.notifyRoom(rid, 'typing', shownName(Meteor.user()), false);
-const typing = (rid) => Notifications.notifyRoom(rid, 'typing', shownName(Meteor.user()), true);
+const stopTyping = (rid) => Notifications.notifyRoom(rid, 'typing', { username: shownName(Meteor.user()), typing: false });
+const typing = (rid) => Notifications.notifyRoom(rid, 'typing', { username: shownName(Meteor.user()), typing: true });
 
 export const MsgTyping = new class {
 	constructor() {
@@ -49,7 +49,7 @@ export const MsgTyping = new class {
 		if (rooms[rid]) {
 			return;
 		}
-		rooms[rid] = function(username, typing) {
+		rooms[rid] = function({ username, typing }) {
 			const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 			if (username === shownName(user)) {
 				return;

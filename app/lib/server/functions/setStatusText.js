@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
+import { hasPermission } from '../../../authorization';
 import { Users } from '../../../models';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { Notifications } from '../../../notifications';
-import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
@@ -28,12 +28,12 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
+	Notifications.notifyLogged('user-status', {
+		_id: user._id,
+		username: user.username,
+		status: STATUS_MAP[user.status],
 		statusText,
-	]);
+	});
 
 	return true;
 };
@@ -59,12 +59,12 @@ export const _setStatusText = function(userId, statusText) {
 	Users.updateStatusText(user._id, statusText);
 	user.statusText = statusText;
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
+	Notifications.notifyLogged('user-status', {
+		_id: user._id,
+		username: user.username,
+		status: STATUS_MAP[user.status],
 		statusText,
-	]);
+	});
 
 	return true;
 };

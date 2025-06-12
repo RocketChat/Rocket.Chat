@@ -73,7 +73,7 @@ const getUsersPresence = debounce(async (isConnected) => {
 }, 1000);
 
 Meteor.startup(function() {
-	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
+	Notifications.onLogged('user-status', ({ _id, username, status, statusText }) => {
 		// only set after first request completed
 		if (lastStatusChange) {
 			lastStatusChange = new Date();

@@ -1,31 +1,31 @@
-import _ from 'underscore';
 import { Base64 } from 'meteor/base64';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
-import { Random } from 'meteor/random';
 import { TimeSync } from 'meteor/mizzao:timesync';
+import { Random } from 'meteor/random';
+import { ReactiveVar } from 'meteor/reactive-var';
+import _ from 'underscore';
 
-import { e2e } from './rocketchat.e2e';
+import { Rooms, Subscriptions } from '../../models';
+import { Notifications } from '../../notifications';
+import { call } from '../../ui-utils';
+import { RoomSettingsEnum, roomTypes } from '../../utils';
 import {
-	Deferred,
-	toString,
-	toArrayBuffer,
-	joinVectorAndEcryptedData,
-	splitVectorAndEcryptedData,
-	encryptRSA,
-	encryptAES,
-	decryptRSA,
 	decryptAES,
-	generateAESKey,
+	decryptRSA,
+	Deferred,
+	encryptAES,
+	encryptRSA,
 	exportJWKKey,
+	generateAESKey,
 	importAESKey,
 	importRSAKey,
+	joinVectorAndEcryptedData,
 	readFileAsArrayBuffer,
+	splitVectorAndEcryptedData,
+	toArrayBuffer,
+	toString,
 } from './helper';
-import { Notifications } from '../../notifications';
-import { Rooms, Subscriptions } from '../../models';
-import { call } from '../../ui-utils';
-import { roomTypes, RoomSettingsEnum } from '../../utils';
+import { e2e } from './rocketchat.e2e';
 
 export class E2ERoom {
 	constructor(userId, roomId, t) {
@@ -93,8 +93,6 @@ export class E2ERoom {
 
 		console.log('E2E -> Requesting room key');
 		// TODO: request group key
-
-		Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
 	}
 
 	isSupportedRoomType(type) {

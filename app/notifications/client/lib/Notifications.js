@@ -16,7 +16,6 @@ class Notifications {
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamBind = new Meteor.Streamer('channel-subscriber');
-		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
 		if (this.debug === true) {
 			this.onAll(function() {
@@ -49,14 +48,6 @@ class Notifications {
 		}
 		args.unshift(`${ userId }/${ eventName }`);
 		return this.streamUser.emit.apply(this.streamUser, args);
-	}
-
-	notifyUsersOfRoom(room, eventName, ...args) {
-		if (this.debug === true) {
-			console.log('RocketChat.Notifications: notifyUsersOfRoom', [room, eventName, ...args]);
-		}
-		args.unshift(`${ room }/${ eventName }`);
-		return this.streamRoomUsers.emit.apply(this.streamRoomUsers, args);
 	}
 
 	onAll(eventName, callback) {

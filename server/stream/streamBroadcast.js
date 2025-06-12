@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { UserPresence } from 'meteor/konecty:user-presence';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { UserPresence } from 'meteor/konecty:user-presence';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
-import { isDocker, getURL } from '../../app/utils';
+import { Logger, LoggerManager } from '../../app/logger';
 import { Users } from '../../app/models/server';
+import { settings } from '../../app/settings';
+import { getURL, isDocker } from '../../app/utils';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -236,6 +236,8 @@ function startStreamBroadcast() {
 			connection.disconnect();
 			return delete connections[instance];
 		};
+
+		if (settings.get('Cancel_Pods_Matrix')) { return; }
 
 		for (const instance of Object.keys(connections)) {
 			const connection = connections[instance];
