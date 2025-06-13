@@ -1,4 +1,6 @@
-function shouldUseOtherLegId(eventData: Record<string, string | undefined>): boolean {
+import type { EventData } from './parseEventData';
+
+function shouldUseOtherLegId(eventData: EventData): boolean {
 	// If the call ID is from a different channel, then it should be correct
 	if (eventData['Channel-Call-UUID'] !== eventData['Unique-ID']) {
 		return false;
@@ -12,7 +14,7 @@ function shouldUseOtherLegId(eventData: Record<string, string | undefined>): boo
 	// #ToDo: Confirm if these conditions hold up on calls with extra legs (eg. voicemail)
 	if (
 		eventData['Caller-Direction'] !== 'outbound' ||
-		(eventData['Other-Leg-Direction'] !== 'inbound' && eventData['Other-Leg-Logical-Direction'])
+		(eventData['Other-Leg-Direction'] === 'outbound' && eventData['Other-Leg-Logical-Direction'])
 	) {
 		return false;
 	}
@@ -28,7 +30,7 @@ function shouldUseOtherLegId(eventData: Record<string, string | undefined>): boo
  *
  * This function doesn't validate if an id was actually received, so it might return undefined, but FreeSwitch SHOULD always be sending one.
  */
-export function parseEventCallId(eventData: Record<string, string | undefined>): string | undefined {
+export function parseEventCallId(eventData: EventData): string | undefined {
 	if (shouldUseOtherLegId(eventData)) {
 		return eventData['Other-Leg-Unique-ID'];
 	}

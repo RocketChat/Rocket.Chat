@@ -54,7 +54,7 @@ export interface IFreeSwitchChannelEventMutable {
 	legs: Record<string, AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'>>;
 
 	// variables should contain the same data you would get by running `uuid_dump` on fs_cli
-	variables?: Record<string, string>;
+	variables?: Record<string, string | string[]>;
 
 	// raw will include fields we received from freeswitch but didn't read
 	raw: Record<string, string>;

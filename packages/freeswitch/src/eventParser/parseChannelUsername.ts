@@ -5,12 +5,19 @@
  * So effectively this returns an extension number.
  */
 
+import { logger } from '../logger';
+import type { EventData } from './parseEventData';
+
 export function parseChannelUsername(channelName?: string): string | undefined {
+	if (!channelName) {
+		return;
+	}
+
 	// If it's not a sofia internal channel, don't even try to parse it
 	// It's most likely a voicemail or maybe some spam bots trying different stuff
 	// If we implement other kinds of channels in the future we should look into how their names are generated so that we may parse them here too.
 	if (!channelName?.startsWith('sofia/internal/') || !channelName.includes('@')) {
-		console.log(channelName, 'not a sofia internal channel');
+		logger.info({ msg: 'FreeSwitch event triggered with something other than a sofia internal channel.', channelName });
 		return;
 	}
 
@@ -29,7 +36,7 @@ export function parseContactUsername(contactNameOrUri: string): string | undefin
 	return contactNameOrUri.match(/^(\d+)\-/)?.[1];
 }
 
-export function parseEventUsername(eventData: Record<string, string | undefined>): string | undefined {
+export function parseEventUsername(eventData: EventData): string | undefined {
 	const { 'Channel-Name': channelName } = eventData;
 
 	return parseChannelUsername(channelName);

@@ -2,11 +2,12 @@ import type { AtLeast, IFreeSwitchChannelEventLeg, IFreeSwitchChannelEventLegPro
 
 import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
+import type { EventData } from './parseEventData';
 import { parseTimestamp } from './parseTimestamp';
 
 export function parseEventLeg(
 	legName: string,
-	eventData: Record<string, string | undefined>,
+	eventData: EventData,
 ): AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'> | undefined {
 	const legData = filterStringList(
 		eventData,

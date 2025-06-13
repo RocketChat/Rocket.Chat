@@ -9,10 +9,9 @@ import { parseTimestamp } from './parseTimestamp';
 import { logger } from '../logger';
 import { parseEventExtensions } from './parseEventExtensions';
 
-export function parseEventData(
-	eventName: string,
-	eventData: Record<string, string | undefined>,
-): Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'> | undefined {
+export type EventData = Record<string, string | undefined> & Record<`variable_${string}`, string | string[] | undefined>;
+
+export function parseEventData(eventName: string, eventData: EventData): Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'> | undefined {
 	const {
 		'Channel-Name': channelName = '',
 		'Channel-State': channelState = '',
@@ -60,8 +59,8 @@ export function parseEventData(
 	const channelUsername = parseChannelUsername(channelName);
 	const firedAt = parseTimestamp(timestamp) || new Date();
 
-	const callerLeg = parseEventLeg('Caller', rawEventData);
-	const otherLeg = parseEventLeg('Other-Leg', rawEventData);
+	const callerLeg = parseEventLeg('Caller', eventData);
+	const otherLeg = parseEventLeg('Other-Leg', eventData);
 	const bridgeUniqueIds = [bridgeA, bridgeB].filter((bridgeId) => bridgeId) as string[];
 
 	const legs: IFreeSwitchChannelEvent['legs'] = {
@@ -70,7 +69,7 @@ export function parseEventData(
 	};
 
 	const variables = filterStringList(
-		rawEventData,
+		eventData,
 		(key) => key.startsWith('variable_'),
 		([key, value]) => {
 			return [key.replace('variable_', ''), value || ''];
@@ -126,7 +125,7 @@ export function parseEventData(
 		bridgedTo,
 		legs,
 		metadata: filterOutEmptyValues(metadata),
-		...(Object.keys(variables).length && { variables }),
+		...((Object.keys(variables).length && { variables }) as { variables: IFreeSwitchChannelEvent['variables'] } | undefined),
 		raw: filterOutEmptyValues(unusedRawData),
 
 		codecs: {

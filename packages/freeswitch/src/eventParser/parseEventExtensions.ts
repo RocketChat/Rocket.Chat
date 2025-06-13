@@ -50,18 +50,18 @@ export function parseEventExtensions(
 		.pop();
 	const allDestinationNumbers = legs?.map(({ destinationNumber }) => destinationNumber);
 
+	// It won't ever be an array, but just to be type-safe
+	const dialedExtension = Array.isArray(event.variables?.dialed_extension)
+		? event.variables.dialed_extension.shift()
+		: event.variables?.dialed_extension;
+
 	if (event.callDirection === 'outbound') {
 		const originator = legs?.find((leg) => leg.type === 'originator');
 
 		return {
 			// Still need to validate this with external calls
 			caller: getMostLikelyUsername([originator?.channelName, originator?.username, anyUsername]),
-			callee: getMostLikelyUsername([
-				event.variables?.dialed_extension,
-				event.channelUsername,
-				originator?.destinationNumber,
-				...allDestinationNumbers,
-			]),
+			callee: getMostLikelyUsername([dialedExtension, event.channelUsername, originator?.destinationNumber, ...allDestinationNumbers]),
 		};
 	}
 
@@ -69,12 +69,12 @@ export function parseEventExtensions(
 		return {
 			caller: getMostLikelyUsername([event.channelUsername, selfLeg?.username, anyUsername]),
 			// Callee might not be available at all if the state is still CS_NEW
-			callee: getMostLikelyUsername([event.variables?.dialed_extension, selfLeg?.destinationNumber, ...allDestinationNumbers]),
+			callee: getMostLikelyUsername([dialedExtension, selfLeg?.destinationNumber, ...allDestinationNumbers]),
 		};
 	}
 
 	return {
 		caller: getMostLikelyUsername([anyUsername]),
-		callee: getMostLikelyUsername([event.variables?.dialed_extension, ...allDestinationNumbers]),
+		callee: getMostLikelyUsername([dialedExtension, ...allDestinationNumbers]),
 	};
 }

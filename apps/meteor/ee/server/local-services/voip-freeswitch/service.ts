@@ -14,6 +14,7 @@ import {
 	parseEventData,
 	computeChannelFromEvents,
 	logger,
+	type EventData,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, FreeSwitchChannelEvent, FreeSwitchChannelEventDelta } from '@rocket.chat/models';
@@ -85,7 +86,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		};
 	}
 
-	private async onFreeSwitchEvent(eventName: string, data: Record<string, string | undefined>): Promise<void> {
+	private async onFreeSwitchEvent(eventName: string, data: EventData): Promise<void> {
 		const event = parseEventData(eventName, data);
 		if (!event) {
 			return;
