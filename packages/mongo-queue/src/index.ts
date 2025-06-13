@@ -1,4 +1,4 @@
-import type { Db, Filter, ObjectId, UpdateFilter } from 'mongodb';
+import type { Db, Filter, ObjectId, UpdateFilter, Document } from 'mongodb';
 
 import type { WorkerPromise, Actions, Work } from './types';
 
@@ -48,7 +48,11 @@ export class MessageQueue {
 		return this._enqueue(queueItem);
 	}
 
-	async enqueueAndProcess<T>(type: Actions, message: T, _options?: { nextReceivableTime: Date; priority: number }): Promise<number> {
+	async enqueueAndProcess<T extends Work<any>>(
+		type: Actions,
+		message: T,
+		_options?: { nextReceivableTime: Date; priority: number },
+	): Promise<number> {
 		const queueItem: Work<T> = {
 			dateCreated: new Date(),
 			type,
@@ -60,23 +64,33 @@ export class MessageQueue {
 		return this._process(queueItem);
 	}
 
-	removeOne(type: Actions, messageQuery: Filter<any>) {
+	removeOne<T, C extends Document = Work<T>>(type: Actions, messageQuery: Filter<C>) {
 		const query = this._buildQueueItemQuery(type, messageQuery);
 		return this._removeOne(query);
 	}
 
-	removeMany(type: Actions, messageQuery: Filter<any>) {
+	removeMany<T, C extends Document = Work<T>>(type: Actions, messageQuery: Filter<C>) {
 		const query = this._buildQueueItemQuery(type, messageQuery);
 		return this._removeMany(query);
 	}
 
-	updateOne(type: Actions, messageQuery: Filter<any>, messageUpdate: UpdateFilter<any>, options: { nextReceivableTime?: Date } = {}) {
+	updateOne<T, C extends Document = Work<T>>(
+		type: Actions,
+		messageQuery: Filter<C>,
+		messageUpdate: UpdateFilter<C>,
+		options: { nextReceivableTime?: Date } = {},
+	) {
 		const query = this._buildQueueItemQuery(type, messageQuery);
 		const update = this._buildQueueItemUpdate(messageUpdate, options);
 		return this._updateOne(query, update);
 	}
 
-	updateMany(type: Actions, messageQuery: Filter<any>, messageUpdate: UpdateFilter<any>, options: { nextReceivableTime?: Date } = {}) {
+	updateMany<T, C extends Document = Work<T>>(
+		type: Actions,
+		messageQuery: Filter<C>,
+		messageUpdate: UpdateFilter<C>,
+		options: { nextReceivableTime?: Date } = {},
+	) {
 		const query = this._buildQueueItemQuery(type, messageQuery);
 		const update = this._buildQueueItemUpdate(messageUpdate, options);
 		return this._updateMany(query, update);
@@ -106,6 +120,7 @@ export class MessageQueue {
 					await this._process(queueItem);
 
 					// Look for more work to do immediately if we just processed something
+					// TODO: should we?
 					setImmediate(this._poll);
 				}
 			} catch (err) {
@@ -116,7 +131,7 @@ export class MessageQueue {
 		}
 	}
 
-	async _process<T>(queueItem: Work<T>) {
+	async _process<T extends Work<any>>(queueItem: T) {
 		const worker = this._workers[queueItem.type];
 		if (!worker) {
 			throw new Error(`No worker registered for type: ${queueItem.type}`);
@@ -142,10 +157,10 @@ export class MessageQueue {
 		return result?.insertedId;
 	}
 
-	_release<T>(queueItem: Work<T>) {
-		const update: UpdateFilter<Work<T>> = {
+	_release(queueItem: Work<unknown>) {
+		const update: UpdateFilter<Work<unknown>> = {
 			$unset: {
-				receivedTime: '',
+				receivedTime: 1 as const,
 			},
 			$set: {
 				retryCount: queueItem.retryCount ? queueItem.retryCount + 1 : 1,
@@ -164,11 +179,11 @@ export class MessageQueue {
 		return this._updateOneById(queueItem._id!, update);
 	}
 
-	_reject<T>(queueItem: Work<T>) {
-		const update: UpdateFilter<Work<T>> = {
+	_reject(queueItem: Work<unknown>) {
+		const update: UpdateFilter<Work<unknown>> = {
 			$unset: {
-				receivedTime: '',
-				nextReceivableTime: '',
+				receivedTime: 1,
+				nextReceivableTime: 1,
 			},
 			$set: {
 				rejectedTime: new Date(),
@@ -188,7 +203,7 @@ export class MessageQueue {
 	}
 
 	async _receive() {
-		const query = {
+		const query: Filter<Work<unknown>> = {
 			type: { $in: Object.keys(this._workers) },
 			rejectedTime: { $exists: false },
 			$and: [
@@ -206,11 +221,11 @@ export class MessageQueue {
 			},
 		};
 
-		const collection = await this._getCollection();
+		const collection = await this._getCollection<Work<unknown>>();
 		return collection.findOneAndUpdate(query, update, { returnDocument: 'after', sort: 'priority' });
 	}
 
-	_buildQueueItemQuery(type: Actions, messageQuery: Filter<any>) {
+	_buildQueueItemQuery<T>(type: Actions, messageQuery: Filter<T>): Filter<T> {
 		const query: Filter<any> = { type };
 
 		Object.keys(messageQuery).forEach((key) => {
@@ -221,7 +236,7 @@ export class MessageQueue {
 		return query;
 	}
 
-	_buildQueueItemUpdate(messageUpdate: UpdateFilter<any>, options: { nextReceivableTime?: Date } = {}) {
+	_buildQueueItemUpdate<T>(messageUpdate: UpdateFilter<T>, options: { nextReceivableTime?: Date } = {}) {
 		const update: Filter<any> = {};
 		const $set: UpdateFilter<any>['$set'] = {};
 
@@ -241,16 +256,16 @@ export class MessageQueue {
 		return update;
 	}
 
-	async _getCollection<T>() {
+	async _getCollection<T extends Document>() {
 		if (!this.databasePromise) {
 			throw new Error('No database configured');
 		}
 		const db = await this.databasePromise();
-		return db.collection<Work<T>>(this.collectionName);
+		return db.collection<T>(this.collectionName);
 	}
 
-	async _removeOne(query: Filter<any>) {
-		const collection = await this._getCollection();
+	async _removeOne<T, C extends Document = Work<T>>(query: Filter<C>) {
+		const collection = await this._getCollection<C>();
 		const result = await collection.deleteOne(query);
 		return result.deletedCount;
 	}
@@ -259,24 +274,24 @@ export class MessageQueue {
 		return this._removeOne({ _id: id });
 	}
 
-	async _removeMany(query: Filter<any>) {
-		const collection = await this._getCollection();
+	async _removeMany<T, C extends Document = Work<T>>(query: Filter<C>) {
+		const collection = await this._getCollection<C>();
 		const result = await collection.deleteMany(query);
 		return result.deletedCount;
 	}
 
-	async _updateOne<T>(query: Filter<any>, update: UpdateFilter<Work<T>>) {
-		const collection = await this._getCollection();
+	async _updateOne<T, C extends Document = Work<T>>(query: Filter<C>, update: UpdateFilter<C>) {
+		const collection = await this._getCollection<C>();
 		const result = await collection.updateOne(query, update);
 		return result.modifiedCount;
 	}
 
-	_updateOneById<T>(id: ObjectId, update: UpdateFilter<Work<T>>) {
-		return this._updateOne({ _id: id }, update);
+	_updateOneById<T, C = Work<T>>(id: ObjectId, update: UpdateFilter<C>) {
+		return this._updateOne<{ _id: ObjectId }>({ _id: id }, update);
 	}
 
-	async _updateMany(query: Filter<any>, update: UpdateFilter<any>) {
-		const collection = await this._getCollection();
+	async _updateMany<T, C extends Document = Work<T>>(query: Filter<C>, update: UpdateFilter<C>) {
+		const collection = await this._getCollection<C>();
 		const result = await collection.updateMany(query, update);
 		return result.modifiedCount;
 	}
