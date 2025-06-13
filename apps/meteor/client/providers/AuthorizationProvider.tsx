@@ -3,11 +3,11 @@ import { Emitter } from '@rocket.chat/emitter';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { Roles, AuthzCachedCollection } from '../../app/models/client';
-import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 class RoleStore extends Emitter<{
@@ -32,21 +32,8 @@ type AuthorizationProviderProps = {
 };
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
-	const roles = useReactiveValue(
-		useCallback(
-			() =>
-				Roles.find()
-					.fetch()
-					.reduce(
-						(ret, obj) => {
-							ret[obj._id] = obj;
-							return ret;
-						},
-						{} as Record<string, IRole>,
-					),
-			[],
-		),
-	);
+	const rolesMap = Roles.use(useShallow((state) => state.records));
+	const roles = useMemo(() => Object.fromEntries(rolesMap), [rolesMap]);
 
 	useEffect(() => {
 		AuthzCachedCollection.listen();
