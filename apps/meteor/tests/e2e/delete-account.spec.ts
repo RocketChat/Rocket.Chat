@@ -30,11 +30,13 @@ test.describe('Delete Own Account', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		const response = await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false });
-		expect(response.status()).toBe(200);
-		await userToDelete.delete();
-		await userWithInvalidPassword.delete();
-		await userWithoutPermissions.delete();
+		await Promise.all([
+			api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false })
+				.then((res) => expect(res.status()).toBe(200)),
+			userToDelete.delete(),
+			userWithInvalidPassword.delete(),
+			userWithoutPermissions.delete(),
+		]);
 	});
 
 	test('should not delete account when invalid password is provided', async ({ page }) => {
