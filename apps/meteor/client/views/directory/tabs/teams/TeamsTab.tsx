@@ -6,8 +6,9 @@ import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 const TeamsTab = (): ReactElement => {
 	const canViewPublicRooms = usePermission('view-c-room');
+	const canViewAllPrivateRooms = usePermission('view-all-p-room');
 
-	if (canViewPublicRooms) {
+	if (canViewPublicRooms || canViewAllPrivateRooms) {
 		return <TeamsTable />;
 	}
 
