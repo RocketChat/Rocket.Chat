@@ -9539,7 +9539,7 @@ __metadata:
     isolated-vm: "npm:5.0.1"
     jest: "npm:~30.0.0"
     jschardet: "npm:^3.1.4"
-    jsdom: "npm:^26.0.0"
+    jsdom: "npm:^26.1.0"
     jsdom-global: "npm:^3.0.2"
     jsrsasign: "npm:^11.1.0"
     juice: "npm:^8.1.0"
@@ -10497,7 +10497,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:~5.0.0"
     eslint-plugin-storybook: "npm:~0.11.4"
     jest: "npm:~30.0.0"
-    jest-axe: "npm:~9.0.0"
+    jest-axe: "npm:~10.0.0"
     react: "npm:~18.3.1"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.8.3"
@@ -10556,7 +10556,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:~5.0.0"
     eslint-plugin-storybook: "npm:^0.11.4"
     jest: "npm:~30.0.0"
-    jest-axe: "npm:~9.0.0"
+    jest-axe: "npm:~10.0.0"
     react: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     sip.js: "npm:^0.21.2"
@@ -16193,13 +16193,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.9.1":
-  version: 4.9.1
-  resolution: "axe-core@npm:4.9.1"
-  checksum: 10/9d4944f6d3289428e1c6b41a80516f6558a960889f59c3c00f0fb88b955eda81edf9ca377c2cbc2a775f4003596d2aeaa35acca5aad3e1fc6b3d1e26e82b02cc
-  languageName: node
-  linkType: hard
-
 "axe-core@npm:^3.5.5":
   version: 3.5.6
   resolution: "axe-core@npm:3.5.6"
@@ -19587,7 +19580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:^10.4.3, decimal.js@npm:^10.5.0":
+"decimal.js@npm:^10.5.0":
   version: 10.5.0
   resolution: "decimal.js@npm:10.5.0"
   checksum: 10/714d49cf2f2207b268221795ede330e51452b7c451a0c02a770837d2d4faed47d603a729c2aa1d952eb6c4102d999e91c9b952c1aa016db3c5cba9fc8bf4cda2
@@ -22809,17 +22802,6 @@ __metadata:
     combined-stream: "npm:^1.0.8"
     mime-types: "npm:^2.1.12"
   checksum: 10/7264aa760a8cf09482816d8300f1b6e2423de1b02bba612a136857413fdc96d7178298ced106817655facc6b89036c6e12ae31c9eb5bdc16aabf502ae8a5d805
-  languageName: node
-  linkType: hard
-
-"form-data@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "form-data@npm:4.0.1"
-  dependencies:
-    asynckit: "npm:^0.4.0"
-    combined-stream: "npm:^1.0.8"
-    mime-types: "npm:^2.1.12"
-  checksum: 10/6adb1cff557328bc6eb8a68da205f9ae44ab0e88d4d9237aaf91eed591ffc64f77411efb9016af7d87f23d0a038c45a788aa1c6634e51175c4efa36c2bc53774
   languageName: node
   linkType: hard
 
@@ -26075,18 +26057,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-axe@npm:~9.0.0":
-  version: 9.0.0
-  resolution: "jest-axe@npm:9.0.0"
-  dependencies:
-    axe-core: "npm:4.9.1"
-    chalk: "npm:4.1.2"
-    jest-matcher-utils: "npm:29.2.2"
-    lodash.merge: "npm:4.6.2"
-  checksum: 10/4a0d382f5d24457a16e2459f75f2f101ed267b803654291d992c6c7181e462602e8d9d4902a7b40422258d5cafc5b5484da529693011c0ce1c60e64825d365fa
-  languageName: node
-  linkType: hard
-
 "jest-changed-files@npm:30.0.0":
   version: 30.0.0
   resolution: "jest-changed-files@npm:30.0.0"
@@ -27218,40 +27188,6 @@ __metadata:
   peerDependencies:
     jsdom: ">=10.0.0"
   checksum: 10/5c665a412c244d8cfe541da784ff6888c0ed041da3f4c03d7d4ab514215b3f50a934f89c33b543b7848765d841029978a2592dc04b2e0a8734b4bb54809e67d7
-  languageName: node
-  linkType: hard
-
-"jsdom@npm:^26.0.0":
-  version: 26.0.0
-  resolution: "jsdom@npm:26.0.0"
-  dependencies:
-    cssstyle: "npm:^4.2.1"
-    data-urls: "npm:^5.0.0"
-    decimal.js: "npm:^10.4.3"
-    form-data: "npm:^4.0.1"
-    html-encoding-sniffer: "npm:^4.0.0"
-    http-proxy-agent: "npm:^7.0.2"
-    https-proxy-agent: "npm:^7.0.6"
-    is-potential-custom-element-name: "npm:^1.0.1"
-    nwsapi: "npm:^2.2.16"
-    parse5: "npm:^7.2.1"
-    rrweb-cssom: "npm:^0.8.0"
-    saxes: "npm:^6.0.0"
-    symbol-tree: "npm:^3.2.4"
-    tough-cookie: "npm:^5.0.0"
-    w3c-xmlserializer: "npm:^5.0.0"
-    webidl-conversions: "npm:^7.0.0"
-    whatwg-encoding: "npm:^3.1.1"
-    whatwg-mimetype: "npm:^4.0.0"
-    whatwg-url: "npm:^14.1.0"
-    ws: "npm:^8.18.0"
-    xml-name-validator: "npm:^5.0.0"
-  peerDependencies:
-    canvas: ^3.0.0
-  peerDependenciesMeta:
-    canvas:
-      optional: true
-  checksum: 10/8c230ee4657240bbbca6b4ebb484be53fc6a777a22a3357c80c5537222813666e3e1f54740bc13e769c461d9598ba7dac402c245949c6cef7ef7014ce6f36f01
   languageName: node
   linkType: hard
 
@@ -37303,15 +37239,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tough-cookie@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "tough-cookie@npm:5.1.0"
-  dependencies:
-    tldts: "npm:^6.1.32"
-  checksum: 10/01908de89d5268e424eb07c17230ef69110fed598f8036db366d2c992d5e8e52ccd3af600c87b7fb43479046eb4289f21baa4467a3032a2230a8d3878d3cb76d
-  languageName: node
-  linkType: hard
-
 "tough-cookie@npm:^5.1.1":
   version: 5.1.2
   resolution: "tough-cookie@npm:5.1.2"
@@ -39316,7 +39243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatwg-url@npm:^14.0.0, whatwg-url@npm:^14.1.0":
+"whatwg-url@npm:^14.0.0":
   version: 14.1.0
   resolution: "whatwg-url@npm:14.1.0"
   dependencies:
