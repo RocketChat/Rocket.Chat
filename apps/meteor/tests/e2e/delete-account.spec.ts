@@ -31,8 +31,7 @@ test.describe('Delete Own Account', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false })
-				.then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false }).then((res) => expect(res.status()).toBe(200)),
 			userToDelete.delete(),
 			userWithInvalidPassword.delete(),
 			userWithoutPermissions.delete(),
