@@ -11,22 +11,22 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserSubscription: jest.fn(() => mockSubscription),
 }));
 
-jest.mock('./menuActions/useLeaveRoom', () => ({
+jest.mock('../../hooks/menuActions/useLeaveRoom', () => ({
 	useLeaveRoomAction: jest.fn(() => jest.fn()),
 }));
-jest.mock('./menuActions/useToggleFavoriteAction', () => ({
+jest.mock('../../hooks/menuActions/useToggleFavoriteAction', () => ({
 	useToggleFavoriteAction: jest.fn(() => jest.fn()),
 }));
-jest.mock('./menuActions/useToggleNotificationsAction', () => ({
+jest.mock('../../hooks/menuActions/useToggleNotificationsAction', () => ({
 	useToggleNotificationAction: jest.fn(() => jest.fn()),
 }));
-jest.mock('./menuActions/useToggleReadAction', () => ({
+jest.mock('../../hooks/menuActions/useToggleReadAction', () => ({
 	useToggleReadAction: jest.fn(() => jest.fn()),
 }));
-jest.mock('./useHideRoomAction', () => ({
+jest.mock('../../hooks/useHideRoomAction', () => ({
 	useHideRoomAction: jest.fn(() => jest.fn()),
 }));
-jest.mock('../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
+jest.mock('../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
 	useOmnichannelPrioritiesMenu: jest.fn(() => [{ id: 'priority', content: 'Priority', icon: 'priority', onClick: jest.fn() }]),
 }));
 
