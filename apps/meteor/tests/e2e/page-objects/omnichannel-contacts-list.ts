@@ -30,11 +30,6 @@ export class OmnichannelContacts {
 
 	get btnFilters(): Locator {
 		return this.page.getByRole('button', { name: 'Filters' });
-		return this.page.getByRole('button', { name: 'Filters' });
-	}
-
-	get btnCloseChip(): Locator {
-		return this.page.locator('button.rcx-chip i');
 	}
 
 	get inputServedBy(): Locator {
@@ -42,7 +37,7 @@ export class OmnichannelContacts {
 	}
 
 	get inputDepartment(): Locator {
-		return this.page.locator('//*[label="Department"]//input');
+		return this.filtersContextualBar.getByLabel('Department').locator('input');
 	}
 
 	get btnApply(): Locator {
@@ -54,12 +49,11 @@ export class OmnichannelContacts {
 	}
 
 	get selectStatusContainer(): Locator {
-		return this.page.getByTestId('hidden-select-container');
+		return this.filtersContextualBar.getByRole('button', { name: 'Status' });
 	}
 
 	get inputTags(): Locator {
-		// return this.page.getByRole('listbox').nth(2);
-		return this.page.getByText('Tags').locator('input');
+		return this.filtersContextualBar.getByLabel('Tags').locator('input');
 	}
 
 	get inputUnits(): Locator {
@@ -119,7 +113,7 @@ export class OmnichannelContacts {
 		await this.btnApply.click();
 	}
 
-	async addTag(option: string) {
+	async selectTag(option: string) {
 		await this.inputTags.click();
 		await this.inputTags.fill(option);
 		await this.page.locator(`[role='option'][value='${option}']`).click();
@@ -129,13 +123,6 @@ export class OmnichannelContacts {
 
 	async removeTag(option: string) {
 		await this.page.locator(`role=option[name='${option}']`).click();
-		await this.btnApply.click();
-	}
-
-	async selectUnit1(option: string) {
-		await this.inputUnits.click();
-		await this.page.locator(`[role='option'][value='${option}']`).click();
-		await this.inputUnits.click();
 		await this.btnApply.click();
 	}
 
