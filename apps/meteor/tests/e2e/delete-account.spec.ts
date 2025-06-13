@@ -40,8 +40,8 @@ test.describe('Delete Own Account', () => {
 
 	test('should not delete account when invalid password is provided', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
-			await poRegistration.username.type(userWithInvalidPassword.data.username);
-			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.username.fill(userWithInvalidPassword.data.username);
+			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 			await expect(poUtils.mainContent).toBeVisible();
 		});
@@ -78,8 +78,8 @@ test.describe('Delete Own Account', () => {
 
 	test('should delete account when valid password is provided and permission is enabled', async ({ page }) => {
 		await test.step('login with the user to delete', async () => {
-			await poRegistration.username.type(userToDelete.data.username);
-			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.username.fill(userToDelete.data.username);
+			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await poRegistration.btnLogin.click();
 			await expect(poUtils.mainContent).toBeVisible();
 		});
@@ -118,8 +118,8 @@ test.describe('Delete Own Account', () => {
 
 		test('should not show delete account button when permission is disabled', async ({ page }) => {
 			await test.step('login with the user to delete', async () => {
-				await poRegistration.username.type(userWithoutPermissions.data.username);
-				await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+				await poRegistration.username.fill(userWithoutPermissions.data.username);
+				await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 				await poRegistration.btnLogin.click();
 				await expect(poUtils.mainContent).toBeVisible();
 			});
