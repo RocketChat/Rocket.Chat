@@ -176,6 +176,26 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
+	get btnQuoteMessage(): Locator {
+		return this.page.getByRole('button', { name: 'Quote' });
+	}
+
+	get quotePreview(): Locator {
+		return this.page.getByRole('blockquote');
+	}
+
+	get linkPreview(): Locator {
+		return this.page.getByText('Link Preview');
+	}
+
+	linkQuotePreview(name: string): Locator {
+		return this.quotePreview.getByRole('link', { name: `${name}` });
+	}
+
+	get threadQuotePreview(): Locator {
+		return this.page.getByRole('dialog').getByRole('blockquote');
+	}
+
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
