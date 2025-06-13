@@ -151,6 +151,7 @@ const SidebarItemTemplateWithData = ({
 								cl={cl}
 								name={title}
 								hideDefaultOptions={isQueued}
+								href={href || false}
 							/>
 						)
 					: undefined
