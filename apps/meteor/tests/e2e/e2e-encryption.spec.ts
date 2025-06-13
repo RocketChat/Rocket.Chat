@@ -286,29 +286,24 @@ test.describe('basic features', () => {
 	});
 });
 
-test.use({ storageState: Users.admin.state });
-
 test.describe.serial('e2e-encryption', () => {
-	// test.skip();
-
 	let poHomeChannel: HomeChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
 
-	test.beforeEach(async ({ page, api }) => {
-		await api.post('/settings/E2E_Enable', { value: true });
-
-		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-	});
-
 	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 	});
 
 	test.afterAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: false });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		await page.goto('/home');
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -822,6 +817,9 @@ test.describe.serial('e2e-encryption', () => {
 		await page.locator('role=menuitem[name="Pin"]').click();
 		await page.locator('#modal-root >> button:has-text("Yes, pin message")').click();
 
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.dismissToast();
+
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnPinnedMessagesList.click();
 
@@ -873,9 +871,9 @@ test.describe.serial('e2e-encryption', () => {
 	});
 });
 
-test.describe.serial('e2ee room setup', () => {
-	// test.skip();
+test.use({ storageState: Users.admin.state });
 
+test.describe.serial('e2ee room setup', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
@@ -911,7 +909,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await page.waitForSelector('.main-content');
+		await page.waitForSelector('#main-content');
 
 		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 
@@ -1067,8 +1065,6 @@ test.describe.serial('e2ee room setup', () => {
 });
 
 test.describe('e2ee support legacy formats', () => {
-	// test.skip();
-
 	test.use({ storageState: Users.userE2EE.state });
 
 	let poHomeChannel: HomeChannel;

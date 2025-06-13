@@ -23,6 +23,7 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 				queryClient.invalidateQueries({
 					queryKey: ['livechat-agents'],
 				});
+				queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', uid] });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

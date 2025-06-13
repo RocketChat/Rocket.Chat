@@ -907,7 +907,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const res = await request
 				.post(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
-				.send({ upsert: [{ agentId: agent._id, username: agent.username }], remove: [] })
+				// UI sends agent name as well. API doens't use it, but keeping here for avoid Breaking Changes
+				.send({ upsert: [{ agentId: agent._id, username: agent.username, name: agent.name }], remove: [] })
 				.expect(200);
 			expect(res.body).to.have.property('success', true);
 			await deleteDepartment(dep._id);

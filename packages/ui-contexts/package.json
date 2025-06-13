@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "19.0.0-rc.0",
+	"version": "19.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -13,9 +13,9 @@
 		"@types/react-dom": "~18.3.5",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^5.0.0",
-		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
+		"mongodb": "6.10.0",
 		"react": "~18.3.1",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",

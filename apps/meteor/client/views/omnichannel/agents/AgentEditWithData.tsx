@@ -6,12 +6,11 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentEdit from './AgentEdit';
-import { FormSkeleton } from '../../../components/Skeleton';
+import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
 	const { t } = useTranslation();
 
-	const getAvailableDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
@@ -31,30 +30,15 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 		refetchOnWindowFocus: false,
 	});
 
-	const {
-		data: availableDepartments,
-		isPending: availableDepartmentsLoading,
-		error: availableDepartmentsError,
-	} = useQuery({
-		queryKey: ['livechat-getAvailableDepartments'],
-		queryFn: async () => getAvailableDepartments({ showArchived: 'true' }),
-	});
-
-	if (isPending || availableDepartmentsLoading || agentDepartmentsLoading || !agentDepartments || !availableDepartments) {
-		return <FormSkeleton />;
+	if (isPending || agentDepartmentsLoading || !agentDepartments) {
+		return <ContextualbarSkeletonBody />;
 	}
 
-	if (error || agentsDepartmentsError || availableDepartmentsError || !data?.user) {
+	if (error || agentsDepartmentsError || !data?.user) {
 		return <Box p={16}>{t('User_not_found')}</Box>;
 	}
 
-	return (
-		<AgentEdit
-			agentData={data.user}
-			userDepartments={agentDepartments.departments}
-			availableDepartments={availableDepartments.departments}
-		/>
-	);
+	return <AgentEdit agentData={data.user} agentDepartments={agentDepartments.departments} />;
 };
 
 export default AgentEditWithData;
