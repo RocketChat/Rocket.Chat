@@ -7,6 +7,7 @@ import express from 'express';
 import type { Hono } from 'hono';
 import request from 'supertest';
 
+import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 
 // Helper to create a ReadableStream from a string
@@ -237,8 +238,8 @@ describe('Router use method', () => {
 				},
 				query: isTestQueryParams,
 			},
-			async function action(this: { queryParams: { outerProperty: { innerProperty: string } } }) {
-				const { outerProperty } = this.queryParams;
+			async function action(this: APIActionContext) {
+				const { outerProperty } = this.queryParams as { outerProperty: { innerProperty: string } };
 				return {
 					statusCode: 200,
 					body: {

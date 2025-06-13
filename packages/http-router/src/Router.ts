@@ -9,10 +9,10 @@ import qs from 'qs'; // Using qs specifically to keep express compatibility
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
 
-type InternalHonoActionHandler<TOptions extends TypedOptions> = (c: Context) => Promise<ResponseSchema<TOptions>>;
-type InternalMethodActions<TOptions extends TypedOptions> = [...MiddlewareHandler[], InternalHonoActionHandler<TOptions>];
-type PublicActionHandlerSignature = (...args: any[]) => any;
-type PublicApiMethodArgs = [...MiddlewareHandler[], PublicActionHandlerSignature];
+type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TContext = (c: Context) => Promise<ResponseSchema<TOptions>>> = [
+	...MiddlewareHandler[],
+	TContext,
+];
 
 function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
 	const last = arr[arr.length - 1];
@@ -53,12 +53,17 @@ export type Route = {
 	tags?: string[];
 };
 
+export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>> {
+	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
+}
+
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
-> {
+	TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>,
+> extends AbstractRouter<TActionCallback> {
 	protected innerRouter: Hono<{
 		Variables: {
 			remoteAddress: string;
@@ -66,6 +71,7 @@ export class Router<
 	}>;
 
 	constructor(readonly base: TBasePath) {
+		super();
 		this.innerRouter = new Hono();
 	}
 
@@ -162,9 +168,10 @@ export class Router<
 		method: Method,
 		subpath: TSubPathPattern,
 		options: TOptions,
-		...actions: InternalMethodActions<TOptions>
-	): Router<TBasePath, TOperations> {
-		const [middlewares, action] = splitArray(actions);
+		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
+	): Router<TBasePath, TOperations, TActionCallback> {
+		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
+		const convertedAction = this.convertActionToHandler(action);
 
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
 			const { req, res } = c;
@@ -201,10 +208,15 @@ export class Router<
 				}
 			}
 
-			const { body, statusCode, headers } = await action(c);
+			const response = await convertedAction(c);
+			const { body, statusCode, headers } = response as {
+				body: any;
+				statusCode: number;
+				headers?: Record<string, string>;
+			};
 
 			if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE) {
-				const responseValidatorFn = options?.response?.[statusCode];
+				const responseValidatorFn = options?.response?.[statusCode as keyof typeof options.response];
 				/* c8 ignore next 3 */
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
@@ -252,71 +264,83 @@ export class Router<
 		return this;
 	}
 
+	protected convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>> {
+		// Default implementation simply passes through the action
+		// Subclasses can override this to provide custom handling
+		return action as (c: Context) => Promise<ResponseSchema<TypedOptions>>;
+	}
+
 	get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		...actionArgs: PublicApiMethodArgs
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
 	): Router<
 		TBasePath,
 		| TOperations
 		| ({
 				method: 'GET';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & Omit<TOptions, 'response'>),
+		TActionCallback
 	> {
-		return this.method('GET', subpath, options, ...(actionArgs as InternalMethodActions<TOptions>));
+		return this.method('GET', subpath, options, ...action);
 	}
 
 	post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		...actionArgs: PublicApiMethodArgs
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
 	): Router<
 		TBasePath,
 		| TOperations
 		| ({
 				method: 'POST';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & Omit<TOptions, 'response'>),
+		TActionCallback
 	> {
-		return this.method('POST', subpath, options, ...(actionArgs as InternalMethodActions<TOptions>));
+		return this.method('POST', subpath, options, ...action);
 	}
 
 	put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		...actionArgs: PublicApiMethodArgs
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
 	): Router<
 		TBasePath,
 		| TOperations
 		| ({
 				method: 'PUT';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & Omit<TOptions, 'response'>),
+		TActionCallback
 	> {
-		return this.method('PUT', subpath, options, ...(actionArgs as InternalMethodActions<TOptions>));
+		return this.method('PUT', subpath, options, ...action);
 	}
 
 	delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		subpath: TSubPathPattern,
 		options: TOptions,
-		...actionArgs: PublicApiMethodArgs
+		...action: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
 	): Router<
 		TBasePath,
 		| TOperations
 		| ({
 				method: 'DELETE';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & Omit<TOptions, 'response'>),
+		TActionCallback
 	> {
-		return this.method('DELETE', subpath, options, ...(actionArgs as InternalMethodActions<TOptions>));
+		return this.method('DELETE', subpath, options, ...action);
 	}
 
-	use<FN extends MiddlewareHandler>(fn: FN): Router<TBasePath, TOperations>;
+	use<FN extends MiddlewareHandler>(fn: FN): Router<TBasePath, TOperations, TActionCallback>;
 
-	use<IRouter extends Router<any, any>>(
+	use<IRouter extends Router<any, any, any>>(
 		innerRouter: IRouter,
-	): IRouter extends Router<any, infer IOperations> ? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>> : never;
+	): IRouter extends Router<any, infer IOperations, any>
+		? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>, TActionCallback>
+		: never;
 
 	use(innerRouter: unknown): any {
 		if (innerRouter instanceof Router) {
@@ -375,4 +399,5 @@ type Filter<
 	},
 > = TOther extends { method: Method; path: string } ? TOther : never;
 
-export type ExtractRouterEndpoints<TRoute extends Router<any, any>> = TRoute extends Router<any, infer TOperations> ? TOperations : never;
+export type ExtractRouterEndpoints<TRoute extends Router<any, any, any>> =
+	TRoute extends Router<any, infer TOperations, any> ? TOperations : never;

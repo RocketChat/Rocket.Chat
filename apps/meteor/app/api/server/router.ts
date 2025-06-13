@@ -1,19 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { ResponseSchema } from '@rocket.chat/http-router';
 import { Router } from '@rocket.chat/http-router';
-import type { HonoRequest, MiddlewareHandler, Context as HonoContext } from 'hono';
+import type { Context as HonoContext } from 'hono';
 
-import type { TypedAction, TypedOptions } from './definition';
+import type { TypedOptions } from './definition';
 
-type MiddlewareHandlerListAndActionHandler<TOptions extends TypedOptions, TSubPathPattern extends string> = [
-	...MiddlewareHandler[],
-	TypedAction<TOptions, TSubPathPattern>,
-];
-
-function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
-	const last = arr[arr.length - 1];
-	const rest = arr.slice(0, -1) as T[];
-	return [rest, last as U];
-}
 declare module 'hono' {
 	interface ContextVariableMap {
 		'route': string;
@@ -21,21 +12,26 @@ declare module 'hono' {
 	}
 }
 
+export type APIActionContext = {
+	requestIp: string;
+	urlParams: Record<string, string>;
+	queryParams: Record<string, any>;
+	bodyParams: Record<string, any>;
+	request: Request;
+	path: string;
+	response: any;
+	route: string;
+};
+
+export type APIActionHandler = (this: APIActionContext, request: Request) => Promise<ResponseSchema<TypedOptions>>;
+
 export class RocketChatAPIRouter<
 	TBasePath extends string,
 	TOperations extends {
 		[x: string]: unknown;
 	} = NonNullable<unknown>,
-> extends Router<TBasePath, TOperations> {
-	protected async parseBodyParams<T extends Record<string, any>>({ request, extra }: { request: HonoRequest; extra?: T }) {
-		if (extra && Object.keys(extra.bodyParamsOverride || {}).length !== 0) {
-			return extra;
-		}
-
-		return super.parseBodyParams({ request });
-	}
-
-	protected _convertToHonoAction(action: TypedAction<any, any>): (c: HonoContext) => Promise<any> {
+> extends Router<TBasePath, TOperations, APIActionHandler> {
+	protected convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext) => {
 			const { req, res } = c;
 			const queryParams = super.parseQueryParams(req);
@@ -55,82 +51,10 @@ export class RocketChatAPIRouter<
 					path: req.path,
 					response: res,
 					route: req.routePath,
-				} as any,
+				} as APIActionContext,
 				[request],
 			);
 		};
-	}
-
-	public get<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		subpath: TSubPathPattern,
-		options: TOptions,
-		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
-	): RocketChatAPIRouter<
-		TBasePath,
-		| TOperations
-		| ({
-				method: 'GET';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
-	> {
-		const [middlewares, typedActionHandler] = splitArray(actions);
-		const honoAction = this._convertToHonoAction(typedActionHandler);
-
-		return super.method('GET', subpath, options, ...middlewares, honoAction) as this;
-	}
-
-	public post<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		subpath: TSubPathPattern,
-		options: TOptions,
-		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
-	): RocketChatAPIRouter<
-		TBasePath,
-		| TOperations
-		| ({
-				method: 'POST';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
-	> {
-		const [middlewares, typedActionHandler] = splitArray(actions);
-		const honoAction = this._convertToHonoAction(typedActionHandler);
-
-		return super.method('POST', subpath, options, ...middlewares, honoAction) as this;
-	}
-
-	public put<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		subpath: TSubPathPattern,
-		options: TOptions,
-		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
-	): RocketChatAPIRouter<
-		TBasePath,
-		| TOperations
-		| ({
-				method: 'PUT';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
-	> {
-		const [middlewares, typedActionHandler] = splitArray(actions);
-		const honoAction = this._convertToHonoAction(typedActionHandler);
-
-		return super.method('PUT', subpath, options, ...middlewares, honoAction) as this;
-	}
-
-	public delete<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		subpath: TSubPathPattern,
-		options: TOptions,
-		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TSubPathPattern>
-	): RocketChatAPIRouter<
-		TBasePath,
-		| TOperations
-		| ({
-				method: 'DELETE';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
-	> {
-		const [middlewares, typedActionHandler] = splitArray(actions);
-		const honoAction = this._convertToHonoAction(typedActionHandler);
-
-		return super.method('DELETE', subpath, options, ...middlewares, honoAction) as this;
 	}
 }
 
