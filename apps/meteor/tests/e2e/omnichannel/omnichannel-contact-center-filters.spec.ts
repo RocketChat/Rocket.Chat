@@ -328,7 +328,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		});
 	});
 
-	test('Close contextual bar with filter screen', async () => {
+	test('OC - Contact Center - Close contextual bar with filter screen', async () => {
 		await test.step('expect to close filters contextual bar ', async () => {
 			await poContacts.btnFilters.click();
 			await poContacts.btnClose.click();
