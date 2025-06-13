@@ -303,7 +303,7 @@ test.describe('OC - Contact Center [Auto Selection]', async () => {
 		});
 	});
 
-	test('Clear all applied Filters', async () => {
+	test('OC - Contact Center - Clear all applied Filters', async () => {
 		const [departmentA] = departments.map(({ data }) => data);
 		const [unitA] = units.map((unit) => unit.data);
 
