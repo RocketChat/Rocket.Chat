@@ -15,7 +15,18 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 * It should be used as a hook in React components to access the collection's records and methods.
 	 */
 	readonly use = createDocumentMapStore<T>({
-		onMutate: () => this.recomputeQueries(),
+		onInvalidate: (...docs) => {
+			for (const query of this._collection.queries) {
+				if (docs.some((doc) => query.predicate(doc))) {
+					this._collection.recomputeQuery(query);
+				}
+			}
+		},
+		onInvalidateAll: () => {
+			for (const query of this._collection.queries) {
+				this._collection.recomputeQuery(query);
+			}
+		},
 	});
 
 	/**
@@ -36,9 +47,5 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 */
 	get state() {
 		return this.use.getState();
-	}
-
-	private recomputeQueries() {
-		this._collection.recomputeAllResults();
 	}
 }

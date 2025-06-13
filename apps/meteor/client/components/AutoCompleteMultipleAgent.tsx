@@ -1,19 +1,19 @@
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo, useState } from 'react';
 
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-type AutoCompleteMultipleAgentProps = {
-	value: PaginatedMultiSelectOption[];
-	error?: boolean;
-	placeholder?: string;
+type AutoCompleteMultipleAgentProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'options' | 'renderItem' | 'setFilter' | 'filter' | 'endReached' | 'value' | 'onChange'
+> & {
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
-	withTitle?: boolean;
+	value: PaginatedMultiSelectOption[];
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 };
 
@@ -26,6 +26,7 @@ const AutoCompleteMultipleAgent = ({
 	onlyAvailable = false,
 	withTitle = false,
 	onChange,
+	...props
 }: AutoCompleteMultipleAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
@@ -40,6 +41,7 @@ const AutoCompleteMultipleAgent = ({
 
 	return (
 		<PaginatedMultiSelectFiltered
+			{...props}
 			withTitle={withTitle}
 			value={value}
 			error={error}
