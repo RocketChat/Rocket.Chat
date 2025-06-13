@@ -1,5 +1,16 @@
 # @rocket.chat/model-typings
 
+## 1.6.4
+
+### Patch Changes
+
+- ([#36200](https://github.com/RocketChat/Rocket.Chat/pull/36200) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1
+  </details>
+
 ## 1.6.3
 
 ### Patch Changes
