@@ -13,6 +13,7 @@ import {
 	listenToEvents,
 	parseEventData,
 	computeChannelFromEvents,
+	logger,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, FreeSwitchChannelEvent, FreeSwitchChannelEventDelta } from '@rocket.chat/models';
@@ -63,11 +64,11 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	}
 
 	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
-		if (!settings.get('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
+		if (!settings.get('VoIP_TeamCollab_Enabled')) {
 			throw new Error('VoIP is disabled.');
 		}
 
-		const host = process.env.FREESWITCHIP || settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
+		const host = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
 		if (!host) {
 			throw new Error('VoIP is not properly configured.');
 		}
@@ -102,22 +103,24 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 				return;
 			}
 
-			console.log(error);
+			logger.error(error);
 			throw error;
 		}
 	}
 
 	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchChannelEvent>>): Promise<void> {
-		return this.registerRecord(async () => {
-			await FreeSwitchChannelEvent.registerEvent(event);
+		const { channelUniqueId, eventName } = event;
 
-			// #TODO: Use Agenda, so we can cover cases where the CHANNEL_DESTROY event is lost
-			if (event.eventName === 'CHANNEL_DESTROY' && event.channelUniqueId) {
-				setTimeout(async () => {
-					await this.computeChannel(event.channelUniqueId);
-				}, 1000);
-			}
-		});
+		if (eventName === 'CHANNEL_DESTROY' && channelUniqueId) {
+			// #TODO: Replace with a proper background process, also make it not rely on the CHANNEL_DESTROY event.
+			setTimeout(() => {
+				this.computeChannel(channelUniqueId).catch((reason) => {
+					logger.error({ msg: 'Failed to compute channel data ', reason, channelUniqueId });
+				});
+			}, 2000);
+		}
+
+		return this.registerRecord(() => FreeSwitchChannelEvent.registerEvent(event));
 	}
 
 	private async registerChannel(channel: InsertionModel<WithoutId<IFreeSwitchChannel>>): Promise<void> {
@@ -138,7 +141,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			await this.registerChannel(channel);
 			await this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: true, finalState });
 
-			await Promise.all(
+			await Promise.allSettled(
 				deltas.map(async (delta) => this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: false, event: delta })),
 			);
 		}
