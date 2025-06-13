@@ -9,6 +9,8 @@ import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../NavBarV2';
 import Sidebar from '../../../sidebarv2';
+import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
+import SidePanel from '../../navigation/sidepanel';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -50,7 +52,12 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				{!removeSidenav && <Sidebar />}
+				{!removeSidenav && (
+					<RoomsNavigationProvider>
+						<Sidebar />
+						<SidePanel />
+					</RoomsNavigationProvider>
+				)}
 				<MainContent>{children}</MainContent>
 			</Box>
 		</>
