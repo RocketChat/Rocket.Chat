@@ -1,4 +1,5 @@
 export * from './convertSubObjectsIntoPaths';
+export * from './convertPathsIntoSubObjects';
 export * from './getObjectKeys';
 export * from './normalizeLanguage';
 export * from './objectMap';
