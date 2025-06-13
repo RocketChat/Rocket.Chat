@@ -25,7 +25,7 @@ class CachedChatRoom extends PrivateCachedCollection<IRoom> {
 	}
 
 	private mergeWithSubscription(room: IRoom): IRoom {
-		CachedChatSubscription.collection.store.update(
+		CachedChatSubscription.collection.state.update(
 			(record) => record.rid === room._id,
 			(sub) => ({
 				...sub,

@@ -107,5 +107,5 @@ $config = array(
 	'metadata.sign.privatekey_pass' => null,
 	'metadata.sign.certificate' => null,
 	'proxy' => null,
-	'trusted.url.domains' => array(),
+	'trusted.url.domains' => array('localhost:3000'),
 );

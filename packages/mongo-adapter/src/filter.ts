@@ -47,6 +47,16 @@ const $all =
 		return operand.every((operandElement) => value.some((valueElement) => equals(operandElement, valueElement)));
 	};
 
+const $eq =
+	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
+	(value: T): boolean => {
+		if (value === undefined) {
+			return false;
+		}
+
+		return flatSome(value, (x) => equals(x, operand));
+	};
+
 const $lt =
 	<T>(operand: T, _options: undefined): ((value: T) => boolean) =>
 	(value: T): boolean =>
@@ -130,7 +140,9 @@ const $elemMatch = <T>(operand: Filter<T>, _options: undefined): ((value: T) => 
 
 const $not = <T>(operand: FieldExpression<T>, _options: undefined): ((value: T) => boolean) => {
 	const matcher = compileValueSelector(operand);
-	return (value: T): boolean => !matcher(value);
+	return (value: T): boolean => {
+		return !matcher(value);
+	};
 };
 
 const dummyOperator =
@@ -143,6 +155,7 @@ const $near = dummyOperator;
 const $geoIntersects = dummyOperator;
 
 const valueOperators = {
+	$eq,
 	$in,
 	$nin,
 	$all,
@@ -179,8 +192,8 @@ const $nor = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
 };
 
 const $where = <T>(selectorValue: string | ((doc: T) => boolean)): ((doc: T) => boolean) => {
-	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${selectorValue}`);
-	return (doc: T): boolean => !!fn.call(doc);
+	const fn = selectorValue instanceof Function ? selectorValue : Function(`doc`, `return ${selectorValue}`);
+	return (doc: T): boolean => !!fn.call(doc, doc);
 };
 
 const logicalOperators = {
@@ -285,6 +298,10 @@ export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'
 				case '$where':
 					return $where(subSelector);
 			}
+		}
+
+		if (key.slice(0, 1) === '$') {
+			throw new Error(`Unrecognized logical operator: ${key}`);
 		}
 
 		const lookUpByIndex = createLookupFunction(key);

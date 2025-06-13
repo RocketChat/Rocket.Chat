@@ -1,6 +1,5 @@
 import '../lib/rooms/roomTypes';
 import './absoluteUrl';
-import './afterLogoutCleanUp';
 import './appRoot';
 import './audit';
 import './callbacks';
@@ -8,7 +7,6 @@ import './deviceManagement';
 import './e2e';
 import './iframeCommands';
 import './incomingMessages';
-import './messageObserve';
 import './messageTypes';
 import './roles';
 import './routes';
