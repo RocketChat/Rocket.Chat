@@ -22,7 +22,7 @@ test.skip(!IS_EE, 'OC - Contact center Filters > Enterprise Only');
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Contact Center [Auto Selection]', async () => {
+test.describe('OC - Contact Center', async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
