@@ -250,7 +250,7 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          coverage: ${{ github.event_name != 'release' }}
+          coverage: true
 
   build-prod:
     name: 📦 Meteor Build - official
@@ -281,7 +281,7 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          coverage: ${{ github.event_name != 'release' }}
+          coverage: false
 
   # TODO: this should go away once upstream builds are fixed
   build-matrix-rust-bindings-for-alpine:

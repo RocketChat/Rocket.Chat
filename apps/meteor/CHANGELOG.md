@@ -1,5 +1,48 @@
 # @rocket.chat/meteor
 
+## 7.7.1
+
+### Patch Changes
+
+- ([#36204](https://github.com/RocketChat/Rocket.Chat/pull/36204) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of saving an agent when editing a department to work.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36210](https://github.com/RocketChat/Rocket.Chat/pull/36210) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the usage of `Livechat_enabled_when_agent_idle` setting across the codebase. Goal is to use it wherever is applicable making the feature more predictable.
+
+- ([#36200](https://github.com/RocketChat/Rocket.Chat/pull/36200) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- <details><summary>Updated dependencies [016611917a86c738c22f7da4235e3ad38cf81e2a, 710f6b2bc211ba1d06d701f99d17bf2405d19b32]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.1
+  - @rocket.chat/model-typings@1.6.4
+  - @rocket.chat/models@1.5.4
+  - @rocket.chat/omnichannel-services@0.3.22
+  - @rocket.chat/presence@0.2.25
+  - @rocket.chat/api-client@0.2.25
+  - @rocket.chat/core-services@0.9.4
+  - @rocket.chat/ui-contexts@19.0.1
+  - @rocket.chat/apps@0.5.4
+  - @rocket.chat/cron@0.1.25
+  - @rocket.chat/instance-status@0.1.25
+  - @rocket.chat/network-broker@0.2.4
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@19.0.1
+  - @rocket.chat/gazzodown@19.0.1
+  - @rocket.chat/ui-avatar@15.0.1
+  - @rocket.chat/ui-client@19.0.1
+  - @rocket.chat/ui-video-conf@19.0.1
+  - @rocket.chat/ui-voip@9.0.1
+  - @rocket.chat/web-ui-registration@19.0.1
+  - @rocket.chat/core-typings@7.7.1
+  - @rocket.chat/license@1.0.16
+  - @rocket.chat/pdf-worker@0.3.4
+  - @rocket.chat/freeswitch@1.2.12
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.7.0
 
 ### Minor Changes
