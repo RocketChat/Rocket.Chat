@@ -17,6 +17,6 @@ export interface IScheduledMessage {
 
 export const ScheduledMessages = new Mongo.Collection<IScheduledMessage>('scheduled_messages');
 
-Meteor.startup(() => {
-  ScheduledMessages.createIndex({ scheduledAt: 1 });
-});
+// Meteor.startup(() => {
+//   ScheduledMessages.createIndex({ scheduledAt: 1 });
+// });
