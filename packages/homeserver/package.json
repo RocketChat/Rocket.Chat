@@ -1,0 +1,51 @@
+{
+  "name": "@rocket.chat/homeserver",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/server.js",
+    "start:dev": "tsx watch src/server.ts",
+    "start:prod": "node dist/server.js",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.0",
+    "@nestjs/common": "^10.4.15",
+    "@rocket.chat/core-typings": "workspace:^",
+    "@rocket.chat/models": "workspace:^",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "dotenv": "^16.3.1",
+    "elysia": "^1.2.40",
+    "mongodb": "^6.3.0",
+    "pino": "^9.7.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "tsyringe": "^4.10.0",
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.18",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.17",
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^20.11.4",
+    "tsx": "^4.7.0",
+    "typescript": "~5.6.3"
+  },
+  "engines": {
+    "node": ">=20.11.4"
+  }
+}
