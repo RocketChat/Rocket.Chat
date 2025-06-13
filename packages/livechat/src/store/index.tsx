@@ -3,13 +3,13 @@ import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 
+import Store from './Store';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
-import Store from './Store';
 
 export type LivechatHiddenSytemMessageType =
 	| 'uj' // User joined
@@ -30,6 +30,7 @@ export type StoreState = {
 			offlineColor?: string;
 			position: 'left' | 'right';
 			background?: string;
+			hideExpandChat?: boolean;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -89,6 +90,7 @@ export type StoreState = {
 			background?: string;
 			hideGuestAvatar?: boolean;
 			hideAgentAvatar?: boolean;
+			hideExpandChat?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
