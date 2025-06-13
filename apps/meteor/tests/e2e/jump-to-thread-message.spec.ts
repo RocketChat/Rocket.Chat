@@ -48,7 +48,7 @@ test.describe.serial('Threads', () => {
 		await page.goto(messageLink);
 
 		await expect(async () => {
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
 		}).toPass();
 
@@ -63,7 +63,7 @@ test.describe.serial('Threads', () => {
 		await page.goto(threadMessageLink);
 
 		await expect(async () => {
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
 		}).toPass();
 
@@ -78,7 +78,7 @@ test.describe.serial('Threads', () => {
 		await page.goto(threadMessageLink);
 
 		await expect(async () => {
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
 		}).toPass();
 

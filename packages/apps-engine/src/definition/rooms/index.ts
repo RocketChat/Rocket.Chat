@@ -7,7 +7,16 @@ import { IPreRoomDeletePrevent } from './IPreRoomDeletePrevent';
 import { IRoom } from './IRoom';
 import { RoomType } from './RoomType';
 
-export { IRoom, RoomType, IPostRoomCreate, IPostRoomDeleted, IPreRoomCreateExtend, IPreRoomCreateModify, IPreRoomCreatePrevent, IPreRoomDeletePrevent };
+export {
+	IRoom,
+	RoomType,
+	IPostRoomCreate,
+	IPostRoomDeleted,
+	IPreRoomCreateExtend,
+	IPreRoomCreateModify,
+	IPreRoomCreatePrevent,
+	IPreRoomDeletePrevent,
+};
 
 export * from './IPreRoomUserJoined';
 export * from './IPostRoomUserJoined';

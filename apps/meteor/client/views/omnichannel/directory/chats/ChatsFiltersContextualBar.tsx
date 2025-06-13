@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -58,7 +58,14 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 		reset();
 	};
 
-	const formId = useUniqueId();
+	const formId = useId();
+	const fromFieldId = useId();
+	const toFieldId = useId();
+	const servedByFieldId = useId();
+	const statusFieldId = useId();
+	const departmentFieldId = useId();
+	const tagsFieldId = useId();
+	const unitsFieldId = useId();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
@@ -69,75 +76,101 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form' id={formId} onSubmit={handleSubmit(handleSubmitFilters)}>
 				<Field>
-					<FieldLabel>{t('From')}</FieldLabel>
+					<FieldLabel htmlFor={fromFieldId}>{t('From')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='from'
 							control={control}
-							render={({ field }) => <InputBox type='date' placeholder={t('From')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('To')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='to'
-							control={control}
-							render={({ field }) => <InputBox type='date' placeholder={t('To')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
-						/>
-					</FieldRow>
-				</Field>
-				{canViewLivechatRooms && (
-					<Field>
-						<FieldLabel>{t('Served_By')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='servedBy'
-								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteMultipleAgent value={value} onChange={onChange} />}
-							/>
-						</FieldRow>
-					</Field>
-				)}
-				<Field>
-					<FieldLabel>{t('Status')}</FieldLabel>
-					<Controller
-						name='status'
-						control={control}
-						render={({ field }) => <Select {...field} options={statusOptions} placeholder={t('Select_an_option')} />}
-					/>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Department')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='department'
-							control={control}
-							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartmentMultiple showArchived value={value} onChange={onChange} onlyMyDepartments />
+							render={({ field }) => (
+								<InputBox type='date' id={fromFieldId} placeholder={t('From')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Tags')}</FieldLabel>
+					<FieldLabel htmlFor={toFieldId}>{t('To')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='to'
+							control={control}
+							render={({ field }) => (
+								<InputBox type='date' id={toFieldId} placeholder={t('To')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				{canViewLivechatRooms && (
+					<Field>
+						<FieldLabel is='span' id={servedByFieldId}>
+							{t('Served_By')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='servedBy'
+								control={control}
+								render={({ field: { value, onChange } }) => (
+									<AutoCompleteMultipleAgent aria-labelledby={servedByFieldId} value={value} onChange={onChange} />
+								)}
+							/>
+						</FieldRow>
+					</Field>
+				)}
+				<Field>
+					<FieldLabel is='span' id={statusFieldId}>
+						{t('Status')}
+					</FieldLabel>
+					<Controller
+						name='status'
+						control={control}
+						render={({ field }) => (
+							<Select {...field} aria-labelledby={statusFieldId} options={statusOptions} placeholder={t('Select_an_option')} />
+						)}
+					/>
+				</Field>
+				<Field>
+					<FieldLabel is='span' id={departmentFieldId}>
+						{t('Department')}
+					</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='department'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<AutoCompleteDepartmentMultiple
+									aria-labelledby={departmentFieldId}
+									showArchived
+									value={value}
+									onChange={onChange}
+									onlyMyDepartments
+								/>
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel id={tagsFieldId}>{t('Tags')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='tags'
 							control={control}
-							render={({ field: { value, onChange } }) => <CurrentChatTags value={value} handler={onChange} viewAll />}
+							render={({ field: { value, onChange } }) => (
+								<CurrentChatTags aria-labelledby={tagsFieldId} value={value} handler={onChange} viewAll />
+							)}
 						/>
 					</FieldRow>
 				</Field>
 				{isEnterprise && (
 					<Field>
-						<FieldLabel>{t('Units')}</FieldLabel>
+						<FieldLabel is='span' id={unitsFieldId}>
+							{t('Units')}
+						</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='units'
 								control={control}
-								render={({ field: { value, onChange } }) => <AutoCompleteUnits value={value} onChange={onChange} />}
+								render={({ field: { value, onChange } }) => (
+									<AutoCompleteUnits aria-labelledby={unitsFieldId} value={value} onChange={onChange} />
+								)}
 							/>
 						</FieldRow>
 					</Field>
@@ -147,7 +180,9 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 						if (customField.type === 'select') {
 							return (
 								<Field key={customField._id}>
-									<FieldLabel>{customField.label}</FieldLabel>
+									<FieldLabel is='span' id={customField._id}>
+										{customField.label}
+									</FieldLabel>
 									<FieldRow>
 										<Controller
 											name={customField._id}
@@ -155,6 +190,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 											render={({ field }) => (
 												<Select
 													{...field}
+													aria-labelledby={customField._id}
 													value={field.value as string}
 													options={(customField.options || '').split(',').map((item) => [item, item])}
 												/>
@@ -167,12 +203,12 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 
 						return (
 							<Field key={customField._id}>
-								<FieldLabel>{customField.label}</FieldLabel>
+								<FieldLabel htmlFor={customField._id}>{customField.label}</FieldLabel>
 								<FieldRow>
 									<Controller
 										name={customField._id}
 										control={control}
-										render={({ field }) => <TextInput {...field} value={field.value as string} />}
+										render={({ field }) => <TextInput {...field} id={customField._id} value={field.value as string} />}
 									/>
 								</FieldRow>
 							</Field>

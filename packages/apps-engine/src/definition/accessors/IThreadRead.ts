@@ -5,5 +5,5 @@ import type { IMessage } from '../messages/index';
  * Thread messages in a read-only-fashion.
  */
 export interface IThreadRead {
-    getThreadById(id: string): Promise<Array<IMessage> | undefined>;
+	getThreadById(id: string): Promise<Array<IMessage> | undefined>;
 }

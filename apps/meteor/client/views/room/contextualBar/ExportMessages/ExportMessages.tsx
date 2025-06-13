@@ -59,12 +59,13 @@ const ExportMessages = () => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty },
 		watch,
 		register,
 		setValue,
 		handleSubmit,
 		clearErrors,
+		reset,
 	} = useForm<ExportMessagesFormValues>({
 		mode: 'onBlur',
 		defaultValues: {
@@ -126,7 +127,7 @@ const ExportMessages = () => {
 			setValue('format', 'json');
 		}
 
-		setValue('messagesCount', messageCount);
+		setValue('messagesCount', messageCount, { shouldDirty: true });
 	}, [type, setValue, messageCount]);
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
@@ -345,8 +346,10 @@ const ExportMessages = () => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={closeTab}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting} form={formId} primary type='submit'>
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
+					<Button disabled={!isDirty} loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>
