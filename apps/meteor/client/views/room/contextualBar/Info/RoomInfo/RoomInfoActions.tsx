@@ -17,7 +17,7 @@ export type RoomInfoActionsProps = {
 
 const RoomInfoActions = ({ actions, className }: RoomInfoActionsProps) => {
 	return (
-		<>
+		<>	
 			{actions.items.map(({ id, content, icon, onClick }) => (
 				<InfoPanelAction className={className} key={id} label={content} onClick={onClick} icon={icon} />
 			))}

@@ -278,7 +278,7 @@ const MessageBox = ({
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
-
+	
 	const sizes = useContentBoxSize(textareaRef);
 
 	const format = useFormatDateAndTime();
