@@ -44,7 +44,7 @@
 		"@types/polka": "^0.5.7",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [

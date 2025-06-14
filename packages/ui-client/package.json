@@ -56,7 +56,7 @@
 		"react-hook-form": "~7.45.4",
 		"storybook": "^8.6.14",
 		"storybook-dark-mode": "^4.0.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
