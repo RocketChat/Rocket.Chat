@@ -9696,6 +9696,7 @@ __metadata:
     "@rocket.chat/fuselage": "npm:^0.62.2"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
+    "@rocket.chat/tsconfig": "workspace:*"
     "@storybook/addon-a11y": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
