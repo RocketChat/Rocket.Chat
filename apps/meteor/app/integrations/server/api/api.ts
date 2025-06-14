@@ -9,8 +9,9 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
+import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
@@ -294,7 +295,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 class WebHookAPI extends APIClass<'/hooks'> {
 	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = this.urlParams;
-		const integration = await Integrations.findOneById<IIncomingIntegration>(integrationId);
+		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
 		if (!integration) {
 			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
