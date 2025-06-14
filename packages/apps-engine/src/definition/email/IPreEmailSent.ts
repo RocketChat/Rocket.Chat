@@ -15,11 +15,11 @@ import { AppMethod } from '../metadata';
  * reason for rejection.
  */
 export interface IPreEmailSent {
-    [AppMethod.EXECUTE_PRE_EMAIL_SENT](
-        context: IPreEmailSentContext,
-        read: IRead,
-        http: IHttp,
-        persis: IPersistence,
-        modify: IModify,
-    ): Promise<IEmailDescriptor>;
+	[AppMethod.EXECUTE_PRE_EMAIL_SENT](
+		context: IPreEmailSentContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<IEmailDescriptor>;
 }

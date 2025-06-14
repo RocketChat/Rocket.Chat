@@ -20,6 +20,7 @@ import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
+import { subscriptionsQueryKeys } from '../../lib/queryKeys';
 import { mapSubscriptionFromApi } from '../../lib/utils/mapSubscriptionFromApi';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
@@ -45,7 +46,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 
 	const rid = data?.rid;
 	const { data: subscriptionData, refetch } = useQuery({
-		queryKey: ['subscriptions', rid] as const,
+		queryKey: rid ? subscriptionsQueryKeys.subscription(rid) : [],
 		queryFn: () => {
 			if (!rid) {
 				throw new Error('Room not found');

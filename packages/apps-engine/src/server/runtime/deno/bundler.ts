@@ -10,81 +10,81 @@ import type { IParseAppPackageResult } from '../../compiler';
  * This makes running the app in the Deno Runtime much more difficult, so instead we bundle the files at runtime.
  */
 export async function bundleLegacyApp(appPackage: IParseAppPackageResult) {
-    const buildResult = await build({
-        write: false,
-        bundle: true,
-        minify: true,
-        platform: 'node',
-        target: ['node10'],
-        define: {
-            'global.Promise': 'Promise',
-        },
-        external: ['@rocket.chat/apps-engine/*'],
-        stdin: {
-            contents: appPackage.files[appPackage.info.classFile],
-            sourcefile: appPackage.info.classFile,
-            loader: 'js',
-        },
-        plugins: [
-            {
-                name: 'legacy-app',
-                setup(build: PluginBuild) {
-                    build.onResolve({ filter: /.*/ }, (args: OnResolveArgs) => {
-                        if (args.namespace === 'file') {
-                            return;
-                        }
+	const buildResult = await build({
+		write: false,
+		bundle: true,
+		minify: true,
+		platform: 'node',
+		target: ['node10'],
+		define: {
+			'global.Promise': 'Promise',
+		},
+		external: ['@rocket.chat/apps-engine/*'],
+		stdin: {
+			contents: appPackage.files[appPackage.info.classFile],
+			sourcefile: appPackage.info.classFile,
+			loader: 'js',
+		},
+		plugins: [
+			{
+				name: 'legacy-app',
+				setup(build: PluginBuild) {
+					build.onResolve({ filter: /.*/ }, (args: OnResolveArgs) => {
+						if (args.namespace === 'file') {
+							return;
+						}
 
-                        const modulePath = path.join(path.dirname(args.importer), args.path).concat('.js');
+						const modulePath = path.join(path.dirname(args.importer), args.path).concat('.js');
 
-                        const hasFile = !!appPackage.files[modulePath];
+						const hasFile = !!appPackage.files[modulePath];
 
-                        if (hasFile) {
-                            return {
-                                namespace: 'app-source',
-                                path: modulePath,
-                            };
-                        }
+						if (hasFile) {
+							return {
+								namespace: 'app-source',
+								path: modulePath,
+							};
+						}
 
-                        // require('../') or require('./') are both valid, but aren't included in the files record in the same way
-                        // we need to treat those differently
-                        if (/\.\.?\//.test(args.path)) {
-                            const indexModulePath = modulePath.replace(/\.js$/, `${path.sep}index.js`);
+						// require('../') or require('./') are both valid, but aren't included in the files record in the same way
+						// we need to treat those differently
+						if (/\.\.?\//.test(args.path)) {
+							const indexModulePath = modulePath.replace(/\.js$/, `${path.sep}index.js`);
 
-                            if (appPackage.files[indexModulePath]) {
-                                return {
-                                    namespace: 'app-source',
-                                    path: indexModulePath,
-                                };
-                            }
-                        }
+							if (appPackage.files[indexModulePath]) {
+								return {
+									namespace: 'app-source',
+									path: indexModulePath,
+								};
+							}
+						}
 
-                        return {
-                            path: args.path,
-                            external: true,
-                        };
-                    });
+						return {
+							path: args.path,
+							external: true,
+						};
+					});
 
-                    build.onLoad({ filter: /.*/, namespace: 'app-source' }, (args: OnLoadArgs) => {
-                        if (!appPackage.files[args.path]) {
-                            return {
-                                errors: [
-                                    {
-                                        text: `File ${args.path} could not be found`,
-                                    },
-                                ],
-                            };
-                        }
+					build.onLoad({ filter: /.*/, namespace: 'app-source' }, (args: OnLoadArgs) => {
+						if (!appPackage.files[args.path]) {
+							return {
+								errors: [
+									{
+										text: `File ${args.path} could not be found`,
+									},
+								],
+							};
+						}
 
-                        return {
-                            contents: appPackage.files[args.path],
-                        };
-                    });
-                },
-            },
-        ],
-    });
+						return {
+							contents: appPackage.files[args.path],
+						};
+					});
+				},
+			},
+		],
+	});
 
-    const [{ text: bundle }] = buildResult.outputFiles;
+	const [{ text: bundle }] = buildResult.outputFiles;
 
-    appPackage.files = { [appPackage.info.classFile]: bundle };
+	appPackage.files = { [appPackage.info.classFile]: bundle };
 }

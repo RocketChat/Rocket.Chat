@@ -16,6 +16,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
@@ -47,7 +48,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 	const subscription = useRoomSubscription();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={iconName} />
 				<ContextualbarTitle>{title}</ContextualbarTitle>
@@ -112,7 +113,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 					</>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

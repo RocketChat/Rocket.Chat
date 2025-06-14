@@ -41,7 +41,7 @@ export const credentials: Credentials = {
 	'X-User-Id': undefined,
 } as unknown as Credentials; // FIXME
 
-type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
+export type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
 
 export function api<TPath extends PathWithoutPrefix<Path>>(path: TPath) {
 	return `${prefix}${path}` as const;

@@ -13,7 +13,6 @@ import type {
 	Username,
 	IOmnichannelRoom,
 	ILivechatTag,
-	InquiryWithAgentInfo,
 	ILivechatTagRecord,
 	TransferData,
 	AtLeast,
@@ -58,10 +57,6 @@ interface EventLikeCallbackSignatures {
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: UserStatus }) => void;
 	'livechat.onNewAgentCreated': (agentId: string) => void;
-	'livechat.afterTakeInquiry': (
-		params: { inquiry: InquiryWithAgentInfo; room: IOmnichannelRoom },
-		agent: { agentId: string; username: string },
-	) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: {
@@ -150,7 +145,6 @@ type ChainedCallbackSignatures = {
 		newDepartmentId: ILivechatDepartmentRecord['_id'];
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
-	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'livechat.afterRemoveDepartment': (params: {
 		department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
 		agentsId: ILivechatAgent['_id'][];
@@ -187,7 +181,6 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
-	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'beforeSendMessageNotifications': (message: string) => string;
 	'livechat.onAgentAssignmentFailed': (
@@ -226,7 +219,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'

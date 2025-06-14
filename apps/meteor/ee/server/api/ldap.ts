@@ -102,15 +102,15 @@ API.v1.post(
 	},
 	async function () {
 		if (!this.userId) {
-			return API.v1.unauthorized({ error: 'error-invalid-user' });
+			throw new Error('error-invalid-user');
 		}
 
 		if (!(await hasPermissionAsync(this.userId, 'sync-auth-services-users'))) {
-			return API.v1.unauthorized({ error: 'error-not-authorized' });
+			throw new Error('error-not-authorized');
 		}
 
 		if (settings.get('LDAP_Enable') !== true) {
-			return API.v1.forbidden({ error: 'LDAP_disabled' });
+			throw new Error('LDAP_disabled');
 		}
 
 		try {

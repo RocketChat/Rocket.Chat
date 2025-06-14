@@ -11,5 +11,11 @@ import type { IUserContext } from './IUserContext';
  * user has been saved to the database.
  */
 export interface IPostUserUpdated {
-    [AppMethod.EXECUTE_POST_USER_CREATED](context: IUserContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_USER_CREATED](
+		context: IUserContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void>;
 }

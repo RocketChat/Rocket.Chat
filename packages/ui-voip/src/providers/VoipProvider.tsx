@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import VoipPopup from '../components/VoipPopup';
+import { VoipPopupDraggable } from '../components';
 import VoipPopupPortal from '../components/VoipPopupPortal';
 import type { VoipContextValue } from '../contexts/VoipContext';
 import { VoipContext } from '../contexts/VoipContext';
@@ -196,7 +196,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 				)}
 
 			<VoipPopupPortal>
-				<VoipPopup position={{ bottom: 132, right: 24 }} />
+				<VoipPopupDraggable initialPosition={{ bottom: 132, right: 24 }} />
 			</VoipPopupPortal>
 		</VoipContext.Provider>
 	);

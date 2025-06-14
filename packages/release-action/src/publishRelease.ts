@@ -70,7 +70,16 @@ export async function publishRelease({
 
 	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 
-	if (mergeFinal) {
+	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({
+		...github.context.repo,
+	});
+
+	core.info(`latest release tag: ${latestRelease.tag_name}`);
+
+	const isLatestRelease = semver.gt(newVersion, latestRelease.tag_name);
+
+	// if the action is "cut" on a branch that will be the next release, we need to merge the changes to master
+	if (!mergeFinal && isLatestRelease) {
 		// get current branch name
 		const branchName = await getCurrentBranch();
 
@@ -88,19 +97,13 @@ export async function publishRelease({
 
 	await pushChanges();
 
-	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({
-		...github.context.repo,
-	});
-
-	core.info(`latest release tag: ${latestRelease.tag_name}`);
-
 	core.info('create release');
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: releaseBody,
 		prerelease: newVersion.includes('-'),
-		make_latest: semver.gt(newVersion, latestRelease.tag_name) ? 'true' : 'false',
+		make_latest: isLatestRelease ? 'true' : 'false',
 		...github.context.repo,
 	});
 }
