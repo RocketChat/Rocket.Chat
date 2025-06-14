@@ -167,12 +167,23 @@ const getTeams = async (
 		return;
 	}
 
-	const userSubs = await Subscriptions.findByUserId(user._id).toArray();
-	const ids = userSubs.map((sub) => sub.rid);
-	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
-		searchTerm ? new RegExp(searchTerm, 'i') : null,
-		ids,
-		{
+	const canViewAllPrivateRooms = await hasPermissionAsync(user._id, 'view-all-p-room');
+	
+	let cursor, totalCount;
+	
+	if (canViewAllPrivateRooms) {
+		// User can see all teams
+		const query = {
+			teamMain: true,
+			...(searchTerm ? {
+				$or: [
+					{ name: searchTerm },
+					{ fname: searchTerm },
+				],
+			} : {}),
+		};
+		
+		const result = Rooms.findPaginated(query, {
 			...pagination,
 			sort: {
 				featured: -1,
@@ -194,8 +205,43 @@ const getTeams = async (
 				teamId: 1,
 				teamMain: 1,
 			},
-		},
-	);
+		});
+		cursor = result.cursor;
+		totalCount = result.totalCount;
+	} else {
+		// User can only see teams they are subscribed to
+		const userSubs = await Subscriptions.findByUserId(user._id).toArray();
+		const ids = userSubs.map((sub) => sub.rid);
+		const result = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
+			searchTerm ? new RegExp(searchTerm, 'i') : null,
+			ids,
+			{
+				...pagination,
+				sort: {
+					featured: -1,
+					...sort,
+				},
+				projection: {
+					t: 1,
+					description: 1,
+					topic: 1,
+					name: 1,
+					fname: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					default: 1,
+					featured: 1,
+					usersCount: 1,
+					prid: 1,
+					teamId: 1,
+					teamMain: 1,
+				},
+			},
+		);
+		cursor = result.cursor;
+		totalCount = result.totalCount;
+	}
 	const results = await Promise.all(
 		(await cursor.toArray()).map(async (room) => ({
 			...room,
