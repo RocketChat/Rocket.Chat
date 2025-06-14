@@ -69,7 +69,7 @@ it('should send outstanding blocks if there is no block waiting and item is adde
 
 	ddpDispatcher.dispatch(ddp.call('test1'));
 
-	expect(fn).toBeCalledTimes(1);
+	expect(fn).toHaveBeenCalledTimes(1);
 });
 
 it('should send the next blocks if the outstanding block was completed', () => {
@@ -89,11 +89,11 @@ it('should send the next blocks if the outstanding block was completed', () => {
 
 	ddpDispatcher.dispatch(block3);
 
-	expect(fn).toBeCalledTimes(1);
+	expect(fn).toHaveBeenCalledTimes(1);
 
 	ddpDispatcher.removeItem(block1);
 
-	expect(fn).toBeCalledTimes(2);
+	expect(fn).toHaveBeenCalledTimes(2);
 
 	expect(ddpDispatcher.queue.length).toBe(2);
 
@@ -114,7 +114,7 @@ it('should send the next blocks if the outstanding block was completed', () => {
 
 	expect(ddpDispatcher.queue).toEqual([]);
 
-	expect(fn).toBeCalledTimes(3);
+	expect(fn).toHaveBeenCalledTimes(3);
 	expect(fn).toHaveBeenNthCalledWith(1, block1);
 	expect(fn).toHaveBeenNthCalledWith(2, block2);
 	expect(fn).toHaveBeenNthCalledWith(3, block3);

@@ -16,13 +16,13 @@ it('should call the heartbeat and timeout callbacks respecting the informed time
 	timeout.on('timeout', timeoutCallback);
 
 	// At this point in time, the callback should not have been called yet
-	expect(heartbeatCallback).not.toBeCalled();
-	expect(timeoutCallback).not.toBeCalled();
+	expect(heartbeatCallback).not.toHaveBeenCalled();
+	expect(timeoutCallback).not.toHaveBeenCalled();
 
 	jest.advanceTimersByTime(60);
 
 	expect(heartbeatCallback).toHaveBeenCalledTimes(1);
-	expect(timeoutCallback).not.toBeCalled();
+	expect(timeoutCallback).not.toHaveBeenCalled();
 
 	jest.advanceTimersByTime(60);
 
@@ -43,20 +43,20 @@ it('should never call the timeout callback if the reset method is called', async
 	timeout.on('timeout', timeoutCallback);
 
 	// At this point in time, the callback should not have been called yet
-	expect(heartbeatCallback).not.toBeCalled();
-	expect(timeoutCallback).not.toBeCalled();
+	expect(heartbeatCallback).not.toHaveBeenCalled();
+	expect(timeoutCallback).not.toHaveBeenCalled();
 
 	jest.advanceTimersByTime(60);
 
 	expect(heartbeatCallback).toHaveBeenCalledTimes(1);
-	expect(timeoutCallback).not.toBeCalled();
+	expect(timeoutCallback).not.toHaveBeenCalled();
 
 	timeout.reset();
 
 	jest.advanceTimersByTime(60);
 
 	expect(heartbeatCallback).toHaveBeenCalledTimes(2);
-	expect(timeoutCallback).not.toBeCalled();
+	expect(timeoutCallback).not.toHaveBeenCalled();
 });
 
 afterEach(() => {
