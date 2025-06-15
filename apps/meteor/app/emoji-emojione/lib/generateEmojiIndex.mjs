@@ -8,7 +8,7 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
+const assetFolder = '../../../node_modules/emoji-toolkit';
 const emojiJsonFile = `${assetFolder}/emoji.json`;
 
 if (!fs.existsSync(emojiJsonFile)) {
