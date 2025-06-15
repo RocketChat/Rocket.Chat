@@ -68,6 +68,9 @@ COPY ./packages/tracing/dist packages/tracing/dist
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
+COPY ./packages/mongo-queue/package.json packages/mongo-queue/package.json
+COPY ./packages/mongo-queue/dist packages/mongo-queue/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
