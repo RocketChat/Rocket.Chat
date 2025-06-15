@@ -1,3 +1,4 @@
+import { AppStatusUtils } from '../../definition/AppStatus';
 import type { IUIActionButton, IUIActionButtonDescriptor } from '../../definition/ui';
 import type { AppManager } from '../AppManager';
 import type { AppActivationBridge } from '../bridges';
@@ -8,9 +9,12 @@ import { AppPermissions } from '../permissions/AppPermissions';
 export class UIActionButtonManager {
 	private readonly activationBridge: AppActivationBridge;
 
+	private readonly manager: AppManager;
+
 	private registeredActionButtons = new Map<string, Map<string, IUIActionButtonDescriptor>>();
 
 	constructor(manager: AppManager) {
+		this.manager = manager;
 		this.activationBridge = manager.getBridges().getAppActivationBridge();
 	}
 
@@ -39,18 +43,37 @@ export class UIActionButtonManager {
 		return this.registeredActionButtons.get(appId);
 	}
 
-	public getAllActionButtons() {
+	public async getAllActionButtons(): Promise<Array<IUIActionButton>> {
 		const buttonList: Array<IUIActionButton> = [];
 
-		// Flatten map to a simple list of all buttons
-		this.registeredActionButtons.forEach((appButtons, appId) =>
+		// Flatten map to a simple list of buttons from enabled apps only
+		for (const [appId, appButtons] of this.registeredActionButtons) {
+			const app = this.manager.getOneById(appId);
+
+			// Skip if app doesn't exist
+			if (!app) {
+				continue;
+			}
+
+			// or if it is not enabled
+			try {
+				const appStatus = await app.getStatus();
+				if (!AppStatusUtils.isEnabled(appStatus)) {
+					continue;
+				}
+			} catch (error) {
+				// If we can't get the app status, skip this app's buttons
+				continue;
+			}
+
+			// Add buttons from this enabled app
 			appButtons.forEach((button) =>
 				buttonList.push({
 					...button,
 					appId,
 				}),
-			),
-		);
+			);
+		}
 
 		return buttonList;
 	}
