@@ -1,20 +1,21 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
 import RoomListCollapser from './RoomListCollapser';
+import RoomsListFilters from './RoomListFilters';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { useSideBarRoomsList } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
@@ -22,10 +23,9 @@ const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
-	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
+	const { roomListGroups, groupCounts, collapsedGroups, handleClick, handleKeyDown, totalCount } = useSideBarRoomsList();
+	const avatarTemplate = useAvatarTemplate('condensed');
+	const sideBarItemTemplate = useTemplateByViewMode('condensed');
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
@@ -51,20 +51,30 @@ const RoomList = () => {
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
 			<VirtualizedScrollbars>
 				<GroupedVirtuoso
-					groupCounts={groupsCount}
-					groupContent={(index) => (
-						<RoomListCollapser
-							collapsedGroups={collapsedGroups}
-							onClick={() => handleClick(groupsList[index])}
-							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-							groupTitle={groupsList[index]}
-							unreadCount={groupedUnreadInfo[index]}
-						/>
-					)}
-					{...(roomList.length > 0 && {
-						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
+					groupCounts={groupCounts}
+					groupContent={(index) => {
+						const { group, unreadInfo } = roomListGroups[index];
+						return (
+							<RoomListCollapser
+								collapsedGroups={collapsedGroups}
+								onClick={() => handleClick(group)}
+								onKeyDown={(e) => handleKeyDown(e, group)}
+								groupTitle={group}
+								unreadCount={unreadInfo}
+							/>
+						);
+					}}
+					{...(totalCount > 0 && {
+						itemContent: (index, groupIndex) => {
+							const { rooms } = roomListGroups[groupIndex];
+							// Grouped virtuoso index increases linearly, but we're indexing the list by group.
+							// Either we go back to providing a single list, or we do this.
+							const correctedIndex = index - groupCounts.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);
+							// TODO: ILivechatInquiryRecord
+							return rooms[correctedIndex] && <RoomListRow data={itemData} item={rooms[correctedIndex] as SubscriptionWithRoom} />;
+						},
 					})}
-					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
+					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper }}
 				/>
 			</VirtualizedScrollbars>
 		</Box>
