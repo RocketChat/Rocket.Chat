@@ -5,10 +5,6 @@ import JumpToMessageAction from './actions/JumpToMessageAction';
 import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 import ReplyInThreadMessageAction from './actions/ReplyInThreadMessageAction';
-// Import the TimestampButton component
-import TimestampButton from './actions/Timestamp/TimestampButton';
-import { FeaturePreview, FeaturePreviewOn} from '@rocket.chat/ui-client';
-
 
 type MobileItemsProps = {
 	message: IMessage;
@@ -24,14 +20,6 @@ const MobileItems = ({ message, room, subscription }: MobileItemsProps) => {
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
 			<ForwardMessageAction message={message} />
 			<JumpToMessageAction id='jump-to-message' message={message} />
-			// Conditionally render TimestampButton based on Feature Preview setting
-			<FeaturePreview feature="enable-timestamp-message-parser">
-				{[
-					<FeaturePreviewOn>
-						<TimestampButton message={message} />
-					</FeaturePreviewOn>,
-				]}
-			</FeaturePreview>
 		</>
 	);
 };

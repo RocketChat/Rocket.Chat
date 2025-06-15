@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import type { TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
 import { dateToTimestamp, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import { useChat } from '../../../../../../../views/room/contexts/ChatContext';
+import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
 
-export const useTimestampPicker = (_messageId: string) => {
-	
+export const useTimestampPicker = (composer?: ComposerAPI) => {
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 	const [selectedFormat, setSelectedFormat] = useState<TimestampFormat>('f');
-	const chat = useChat();
 
 	const handleDateChange = (date: Date) => {
 		// Preserve the time when changing date
@@ -32,26 +30,12 @@ export const useTimestampPicker = (_messageId: string) => {
 	const handleSubmit = () => {
 		const timestamp = dateToTimestamp(selectedDate);
 		const markup = generateTimestampMarkup(timestamp, selectedFormat);
-	
-		// Get the current text and cursor position from composer
-		if (chat?.composer) {
-			const text = chat.composer.text;
-			const selection = chat.composer.selection;
-			const cursorPosition = selection?.end ?? text.length;
-	
-			// Insert the timestamp markup at the cursor position
-			const newText = text.slice(0, cursorPosition) + markup + text.slice(cursorPosition);
-	
-			// Update the composer text and set cursor position after the markup
-			chat.composer.setText(newText, {
-				selection: {
-					start: cursorPosition + markup.length,
-					end: cursorPosition + markup.length,
-				},
-			});
+		
+		// Use the provided composer to insert the timestamp markup
+		if (composer) {
+			composer.insertText(markup);
 		}
 	};
-
 
 	return {
 		selectedDate,

@@ -1,42 +1,34 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import TimestampPicker from '../../../../../../components/message/TimestampPicker';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { TimestampPicker } from '../../../../../../components/message/toolbar/items/actions/Timestamp/TimestampPicker';
 import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 
-export const useTimestampAction = (composer: ComposerAPI | undefined, disabled: boolean): (() => GenericMenuItemProps) => {
+export const useTimestampAction = (composer: ComposerAPI | undefined, disabled: boolean): GenericMenuItemProps => {
     const setModal = useSetModal();
+    const t = useTranslation();
+    const timestampFeatureEnabled = useFeaturePreview('enable-timestamp-message-parser');
 
-    const handleInsertTimestamp = useMutableCallback((markup: string) => {
-        composer?.insertText(markup);
-        setModal(null);
-    });
-
-    const handleClick = useMutableCallback(() => {
+    const handleClick = () => {
         if (!composer) {
             return;
         }
 
-        const handleClose = (): void => {
-            setModal(null);
-        };
-
         setModal(
             <TimestampPicker
-                onClose={handleClose}
-                onInsert={handleInsertTimestamp}
-                initialDate={new Date()}
-            />,
+                onClose={() => setModal(null)}
+                composer={composer}
+            />
         );
-    });
+    };
 
-    return useMutableCallback((): GenericMenuItemProps => ({
+    return {
         id: 'timestamp',
         icon: 'clock',
-        content: 'Insert_Timestamp',
+        content: t('Add_Date_And_Time'),
         onClick: handleClick,
-        disabled,
-    }));
+        disabled: disabled || !timestampFeatureEnabled,
+    };
 };
 
 

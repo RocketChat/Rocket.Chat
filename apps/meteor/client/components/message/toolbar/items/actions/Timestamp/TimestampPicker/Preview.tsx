@@ -1,7 +1,6 @@
-import { Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { formatTimestamp } from '../../../../../../../lib/utils/timestamp/conversion';
 import type { TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
 
@@ -11,7 +10,7 @@ type PreviewProps = {
 };
 
 const Preview = ({ date, format }: PreviewProps): ReactElement => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const formattedDate = formatTimestamp(date, format);
 
@@ -20,14 +19,7 @@ const Preview = ({ date, format }: PreviewProps): ReactElement => {
 			<Field>
 				<FieldLabel>{t('Preview')}</FieldLabel>
 				<FieldRow>
-					<TextInput
-						value={formattedDate}
-						readOnly
-						style={{
-							width: '100%',
-							backgroundColor: '#f1f2f4',
-						}}
-					/>
+					<InputBox type="text" value={formattedDate} readOnly w='full' />
 				</FieldRow>
 			</Field>
 		</Box>

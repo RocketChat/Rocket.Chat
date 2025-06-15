@@ -1,5 +1,4 @@
 import type { TimestampFormat } from './types';
-import { TIMESTAMP_MARKUP_REGEX } from './constants';
 
 /**
  * Validates if a string is a valid Unix timestamp
@@ -20,7 +19,8 @@ export const isValidFormat = (format: string): format is TimestampFormat => {
  * Validates if a string is a valid timestamp markup
  */
 export const isValidTimestampMarkup = (markup: string): boolean => {
-  return TIMESTAMP_MARKUP_REGEX.test(markup);
+  const regex = /<t:\d+(?::[tTdDfFR])?>/;
+  return regex.test(markup);
 };
 
 /**

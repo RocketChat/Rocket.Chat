@@ -6791,5 +6791,7 @@
   "Once": "Once",
   "__unreadTitle__from__roomTitle__": "{{unreadTitle}} from {{roomTitle}}",
   "An_update_is_available": "An update is available",
-  "Reload_to_update": "Reload to update"
+  "Reload_to_update": "Reload to update",
+  "Add_Date_And_Time": "Add Date And Time",
+  "Insert": "Insert"
 }

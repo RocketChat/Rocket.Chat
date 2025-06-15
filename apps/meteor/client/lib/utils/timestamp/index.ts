@@ -21,7 +21,3 @@ export {
   isValidDateRange,
 } from './validation';
 
-// Renderer functions
-export {
-  renderTimestamp,
-} from './renderer';
