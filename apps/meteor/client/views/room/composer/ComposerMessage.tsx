@@ -1,4 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { memo, useCallback, useMemo } from 'react';
@@ -28,8 +29,6 @@ export type ComposerMessageProps = {
 
 const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	// true: enables contenteditable <div>; false: uses classic <textarea> composer
-	const featurePreviewComposer = true;
-
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -92,11 +91,15 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}
-
-	return featurePreviewComposer ? (
-		<RichTextMessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
-	) : (
-		<MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	return (
+		<FeaturePreview feature='realtimeMessageComposer'>
+			<FeaturePreviewOff>
+				<MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+			</FeaturePreviewOff>
+			<FeaturePreviewOn>
+				<RichTextMessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+			</FeaturePreviewOn>
+		</FeaturePreview>
 	);
 };
 

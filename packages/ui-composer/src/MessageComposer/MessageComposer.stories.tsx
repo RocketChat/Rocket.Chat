@@ -52,7 +52,7 @@ export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const RichTextComposer: StoryFn<typeof MessageComposer> = (args) => (
+export const RichTextComposer: StoryFn<typeof RichTextComposerInput> = (args) => (
 	<>
 		<MessageComposerHint icon='flask' helperText=''>
 			Experiment: Real Time Composer
