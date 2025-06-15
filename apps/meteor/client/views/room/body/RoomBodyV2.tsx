@@ -27,8 +27,7 @@ import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
-import { useFileUpload } from './hooks/useFileUpload';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
@@ -118,12 +117,7 @@ const RoomBody = (): ReactElement => {
 		surroundingMessagesJumpTpRef,
 	);
 
-	const {
-		uploads,
-		handleUploadFiles,
-		handleUploadProgressClose,
-		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
-	} = useFileUpload();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.uploads);
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -205,20 +199,6 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{uploads.length > 0 && (
-									<UploadProgressContainer>
-										{uploads.map((upload) => (
-											<UploadProgressIndicator
-												key={upload.id}
-												id={upload.id}
-												name={upload.name}
-												percentage={upload.percentage}
-												error={upload.error instanceof Error ? upload.error.message : undefined}
-												onClose={handleUploadProgressClose}
-											/>
-										))}
-									</UploadProgressContainer>
-								)}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
 										count={unread}
@@ -226,7 +206,6 @@ const RoomBody = (): ReactElement => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
@@ -282,7 +261,6 @@ const RoomBody = (): ReactElement => {
 									onResize={handleComposerResize}
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
-									onUploadFiles={handleUploadFiles}
 									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}
