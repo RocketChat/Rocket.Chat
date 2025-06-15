@@ -4,7 +4,7 @@ export function parseTimestamp(timestamp: string | undefined): Date | undefined 
 	}
 
 	const value = parseInt(timestamp);
-	if (Number.isNaN(value)) {
+	if (Number.isNaN(value) || value < 0) {
 		return undefined;
 	}
 

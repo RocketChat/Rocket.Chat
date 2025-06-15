@@ -63,7 +63,7 @@ export function parseEventLeg(
 	}
 
 	const profile: IFreeSwitchChannelEventLegProfile = {
-		...{
+		...filterOutMissingData({
 			profileIndex,
 			profileCreatedTime: parseTimestamp(profileCreatedTime),
 			channelCreatedTime: parseTimestamp(channelCreatedTime),
@@ -75,7 +75,7 @@ export function parseEventLeg(
 			channelTransferTime: parseTimestamp(channelTransferTime),
 			channelRessurectTime: parseTimestamp(channelRessurectTime),
 			channelLastHold: parseTimestamp(channelLastHold),
-		},
+		}),
 	};
 
 	const effectiveProfileIndex = profileIndex || '1';

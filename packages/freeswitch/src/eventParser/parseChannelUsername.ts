@@ -16,7 +16,7 @@ export function parseChannelUsername(channelName?: string): string | undefined {
 	// If it's not a sofia internal channel, don't even try to parse it
 	// It's most likely a voicemail or maybe some spam bots trying different stuff
 	// If we implement other kinds of channels in the future we should look into how their names are generated so that we may parse them here too.
-	if (!channelName?.startsWith('sofia/internal/') || !channelName.includes('@')) {
+	if (!channelName.startsWith('sofia/internal/') || !channelName.includes('@')) {
 		logger.info({ msg: 'FreeSwitch event triggered with something other than a sofia internal channel.', channelName });
 		return;
 	}

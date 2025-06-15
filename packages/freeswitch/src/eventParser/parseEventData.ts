@@ -149,7 +149,12 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 		channelPresenceId,
 	};
 
-	const filteredEvent = filterOutMissingData(event) as typeof event;
+	const filteredEvent = {
+		...(filterOutMissingData(event) as typeof event),
+		channelName,
+		channelCallState,
+		channelState,
+	};
 	const extensions = parseEventExtensions(filteredEvent);
 
 	return {

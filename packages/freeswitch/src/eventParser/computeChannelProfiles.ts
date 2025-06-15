@@ -23,11 +23,8 @@ function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IF
 
 	newProfile.profileCreatedTime = profileCreatedTime;
 
+	// eslint-disable-next-line guard-for-in
 	for (const key in timestamps) {
-		if (!(key in timestamps)) {
-			continue;
-		}
-
 		const value = timestamps[key as keyof typeof timestamps];
 		if (!value || typeof value === 'string') {
 			continue;
@@ -59,10 +56,12 @@ export function computeChannelProfiles(legProfiles: Record<string, IFreeSwitchCh
 
 	// Sort profiles by createdTime, temporarily filter out the ones that do not have one:
 	const sortedProfiles = profiles
-		.filter(({ profileCreatedTime, channelCreatedTime }) => profileCreatedTime || channelCreatedTime)
+		.filter(
+			({ profileCreatedTime, channelCreatedTime, profileIndex }) => profileCreatedTime || (profileIndex === '1' && channelCreatedTime),
+		)
 		.sort(
 			({ profileCreatedTime: profile1, channelCreatedTime: channel1 }, { profileCreatedTime: profile2, channelCreatedTime: channel2 }) =>
-				(profile1?.valueOf() || channel1?.valueOf() || 0) - (profile2?.valueOf() || channel2?.valueOf() || 0),
+				(profile1?.valueOf() || (channel1 as Date).valueOf()) - (profile2?.valueOf() || (channel2 as Date).valueOf()),
 		);
 
 	const adjustedProfiles: IFreeSwitchChannelProfile[] = [];
@@ -75,7 +74,7 @@ export function computeChannelProfiles(legProfiles: Record<string, IFreeSwitchCh
 	let firstChannelCreate: Date | undefined;
 
 	for (let i = 0; i < sortedProfiles.length; i++) {
-		const nextProfileCreatedTime = sortedProfiles[i + 1]?.profileCreatedTime || sortedProfiles[i + 1]?.channelCreatedTime || undefined;
+		const nextProfileCreatedTime = sortedProfiles[i + 1]?.profileCreatedTime || undefined;
 
 		const profile = sortedProfiles[i];
 

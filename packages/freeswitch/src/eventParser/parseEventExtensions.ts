@@ -48,7 +48,7 @@ export function parseEventExtensions(
 		?.map(({ username }) => username)
 		.filter((username) => username)
 		.pop();
-	const allDestinationNumbers = legs?.map(({ destinationNumber }) => destinationNumber);
+	const allDestinationNumbers = legs?.map(({ destinationNumber }) => destinationNumber) || [];
 
 	// It won't ever be an array, but just to be type-safe
 	const dialedExtension = Array.isArray(event.variables?.dialed_extension)

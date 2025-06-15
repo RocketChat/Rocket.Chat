@@ -28,11 +28,8 @@ export function extractChannelChangesFromEvent(
 		return { oldValue, newValue: fullList };
 	};
 
+	// eslint-disable-next-line guard-for-in
 	for (const key in eventValues) {
-		if (!(key in eventValues)) {
-			continue;
-		}
-
 		const { oldValue, newValue } = getValues(key);
 
 		if (newValue === undefined || oldValue === newValue) {
