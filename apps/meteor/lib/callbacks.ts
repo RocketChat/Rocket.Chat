@@ -106,8 +106,6 @@ type ChainedCallbackSignatures = {
 		options: T,
 	) => Promise<T>;
 
-	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
 	'livechat.saveInfo': (
