@@ -114,11 +114,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 					Accounts._unstoreLoginToken = _unstoreLoginToken;
 				};
 			},
-
-			queryLoginServices: {
-				getCurrentValue: () => loginServices.getLoginServiceButtons(),
-				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
-			},
+			queryLoginServices: () => [(cb) => loginServices.on('changed', cb), () => loginServices.getLoginServiceButtons()],
 		}),
 		[loginMethod],
 	);
