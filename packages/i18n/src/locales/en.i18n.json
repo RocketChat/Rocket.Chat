@@ -4136,6 +4136,8 @@
   "Read_only_group": "Read Only Group",
   "Readability": "Readability",
   "RealName_Change_Disabled": "Your Rocket.Chat administrator has disabled the changing of names",
+  "Realtime_message_composer": "Realtime message composer",
+  "Realtime_message_composer_description": "Realtime preview of message formatting when using the message composer",
   "Real_Estate": "Real Estate",
   "Real_Time_Monitoring": "Real-time Monitoring",
   "Reason": "Reason",
