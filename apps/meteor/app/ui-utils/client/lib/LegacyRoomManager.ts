@@ -1,11 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Filter } from '@rocket.chat/mongo-adapter';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
@@ -16,30 +14,45 @@ import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
-const openedRooms: Record<
-	string,
-	{
-		typeName: string;
-		rid: IRoom['_id'];
-		ready: boolean;
-		active: boolean;
-		dom?: Node;
-		streamActive?: boolean;
-		unreadSince: ReactiveVar<Date | undefined>;
-		lastSeen: Date;
-		unreadFirstId?: string;
-	}
-> = {};
+class UnreadSince extends Emitter<{
+	changed: Date | undefined;
+}> {
+	private unreadSince: Date | undefined;
 
-const openedRoomsDependency = new Tracker.Dependency();
+	set(since: Date | undefined) {
+		if (this.unreadSince === since) {
+			return;
+		}
+
+		this.unreadSince = since;
+		this.emit('changed', since);
+	}
+
+	get() {
+		return this.unreadSince;
+	}
+}
+
+type OpenedRoom = {
+	typeName: string;
+	rid: IRoom['_id'];
+	ready: boolean;
+	active: boolean;
+	dom?: Node;
+	streamActive?: boolean;
+	unreadSince: UnreadSince;
+	lastSeen: Date;
+	unreadFirstId?: string;
+	stream?: {
+		stop: () => void;
+	};
+};
+
+const openedRooms: Record<string, OpenedRoom> = {};
 
 function close(typeName: string) {
 	if (openedRooms[typeName]) {
-		if (openedRooms[typeName].rid) {
-			sdk.stop('room-messages', openedRooms[typeName].rid);
-			sdk.stop('notify-room', `${openedRooms[typeName].rid}/deleteMessage`);
-			sdk.stop('notify-room', `${openedRooms[typeName].rid}/deleteMessageBulk`);
-		}
+		openedRooms[typeName].stream?.stop();
 
 		openedRooms[typeName].ready = false;
 		openedRooms[typeName].active = false;
@@ -73,142 +86,145 @@ async function closeAllRooms() {
 }
 
 function getOpenedRoomByRid(rid: IRoom['_id']) {
-	openedRoomsDependency.depend();
 	return Object.keys(openedRooms)
 		.map((typeName) => openedRooms[typeName])
 		.find((openedRoom) => openedRoom.rid === rid);
 }
 
-const computation = Tracker.autorun(() => {
-	if (!mainReady.get()) {
+const openRoom = (typeName: string, record: OpenedRoom) => {
+	if (record.active !== true || (record.ready === true && record.streamActive === true)) {
 		return;
 	}
-	Tracker.nonreactive(() =>
-		Object.entries(openedRooms).forEach(([typeName, record]) => {
-			if (record.active !== true || (record.ready === true && record.streamActive === true)) {
-				return;
-			}
 
-			const type = typeName.slice(0, 1);
-			const name = typeName.slice(1);
+	if (record.streamActive === true) {
+		return;
+	}
 
-			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
+	const type = typeName.slice(0, 1);
+	const name = typeName.slice(1);
 
-			if (room) {
-				if (record.streamActive !== true) {
-					void sdk
-						.stream('room-messages', [record.rid], async (msg) => {
-							// Should not send message to room if room has not loaded all the current messages
-							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-							// 	return;
-							// }
-							// Do not load command messages into channel
-							if (msg.t !== 'command') {
-								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
-								const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
-								({ _id: msg._id, temp: { $ne: true } });
-								await upsertMessage({ msg, subscription });
+	const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
 
-								if (isNew) {
-									await callbacks.run('streamNewMessage', msg);
-								}
-							}
+	if (!room) {
+		return;
+	}
 
-							await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
+	const streams: ReturnType<typeof sdk.stream>[] = [];
 
-							fireGlobalEvent('new-message', {
-								...msg,
-								name: room.name || '',
-								room: {
-									type,
-									name,
-								},
-							});
-						})
-
-						.ready()
-						.then(() => {
-							record.streamActive = true;
-							openedRoomsDependency.changed();
-						});
-
-					// when we receive a messages imported event we just clear the room history and fetch it again
-					sdk.stream('notify-room', [`${record.rid}/messagesImported`], async () => {
-						await RoomHistoryManager.clear(record.rid);
-						await RoomHistoryManager.getMore(record.rid);
-					});
-
-					sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
-						Messages.state.delete(msg._id);
-
-						// remove thread refenrece from deleted message
-						Messages.state.update(
-							(record) => record.tmid === msg._id,
-							({ tmid: _, ...record }) => record,
-						);
-					});
-
-					sdk.stream(
-						'notify-room',
-						[`${record.rid}/deleteMessageBulk`],
-						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-							const query: Filter<IMessage> = { rid };
-
-							if (ids) {
-								query._id = { $in: ids };
-							} else {
-								query.ts = ts;
-							}
-							if (excludePinned) {
-								query.pinned = { $ne: true };
-							}
-							if (ignoreDiscussion) {
-								query.drid = { $exists: false };
-							}
-							if (users?.length) {
-								query['u.username'] = { $in: users };
-							}
-
-							const predicate = createPredicateFromFilter(query);
-
-							if (showDeletedStatus) {
-								return Messages.state.update(predicate, (record) => ({
-									...record,
-									t: 'rm',
-									msg: '',
-									urls: [],
-									mentions: [],
-									attachments: [],
-									reactions: {},
-								}));
-							}
-
-							return Messages.state.remove(predicate);
-						},
-					);
-
-					sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
-						if (tmid) {
-							Messages.state.update(
-								(record) => record.tmid === tmid && record.unread === true,
-								({ unread: _, ...record }) => record,
-							);
-							return;
-						}
-						Messages.state.update(
-							(r) =>
-								r.rid === record.rid && r.unread === true && r.ts.getTime() < until.getTime() && (r.tmid === undefined || r.tshow === true),
-							({ unread: _, ...r }) => r,
-						);
-					});
+	streams.push(
+		...[
+			sdk.stream('room-messages', [record.rid], async (msg) => {
+				// Should not send message to room if room has not loaded all the current messages
+				// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+				// 	return;
+				// }
+				// Do not load command messages into channel
+				if (msg.t !== 'command') {
+					const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
+					const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
+					({ _id: msg._id, temp: { $ne: true } });
+					await upsertMessage({ msg, subscription });
+					if (isNew) {
+						await callbacks.run('streamNewMessage', msg);
+					}
 				}
-			}
 
-			record.ready = true;
-		}),
+				await callbacks.run('streamMessage', { ...msg, name: room.name || '' });
+
+				fireGlobalEvent('new-message', {
+					...msg,
+					name: room.name || '',
+					room: {
+						type,
+						name,
+					},
+				});
+			}),
+
+			// when we receive a messages imported event we just clear the room history and fetch it again
+			sdk.stream('notify-room', [`${record.rid}/messagesImported`], async () => {
+				await RoomHistoryManager.clear(record.rid);
+				await RoomHistoryManager.getMore(record.rid);
+			}),
+			sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
+				Messages.state.delete(msg._id);
+
+				// remove thread refenrece from deleted message
+				Messages.state.update(
+					(record) => record.tmid === msg._id,
+					({ tmid: _, ...record }) => record,
+				);
+			}),
+			sdk.stream(
+				'notify-room',
+				[`${record.rid}/deleteMessageBulk`],
+				({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
+					const query: Filter<IMessage> = { rid };
+
+					if (ids) {
+						query._id = { $in: ids };
+					} else {
+						query.ts = ts;
+					}
+					if (excludePinned) {
+						query.pinned = { $ne: true };
+					}
+					if (ignoreDiscussion) {
+						query.drid = { $exists: false };
+					}
+					if (users?.length) {
+						query['u.username'] = { $in: users };
+					}
+
+					const predicate = createPredicateFromFilter(query);
+
+					if (showDeletedStatus) {
+						return Messages.state.update(predicate, (record) => ({
+							...record,
+							t: 'rm',
+							msg: '',
+							urls: [],
+							mentions: [],
+							attachments: [],
+							reactions: {},
+						}));
+					}
+
+					return Messages.state.remove(predicate);
+				},
+			),
+
+			sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
+				if (tmid) {
+					Messages.state.update(
+						(record) => record.tmid === tmid && record.unread === true,
+						({ unread: _, ...record }) => record,
+					);
+					return;
+				}
+				Messages.state.update(
+					(r) =>
+						r.rid === record.rid && r.unread === true && r.ts.getTime() < until.getTime() && (r.tmid === undefined || r.tshow === true),
+					({ unread: _, ...r }) => r,
+				);
+			}),
+		],
 	);
-	openedRoomsDependency.changed();
-});
+
+	const [streamRoomMessages] = streams;
+
+	void streamRoomMessages.ready().then(() => {
+		record.streamActive = true;
+	});
+
+	record.stream = {
+		stop: () => {
+			streams.forEach((stream) => stream.stop());
+		},
+	};
+
+	record.ready = true;
+};
 
 function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 	if (!openedRooms[typeName]) {
@@ -217,7 +233,7 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 			rid,
 			active: false,
 			ready: false,
-			unreadSince: new ReactiveVar(undefined),
+			unreadSince: new UnreadSince(),
 			lastSeen: new Date(),
 		};
 	}
@@ -231,18 +247,9 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 	if (CachedChatSubscription.ready.get() === true) {
 		if (openedRooms[typeName].active !== true) {
 			openedRooms[typeName].active = true;
-			if (computation) {
-				computation.invalidate();
-			}
+			openRoom(typeName, openedRooms[typeName]);
 		}
 	}
-
-	return {
-		ready() {
-			openedRoomsDependency.depend();
-			return openedRooms[typeName].ready;
-		},
-	};
 }
 
 let openedRoom: string | undefined = undefined;
@@ -265,10 +272,6 @@ export const LegacyRoomManager = {
 	close,
 
 	closeAllRooms,
-
-	get computation() {
-		return computation;
-	},
 
 	open,
 };
