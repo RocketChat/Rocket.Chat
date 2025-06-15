@@ -1,13 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { useState,useEffect } from 'react';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
+import { useReactiveValue } from '/client/hooks/useReactiveValue';
+import { useCallback } from 'react';
+import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
 type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
@@ -17,6 +20,11 @@ type UseRoomActionsOptions = {
 export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
+	const [isMember, setIsMember] = useState<boolean>(false);
+	const reactiveIsMember = useReactiveValue( useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]) );
+	useEffect(() => {
+		setIsMember(reactiveIsMember);
+	}, [reactiveIsMember]);
 	const { t } = useTranslation();
 
 	const handleLeave = useRoomLeave(room);
@@ -55,7 +63,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 							},
 						]
 					: []),
-				...(handleLeave
+				...(isMember && handleLeave
 					? [
 							{
 								id: 'leave',
@@ -100,5 +108,5 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t,isMember]);
 };
