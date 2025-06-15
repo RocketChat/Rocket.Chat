@@ -3011,6 +3011,8 @@
   "Livechat_forward_open_chats_timeout": "Timeout (in seconds) to forward chats",
   "Livechat_guest_count": "Guest Counter",
   "Livechat_hide_system_messages": "Hide system messages",
+  "Livechat_hide_expand_chat": "Hide \"Expand chat\"",
+  "Livechat_hide_expand_chat_description": "Remove the \"Expand chat\" button from the widget",
   "Livechat_hide_watermark": "Hide \"powered by Rocket.Chat\"",
   "Livechat_hide_watermark_description": "Remove the Rocket.Chat logo from the widget",
   "Livechat_last_chatted_agent_routing": "Last-Chatted Agent Preferred",

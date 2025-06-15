@@ -41,6 +41,7 @@ export type ScreenContextValue = {
 		background?: string;
 		hideGuestAvatar?: boolean;
 		hideAgentAvatar?: boolean;
+		hideExpandChat?: boolean;
 	};
 };
 
@@ -51,6 +52,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 		iconColor: '',
 		hideAgentAvatar: false,
 		hideGuestAvatar: true,
+		hideExpandChat: false,
 	},
 	notificationsEnabled: true,
 	minimized: true,
@@ -76,7 +78,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		...store
 	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
-	const { color, position: configPosition, background } = config.theme || {};
+	const { color, position: configPosition, background, hideExpandChat } = config.theme || {};
 	const { livechatLogo, hideWatermark = false, registrationForm } = config.settings || {};
 
 	const {
@@ -89,6 +91,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		background: customBackground,
 		hideAgentAvatar = false,
 		hideGuestAvatar = true,
+		hideExpandChat: customHideExpandChat = false,
 	} = iframe.theme || {};
 
 	const [poppedOut, setPopedOut] = useState(false);
@@ -174,6 +177,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 			background: customBackground || background,
 			hideAgentAvatar,
 			hideGuestAvatar,
+			hideExpandChat: customHideExpandChat || hideExpandChat,
 		},
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),

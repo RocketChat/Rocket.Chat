@@ -329,4 +329,16 @@ export const createSettings = async (): Promise<void> => {
 		key: 'Load_Rotation',
 		i18nLabel: 'Load_Rotation',
 	});
+
+	await settingsRegistry.add('Livechat_hide_expand_chat', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nDescription: 'Livechat_hide_expand_chat_description',
+		invalidValue: false,
+		modules: ['livechat-enterprise'],
+		enterprise: false,
+		public: false,
+		enableQuery: omnichannelEnabledQuery,
+	});
 };
