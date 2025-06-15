@@ -95,6 +95,7 @@ export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 export { useUserPresence } from './hooks/useUserPresence';
 export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
+export { useOnLogout } from './hooks/useOnLogout';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
