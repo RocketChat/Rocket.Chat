@@ -1,7 +1,7 @@
 import { log } from 'console';
 
 import type { IStats, IVoIPPeriodStats } from '@rocket.chat/core-typings';
-import { FreeSwitchCall } from '@rocket.chat/models';
+import { FreeSwitchChannel } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -27,38 +27,31 @@ async function getVoIPStatisticsForPeriod(days?: number): Promise<IVoIPPeriodSta
 
 	const minDate = getMinDate(days);
 
-	const statistics: IVoIPPeriodStats = {};
+	const statistics: IVoIPPeriodStats = {
+		externalInboundCalls: 0,
+		externalOutboundCalls: 0,
+	};
 
 	promises.push(
-		FreeSwitchCall.countCallsByDirection('internal', minDate, options).then((count) => {
+		FreeSwitchChannel.countChannelsByKind('internal', minDate, options).then((count) => {
 			statistics.internalCalls = count;
 		}),
 	);
-	promises.push(
-		FreeSwitchCall.countCallsByDirection('external_inbound', minDate, options).then((count) => {
-			statistics.externalInboundCalls = count;
-		}),
-	);
-	promises.push(
-		FreeSwitchCall.countCallsByDirection('external_outbound', minDate, options).then((count) => {
-			statistics.externalOutboundCalls = count;
-		}),
-	);
 
 	promises.push(
-		FreeSwitchCall.sumCallsDuration(minDate, options).then((callsDuration) => {
+		FreeSwitchChannel.sumChannelsDurationByKind('internal', minDate, options).then((callsDuration) => {
 			statistics.callsDuration = callsDuration;
 		}),
 	);
 
 	promises.push(
-		FreeSwitchCall.countCallsBySuccessState(true, minDate, options).then((count) => {
+		FreeSwitchChannel.countChannelsByKindAndSuccessState('internal', true, minDate, options).then((count) => {
 			statistics.successfulCalls = count;
 		}),
 	);
 
 	promises.push(
-		FreeSwitchCall.countCallsBySuccessState(false, minDate, options).then((count) => {
+		FreeSwitchChannel.countChannelsByKindAndSuccessState('internal', false, minDate, options).then((count) => {
 			statistics.failedCalls = count;
 		}),
 	);
