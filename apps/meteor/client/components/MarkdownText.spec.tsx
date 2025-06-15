@@ -397,3 +397,38 @@ describe('links handling', () => {
 		});
 	});
 });
+
+describe('code handling', () => {
+	it.each([
+		{
+			caseName: 'inline with special characters',
+			content: '`2 < 3 > 1 & 4 "Test"`',
+			expected: '<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>',
+		},
+		{
+			caseName: 'inline with encoded special characters',
+			content: '`< = &lt; > = &gt; & = &amp;`',
+			expected: '<code>&lt; = &amp;lt; &gt; = &amp;gt; &amp; = &amp;amp;</code>',
+		},
+		{
+			caseName: 'block with language',
+			content: "```typescript\nconst test = 'this is code'\n```",
+			expected: '<code class="language-typescript">const test = \'this is code\' </code>',
+		},
+		{
+			caseName: 'block without language',
+			content: '```\nTwo < Three > One & Four "Test"\n```',
+			expected: '<code>Two &lt; Three &gt; One &amp; Four "Test" </code>',
+		},
+		{
+			caseName: 'block with encoded special characters',
+			content: '```\nTwo &lt; Three &gt; One &amp; Four "Test"\n```',
+			expected: '<code>Two &amp;lt; Three &amp;gt; One &amp;amp; Four "Test" </code>',
+		},
+	] as const)('should render $caseName', ({ content, expected }) => {
+		render(<MarkdownText content={`${content}`} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(screen.getByRole('code').outerHTML).toEqual(expected);
+	});
+});
