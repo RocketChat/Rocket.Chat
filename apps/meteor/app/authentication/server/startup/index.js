@@ -203,6 +203,10 @@ const onCreateUserAsync = async function (options, user = {}) {
 		await beforeCreateUserCallback.run(options, user);
 	}
 
+	if (!(user.roles && Array.isArray(user.roles))) {
+		user.roles = [];
+	}
+
 	user.status = 'offline';
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
 
