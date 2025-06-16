@@ -889,10 +889,6 @@ class VoipClient extends Emitter<VoipEvents> {
 	};
 
 	private onSessionStablishing = (): void => {
-		if (this.isIncoming()) {
-			return;
-		}
-
 		this.emit('outgoingcall', this.getContactInfo() as ContactInfo);
 	};
 
