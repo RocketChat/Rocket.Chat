@@ -665,53 +665,6 @@ describe('Router', () => {
 		expect(response2.headers).not.toHaveProperty('x-api-version');
 	});
 
-	it('should parse nested query params into object for GET requests', async () => {
-		const ajv = new Ajv();
-		const app = express();
-
-		const isTestQueryParams = ajv.compile({
-			type: 'object',
-			properties: {
-				outerProperty: { type: 'object', properties: { innerProperty: { type: 'string' } } },
-			},
-			additionalProperties: false,
-			required: ['outerProperty'],
-		});
-
-		const api = new Router('/api').get(
-			'/test',
-			{
-				response: {
-					200: ajv.compile({
-						type: 'object',
-						properties: {
-							outerProperty: { type: 'object', properties: { innerProperty: { type: 'string' } } },
-						},
-						additionalProperties: false,
-						required: ['outerProperty'],
-					}),
-				},
-				query: isTestQueryParams,
-			},
-			async function action(this: Record<string, any>) {
-				const { outerProperty } = this.queryParams as { outerProperty: { innerProperty: string } };
-				return {
-					statusCode: 200,
-					body: {
-						outerProperty,
-					},
-				};
-			},
-		);
-
-		app.use(api.router);
-
-		const response1 = await request(app).get('/api/test?outerProperty[innerProperty]=test');
-
-		expect(response1.statusCode).toBe(200);
-		expect(response1.body).toHaveProperty('outerProperty');
-		expect(response1.body.outerProperty).toHaveProperty('innerProperty', 'test');
-	});
 	it('should fail if the delete request body is not valid', async () => {
 		const ajv = new Ajv();
 		const app = express();

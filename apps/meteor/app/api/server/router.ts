@@ -32,17 +32,19 @@ export class RocketChatAPIRouter<
 	} = NonNullable<unknown>,
 > extends Router<TBasePath, TOperations, APIActionHandler> {
 	protected convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
-		return async (c: HonoContext) => {
-			const { req, res } = c;
-			const queryParams = super.parseQueryParams(req);
-			const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
-				request: req,
-				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
-			});
-			const request = req.raw.clone();
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const self = this;
+		return function (c: HonoContext): Promise<ResponseSchema<TypedOptions>> {
+			return new Promise(async (resolve) => {
+				const { req, res } = c;
+				const queryParams = self.parseQueryParams(req);
+				const bodyParams = await self.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
+					request: req,
+					extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
+				});
+				const request = req.raw.clone();
 
-			return action.apply(
-				{
+				const context = {
 					requestIp: c.get('remoteAddress'),
 					urlParams: req.param(),
 					queryParams,
@@ -51,9 +53,10 @@ export class RocketChatAPIRouter<
 					path: req.path,
 					response: res,
 					route: req.routePath,
-				} as APIActionContext,
-				[request],
-			);
+				} as APIActionContext;
+
+				resolve(await action.apply(context, [request]));
+			});
 		};
 	}
 }
