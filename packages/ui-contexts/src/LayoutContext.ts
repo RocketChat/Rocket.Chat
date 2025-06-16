@@ -6,6 +6,8 @@ export type SizeLayout = {
 };
 
 export type LayoutContextValue = {
+	isInternalScope: boolean;
+	setIsInternalScope: (value: boolean) => void;
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isTablet: boolean;
@@ -17,6 +19,11 @@ export type LayoutContextValue = {
 		collapse: () => void;
 		expand: () => void;
 		close: () => void;
+	};
+	sidePanel: {
+		displaySidePanel: boolean;
+		closeSidePanel: () => void;
+		openSidePanel: () => void;
 	};
 	navbar: {
 		searchExpanded: boolean;
@@ -35,6 +42,8 @@ export type LayoutContextValue = {
 };
 
 export const LayoutContext = createContext<LayoutContextValue>({
+	isInternalScope: false,
+	setIsInternalScope: () => undefined,
 	isEmbedded: false,
 	showTopNavbarEmbeddedLayout: false,
 	isTablet: false,
@@ -52,8 +61,13 @@ export const LayoutContext = createContext<LayoutContextValue>({
 		expand: () => undefined,
 		close: () => undefined,
 	},
+	sidePanel: {
+		displaySidePanel: true,
+		closeSidePanel: () => undefined,
+		openSidePanel: () => undefined,
+	},
 	size: {
-		sidebar: '380px',
+		sidebar: '240px',
 		contextualBar: '380px',
 	},
 	contextualBarPosition: 'relative',

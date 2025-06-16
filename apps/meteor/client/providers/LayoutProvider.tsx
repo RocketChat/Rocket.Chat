@@ -18,6 +18,8 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [displaySidePanel, setDisplaySidePanel] = useState(true);
+	const [isInternalScope, setIsInternalScope] = useState(false);
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
@@ -31,6 +33,14 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isTablet = !breakpoints.includes('lg');
 
 	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
+
+	const shouldDisplaySidePanel = useMemo(() => {
+		if (!isTablet) {
+			return true;
+		}
+
+		return displaySidePanel;
+	}, [displaySidePanel, isTablet]);
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);
@@ -53,6 +63,8 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 			children={children}
 			value={useMemo(
 				() => ({
+					isInternalScope,
+					setIsInternalScope,
 					isMobile,
 					isTablet,
 					isEmbedded,
@@ -69,6 +81,11 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
+					sidePanel: {
+						displaySidePanel: shouldDisplaySidePanel,
+						closeSidePanel: () => setDisplaySidePanel(false),
+						openSidePanel: () => setDisplaySidePanel(true),
+					},
 					size: {
 						sidebar: '240px',
 						// eslint-disable-next-line no-nested-ternary
@@ -81,13 +98,15 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					hiddenActions,
 				}),
 				[
+					isInternalScope,
 					isMobile,
 					isTablet,
-					navBarSearchExpanded,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navBarSearchExpanded,
 					isCollapsed,
 					shouldToggle,
+					shouldDisplaySidePanel,
 					breakpoints,
 					hiddenActions,
 					router,
