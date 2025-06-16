@@ -2577,7 +2577,6 @@ describe('Meteor.methods', () => {
 		let room: IRoom;
 		let privateRoom: IRoom;
 
-
 		before(async () => {
 			testUser = await createUser();
 			testUser2 = await createUser();
@@ -2647,10 +2646,7 @@ describe('Meteor.methods', () => {
 				}),
 			};
 
-			const res = await request
-				.post('/api/v1/method.callAnon/getRoomByTypeAndName')
-				.set('Content-Type', 'application/json')
-				.send(payload);
+			const res = await request.post('/api/v1/method.callAnon/getRoomByTypeAndName').set('Content-Type', 'application/json').send(payload);
 
 			expect(res.body).to.have.property('message');
 			const parsedMessage = JSON.parse(res.body.message);
