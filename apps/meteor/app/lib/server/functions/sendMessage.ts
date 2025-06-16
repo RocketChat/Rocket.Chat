@@ -256,7 +256,7 @@ export const sendMessage = async (
 
 	const uploadIdsToConfirm = filesToConfirm?.map(({ _id }) => _id);
 
-	if (uploadIdsToConfirm !== undefined && !isE2E) {
+	if (uploadIdsToConfirm?.length && !isE2E) {
 		const uploadsToConfirm: Partial<IUpload>[] = await Uploads.findByIds(uploadIdsToConfirm).toArray();
 		const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(uploadsToConfirm, message.rid, user);
 		message.files = files;
@@ -335,7 +335,7 @@ export const sendMessage = async (
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room);
 
-	if (uploadIdsToConfirm !== undefined) {
+	if (uploadIdsToConfirm?.length) {
 		await Uploads.confirmTemporaryFiles(uploadIdsToConfirm, user._id);
 	}
 

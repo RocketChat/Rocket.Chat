@@ -21,77 +21,60 @@ const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number
 	});
 };
 
-const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2eRoom: E2ERoom, msg: string) => {
-	const attachments = [];
-	const arrayOfFiles = [];
+const getAttachmentForFile = async (fileToUpload: EncryptedUpload): Promise<FileAttachmentProps> => {
+	const attachment: FileAttachmentProps = {
+		title: fileToUpload.file.name,
+		type: 'file',
+		title_link: fileToUpload.url,
+		title_link_download: true,
+		encryption: {
+			key: fileToUpload.encryptedFile.key,
+			iv: fileToUpload.encryptedFile.iv,
+		},
+		hashes: {
+			sha256: fileToUpload.encryptedFile.hash,
+		},
+	};
 
-	const imgDimensions = await Promise.all(
-		filesToUpload.map(({ file }) => {
-			if (/^image\/.+/.test(file.type)) {
-				return getHeightAndWidthFromDataUrl(window.URL.createObjectURL(file));
-			}
-			return null;
+	const fileType = fileToUpload.file.type.match(/^(image|audio|video)\/.+/)?.[1] as 'image' | 'audio' | 'video' | undefined;
+
+	if (!fileType) {
+		return {
+			...attachment,
+			size: fileToUpload.file.size,
+			format: getFileExtension(fileToUpload.file.name),
+		};
+	}
+
+	return {
+		...attachment,
+		[`${fileType}_url`]: fileToUpload.url,
+		[`${fileType}_type`]: fileToUpload.file.type,
+		[`${fileType}_size`]: fileToUpload.file.size,
+		...(fileType === 'image' && {
+			image_dimensions: await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(fileToUpload.file)),
+		}),
+	};
+};
+
+const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2eRoom: E2ERoom, msg: string) => {
+	const attachments: FileAttachmentProps[] = [];
+
+	const arrayOfFiles = await Promise.all(
+		filesToUpload.map(async (fileToUpload) => {
+			attachments.push(await getAttachmentForFile(fileToUpload));
+
+			const file = {
+				_id: fileToUpload.id,
+				name: fileToUpload.file.name,
+				type: fileToUpload.file.type,
+				size: fileToUpload.file.size,
+				format: getFileExtension(fileToUpload.file.name),
+			};
+
+			return file;
 		}),
 	);
-
-	for (let i = 0; i < filesToUpload.length; i++) {
-		const attachment: FileAttachmentProps = {
-			title: filesToUpload[i].file.name,
-			type: 'file',
-			title_link: filesToUpload[i].url,
-			title_link_download: true,
-			encryption: {
-				key: filesToUpload[i].encryptedFile.key,
-				iv: filesToUpload[i].encryptedFile.iv,
-			},
-			hashes: {
-				sha256: filesToUpload[i].encryptedFile.hash,
-			},
-		};
-
-		if (/^image\/.+/.test(filesToUpload[i].file.type)) {
-			const dimensions = imgDimensions[i];
-			attachments.push({
-				...attachment,
-				image_url: filesToUpload[i].url,
-				image_type: filesToUpload[i].file.type,
-				image_size: filesToUpload[i].file.size,
-				...(dimensions && {
-					image_dimensions: dimensions,
-				}),
-			});
-		} else if (/^audio\/.+/.test(filesToUpload[i].file.type)) {
-			attachments.push({
-				...attachment,
-				audio_url: filesToUpload[i].url,
-				audio_type: filesToUpload[i].file.type,
-				audio_size: filesToUpload[i].file.size,
-			});
-		} else if (/^video\/.+/.test(filesToUpload[i].file.type)) {
-			attachments.push({
-				...attachment,
-				video_url: filesToUpload[i].url,
-				video_type: filesToUpload[i].file.type,
-				video_size: filesToUpload[i].file.size,
-			});
-		} else {
-			attachments.push({
-				...attachment,
-				size: filesToUpload[i].file.size,
-				format: getFileExtension(filesToUpload[i].file.name),
-			});
-		}
-
-		const files = {
-			_id: filesToUpload[i].id,
-			name: filesToUpload[i].file.name,
-			type: filesToUpload[i].file.type,
-			size: filesToUpload[i].file.size,
-			format: getFileExtension(filesToUpload[i].file.name),
-		};
-
-		arrayOfFiles.push(files);
-	}
 
 	return e2eRoom.encryptMessageContent({
 		attachments,
