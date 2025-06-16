@@ -10,7 +10,7 @@ to: packages/<%= name %>/package.json
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.12",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
+		"jest": "~30.0.0",
 		"typescript": "~5.3.3"
 	},
 	"scripts": {

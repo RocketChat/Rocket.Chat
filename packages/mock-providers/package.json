@@ -21,7 +21,7 @@
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
 		"eslint": "~8.45.0",
-		"jest": "^29.7.0",
+		"jest": "~30.0.0",
 		"react": "~18.3.1",
 		"typescript": "~5.8.3"
 	},
