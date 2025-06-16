@@ -50,7 +50,7 @@ const RoomMembersItem = ({
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	return (
-		<Option data-username={username} data-userid={_id} onClick={onClickView} {...handleMenuEvent}>
+		<Option data-username={username} data-userid={_id} onClick={onClickView} style={{ paddingInline: 24 }} {...handleMenuEvent}>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>

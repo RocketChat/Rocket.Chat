@@ -1,4 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -6,8 +8,6 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
-import type { FieldExpression, Query } from '../../../../../lib/minimongo';
-import { createFilterFromQuery } from '../../../../../lib/minimongo';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 
@@ -24,7 +24,7 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 };
 
 const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Query<IMessage> = {};
+	const query: Filter<IMessage> = {};
 
 	if (params.ids) {
 		query._id = { $in: params.ids };
@@ -43,7 +43,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((me
 		query['u.username'] = { $in: params.users };
 	}
 
-	return createFilterFromQuery<IMessage>(query);
+	return createPredicateFromFilter<IMessage>(query);
 };
 
 const useSubscribeToMessage = () => {

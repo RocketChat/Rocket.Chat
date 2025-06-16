@@ -6,7 +6,6 @@ import type {
 	Db,
 	Document,
 	FindOptions,
-	DistinctOptions,
 	UpdateResult,
 	Filter,
 	DeleteResult,
@@ -14,6 +13,7 @@ import type {
 	FindCursor,
 	UpdateFilter,
 	DeleteOptions,
+	AggregateOptions,
 	WithId,
 } from 'mongodb';
 
@@ -133,21 +133,44 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
-		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
+	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
+		return this.col
+			.aggregate<{ _id: string | null }>(
+				[
+					{ $match: { status: LivechatInquiryStatus.QUEUED } },
+					{
+						$group: {
+							_id: '$department',
+						},
+					},
+				],
+				options,
+			)
+			.toArray();
 	}
 
 	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
+	/**
+	 * Updates the `lastMessage` of inquiries that are not taken yet, after they're taken we only need to update room's `lastMessage`
+	 */
 	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
-		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+		return this.findOneAndUpdate(
+			{ rid, status: { $ne: LivechatInquiryStatus.TAKEN } },
+			{ $set: { lastMessage: message } },
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult> {
+		return this.updateOne({ _id: inquiryId }, { $set: { lastMessage } });
 	}
 
 	async findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
-		department?: string,
+		department: string | null,
 	): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		return this.findOneAndUpdate(
@@ -181,13 +204,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
-	}
-
-	async unlockAndQueue(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: inquiryId },
-			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
-		);
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
@@ -311,13 +327,17 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
 			{
-				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$set: {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					...(lastMessage && { lastMessage }),
+				},
 				$unset: { takenAt: 1 },
 			},
 			{ returnDocument: 'after' },

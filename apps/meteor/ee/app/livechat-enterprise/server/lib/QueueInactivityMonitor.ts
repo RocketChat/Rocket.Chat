@@ -7,13 +7,13 @@ import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
 
 import { schedulerLogger } from './logger';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
-class OmnichannelQueueInactivityMonitorClass {
+export class OmnichannelQueueInactivityMonitorClass {
 	scheduler: Agenda;
 
 	running: boolean;
@@ -91,6 +91,7 @@ class OmnichannelQueueInactivityMonitorClass {
 			return;
 		}
 		await this.scheduler.cancel({});
+		this.running = false;
 	}
 
 	async stopInquiry(inquiryId: string): Promise<void> {
@@ -100,7 +101,7 @@ class OmnichannelQueueInactivityMonitorClass {
 
 	async closeRoomAction(room: IOmnichannelRoom): Promise<void> {
 		const comment = this.message;
-		return Livechat.closeRoom({
+		return closeRoom({
 			comment,
 			room,
 			user: await this.getRocketCatUser(),
@@ -109,6 +110,7 @@ class OmnichannelQueueInactivityMonitorClass {
 
 	async closeRoom({ attrs: { data } }: any = {}): Promise<void> {
 		const { inquiryId } = data;
+		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
 		if (!inquiry || inquiry.status !== 'queued') {
 			return;

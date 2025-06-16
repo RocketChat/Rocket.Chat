@@ -51,6 +51,8 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	});
 
 	const handleRecord = useEffectEvent(async () => {
+		chat?.composer?.setRecordingMode(true);
+
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
@@ -105,7 +107,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	}
 
 	return (
-		<Box display='flex' position='absolute' color='default' pi={4} pb={12}>
+		<Box display='flex' position='absolute' color='default' pi={4} pb={12} role='group' aria-label={t('Audio_recorder')}>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction icon='circle-cross' title={t('Cancel_recording')} onClick={handleCancelButtonClick} />

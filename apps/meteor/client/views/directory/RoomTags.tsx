@@ -1,9 +1,12 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const RoomTags = ({ room }: { room: Serialized<IRoom> }): ReactElement => {
+type RoomTagsProps = {
+	room: Serialized<IRoom>;
+};
+
+const RoomTags = ({ room }: RoomTagsProps) => {
 	const { t } = useTranslation();
 
 	return (

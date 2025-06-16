@@ -44,13 +44,13 @@ type RoomListRowProps = {
 			icon: ReactNode;
 			title: ReactNode;
 			avatar: ReactNode;
-			actions: unknown;
+			actions: ReactNode;
 			href: string;
 			time?: Date;
 			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
-			titleIcon?: string;
+			titleIcon?: ReactNode;
 			badges?: ReactNode;
 			threadUnread?: boolean;
 			unread?: boolean;
@@ -124,8 +124,13 @@ const SidebarItemTemplateWithData = ({
 	const badges = (
 		<>
 			{showUnread && (
-				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
-					{unreadCount.total}
+				<SidebarV2ItemBadge
+					variant={unreadVariant}
+					title={unreadTitle}
+					role='status'
+					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
+				>
+					<span aria-hidden>{unreadCount.total}</span>
 				</SidebarV2ItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
@@ -144,7 +149,7 @@ const SidebarItemTemplateWithData = ({
 			onClick={(): void => {
 				!selected && sidebar.toggle();
 			}}
-			aria-label={title}
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}

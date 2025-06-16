@@ -23,7 +23,10 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 			try {
 				await leaveRoom(room._id);
 				router.navigate('/home');
-				LegacyRoomManager.close(room._id);
+
+				if (room.name) {
+					LegacyRoomManager.close(`${room.t}${room.name}`);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -34,7 +37,7 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, room.fname || room.name)}
+				text={t(warnText as TranslationKey, { roomName: room.fname || room.name })}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}

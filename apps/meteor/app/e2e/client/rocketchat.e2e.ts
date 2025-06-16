@@ -40,6 +40,7 @@ import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
+import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -239,7 +240,7 @@ class E2E extends Emitter {
 						return;
 					}
 
-					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
 						this.log('Imported valid E2E suggested key');
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
@@ -264,8 +265,9 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
+		const userId = Meteor.userId();
+		if (!this.instancesByRoomId[rid] && userId) {
+			this.instancesByRoomId[rid] = new E2ERoom(userId, room);
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
@@ -519,6 +521,9 @@ class E2E extends Emitter {
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
@@ -611,6 +616,9 @@ class E2E extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(this.db_private_key));
 
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			const privateKey = toString(privKey) as string;
 
@@ -638,6 +646,9 @@ class E2E extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
 
 		try {
+			if (!masterKey) {
+				throw new Error('Error getting master key');
+			}
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
@@ -673,7 +684,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const decryptedMessage: IE2EEMessage = await e2eRoom.decryptMessage(message);
+		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
@@ -706,9 +717,10 @@ class E2E extends Emitter {
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
-		});
+		await Messages.state.updateAsync(
+			(record) => record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
@@ -774,7 +786,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(quoteAttachment);
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.get('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 

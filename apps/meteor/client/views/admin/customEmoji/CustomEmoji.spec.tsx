@@ -28,7 +28,6 @@ describe('CustomEmoji Component', () => {
 
 	it('renders emoji list', async () => {
 		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
-			legacyRoot: true,
 			wrapper: appRoot.build(),
 		});
 
@@ -39,7 +38,6 @@ describe('CustomEmoji Component', () => {
 
 	it("renders emoji's aliases as comma-separated values when aliases is an array", async () => {
 		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
-			legacyRoot: true,
 			wrapper: appRoot.build(),
 		});
 
@@ -50,7 +48,6 @@ describe('CustomEmoji Component', () => {
 
 	it("renders emoji's aliases values when aliases is a string", async () => {
 		render(<CustomEmoji onClick={mockOnClick} reload={mockRef} />, {
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/v1/emoji-custom.all', () => ({
 					count: 1,

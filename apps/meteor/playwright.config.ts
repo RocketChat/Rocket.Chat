@@ -15,7 +15,7 @@ export default {
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
-			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
+			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
 		},
 		permissions: ['microphone'],
 	},

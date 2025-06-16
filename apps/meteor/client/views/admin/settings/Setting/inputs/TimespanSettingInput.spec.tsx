@@ -52,7 +52,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ wrapper: mockAppRoot().build(), legacyRoot: true },
+			{ wrapper: mockAppRoot().build() },
 		);
 
 		const numberInput = screen.getByRole('spinbutton');
@@ -74,7 +74,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ wrapper: mockAppRoot().build(), legacyRoot: true },
+			{ wrapper: mockAppRoot().build() },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
@@ -99,7 +99,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ wrapper: mockAppRoot().build(), legacyRoot: true },
+			{ wrapper: mockAppRoot().build() },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'days' });
@@ -124,7 +124,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ wrapper: mockAppRoot().build(), legacyRoot: true },
+			{ wrapper: mockAppRoot().build() },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
@@ -150,7 +150,7 @@ describe('TimespanSettingInput component', () => {
 				hasResetButton
 				onResetButtonClick={onResetButtonClickMock}
 			/>,
-			{ wrapper: mockAppRoot().build(), legacyRoot: true },
+			{ wrapper: mockAppRoot().build() },
 		);
 
 		const resetButton = screen.getByTitle('Reset');

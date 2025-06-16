@@ -1,8 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { defaultTranslationNamespace, availableTranslationNamespaces, extractTranslationNamespaces } from '@rocket.chat/i18n';
 import { Logger } from '@rocket.chat/logger';
+import * as i18next from 'i18next';
+import sprintf from 'i18next-sprintf-postprocessor';
 
 import { OmnichannelTranscript } from './OmnichannelTranscript';
-import { invalidSystemMessage, messages, validSystemMessage } from './OmnichannelTranscript.fixtures';
+import { invalidSystemMessage, messages, validSystemMessage, validTranslatableSystemMessage } from './OmnichannelTranscript.fixtures';
 
 jest.mock('@rocket.chat/pdf-worker', () => ({
 	PdfWorker: jest.fn().mockImplementation(() => ({
@@ -24,14 +27,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		createDirectMessage: jest.fn().mockResolvedValue({ rid: 'roomId' }),
 	},
-	QueueWorker: {
-		queueWork: jest.fn(),
-	},
-	Translation: {
-		translate: jest.fn().mockResolvedValue('translated message'),
-		translateToServerLanguage: jest.fn().mockResolvedValue('translated server message'),
-		translateMultipleToServerLanguage: jest.fn((keys) => keys.map((key: any) => ({ key, value: key }))),
-	},
 	Settings: {
 		get: jest.fn().mockResolvedValue(''),
 	},
@@ -40,9 +35,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 jest.mock('@rocket.chat/models', () => ({
 	LivechatRooms: {
 		findOneById: jest.fn().mockResolvedValue({}),
-		setTranscriptRequestedPdfById: jest.fn(),
-		unsetTranscriptRequestedPdfById: jest.fn(),
-		setPdfTranscriptFileIdById: jest.fn(),
 	},
 	Messages: {
 		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
@@ -70,8 +62,24 @@ jest.mock('@rocket.chat/tools', () => ({
 describe('OmnichannelTranscript', () => {
 	let omnichannelTranscript: OmnichannelTranscript;
 
-	beforeEach(() => {
-		omnichannelTranscript = new OmnichannelTranscript(Logger);
+	beforeEach(async () => {
+		const i18n = i18next.use(sprintf);
+		i18next.use(sprintf);
+		await i18n.init({
+			lng: 'en',
+			fallbackLng: 'en',
+			defaultNS: defaultTranslationNamespace,
+			ns: availableTranslationNamespaces,
+			nsSeparator: '.',
+			resources: {
+				en: extractTranslationNamespaces({
+					Conversation_closed: 'Conversation closed: {{comment}}.',
+				}),
+			},
+			initImmediate: true,
+		});
+
+		omnichannelTranscript = new OmnichannelTranscript(Logger, i18n);
 	});
 
 	it('should return default timezone', async () => {
@@ -80,8 +88,7 @@ describe('OmnichannelTranscript', () => {
 	});
 
 	it('should parse the messages', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData(messages as unknown as IMessage[]);
-		console.log(parsedMessages[0]);
+		const parsedMessages = await omnichannelTranscript.getMessagesData(messages as unknown as IMessage[], 'en');
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(3);
 		expect(parsedMessages[0]).toHaveProperty('files');
@@ -90,8 +97,8 @@ describe('OmnichannelTranscript', () => {
 		expect(parsedMessages[0].quotes).toHaveLength(0);
 	});
 
-	it('should parse system message', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, validSystemMessage] as unknown as IMessage[]);
+	it('should parse system message without a valid translation key', async () => {
+		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, validSystemMessage] as unknown as IMessage[], 'en');
 		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(4);
@@ -105,10 +112,45 @@ describe('OmnichannelTranscript', () => {
 		expect(systemMessage.quotes).toHaveLength(0);
 	});
 
-	it('should parse an invalid system message', async () => {
-		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, invalidSystemMessage] as unknown as IMessage[]);
+	it('should translate a system message with available translation keys', async () => {
+		const parsedMessages = await omnichannelTranscript.getMessagesData(
+			[...messages, validTranslatableSystemMessage] as unknown as IMessage[],
+			'en',
+		);
 		const systemMessage = parsedMessages[3];
-		console.log(parsedMessages[3]);
+		expect(parsedMessages).toBeDefined();
+		expect(parsedMessages).toHaveLength(4);
+		expect(systemMessage).toHaveProperty('t');
+		expect(systemMessage.t).toBe('livechat-close');
+		expect(systemMessage).toHaveProperty('msg');
+		expect(systemMessage.msg).toBe('Conversation closed: Conversation closed by user.');
+		expect(systemMessage).toHaveProperty('files');
+		expect(systemMessage.files).toHaveLength(0);
+		expect(systemMessage).toHaveProperty('quotes');
+		expect(systemMessage.quotes).toHaveLength(0);
+	});
+
+	it('should translate a system message to the default language when the server language provided doesnt work', async () => {
+		const parsedMessages = await omnichannelTranscript.getMessagesData(
+			[...messages, validTranslatableSystemMessage] as unknown as IMessage[],
+			'es',
+		);
+		const systemMessage = parsedMessages[3];
+		expect(parsedMessages).toBeDefined();
+		expect(parsedMessages).toHaveLength(4);
+		expect(systemMessage).toHaveProperty('t');
+		expect(systemMessage.t).toBe('livechat-close');
+		expect(systemMessage).toHaveProperty('msg');
+		expect(systemMessage.msg).toBe('Conversation closed: Conversation closed by user.');
+		expect(systemMessage).toHaveProperty('files');
+		expect(systemMessage.files).toHaveLength(0);
+		expect(systemMessage).toHaveProperty('quotes');
+		expect(systemMessage.quotes).toHaveLength(0);
+	});
+
+	it('should parse an invalid system message', async () => {
+		const parsedMessages = await omnichannelTranscript.getMessagesData([...messages, invalidSystemMessage] as unknown as IMessage[], 'en');
+		const systemMessage = parsedMessages[3];
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(4);
 		expect(systemMessage).toHaveProperty('t');

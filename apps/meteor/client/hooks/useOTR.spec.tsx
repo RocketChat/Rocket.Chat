@@ -27,7 +27,7 @@ describe('useOTR', () => {
 		(useUserId as jest.Mock).mockReturnValue(undefined);
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -37,7 +37,7 @@ describe('useOTR', () => {
 		(useUserId as jest.Mock).mockReturnValue('userId');
 		(useRoom as jest.Mock).mockReturnValue(undefined);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -48,7 +48,7 @@ describe('useOTR', () => {
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 		(OTR.getInstanceByRoomId as jest.Mock).mockReturnValue(undefined);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -62,7 +62,7 @@ describe('useOTR', () => {
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 		(OTR.getInstanceByRoomId as jest.Mock).mockReturnValue(mockOtrInstance);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBe(mockOtrInstance);
 		expect(result.current.otrState).toBe(OtrRoomState.NOT_STARTED);

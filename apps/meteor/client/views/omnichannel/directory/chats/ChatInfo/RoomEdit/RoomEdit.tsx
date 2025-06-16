@@ -3,12 +3,13 @@ import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@ro
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
-import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
+import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
+import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
@@ -102,9 +103,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries({
-					queryKey: ['/v1/rooms.info', room._id],
-				});
+				await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(room._id) });
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();
@@ -117,11 +116,15 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		[dispatchToastMessage, isFormValid, onClose, queryClient, reload, reloadInfo, room._id, saveRoom, t, visitor._id],
 	);
 
+	const topicField = useId();
+
+	// TODO: this loading should be checked in the `RoomEditWithData`
+	// This component should not have logical data
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
 		return (
-			<ContextualbarScrollableContent>
+			<ContextualbarContent>
 				<FormSkeleton />
-			</ContextualbarScrollableContent>
+			</ContextualbarContent>
 		);
 	}
 
@@ -133,9 +136,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				)}
 
 				<Field>
-					<FieldLabel>{t('Topic')}</FieldLabel>
+					<FieldLabel htmlFor={topicField}>{t('Topic')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('topic')} flexGrow={1} />
+						<TextInput {...register('topic')} id={topicField} flexGrow={1} />
 					</FieldRow>
 				</Field>
 

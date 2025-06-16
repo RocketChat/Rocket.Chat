@@ -13,7 +13,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -26,6 +25,7 @@ import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
 import type { InstancesEndpoints } from './v1/instances';
 import type { IntegrationsEndpoints } from './v1/integrations';
+import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
@@ -40,6 +40,7 @@ import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
+import type { ServerEventsEndpoints } from './v1/server-events';
 import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
@@ -83,12 +84,12 @@ export interface Endpoints
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
+		IntegrationHooksEndpoints,
 		VoipEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
 		E2eEndpoints,
 		AssetsEndpoints,
-		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		MailerEndpoints,
 		WebdavEndpoints,
@@ -101,6 +102,7 @@ export interface Endpoints
 		AuthEndpoints,
 		ImportEndpoints,
 		VoipFreeSwitchEndpoints,
+		ServerEventsEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -213,6 +215,7 @@ export type UrlParams<T extends string> = string extends T
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
+export * from './apps';
 export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';
@@ -222,7 +225,6 @@ export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customUserStatus';
-export * from './v1/customSounds';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';
@@ -253,6 +255,7 @@ export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
+export * from './v1/server-events';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
@@ -274,3 +277,4 @@ export * from './v1/chat';
 export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
+export * from './default';

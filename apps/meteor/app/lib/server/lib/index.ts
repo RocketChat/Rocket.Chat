@@ -9,7 +9,6 @@ import './notifyUsersOnMessage';
 import './meteorFixes';
 
 export { sendNotification } from './sendNotificationsOnMessage';
-export { hostname } from '../startup/settingsOnLoadSiteUrl';
 export { passwordPolicy } from './passwordPolicy';
 export { validateEmailDomain } from './validateEmailDomain';
 export { RateLimiterClass as RateLimiter } from './RateLimiter';

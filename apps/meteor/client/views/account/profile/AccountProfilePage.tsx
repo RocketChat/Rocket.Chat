@@ -1,5 +1,4 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -10,9 +9,10 @@ import {
 	useEndpoint,
 	useTranslation,
 	useSetting,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState, useCallback } from 'react';
+import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AccountProfileForm from './AccountProfileForm';
@@ -27,6 +27,7 @@ const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -109,7 +110,7 @@ const AccountProfilePage = (): ReactElement => {
 		return setModal(<ActionConfirmModal onConfirm={handleConfirm} onCancel={() => setModal(null)} isPassword={hasLocalPassword} />);
 	}, [dispatchToastMessage, hasLocalPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, logout, t]);
 
-	const profileFormId = useUniqueId();
+	const profileFormId = useId();
 
 	return (
 		<Page>
@@ -120,7 +121,7 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<Box mb={12}>
-						<ButtonGroup stretch>
+						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>

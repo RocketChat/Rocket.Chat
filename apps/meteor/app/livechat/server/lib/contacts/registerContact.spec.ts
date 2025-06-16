@@ -13,7 +13,6 @@ const modelsMock = {
 		upsertContact: sinon.stub(),
 		updateContact: sinon.stub(),
 		findContactMatchingVisitor: sinon.stub(),
-		findOneByVisitorId: sinon.stub(),
 	},
 	'LivechatRooms': {
 		findNewestByVisitorIdOrToken: sinon.stub(),
@@ -38,13 +37,6 @@ const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
 	'./Helper': { validateEmail: sinon.stub() },
-	'./LivechatTyped': {
-		Livechat: {
-			logger: {
-				debug: sinon.stub(),
-			},
-		},
-	},
 });
 
 describe('registerContact', () => {

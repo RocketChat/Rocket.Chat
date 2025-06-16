@@ -251,6 +251,10 @@ export class Admin {
 		return this.page.getByRole('button', { name: 'New', exact: true });
 	}
 
+	get btnNewApplication(): Locator {
+		return this.page.getByRole('button', { name: 'New Application', exact: true });
+	}
+
 	get btnDelete(): Locator {
 		return this.page.getByRole('button', { name: 'Delete', exact: true });
 	}
@@ -263,6 +267,26 @@ export class Admin {
 		return this.page.getByRole('textbox', { name: 'Name' });
 	}
 
+	get inputApplicationName(): Locator {
+		return this.page.getByRole('textbox', { name: 'Application Name' });
+	}
+
+	get inputClientId(): Locator {
+		return this.page.getByRole('textbox', { name: 'Client ID' });
+	}
+
+	get inputClientSecret(): Locator {
+		return this.page.getByRole('textbox', { name: 'Client Secret' });
+	}
+
+	get inputAuthUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Authorization URL' });
+	}
+
+	get inputTokenUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Access Token URL' });
+	}
+
 	get inputPostToChannel(): Locator {
 		return this.page.getByRole('textbox', { name: 'Post to Channel' });
 	}
@@ -271,12 +295,20 @@ export class Admin {
 		return this.page.getByRole('textbox', { name: 'Post as' });
 	}
 
+	get inputRedirectURI(): Locator {
+		return this.page.getByRole('textbox', { name: 'Redirect URI' });
+	}
+
 	codeExamplePayload(text: string): Locator {
 		return this.page.locator('code', { hasText: text });
 	}
 
 	getIntegrationByName(name: string): Locator {
 		return this.page.getByRole('table', { name: 'Integrations table' }).locator('tr', { hasText: name });
+	}
+
+	getThirdPartyAppByName(name: string): Locator {
+		return this.page.getByRole('table', { name: 'Third-party applications table' }).locator('tr', { hasText: name });
 	}
 
 	get inputWebhookUrl(): Locator {
@@ -289,6 +321,10 @@ export class Admin {
 
 	get btnFullScreen(): Locator {
 		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
+	}
+
+	get btnExitFullScreen(): Locator {
+		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
 	}
 
 	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {

@@ -2,7 +2,7 @@ import type { IUser, ILivechatContactVisitorAssociation } from '@rocket.chat/cor
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
-import { Livechat } from '../../../../../../app/livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../../../../app/livechat/server/lib/closeRoom';
 import { i18n } from '../../../../../../server/lib/i18n';
 
 export async function changeContactBlockStatus({ block, visitor }: { visitor: ILivechatContactVisitorAssociation; block: boolean }) {
@@ -32,5 +32,5 @@ export async function closeBlockedRoom(association: ILivechatContactVisitorAssoc
 		return;
 	}
 
-	return Livechat.closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment'), user });
+	return closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment'), user });
 }

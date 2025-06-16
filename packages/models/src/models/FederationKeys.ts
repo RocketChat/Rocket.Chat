@@ -28,7 +28,7 @@ export class FederationKeysRaw extends BaseRaw<FederationKey> implements IFedera
 		privateKey: '' | NodeRSA | null;
 		publicKey: '' | NodeRSA | null;
 	}> {
-		const key = new NodeRSA({ b: 512 });
+		const key = new NodeRSA({ b: 2048 });
 
 		key.generateKeyPair();
 

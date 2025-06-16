@@ -35,6 +35,7 @@ jest.mock('../../../../../app/ui/client/lib/ChatMessages', () => {
 				release: jest.fn(),
 				readStateManager: {
 					updateSubscription: updateSubscriptionMock,
+					subscribeToMessages: jest.fn(),
 				},
 			};
 		}),
@@ -81,14 +82,12 @@ describe('useChatMessagesInstance', () => {
 	});
 
 	it('should initialize ChatMessages instance with correct arguments', () => {
-		const { result } = renderHook(
-			() =>
-				useChatMessagesInstance({
-					rid: mockSubscription.rid,
-					tmid: 'threadId',
-					encrypted: false,
-				}),
-			{ legacyRoot: true },
+		const { result } = renderHook(() =>
+			useChatMessagesInstance({
+				rid: mockSubscription.rid,
+				tmid: 'threadId',
+				encrypted: false,
+			}),
 		);
 
 		expect(ChatMessages).toHaveBeenCalledWith({
@@ -105,14 +104,12 @@ describe('useChatMessagesInstance', () => {
 	});
 
 	it('should update ChatMessages subscription', () => {
-		const { result, rerender } = renderHook(
-			() =>
-				useChatMessagesInstance({
-					rid: mockSubscription.rid,
-					tmid: 'threadId',
-					encrypted: false,
-				}),
-			{ legacyRoot: true },
+		const { result, rerender } = renderHook(() =>
+			useChatMessagesInstance({
+				rid: mockSubscription.rid,
+				tmid: 'threadId',
+				encrypted: false,
+			}),
 		);
 
 		expect(ChatMessages).toHaveBeenCalledWith({
@@ -145,14 +142,12 @@ describe('useChatMessagesInstance', () => {
 	});
 
 	it('should update ChatMessages instance when dependencies changes', () => {
-		const { result, rerender } = renderHook(
-			() =>
-				useChatMessagesInstance({
-					rid: mockSubscription.rid,
-					tmid: 'threadId',
-					encrypted: false,
-				}),
-			{ legacyRoot: true },
+		const { result, rerender } = renderHook(() =>
+			useChatMessagesInstance({
+				rid: mockSubscription.rid,
+				tmid: 'threadId',
+				encrypted: false,
+			}),
 		);
 
 		expect(ChatMessages).toHaveBeenCalledWith({
@@ -190,7 +185,7 @@ describe('useChatMessagesInstance', () => {
 			tmid: 'threadId',
 			encrypted: false,
 		};
-		const { result, rerender } = renderHook((props = initialProps) => useChatMessagesInstance(props as any), { legacyRoot: true });
+		const { result, rerender } = renderHook((props = initialProps) => useChatMessagesInstance(props as any));
 
 		expect(ChatMessages).toHaveBeenCalledWith({
 			rid: mockSubscription.rid,

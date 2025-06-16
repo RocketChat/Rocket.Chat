@@ -3,9 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { TranslationProviderRegistry } from '..';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
+import { getSupportedLanguages } from '../functions/getSupportedLanguages';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,24 +14,15 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'autoTranslate.getSupportedLanguages'(targetLanguage) {
-		if (!settings.get('AutoTranslate_Enabled')) {
-			throw new Meteor.Error('error-autotranslate-disabled', 'Auto-Translate is disabled');
-		}
-
 		const userId = Meteor.userId();
+
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSupportedLanguages',
 			});
 		}
 
-		if (!(await hasPermissionAsync(userId, 'auto-translate'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
-				method: 'autoTranslate.saveSettings',
-			});
-		}
-
-		return TranslationProviderRegistry.getSupportedLanguages(targetLanguage);
+		return getSupportedLanguages(userId, targetLanguage);
 	},
 });
 

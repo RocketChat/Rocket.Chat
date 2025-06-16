@@ -1,8 +1,8 @@
+import OAuthServer, { OAuthError, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
 import { Accounts } from 'meteor/accounts-base';
-import OAuthServer, { OAuthError, UnauthorizedRequestError } from 'oauth2-server';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';
@@ -21,6 +21,17 @@ export class OAuth2Server {
 
 		this.config = config;
 		this.app = express();
+		this.app.use(
+			'/oauth/*',
+			express.json({
+				limit: '50mb',
+			}),
+			express.urlencoded({
+				extended: true,
+				limit: '50mb',
+			}),
+			express.query({}),
+		);
 
 		this.oauth = new OAuthServer({
 			model: new Model(this.config),

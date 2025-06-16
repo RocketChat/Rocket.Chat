@@ -3,7 +3,7 @@ import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-ty
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedChatRoom } from './CachedChatRoom';
-import { CachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -12,9 +12,12 @@ declare module '@rocket.chat/core-typings' {
 	}
 }
 
-class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
+class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
-		super({ name: 'subscriptions' });
+		super({
+			name: 'subscriptions',
+			eventType: 'notify-user',
+		});
 	}
 
 	protected handleLoadFromServer(record: ISubscription) {
@@ -30,48 +33,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 	}
 
 	private mergeWithRoom(subscription: ISubscription): SubscriptionWithRoom {
-		const options = {
-			fields: {
-				lm: 1,
-				lastMessage: 1,
-				uids: 1,
-				usernames: 1,
-				usersCount: 1,
-				topic: 1,
-				encrypted: 1,
-				description: 1,
-				announcement: 1,
-				broadcast: 1,
-				archived: 1,
-				avatarETag: 1,
-				retention: 1,
-				teamId: 1,
-				teamMain: 1,
-				msgs: 1,
-				onHold: 1,
-				metrics: 1,
-				muted: 1,
-				servedBy: 1,
-				ts: 1,
-				waitingResponse: 1,
-				v: 1,
-				transcriptRequest: 1,
-				tags: 1,
-				closedAt: 1,
-				responseBy: 1,
-				priorityId: 1,
-				priorityWeight: 1,
-				slaId: 1,
-				estimatedWaitingTimeQueue: 1,
-				livechatData: 1,
-				departmentId: 1,
-				source: 1,
-				queuedAt: 1,
-				federated: 1,
-			},
-		};
-
-		const room = CachedChatRoom.collection.findOne({ _id: subscription.rid }, options);
+		const room = CachedChatRoom.collection.state.find((record) => record._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 

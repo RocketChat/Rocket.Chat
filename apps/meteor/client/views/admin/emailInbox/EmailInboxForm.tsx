@@ -18,10 +18,10 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -192,25 +192,25 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		return t('Email_already_exists');
 	});
 
-	const activeField = useUniqueId();
-	const nameField = useUniqueId();
-	const emailField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const senderInfoField = useUniqueId();
-	const departmentField = useUniqueId();
+	const activeField = useId();
+	const nameField = useId();
+	const emailField = useId();
+	const descriptionField = useId();
+	const senderInfoField = useId();
+	const departmentField = useId();
 
-	const smtpServerField = useUniqueId();
-	const smtpPortField = useUniqueId();
-	const smtpUsernameField = useUniqueId();
-	const smtpPasswordField = useUniqueId();
-	const smtpSecureField = useUniqueId();
+	const smtpServerField = useId();
+	const smtpPortField = useId();
+	const smtpUsernameField = useId();
+	const smtpPasswordField = useId();
+	const smtpSecureField = useId();
 
-	const imapServerField = useUniqueId();
-	const imapPortField = useUniqueId();
-	const imapUsernameField = useUniqueId();
-	const imapPasswordField = useUniqueId();
-	const imapRetriesField = useUniqueId();
-	const imapSecureField = useUniqueId();
+	const imapServerField = useId();
+	const imapPortField = useId();
+	const imapUsernameField = useId();
+	const imapPasswordField = useId();
+	const imapRetriesField = useId();
+	const imapSecureField = useId();
 
 	return (
 		<PageScrollableContentWithShadow>

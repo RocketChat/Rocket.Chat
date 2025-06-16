@@ -1,5 +1,5 @@
+import apn from '@parse/node-apn';
 import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
-import apn from 'apn';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -7,7 +7,7 @@ import { logger } from './logger';
 
 let apnConnection: apn.Provider | undefined;
 
-declare module 'apn' {
+declare module '@parse/node-apn' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Notification {
 		setContentAvailable: (value: boolean | 1 | 0) => void;
@@ -72,7 +72,7 @@ export const sendAPN = ({
 		response.failed.forEach((failure) => {
 			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
 
-			if (['400', '410'].includes(failure.status ?? '')) {
+			if (['400', '410'].includes(String(failure.status))) {
 				logger.debug(`Removing token ${userToken}`);
 				_removeToken({
 					apn: userToken,

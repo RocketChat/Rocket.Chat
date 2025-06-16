@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
+import { messageSearch } from '../../../../server/methods/messageSearch';
 import type { IRawSearchResult } from '../model/ISearchResult';
 import { SearchProvider } from '../model/SearchProvider';
 
@@ -33,16 +33,20 @@ export class DefaultProvider extends SearchProvider<{ searchAll?: boolean; limit
 	/**
 	 * Uses Meteor function 'messageSearch'
 	 */
-	search(
+	async search(
+		userId: string,
 		text: string,
 		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
 		payload: { searchAll?: boolean; limit?: number } = {},
 		callback?: (error: Error | null, result: IRawSearchResult) => void,
-	): void {
+	): Promise<void> {
 		const _rid = payload.searchAll ? undefined : context.rid;
 
 		const _limit = payload.limit || this._settings.get<number>('PageSize');
 
-		Meteor.call('messageSearch', text, _rid, _limit, callback);
+		const result = await messageSearch(userId, text, _rid, _limit);
+		if (callback && result !== false) {
+			return callback(null, result);
+		}
 	}
 }

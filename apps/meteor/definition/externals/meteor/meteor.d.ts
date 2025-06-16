@@ -85,7 +85,11 @@ declare module 'meteor/meteor' {
 
 			_outstandingMethodBlocks: unknown[];
 
-			onMessage(message: string): void;
+			// Updated: onMessage is now inside _streamHandlers
+			_streamHandlers: {
+				onMessage(message: string): void;
+				onReset(): void;
+			};
 
 			status(): {
 				connected: boolean;
@@ -94,6 +98,7 @@ declare module 'meteor/meteor' {
 				status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 				reconnect: () => void;
 			};
+
 			subscribe(
 				id: string,
 				name: string,
@@ -125,6 +130,16 @@ declare module 'meteor/meteor' {
 					config: (config: { onlineOnly: string[] }) => void;
 			  }
 			| undefined;
+
+		function _isPromise(obj: unknown): obj is Promise<unknown>;
+
+		function _runFresh(func: () => void): void;
+
+		class _SynchronousQueue {
+			queueTask(arg0: () => void): void;
+
+			drain(): unknown;
+		}
 	}
 
 	// eslint-disable-next-line no-var

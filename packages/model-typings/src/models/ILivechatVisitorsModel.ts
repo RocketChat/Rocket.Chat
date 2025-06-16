@@ -60,21 +60,17 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
 
-	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean>;
-
-	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
-
 	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null>;
 
 	disableById(_id: string): Promise<UpdateResult>;
 
 	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 
-	countVisitorsOnPeriod(period: string): Promise<number>;
 	saveGuestById(
 		_id: string,
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
 	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number>;
+	updateDepartmentById(_id: string, department: string): Promise<null | WithId<ILivechatVisitor>>;
 }

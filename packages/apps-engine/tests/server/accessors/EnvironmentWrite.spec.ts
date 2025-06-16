@@ -4,22 +4,22 @@ import type { IServerSettingUpdater, ISettingUpdater } from '../../../src/defini
 import { EnvironmentWrite } from '../../../src/server/accessors';
 
 export class EnvironmentWriteTestFixture {
-    private sr: ISettingUpdater;
+	private sr: ISettingUpdater;
 
-    private serverSettings: IServerSettingUpdater;
+	private serverSettings: IServerSettingUpdater;
 
-    @SetupFixture
-    public setupFixture() {
-        this.sr = {} as ISettingUpdater;
-        this.serverSettings = {} as IServerSettingUpdater;
-    }
+	@SetupFixture
+	public setupFixture() {
+		this.sr = {} as ISettingUpdater;
+		this.serverSettings = {} as IServerSettingUpdater;
+	}
 
-    @Test()
-    public useEnvironmentWrite() {
-        Expect(() => new EnvironmentWrite(this.sr, this.serverSettings)).not.toThrow();
+	@Test()
+	public useEnvironmentWrite() {
+		Expect(() => new EnvironmentWrite(this.sr, this.serverSettings)).not.toThrow();
 
-        const er = new EnvironmentWrite(this.sr, this.serverSettings);
-        Expect(er.getSettings()).toBeDefined();
-        Expect(er.getServerSettings()).toBeDefined();
-    }
+		const er = new EnvironmentWrite(this.sr, this.serverSettings);
+		Expect(er.getSettings()).toBeDefined();
+		Expect(er.getServerSettings()).toBeDefined();
+	}
 }

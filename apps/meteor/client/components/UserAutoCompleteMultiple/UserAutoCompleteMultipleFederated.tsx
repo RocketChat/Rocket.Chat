@@ -1,3 +1,4 @@
+import type { OptionType } from '@rocket.chat/fuselage';
 import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -93,7 +94,7 @@ const UserAutoCompleteMultipleFederated = ({
 	);
 
 	return (
-		<OptionsContext.Provider value={{ options }}>
+		<OptionsContext.Provider value={{ options: options as unknown as OptionType[] }}>
 			<MultiSelectFiltered
 				{...props}
 				data-qa-type='user-auto-complete-input'

@@ -1,4 +1,4 @@
-FROM node:22.11.0-alpine3.20
+FROM node:22.14.0-alpine3.20
 
 ARG SERVICE
 
@@ -53,6 +53,8 @@ COPY ./packages/random/dist packages/random/dist
 COPY ./packages/sha256/package.json packages/sha256/package.json
 COPY ./packages/sha256/dist packages/sha256/dist
 
+COPY ./packages/tsconfig packages/tsconfig
+
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 
@@ -75,10 +77,15 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
+    apk --no-cache --virtual deps add g++ python3 make py3-setuptools shadow && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
-    apk del build-dependencies
+    groupmod -n rocketchat nogroup && \
+    useradd -u 65533 -r -g rocketchat rocketchat && \
+    apk del deps && \
+    chown -R rocketchat:rocketchat /app
+
+USER rocketchat
 
 EXPOSE 3000 9458
 

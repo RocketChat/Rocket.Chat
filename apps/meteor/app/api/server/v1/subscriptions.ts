@@ -8,6 +8,8 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { readMessages } from '../../../../server/lib/readMessages';
+import { getSubscriptions } from '../../../../server/publications/subscription';
+import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -28,7 +30,7 @@ API.v1.addRoute(
 				updatedSinceDate = new Date(updatedSince as string);
 			}
 
-			const result = await Meteor.callAsync('subscriptions/get', updatedSinceDate);
+			const result = await getSubscriptions(this.userId, updatedSinceDate);
 
 			return API.v1.success(
 				Array.isArray(result)
@@ -98,7 +100,11 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
+			await unreadMessages(
+				this.userId,
+				'firstUnreadMessage' in this.bodyParams ? this.bodyParams.firstUnreadMessage : undefined,
+				'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
+			);
 
 			return API.v1.success();
 		},

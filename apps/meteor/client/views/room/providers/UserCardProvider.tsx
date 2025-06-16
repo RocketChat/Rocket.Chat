@@ -44,7 +44,7 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 
 	const handleSetUserCard = useCallback(
 		(e: UIEvent, username: string) => {
-			triggerRef.current = e.target as Element;
+			triggerRef.current = e.target as Element | null;
 			state.open();
 			setUserCardData({
 				username,

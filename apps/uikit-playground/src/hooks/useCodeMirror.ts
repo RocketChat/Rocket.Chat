@@ -10,7 +10,7 @@ export type ICodeMirrorChanges = {
 };
 
 export default function useCodeMirror(extensions?: Extension[], doc?: string) {
-  const view = useRef<EditorView>();
+  const view = useRef<EditorView>(undefined);
   const [element, setElement] = useState<HTMLElement>();
   const [changes, setChanges] = useState<ICodeMirrorChanges>({
     value: '[]',

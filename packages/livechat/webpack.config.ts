@@ -14,6 +14,7 @@ const common = (args: webpack.WebpackOptionsNormalized): Partial<webpack.Configu
 	devtool: args.mode === 'production' ? 'source-map' : 'eval',
 	resolve: {
 		extensions: ['.js', '.jsx', '.ts', '.tsx'],
+		symlinks: false,
 		alias: {
 			'react': 'preact/compat',
 			'react-dom': 'preact/compat',
