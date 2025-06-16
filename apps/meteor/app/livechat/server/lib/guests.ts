@@ -80,7 +80,7 @@ export async function saveGuest(
 
 export async function removeGuest({ _id, token }: { _id: string; token: string }) {
 	await cleanGuestHistory(token);
-	return LivechatVisitors.disableById(_id);
+	return Promise.all([LivechatVisitors.disableById(_id), LivechatContacts.disableByVisitorId(_id)]);
 }
 
 export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
