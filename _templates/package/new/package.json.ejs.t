@@ -11,8 +11,13 @@ to: packages/<%= name %>/package.json
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.12",
 		"eslint": "~8.45.0",
+<<<<<<< tsconfig-bases-CORE-1150
 		"jest": "~29.7.0",
 		"typescript": "~5.7.2"
+=======
+		"jest": "~30.0.0",
+		"typescript": "~5.3.3"
+>>>>>>> develop
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
