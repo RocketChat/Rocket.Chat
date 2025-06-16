@@ -9014,6 +9014,7 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/express": "npm:^4.17.21"
     "@types/jest": "npm:~29.5.14"
@@ -9067,7 +9068,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
+"@rocket.chat/jest-presets@workspace:^, @rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
