@@ -1,6 +1,6 @@
 import type { RoomPowerLevelsEvent } from '../core/events/m.room.power_levels';
 import type { RedactionEvent } from '../core/events/m.room.redaction';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import type { z } from 'zod';
 import { generateId } from '../authentication';
 import type { GetMissingEventsBody, GetMissingEventsParams, GetMissingEventsResponse, SendTransactionBody } from '../dtos';
@@ -82,11 +82,11 @@ export class EventService {
 	private readonly logger = createLogger('EventService');
 
 	constructor(
-		private readonly eventRepository: EventRepository,
-		private readonly roomRepository: RoomRepository,
-		private readonly keyRepository: KeyRepository,
-		private readonly configService: ConfigService,
-		private readonly stagingAreaQueue: StagingAreaQueue,
+		@inject('EventRepository') private readonly eventRepository: EventRepository,
+		@inject('RoomRepository') private readonly roomRepository: RoomRepository,
+		@inject('KeyRepository') private readonly keyRepository: KeyRepository,
+		@inject('ConfigService') private readonly configService: ConfigService,
+		@inject('StagingAreaQueue') private readonly stagingAreaQueue: StagingAreaQueue,
 	) { }
 
 	async getEventById<T extends EventBase>(eventId: string): Promise<T | null> {

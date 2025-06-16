@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import type { Collection, Filter, FindOptions } from 'mongodb';
 import { generateId } from '../authentication';
 import type { EventBase, EventStore } from '../models/event.model';
@@ -8,7 +8,7 @@ import { DatabaseConnectionService } from '../services/database-connection.servi
 export class EventRepository {
 	private collection: Collection<EventStore> | null = null;
 
-	constructor(private readonly dbConnection: DatabaseConnectionService) {
+	constructor(@inject('DatabaseConnectionService') private readonly dbConnection: DatabaseConnectionService) {
 		this.getCollection();
 	}
 

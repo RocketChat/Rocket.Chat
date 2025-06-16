@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import {
 	type ErrorResponse,
 	type MakeJoinResponse,
@@ -24,7 +24,7 @@ import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class FederationProfilesController extends BaseController {
-	constructor(private profilesService: ProfilesService) {
+	constructor(@inject('ProfilesService') private profilesService: ProfilesService) {
 		super();
 	}
 

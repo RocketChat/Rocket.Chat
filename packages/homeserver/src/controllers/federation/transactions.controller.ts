@@ -1,12 +1,12 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import { type ErrorResponse, ErrorResponseDto, SendTransactionBodyDto, type SendTransactionResponse, SendTransactionResponseDto } from '../../dtos';
 import { EventService } from '../../services/event.service';
 import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class FederationTransactionsController extends BaseController {
-	constructor(private eventService: EventService) {
+	constructor(@inject('EventService') private eventService: EventService) {
 		super();
 	}
 

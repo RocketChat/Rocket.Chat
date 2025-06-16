@@ -1,12 +1,12 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import { type ErrorResponse, ErrorResponseDto, InternalInviteUserBodyDto, type InternalInviteUserResponse, InternalInviteUserResponseDto } from '../../dtos';
 import { InviteService } from '../../services/invite.service';
 import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class InternalInviteController extends BaseController {
-	constructor(private inviteService: InviteService) {
+	constructor(@inject('InviteService') private inviteService: InviteService) {
 		super();
 	}
 

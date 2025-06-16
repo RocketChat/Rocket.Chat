@@ -11,7 +11,7 @@ import {
 	signJson,
 } from '../../signJson';
 import { FederationConfigService } from './federation-config.service';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { createLogger } from '../../utils/logger';
 
 interface SignedRequest {
@@ -27,7 +27,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 @injectable()
 export class FederationRequestService {
 	private readonly logger = createLogger('FederationRequestService');
-	constructor(private readonly configService: FederationConfigService) {}
+	constructor(@inject('FederationConfigService') private readonly configService: FederationConfigService) {}
 
 	async makeSignedRequest<T>({
 		method,

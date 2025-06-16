@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import type { EventBase } from '../models/event.model';
 import {
 	type StagingAreaEventType,
@@ -37,11 +37,11 @@ export class StagingAreaService {
 	private readonly logger = createLogger('StagingAreaService');
 
 	constructor(
-		private readonly eventService: EventService,
-		private readonly missingEventsService: MissingEventService,
-		private readonly stagingAreaQueue: StagingAreaQueue,
-		private readonly eventAuthService: EventAuthorizationService,
-		private readonly eventStateService: EventStateService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('MissingEventService') private readonly missingEventsService: MissingEventService,
+		@inject('StagingAreaQueue') private readonly stagingAreaQueue: StagingAreaQueue,
+		@inject('EventAuthorizationService') private readonly eventAuthService: EventAuthorizationService,
+		@inject('EventStateService') private readonly eventStateService: EventStateService,
 	) {
 		this.processQueue();
 	}

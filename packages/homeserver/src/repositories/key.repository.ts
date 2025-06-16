@@ -1,4 +1,4 @@
-import { injectable } from "tsyringe";
+import { injectable, inject } from "tsyringe";
 import { Collection } from "mongodb";
 import { DatabaseConnectionService } from "../services/database-connection.service";
 
@@ -13,7 +13,7 @@ type Key = {
 export class KeyRepository {
 	private collection: Collection<Key> | null = null;
 
-	constructor(private readonly dbConnection: DatabaseConnectionService) {
+	constructor(@inject('DatabaseConnectionService') private readonly dbConnection: DatabaseConnectionService) {
 		this.getCollection();
 	}
 

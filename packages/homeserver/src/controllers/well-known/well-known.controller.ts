@@ -1,12 +1,12 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import { WellKnownServerResponseDto } from '../../dtos';
 import { WellKnownService } from '../../services/well-known.service';
 import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class WellKnownController extends BaseController {
-	constructor(private wellKnownService: WellKnownService) {
+	constructor(@inject('WellKnownService') private wellKnownService: WellKnownService) {
 		super();
 	}
 

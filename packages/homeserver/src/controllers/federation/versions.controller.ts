@@ -1,12 +1,12 @@
 import { Elysia } from "elysia";
-import { container, injectable } from "tsyringe";
+import { container, injectable, inject } from "tsyringe";
 import { GetVersionsResponseDto } from "../../dtos";
 import { ConfigService } from "../../services/config.service";
 import { BaseController, type RouteHandler } from "../base.controller";
 
 @injectable()
 export class FederationVersionsController extends BaseController {
-	constructor(private configService: ConfigService) {
+	constructor(@inject('ConfigService') private configService: ConfigService) {
 		super();
 	}
 

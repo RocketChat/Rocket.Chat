@@ -1,9 +1,9 @@
 import { ServerRepository } from '../repositories/server.repository';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 export class ServerService {
-	constructor(private readonly serverRepository: ServerRepository) {}
+	constructor(@inject('ServerRepository') private readonly serverRepository: ServerRepository) {}
 
 	async getValidPublicKeyFromLocal(
 		origin: string,

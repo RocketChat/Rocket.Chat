@@ -1,11 +1,11 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { ProcessInviteBodyDto, ProcessInviteParamsDto, ProcessInviteResponseDto } from '../../dtos/federation/invite.dto';
 import { InviteService } from '../../services/invite.service';
 import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class FederationInviteController extends BaseController {
-	constructor(private readonly inviteService: InviteService) {
+	constructor(@inject('InviteService') private readonly inviteService: InviteService) {
 		super();
 	}
 

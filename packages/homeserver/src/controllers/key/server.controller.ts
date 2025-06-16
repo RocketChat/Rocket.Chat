@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import { toUnpaddedBase64 } from '../../binaryData';
 import { ServerKeyResponseDto } from '../../dtos';
 import type { SigningKey } from '../../keys';
@@ -9,7 +9,7 @@ import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class KeyServerController extends BaseController {
-	constructor(private configService: ConfigService) {
+	constructor(@inject('ConfigService') private configService: ConfigService) {
 		super();
 	}
 

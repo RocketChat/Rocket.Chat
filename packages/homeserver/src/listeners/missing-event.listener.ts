@@ -4,7 +4,7 @@ import { EventFetcherService } from '../services/event-fetcher.service';
 import { EventService, type StagedEvent } from '../services/event.service';
 import { StagingAreaService } from '../services/staging-area.service';
 import type { EventBase } from '../models/event.model';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { createLogger } from '../utils/logger';
 
 @injectable()
@@ -12,10 +12,10 @@ export class MissingEventListener {
 	private readonly logger = createLogger('MissingEventListener');
 
 	constructor(
-		private readonly missingEventsQueue: MissingEventsQueue,
-		private readonly stagingAreaService: StagingAreaService,
-		private readonly eventService: EventService,
-		private readonly eventFetcherService: EventFetcherService,
+		@inject('MissingEventsQueue') private readonly missingEventsQueue: MissingEventsQueue,
+		@inject('StagingAreaService') private readonly stagingAreaService: StagingAreaService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('EventFetcherService') private readonly eventFetcherService: EventFetcherService,
 	) {
 		this.missingEventsQueue.registerHandler(this.handleQueueItem.bind(this));
 	}

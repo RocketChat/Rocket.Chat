@@ -1,7 +1,7 @@
+import 'reflect-metadata';
 import { container } from 'tsyringe';
 import type { RouteHandler } from './base.controller';
 
-// Import all controllers
 import { FederationInviteController } from './federation/invite.controller';
 import { FederationProfilesController } from './federation/profiles.controller';
 import { FederationSendJoinController } from './federation/send-join.controller';
@@ -15,8 +15,9 @@ import { InternalRoomController } from './internal/room.controller';
 import { KeyServerController } from './key/server.controller';
 import { WellKnownController } from './well-known/well-known.controller';
 import { ClientVersionsController } from './client/versions.controller';
+import { createLogger } from '../utils/logger';
+import Elysia from 'elysia';
 
-// Export all controller classes
 export {
 	FederationInviteController,
 	FederationProfilesController,
@@ -33,8 +34,7 @@ export {
 	ClientVersionsController,
 };
 
-// List of all controller classes
-export const controllerClasses = [
+const controllerClasses = [
 	FederationInviteController,
 	FederationProfilesController,
 	FederationSendJoinController,
@@ -50,27 +50,39 @@ export const controllerClasses = [
 	ClientVersionsController,
 ];
 
-// Get all routes from all controllers
-export function getAllRoutes(): RouteHandler[] {
+const logger = createLogger('Controllers');
+
+export async function getAllRoutes(): Promise<RouteHandler[]> {
 	const routes: RouteHandler[] = [];
 	
 	for (const ControllerClass of controllerClasses) {
 		try {
-			console.log('Resolving controller:', ControllerClass.name);
 			const controller = container.resolve(ControllerClass);
-			routes.push(...controller.getRoutes());	
+			routes.push(...controller.getRoutes());
 		} catch (error) {
-			console.error(`Error resolving controller ${ControllerClass.name}:`, error);
+			logger.error(`Error resolving controller ${ControllerClass.name}:`, error);
 		}
 	}
 	
+	logger.info(`Total routes collected: ${routes.length}`);
 	return routes;
 }
 
-// Register all routes with Elysia (for microservice mode)
-export function registerAllElysiaRoutes(app: any): void {
+export function registerAllElysiaRoutes(app: Elysia): void {
+	logger.info('Registering Elysia routes...');
+	let successCount = 0;
+	let errorCount = 0;
+	
 	for (const ControllerClass of controllerClasses) {
-		const controller = container.resolve(ControllerClass);
-		controller.registerElysiaRoutes(app);
+		try {
+			const controller = container.resolve(ControllerClass);
+			controller.registerElysiaRoutes(app);
+			successCount++;
+		} catch (error) {
+			logger.error(`Error registering controller ${ControllerClass.name}:`, error);
+			errorCount++;
+		}
 	}
+	
+	logger.info(`Total controllers registered: ${successCount} successful, ${errorCount} failed`);
 }

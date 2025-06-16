@@ -1,13 +1,13 @@
 import type { MissingEventType } from '../queues/missing-event.queue';
 import { MissingEventsQueue } from '../queues/missing-event.queue';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { createLogger } from '../utils/logger';
 
 const logger = createLogger('MissingEventService');
 
 @injectable()
 export class MissingEventService {
-	constructor(private readonly missingEventsQueue: MissingEventsQueue) {}
+	constructor(@inject('MissingEventsQueue') private readonly missingEventsQueue: MissingEventsQueue) {}
 
 	addEvent(event: MissingEventType) {
 		logger.debug(

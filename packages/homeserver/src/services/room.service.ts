@@ -20,7 +20,7 @@ import {
 import { createSignedEvent } from '../core/events/utils/createSignedEvent';
 import { FederationService } from '../federation-sdk';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { generateId } from '../authentication';
 import type { InternalCreateRoomResponse, InternalUpdateRoomNameResponse } from '../dtos';
 import { ForbiddenError } from '../errors';
@@ -53,11 +53,11 @@ function createMediaId(length: number) {
 @injectable()
 export class RoomService {
 	constructor(
-		private readonly roomRepository: RoomRepository,
-		private readonly eventRepository: EventRepository,
-		private readonly eventService: EventService,
-		private readonly configService: ConfigService,
-		private readonly federationService: FederationService,
+		@inject('RoomRepository') private readonly roomRepository: RoomRepository,
+		@inject('EventRepository') private readonly eventRepository: EventRepository,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('ConfigService') private readonly configService: ConfigService,
+		@inject('FederationService') private readonly federationService: FederationService,
 	) {}
 
 	private validatePowerLevelChange(

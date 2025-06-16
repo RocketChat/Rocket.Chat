@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { Collection } from 'mongodb';
 import type { EventBase } from '../models/event.model';
 import { DatabaseConnectionService } from '../services/database-connection.service';
@@ -20,7 +20,7 @@ type Room = {
 export class RoomRepository {
 	private collection: Collection<Room> | null = null;
 
-	constructor(private readonly dbConnection: DatabaseConnectionService) {
+	constructor(@inject('DatabaseConnectionService') private readonly dbConnection: DatabaseConnectionService) {
 		this.getCollection();
 	}
 

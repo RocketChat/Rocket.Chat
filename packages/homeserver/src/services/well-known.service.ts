@@ -1,9 +1,9 @@
 import { ConfigService } from './config.service';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 export class WellKnownService {
-	constructor(private readonly configService: ConfigService) {}
+	constructor(@inject('ConfigService') private readonly configService: ConfigService) {}
 
 	getWellKnownHostData() {
 		return {

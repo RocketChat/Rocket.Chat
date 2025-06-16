@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import {
 	type ErrorResponse,
 	type InternalMessageResponse,
@@ -22,7 +22,7 @@ import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class InternalMessageController extends BaseController {
-	constructor(private messageService: MessageService) {
+	constructor(@inject('MessageService') private messageService: MessageService) {
 		super();
 	}
 

@@ -11,7 +11,7 @@ import { FederationConfigService } from './federation-config.service';
 import { FederationRequestService } from './federation-request.service';
 import { SignatureVerificationService } from './signature-verification.service';
 import type { ProtocolVersionKey } from '../../signJson';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { createLogger } from '../../utils/logger';
 
 @injectable()
@@ -19,9 +19,9 @@ export class FederationService {
 	private readonly logger = createLogger('FederationService');
 
 	constructor(
-		private readonly configService: FederationConfigService,
-		private readonly requestService: FederationRequestService,
-		private readonly signatureService: SignatureVerificationService,
+		@inject('FederationConfigService') private readonly configService: FederationConfigService,
+		@inject('FederationRequestService') private readonly requestService: FederationRequestService,
+		@inject('SignatureVerificationService') private readonly signatureService: SignatureVerificationService,
 	) { }
 
 	/**

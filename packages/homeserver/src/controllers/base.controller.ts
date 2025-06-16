@@ -1,6 +1,5 @@
 import type { Elysia } from 'elysia';
 
-// Transport-agnostic route handler interface
 export interface RouteHandler {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 	path: string;
@@ -9,7 +8,6 @@ export interface RouteHandler {
 		auth?: boolean;
 		rateLimit?: number;
 	};
-	// Keep Elysia-specific config for future use
 	elysiaConfig?: {
 		params?: any;
 		body?: any;
@@ -37,7 +35,6 @@ export interface RouteContext {
 export abstract class BaseController {
 	abstract getRoutes(): RouteHandler[];
 	
-	// Method to register routes with Elysia (for microservice mode)
 	registerElysiaRoutes(app: Elysia): void {
 		const routes = this.getRoutes();
 		
@@ -45,7 +42,6 @@ export abstract class BaseController {
 			const method = route.method.toLowerCase();
 			const path = this.convertToElysiaPath(route.path);
 			
-			// Create Elysia-compatible handler
 			const elysiaHandler = async ({ params, query, body, headers, set }: any) => {
 				const context: RouteContext = {
 					params,
@@ -58,13 +54,11 @@ export abstract class BaseController {
 				return route.handler(context);
 			};
 			
-			// Merge options with Elysia config
 			const options = {
 				...route.options,
 				...route.elysiaConfig,
 			};
 			
-			// Register based on method
 			switch (method) {
 				case 'get':
 					app.get(path, elysiaHandler, options);

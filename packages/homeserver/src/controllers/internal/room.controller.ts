@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import {
 	type ErrorResponse,
 	type InternalBanUserResponse,
@@ -34,7 +34,7 @@ import { BaseController, type RouteHandler } from '../base.controller';
 
 @injectable()
 export class InternalRoomController extends BaseController {
-	constructor(private roomService: RoomService) {
+	constructor(@inject('RoomService') private roomService: RoomService) {
 		super();
 	}
 

@@ -1,6 +1,6 @@
 import { isRoomMemberEvent } from '../../core/events/m.room.member';
 import { Elysia } from 'elysia';
-import { container, injectable } from 'tsyringe';
+import { container, injectable, inject } from 'tsyringe';
 import { type ErrorResponse, type SendJoinResponse, ErrorResponseDto, SendJoinEventDto, SendJoinParamsDto, SendJoinResponseDto } from '../../dtos';
 import { ConfigService } from '../../services/config.service';
 import { EventService } from '../../services/event.service';
@@ -9,8 +9,8 @@ import { BaseController, type RouteHandler } from '../base.controller';
 @injectable()
 export class FederationSendJoinController extends BaseController {
 	constructor(
-		private eventService: EventService,
-		private configService: ConfigService
+		@inject('EventService') private eventService: EventService,
+		@inject('ConfigService') private configService: ConfigService
 	) {
 		super();
 	}

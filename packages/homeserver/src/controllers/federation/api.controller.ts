@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { BaseController, type RouteHandler } from '../base.controller';
 import { EventService } from '../../services/event.service';
 import { FederationService } from '../../federation-sdk';
@@ -9,11 +9,11 @@ import { ProfilesService } from '../../services/profiles.service';
 @injectable()
 export class FederationApiController extends BaseController {
 	constructor(
-		private readonly eventService: EventService,
-		private readonly federationService: FederationService,
-		private readonly inviteService: InviteService,
-		private readonly roomService: RoomService,
-		private readonly profilesService: ProfilesService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('FederationService') private readonly federationService: FederationService,
+		@inject('InviteService') private readonly inviteService: InviteService,
+		@inject('RoomService') private readonly roomService: RoomService,
+		@inject('ProfilesService') private readonly profilesService: ProfilesService,
 	) {
 		super();
 	}

@@ -14,7 +14,7 @@ import { EventService, EventType } from './event.service';
 import { RoomService } from './room.service';
 import { ForbiddenError } from '../errors';
 import { type RedactionAuthEvents, redactionEvent, type RedactionEvent } from '../core/events/m.room.redaction';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { createLogger } from '../utils/logger';
 import { signEvent, type SignedEvent } from '../signEvent';
 import { generateId } from '../authentication';
@@ -24,10 +24,10 @@ export class MessageService {
 	private readonly logger = createLogger('MessageService');
 
 	constructor(
-		private readonly eventService: EventService,
-		private readonly configService: ConfigService,
-		private readonly federationService: FederationService,
-		private readonly roomService: RoomService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('ConfigService') private readonly configService: ConfigService,
+		@inject('FederationService') private readonly federationService: FederationService,
+		@inject('RoomService') private readonly roomService: RoomService,
 	) { }
 
 	async sendMessage(

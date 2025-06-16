@@ -70,7 +70,6 @@ export class ConfigService {
 		const defaultEnvPath = path.resolve(process.cwd(), '.env');
 		if (fs.existsSync(defaultEnvPath)) {
 			dotenv.config({ path: defaultEnvPath });
-			this.logger.info('Loaded configuration from .env');
 		}
 
 		const envSpecificPath = path.resolve(process.cwd(), `.env.${nodeEnv}`);

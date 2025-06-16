@@ -1,7 +1,7 @@
 import { createLogger } from '../utils/logger';
 import { MongoClient, type MongoClientOptions, Db } from 'mongodb';
 import { ConfigService } from './config.service';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 export class DatabaseConnectionService {
@@ -10,7 +10,7 @@ export class DatabaseConnectionService {
 	private connectionPromise: Promise<void> | null = null;
 	private readonly logger = createLogger('DatabaseConnectionService');
 
-	constructor(private readonly configService: ConfigService) {
+	constructor(@inject('ConfigService') private readonly configService: ConfigService) {
 		this.connect().catch((err) =>
 			this.logger.error(`Initial database connection failed: ${err.message}`),
 		);

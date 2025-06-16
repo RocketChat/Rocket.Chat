@@ -5,7 +5,7 @@ import {
 	HttpException,
 	HttpStatus
 } from '@nestjs/common';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { generateId } from '../authentication';
 import type { InternalInviteUserResponse, ProcessInviteBody, ProcessInviteResponse } from '../dtos';
 import { makeUnsignedRequest } from '../makeRequest';
@@ -28,10 +28,10 @@ export class InviteService {
 	private readonly logger = createLogger('InviteService');
 
 	constructor(
-		private readonly eventService: EventService,
-		private readonly federationService: FederationService,
-		private readonly configService: ConfigService,
-		private readonly roomService: RoomService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('FederationService') private readonly federationService: FederationService,
+		@inject('ConfigService') private readonly configService: ConfigService,
+		@inject('RoomService') private readonly roomService: RoomService,
 	) {}
 
 	/**

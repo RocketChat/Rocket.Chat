@@ -1,4 +1,4 @@
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import type { StagingAreaEventType } from '../queues/staging-area.queue';
 import { StagingAreaQueue } from '../queues/staging-area.queue';
 import { StagingAreaService } from '../services/staging-area.service';
@@ -9,8 +9,8 @@ export class StagingAreaListener {
 	private readonly logger = createLogger('StagingAreaListener');
 
 	constructor(
-		private readonly stagingAreaQueue: StagingAreaQueue,
-		private readonly stagingAreaService: StagingAreaService,
+		@inject('StagingAreaQueue') private readonly stagingAreaQueue: StagingAreaQueue,
+		@inject('StagingAreaService') private readonly stagingAreaService: StagingAreaService,
 	) {
 		this.stagingAreaQueue.registerHandler(this.handleQueueItem.bind(this));
 	}

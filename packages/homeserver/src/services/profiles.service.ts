@@ -5,7 +5,7 @@ import { EventService } from './event.service';
 import type {
 	AuthEvents
 } from '../core/events/m.room.member';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import type { EventAuthParams, EventAuthResponse, GetDevicesParams, GetDevicesResponse, GetMissingEventsBody, GetMissingEventsParams, GetMissingEventsResponse, MakeJoinParams, MakeJoinQuery, MakeJoinResponse, QueryKeysBody, QueryKeysResponse, QueryProfileResponse } from '../dtos/federation/profiles.dto';
 import type { EventStore } from '../models/event.model';
 import { EventRepository } from '../repositories/event.repository';
@@ -13,9 +13,9 @@ import { EventRepository } from '../repositories/event.repository';
 @injectable()
 export class ProfilesService {
 	constructor(
-		private readonly configService: ConfigService,
-		private readonly eventService: EventService,
-		private readonly eventRepository: EventRepository,
+		@inject('ConfigService') private readonly configService: ConfigService,
+		@inject('EventService') private readonly eventService: EventService,
+		@inject('EventRepository') private readonly eventRepository: EventRepository,
 	) {}
 
 	async queryProfile(

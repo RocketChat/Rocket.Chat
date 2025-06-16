@@ -8,7 +8,7 @@ import { generateId } from '../authentication';
 import { EventRepository } from '../repositories/event.repository';
 import type { EventBase } from '../models/event.model';
 import { ConfigService } from './config.service';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 export interface FetchedEvents {
 	events: { eventId: string; event: EventBase }[];
@@ -20,9 +20,9 @@ export class EventFetcherService {
 	private readonly logger = createLogger('EventFetcherService');
 
 	constructor(
-		private readonly eventRepository: EventRepository,
-		private readonly federationService: FederationService,
-		private readonly configService: ConfigService,
+		@inject('EventRepository') private readonly eventRepository: EventRepository,
+		@inject('FederationService') private readonly federationService: FederationService,
+		@inject('ConfigService') private readonly configService: ConfigService,
 	) {}
 
 	public async fetchEventsByIds(
