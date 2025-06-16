@@ -23,8 +23,7 @@ function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IF
 
 	newProfile.profileCreatedTime = profileCreatedTime;
 
-	// eslint-disable-next-line guard-for-in
-	for (const key in timestamps) {
+	for (const key of Object.keys(timestamps)) {
 		const value = timestamps[key as keyof typeof timestamps];
 		if (!value || typeof value === 'string') {
 			continue;
