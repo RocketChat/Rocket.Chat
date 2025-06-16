@@ -13,8 +13,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
       >
         <button
           aria-expanded="false"
-          class="rcx-box rcx-box--full rcx-css-wj27h8 rcx-css-ylkbm1"
-          focusable="true"
+          class="rcx-box rcx-box--full rcx-box--focusable rcx-css-wj27h8 rcx-css-ylkbm1"
           role="button"
         >
           <span
@@ -83,7 +82,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             >
               Time
             </div>
-            June 2, 2025 1:06 PM
+            June 2, 2025 10:06 AM
           </div>
           <div
             class="rcx-box rcx-box--full rcx-css-4r9746"
