@@ -127,6 +127,7 @@ describe('Router use method', () => {
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
 	});
+
 	it('should fail if the body response is not valid', async () => {
 		process.env.NODE_ENV = 'test';
 		process.env.TEST_MODE = 'true';

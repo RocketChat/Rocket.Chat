@@ -6,20 +6,20 @@ import type { IUser } from '../users';
  * - IPostMessageReacted
  */
 export interface IMessageReactionContext {
-    /**
-     * The reaction itself
-     */
-    reaction: string;
-    /**
-     * If the reaction was removed or added from the message
-     */
-    isReacted: boolean;
-    /**
-     * The message that recieved the reaction
-     */
-    message: IMessage;
-    /**
-     * The user who reacted to the message
-     */
-    user: IUser;
+	/**
+	 * The reaction itself
+	 */
+	reaction: string;
+	/**
+	 * If the reaction was removed or added from the message
+	 */
+	isReacted: boolean;
+	/**
+	 * The message that recieved the reaction
+	 */
+	message: IMessage;
+	/**
+	 * The user who reacted to the message
+	 */
+	user: IUser;
 }

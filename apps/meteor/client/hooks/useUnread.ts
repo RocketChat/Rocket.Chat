@@ -7,6 +7,7 @@ import { Rooms } from '../../app/models/client';
 
 const query = { open: { $ne: false }, hideUnreadStatus: { $ne: true }, archived: { $ne: true } };
 const options = { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1, fname: 1, prid: 1 } };
+const updateFavicon = manageFavicon();
 
 export const useUnread = () => {
 	const unreadAlertEnabled = useUserPreference('unreadAlert');
@@ -55,7 +56,6 @@ export const useUnread = () => {
 	}, [setUnread, unread, subscriptions, unreadAlertEnabled, fireEventUnreadChangedBySubscription, fireEventUnreadChanged]);
 
 	useEffect(() => {
-		const updateFavicon = manageFavicon();
 		updateFavicon(unread);
 	}, [unread]);
 };

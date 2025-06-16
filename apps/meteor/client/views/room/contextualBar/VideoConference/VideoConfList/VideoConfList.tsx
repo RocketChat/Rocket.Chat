@@ -13,6 +13,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
@@ -35,7 +36,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='phone' />
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
@@ -90,7 +91,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
