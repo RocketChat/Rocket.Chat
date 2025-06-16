@@ -202,7 +202,7 @@ export class MockedAppRootBuilder {
 		loginWithService: () => () => Promise.resolve(true),
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
-		queryLoginServices: () => [() => () => undefined, () => undefined],
+		queryLoginServices: () => [() => () => undefined, () => []],
 		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 
