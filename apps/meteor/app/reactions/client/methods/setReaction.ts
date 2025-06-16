@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const message: IMessage | undefined = Messages.findOne({ _id: messageId });
+		const message: IMessage | undefined = Messages.state.get(messageId);
 		if (!message) {
 			return false;
 		}
@@ -53,9 +53,15 @@ Meteor.methods<ServerMethods>({
 
 			if (!message.reactions || typeof message.reactions !== 'object' || Object.keys(message.reactions).length === 0) {
 				delete message.reactions;
-				Messages.update({ _id: messageId }, { $unset: { reactions: 1 } });
+				Messages.state.update(
+					(record) => record._id === messageId,
+					({ reactions: _, ...record }) => record,
+				);
 			} else {
-				Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
+				Messages.state.update(
+					(record) => record._id === messageId,
+					(record) => ({ ...record, reactions: message.reactions }),
+				);
 			}
 		} else {
 			if (!message.reactions) {
@@ -68,7 +74,10 @@ Meteor.methods<ServerMethods>({
 			}
 			message.reactions[reaction].usernames.push(user.username);
 
-			Messages.update({ _id: messageId }, { $set: { reactions: message.reactions } });
+			Messages.state.update(
+				(record) => record._id === messageId,
+				(record) => ({ ...record, reactions: message.reactions }),
+			);
 		}
 	},
 });

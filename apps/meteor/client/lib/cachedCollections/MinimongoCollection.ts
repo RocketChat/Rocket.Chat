@@ -1,7 +1,6 @@
 import { Mongo } from 'meteor/mongo';
-import { create } from 'zustand';
 
-import type { IDocumentMapStore } from './DocumentMapStore';
+import { createDocumentMapStore } from './DocumentMapStore';
 import { LocalCollection } from './LocalCollection';
 
 /**
@@ -15,63 +14,20 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 *
 	 * It should be used as a hook in React components to access the collection's records and methods.
 	 */
-	readonly use = create<IDocumentMapStore<T>>()((set, get) => ({
-		records: [],
-		has: (id: T['_id']) => get().records.some((record) => record._id === id),
-		get: (id: T['_id']) => get().records.find((record) => record._id === id),
-		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
-		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
-		replaceAll: (records: T[]) => {
-			set({ records: records.map<T>(Object.freeze) });
-			this.recomputeQueries();
-		},
-		store: (doc) => {
-			set((state) => {
-				const records = [...state.records];
-				const index = records.findIndex((r) => r._id === doc._id);
-				if (index !== -1) {
-					records[index] = Object.freeze(doc);
-				} else {
-					records.push(Object.freeze(doc));
-				}
-				return { records };
-			});
-			this.recomputeQueries();
-		},
-		storeMany: (docs) => {
-			const records = [...get().records];
-
-			for (const doc of docs) {
-				const index = records.findIndex((r) => r._id === doc._id);
-				if (index !== -1) {
-					records[index] = Object.freeze(doc);
-				} else {
-					records.push(Object.freeze(doc));
+	readonly use = createDocumentMapStore<T>({
+		onInvalidate: (...docs) => {
+			for (const query of this._collection.queries) {
+				if (docs.some((doc) => query.predicate(doc))) {
+					this._collection.recomputeQuery(query);
 				}
 			}
-			set({ records });
-			this.recomputeQueries();
 		},
-		delete: (doc) => {
-			set((state) => {
-				const records = state.records.filter((r) => r._id !== doc._id);
-				return { records };
-			});
-			this.recomputeQueries();
+		onInvalidateAll: () => {
+			for (const query of this._collection.queries) {
+				this._collection.recomputeQuery(query);
+			}
 		},
-		update: (predicate: (record: T) => boolean, modifier: (record: T) => T) => {
-			set({
-				records: get().records.map((record) => (predicate(record) ? modifier(record) : record)),
-			});
-			this._collection.recomputeAllResults();
-		},
-		updateAsync: async (predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>) => {
-			set({
-				records: await Promise.all(get().records.map((record) => (predicate(record) ? modifier(record) : record))),
-			});
-			this._collection.recomputeAllResults();
-		},
-	}));
+	});
 
 	/**
 	 * The internal collection that manages the queries and results.
@@ -89,11 +45,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 *
 	 * It's a convenience method to access the Zustand store directly i.e. outside of React components.
 	 */
-	get store() {
+	get state() {
 		return this.use.getState();
-	}
-
-	private recomputeQueries() {
-		this._collection.recomputeAllResults();
 	}
 }

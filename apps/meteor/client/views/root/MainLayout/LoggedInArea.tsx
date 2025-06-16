@@ -11,6 +11,7 @@ import { useRootUrlChange } from '../../../hooks/useRootUrlChange';
 import { useTwoFactorAuthSetupCheck } from '../../../hooks/useTwoFactorAuthSetupCheck';
 import { useUnread } from '../../../hooks/useUnread';
 import { useForceLogout } from '../hooks/useForceLogout';
+import { useLogoutCleanup } from '../hooks/useLogoutCleanup';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from '../hooks/useUpdateVideoConfUser';
@@ -39,6 +40,8 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useFingerprintChange();
 	useRootUrlChange();
 	useTwoFactorAuthSetupCheck();
+	//
+	useLogoutCleanup();
 
 	return children;
 };
