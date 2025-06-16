@@ -17,8 +17,8 @@ describe('call procedures', () => {
 				id,
 			}),
 		);
-		expect(callback).toBeCalledTimes(1);
-		expect(callback).toBeCalledWith(null, ['arg1', 'arg2']);
+		expect(callback).toHaveBeenCalledTimes(1);
+		expect(callback).toHaveBeenCalledWith(null, ['arg1', 'arg2']);
 	});
 
 	it('should be able to handle errors thrown by the method call', async () => {
@@ -39,8 +39,8 @@ describe('call procedures', () => {
 				id,
 			}),
 		);
-		expect(callback).toBeCalledTimes(1);
-		expect(callback).toBeCalledWith({
+		expect(callback).toHaveBeenCalledTimes(1);
+		expect(callback).toHaveBeenCalledWith({
 			error: 400,
 			reason: 'Bad Request',
 			message: 'Bad Request [400]',
@@ -110,9 +110,9 @@ describe('call procedures', () => {
 
 		expect(client.dispatcher.queue.length).toBe(3);
 
-		expect(dispatch).toBeCalledTimes(1);
+		expect(dispatch).toHaveBeenCalledTimes(1);
 
-		expect(fn).toBeCalledTimes(0);
+		expect(fn).toHaveBeenCalledTimes(0);
 
 		ws.handleMessage(
 			JSON.stringify({
@@ -122,8 +122,8 @@ describe('call procedures', () => {
 			}),
 		);
 
-		expect(dispatch).toBeCalledTimes(3);
-		expect(fn).toBeCalledTimes(1);
+		expect(dispatch).toHaveBeenCalledTimes(3);
+		expect(fn).toHaveBeenCalledTimes(1);
 
 		ws.handleMessage(
 			JSON.stringify({
@@ -133,7 +133,7 @@ describe('call procedures', () => {
 			}),
 		);
 
-		expect(fn).toBeCalledTimes(2);
+		expect(fn).toHaveBeenCalledTimes(2);
 
 		ws.handleMessage(
 			JSON.stringify({
@@ -143,7 +143,7 @@ describe('call procedures', () => {
 			}),
 		);
 
-		expect(fn).toBeCalledTimes(3);
+		expect(fn).toHaveBeenCalledTimes(3);
 	});
 });
 
@@ -242,8 +242,8 @@ describe('subscribe procedures', () => {
 			}),
 		);
 
-		expect(observer).toBeCalledTimes(1);
-		expect(observer).toBeCalledWith({
+		expect(observer).toHaveBeenCalledTimes(1);
+		expect(observer).toHaveBeenCalledWith({
 			msg: 'added',
 			collection: 'test',
 			id: '1',

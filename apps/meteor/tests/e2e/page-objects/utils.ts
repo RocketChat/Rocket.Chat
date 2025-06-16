@@ -8,7 +8,7 @@ export class Utils {
 	}
 
 	get mainContent(): Locator {
-		return this.page.locator('main.main-content');
+		return this.page.locator('#main-content');
 	}
 
 	get toastBar(): Locator {
