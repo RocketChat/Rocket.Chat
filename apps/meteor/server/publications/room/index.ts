@@ -49,11 +49,15 @@ Meteor.methods<ServerMethods>({
 
 	async 'getRoomByTypeAndName'(type, name) {
 		const userId = Meteor.userId();
+		const isAnonymous = !userId;
 
-		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getRoomByTypeAndName',
-			});
+		if (isAnonymous) {
+			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
+			if (!allowAnon || type !== 'c') {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'getRoomByTypeAndName',
+				});
+			}
 		}
 
 		const roomFind = roomCoordinator.getRoomFind(type);
