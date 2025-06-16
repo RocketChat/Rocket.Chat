@@ -1,7 +1,7 @@
 import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
@@ -146,7 +146,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<ISubscription> = {
+			const query: Filter<ISubscription> = {
 				t: 'd',
 				$or: [{ name: identifier }, { rid: identifier }],
 			};

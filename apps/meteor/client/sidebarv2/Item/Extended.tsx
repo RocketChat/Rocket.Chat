@@ -9,15 +9,14 @@ import {
 	SidebarV2ItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import type { Keys as IconName } from '@rocket.chat/icons';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
-	icon?: IconName;
-	title: string;
+	icon?: ReactNode;
+	title: ReactNode;
 	avatar?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
@@ -60,14 +59,14 @@ const Extended = ({
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
-					{icon && icon}
+					{icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
-					{badges && badges}
-					{actions && actions}
+					{badges}
+					{actions}
 					{menu && (
 						<SidebarV2ItemMenu>
 							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
