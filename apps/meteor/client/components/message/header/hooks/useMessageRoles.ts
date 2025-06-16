@@ -21,7 +21,7 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 
 	const predicate = useCallback(
 		(record: IRole): boolean => {
-			return [...(userRoles ?? []), ...(roomRoles ?? [])].includes(record._id) && !!record.description;
+			return !!record.description && [...(userRoles ?? []), ...(roomRoles ?? [])].includes(record._id);
 		},
 		[roomRoles, userRoles],
 	);
