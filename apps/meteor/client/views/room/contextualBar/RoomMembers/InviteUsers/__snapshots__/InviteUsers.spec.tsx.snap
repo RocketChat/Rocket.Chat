@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Default without crashing 1`] = `
 <body>
@@ -71,57 +71,51 @@ exports[`renders Default without crashing 1`] = `
             </div>
             <div
               class=""
-              data-overlayscrollbars-padding=""
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
             >
               <div
-                class=""
-                data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-                style="padding: 0px 0px 0px 0px;"
-                tabindex="-1"
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-iag4sp"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
                 >
-                  <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                  <label
+                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
+                    for=":r1:"
+                  >
+                    Invite link
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                      for=":r1:"
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
                     >
-                      Invite link
-                    </label>
-                    <span
-                      class="rcx-box rcx-box--full rcx-field__row"
-                    >
-                      <label
-                        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                      <input
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-input-box"
+                        id=":r1:"
+                        size="1"
+                        type="url"
+                        value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
                       >
-                        <input
-                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-input-box"
-                          id=":r1:"
-                          size="1"
-                          type="url"
-                          value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
-                        />
-                        <span
-                          class="rcx-box rcx-box--full rcx-input-box__addon"
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
-                          >
-                            
-                          </i>
-                        </span>
-                      </label>
-                    </span>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-ox4caw"
-                    >
-                      Expire on February 4, 2020 4:45 PM.
-                    </div>
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </span>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ox4caw"
+                  >
+                    Expire on February 4, 2020 4:45 PM.
                   </div>
                 </div>
               </div>
@@ -233,190 +227,184 @@ exports[`renders InviteEdit without crashing 1`] = `
             </div>
             <div
               class=""
-              data-overlayscrollbars-padding=""
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
             >
               <div
-                class=""
-                data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-                style="padding: 0px 0px 0px 0px;"
-                tabindex="-1"
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-iag4sp"
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
                 >
-                  <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                  <label
+                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
+                    for=":r3:"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                      for=":r3:"
-                    >
-                      Expiration (Days)
-                    </label>
-                    <span
-                      class="rcx-box rcx-box--full rcx-field__row"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-labelledby="react-aria-:rc:"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                        id=":r3:"
-                        type="button"
-                      >
-                        <div
-                          aria-hidden="true"
-                          data-a11y-ignore="aria-hidden-focus"
-                          data-react-aria-prevent-focus="true"
-                          data-testid="hidden-select-container"
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          <label>
-                            <select
-                              name="days"
-                              tabindex="-1"
-                            >
-                              <option />
-                              <option
-                                value="1"
-                              >
-                                1
-                              </option>
-                              <option
-                                value="7"
-                              >
-                                7
-                              </option>
-                              <option
-                                value="15"
-                              >
-                                15
-                              </option>
-                              <option
-                                value="30"
-                              >
-                                30
-                              </option>
-                              <option
-                                value="0"
-                              >
-                                0
-                              </option>
-                            </select>
-                          </label>
-                        </div>
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                          id="react-aria-:rc:"
-                        >
-                          1
-                        </span>
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
-                        >
-                          
-                        </i>
-                      </button>
-                    </span>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
-                  >
-                    <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                      for=":r4:"
-                    >
-                      Max number of uses
-                    </label>
-                    <span
-                      class="rcx-box rcx-box--full rcx-field__row"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="listbox"
-                        aria-labelledby="react-aria-:rk:"
-                        class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                        id=":r4:"
-                        type="button"
-                      >
-                        <div
-                          aria-hidden="true"
-                          data-a11y-ignore="aria-hidden-focus"
-                          data-react-aria-prevent-focus="true"
-                          data-testid="hidden-select-container"
-                          style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                        >
-                          <label>
-                            <select
-                              name="maxUses"
-                              tabindex="-1"
-                            >
-                              <option />
-                              <option
-                                value="5"
-                              >
-                                5
-                              </option>
-                              <option
-                                value="10"
-                              >
-                                10
-                              </option>
-                              <option
-                                value="25"
-                              >
-                                25
-                              </option>
-                              <option
-                                value="50"
-                              >
-                                50
-                              </option>
-                              <option
-                                value="100"
-                              >
-                                100
-                              </option>
-                              <option
-                                value="0"
-                              >
-                                0
-                              </option>
-                            </select>
-                          </label>
-                        </div>
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                          id="react-aria-:rk:"
-                        >
-                          5
-                        </span>
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
-                        >
-                          
-                        </i>
-                      </button>
-                    </span>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-31obua"
+                    Expiration (Days)
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <button
-                      class="rcx-box rcx-box--full rcx-button--primary rcx-button"
-                      disabled=""
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rc:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      id=":r3:"
                       type="button"
                     >
-                      <span
-                        class="rcx-button--content"
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
                       >
-                        Generate_New_Link
+                        <label>
+                          <select
+                            name="days"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="1"
+                            >
+                              1
+                            </option>
+                            <option
+                              value="7"
+                            >
+                              7
+                            </option>
+                            <option
+                              value="15"
+                            >
+                              15
+                            </option>
+                            <option
+                              value="30"
+                            >
+                              30
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rc:"
+                      >
+                        1
                       </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
                     </button>
-                  </div>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
+                    for=":r4:"
+                  >
+                    Max number of uses
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rk:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      id=":r4:"
+                      type="button"
+                    >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="maxUses"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="5"
+                            >
+                              5
+                            </option>
+                            <option
+                              value="10"
+                            >
+                              10
+                            </option>
+                            <option
+                              value="25"
+                            >
+                              25
+                            </option>
+                            <option
+                              value="50"
+                            >
+                              50
+                            </option>
+                            <option
+                              value="100"
+                            >
+                              100
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rk:"
+                      >
+                        5
+                      </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
+                    </button>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-31obua"
+                >
+                  <button
+                    class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+                    disabled=""
+                    type="button"
+                  >
+                    <span
+                      class="rcx-button--content"
+                    >
+                      Generate_New_Link
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -527,42 +515,36 @@ exports[`renders InviteError without crashing 1`] = `
             </div>
             <div
               class=""
-              data-overlayscrollbars-padding=""
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
             >
               <div
-                class=""
-                data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-                style="padding: 0px 0px 0px 0px;"
-                tabindex="-1"
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
               >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-iag4sp"
+                <section
+                  class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-1jggbrp rcx-css-1fuhgt0"
                 >
-                  <section
-                    class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-1jggbrp rcx-css-1fuhgt0"
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
                   >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
-                    >
-                      
-                    </i>
+                    
+                  </i>
+                  <div
+                    class="rcx-box rcx-box--full rcx-callout__wrapper"
+                  >
                     <div
-                      class="rcx-box rcx-box--full rcx-callout__wrapper"
+                      class="rcx-box rcx-box--full rcx-callout__wrapper-content"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+                        class="rcx-box rcx-box--full rcx-callout__content"
                       >
-                        <div
-                          class="rcx-box rcx-box--full rcx-callout__content"
-                        >
-                          Error: Error message
-                        </div>
+                        Error: Error message
                       </div>
                     </div>
-                  </section>
-                </div>
+                  </div>
+                </section>
               </div>
             </div>
             <div
@@ -672,22 +654,16 @@ exports[`renders InviteLoading without crashing 1`] = `
             </div>
             <div
               class=""
-              data-overlayscrollbars-padding=""
-              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
             >
               <div
-                class=""
-                data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-                style="padding: 0px 0px 0px 0px;"
-                tabindex="-1"
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
               >
-                <div
-                  class="rcx-box rcx-box--full rcx-css-iag4sp"
-                >
-                  <span
-                    class="rcx-skeleton rcx-skeleton--text rcx-css-1jggbrp rcx-css-1qcz93u"
-                  />
-                </div>
+                <span
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-1jggbrp rcx-css-1qcz93u"
+                />
               </div>
             </div>
             <div
