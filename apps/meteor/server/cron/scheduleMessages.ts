@@ -3,6 +3,7 @@ import { Rooms, Messages } from '@rocket.chat/models';
 import { sendMessage } from '/app/lib/server/functions/sendMessage';
 import { ScheduledMessages } from '/app/models/server/models/ScheduledMessages';
 import { Users } from '@rocket.chat/models';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '/app/lib/server/lib/notifyListener';
 
 export async function scheduleMessagesCron(): Promise<void> {
   const name = 'sendScheduledMessages';
@@ -37,13 +38,20 @@ export async function scheduleMessagesCron(): Promise<void> {
         }
 
         const messageToSend = {
-          // _id: message._id, // Removed to avoid conflicts
           rid: message.rid,
-          tmid: message.tmid,
           msg: message.msg,
-          u: { _id: user._id, username: user.username },
+          u: { _id: user._id, username: user.username, name: user.name },
           ts: message.scheduledAt,
           _updatedAt: new Date(),
+          urls: [],
+          mentions: [],
+          channels: [],
+          md: [
+            {
+              type: 'PARAGRAPH',
+              value: [{ type: 'PLAIN_TEXT', value: message.msg }],
+            },
+          ],
         };
 
         console.log(`Sending message to room ${message.rid} with original scheduled _id ${message._id}`);
@@ -56,6 +64,10 @@ export async function scheduleMessagesCron(): Promise<void> {
         } else {
           console.log(`Message ${result._id} successfully inserted into messages collection`);
         }
+
+        // Ensure notifications are sent
+        await notifyOnMessageChange({ id: result._id });
+        await notifyOnRoomChangedById(message.rid);
 
         await ScheduledMessages.removeAsync({ _id: message._id });
         console.log(`Sent scheduled message ${message._id} (new message _id: ${result._id}) at ${now.toISOString()}`);
