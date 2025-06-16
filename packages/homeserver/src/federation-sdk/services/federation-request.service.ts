@@ -102,7 +102,7 @@ export class FederationRequestService {
 				);
 			}
 
-			return response.json();
+			return response.json() as Promise<T>;
 		} catch (error: any) {
 			this.logger.error(
 				`Federation request failed: ${error.message}`,

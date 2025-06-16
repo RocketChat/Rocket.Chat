@@ -55,7 +55,7 @@ describe('getPublicKeyFromRemoteServer', () => {
 		originalFetch = globalThis.fetch;
 		mockServerKeys = await createValidServerKeyResponse();
 
-		const mockFetch = async (input: RequestInfo | URL) => {
+		const mockFetch = async (input: string | Request | URL) => {
 			const url = input.toString();
 			if (url.includes('/_matrix/key/v2/server')) {
 				return new Response(JSON.stringify(mockServerKeys), {
@@ -179,7 +179,7 @@ describe('getPublicKeyFromRemoteServer', () => {
 		const serverName = 'test.server';
 		const keyId = `${keyPair.algorithm}:${keyPair.version}`;
 
-		const specialMockFetch = async (input: RequestInfo | URL) => {
+		const specialMockFetch = async (input: string | Request | URL) => {
 			const url = input.toString();
 			if (url.includes('/_matrix/key/v2/server')) {
 				const baseServerKey = {

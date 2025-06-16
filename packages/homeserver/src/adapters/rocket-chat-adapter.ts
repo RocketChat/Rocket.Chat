@@ -34,13 +34,13 @@ export class RocketChatAdapter {
 	/**
 	 * Get route definitions that can be registered with Rocket.Chat's API system
 	 */
-	getRoutes(): RouteDefinition[] {
+	async getRoutes(): Promise<RouteDefinition[]> {
 		if (!this.initialized) {
 			throw new Error('Adapter not initialized. Call initialize() first.');
 		}
 
 		// Get routes from all controllers
-		const homeserverRoutes = getAllRoutes();
+		const homeserverRoutes = await getAllRoutes();
 		
 		// Convert to RC-compatible route definitions
 		return homeserverRoutes.map(route => this.convertToRocketChatRoute(route));

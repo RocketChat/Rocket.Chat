@@ -128,7 +128,7 @@ export const getAddressFromTargetWellKnownEndpoint = async (
 			throw new Error();
 		}
 
-		data = await response.json();
+		data = (await response.json()) as { 'm.server': string };
 	} catch (error) {
 		throw new Error('No address found');
 	}
