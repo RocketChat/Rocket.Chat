@@ -3,6 +3,7 @@
 	"version": "0.2.25",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"@types/strict-uri-encode": "^2.0.2",
 		"eslint": "~8.45.0",
