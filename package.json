@@ -15,18 +15,14 @@
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"fuselage": "./fuselage.sh",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
-		"knip": "knip"
+		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
-		"@types/node": "^24.0.0",
-		"knip": "^5.60.2",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.5.3",
-		"typescript": "^5.8.3"
+		"turbo": "^2.5.3"
 	},
 	"workspaces": [
 		"apps/*",
