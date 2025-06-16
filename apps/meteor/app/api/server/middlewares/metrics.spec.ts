@@ -1,16 +1,16 @@
+import { Router } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
 import express from 'express';
 import request from 'supertest';
 
-import { CachedSettings } from '../../../settings/server/CachedSettings';
-import { RocketChatAPIRouter } from '../router';
 import { metricsMiddleware } from './metrics';
+import { CachedSettings } from '../../../settings/server/CachedSettings';
 
 describe('Metrics middleware', () => {
 	it('should handle metrics', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new RocketChatAPIRouter('/api');
+		const api = new Router('/api');
 		const settings = new CachedSettings();
 		settings.set({
 			_id: 'Prometheus_API_User_Agent',
@@ -58,7 +58,7 @@ describe('Metrics middleware', () => {
 	it('should strip path from metrics', async () => {
 		const ajv = new Ajv();
 		const app = express();
-		const api = new RocketChatAPIRouter('/api');
+		const api = new Router('/api');
 		const settings = new CachedSettings();
 		settings.set({
 			_id: 'Prometheus_API_User_Agent',
@@ -110,7 +110,7 @@ describe('Metrics middleware', () => {
 		const app = express();
 		const settings = new CachedSettings();
 
-		const api = new RocketChatAPIRouter('/api');
+		const api = new Router('/api');
 
 		const summary = {
 			startTimer: jest.fn().mockImplementation(() => jest.fn()),
