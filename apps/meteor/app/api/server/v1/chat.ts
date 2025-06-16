@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -56,6 +56,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -201,6 +202,7 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
+			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  }
@@ -210,114 +212,64 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
+			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  };
 
 const ChatPostMessageSchema = {
+	type: 'object',
+	additionalProperties: false,
+	properties: {
+		roomId: {
+			oneOf: [
+				{ type: 'string' },
+				{
+					type: 'array',
+					items: { type: 'string' },
+				},
+			],
+		},
+		channel: {
+			oneOf: [
+				{ type: 'string' },
+				{
+					type: 'array',
+					items: { type: 'string' },
+				},
+			],
+		},
+		text: { type: 'string', nullable: true },
+		alias: { type: 'string', nullable: true },
+		emoji: { type: 'string', nullable: true },
+		avatar: { type: 'string', nullable: true },
+		tmid: { type: 'string', nullable: true },
+		attachments: {
+			type: 'array',
+			items: { type: 'object' },
+			nullable: true,
+		},
+		customFields: { type: 'object', nullable: true },
+	},
 	oneOf: [
 		{
-			type: 'object',
-			properties: {
-				roomId: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				tmid: {
-					type: 'string',
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
 			required: ['roomId'],
-			additionalProperties: false,
+			not: { required: ['channel'] },
 		},
 		{
-			type: 'object',
-			properties: {
-				channel: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
 			required: ['channel'],
-			additionalProperties: false,
+			not: { required: ['roomId'] },
 		},
 	],
 };
 
-const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
-
-API.v1.post(
+export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
 		authRequired: true,
+		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
 		response: {
 			400: ajv.compile({
@@ -421,7 +373,7 @@ API.v1.post(
 			}),
 		},
 	},
-	async function () {
+	async function action() {
 		const { text, attachments } = this.bodyParams;
 		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -452,6 +404,21 @@ API.v1.post(
 		});
 	},
 );
+
+export type ChatPostMessageEndpoints = {
+	'/v1/chat.postMessage': {
+		POST: (params: ChatPostMessage) => {
+			ts: number;
+			channel: IRoom;
+			message: IMessage;
+		};
+	};
+};
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatPostMessageEndpoints {}
+}
 
 API.v1.addRoute(
 	'chat.search',

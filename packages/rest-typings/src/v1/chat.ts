@@ -920,13 +920,6 @@ export type ChatEndpoints = {
 			};
 		};
 	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
-		};
-	};
 	'/v1/chat.syncThreadMessages': {
 		GET: (params: ChatSyncThreadMessages) => {
 			messages: {
