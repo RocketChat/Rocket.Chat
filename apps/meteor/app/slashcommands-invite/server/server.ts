@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { i18n } from '../../../server/lib/i18n';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 /*
  * Invite is a named function that will replace /invite commands

@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -7,8 +6,6 @@ import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
-
-
 
 test.use({ storageState: Users.user1.state });
 
@@ -51,8 +48,8 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poHomeOmnichannelAgent1?.page?.close();
-		await poHomeOmnichannelAgent2?.page?.close();
+		await poHomeOmnichannelAgent1.page.close();
+		await poHomeOmnichannelAgent2.page.close();
 		await page.close();
 	});
 
@@ -64,11 +61,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {
-
-		const guest = {
-			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
-			email: faker.internet.email(),
-		};
+		const guest = createFakeVisitor();
 
 		await test.step('expect start Chat with department', async () => {
 			await poLiveChat.openAnyLiveChat();
@@ -92,12 +85,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Change Department', async () => {
-		
-		const guest = {
-			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
-			email: faker.internet.email(),
-		
-		};
+		const guest = createFakeVisitor();
 		await test.step('expect start Chat with department', async () => {
 			await poLiveChat.openAnyLiveChat();
 			await poLiveChat.sendMessage(guest, false, departmentA.name);
@@ -133,7 +121,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 
 			await expect(poLiveChat.livechatModalText('Are you sure you want to switch the department?')).toBeVisible();
 			await poLiveChat.btnYes.click();
-			
+
 			await expect(poLiveChat.livechatModal).toBeVisible();
 
 			await expect(poLiveChat.livechatModalText('Department switched')).toBeVisible();

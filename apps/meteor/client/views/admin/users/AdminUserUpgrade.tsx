@@ -1,13 +1,13 @@
-import { Button, ButtonGroup, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/fuselage';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarEmptyContent } from '../../../components/Contextualbar';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 
 const AdminUserUpgrade = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 	const openExternalLink = useExternalLink();

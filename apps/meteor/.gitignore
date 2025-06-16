@@ -70,7 +70,6 @@ Thumbs.db
 thumbs.db
 tramp
 ecosystem.json
-pm2.json
 settings.json
 /public/livechat
 packages/rocketchat-i18n/i18n/livechat.*

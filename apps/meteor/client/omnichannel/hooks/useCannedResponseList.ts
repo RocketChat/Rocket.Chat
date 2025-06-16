@@ -30,7 +30,7 @@ export const useCannedResponseList = (
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { cannedResponses, total } = await getCannedResponses({
 				...(options.filter && { text: options.filter }),
 				...(options.type && ['global', 'user'].find((option) => option === options.type) && { scope: options.type }),

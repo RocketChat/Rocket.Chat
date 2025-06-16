@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { SelectInput } from '.';
@@ -34,7 +34,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof SelectInput>>;
 
-const Template: Story<ComponentProps<typeof SelectInput>> = (args) => <SelectInput {...args} />;
+const Template: StoryFn<ComponentProps<typeof SelectInput>> = (args) => <SelectInput {...args} />;
 
 export const Empty = Template.bind({});
 Empty.storyName = 'empty';

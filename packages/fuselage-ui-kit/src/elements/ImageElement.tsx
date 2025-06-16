@@ -1,8 +1,8 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
 import { Element } from './ImageElement.styles';
+import type { BlockProps } from '../utils/BlockProps';
 
 type ImageElementProps = BlockProps<UiKit.ImageElement>;
 

@@ -1,5 +1,6 @@
 import { TableBody } from '@rocket.chat/fuselage';
-import type { FC, ComponentProps } from 'react';
-import React from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-export const GenericTableBody: FC<ComponentProps<typeof TableBody>> = (props) => <TableBody {...props} />;
+type GenericTableBodyProps = ComponentPropsWithoutRef<typeof TableBody>;
+
+export const GenericTableBody = (props: GenericTableBodyProps) => <TableBody {...props} />;

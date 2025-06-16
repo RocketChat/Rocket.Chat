@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { UserStatus } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -11,10 +11,12 @@ import { saveCustomFields } from '../../app/lib/server/functions/saveCustomField
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
+import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
+import { removeOtherTokens } from '../lib/removeOtherTokens';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -107,8 +109,8 @@ async function saveUserProfile(
 		await Users.setNickname(user._id, settings.nickname.trim());
 	}
 
-	if (settings.email) {
-		await Meteor.callAsync('setEmail', settings.email);
+	if (user && settings.email) {
+		await setEmailFunction(settings.email, user);
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
@@ -141,7 +143,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await Meteor.callAsync('removeOtherTokens');
+				await removeOtherTokens(this.userId, this.connection?.id || '');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
@@ -165,7 +167,7 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 	requireSecondFactor: true,
 });
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserProfile(
@@ -183,6 +185,31 @@ declare module '@rocket.chat/ui-contexts' {
 			...args: unknown[]
 		): boolean;
 	}
+}
+
+export function executeSaveUserProfile(
+	this: Meteor.MethodThisType,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
+	},
+	customFields: Record<string, any> = {},
+	...args: unknown[]
+) {
+	check(settings, Object);
+	check(customFields, Match.Maybe(Object));
+
+	if (settings.email || settings.newPassword) {
+		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+	}
+
+	return saveUserProfile.call(this, settings, customFields, ...args);
 }
 
 Meteor.methods<ServerMethods>({

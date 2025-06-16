@@ -1,16 +1,15 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { useId, type ReactElement } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import UsersInRoleTable from './UsersInRoleTable';
 import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import UsersInRoleTable from './UsersInRoleTable';
 
 type UsersInRolePayload = {
 	rid?: IRoom['_id'];
@@ -34,8 +33,8 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const addUserToRoleEndpoint = useEndpoint('POST', '/v1/roles.addUserToRole');
 
 	const { rid } = watch();
-	const roomFieldId = useUniqueId();
-	const usersFieldId = useUniqueId();
+	const roomFieldId = useId();
+	const usersFieldId = useId();
 
 	const handleAdd = useEffectEvent(async ({ users, rid }: UsersInRolePayload) => {
 		try {
@@ -47,7 +46,9 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 				}),
 			);
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
-			queryClient.invalidateQueries(['getUsersInRole']);
+			queryClient.invalidateQueries({
+				queryKey: ['getUsersInRole'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -70,7 +71,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 									<Controller
 										control={control}
 										name='rid'
-										rules={{ required: t('error-the-field-is-required', { field: t('Room') }) }}
+										rules={{ required: t('Required_field', { field: t('Room') }) }}
 										render={({ field: { onChange, value } }) => (
 											<RoomAutoComplete
 												id={roomFieldId}
@@ -98,7 +99,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 								<Controller
 									control={control}
 									name='users'
-									rules={{ required: t('error-the-field-is-required', { field: t('Users') }) }}
+									rules={{ required: t('Required_field', { field: t('Users') }) }}
 									render={({ field: { onChange, value } }) => (
 										<UserAutoCompleteMultiple
 											id={usersFieldId}

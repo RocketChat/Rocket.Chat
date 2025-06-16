@@ -1,9 +1,9 @@
 import type { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
-import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 
 export async function startRegisterWorkspaceSetupWizard(resend = false, email: string): Promise<CloudRegistrationIntentData> {
 	const regInfo = await buildWorkspaceRegistrationData(email);

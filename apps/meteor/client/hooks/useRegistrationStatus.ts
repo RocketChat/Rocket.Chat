@@ -11,19 +11,16 @@ export const useRegistrationStatus = (): useRegistrationStatusReturnType => {
 	const getRegistrationStatus = useEndpoint('GET', '/v1/cloud.registrationStatus');
 	const canViewregistrationStatus = usePermission('manage-cloud');
 
-	const queryResult = useQuery(
-		['getRegistrationStatus'],
-		() => {
+	const queryResult = useQuery({
+		queryKey: ['getRegistrationStatus'],
+		queryFn: () => {
 			if (!canViewregistrationStatus) {
 				throw new Error('unauthorized api call');
 			}
 			return getRegistrationStatus();
 		},
-		{
-			keepPreviousData: true,
-			staleTime: Infinity,
-		},
-	);
+		staleTime: Infinity,
+	});
 
-	return { isRegistered: !queryResult.isLoading && queryResult.data?.registrationStatus?.workspaceRegistered, ...queryResult };
+	return { isRegistered: !queryResult.isPending && queryResult.data?.registrationStatus?.workspaceRegistered, ...queryResult };
 };

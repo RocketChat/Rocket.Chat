@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { Random } from './main.client';
 
 it('which should generate the same sequence in all environments', () => {

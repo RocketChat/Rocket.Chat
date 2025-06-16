@@ -2,11 +2,11 @@ import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
-import { _setRealName } from '../../../app/lib/server/functions/setRealName';
-import { settings } from '../../../app/settings/server';
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
 import { logger } from './logger';
+import { _setRealName } from '../../../app/lib/server/functions/setRealName';
+import { settings } from '../../../app/settings/server';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
 	if (!options.cas) {

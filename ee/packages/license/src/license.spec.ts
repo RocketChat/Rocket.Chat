@@ -291,7 +291,7 @@ describe('License.getInfo', () => {
 					})
 				).limits,
 			).toMatchObject({
-				privateApps: { max: 3 },
+				privateApps: { max: 0 },
 				marketplaceApps: { max: 5 },
 			});
 		});
@@ -421,7 +421,7 @@ describe('License.setLicense', () => {
 });
 
 describe('License.removeLicense', () => {
-	it('should trigger the sync event even if the module callback throws an error', async () => {
+	it('should trigger the removed event', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
 		const removeLicense = jest.fn();
@@ -431,7 +431,7 @@ describe('License.removeLicense', () => {
 
 		licenseManager.onModule(moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'chat.rocket.test-addon']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -440,22 +440,34 @@ describe('License.removeLicense', () => {
 		]);
 
 		await expect(licenseManager.setLicense(await license.sign(), true)).resolves.toBe(true);
-		await expect(removeLicense).toHaveBeenCalledTimes(0);
-		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+		expect(removeLicense).toHaveBeenCalledTimes(0);
+		expect(moduleCallback).toHaveBeenNthCalledWith(1, {
 			module: 'auditing',
 			valid: true,
+			external: false,
+		});
+		expect(moduleCallback).toHaveBeenNthCalledWith(2, {
+			module: 'chat.rocket.test-addon',
+			valid: true,
+			external: true,
 		});
 
 		removeLicense.mockClear();
 		moduleCallback.mockClear();
-		await licenseManager.remove();
+		licenseManager.remove();
 
-		await expect(removeLicense).toHaveBeenCalledTimes(1);
-		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+		expect(removeLicense).toHaveBeenCalledTimes(1);
+		expect(moduleCallback).toHaveBeenNthCalledWith(1, {
 			module: 'auditing',
 			valid: false,
+			external: false,
+		});
+		expect(moduleCallback).toHaveBeenNthCalledWith(2, {
+			module: 'chat.rocket.test-addon',
+			valid: false,
+			external: true,
 		});
 
-		await expect(licenseManager.hasValidLicense()).toBe(false);
+		expect(licenseManager.hasValidLicense()).toBe(false);
 	});
 });

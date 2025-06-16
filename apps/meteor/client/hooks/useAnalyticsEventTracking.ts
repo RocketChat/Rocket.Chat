@@ -55,7 +55,7 @@ export const useAnalyticsEventTracking = () => {
 
 		callbacks.add(
 			'afterSaveMessage',
-			(_message, room, _uid) => {
+			(_message, { room }) => {
 				trackEvent('Message', 'Send', `${room.name} (${room._id})`);
 			},
 			callbacks.priority.LOW,

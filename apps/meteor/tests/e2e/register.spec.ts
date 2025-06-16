@@ -129,9 +129,9 @@ test.describe.parallel('register', () => {
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
 			await page.goto('/home');
 			await poRegistration.goToRegister.click();
-	
+
 			const results = await makeAxeBuilder().analyze();
-	
+
 			expect(results.violations).toEqual([]);
 		});
 	});

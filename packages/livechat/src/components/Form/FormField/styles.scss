@@ -1,19 +1,19 @@
-@import '../../../styles/colors';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
-$form-field-label-color: $color-text-dark;
-$form-field-label-error-color: $color-red;
+$form-field-label-color: colors.$color-text-dark;
+$form-field-label-error-color: colors.$color-red;
 $form-field-label-font-size: 0.75rem;
 $form-field-label-font-weight: 600;
 $form-field-label-line-height: 1rem;
 
-$form-field-description-color: $color-text-grey;
+$form-field-description-color: colors.$color-text-grey;
 $form-field-description-font-size: 0.75rem;
 $form-field-description-font-weight: 500;
 $form-field-description-line-height: 1rem;
 
-$form-field-error-color: $color-red;
-$form-field-error-border-color: $color-red;
+$form-field-error-color: colors.$color-red;
+$form-field-error-border-color: colors.$color-red;
 
 .form-field {
 	display: flex;
@@ -37,7 +37,7 @@ $form-field-error-border-color: $color-red;
 	&__label {
 		flex: 0 0 auto;
 
-		transition: color $default-time-animation;
+		transition: color variables.$default-time-animation;
 		text-align: left;
 		white-space: nowrap;
 		letter-spacing: 0;
@@ -60,7 +60,7 @@ $form-field-error-border-color: $color-red;
 
 		min-height: $form-field-description-line-height;
 
-		transition: color $default-time-animation;
+		transition: color variables.$default-time-animation;
 
 		color: $form-field-description-color;
 

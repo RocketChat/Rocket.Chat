@@ -1,14 +1,14 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-import CodeElement from '../code/CodeElement';
-import EmojiElement from '../emoji/EmojiElement';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
+import CodeElement from '../code/CodeElement';
+import EmojiElement from '../emoji/EmojiElement';
+import ChannelMentionElement from '../mentions/ChannelMentionElement';
+import UserMentionElement from '../mentions/UserMentionElement';
 
 type MessageBlock =
 	| MessageParser.Emoji

@@ -1,5 +1,5 @@
-@import '../../styles/colors';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/variables';
 
 .tooltip {
 	$tail-size: 0.3125rem;
@@ -14,7 +14,7 @@
 	padding: 0.5rem 0.75rem;
 
 	user-select: none;
-	transition: opacity $default-time-animation;
+	transition: opacity variables.$default-time-animation;
 	text-align: center;
 	white-space: nowrap;
 	letter-spacing: 0;
@@ -22,13 +22,13 @@
 
 	opacity: 1;
 
-	color: $color-text-lighter;
-	border-radius: $default-border-radius;
+	color: colors.$color-text-lighter;
+	border-radius: variables.$default-border-radius;
 
-	background-color: $bg-color-darker;
+	background-color: colors.$bg-color-darker;
 	box-shadow:
-		0 0 0.125rem 0 rgba($bg-color-dark, 0.08),
-		0 0 0.75rem 0 rgba($bg-color-dark, 0.12);
+		0 0 0.125rem 0 rgba(colors.$bg-color-dark, 0.08),
+		0 0 0.75rem 0 rgba(colors.$bg-color-dark, 0.12);
 
 	font-size: 0.75rem;
 	font-weight: 600;
@@ -47,7 +47,7 @@
 
 				content: "";
 
-				border: $tail-size solid $bg-color-darker;
+				border: $tail-size solid colors.$bg-color-darker;
 				@content;
 			}
 		}
@@ -88,7 +88,7 @@
 		&-top-left {
 			@include tail {
 				top: 100%;
-				right: $default-border-radius;
+				right: variables.$default-border-radius;
 
 				border-right-color: transparent;
 				border-bottom-color: transparent;
@@ -99,7 +99,7 @@
 		&-top-right {
 			@include tail {
 				top: 100%;
-				left: $default-border-radius;
+				left: variables.$default-border-radius;
 
 				border-right-color: transparent;
 				border-bottom-color: transparent;
@@ -120,7 +120,7 @@
 
 		&-bottom-left {
 			@include tail {
-				right: $default-border-radius;
+				right: variables.$default-border-radius;
 				bottom: 100%;
 
 				border-top-color: transparent;
@@ -132,7 +132,7 @@
 		&-bottom-right {
 			@include tail {
 				bottom: 100%;
-				left: $default-border-radius;
+				left: variables.$default-border-radius;
 
 				border-top-color: transparent;
 				border-right-color: transparent;

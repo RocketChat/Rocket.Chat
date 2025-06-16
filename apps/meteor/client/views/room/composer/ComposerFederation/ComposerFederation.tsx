@@ -1,6 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import type { ReactElement } from 'react';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
@@ -9,7 +7,7 @@ import ComposerMessage from '../ComposerMessage';
 import ComposerFederationDisabled from './ComposerFederationDisabled';
 import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisabled';
 
-const ComposerFederation = ({ room, subscription, children, ...props }: ComposerMessageProps & { room: IRoom }): ReactElement => {
+const ComposerFederation = ({ subscription, children, ...props }: ComposerMessageProps): ReactElement => {
 	const federationEnabled = useSetting('Federation_Matrix_enabled') === true;
 	const federationModuleEnabled = useHasLicenseModule('federation') === true;
 
@@ -24,7 +22,7 @@ const ComposerFederation = ({ room, subscription, children, ...props }: Composer
 	return (
 		<>
 			{children}
-			<ComposerMessage readOnly={room.ro} {...props} />
+			<ComposerMessage {...props} />
 		</>
 	);
 };

@@ -1,12 +1,13 @@
+import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+
+import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
 import { api, credentials, request } from '../api-data';
 import type { DummyResponse } from './utils';
-import { expect } from 'chai';
-import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
-import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 
 export const createSLA = (): Promise<Omit<IOmnichannelServiceLevelAgreements, '_updated'>> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('livechat/sla'))
 			.set(credentials)
 			.send(generateRandomSLAData())
@@ -21,7 +22,7 @@ export const createSLA = (): Promise<Omit<IOmnichannelServiceLevelAgreements, '_
 
 export const deleteSLA = (id: string): Promise<void> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.delete(api(`livechat/sla/${id}`))
 			.set(credentials)
 			.send()
@@ -67,4 +68,4 @@ export const getRandomPriority = async (): Promise<ILivechatPriority> => {
 		body: { priorities },
 	} = response as { body: { priorities: ILivechatPriority[] } };
 	return priorities[Math.floor(Math.random() * priorities.length)];
-}
+};

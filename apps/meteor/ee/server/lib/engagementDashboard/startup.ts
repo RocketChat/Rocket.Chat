@@ -1,9 +1,14 @@
-import { callbacks } from '../../../../lib/callbacks';
 import { fillFirstDaysOfMessagesIfNeeded, handleMessagesDeleted, handleMessagesSent } from './messages';
 import { fillFirstDaysOfUsersIfNeeded, handleUserCreated } from './users';
+import { callbacks } from '../../../../lib/callbacks';
 
 export const attachCallbacks = (): void => {
-	callbacks.add('afterSaveMessage', handleMessagesSent, callbacks.priority.MEDIUM, 'engagementDashboard.afterSaveMessage');
+	callbacks.add(
+		'afterSaveMessage',
+		(message, { room }) => handleMessagesSent(message, { room }),
+		callbacks.priority.MEDIUM,
+		'engagementDashboard.afterSaveMessage',
+	);
 	callbacks.add('afterDeleteMessage', handleMessagesDeleted, callbacks.priority.MEDIUM, 'engagementDashboard.afterDeleteMessage');
 	callbacks.add('afterCreateUser', handleUserCreated, callbacks.priority.MEDIUM, 'engagementDashboard.afterCreateUser');
 };

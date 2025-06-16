@@ -2,7 +2,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const TeamsInfoWithRooms = lazy(() => import('../../views/teams/contextualBar/info/TeamsInfoWithRooms'));
+const TeamsInfoWithData = lazy(() => import('../../views/teams/contextualBar/info/TeamsInfoWithData'));
 
 export const useTeamInfoRoomAction = () => {
 	return useMemo(
@@ -13,7 +13,7 @@ export const useTeamInfoRoomAction = () => {
 			full: true,
 			title: 'Teams_Info',
 			icon: 'info-circled',
-			tabComponent: TeamsInfoWithRooms,
+			tabComponent: TeamsInfoWithData,
 			order: 1,
 		}),
 		[],

@@ -1,5 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
+
 export default async function handleQUIT(args) {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
@@ -13,4 +15,6 @@ export default async function handleQUIT(args) {
 			},
 		},
 	);
+
+	void notifyOnUserChange({ id: user._id, clientAction: 'updated', diff: { status: 'offline' } });
 }

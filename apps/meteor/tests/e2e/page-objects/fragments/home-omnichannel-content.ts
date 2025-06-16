@@ -3,16 +3,20 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
 import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly closeChatModal: OmnichannelCloseChatModal;
 
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
+	readonly contactReviewModal: OmnichannelContactReviewModal;
+
 	constructor(page: Page) {
 		super(page);
 		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
+		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
@@ -23,11 +27,11 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="return-to-queue-modal"]');
 	}
 
-	get btnReturnToQueueConfirm():Locator {
+	get btnReturnToQueueConfirm(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Confirm"]');
 	}
 
-	get btnReturnToQueueCancel():Locator {
+	get btnReturnToQueueCancel(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Cancel"]');
 	}
 
@@ -52,13 +56,9 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	get infoContactEmail(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-email"]');
+		return this.page.getByRole('dialog').locator('p[data-type="email"]');
 	}
 
-	get infoContactName(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-name"]');
-	}
-	
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
@@ -71,15 +71,17 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="on-hold-modal"]');
 	}
 
-	get btnEditRoomInfo(): Locator {
-		return this.page.locator('button[data-qa-id="room-info-edit"]');
-	}
-
 	get btnOnHoldConfirm(): Locator {
 		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
 	}
 
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
+	}
+
+	async closeChat() {
+		await this.btnCloseChat.click();
+		await this.closeChatModal.inputComment.fill('any_comment');
+		await this.closeChatModal.btnConfirm.click();
 	}
 }

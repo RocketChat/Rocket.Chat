@@ -1,0 +1,6 @@
+.thread-list {
+	overflow: hidden auto;
+	word-wrap: break-word;
+	flex-grow: 1;
+	flex-shrink: 1;
+}

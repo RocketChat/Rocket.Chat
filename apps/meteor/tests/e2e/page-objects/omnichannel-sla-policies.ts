@@ -60,7 +60,7 @@ export class OmnichannelSlaPolicies {
 	}
 
 	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	headingButtonNew(name: string) {

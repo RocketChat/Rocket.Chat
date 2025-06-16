@@ -1,8 +1,11 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeFlextabChannels } from './home-flextab-channels';
+import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
+import { HomeFlextabOtr } from './home-flextab-otr';
+import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -16,12 +19,25 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
+	readonly otr: HomeFlextabOtr;
+
+	readonly exportMessages: HomeFlextabExportMessages;
+
+	readonly pruneMessages: HomeFlextabPruneMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
+		this.otr = new HomeFlextabOtr(page);
+		this.exportMessages = new HomeFlextabExportMessages(page);
+		this.pruneMessages = new HomeFlextabPruneMessages(page);
+	}
+
+	get toolbarPrimaryActions(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
 	}
 
 	get btnTabMembers(): Locator {
@@ -36,12 +52,28 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
+	get btnTeamMembers(): Locator {
+		return this.page.locator('role=menuitem[name="Teams Members"]');
+	}
+
 	get kebab(): Locator {
-		return this.page.locator('role=button[name="Options"]');
+		return this.toolbarPrimaryActions.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
+	}
+
+	get btnExportMessages(): Locator {
+		return this.page.locator('role=menuitem[name="Export messages"]');
+	}
+
+	get btnPruneMessages(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Prune Messages' });
+	}
+
+	get btnE2EERoomSetupDisableE2E(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
 	}
 
 	get btnDisableE2E(): Locator {
@@ -52,11 +84,23 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Enable E2E"]');
 	}
 
+	get btnEnableOTR(): Locator {
+		return this.page.locator('role=menuitem[name="OTR"]');
+	}
+
 	get flexTabViewThreadMessage(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
+	}
+
+	get btnPinnedMessagesList(): Locator {
+		return this.page.locator('[data-key="pinned-messages"]');
+	}
+
+	get btnStarredMessageList(): Locator {
+		return this.page.locator('[data-key="starred-messages"]');
 	}
 }

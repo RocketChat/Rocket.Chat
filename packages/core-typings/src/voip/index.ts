@@ -1,5 +1,6 @@
 export * from './CallStates';
 export * from './ConnectionState';
+export * from './FreeSwitchExtension';
 export * from './ICallerInfo';
 export * from './IConnectionDelegate';
 export * from './IEvents';
@@ -16,3 +17,5 @@ export * from './IVoipClientEvents';
 export * from './VoIPUserConfiguration';
 export * from './VoIpCallerInfo';
 export * from './ICallDetails';
+export * from './IFreeSwitchCall';
+export * from './IFreeSwitchEvent';

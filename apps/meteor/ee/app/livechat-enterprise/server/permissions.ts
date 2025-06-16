@@ -18,6 +18,8 @@ export const omnichannelEEPermissions = [
 	{ _id: 'outbound-voip-calls', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'request-pdf-transcript', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
 	{ _id: 'view-livechat-reports', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
+	{ _id: 'block-livechat-contact', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
+	{ _id: 'unblock-livechat-contact', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
 ];
 
 export const createPermissions = async (): Promise<void> => {

@@ -5,9 +5,11 @@ import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRolePr
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
@@ -68,7 +70,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -80,7 +82,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
+			await addUserToRole(this.userId, role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -91,7 +93,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.getUsersInRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
@@ -109,9 +111,6 @@ API.v1.addRoute(
 			if (!role) {
 				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
 			}
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
 			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
@@ -125,7 +124,7 @@ API.v1.addRoute(
 				}
 
 				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.route,
+					this.route,
 					'role',
 					'7.0.0',
 					this.response,
@@ -150,16 +149,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
 			if (!isRoleDeleteProps(bodyParams)) {
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
@@ -172,9 +167,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 			}
 
-			const existingUsers = await Roles.findUsersInRole(role._id);
-
-			if (existingUsers && (await existingUsers.count()) > 0) {
+			if ((await Roles.countUsersInRole(role._id)) > 0) {
 				throw new Meteor.Error('error-role-in-use', "Cannot delete role because it's in use");
 			}
 
@@ -189,7 +182,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.removeUserFromRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
@@ -199,16 +192,12 @@ API.v1.addRoute(
 
 			const { roleId, roleName, username, scope } = bodyParams;
 
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
-			}
-
 			if (!roleId) {
 				if (!roleName) {
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);
@@ -228,13 +217,13 @@ API.v1.addRoute(
 			}
 
 			if (role._id === 'admin') {
-				const adminCount = await (await Roles.findUsersInRole('admin')).count();
+				const adminCount = await Roles.countUsersInRole('admin');
 				if (adminCount === 1) {
 					throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 				}
 			}
 
-			await Roles.removeUserRoles(user._id, [role._id], scope);
+			await removeUserFromRolesAsync(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
 				void api.broadcast('user.roleUpdate', {

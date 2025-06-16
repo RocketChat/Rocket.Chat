@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Group, Item, PopoverMenu } from '.';
@@ -21,7 +21,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof PopoverMenu>>;
 
-export const Default: Story<ComponentProps<typeof PopoverMenu>> = (args) => (
+export const Default: StoryFn<ComponentProps<typeof PopoverMenu>> = (args) => (
 	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
 		<Group>
 			<Item>Reload</Item>
@@ -31,7 +31,7 @@ export const Default: Story<ComponentProps<typeof PopoverMenu>> = (args) => (
 );
 Default.storyName = 'default';
 
-export const WithOverlay: Story<ComponentProps<typeof PopoverMenu>> = (args) => (
+export const WithOverlay: StoryFn<ComponentProps<typeof PopoverMenu>> = (args) => (
 	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
 		<Group>
 			<Item>Reload</Item>

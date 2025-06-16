@@ -1,16 +1,16 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 import FilterByText from '../../../../components/FilterByText';
 import { GenericTableHeaderCell } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -24,7 +24,7 @@ const isSessionPopulatedSession = (
 ): session is Serialized<DeviceManagementPopulatedSession> => '_user' in session;
 
 const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
@@ -76,7 +76,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Devices_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Devices_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			<DeviceManagementTable
 				data={data}
 				phase={phase}

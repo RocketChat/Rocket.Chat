@@ -87,9 +87,7 @@ audio,
 video {
 	margin: 0;
 	padding: 0;
-
 	vertical-align: baseline;
-
 	border: 0 solid;
 
 	&::after,
@@ -134,6 +132,5 @@ q::after {
 
 table {
 	border-spacing: 0;
-
 	border-collapse: collapse;
 }

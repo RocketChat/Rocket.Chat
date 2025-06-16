@@ -1,8 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC, ComponentProps } from 'react';
-import React from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const AttachmentDetails: FC<ComponentProps<typeof Box>> = ({ ...props }) => (
+type AttachmentDetailsProps = ComponentPropsWithoutRef<typeof Box>;
+
+const AttachmentDetails = (props: AttachmentDetailsProps) => (
 	<Box rcx-attachment__details fontScale='p2' color='hint' bg='surface-tint' padding={16} {...props} />
 );
 

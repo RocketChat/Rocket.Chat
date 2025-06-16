@@ -2,11 +2,11 @@ import Bugsnag from '@bugsnag/js';
 import type { BugsnagErrorBoundary as BugsnagErrorBoundaryComponent } from '@bugsnag/plugin-react';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 import type { ReactNode } from 'react';
-import React from 'react';
+import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Info } from '../../../app/utils/rocketchat.info';
 import AppErrorPage from './AppErrorPage';
+import { Info } from '../../../app/utils/rocketchat.info';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

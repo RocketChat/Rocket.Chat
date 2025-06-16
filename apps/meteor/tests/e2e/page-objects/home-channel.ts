@@ -1,14 +1,19 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect } from '../utils/test';
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
 
 export class HomeChannel {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly content: HomeContent;
 
 	readonly sidenav: HomeSidenav;
+
+	readonly sidebar: Sidebar;
+
+	readonly sidepanel: Sidepanel;
+
+	readonly navbar: Navbar;
 
 	readonly tabs: HomeFlextab;
 
@@ -16,6 +21,9 @@ export class HomeChannel {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new Sidebar(page);
+		this.sidepanel = new Sidepanel(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 	}
 
@@ -27,14 +35,6 @@ export class HomeChannel {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-
-		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
-	}
-
 	async dismissToast() {
 		// this is a workaround for when the toast is blocking the click of the button
 		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
@@ -43,6 +43,10 @@ export class HomeChannel {
 
 	get composer(): Locator {
 		return this.page.locator('textarea[name="msg"]');
+	}
+
+	get composerBoxPopup(): Locator {
+		return this.page.locator('[role="menu"][name="ComposerBoxPopup"]');
 	}
 
 	get userCardToolbar(): Locator {
@@ -62,14 +66,74 @@ export class HomeChannel {
 	}
 
 	get readOnlyFooter(): Locator {
-		return this.page.locator('footer', { hasText: 'This room is read only' })
+		return this.page.locator('footer', { hasText: 'This room is read only' });
 	}
 
 	get roomHeaderToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}
 
-	getSystemMessageByText(text: string): Locator {
-		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	get markUnread(): Locator {
+		return this.page.locator('role=menuitem[name="Mark Unread"]');
+	}
+
+	get audioVideoConfRingtone(): Locator {
+		return this.page.locator('#custom-sound-ringtone');
+	}
+
+	get audioVideoConfDialtone(): Locator {
+		return this.page.locator('#custom-sound-dialtone');
+	}
+
+	get dialogEnterE2EEPassword(): Locator {
+		return this.page.getByRole('dialog', { name: 'Enter E2EE password' });
+	}
+
+	get dialogSaveE2EEPassword(): Locator {
+		return this.page.getByRole('dialog', { name: 'Save your encryption password' });
+	}
+
+	get btnSaveE2EEPassword(): Locator {
+		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'Save E2EE password' });
+	}
+
+	get btnRoomSaveE2EEPassword(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Save E2EE password' });
+	}
+
+	get btnRoomEnterE2EEPassword(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Enter your E2E password' });
+	}
+
+	get btnSavedMyPassword(): Locator {
+		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'I saved my password' });
+	}
+
+	get btnEnterE2EEPassword(): Locator {
+		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2E password' });
+	}
+
+	get bannerSaveEncryptionPassword(): Locator {
+		return this.page.getByRole('button', { name: 'Save your encryption password' });
+	}
+
+	get bannerEnterE2EEPassword(): Locator {
+		return this.page.getByRole('button', { name: 'Enter your E2E password' });
+	}
+
+	get btnNotPossibleDecodeKey(): Locator {
+		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
+	}
+
+	get audioRecorder(): Locator {
+		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
+	}
+
+	get btnJoinRoom(): Locator {
+		return this.page.getByRole('button', { name: 'Join' });
+	}
+
+	get statusUploadIndicator(): Locator {
+		return this.page.getByRole('main').getByRole('status');
 	}
 }

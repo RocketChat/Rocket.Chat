@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Tooltip, { withTooltip } from '.';
@@ -26,10 +26,10 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Tooltip>>;
 
-export const Inline: Story<ComponentProps<typeof Tooltip>> = (args) => <Tooltip {...args} />;
+export const Inline: StoryFn<ComponentProps<typeof Tooltip>> = (args) => <Tooltip {...args} />;
 Inline.storyName = 'inline';
 
-export const Placements: Story<ComponentProps<typeof Tooltip>> = (args) => (
+export const Placements: StoryFn<ComponentProps<typeof Tooltip>> = (args) => (
 	<div style={{ display: 'flex', flexDirection: 'column' }}>
 		{placements.map((placement, i) => (
 			<Tooltip {...args} key={i} placement={placement} />
@@ -38,7 +38,7 @@ export const Placements: Story<ComponentProps<typeof Tooltip>> = (args) => (
 );
 Placements.storyName = 'placements';
 
-export const ConnectedToAnotherComponent: Story<ComponentProps<typeof Tooltip.Trigger>> = (args) => (
+export const ConnectedToAnotherComponent: StoryFn<ComponentProps<typeof Tooltip.Trigger>> = (args) => (
 	<Tooltip.Trigger {...args}>
 		<Button>A simple button</Button>
 	</Tooltip.Trigger>
@@ -51,7 +51,7 @@ ConnectedToAnotherComponent.decorators = [(storyFn) => <Tooltip.Container>{story
 
 const MyButton = withTooltip(Button);
 
-export const WithTooltip: Story<{ tooltip?: string }> = ({ tooltip }) => <MyButton tooltip={tooltip}>A simple button</MyButton>;
+export const WithTooltip: StoryFn<{ tooltip?: string }> = ({ tooltip }) => <MyButton tooltip={tooltip}>A simple button</MyButton>;
 WithTooltip.storyName = 'withTooltip()';
 WithTooltip.args = {
 	tooltip: 'A simple tool tip',

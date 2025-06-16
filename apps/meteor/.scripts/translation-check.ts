@@ -32,7 +32,7 @@ const parseFile = async (path: PathLike) => {
 				throw new SyntaxError(`Invalid JSON on file ${path}:${line}:${column}`);
 			}
 		}
-		throw new SyntaxError(`Invalid JSON on file ${path}: ${e.message}`);
+		throw new SyntaxError(`Invalid JSON on file ${path}: ${(e as Error).message}`);
 	}
 
 	if (hasDuplicatedKeys(content, json)) {

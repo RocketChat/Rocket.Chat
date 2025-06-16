@@ -1,15 +1,15 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLanguage } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useMemo, useEffect, useState, memo } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useMemo, useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AutoTranslate from './AutoTranslate';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import AutoTranslate from './AutoTranslate';
 
 const AutoTranslateWithData = (): ReactElement => {
 	const room = useRoom();
@@ -25,7 +25,7 @@ const AutoTranslateWithData = (): ReactElement => {
 	});
 	const languagesDict = translateData ? Object.fromEntries(translateData.languages.map((lang) => [lang.language, lang.name])) : {};
 
-	const handleChangeLanguage = useMutableCallback((value) => {
+	const handleChangeLanguage = useEffectEvent((value: string) => {
 		setCurrentLanguage(value);
 
 		saveSettings({
@@ -39,7 +39,7 @@ const AutoTranslateWithData = (): ReactElement => {
 		});
 	});
 
-	const handleSwitch = useMutableCallback((event) => {
+	const handleSwitch = useEffectEvent((event: ChangeEvent<HTMLInputElement>) => {
 		saveSettings({
 			roomId: room._id,
 			field: 'autoTranslate',

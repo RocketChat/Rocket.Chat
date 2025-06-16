@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import {
 	ButtonGroup,
 	Button,
@@ -8,26 +7,29 @@ import {
 	StatesIcon,
 	StatesTitle,
 	Accordion,
+	AccordionItem,
 	Field,
 	FieldGroup,
 	FieldLabel,
 	FieldRow,
 	FieldHint,
+	Callout,
+	Margins,
 } from '@rocket.chat/fuselage';
-import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
-import { useFeaturePreviewList } from '@rocket.chat/ui-client';
+import { usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useEffect, Fragment } from 'react';
+import { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { features, unseenFeatures } = useFeaturePreviewList();
+	const { features, unseenFeatures } = usePreferenceFeaturePreviewList();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -55,8 +57,9 @@ const AccountFeaturePreviewPage = () => {
 	const { featuresPreview } = watch();
 
 	const handleSave = async () => {
+		const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 		try {
-			await setUserPreferences({ data: { featuresPreview } });
+			await setUserPreferences({ data: { featuresPreview: featuresToBeSaved } });
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -70,12 +73,7 @@ const AccountFeaturePreviewPage = () => {
 		setValue('featuresPreview', updated, { shouldDirty: true });
 	};
 
-	const grouppedFeaturesPreview = Object.entries(
-		featuresPreview.reduce((result, currentValue) => {
-			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
-			return result;
-		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
-	);
+	const grouppedFeaturesPreview = useFeaturePreviewEnableQuery(featuresPreview);
 
 	return (
 		<Page>
@@ -90,25 +88,28 @@ const AccountFeaturePreviewPage = () => {
 					)}
 					{featuresPreview.length > 0 && (
 						<>
-							<Box
-								className={css`
-									white-space: break-spaces;
-								`}
-								pbe={24}
-								fontScale='p1'
-							>
-								{t('Feature_preview_page_description')}
+							<Box>
+								<Margins block={24}>
+									<Box fontScale='p1'>{t('Feature_preview_page_description')}</Box>
+									<Callout>{t('Feature_preview_page_callout')}</Callout>
+								</Margins>
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
-									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+									<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 										<FieldGroup>
 											{features.map((feature) => (
 												<Fragment key={feature.name}>
 													<Field>
 														<FieldRow>
 															<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
-															<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
+															<ToggleSwitch
+																id={feature.name}
+																checked={feature.value}
+																name={feature.name}
+																onChange={handleFeatures}
+																disabled={feature.disabled}
+															/>
 														</FieldRow>
 														{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
 													</Field>
@@ -116,7 +117,7 @@ const AccountFeaturePreviewPage = () => {
 												</Fragment>
 											))}
 										</FieldGroup>
-									</Accordion.Item>
+									</AccordionItem>
 								))}
 							</Accordion>
 						</>

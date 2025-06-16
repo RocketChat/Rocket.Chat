@@ -1,15 +1,17 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FC, RefObject, SetStateAction } from 'react';
-import React, { memo } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const InsertPlaceholderDropdown: FC<{
+type InsertPlaceholderDropdownProps = {
 	onChange: any;
 	textAreaRef: RefObject<HTMLTextAreaElement>;
 	setVisible: Dispatch<SetStateAction<boolean>>;
-}> = ({ onChange, textAreaRef, setVisible }) => {
-	const t = useTranslation();
+};
+
+const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: InsertPlaceholderDropdownProps) => {
+	const { t } = useTranslation();
 
 	const clickable = css`
 		cursor: pointer;

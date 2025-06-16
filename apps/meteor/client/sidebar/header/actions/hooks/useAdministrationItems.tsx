@@ -1,6 +1,5 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute, useRouter, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
-
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -29,12 +28,6 @@ const ADMIN_PERMISSIONS = [
 	'view-engagement-dashboard',
 	'view-moderation-console',
 ];
-
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
 
 export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();

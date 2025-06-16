@@ -11,6 +11,10 @@ export class OmnichannelLivechatAppearance extends OmnichannelAdministration {
 		return this.page.locator('[name="Livechat_background"]');
 	}
 
+	get inputLivechatTitle(): Locator {
+		return this.page.locator('[name="Livechat_title"]');
+	}
+
 	findHideSystemMessageOption(option: string): Locator {
 		return this.page.locator(`[role="option"][value="${option}"]`);
 	}

@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
@@ -15,14 +16,13 @@ import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { createAnOnlineAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, createBotAgent } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
+import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
-	this.retries(0);
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
 	this.timeout(60000);
 
@@ -30,11 +30,12 @@ describe('LIVECHAT - dashboards', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 	});
 
 	let department: ILivechatDepartment;
 	const agents: {
-		credentials: IUserCredentialsHeader;
+		credentials: Credentials;
 		user: IUser & { username: string };
 	}[] = [];
 	let avgClosedRoomChatDuration = 0;
@@ -143,7 +144,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -151,7 +156,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of conversation totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -207,7 +216,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -215,7 +228,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -263,7 +280,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/chats-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -271,7 +292,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of chats totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/chats-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -323,9 +348,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(
-					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
-				)
+				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -333,9 +360,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of agents productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(
-					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
-				)
+				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -382,7 +411,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -390,7 +423,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -431,7 +468,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -439,7 +480,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by agent', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -532,7 +577,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -540,7 +589,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -577,7 +630,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/timings'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -585,7 +642,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/timings'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -716,6 +777,491 @@ describe('LIVECHAT - dashboards', function () {
 			expect(user1Data).to.have.property('value', '28.57%');
 			expect(user2Data).to.have.property('value', '71.43%');
 		});
+		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total conversations', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: yesterday, to: yesterday, name: 'Total_conversations', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body.head).to.be.an('array').with.lengthOf(2);
+			expect(result.body.head[0]).to.have.property('name', 'Agent');
+			expect(result.body.head[1]).to.have.property('name', '%_of_conversations');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.empty;
+		});
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average chat durations',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_chat_duration', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_chat_duration');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total messages', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: yesterday, to: yesterday, name: 'Total_messages', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body.head).to.be.an('array').with.lengthOf(2);
+			expect(result.body.head[0]).to.have.property('name', 'Agent');
+			expect(result.body.head[1]).to.have.property('name', 'Total_messages');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.empty;
+		});
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average first response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_first_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_first_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for best first response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Best_first_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Best_first_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average reaction times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_reaction_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_reaction_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+	});
+
+	describe('[livechat/analytics/agent-overview] - Average first response time', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let forwardAgent: { credentials: Credentials; user: IUser & { username: string } };
+		let botAgent: { credentials: Credentials; user: IUser };
+		let originalFirstResponseTimeInSeconds: number;
+		let roomId: string;
+		const firstDelayInSeconds = 4;
+		const secondDelayInSeconds = 8;
+
+		before(async () => {
+			agent = await createAnOnlineAgent();
+			forwardAgent = await createAnOnlineAgent();
+			botAgent = await createBotAgent();
+
+			await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
+		});
+
+		after(async () =>
+			Promise.all([
+				deleteUser(agent.user),
+				deleteUser(forwardAgent.user),
+				updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
+			]),
+		);
+
+		it('should return no average response time for an agent if no response has been sent in the period', async () => {
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
+		});
+
+		it("should not consider system messages in agents' first response time metric", async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			await sleep(firstDelayInSeconds * 1000);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
+		});
+
+		it("should not consider bot messages in agent's first response time metric if setting is enabled", async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: botAgent.credentials });
+
+			roomId = response.room._id;
+
+			await sleep(firstDelayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', botAgent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === botAgent.user.username,
+			);
+			expect(agentData).to.be.undefined;
+		});
+
+		it('should correctly associate the first response time to the first agent who responded the room', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
+			roomId = response.room._id;
+
+			await sendAgentMessage(roomId, 'first response from agent', forwardAgent.credentials);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId,
+					userId: agent.user._id,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			// The agent to whom the room has been forwarded shouldn't have their average first response time changed
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalFirstResponseTimeInSeconds).to.be.equal(averageFirstResponseTimeInSeconds);
+
+			// A room's first response time should be attached to the agent who first responded to it even if it has been forwarded
+			const forwardAgentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === forwardAgent.user.username,
+			);
+			expect(forwardAgentData).to.not.be.undefined;
+			expect(forwardAgentData).to.have.property('name', forwardAgent.user.username);
+			expect(forwardAgentData).to.have.property('value');
+			const forwardAgentAverageFirstResponseTimeInSeconds = moment.duration(forwardAgentData.value).asSeconds();
+			expect(originalFirstResponseTimeInSeconds).to.be.greaterThan(forwardAgentAverageFirstResponseTimeInSeconds);
+		});
+
+		it('should correctly calculate the average time of first responses for an agent', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			await sleep(secondDelayInSeconds * 1000);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThan(originalFirstResponseTimeInSeconds);
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInSeconds + secondDelayInSeconds) / 2);
+			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInSeconds);
+		});
+	});
+
+	describe('[livechat/analytics/agent-overview] - Best first response time', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let forwardAgent: { credentials: Credentials; user: IUser & { username: string } };
+		let originalBestFirstResponseTimeInSeconds: number;
+		let roomId: string;
+
+		before(async () => {
+			agent = await createAnOnlineAgent();
+			forwardAgent = await createAnOnlineAgent();
+		});
+
+		after(() => Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]));
+
+		it('should return no best response time for an agent if no response has been sent in the period', async () => {
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
+		});
+
+		it("should not consider system messages in agents' best response time metric", async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			const delayInSeconds = 4;
+			await sleep(delayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			originalBestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInSeconds);
+		});
+
+		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			const delayInSeconds = 6;
+			await sleep(delayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+		});
+
+		it('should correctly associate best first response time to the first agent who responded the room', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
+			roomId = response.room._id;
+
+			await sendAgentMessage(roomId, 'first response from agent', forwardAgent.credentials);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId,
+					userId: agent.user._id,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			// The agent to whom the room has been forwarded shouldn't have their best first response time changed
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+
+			// A room's first response time should be attached to the agent who first responded to it even if it has been forwarded
+			const forwardAgentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === forwardAgent.user.username,
+			);
+			expect(forwardAgentData).to.not.be.undefined;
+			expect(forwardAgentData).to.have.property('name', forwardAgent.user.username);
+			expect(forwardAgentData).to.have.property('value');
+			const forwardAgentBestFirstResponseTimeInSeconds = moment.duration(forwardAgentData.value).asSeconds();
+			expect(forwardAgentBestFirstResponseTimeInSeconds).to.be.lessThan(originalBestFirstResponseTimeInSeconds);
+		});
 	});
 
 	describe('livechat/analytics/overview', () => {
@@ -776,12 +1322,12 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 7 },
-				{ title: 'Open_conversations', value: 4 },
+				{ title: 'Total_conversations', value: 16 },
+				{ title: 'Open_conversations', value: 13 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '3.50' },
+				{ title: 'Conversations_per_day', value: '8.00' },
 				// { title: 'Busiest_time', value: '' },
 			];
 
@@ -798,5 +1344,60 @@ describe('LIVECHAT - dashboards', function () {
 			const totalMessagesValue = parseInt(totalMessages.value);
 			expect(totalMessagesValue).to.be.greaterThanOrEqual(minMessages);
 		});
+		(IS_EE ? it : it.skip)(
+			'should only consider conversations in the provided time range when returning analytics conversations overview data',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Conversations', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.be.an('array');
+
+				const expectedResult = [
+					{ title: 'Total_conversations', value: 0 },
+					{ title: 'Open_conversations', value: 0 },
+					{ title: 'On_Hold_conversations', value: 0 },
+					{ title: 'Conversations_per_day', value: '0.00' },
+				];
+
+				expectedResult.forEach((expected) => {
+					const resultItem = result.body.find((item: any) => item.title === expected.title);
+					expect(resultItem).to.not.be.undefined;
+					expect(resultItem).to.have.property('value', expected.value);
+				});
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only consider conversations in the provided time range when returning analytics productivity overview data',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Productivity', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.be.an('array');
+
+				const expectedResult = [
+					{ title: 'Avg_response_time', value: '00:00:00' },
+					{ title: 'Avg_first_response_time', value: '00:00:00' },
+					{ title: 'Avg_reaction_time', value: '00:00:00' },
+				];
+
+				expectedResult.forEach((expected) => {
+					const resultItem = result.body.find((item: any) => item.title === expected.title);
+					expect(resultItem).to.not.be.undefined;
+					expect(resultItem).to.have.property('value', expected.value);
+				});
+			},
+		);
 	});
 });

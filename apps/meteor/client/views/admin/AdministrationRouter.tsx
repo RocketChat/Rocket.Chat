@@ -1,13 +1,13 @@
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { Suspense, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
+import AdministrationLayout from './AdministrationLayout';
+import { getAdminSidebarItems } from './sidebarItems';
 import PageSkeleton from '../../components/PageSkeleton';
 import type { Item, SidebarDivider, SidebarItem } from '../../lib/createSidebarItems';
 import { isGoRocketChatLink } from '../../lib/createSidebarItems';
 import SettingsProvider from '../../providers/SettingsProvider';
-import AdministrationLayout from './AdministrationLayout';
-import { getAdminSidebarItems } from './sidebarItems';
 
 const isSidebarDivider = (sidebarItem: SidebarItem): sidebarItem is SidebarDivider => {
 	return (sidebarItem as SidebarDivider).divider === true;
@@ -49,9 +49,7 @@ const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactEle
 
 	return (
 		<AdministrationLayout>
-			<SettingsProvider privileged>
-				{children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />}
-			</SettingsProvider>
+			<SettingsProvider>{children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />}</SettingsProvider>
 		</AdministrationLayout>
 	);
 };

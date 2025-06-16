@@ -1,7 +1,7 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { expect } from 'chai';
 
-import { Markdown, original, filtered } from './client.mocks.js';
+import { Markdown, original, filtered } from './client.mocks';
 
 const wrapper = (text, tag) => `<span class="copyonly">${tag}</span>${text}<span class="copyonly">${tag}</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${text}</strong>`, '*');
@@ -280,7 +280,7 @@ const code = {
 	'```code\n```': codeWrapper('<span class="hljs-keyword">code</span>\n', 'clean'),
 	'```\ncode```': codeWrapper('<span class="hljs-keyword">code</span>', 'clean'),
 	"```javascript\nvar a = 'log';\nconsole.log(a);```": codeWrapper(
-		'<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);',
+		'<span class="hljs-keyword">var</span> a = <span class="hljs-string">&#x27;log&#x27;</span>;\n<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a);',
 		'javascript',
 	),
 	'```*code*```': codeWrapper('<span class="hljs-emphasis">*code*</span>', 'markdown'),

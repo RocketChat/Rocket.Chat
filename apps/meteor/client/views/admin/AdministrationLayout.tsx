@@ -1,10 +1,13 @@
-import type { FC } from 'react';
-import React from 'react';
+import type { ReactNode } from 'react';
 
-import SidebarPortal from '../../sidebar/SidebarPortal';
 import AdminSidebar from './sidebar/AdminSidebar';
+import SidebarPortal from '../../sidebar/SidebarPortal';
 
-const AdministrationLayout: FC = ({ children }) => {
+type AdministrationLayoutProps = {
+	children?: ReactNode;
+};
+
+const AdministrationLayout = ({ children }: AdministrationLayoutProps) => {
 	return (
 		<>
 			<SidebarPortal>

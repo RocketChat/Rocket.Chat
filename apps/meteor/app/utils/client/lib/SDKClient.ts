@@ -1,15 +1,13 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
-import type { SDK } from '@rocket.chat/ddp-client/src/DDPSDK';
-import type { ClientStream } from '@rocket.chat/ddp-client/src/types/ClientStream';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
+import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
 
-declare module '@rocket.chat/ddp-client/src/DDPSDK' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface SDK {
 		stream<N extends StreamNames, K extends StreamKeys<N>>(
@@ -51,15 +49,20 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 
 type StreamMapValue = {
 	stop: () => void;
-	error: (cb: (...args: any[]) => void) => void;
+	onError: (cb: (...args: any[]) => void) => () => void;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
+	onStop: (cb: () => void) => () => void;
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
 };
 
 const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
-	const ee = new Emitter();
+	const ee = new Emitter<{
+		ready: [error: any] | [undefined, any];
+		error: [error: any];
+		stop: undefined;
+	}>();
 	const meta = {
 		ready: false,
 	};
@@ -76,6 +79,9 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 			onError: (err: any) => {
 				ee.emit('ready', [err]);
 				ee.emit('error', err);
+			},
+			onStop: () => {
+				ee.emit('stop');
 			},
 		},
 	);
@@ -108,8 +114,14 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		if (meta.ready) {
 			return Promise.resolve();
 		}
-		return new Promise<void>((r) => {
-			ee.once('ready', r);
+		return new Promise<void>((resolve, reject) => {
+			ee.once('ready', ([err]) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+				resolve();
+			});
 		});
 	};
 
@@ -117,11 +129,12 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		stop: sub.stop,
 		onChange,
 		ready,
-		error: (cb: (...args: any[]) => void) =>
+		onError: (cb: (...args: any[]) => void) =>
 			ee.once('error', (error) => {
 				cb(error);
 			}),
 
+		onStop: (cb: () => void) => ee.once('stop', cb),
 		get isReady() {
 			return meta.ready;
 		},
@@ -137,6 +150,12 @@ const createStreamManager = () => {
 	// const proxyUnsubLists = new Map<string, Set<() => void>>();
 
 	const streams = new Map<string, StreamMapValue>();
+
+	Accounts.onLogout(() => {
+		streams.forEach((stream) => {
+			stream.unsubList.forEach((stop) => stop());
+		});
+	});
 
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
@@ -167,9 +186,10 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
+		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
-
 			// If someone is still listening, don't unsubscribe
 			if (streamProxy.has(eventLiteral)) {
 				return;
@@ -181,12 +201,20 @@ const createStreamManager = () => {
 			}
 		};
 
-		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
+			const offError = stream.onError(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			const offStop = stream.onStop(() => {
+				stream.unsubList.forEach((stop) => stop());
+			});
+
+			stream.unsubList.add(offError);
+			stream.unsubList.add(offStop);
 			streams.set(eventLiteral, stream);
 		}
-		stream.error(() => stop());
 
 		return {
 			id: '',
@@ -221,12 +249,22 @@ export const createSDK = (rest: RestClientInterface) => {
 		return Meteor.callAsync(method, ...args);
 	};
 
+	const disconnect = () => {
+		Meteor.disconnect();
+	};
+
+	const reconnect = () => {
+		Meteor.reconnect();
+	};
+
 	return {
 		rest,
 		stop: stopAll,
 		stream,
 		publish,
 		call,
+		disconnect,
+		reconnect,
 	};
 };
 

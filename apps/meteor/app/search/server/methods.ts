@@ -1,12 +1,12 @@
 import type { IMessageSearchProvider, IMessageSearchSuggestion, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { SearchLogger } from './logger/logger';
 import type { IRawSearchResult, ISearchResult } from './model/ISearchResult';
 import { searchProviderService, validationService } from './service';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rocketchatSearch.getProvider'(): IMessageSearchProvider | undefined;
@@ -55,8 +55,13 @@ Meteor.methods<ServerMethods>({
 
 		SearchLogger.debug({ msg: 'search', text, context, payload });
 
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Error('User not logged in');
+		}
+
 		return new Promise<IRawSearchResult>((resolve, reject) => {
-			searchProviderService.activeProvider?.search(text, context, payload, (error, data) => {
+			void searchProviderService.activeProvider?.search(userId, text, context, payload, (error, data) => {
 				if (error) {
 					return reject(error);
 				}

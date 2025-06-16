@@ -18,6 +18,8 @@ import { isURL } from '../../../lib/utils/isURL';
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
 
+const configuredOAuthServices = new Map<string, CustomOAuth>();
+
 export class CustomOAuth implements IOAuthProvider {
 	public serverURL: string;
 
@@ -27,7 +29,10 @@ export class CustomOAuth implements IOAuthProvider {
 
 	public responseType: string;
 
-	constructor(public readonly name: string, options: OauthConfig) {
+	constructor(
+		public readonly name: string,
+		options: OauthConfig,
+	) {
 		this.name = name;
 		if (!Match.test(this.name, String)) {
 			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
@@ -118,5 +123,33 @@ export class CustomOAuth implements IOAuthProvider {
 				height: 450,
 			},
 		});
+	}
+
+	static configureOAuthService(serviceName: string, options: OauthConfig): CustomOAuth {
+		const existingInstance = configuredOAuthServices.get(serviceName);
+		if (existingInstance) {
+			existingInstance.configure(options);
+			return existingInstance;
+		}
+
+		// If we don't have a reference to the instance for this service and it was already registered on meteor,
+		// then there's nothing we can do to update it
+		if (Accounts.oauth.serviceNames().includes(serviceName)) {
+			throw new Error(`CustomOAuth service [${serviceName}] already registered, skipping new configuration.`);
+		}
+
+		const instance = new CustomOAuth(serviceName, options);
+		configuredOAuthServices.set(serviceName, instance);
+		return instance;
+	}
+
+	static configureCustomOAuthService(serviceName: string, options: OauthConfig): CustomOAuth | undefined {
+		// Custom OAuth services are configured based on the login service list, so if this ends up being called multiple times, simply ignore it
+		// Non-Custom OAuth services are configured based on code, so if configureOAuthService is called multiple times for them, it's a bug and it should throw.
+		try {
+			return this.configureOAuthService(serviceName, options);
+		} catch (e) {
+			console.error(e);
+		}
 	}
 }

@@ -4,8 +4,8 @@ import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { contextualBarParser } from '../../surfaces';
 import MultiChannelsSelectElement from './MultiChannelsSelectElement';
+import { contextualBarParser } from '../../surfaces';
 import { useChannelsData } from './hooks/useChannelsData';
 
 const channelsBlock: MultiChannelsSelectElementType = {
@@ -65,7 +65,7 @@ describe('UiKit MultiChannelsSelect Element', () => {
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
-      </MockedServerContext>
+      </MockedServerContext>,
     );
   });
 

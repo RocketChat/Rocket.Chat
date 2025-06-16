@@ -1,21 +1,21 @@
-@import '../../../styles/colors';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
 $message-bubble-padding: 12px;
-$message-bubble-background-color: $bg-color-light;
-$message-bubble-color: $color-text-dark;
-$message-bubble-border-radius: $default-border-radius;
-$message-bubble-link-color: $color-blue;
-$message-bubble-me-background-color: $color-blue;
-$message-bubble-me-color: $color-text-lighter;
-$message-bubble-me-link-color: $color-text-lighter;
+$message-bubble-background-color: colors.$bg-color-light;
+$message-bubble-color: colors.$color-text-dark;
+$message-bubble-border-radius: variables.$default-border-radius;
+$message-bubble-link-color: colors.$color-blue;
+$message-bubble-me-background-color: colors.$color-blue;
+$message-bubble-me-color: colors.$color-text-lighter;
+$message-bubble-me-link-color: colors.$color-text-lighter;
 $message-bubble-nude-padding: 0;
 $message-bubble-quoted-padding: 12px 12px 12px 0;
 $message-bubble-quoted-indicator-width: 3px;
 $message-bubble-quoted-indicator-margin: (-2 * $message-bubble-quoted-indicator-width) (2 * $message-bubble-quoted-indicator-width)
 	(-2 * $message-bubble-quoted-indicator-width) $message-bubble-quoted-indicator-width;
-$message-bubble-quoted-indicator-border-radius: $default-border-radius;
-$message-bubble-quoted-indicator-color: $color-green;
+$message-bubble-quoted-indicator-border-radius: variables.$default-border-radius;
+$message-bubble-quoted-indicator-color: colors.$color-green;
 
 .message-bubble {
 	display: flex;

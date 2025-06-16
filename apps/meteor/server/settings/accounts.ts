@@ -31,6 +31,18 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 
+			await this.add('Accounts_twoFactorAuthentication_email_available_for_OAuth_users', true, {
+				type: 'boolean',
+				enableQuery: [
+					enable2FA,
+					{
+						_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+						value: true,
+					},
+				],
+				public: true,
+			});
+
 			await this.add('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true, {
 				type: 'boolean',
 				enableQuery: [
@@ -225,6 +237,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
+			i18nDescription: 'Accounts_CustomFieldsToShowInUserInfo_Description',
 		});
 		await this.add('Accounts_LoginExpiration', 90, {
 			type: 'int',
@@ -686,10 +699,22 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Mute_Focused_Conversations',
 			});
 
+			await this.add('Accounts_Default_User_Preferences_masterVolume', 100, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Master_volume',
+			});
+
 			await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 				type: 'int',
 				public: true,
-				i18nLabel: 'Notifications_Sound_Volume',
+				i18nLabel: 'Notification_volume',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Call_ringer_volume',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
@@ -708,6 +733,33 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'VideoConf_Mobile_Ringing',
+			});
+
+			const defaultUserPreferencesSidebarSectionsOrder = [
+				'Incoming_Calls',
+				'Incoming_Livechats',
+				'Open_Livechats',
+				'On_Hold_Chats',
+				'Unread',
+				'Favorites',
+				'Teams',
+				'Discussions',
+				'Channels',
+				'Direct_Messages',
+				'Conversations',
+			];
+
+			await this.add('Accounts_Default_User_Preferences_sidebarSectionsOrder', defaultUserPreferencesSidebarSectionsOrder, {
+				type: 'multiSelect',
+				public: true,
+				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
+				i18nLabel: 'Sidebar_Sections_Order',
+				i18nDescription: 'Sidebar_Sections_Order_Description',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
+				type: 'string',
+				public: true,
 			});
 		});
 
@@ -738,7 +790,7 @@ export const createAccountSettings = () =>
 				i18nDescription: 'Accounts_AvatarCacheTime_description',
 			});
 
-			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', true, {
 				type: 'boolean',
 				public: true,
 			});

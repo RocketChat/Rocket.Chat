@@ -1,7 +1,6 @@
 import { readFile } from 'fs/promises';
+import { EOL } from 'os';
 import path from 'path';
-
-import { getExecOutput } from '@actions/exec';
 
 import { readPackageJson } from './utils';
 
@@ -27,14 +26,28 @@ export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; y
 	return packageJson.engines;
 }
 
-export async function getAppsEngineVersion() {
+export async function getAppsEngineVersion(cwd: string) {
 	try {
-		const result = await getExecOutput('yarn why @rocket.chat/apps-engine --json');
+		const result = await readPackageJson(path.join(cwd, 'packages/apps-engine'));
 
-		const match = result.stdout.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
-		if (match) {
-			return match[1];
+		return result.version ?? 'Not Available';
+	} catch (e) {
+		console.error(e);
+	}
+}
+
+export async function getDenoVersion(cwd: string) {
+	try {
+		const toolVersionsContent = await readFile(path.join(cwd, '.tool-versions'));
+		const data = toolVersionsContent.toString().replace(EOL, ' ').split(' ');
+
+		for (let i = 0; i < data.length; i++) {
+			if (data[i] === 'deno') {
+				return data[i + 1];
+			}
 		}
+
+		return 'Not available';
 	} catch (e) {
 		console.error(e);
 	}

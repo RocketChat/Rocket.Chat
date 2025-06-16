@@ -1,25 +1,23 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Icon, Tag, Skeleton } from '@rocket.chat/fuselage';
-import type { VFC } from 'react';
-import React from 'react';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 
-import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';
 
 type RoomForewordUsernameListItemProps = {
 	href: string | undefined;
 	username: NonNullable<IUser['username']>;
-	useRealName: boolean;
 };
 
-const RoomForewordUsernameListItem: VFC<RoomForewordUsernameListItemProps> = ({ username, href, useRealName }) => {
-	const { data, isLoading, isError } = useUserInfoQuery({ username });
+const RoomForewordUsernameListItem = ({ username, href }: RoomForewordUsernameListItemProps) => {
+	const { data, isLoading, isError, isSuccess } = useUserInfoQuery({ username });
+	const displayName = useUserDisplayName({ name: data?.user?.name, username });
 
 	return (
 		<Tag icon={<Icon name='user' size='x20' />} data-username={username} large href={href}>
 			{isLoading && <Skeleton variant='rect' />}
-			{!isLoading && isError && username}
-			{!isLoading && !isError && getUserDisplayName(data?.user?.name, username, useRealName)}
+			{isError && username}
+			{isSuccess && displayName}
 		</Tag>
 	);
 };

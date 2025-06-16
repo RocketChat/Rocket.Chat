@@ -1,7 +1,7 @@
 import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -22,15 +22,19 @@ const OAuthAppsTable = (): ReactElement => {
 	const uid = { uid: useUserId() || '' };
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
-	const { data, isLoading, isSuccess } = useQuery(['oauth-apps', { uid }], async () => {
-		const oauthApps = await getOauthApps(uid);
-		return oauthApps;
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['oauth-apps', { uid }],
+
+		queryFn: async () => {
+			const oauthApps = await getOauthApps(uid);
+			return oauthApps;
+		},
 	});
 
 	const router = useRoute('admin-oauth-apps');
 
 	const onClick = useCallback(
-		(_id) => (): void =>
+		(_id: string) => (): void =>
 			router.push({
 				context: 'edit',
 				id: _id,
@@ -58,7 +62,7 @@ const OAuthAppsTable = (): ReactElement => {
 			)}
 			{isSuccess && data?.oauthApps.length === 0 && <GenericNoResults />}
 			{isSuccess && data?.oauthApps.length > 0 && (
-				<GenericTable>
+				<GenericTable aria-label={t('Third_party_applications_table')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data?.oauthApps.map(({ _id, name, _createdAt, _createdBy: { username: createdBy } }) => (

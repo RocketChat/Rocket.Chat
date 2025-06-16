@@ -1,10 +1,8 @@
-import { registerModel } from '@rocket.chat/models';
+import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
 import { afterEach, before, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-import { BaseRaw } from '../../../../../server/models/raw/BaseRaw';
 
 const maxTokens = {
 	getMaxLoginTokens: () => 2,

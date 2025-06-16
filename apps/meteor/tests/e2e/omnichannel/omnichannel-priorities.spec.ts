@@ -8,7 +8,7 @@ import { test, expect } from '../utils/test';
 const PRIORITY_NAME = faker.person.firstName();
 
 const ERROR = {
-	fieldNameRequired: 'The field Name is required.',
+	fieldNameRequired: 'Name required',
 };
 
 test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
@@ -29,7 +29,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 		poOmnichannelPriorities = new OmnichannelPriorities(page);
 
 		await page.goto('/omnichannel');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 		await poOmnichannelPriorities.sidenav.linkPriorities.click();
 	});
 

@@ -78,7 +78,7 @@ export interface IRoomTypeClientDirectives {
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
 	condition: () => boolean;
 	getAvatarPath: (
-		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
+		room: Pick<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon?: (room: Partial<IRoom>) => IconName;
 	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; reference: string };
@@ -106,7 +106,7 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
-	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
+	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;

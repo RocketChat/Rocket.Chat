@@ -29,7 +29,7 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 	'../../../../lib/callbacks': {},
 	'../../../../ee/app/livechat-enterprise/server/business-hour/Helper': {},
 	'./AbstractBusinessHour': {},
-	'moment': momentStub,
+	'moment-timezone': momentStub,
 	'@rocket.chat/models': {
 		LivechatBusinessHours: LivechatBusinessHoursStub,
 	},

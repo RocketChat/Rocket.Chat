@@ -1,6 +1,5 @@
 import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-
-import { LivechatDepartmentAgentsRaw } from '../../../../server/models/raw/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from '@rocket.chat/models';
 
 export class LivechatDepartmentAgents extends LivechatDepartmentAgentsRaw {
 	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<ILivechatDepartmentAgents[]> {

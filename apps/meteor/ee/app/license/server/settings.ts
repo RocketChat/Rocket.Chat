@@ -20,4 +20,9 @@ await settingsRegistry.addGroup('Enterprise', async function () {
 			i18nLabel: 'Status',
 		});
 	});
+	await this.add('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', -1, {
+		type: 'int',
+		readonly: true,
+		public: true,
+	});
 });

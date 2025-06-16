@@ -1,4 +1,5 @@
-import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -11,6 +12,7 @@ import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import { Messages } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
@@ -47,6 +49,8 @@ export class OTRRoom implements IOTRRoom {
 
 	private isFirstOTR: boolean;
 
+	private onPresenceEventHook: (event: UserPresence | undefined) => void;
+
 	protected constructor(uid: IUser['_id'], rid: IRoom['_id'], peerId: IUser['_id']) {
 		this._userId = uid;
 		this._roomId = rid;
@@ -54,6 +58,7 @@ export class OTRRoom implements IOTRRoom {
 		this._sessionKey = null;
 		this.peerId = peerId;
 		this.isFirstOTR = true;
+		this.onPresenceEventHook = this.onPresenceEvent.bind(this);
 	}
 
 	public static create(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
@@ -110,6 +115,35 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
+	onPresenceEvent(event: UserPresence | undefined): void {
+		if (!event) {
+			return;
+		}
+		if (event.status !== UserStatus.OFFLINE) {
+			return;
+		}
+		console.warn(`OTR Room ${this._roomId} ended because ${this.peerId} went offline`);
+		this.end();
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				variant: 'warning',
+				title: t('OTR'),
+				children: t('OTR_Session_ended_other_user_went_offline', { username: event.username }),
+				confirmText: t('Ok'),
+				onClose: imperativeModal.close,
+				onConfirm: imperativeModal.close,
+			},
+		});
+	}
+
+	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
+	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
+	listenToUserStatus(): void {
+		Presence.listen(this.peerId, this.onPresenceEventHook);
+	}
+
 	acknowledge(): void {
 		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
@@ -137,10 +171,26 @@ export class OTRRoom implements IOTRRoom {
 		]);
 	}
 
+	softReset(): void {
+		this.isFirstOTR = true;
+		this.setState(OtrRoomState.NOT_STARTED);
+		this._keyPair = null;
+		this._exportedPublicKey = {};
+		this._sessionKey = null;
+	}
+
+	deleteOTRMessages(): void {
+		Messages.state.remove(
+			(record) => record.rid === this._roomId && !!record.t && ['otr', 'otr-ack', ...Object.values(otrSystemMessages)].includes(record.t),
+		);
+	}
+
 	end(): void {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
+		Presence.stop(this.peerId, this.onPresenceEventHook);
+		this.deleteOTRMessages();
 		sdk.publish('notify-user', [
 			`${this.peerId}/otr`,
 			'end',
@@ -285,6 +335,7 @@ export class OTRRoom implements IOTRRoom {
 						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
+							this.listenToUserStatus();
 
 							if (data.refresh) {
 								await sdk.rest.post('/v1/chat.otr', {
@@ -362,6 +413,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
+						this.listenToUserStatus();
 						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
@@ -390,6 +442,7 @@ export class OTRRoom implements IOTRRoom {
 					if (this.getState() === OtrRoomState.ESTABLISHED) {
 						this.reset();
 						this.setState(OtrRoomState.NOT_STARTED);
+						this.deleteOTRMessages();
 						imperativeModal.open({
 							component: GenericModal,
 							props: {

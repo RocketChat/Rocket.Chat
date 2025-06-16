@@ -1,7 +1,7 @@
 import { useToolbar } from '@react-aria/toolbar';
 import { ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
 type UserCardActionsProps = ComponentProps<typeof ButtonGroup>;
 

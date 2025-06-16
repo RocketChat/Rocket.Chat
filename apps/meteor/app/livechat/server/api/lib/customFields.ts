@@ -1,7 +1,8 @@
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
-import { LivechatCustomField } from '@rocket.chat/models';
+import { LivechatCustomField, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { UpdateResult, Document } from 'mongodb';
 
 export async function findLivechatCustomFields({
 	text,
@@ -40,4 +41,21 @@ export async function findCustomFieldById({
 	return {
 		customField: await LivechatCustomField.findOneById(customFieldId),
 	};
+}
+
+export async function setCustomField(
+	token: string,
+	key: string,
+	value: string,
+	overwrite = true,
+): Promise<boolean | UpdateResult | Document> {
+	const customField = await LivechatCustomField.findOneById(key);
+	if (customField) {
+		if (customField.scope === 'room') {
+			return LivechatRooms.updateDataByToken(token, key, value, overwrite);
+		}
+		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
+	}
+
+	return true;
 }

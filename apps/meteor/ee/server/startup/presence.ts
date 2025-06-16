@@ -46,8 +46,8 @@ Meteor.startup(() => {
 		})();
 	});
 
-	Accounts.onLogout((login: any): void => {
-		void Presence.removeConnection(login.user._id, login.connection.id, nodeId);
+	Accounts.onLogout((login): void => {
+		void Presence.removeConnection(login.user?._id, login.connection.id, nodeId);
 
 		updateConns();
 	});

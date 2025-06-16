@@ -1,4 +1,4 @@
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 .chat-finished {
 	&__greeting {
@@ -16,7 +16,7 @@
 
 		letter-spacing: 0;
 
-		color: $color-text-grey;
+		color: colors.$color-text-grey;
 
 		font-size: 1rem;
 		font-weight: 500;

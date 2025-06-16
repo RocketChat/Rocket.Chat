@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { schedulerLogger } from './logger';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
@@ -33,7 +33,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
-			processEvery: '1 minute',
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 
 		await this.scheduler.start();
@@ -82,7 +82,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			comment,
 		};
 
-		await Livechat.closeRoom(payload);
+		await closeRoom(payload);
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {

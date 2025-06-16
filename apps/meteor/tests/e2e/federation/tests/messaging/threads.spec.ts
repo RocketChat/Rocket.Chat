@@ -90,22 +90,22 @@ test.describe.only('Federation - Threads', () => {
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-                await expect(pageForServer2).toHaveURL(/.*thread/);
+				await expect(pageForServer2).toHaveURL(/.*thread/);
 
-                await expect(poFederationChannelServer2.content.threadSendToChannelAlso()).not.toBeVisible();
+				await expect(poFederationChannelServer2.content.threadSendToChannelAlso()).not.toBeVisible();
 
-                await poFederationChannelServer2.content.sendThreadMessage('This is a thread message sent from server B');
+				await poFederationChannelServer2.content.sendThreadMessage('This is a thread message sent from server B');
 
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('This is a thread message sent from server B');
-                await expect(poFederationChannelServer2.content.lastUserMessage).toContainText('This is a thread message sent from server B');
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('This is a thread message sent from server B');
+				await expect(poFederationChannelServer2.content.lastUserMessage).toContainText('This is a thread message sent from server B');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-                await expect(page).toHaveURL(/.*thread/);
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('This is a thread message sent from server B');
+				await expect(page).toHaveURL(/.*thread/);
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('This is a thread message sent from server B');
 			});
 
 			test('expect to send a thread message from Server A to Server B', async ({ page }) => {
@@ -117,24 +117,24 @@ test.describe.only('Federation - Threads', () => {
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-                await expect(page).toHaveURL(/.*thread/);
+				await expect(page).toHaveURL(/.*thread/);
 
-                await expect(poFederationChannelServer1.content.threadSendToChannelAlso()).not.toBeVisible();
+				await expect(poFederationChannelServer1.content.threadSendToChannelAlso()).not.toBeVisible();
 
-                await poFederationChannelServer1.content.sendThreadMessage('This is a thread message sent from server A');
+				await poFederationChannelServer1.content.sendThreadMessage('This is a thread message sent from server A');
 
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('This is a thread message sent from server A');
-                await expect(poFederationChannelServer1.content.lastUserMessage).toContainText('This is a thread message sent from server A');
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('This is a thread message sent from server A');
+				await expect(poFederationChannelServer1.content.lastUserMessage).toContainText('This is a thread message sent from server A');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-                await expect(pageForServer2).toHaveURL(/.*thread/);
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('This is a thread message sent from server A');
+				await expect(pageForServer2).toHaveURL(/.*thread/);
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('This is a thread message sent from server A');
 			});
-        });
+		});
 
 		test.describe('Send "Special" messages', () => {
 			test('expect to send a thread message with emojis from Server A to Server B', async ({ page }) => {
@@ -145,18 +145,24 @@ test.describe.only('Federation - Threads', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer2.content.sendThreadMessage('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
 
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
-                await expect(poFederationChannelServer2.content.lastUserMessage).toContainText('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(
+					'😀 😀 hello world 🌎 from server B with emojis 😀 😀',
+				);
+				await expect(poFederationChannelServer2.content.lastUserMessage).toContainText(
+					'😀 😀 hello world 🌎 from server B with emojis 😀 😀',
+				);
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(
+					'😀 😀 hello world 🌎 from server B with emojis 😀 😀',
+				);
 			});
 
 			test('expect to send a thread message with emojis from Server B to Server A', async ({ page }) => {
@@ -167,18 +173,24 @@ test.describe.only('Federation - Threads', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer1.content.sendThreadMessage('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
 
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
-                await expect(poFederationChannelServer1.content.lastUserMessage).toContainText('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(
+					'😀 😀 hello world 🌎 from server A with emojis 😀 😀',
+				);
+				await expect(poFederationChannelServer1.content.lastUserMessage).toContainText(
+					'😀 😀 hello world 🌎 from server A with emojis 😀 😀',
+				);
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(
+					'😀 😀 hello world 🌎 from server A with emojis 😀 😀',
+				);
 			});
 
 			test('expect to send an audio message from Server A to Server B', async ({ page }) => {
@@ -189,22 +201,21 @@ test.describe.only('Federation - Threads', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer2.content.sendAudioRecordedInThreadMessage();
 
-                await expect(await (await poFederationChannelServer2.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText()).toEqual(
-					'Audio record.mp3',
-				);
+				await expect(
+					await (await poFederationChannelServer2.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText(),
+				).toEqual('Audio record.mp3');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-				
-				await expect(await (await poFederationChannelServer1.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText()).toEqual(
-					'Audio record.mp3',
-				);
+				await expect(
+					await (await poFederationChannelServer1.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText(),
+				).toEqual('Audio record.mp3');
 			});
 
 			test('expect to send an audio message from Server B to Server A', async ({ page }) => {
@@ -213,24 +224,23 @@ test.describe.only('Federation - Threads', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-                await poFederationChannelServer2.content.sendMessage('hello world from server B');
+				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer1.content.sendAudioRecordedInThreadMessage();
 
-                await expect(await (await poFederationChannelServer1.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText()).toEqual(
-					'Audio record.mp3',
-				);
+				await expect(
+					await (await poFederationChannelServer1.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText(),
+				).toEqual('Audio record.mp3');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-				
-				await expect(await (await poFederationChannelServer2.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText()).toEqual(
-					'Audio record.mp3',
-				);
+				await expect(
+					await (await poFederationChannelServer2.content.getLastFileThreadMessageByFileName('Audio record.mp3')).innerText(),
+				).toEqual('Audio record.mp3');
 			});
 
 			test('expect to send a thread message mentioning an user from Server A to Server B', async ({ page }) => {
@@ -239,19 +249,25 @@ test.describe.only('Federation - Threads', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-                await poFederationChannelServer1.content.sendMessage('hello world from server A');
+				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-				await poFederationChannelServer2.content.sendThreadMessage(`hello @${adminUsernameWithDomainFromServer1}, here's @${userFromServer2UsernameOnly} from Server B`);
+				await poFederationChannelServer2.content.sendThreadMessage(
+					`hello @${adminUsernameWithDomainFromServer1}, here's @${userFromServer2UsernameOnly} from Server B`,
+				);
 
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(`hello ${adminUsernameWithDomainFromServer1}, here's ${userFromServer2UsernameOnly} from Server B`);
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(
+					`hello ${adminUsernameWithDomainFromServer1}, here's ${userFromServer2UsernameOnly} from Server B`,
+				);
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(`hello ${constants.RC_SERVER_1.username}, here's ${usernameWithDomainFromServer2} from Server B`);
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(
+					`hello ${constants.RC_SERVER_1.username}, here's ${usernameWithDomainFromServer2} from Server B`,
+				);
 			});
 
 			test('expect to send a thread message mentioning an user Server B to Server A', async ({ page }) => {
@@ -260,19 +276,25 @@ test.describe.only('Federation - Threads', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-                await poFederationChannelServer2.content.sendMessage('hello world from server B');
+				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
-				await poFederationChannelServer1.content.sendThreadMessage(`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A`);
+				await poFederationChannelServer1.content.sendThreadMessage(
+					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A`,
+				);
 
-                await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(`hello ${usernameWithDomainFromServer2}, here's ${constants.RC_SERVER_1.username} from Server A`);
+				await expect(poFederationChannelServer1.content.lastThreadMessageText).toContainText(
+					`hello ${usernameWithDomainFromServer2}, here's ${constants.RC_SERVER_1.username} from Server A`,
+				);
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
-                await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A`);
+				await expect(poFederationChannelServer2.content.lastThreadMessageText).toContainText(
+					`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A`,
+				);
 			});
 		});
 
@@ -281,47 +303,47 @@ test.describe.only('Federation - Threads', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-                await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-                
-				const message = `Message for quote - ${Date.now()}`;
-                await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+				const message = `Message for quote - ${Date.now()}`;
+				await poFederationChannelServer1.content.sendMessage('hello world from server A');
+
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer2.content.sendThreadMessage(message);
-                
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer1.content.quoteMessageInsideThread('this is a quote message');
 
-                await expect(poFederationChannelServer1.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
-                await expect(poFederationChannelServer2.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
+				await expect(poFederationChannelServer1.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
+				await expect(poFederationChannelServer2.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
 			});
 
 			test('expect to send a thread message quoting a thread message Server B to Server A', async ({ page }) => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
-                await poFederationChannelServer1.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-                
-				const message = `Message for quote - ${Date.now()}`;
-                await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-                await poFederationChannelServer1.content.openLastMessageMenu();
-                await poFederationChannelServer1.content.btnOptionReplyInThread.click();
+				const message = `Message for quote - ${Date.now()}`;
+				await poFederationChannelServer2.content.sendMessage('hello world from server B');
+
+				await poFederationChannelServer1.content.openLastMessageMenu();
+				await poFederationChannelServer1.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer1.content.sendThreadMessage(message);
-                
-                await poFederationChannelServer2.content.openLastMessageMenu();
-                await poFederationChannelServer2.content.btnOptionReplyInThread.click();
+
+				await poFederationChannelServer2.content.openLastMessageMenu();
+				await poFederationChannelServer2.content.btnOptionReplyInThread.click();
 
 				await poFederationChannelServer2.content.quoteMessageInsideThread('this is a quote message');
 
-                await expect(poFederationChannelServer1.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
-                await expect(poFederationChannelServer2.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
+				await expect(poFederationChannelServer1.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
+				await expect(poFederationChannelServer2.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText(message);
 			});
 		});
 

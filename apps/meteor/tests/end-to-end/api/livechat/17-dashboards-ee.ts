@@ -14,16 +14,16 @@ import {
 	sendMessage,
 	fetchInquiry,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { pagination } from '../../../data/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 	});
 
@@ -92,6 +92,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.agents[0]).to.have.a.property('username');
 			expect(body.agents[0]).to.have.a.property('averageServiceTimeInSeconds').that.is.a('number');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/agents/average-service-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/agents/total-service-time', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -151,6 +157,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.agents[0]).to.have.a.property('_id');
 			expect(body.agents[0]).to.have.a.property('username');
 			expect(body.agents[0]).to.have.a.property('serviceTimeDuration').that.is.a('number');
+		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/agents/total-service-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
 		});
 	});
 	describe('livechat/analytics/agents/available-for-service-history', () => {
@@ -216,6 +228,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.agents[0]).to.have.a.property('username');
 			expect(body.agents[0]).to.have.a.property('availableTimeInSeconds').that.is.a('number');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/agents/available-for-service-history', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/departments/amount-of-chats', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -274,6 +292,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('rooms').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
+		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/amount-of-chats', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
 		});
 	});
 	describe('livechat/analytics/departments/average-service-time', () => {
@@ -334,6 +358,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments[0]).to.have.a.property('averageServiceTimeInSeconds').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/average-service-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/departments/average-chat-duration-time', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -392,6 +422,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('averageChatDurationTimeInSeconds').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
+		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/average-chat-duration-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
 		});
 	});
 	describe('livechat/analytics/departments/total-service-time', () => {
@@ -453,6 +489,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments[0]).to.have.a.property('serviceTimeDuration').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/total-service-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/departments/average-waiting-time', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -512,6 +554,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments[0]).to.have.a.property('averageWaitingTimeInSeconds').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/average-waiting-time', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/departments/total-transferred-chats', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -570,6 +618,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('numberOfTransferredRooms').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
+		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/total-transferred-chats', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
 		});
 	});
 	describe('livechat/analytics/departments/total-abandoned-chats', () => {
@@ -639,6 +693,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments[0]).to.have.a.property('abandonedRooms').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
 		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/total-abandoned-chats', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
+		});
 	});
 	describe('livechat/analytics/departments/percentage-abandoned-chats', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
@@ -699,6 +759,12 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.departments).to.be.an('array').with.lengthOf.greaterThan(0);
 			expect(body.departments[0]).to.have.a.property('percentageOfAbandonedChats').that.is.a('number');
 			expect(body.departments[0]).to.have.a.property('_id');
+		});
+		it('should accept pagination', async () => {
+			await pagination('livechat/analytics/departments/percentage-abandoned-chats', credentials, {
+				start: new Date().toISOString(),
+				end: new Date().toISOString(),
+			});
 		});
 	});
 });

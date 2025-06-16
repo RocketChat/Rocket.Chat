@@ -5,8 +5,8 @@ import { format } from 'date-fns';
 import { useContext, useEffect, useState, type ReactElement } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { MarkupInteractionContext } from '../../MarkupInteractionContext';
 import { timeAgo } from './timeago';
+import { MarkupInteractionContext } from '../../MarkupInteractionContext';
 
 type BoldSpanProps = {
 	children: MessageParser.Timestamp;

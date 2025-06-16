@@ -29,5 +29,12 @@ export const makeFunction = <T extends BaseFunction>(fn: T): PatchedFunction<T> 
 
 	result.patch = (patch: PatchFunction<T>, condition?: () => boolean) => addPatch(result, patch, condition);
 
+	result.originalSignature = (() => {
+		throw new Error('OriginalSignature of patched functions is not meant to be executed directly.');
+	}) as unknown as T;
+	result.patchSignature = (() => {
+		throw new Error('PatchSignature of patched functions is not meant to be executed directly.');
+	}) as unknown as PatchFunction<T>;
+
 	return result;
 };

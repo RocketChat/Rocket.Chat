@@ -1,8 +1,7 @@
 @use 'sass:math';
+@use '../../styles/variables';
 
-@import '../../styles/variables';
-
-$button-group-margin: math.div($default-gap, 4);
+$button-group-margin: math.div(variables.$default-gap, 4);
 
 .button-group {
 	display: flex;

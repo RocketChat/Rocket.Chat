@@ -3,7 +3,7 @@
  * Transform a License V2 into a V3 representation.
  */
 
-import type { ILicenseV2, ILicenseV3, LicenseModule } from '@rocket.chat/core-typings';
+import type { ILicenseV2, ILicenseV3, InternalModuleName } from '@rocket.chat/core-typings';
 
 import { isBundle, getBundleFromModule, getBundleModules } from './bundles';
 import { getTagColor } from './getTagColor';
@@ -29,7 +29,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 							name: tag,
 							color: getTagColor(tag),
 						})),
-				  ],
+					],
 		},
 		validation: {
 			serverUrls: [
@@ -50,10 +50,10 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 		},
 		grantedModules: [
 			...new Set(
-				['hide-watermark', ...v2.modules]
+				['teams-voip', 'contact-id-verification', 'hide-watermark', ...v2.modules]
 					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
 					.reduce((prev, curr) => [...prev, ...curr], [])
-					.map((licenseModule) => ({ module: licenseModule as LicenseModule })),
+					.map((licenseModule) => ({ module: licenseModule as InternalModuleName })),
 			),
 		],
 		limits: {
@@ -65,7 +65,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.maxGuestUsers
 				? {
@@ -75,7 +75,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.maxRoomsPerGuest
 				? {
@@ -85,7 +85,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.apps?.maxPrivateApps
 				? {
@@ -95,7 +95,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 			...(v2.apps?.maxMarketplaceApps
 				? {
@@ -105,7 +105,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 								behavior: 'prevent_action',
 							},
 						],
-				  }
+					}
 				: {}),
 		},
 		cloudMeta: v2.meta,

@@ -3,16 +3,25 @@ import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { ChatRoom } from '../../../../../app/models/client';
-import { queueMicrotask } from '../../../../lib/utils/queueMicrotask';
+import { Rooms } from '../../../../../app/models/client';
+import { RoomNotFoundError } from '../../../../lib/errors/RoomNotFoundError';
+import { roomsQueryKeys } from '../../../../lib/queryKeys';
 
 export function useRoomQuery(
 	rid: IRoom['_id'],
-	options?: UseQueryOptions<IRoom | null, Error, IRoom | null, readonly ['rooms', IRoom['_id']]>,
-): UseQueryResult<IRoom | null, Error> {
-	const queryKey = ['rooms', rid] as const;
+	options?: UseQueryOptions<IRoom, Error, IRoom, readonly ['rooms', IRoom['_id']]>,
+): UseQueryResult<IRoom, Error> {
+	const queryResult = useQuery({
+		queryKey: roomsQueryKeys.room(rid),
+		queryFn: async () => {
+			const room = Rooms.state.get(rid);
 
-	const queryResult = useQuery(queryKey, async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null, {
+			if (!room) {
+				throw new RoomNotFoundError(undefined, { rid });
+			}
+
+			return room;
+		},
 		staleTime: Infinity,
 		...options,
 	});
@@ -20,10 +29,10 @@ export function useRoomQuery(
 	const { refetch } = queryResult;
 
 	useEffect(() => {
-		const liveQueryHandle = ChatRoom.find({ _id: rid }).observe({
-			added: () => queueMicrotask(() => refetch({ exact: false })),
-			changed: () => queueMicrotask(() => refetch({ exact: false })),
-			removed: () => queueMicrotask(() => refetch({ exact: false })),
+		const liveQueryHandle = Rooms.find({ _id: rid }).observe({
+			added: () => refetch(),
+			changed: () => refetch(),
+			removed: () => refetch(),
 		});
 
 		return () => {

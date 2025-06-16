@@ -1,0 +1,12 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"rootDirs": ["./src", "./"],
+		"outDir": "./dist",
+		"declaration": true,
+		"paths": {
+			"../resources": ["./src/resources"],
+		}
+	},
+	"include": ["./src/**/*", "./jest.config.ts"]
+}

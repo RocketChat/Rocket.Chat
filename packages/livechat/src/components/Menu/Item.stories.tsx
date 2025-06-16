@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Menu, { Group, Item } from '.';
@@ -20,7 +20,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Item>>;
 
-export const Simple: Story<ComponentProps<typeof Item>> = (args) => (
+export const Simple: StoryFn<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -30,7 +30,7 @@ export const Simple: Story<ComponentProps<typeof Item>> = (args) => (
 );
 Simple.storyName = 'simple';
 
-export const Primary: Story<ComponentProps<typeof Item>> = (args) => (
+export const Primary: StoryFn<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -43,7 +43,7 @@ Primary.args = {
 	primary: true,
 };
 
-export const Danger: Story<ComponentProps<typeof Item>> = (args) => (
+export const Danger: StoryFn<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -56,7 +56,7 @@ Danger.args = {
 	danger: true,
 };
 
-export const Disabled: Story<ComponentProps<typeof Item>> = (args) => (
+export const Disabled: StoryFn<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />
@@ -69,7 +69,7 @@ Disabled.args = {
 	disabled: true,
 };
 
-export const WithIcon: Story<ComponentProps<typeof Item>> = (args) => (
+export const WithIcon: StoryFn<ComponentProps<typeof Item>> = (args) => (
 	<Menu>
 		<Group>
 			<Item {...args} />

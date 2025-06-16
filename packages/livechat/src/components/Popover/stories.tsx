@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { PopoverContainer, PopoverTrigger } from '.';
@@ -19,7 +19,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof PopoverTrigger>>;
 
-export const ArbitraryRenderer: Story<ComponentProps<typeof PopoverTrigger>> = () => (
+export const ArbitraryRenderer: StoryFn<ComponentProps<typeof PopoverTrigger>> = () => (
 	<PopoverTrigger>
 		{({ pop }) => <Button onClick={pop}>More options...</Button>}
 		{({ dismiss, triggerBounds = {} }) => (
@@ -31,7 +31,7 @@ export const ArbitraryRenderer: Story<ComponentProps<typeof PopoverTrigger>> = (
 );
 ArbitraryRenderer.storyName = 'arbitrary renderer';
 
-export const WithOverlayProps: Story<ComponentProps<typeof PopoverTrigger>> = () => (
+export const WithOverlayProps: StoryFn<ComponentProps<typeof PopoverTrigger>> = () => (
 	<PopoverTrigger overlayProps={{ style: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}>
 		{({ pop }) => <Button onClick={pop}>More options...</Button>}
 		{({ dismiss, triggerBounds = {} }) => (

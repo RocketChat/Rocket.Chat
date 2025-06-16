@@ -1,12 +1,16 @@
+export { default as AnchorPortal, AnchorPortalProps } from './AnchorPortal';
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
 export * from './CustomFieldsForm';
 export * from './PasswordVerifier/PasswordVerifier';
-export * from '../hooks/useValidatePassword';
 export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
 export * as UserStatus from './UserStatus';
 export * from './Header';
+export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
-export * from './FeaturePreview/FeaturePreview';
+export * from './FeaturePreview';
+export { default as AnnouncementBanner } from './AnnouncementBanner';
+export { default as UserAutoComplete } from './UserAutoComplete';
+export * from './GenericMenu';

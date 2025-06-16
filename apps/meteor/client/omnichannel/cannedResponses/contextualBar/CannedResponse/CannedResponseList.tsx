@@ -1,25 +1,25 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FC, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
-import React, { memo } from 'react';
+import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import Item from './Item';
+import WrapCannedResponse from './WrapCannedResponse';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
-	ContextualbarInnerContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
-import Item from './Item';
-import WrapCannedResponse from './WrapCannedResponse';
 
-const CannedResponseList: FC<{
+type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
 	itemCount: number;
@@ -27,15 +27,17 @@ const CannedResponseList: FC<{
 	loading: boolean;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLOrSVGElement>;
+	setText: FormEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
-	onClickItem: (data: any) => void;
+	onClickItem: (data: any) => void; // FIXME: fix typings
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
-}> = ({
+};
+
+const CannedResponseList = ({
 	loadMoreItems,
 	cannedItems,
 	itemCount,
@@ -51,8 +53,8 @@ const CannedResponseList: FC<{
 	onClickCreate,
 	onClickUse,
 	reload,
-}) => {
-	const t = useTranslation();
+}: CannedResponseListProps) => {
+	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { context: cannedId } = useRoomToolbox();
@@ -63,13 +65,25 @@ const CannedResponseList: FC<{
 
 	const cannedItem = cannedItems.find((canned) => canned._id === cannedId);
 
+	if (cannedItem) {
+		return (
+			<WrapCannedResponse
+				allowUse={!isRoomOverMacLimit}
+				cannedItem={cannedItem}
+				onClickBack={onClickItem}
+				onClickUse={onClickUse}
+				onClose={onClose}
+				reload={reload}
+			/>
+		);
+	}
+
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -90,48 +104,34 @@ const CannedResponseList: FC<{
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							style={{ width: inlineSize }}
-							totalCount={itemCount}
-							endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
-							overscan={25}
-							data={cannedItems}
-							components={{
-								Scroller: VirtuosoScrollbars,
-							}}
-							itemContent={(_index, data): ReactElement => (
-								<Item
-									data={data}
-									allowUse={!isRoomOverMacLimit}
-									onClickItem={(): void => {
-										onClickItem(data);
-									}}
-									onClickUse={onClickUse}
-								/>
-							)}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{ width: inlineSize }}
+								totalCount={itemCount}
+								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								overscan={25}
+								data={cannedItems}
+								itemContent={(_index, data): ReactElement => (
+									<Item
+										data={data}
+										allowUse={!isRoomOverMacLimit}
+										onClickItem={(): void => {
+											onClickItem(data);
+										}}
+										onClickUse={onClickUse}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
-
-			{cannedItem && (
-				<ContextualbarInnerContent>
-					<WrapCannedResponse
-						allowUse={!isRoomOverMacLimit}
-						cannedItem={cannedItem}
-						onClickBack={onClickItem}
-						onClickUse={onClickUse}
-						reload={reload}
-					/>
-				</ContextualbarInnerContent>
-			)}
-
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClickCreate}>{t('Create')}</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

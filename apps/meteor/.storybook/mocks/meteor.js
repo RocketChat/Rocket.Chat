@@ -20,6 +20,12 @@ export const Meteor = {
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
+	connection: {
+		_stream: {
+			on: () => {},
+		},
+	},
+	users: {},
 };
 
 export const Tracker = {
@@ -30,7 +36,10 @@ export const Tracker = {
 	Dependency: () => {},
 };
 
-export const Accounts = {};
+export const Accounts = {
+	onLogin: () => {},
+	onLogout: () => {},
+};
 
 export const Mongo = {
 	Collection: () => ({
@@ -70,14 +79,6 @@ export const Template = Object.assign(
 		__checkName: () => {},
 	},
 );
-
-export const Blaze = {
-	Template,
-	registerHelper: () => {},
-	renderWithData: () => {},
-};
-
-window.Blaze = Blaze;
 
 export const check = () => {};
 

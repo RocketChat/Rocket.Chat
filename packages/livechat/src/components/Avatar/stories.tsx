@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Avatar } from '.';
@@ -26,7 +26,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Avatar>>;
 
-const Template: Story<ComponentProps<typeof Avatar>> = (args) => <Avatar {...args} />;
+const Template: StoryFn<ComponentProps<typeof Avatar>> = (args) => <Avatar {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';
@@ -43,7 +43,7 @@ Small.args = {
 	small: true,
 };
 
-export const AsPlaceholder: Story<ComponentProps<typeof Avatar>> = (args) => (
+export const AsPlaceholder: StoryFn<ComponentProps<typeof Avatar>> = (args) => (
 	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
 		<Avatar {...args} style={{ margin: '0.5rem' }} large />
 		<Avatar {...args} style={{ margin: '0.5rem' }} />
@@ -55,7 +55,7 @@ AsPlaceholder.args = {
 	src: '',
 };
 
-export const WithStatusIndicator: Story<ComponentProps<typeof Avatar>> = (args) => (
+export const WithStatusIndicator: StoryFn<ComponentProps<typeof Avatar>> = (args) => (
 	<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
 		<Avatar {...args} style={{ margin: '0.5rem' }} status='offline' />
 		<Avatar {...args} style={{ margin: '0.5rem' }} status='away' />

@@ -1,5 +1,6 @@
-import type { Emitter, EventHandlerMap, EventType, Handler, WildcardHandler } from 'mitt';
-import mitt from 'mitt';
+import { Emitter } from '@rocket.chat/emitter';
+
+import type { StoreState } from '.';
 
 function getLocalStorage() {
 	try {
@@ -18,46 +19,26 @@ function getLocalStorage() {
 }
 const localStorage = getLocalStorage();
 
-export default class Store<T extends Record<string, unknown>> implements Emitter {
-	private _state: T;
+type StoreStateType = StoreState;
+
+export default class Store extends Emitter {
+	private _state: StoreStateType;
 
 	private localStorageKey: string;
 
-	private dontPersist: string[];
-
-	all: EventHandlerMap;
-
-	on: {
-		<T = any>(type: EventType, handler: Handler<T>): void;
-		(type: '*', handler: WildcardHandler): void;
-	};
-
-	off: {
-		<T = any>(type: EventType, handler: Handler<T>): void;
-		(type: '*', handler: WildcardHandler): void;
-	};
-
-	emit: {
-		<T = any>(type: EventType, event?: T): void;
-		(type: '*', event?: any): void;
-	};
+	private dontPersist: Array<keyof StoreStateType>;
 
 	constructor(
-		initialState: T,
+		initialState: StoreStateType,
 		{
 			localStorageKey = 'store',
 			dontPersist = [],
 		}: {
 			localStorageKey?: string;
-			dontPersist?: string[];
+			dontPersist?: Array<keyof StoreStateType>;
 		} = {},
 	) {
-		const emitter = mitt();
-		this.all = emitter.all;
-		this.on = emitter.on;
-		this.off = emitter.off;
-		this.emit = emitter.emit;
-
+		super();
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
 
@@ -103,14 +84,14 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 		localStorage.setItem(this.localStorageKey, JSON.stringify(persistable));
 	}
 
-	setState(partialState: Partial<T>) {
+	setState(partialState: Partial<StoreStateType>) {
 		const prevState = this._state;
 		this._state = { ...prevState, ...partialState };
 		this.persist();
 		this.emit('change', [this._state, prevState, partialState]);
 	}
 
-	unsetSinglePropInStateByName(propName: string) {
+	unsetSinglePropInStateByName(propName: keyof StoreStateType) {
 		const prevState = this._state;
 		delete prevState[propName];
 		this._state = { ...prevState };
@@ -118,13 +99,15 @@ export default class Store<T extends Record<string, unknown>> implements Emitter
 		this.emit('change', [this._state, prevState]);
 	}
 
-	setStoredState(storedState: T) {
+	setStoredState(storedState: StoreStateType) {
 		const prevState = this._state;
 
 		const nonPeristable: Record<string, unknown> = {};
+
 		for (const ignoredKey of this.dontPersist) {
 			nonPeristable[ignoredKey] = prevState[ignoredKey];
 		}
+
 		this._state = { ...storedState, ...nonPeristable };
 		this.emit('change', [this._state, prevState]);
 	}

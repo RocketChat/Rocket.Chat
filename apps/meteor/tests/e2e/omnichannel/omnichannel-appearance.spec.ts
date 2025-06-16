@@ -5,10 +5,9 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.skip(!IS_EE, 'Enterprise Only');
-
-test.describe.serial('OC - Livechat Appearance', () => {
+test.describe.serial('OC - Livechat Appearance - EE', () => {
 	let poLivechatAppearance: OmnichannelLivechatAppearance;
+	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
@@ -70,6 +69,41 @@ test.describe.serial('OC - Livechat Appearance', () => {
 		await test.step('expect to have saved changes', async () => {
 			await page.reload();
 			await expect(poLivechatAppearance.inputLivechatBackground).toHaveValue('rgb(186, 1, 85)');
+		});
+	});
+});
+
+test.describe('OC - Livechat Appearance - CE', () => {
+	let poLivechatAppearance: OmnichannelLivechatAppearance;
+
+	test.beforeEach(async ({ page }) => {
+		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
+
+		await page.goto('/omnichannel');
+		await poLivechatAppearance.sidenav.linkLivechatAppearance.click();
+	});
+
+	test.afterAll(async ({ api }) => {
+		const res = await api.post('/settings/Livechat_title', { value: 'Rocket.Chat' });
+
+		if (res.status() !== 200) {
+			throw new Error('Failed to reset settings');
+		}
+	});
+
+	test('OC - Livechat Appearance - Change Livechat Title', async ({ page }) => {
+		await test.step('expect to have default value', async () => {
+			await expect(poLivechatAppearance.inputLivechatTitle).toHaveValue('Rocket.Chat');
+		});
+
+		await test.step('expect to change value', async () => {
+			await poLivechatAppearance.inputLivechatTitle.fill('Test Title');
+			await poLivechatAppearance.btnSave.click();
+		});
+
+		await test.step('expect to have saved changes', async () => {
+			await page.reload();
+			await expect(poLivechatAppearance.inputLivechatTitle).toHaveValue('Test Title');
 		});
 	});
 });

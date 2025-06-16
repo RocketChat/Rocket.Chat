@@ -1,5 +1,4 @@
 import { type FileAttachmentProps, isFileAudioAttachment, isFileImageAttachment, isFileVideoAttachment } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import AudioAttachment from './file/AudioAttachment';
 import GenericFileAttachment from './file/GenericFileAttachment';

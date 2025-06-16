@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const FileItemIcon = ({ type }: { type?: string }) => {
 	switch (type) {

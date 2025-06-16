@@ -1,3 +1,5 @@
+import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
+import { RouterContext } from '@rocket.chat/ui-contexts';
 import type {
 	RouterContextValue,
 	RouteName,
@@ -6,15 +8,14 @@ import type {
 	SearchParameters,
 	To,
 	RouteObject,
+	LocationSearch,
 } from '@rocket.chat/ui-contexts';
-import { RouterContext } from '@rocket.chat/ui-contexts';
-import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Tracker } from 'meteor/tracker';
-import type { FC } from 'react';
-import React from 'react';
+import type { ReactNode } from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 const subscribers = new Set<() => void>();
@@ -44,7 +45,7 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getLocationPathname = () => FlowRouter.current().path as LocationPathname;
+const getLocationPathname = () => FlowRouter.current().path.replace(/\?.*/, '') as LocationPathname;
 
 const getLocationSearch = () => location.search as LocationSearch;
 
@@ -124,7 +125,12 @@ const updateFlowRouter = () => {
 		return;
 	}
 
-	FlowRouter.initialize();
+	FlowRouter.initialize({
+		hashbang: false,
+		page: {
+			click: true,
+		},
+	});
 };
 
 const defineRoutes = (routes: RouteObject[]) => {
@@ -195,8 +201,15 @@ export const router: RouterContextValue = {
 	defineRoutes,
 	getRoutes,
 	subscribeToRoutesChange,
+	getRoomRoute(roomType: RoomType, routeData: RoomRouteData) {
+		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
+	},
 };
 
-const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={router} />;
+type RouterProviderProps = {
+	children?: ReactNode;
+};
+
+const RouterProvider = ({ children }: RouterProviderProps) => <RouterContext.Provider children={children} value={router} />;
 
 export default RouterProvider;

@@ -15,6 +15,7 @@ const KatexElement = ({ code }: KatexElementProps): ReactElement => {
 				macros: {
 					'\\href': '\\@secondoftwo',
 				},
+				maxSize: 100,
 			}),
 		[code],
 	);

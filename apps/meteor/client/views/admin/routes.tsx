@@ -104,6 +104,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/admin/subscription`;
 			pattern: '/admin/subscription';
 		};
+		'admin-feature-preview': {
+			pathname: '/admin/feature-preview';
+			pattern: '/admin/feature-preview';
+		};
 	}
 }
 
@@ -236,4 +240,9 @@ registerAdminRoute('/device-management/:context?/:id?', {
 registerAdminRoute('/subscription', {
 	name: 'subscription',
 	component: lazy(() => import('./subscription/SubscriptionRoute')),
+});
+
+registerAdminRoute('/feature-preview', {
+	name: 'admin-feature-preview',
+	component: lazy(() => import('./featurePreview/AdminFeaturePreviewRoute')),
 });

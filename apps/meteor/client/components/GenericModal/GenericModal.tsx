@@ -1,12 +1,13 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
-import React from 'react';
+import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
+import { useId, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
+import { modalStore } from '../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
@@ -21,8 +22,9 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
+	onDismiss?: () => Promise<void> | void;
 	annotation?: ReactNode;
-} & Omit<ComponentProps<typeof Modal>, 'title'>;
+} & Omit<ComponentPropsWithoutRef<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, IconName> = {
 	danger: 'modal-warning',
@@ -58,7 +60,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	return icon;
 };
 
-const GenericModal: FC<GenericModalProps> = ({
+const GenericModal = ({
 	variant = 'info',
 	children,
 	cancelText,
@@ -67,6 +69,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	icon,
 	onCancel,
 	onClose = onCancel,
+	onDismiss = onClose,
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
@@ -74,9 +77,41 @@ const GenericModal: FC<GenericModalProps> = ({
 	wrapperFunction,
 	annotation,
 	...props
-}) => {
-	const t = useTranslation();
-	const genericModalId = useUniqueId();
+}: GenericModalProps) => {
+	const { t } = useTranslation();
+	const genericModalId = useId();
+
+	const dismissedRef = useRef(true);
+
+	const handleConfirm = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onConfirm?.();
+	});
+
+	const handleCancel = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onCancel?.();
+	});
+
+	const handleCloseButtonClick = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onClose?.();
+	});
+
+	const handleDismiss = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onDismiss?.();
+	});
+
+	useEffect(() => {
+		const thisModal = modalStore.current;
+
+		return () => {
+			if (thisModal === modalStore.current) return;
+			if (!dismissedRef.current) return;
+			handleDismiss();
+		};
+	}, [handleDismiss]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
@@ -86,15 +121,15 @@ const GenericModal: FC<GenericModalProps> = ({
 					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
+				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
+			<Modal.Footer justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
-						<Button secondary onClick={onCancel}>
+						<Button secondary onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
@@ -104,7 +139,7 @@ const GenericModal: FC<GenericModalProps> = ({
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}

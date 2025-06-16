@@ -1,7 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -12,7 +12,7 @@ import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		unmuteUserInRoom(data: { rid: IRoom['_id']; username: string }): boolean;

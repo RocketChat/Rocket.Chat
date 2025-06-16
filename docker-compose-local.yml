@@ -112,7 +112,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   queue-worker-service:
     platform: linux/amd64
     build:
@@ -128,7 +128,7 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   omnichannel-transcript-service:
     platform: linux/amd64
     build:
@@ -144,9 +144,9 @@ services:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - nats
-  
+
   mongo:
-    image: docker.io/bitnami/mongodb:4.4
+    image: docker.io/bitnami/mongodb:7.0
     restart: on-failure
     environment:
       MONGODB_REPLICA_SET_MODE: primary

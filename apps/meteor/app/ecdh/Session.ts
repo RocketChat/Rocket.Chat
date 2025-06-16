@@ -1,8 +1,6 @@
 import type { X25519SecretKey, CryptographyKey } from 'sodium-plus';
 import { SodiumPlus, X25519PublicKey } from 'sodium-plus';
 
-let sodium: SodiumPlus;
-
 export class Session {
 	// Encoding for the key exchange, no requirements to be small
 	protected readonly stringFormatKey: BufferEncoding = 'base64';
@@ -21,8 +19,14 @@ export class Session {
 
 	public publicKey: X25519PublicKey;
 
+	private static sodium: SodiumPlus | undefined;
+
 	async sodium(): Promise<SodiumPlus> {
-		return sodium || SodiumPlus.auto();
+		if (!Session.sodium) {
+			Session.sodium = await SodiumPlus.auto();
+		}
+
+		return Session.sodium;
 	}
 
 	get publicKeyString(): string {
@@ -37,7 +41,9 @@ export class Session {
 		const sodium = await this.sodium();
 		const nonce = await sodium.randombytes_buf(24);
 
-		const ciphertext = await sodium.crypto_secretbox(Buffer.from(plaintext).toString(this.stringFormatRawData), nonce, this.encryptKey);
+		const buffer = Buffer.isBuffer(plaintext) ? plaintext : Buffer.from(plaintext);
+
+		const ciphertext = await sodium.crypto_secretbox(Buffer.from(buffer).toString(this.stringFormatRawData), nonce, this.encryptKey);
 
 		return Buffer.concat([nonce, ciphertext]);
 	}

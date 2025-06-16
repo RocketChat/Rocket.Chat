@@ -70,6 +70,10 @@ export class FederatedUser {
 		});
 	}
 
+	public getInternalReferenceCopy(): IUser {
+		return structuredClone(this.internalReference);
+	}
+
 	public getStorageRepresentation(): Readonly<IUser> {
 		return {
 			_id: this.internalId,
@@ -111,7 +115,23 @@ export class FederatedUser {
 	}
 
 	public shouldUpdateDisplayName(displayName: string): boolean {
-		return this.internalReference.name !== displayName;
+		// If there is no change, then we don't need to update
+		if (this.internalReference.name === displayName) {
+			return false;
+		}
+
+		// If we don't have a name yet, then use whatever we're receiving
+		if (!this.internalReference.name) {
+			return true;
+		}
+
+		// If the displayName received is based on the username, then ignore it and keep the existing name instead
+		if (this.internalReference.username?.includes(displayName) || this.externalId.includes(displayName)) {
+			return false;
+		}
+
+		// It's a new value and an actual display name
+		return true;
 	}
 
 	public getInternalId(): string {

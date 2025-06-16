@@ -1,17 +1,18 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { Filter } from '@rocket.chat/mongo-adapter';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
+import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { mainReady } from './mainReady';
 import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models/client';
+import { Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
-import { mainReady } from './mainReady';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
@@ -50,7 +51,7 @@ function close(typeName: string) {
 
 		if (rid) {
 			RoomManager.close(rid);
-			return RoomHistoryManager.clear(rid);
+			return RoomHistoryManager.close(rid);
 		}
 	}
 }
@@ -79,13 +80,12 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const computation = Tracker.autorun(() => {
-	const ready = CachedChatRoom.ready.get() && mainReady.get();
-	if (ready !== true) {
+	if (!mainReady.get()) {
 		return;
 	}
 	Tracker.nonreactive(() =>
 		Object.entries(openedRooms).forEach(([typeName, record]) => {
-			if (record.active !== true || record.ready === true) {
+			if (record.active !== true || (record.ready === true && record.streamActive === true)) {
 				return;
 			}
 
@@ -93,8 +93,6 @@ const computation = Tracker.autorun(() => {
 			const name = typeName.slice(1);
 
 			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
-
-			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
 				if (record.streamActive !== true) {
@@ -106,8 +104,9 @@ const computation = Tracker.autorun(() => {
 							// }
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
-								const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-								const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
+								const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
+								({ _id: msg._id, temp: { $ne: true } });
 								await upsertMessage({ msg, subscription });
 
 								if (isNew) {
@@ -140,17 +139,20 @@ const computation = Tracker.autorun(() => {
 					});
 
 					sdk.stream('notify-room', [`${record.rid}/deleteMessage`], (msg) => {
-						ChatMessage.remove({ _id: msg._id });
+						Messages.state.delete(msg._id);
 
 						// remove thread refenrece from deleted message
-						ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
+						Messages.state.update(
+							(record) => record.tmid === msg._id,
+							({ tmid: _, ...record }) => record,
+						);
 					});
 
 					sdk.stream(
 						'notify-room',
 						[`${record.rid}/deleteMessageBulk`],
 						({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-							const query: Mongo.Selector<IMessage> = { rid };
+							const query: Filter<IMessage> = { rid };
 
 							if (ids) {
 								query._id = { $in: ids };
@@ -167,44 +169,36 @@ const computation = Tracker.autorun(() => {
 								query['u.username'] = { $in: users };
 							}
 
+							const predicate = createPredicateFromFilter(query);
+
 							if (showDeletedStatus) {
-								return ChatMessage.update(
-									query,
-									{ $set: { t: 'rm', msg: '', urls: [], mentions: [], attachments: [], reactions: {} } },
-									{ multi: true },
-								);
+								return Messages.state.update(predicate, (record) => ({
+									...record,
+									t: 'rm',
+									msg: '',
+									urls: [],
+									mentions: [],
+									attachments: [],
+									reactions: {},
+								}));
 							}
-							return ChatMessage.remove(query);
+
+							return Messages.state.remove(predicate);
 						},
 					);
 
 					sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
 						if (tmid) {
-							return ChatMessage.update(
-								{
-									tmid,
-									unread: true,
-								},
-								{ $unset: { unread: 1 } },
-								{ multi: true },
+							Messages.state.update(
+								(record) => record.tmid === tmid && record.unread === true,
+								({ unread: _, ...record }) => record,
 							);
+							return;
 						}
-						ChatMessage.update(
-							{
-								rid: record.rid,
-								unread: true,
-								ts: { $lt: until },
-								$or: [
-									{
-										tmid: { $exists: false },
-									},
-									{
-										tshow: true,
-									},
-								],
-							},
-							{ $unset: { unread: 1 } },
-							{ multi: true },
+						Messages.state.update(
+							(r) =>
+								r.rid === record.rid && r.unread === true && r.ts.getTime() < until.getTime() && (r.tmid === undefined || r.tshow === true),
+							({ unread: _, ...r }) => r,
 						);
 					});
 				}

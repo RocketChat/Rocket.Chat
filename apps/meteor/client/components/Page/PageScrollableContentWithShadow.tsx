@@ -1,18 +1,19 @@
-import type { FC, ComponentProps } from 'react';
-import React, { useContext } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
+import { useContext } from 'react';
 
 import PageContext from './PageContext';
 import PageScrollableContent from './PageScrollableContent';
 
-type PageScrollableContentWithShadowProps = ComponentProps<typeof PageScrollableContent>;
+type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
 
-const PageScrollableContentWithShadow: FC<PageScrollableContentWithShadowProps> = ({ onScrollContent, ...props }) => {
+const PageScrollableContentWithShadow = ({ onScroll, ...props }: PageScrollableContentWithShadowProps) => {
 	const [, setBorder] = useContext(PageContext);
 	return (
 		<PageScrollableContent
-			onScrollContent={({ top, ...args }: { top: boolean }): void => {
+			onScroll={(args) => {
+				const top = args.elements().viewport.scrollTop;
 				setBorder(!!top);
-				onScrollContent?.({ top, ...args });
+				onScroll?.(args);
 			}}
 			{...props}
 		/>

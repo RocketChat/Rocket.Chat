@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 
 import { parseMeteorResponse } from '../parseMeteorResponse';
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
 type CreateUnitParams = {
 	id?: string | null;
@@ -26,7 +26,7 @@ export const createOrUpdateUnit = async (
 			msg: 'method',
 			id: '34',
 			method: 'livechat:saveUnit',
-			params: [id, { name: name || faker.commerce.department(), visibility: visibility || 'public' }, monitors, departments],
+			params: [id, { name: name || faker.string.uuid(), visibility: visibility || 'public' }, monitors, departments],
 		}),
 	});
 

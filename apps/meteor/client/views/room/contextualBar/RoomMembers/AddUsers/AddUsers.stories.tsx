@@ -1,8 +1,7 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import AddUsers from './AddUsers';
+import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	title: 'Room/Contextual Bar/RoomMembers/AddUsers',
@@ -12,7 +11,7 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof AddUsers>;
+} satisfies Meta<typeof AddUsers>;
 
-export const Default: ComponentStory<typeof AddUsers> = (args) => <AddUsers {...args} />;
+export const Default: StoryFn<typeof AddUsers> = (args) => <AddUsers {...args} />;
 Default.storyName = 'AddUsers';

@@ -1,18 +1,12 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const PermissionsContextBar = (): ReactElement | null => {
 	const t = useTranslation();
@@ -22,7 +16,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const setModal = useSetModal();
 	const hasCustomRolesModule = useHasLicenseModule('custom-roles') === true;
 
-	const handleCloseContextualbar = useMutableCallback(() => {
+	const handleCloseContextualbar = useEffectEvent(() => {
 		router.push({});
 	});
 
@@ -37,14 +31,12 @@ const PermissionsContextBar = (): ReactElement | null => {
 
 	return (
 		(context && (
-			<ContextualbarDialog>
-				<Contextualbar>
-					<ContextualbarHeader>
-						<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
-						<ContextualbarClose onClick={handleCloseContextualbar} />
-					</ContextualbarHeader>
-					<EditRolePageWithData roleId={_id} />
-				</Contextualbar>
+			<ContextualbarDialog onClose={handleCloseContextualbar}>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
+					<ContextualbarClose onClick={handleCloseContextualbar} />
+				</ContextualbarHeader>
+				<EditRolePageWithData roleId={_id} />
 			</ContextualbarDialog>
 		)) ||
 		null

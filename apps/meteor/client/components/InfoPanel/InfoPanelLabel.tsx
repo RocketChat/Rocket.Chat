@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
-import React from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const InfoPanelLabel: FC<ComponentProps<typeof Box>> = (props) => <Box mb={8} fontScale='p2m' color='default' {...props} />;
+type InfoPanelLabelProps = ComponentPropsWithoutRef<typeof Box>;
+
+const InfoPanelLabel = (props: InfoPanelLabelProps) => <Box mb={8} fontScale='p2m' color='default' {...props} />;
 
 export default InfoPanelLabel;

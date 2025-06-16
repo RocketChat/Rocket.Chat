@@ -41,7 +41,9 @@ export const useTranslationsForApps = () => {
 		}
 
 		const invalidate = withDebouncing({ wait: 100 })(() => {
-			queryClient.invalidateQueries(['apps', 'translations']);
+			queryClient.invalidateQueries({
+				queryKey: ['apps', 'translations'],
+			});
 		});
 
 		const unsubscribe = subscribeToApps('apps', ([key]) => {

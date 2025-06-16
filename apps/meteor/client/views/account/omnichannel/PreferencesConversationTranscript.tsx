@@ -1,7 +1,6 @@
-import { Accordion, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -12,15 +11,17 @@ const PreferencesConversationTranscript = () => {
 	const { register } = useFormContext();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
-	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+	const canSendTranscriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
+	const canSendTranscriptEmail = canSendTranscriptEmailPermission && !alwaysSendEmailTranscript;
 	const cantSendTranscriptPDF = !canSendTranscriptPDF || !hasLicense;
 
-	const omnichannelTranscriptPDF = useUniqueId();
-	const omnichannelTranscriptEmail = useUniqueId();
+	const omnichannelTranscriptPDF = useId();
+	const omnichannelTranscriptEmail = useId();
 
 	return (
-		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
+		<AccordionItem defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -42,7 +43,7 @@ const PreferencesConversationTranscript = () => {
 						<FieldLabel htmlFor={omnichannelTranscriptEmail}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_email')}
-								{!canSendTranscriptEmail && (
+								{!canSendTranscriptEmailPermission && (
 									<Box marginInline={4}>
 										<Tag>{t('No_permission')}</Tag>
 									</Box>
@@ -54,7 +55,7 @@ const PreferencesConversationTranscript = () => {
 					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

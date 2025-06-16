@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactElement, ReactNode, RefObject } from 'react';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	useEffect(() => {
@@ -28,17 +28,11 @@ const isAtBackdropChildren = (e: MouseEvent, ref: RefObject<HTMLElement>): boole
 	return (Boolean(parentElement) && backdrop?.contains(parentElement)) ?? false;
 };
 
-const useOutsideClick = (
-	ref: RefObject<HTMLElement>,
-	onDismiss: (() => void) | undefined,
-): {
-	onMouseDown: (e: MouseEvent) => void;
-	onMouseUp: (e: MouseEvent) => void;
-} => {
+const useOutsideClick = (ref: RefObject<HTMLElement>, onDismiss: (() => void) | undefined) => {
 	const hasClicked = useRef<boolean>(false);
 
 	const onMouseDown = useCallback(
-		(e) => {
+		(e: MouseEvent) => {
 			if (isAtBackdropChildren(e, ref)) {
 				hasClicked.current = false;
 				return;
@@ -90,7 +84,7 @@ const ModalBackdrop = ({ children, onDismiss }: ModalBackdropProps): ReactElemen
 			children={children}
 			className='rcx-modal__backdrop'
 			position='fixed'
-			zIndex={999999}
+			zIndex={9999}
 			inset={0}
 			display='flex'
 			flexDirection='column'

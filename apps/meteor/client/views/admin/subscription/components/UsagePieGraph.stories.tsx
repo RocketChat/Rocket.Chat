@@ -1,10 +1,9 @@
 import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
-import type { ComponentMeta, ComponentStory, Story } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
-import { useAutoSequence } from '../../../../stories/hooks/useAutoSequence';
 import UsagePieGraph from './UsagePieGraph';
+import { useAutoSequence } from '../../../../stories/hooks/useAutoSequence';
 
 export default {
 	title: 'Admin/Info/UsagePieGraph',
@@ -12,9 +11,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} as ComponentMeta<typeof UsagePieGraph>;
+} satisfies Meta<typeof UsagePieGraph>;
 
-const Template: ComponentStory<typeof UsagePieGraph> = (args) => <UsagePieGraph {...args} />;
+const Template: StoryFn<typeof UsagePieGraph> = (args) => <UsagePieGraph {...args} />;
 
 export const Example = Template.bind({});
 Example.args = {
@@ -33,7 +32,7 @@ Unlimited.args = {
 	color: colorTokens.p500,
 };
 
-export const Animated: Story<Pick<ComponentProps<typeof UsagePieGraph>, 'size' | 'label'>> = (args) => {
+export const Animated: StoryFn<Pick<ComponentProps<typeof UsagePieGraph>, 'size' | 'label'>> = (args) => {
 	const props = useAutoSequence([
 		{
 			total: 100,

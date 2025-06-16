@@ -17,7 +17,9 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.LEAVE,
 ];
 
-const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((action) => action !== RoomMemberActions.SET_AS_OWNER);
+const allowedActionsForModerators: ValueOf<typeof RoomMemberActions>[] = allowedActionsInFederatedRooms.filter(
+	(action) => action !== RoomMemberActions.SET_AS_OWNER,
+);
 
 const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 

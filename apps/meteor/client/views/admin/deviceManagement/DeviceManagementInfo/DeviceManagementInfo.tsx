@@ -1,29 +1,28 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
 } from '../../../../components/Contextualbar';
-import InfoPanel from '../../../../components/InfoPanel';
+import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { usePresence } from '../../../../hooks/usePresence';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 	onReload: () => void;
 };
 
 const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 
@@ -31,36 +30,36 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 
 	const { name: clientName, os, version: rcVersion } = device || {};
 	const { username, name } = _user || {};
-	const userPresence = usePresence(userId);
+	const userPresence = useUserPresence(userId);
 
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Client')}</InfoPanel.Label>
-						<InfoPanel.Text>{clientName}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Client')}</InfoPanelLabel>
+						<InfoPanelText>{clientName}</InfoPanelText>
+					</InfoPanelField>
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Version')}</InfoPanel.Label>
-						<InfoPanel.Text>{rcVersion || '—'}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Version')}</InfoPanelLabel>
+						<InfoPanelText>{rcVersion || '—'}</InfoPanelText>
+					</InfoPanelField>
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('OS')}</InfoPanel.Label>
-						<InfoPanel.Text>{`${os?.name || ''} ${os?.version || ''}`}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('OS')}</InfoPanelLabel>
+						<InfoPanelText>{`${os?.name || ''} ${os?.version || ''}`}</InfoPanelText>
+					</InfoPanelField>
 
 					{username && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('User')}</InfoPanel.Label>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('User')}</InfoPanelLabel>
 							<Box>
 								<UserAvatar username={username} etag={userPresence?.avatarETag} />
 								<Box is='span' pi={8}>
@@ -71,23 +70,23 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 									{`(${username})`}
 								</Box>
 							</Box>
-						</InfoPanel.Field>
+						</InfoPanelField>
 					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{formatDateAndTime(loginAt)}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Last_login')}</InfoPanelLabel>
+						<InfoPanelText>{formatDateAndTime(loginAt)}</InfoPanelText>
+					</InfoPanelField>
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Device_ID')}</InfoPanel.Label>
-						<InfoPanel.Text>{sessionId}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Device_ID')}</InfoPanelLabel>
+						<InfoPanelText>{sessionId}</InfoPanelText>
+					</InfoPanelField>
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('IP_Address')}</InfoPanel.Label>
-						<InfoPanel.Text>{ip}</InfoPanel.Text>
-					</InfoPanel.Field>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('IP_Address')}</InfoPanelLabel>
+						<InfoPanelText>{ip}</InfoPanelText>
+					</InfoPanelField>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
@@ -97,7 +96,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

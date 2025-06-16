@@ -1,14 +1,14 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 import { GenericTableHeaderCell } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -17,7 +17,7 @@ const sortMapping = {
 };
 
 const DeviceManagementAccountTable = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'loginAt'>('loginAt');
 

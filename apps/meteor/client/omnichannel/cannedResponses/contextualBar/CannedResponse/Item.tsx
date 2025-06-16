@@ -1,19 +1,21 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEvent } from 'react';
-import React, { memo, useState } from 'react';
+import type { MouseEvent } from 'react';
+import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
-const Item: FC<{
+type ItemProps = {
 	data: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	allowUse?: boolean;
 	onClickItem: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
-}> = ({ data, allowUse, onClickItem, onClickUse }) => {
-	const t = useTranslation();
+};
+
+const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
+	const { t } = useTranslation();
 
 	const scope = useScopeDict(data.scope, data.departmentName);
 

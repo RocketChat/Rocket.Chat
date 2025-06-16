@@ -1,16 +1,18 @@
 import { isOmnichannelRoom, type IRoom } from '@rocket.chat/core-typings';
-import { useRouter, useStream, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useStream, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelCloseRoute } from '../../../../hooks/omnichannel/useOmnichannelCloseRoute';
+import { roomsQueryKeys } from '../../../../lib/queryKeys';
 
 export function useGoToHomeOnRemoved(room: IRoom, userId?: string): void {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const subscribeToNotifyUser = useStream('notify-user');
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { navigateHome } = useOmnichannelCloseRoute();
 
 	useEffect(() => {
@@ -20,7 +22,7 @@ export function useGoToHomeOnRemoved(room: IRoom, userId?: string): void {
 
 		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, subscription) => {
 			if (event === 'removed' && subscription.rid === room._id) {
-				queryClient.invalidateQueries(['rooms', room._id]);
+				queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(room._id) });
 
 				if (isOmnichannelRoom({ t: room.t })) {
 					navigateHome();

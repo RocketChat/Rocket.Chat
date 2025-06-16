@@ -1,9 +1,9 @@
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'e2e.requestSubscriptionKeys'(): boolean;

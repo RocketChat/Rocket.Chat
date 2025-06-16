@@ -1,5 +1,6 @@
-import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { api, Federation, FederationEE, License } from '@rocket.chat/core-services';
+import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
 	FederationServers,
@@ -12,18 +13,25 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
+	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
-import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
+import { callbacks } from '../../../../lib/callbacks';
+import { i18n } from '../../../../server/lib/i18n';
+import { VerificationStatus } from '../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
+import { FileUpload } from '../../../file-upload/server';
+import { settings } from '../../../settings/server';
+import {
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
 	if (userId === 'rocket.cat') {
@@ -39,6 +47,25 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	if (!user) {
 		return;
+	}
+
+	if (isUserFederated(user)) {
+		const service = (await License.hasValidLicense()) ? FederationEE : Federation;
+
+		const result = await service.verifyMatrixIds([user.username as string]);
+
+		if (result.get(user.username as string) === VerificationStatus.VERIFIED) {
+			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
+				method: 'deleteUser',
+			});
+		}
+	} else {
+		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+		if (remoteUser) {
+			throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+				method: 'deleteUser',
+			});
+		}
 	}
 
 	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
@@ -93,11 +120,26 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId);
 
+		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {
-			// Remove user as livechat agent
-			await LivechatDepartmentAgents.removeByAgentId(userId);
+			const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
+
+			const { deletedCount } = await LivechatDepartmentAgents.removeByAgentId(userId);
+
+			if (deletedCount > 0) {
+				departmentAgents.forEach((depAgent) => {
+					void notifyOnLivechatDepartmentAgentChanged(
+						{
+							_id: depAgent._id,
+							agentId: userId,
+							departmentId: depAgent.departmentId,
+						},
+						'removed',
+					);
+				});
+			}
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
@@ -135,11 +177,18 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	// Remove user from users database
 	await Users.removeById(userId);
 
+	// App IPostUserDeleted event hook
+	if (deletedBy) {
+		await Apps.self?.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Users.findOneById(deletedBy) });
+	}
+
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
 }

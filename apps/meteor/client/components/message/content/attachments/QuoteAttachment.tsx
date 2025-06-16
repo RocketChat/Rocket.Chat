@@ -3,7 +3,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
@@ -38,7 +37,7 @@ type QuoteAttachmentProps = {
 
 export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
 	const formatTime = useTimeAgo();
-	const displayAvatarPreference = useUserPreference('displayAvatars');
+	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
 	return (
 		<>
@@ -67,12 +66,12 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 							</Box>
 						)}
 					</AttachmentAuthor>
-					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
 							<Attachments attachments={attachment.attachments} id={attachment.attachments[0]?.title_link} />
 						</AttachmentInner>
 					)}
+					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 				</AttachmentDetails>
 			</AttachmentContent>
 		</>

@@ -1,15 +1,16 @@
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsListChildrenProps } from './TeamsListChildren';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
 import type { TeamsUpdateProps } from './TeamsUpdateProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './TeamsAddMembersProps';
 export * from './TeamsConvertToChannelProps';
@@ -19,6 +20,7 @@ export * from './TeamsRemoveMemberProps';
 export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
+export * from './TeamsListChildren';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -89,6 +91,7 @@ export type TeamsEndpoints = {
 				};
 			};
 			owner?: IUser['_id'];
+			sidepanel?: IRoom['sidepanel'];
 		}) => {
 			team: ITeam;
 		};
@@ -182,5 +185,9 @@ export type TeamsEndpoints = {
 		POST: (params: { roomId: IRoom['_id']; isDefault: boolean }) => {
 			room: IRoom;
 		};
+	};
+
+	'/v1/teams.listChildren': {
+		GET: (params: TeamsListChildrenProps) => PaginatedResult<{ data: IRoom[] }>;
 	};
 };

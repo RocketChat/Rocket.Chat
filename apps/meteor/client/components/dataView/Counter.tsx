@@ -1,6 +1,5 @@
 import { Box, Flex, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import Growth from './Growth';
 

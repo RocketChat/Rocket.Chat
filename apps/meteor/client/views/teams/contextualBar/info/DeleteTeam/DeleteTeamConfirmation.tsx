@@ -1,9 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
 import RoomLinkList from './RoomLinkList';
+import GenericModal from '../../../../../components/GenericModal';
 
 type DeleteTeamConfirmationProps = {
 	deletedRooms: { [key: string]: Serialized<IRoom> };
@@ -14,7 +13,7 @@ type DeleteTeamConfirmationProps = {
 };
 
 const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }: DeleteTeamConfirmationProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const roomIds = Object.values(deletedRooms).map(({ _id }) => _id);
 
 	return (

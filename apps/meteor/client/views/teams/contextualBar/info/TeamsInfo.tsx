@@ -1,121 +1,52 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useTeamActions } from './useTeamActions';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import InfoPanel from '../../../../components/InfoPanel';
+import {
+	InfoPanel,
+	InfoPanelAction,
+	InfoPanelActionGroup,
+	InfoPanelAvatar,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelSection,
+	InfoPanelText,
+	InfoPanelTitle,
+} from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
-import type { Action } from '../../../hooks/useActionSpread';
-import { useActionSpread } from '../../../hooks/useActionSpread';
+import { useSplitRoomActions } from '../../../room/contextualBar/Info/hooks/useSplitRoomActions';
 import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	onClickHide: () => void;
-	onClickClose: () => void;
-	onClickLeave: () => void;
-	onClickEdit: () => void;
-	onClickDelete: () => void;
+	onClickEdit?: () => void;
+	onClickClose?: () => void;
 	onClickViewChannels: () => void;
-	onClickConvertToChannel?: () => void;
 };
 
-const TeamsInfo = ({
-	room,
-	onClickHide,
-	onClickClose,
-	onClickLeave,
-	onClickEdit,
-	onClickDelete,
-	onClickViewChannels,
-	onClickConvertToChannel,
-}: TeamsInfoProps): ReactElement => {
-	const t = useTranslation();
+const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps): ReactElement => {
+	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);
+	const memoizedActions = useTeamActions(room, { onClickEdit });
 
-	const memoizedActions = useMemo(
-		() => ({
-			...(onClickEdit && {
-				edit: {
-					label: t('Edit'),
-					action: onClickEdit,
-					icon: 'edit' as const,
-				},
-			}),
-			...(onClickDelete && {
-				delete: {
-					label: t('Delete'),
-					action: onClickDelete,
-					icon: 'trash' as const,
-				},
-			}),
-			...(onClickConvertToChannel && {
-				convertToChannel: {
-					label: t('Convert_to_channel'),
-					action: onClickConvertToChannel,
-					icon: 'hash' as const,
-				},
-			}),
-			...(onClickHide && {
-				hide: {
-					label: t('Hide'),
-					action: onClickHide,
-					icon: 'eye-off' as const,
-				},
-			}),
-			...(onClickLeave && {
-				leave: {
-					label: t('Leave'),
-					action: onClickLeave,
-					icon: 'sign-out' as const,
-				},
-			}),
-		}),
-		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete, onClickConvertToChannel],
-	);
-
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
-
-	const menu = useMemo(() => {
-		if (!menuOptions) {
-			return null;
-		}
-
-		return (
-			<Menu
-				small={false}
-				flexShrink={0}
-				flexGrow={0}
-				key='menu'
-				maxHeight='initial'
-				secondary
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-				options={menuOptions}
-			/>
-		);
-	}, [menuOptions]);
-
-	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
-			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon} />
-		);
-
-		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu]);
+	const { buttons: actions, menu } = useSplitRoomActions(memoizedActions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
@@ -123,84 +54,91 @@ const TeamsInfo = ({
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Section maxWidth='x332' mi='auto'>
-						<InfoPanel.Avatar>
+					<InfoPanelSection maxWidth='x332' mi='auto'>
+						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
-						</InfoPanel.Avatar>
+						</InfoPanelAvatar>
 
-						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
-					</InfoPanel.Section>
+						<InfoPanelActionGroup>
+							{actions.items.map(({ id, content, icon, onClick }) => (
+								<InfoPanelAction key={id} label={content} onClick={onClick} icon={icon} />
+							))}
+							{menu && (
+								<GenericMenu
+									title={t('More')}
+									placement='bottom-end'
+									detached
+									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
+									sections={menu}
+								/>
+							)}
+						</InfoPanelActionGroup>
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
+					<InfoPanelSection>
 						{room.archived && (
 							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}
-					</InfoPanel.Section>
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
-						<InfoPanel.Title title={room.fname || room.name || ''} icon='team' />
-					</InfoPanel.Section>
+					<InfoPanelSection>
+						<InfoPanelTitle title={room.fname || room.name || ''} icon='team' />
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
+					<InfoPanelSection>
 						{room.broadcast && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>
+							<InfoPanelField>
+								<InfoPanelLabel>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
-								</InfoPanel.Label>
-							</InfoPanel.Field>
+								</InfoPanelLabel>
+							</InfoPanelField>
 						)}
 
 						{room.description && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Description')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.description} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{room.announcement && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Announcement')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.announcement} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{room.topic && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.topic} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{onClickViewChannels && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
-								<InfoPanel.Text>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Teams_channels')}</InfoPanelLabel>
+								<InfoPanelText>
 									<Button onClick={onClickViewChannels} small>
 										{t('View_channels')}
 									</Button>
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
-						{retentionPolicy?.isActive && (
-							<RetentionPolicyCallout
-								filesOnly={retentionPolicy.filesOnly}
-								excludePinned={retentionPolicy.excludePinned}
-								maxAge={retentionPolicy.maxAge}
-							/>
-						)}
-					</InfoPanel.Section>
+						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -1,10 +1,10 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { ChatRoom } from '../../../../app/models/client';
+import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
@@ -110,12 +110,12 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<IRoom> = {
+			const query: Filter<IRoom> = {
 				t: 'p',
 				name: identifier,
 			};
 
-			return ChatRoom.findOne(query);
+			return Rooms.findOne(query);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

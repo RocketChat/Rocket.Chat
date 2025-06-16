@@ -1,9 +1,9 @@
 {
-	"extends": "../../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"allowJs": true,
 		"strictPropertyInitialization": false,
-		"outDir": "./dist",
+		"outDir": "./dist/ee/apps/queue-worker/src",
 	},
 	"files": ["./src/service.ts"],
 	"include": ["../../../apps/meteor/definition/externals/meteor"],

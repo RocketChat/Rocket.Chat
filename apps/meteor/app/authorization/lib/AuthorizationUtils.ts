@@ -1,4 +1,4 @@
-const restrictedRolePermissions = new Map();
+const restrictedRolePermissions = new Map<string, Set<string>>();
 
 export const AuthorizationUtils = class {
 	static addRolePermissionWhiteList(roleId: string, list: string[]): void {
@@ -17,7 +17,7 @@ export const AuthorizationUtils = class {
 		const rules = restrictedRolePermissions.get(roleId);
 
 		for (const permissionId of list) {
-			rules.add(permissionId);
+			rules?.add(permissionId);
 		}
 	}
 
@@ -50,5 +50,9 @@ export const AuthorizationUtils = class {
 		}
 
 		return false;
+	}
+
+	static hasRestrictionsToRole(roleId: string): boolean {
+		return restrictedRolePermissions.has(roleId);
 	}
 };

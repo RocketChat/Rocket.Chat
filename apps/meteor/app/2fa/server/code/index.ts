@@ -5,11 +5,11 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
+import { settings } from '../../../settings/server';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
@@ -45,14 +45,10 @@ function getAvailableMethodNames(user: IUser): string[] {
 export async function getUserForCheck(userId: string): Promise<IUser | null> {
 	return Users.findOneById(userId, {
 		projection: {
-			'emails': 1,
-			'language': 1,
-			'createdAt': 1,
-			'services.totp': 1,
-			'services.email2fa': 1,
-			'services.emailCode': 1,
-			'services.password': 1,
-			'services.resume.loginTokens': 1,
+			emails: 1,
+			language: 1,
+			createdAt: 1,
+			services: 1,
 		},
 	});
 }

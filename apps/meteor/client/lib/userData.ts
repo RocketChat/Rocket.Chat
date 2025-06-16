@@ -111,7 +111,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 										})),
 									}),
 								},
-						  }
+							}
 						: {}),
 					...(cloud
 						? {
@@ -119,7 +119,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 									...cloud,
 									expiresAt: new Date(cloud.expiresAt),
 								},
-						  }
+							}
 						: {}),
 					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
 					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),

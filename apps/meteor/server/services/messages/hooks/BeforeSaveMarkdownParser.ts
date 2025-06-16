@@ -31,7 +31,7 @@ export class BeforeSaveMarkdownParser {
 				message.md = parse(message.msg, config);
 			}
 
-			if (message.attachments?.[0]?.description !== undefined) {
+			if (message.attachments?.[0]?.description) {
 				message.attachments[0].descriptionMd = parse(message.attachments[0].description, config);
 			}
 		} catch (e) {

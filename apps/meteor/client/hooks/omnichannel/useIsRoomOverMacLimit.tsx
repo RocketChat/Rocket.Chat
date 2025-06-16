@@ -1,5 +1,5 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, type IOmnichannelGenericRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IOmnichannelGenericRoom } from '@rocket.chat/core-typings';
 
 import { useIsOverMacLimit } from './useIsOverMacLimit';
 

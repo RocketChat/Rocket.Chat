@@ -1,11 +1,13 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { InfoField } from './InfoField';
+import { VoipInfoCallButton } from './VoipInfoCallButton';
 import {
 	ContextualbarIcon,
 	ContextualbarHeader,
@@ -13,15 +15,14 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
-import InfoPanel from '../../../../../components/InfoPanel';
+import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../components/AgentField';
-import { InfoField } from './InfoField';
-import { VoipInfoCallButton } from './VoipInfoCallButton';
 
 type VoipInfoPropsType = {
 	room: IVoipRoom;
@@ -30,7 +31,7 @@ type VoipInfoPropsType = {
 };
 
 export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isCallReady = useIsCallReady();
 
 	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;
@@ -44,7 +45,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const _name = fname || name;
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClickClose}>
 			<ContextualbarHeader expanded>
 				<ContextualbarIcon name='phone' />
 				<ContextualbarTitle>{t('Call_Information')}</ContextualbarTitle>
@@ -52,22 +53,22 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<InfoPanel>
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Channel')}</InfoPanel.Label>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Channel')}</InfoPanelLabel>
 						<Box color='default'>
 							<Icon size='x24' name='phone' verticalAlign='middle' />
 							{t('Voice_Call')}
 						</Box>
-					</InfoPanel.Field>
+					</InfoPanelField>
 					{servedBy && <AgentField isSmall agent={servedBy} />}
 					{v && _name && (
-						<InfoPanel.Field>
-							<InfoPanel.Label>{t('Contact')}</InfoPanel.Label>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Contact')}</InfoPanelLabel>
 							<Box display='flex'>
 								<UserAvatar size='x28' username={_name} />
 								<AgentInfoDetails mis={8} name={parseOutboundPhoneNumber(_name)} status={<UserStatus status={v?.status} />} />
 							</Box>
-						</InfoPanel.Field>
+						</InfoPanelField>
 					)}
 					{phoneNumber && <InfoField label={t('Caller_Id')} info={parseOutboundPhoneNumber(phoneNumber)} />}
 					{queue && <InfoField label={t('Queue')} info={queue} />}
@@ -75,11 +76,11 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					<InfoField label={t('Waiting_Time')} info={waiting || t('Not_Available')} />
 					<InfoField label={t('Talk_Time')} info={duration || t('Not_Available')} />
 					<InfoField label={t('Hold_Time')} info={hold || t('Not_Available')} />
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Wrap_Up_Notes')}</InfoPanel.Label>
-						<InfoPanel.Text withTruncatedText={false}>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanel.Text>
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Wrap_Up_Notes')}</InfoPanelLabel>
+						<InfoPanelText withTruncatedText={false}>{shouldShowWrapup ? lastMessage?.msg : t('Not_Available')}</InfoPanelText>
 						{shouldShowTags && (
-							<InfoPanel.Text>
+							<InfoPanelText>
 								<Box display='flex' flexDirection='row' alignItems='center'>
 									{tags?.map((tag: string) => (
 										<Chip mie={4} key={tag} value={tag}>
@@ -87,9 +88,9 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 										</Chip>
 									))}
 								</Box>
-							</InfoPanel.Text>
+							</InfoPanelText>
 						)}
-					</InfoPanel.Field>
+					</InfoPanelField>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
@@ -104,6 +105,6 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					{isCallReady && <VoipInfoCallButton phoneNumber={phoneNumber} />}
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };

@@ -1,7 +1,7 @@
 @use 'sass:math';
-
-@import '../../styles/colors';
-@import '../../styles/variables';
+@use "sass:color";
+@use '../../styles/colors';
+@use '../../styles/variables';
 
 .menu {
 	display: flex;
@@ -11,15 +11,15 @@
 
 	user-select: none;
 	transition:
-		opacity $default-time-animation,
-		visibility $default-time-animation,
-		transform math.div($default-time-animation, 2);
+		opacity variables.$default-time-animation,
+		visibility variables.$default-time-animation,
+		transform math.div(variables.$default-time-animation, 2);
 
 	border-radius: 4px;
-	background: $bg-color-white;
+	background: colors.$bg-color-white;
 	box-shadow:
-		0 0 2px 0 rgba($bg-color-dark, 0.08),
-		0 0 12px 0 rgba($bg-color-dark, 0.12);
+		0 0 2px 0 rgba(colors.$bg-color-dark, 0.08),
+		0 0 12px 0 rgba(colors.$bg-color-dark, 0.12);
 	align-items: stretch;
 
 	&:empty {
@@ -36,7 +36,7 @@
 
 			letter-spacing: 0;
 
-			color: $color-text-dark;
+			color: colors.$color-text-dark;
 
 			font-size: 12px;
 			font-weight: 600;
@@ -50,7 +50,7 @@
 
 			content: "";
 
-			border: 1px solid $bg-color-grey;
+			border: 1px solid colors.$bg-color-grey;
 		}
 	}
 
@@ -77,22 +77,22 @@
 			color: $color;
 
 			&:hover {
-				background-color: mix($color, $bg-color-white, 5%);
+				background-color: color.mix($color, colors.$bg-color-white, 5%);
 			}
 
 			&:active {
-				background-color: mix($color, $bg-color-white, 10%);
+				background-color: color.mix($color, colors.$bg-color-white, 10%);
 			}
 		}
 
-		@include itemcolor($color-text-dark);
+		@include itemcolor(colors.$color-text-dark);
 
 		&--primary {
-			@include itemcolor($color-blue);
+			@include itemcolor(colors.$color-blue);
 		}
 
 		&--danger {
-			@include itemcolor($color-red);
+			@include itemcolor(colors.$color-red);
 		}
 
 		&--disabled {
@@ -150,5 +150,5 @@
 }
 
 .popover-menu__overlay {
-	background-color: $overlay-bg-color;
+	background-color: colors.$overlay-bg-color;
 }

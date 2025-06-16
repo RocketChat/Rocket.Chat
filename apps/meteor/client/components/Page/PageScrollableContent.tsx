@@ -1,17 +1,16 @@
-import type { Scrollable } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
-import type { CustomScrollbarsProps } from '../CustomScrollbars';
+import type { OverlayScrollbars } from '../CustomScrollbars';
 import { CustomScrollbars } from '../CustomScrollbars';
 
 type PageScrollableContentProps = {
-	onScrollContent?: ComponentProps<typeof Scrollable>['onScrollContent'];
-} & ComponentProps<typeof Box>;
+	onScroll?: (args: OverlayScrollbars) => void;
+} & Omit<ComponentProps<typeof Box>, 'onScroll'>;
 
 const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps>(function PageScrollableContent(
-	{ onScrollContent, borderBlockEndColor, ...props },
+	{ onScroll, borderBlockEndColor, ...props },
 	ref,
 ) {
 	return (
@@ -24,8 +23,8 @@ const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps
 			overflow='hidden'
 			borderBlockEndColor={borderBlockEndColor}
 		>
-			<CustomScrollbars onScroll={onScrollContent as CustomScrollbarsProps['onScroll']} ref={ref as any}>
-				<Box paddingBlock={16} paddingInline={24} display='flex' flexDirection='column' flexGrow={1} {...props} />
+			<CustomScrollbars onScroll={onScroll} ref={ref}>
+				<Box paddingBlock={16} paddingInline={24} display='flex' flexDirection='column' {...props} />
 			</CustomScrollbars>
 		</Box>
 	);

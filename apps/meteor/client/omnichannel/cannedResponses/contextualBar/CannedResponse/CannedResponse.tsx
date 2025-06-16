@@ -1,20 +1,21 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEventHandler } from 'react';
-import React, { memo } from 'react';
+import type { MouseEventHandler } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarAction,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
+	ContextualbarClose,
 } from '../../../../components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
-const CannedResponse: FC<{
+type CannedResponseProps = {
 	allowEdit: boolean;
 	allowUse: boolean;
 	data: {
@@ -27,15 +28,27 @@ const CannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({ allowEdit, allowUse, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
-	const t = useTranslation();
+	onClose: () => void;
+};
+
+const CannedResponse = ({
+	allowEdit,
+	allowUse,
+	data: { departmentName, shortcut, text, scope: dataScope, tags },
+	onClickBack,
+	onClickEdit,
+	onClickUse,
+	onClose,
+}: CannedResponseProps) => {
+	const { t } = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<Contextualbar color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
+				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_canned_responses')} name='arrow-back' />}
 				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
+				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
 				<Box pb='24px'>
@@ -91,7 +104,7 @@ const CannedResponse: FC<{
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 

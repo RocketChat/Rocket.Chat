@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { screenDecorator } from '../../../.storybook/helpers';
@@ -35,7 +35,7 @@ export default {
 	},
 } as Meta<ComponentProps<typeof SwitchDepartment>>;
 
-const Template: Story<ComponentProps<typeof SwitchDepartment>> = (args) => <SwitchDepartment {...args} />;
+const Template: StoryFn<ComponentProps<typeof SwitchDepartment>> = (args) => <SwitchDepartment {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

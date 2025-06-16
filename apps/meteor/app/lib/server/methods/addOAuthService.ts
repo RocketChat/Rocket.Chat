@@ -1,16 +1,27 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { addOAuthService } from '../../../../server/lib/oauth/addOAuthService';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addOAuthService(name: string): void;
 	}
 }
+
+export const addOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
+	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
+		throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
+			method: 'addOAuthService',
+			action: 'Adding_OAuth_Services',
+		});
+	}
+
+	await addOAuthService(name);
+};
 
 Meteor.methods<ServerMethods>({
 	async addOAuthService(name) {
@@ -22,13 +33,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthService' });
 		}
 
-		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
-			throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
-				method: 'addOAuthService',
-				action: 'Adding_OAuth_Services',
-			});
-		}
-
-		await addOAuthService(name);
+		return addOAuthServiceMethod(userId, name);
 	},
 });

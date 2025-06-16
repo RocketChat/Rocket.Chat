@@ -1,7 +1,7 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import React from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
@@ -9,7 +9,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
 type UsersTableRowProps = {
 	user: Serialized<IUser> & { domain?: string };
-	onClick: (username: IUser['username']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
+	onClick: (username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => void;
 	mediaQuery: boolean;
 	federation: boolean;
 	canViewFullOtherUserInfo: boolean;

@@ -1,29 +1,29 @@
-import { Contextualbar } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
-import React, { useCallback, useRef } from 'react';
+import type { ComponentProps } from 'react';
+import { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
 
-import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
+import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
+import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
-type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;
+type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar> & { onClose?: () => void };
 
 /**
- * TODO: inside administration it should have a mechanism to display the contextualbar programmatically
- * @prop closeTab only work inside a room
+ * @prop onClose can be used to close contextualbar outside the room context with ESC key
  * */
-const ContextualbarDialog = (props: ContextualbarDialogProps) => {
-	const ref = useRef(null);
+const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) => {
+	const ref = useRef<HTMLElement | null>(null);
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
-	const sizes = useLayoutSizes();
+	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
+	const closeContextualbar = onClose ?? closeTab;
 
 	const callbackRef = useCallback(
-		(node) => {
+		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}
@@ -31,23 +31,23 @@ const ContextualbarDialog = (props: ContextualbarDialogProps) => {
 			ref.current = node;
 			node.addEventListener('keydown', (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
-					closeTab();
+					closeContextualbar();
 				}
 			});
 		},
-		[closeTab],
+		[closeContextualbar],
 	);
 
 	return (
 		<FocusScope autoFocus restoreFocus>
 			<FeaturePreview feature='contextualbarResizable'>
 				<FeaturePreviewOn>
-					<ContextualbarResizable defaultWidth={sizes.contextualBar}>
+					<ContextualbarResizable defaultWidth={contextualBar}>
 						<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
 					</ContextualbarResizable>
 				</FeaturePreviewOn>
 				<FeaturePreviewOff>
-					<Contextualbar ref={callbackRef} width={sizes.contextualBar} position={position} {...dialogProps} {...props} />
+					<Contextualbar ref={callbackRef} width={contextualBar} position={position} {...dialogProps} {...props} />
 				</FeaturePreviewOff>
 			</FeaturePreview>
 		</FocusScope>

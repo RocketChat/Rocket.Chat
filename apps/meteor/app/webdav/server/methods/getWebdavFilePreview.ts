@@ -1,13 +1,13 @@
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { WebdavAccounts } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { createClient } from 'webdav';
 
 import { settings } from '../../../settings/server';
 import { getWebdavCredentials } from '../lib/getWebdavCredentials';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		getWebdavFilePreview(accountId: IWebdavAccount['_id'], path: string): { success: true; data: ArrayBuffer } | undefined;

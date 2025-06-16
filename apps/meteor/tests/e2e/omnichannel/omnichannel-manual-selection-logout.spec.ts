@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
@@ -37,7 +37,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		await poOmnichannel.page.locator('[name=password]').fill(DEFAULT_USER_CREDENTIALS.password);
 		await poOmnichannel.page.locator('role=button[name="Login"]').click();
 
-		await poOmnichannel.page.locator('.main-content').waitFor();
+		await poOmnichannel.page.locator('#main-content').waitFor();
 	});
 
 	// Delete all data

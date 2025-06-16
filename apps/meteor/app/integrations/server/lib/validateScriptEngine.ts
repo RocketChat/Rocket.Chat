@@ -9,14 +9,14 @@ export const validateScriptEngine = (engine?: IntegrationScriptEngine) => {
 		throw new Error('integration-scripts-disabled');
 	}
 
-	const engineCode = engine === 'isolated-vm' ? 'ivm' : 'vm2';
+	if (engine && engine !== 'isolated-vm') {
+		throw new Error('integration-scripts-unknown-engine');
+	}
+
+	const engineCode = 'ivm';
 
 	if (engineCode === FREEZE_INTEGRATION_SCRIPTS_VALUE) {
-		if (engineCode === 'ivm') {
-			throw new Error('integration-scripts-isolated-vm-disabled');
-		}
-
-		throw new Error('integration-scripts-vm2-disabled');
+		throw new Error('integration-scripts-isolated-vm-disabled');
 	}
 
 	return true;

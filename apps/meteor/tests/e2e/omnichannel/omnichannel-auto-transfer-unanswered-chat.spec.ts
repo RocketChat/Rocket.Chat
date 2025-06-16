@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -32,14 +32,14 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await agent1.page.close();
+		await agent2.page.close();
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
 		]);
-
-		await agent1.page.close();
-		await agent2.page.close();
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -48,10 +48,7 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
-		newVisitor = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();

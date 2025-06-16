@@ -3,11 +3,11 @@ import https from 'https';
 
 import _ from 'underscore';
 
+import { forceDownload } from './helper';
 import { settings } from '../../../settings/server';
 import type { S3Options } from '../../ufs/AmazonS3/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
-import { forceDownload } from './helper';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
 	const forcedDownload = forceDownload(req);

@@ -4,7 +4,7 @@ import { OmnichannelAdministration } from './omnichannel-administration';
 
 export class OmnichannelUnits extends OmnichannelAdministration {
 	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {
@@ -23,8 +23,12 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('[name="name"]');
 	}
 
+	get fieldDepartments() {
+		return this.page.getByLabel('Departments');
+	}
+
 	get inputDepartments() {
-		return this.page.locator('[name="departments"]').locator('input[placeholder="Select an option"]');
+		return this.fieldDepartments.getByRole('textbox');
 	}
 
 	get inputMonitors() {
@@ -39,20 +43,24 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	private selectOption(name: string) {
-		return this.page.locator(`[role=option][value="${name}"]`);
+	private findOption(name: string) {
+		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
 	}
 
-	async selectDepartment({ name, _id }: { name: string; _id: string }) {
+	public findDepartmentsChipOption(name: string) {
+		return this.fieldDepartments.getByRole('option', { name, exact: true });
+	}
+
+	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(_id).click();
+		await this.findOption(name).click();
 		await this.contextualBar.click({ position: { x: 0, y: 0 } });
 	}
 
 	async selectMonitor(option: string) {
 		await this.inputMonitors.click();
-		await this.selectOption(option).click();
+		await this.findOption(option).click();
 		await this.contextualBar.click({ position: { x: 0, y: 0 } });
 	}
 
@@ -70,7 +78,7 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 	}
 
 	get contextualBar() {
-		return this.page.locator('div[data-qa-id="units-contextual-bar"]');
+		return this.page.locator('div[role="dialog"][aria-labelledby="contextualbarTitle"]');
 	}
 
 	get btnSave() {

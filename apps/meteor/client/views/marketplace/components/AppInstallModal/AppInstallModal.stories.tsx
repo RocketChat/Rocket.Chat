@@ -1,5 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import AppInstallModal from './AppInstallModal';
 
@@ -9,9 +8,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} as ComponentMeta<typeof AppInstallModal>;
+} satisfies Meta<typeof AppInstallModal>;
 
-const Template: ComponentStory<typeof AppInstallModal> = (args) => <AppInstallModal {...args} />;
+const Template: StoryFn<typeof AppInstallModal> = (args) => <AppInstallModal {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'AppInstallModal';

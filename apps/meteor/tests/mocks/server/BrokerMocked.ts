@@ -15,10 +15,6 @@ export class BrokerMocked {
 		return this.actions[method](data);
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
-		return this.actions[method](data);
-	}
-
 	async broadcastToServices(): Promise<void> {
 		// no op
 	}

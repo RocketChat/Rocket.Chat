@@ -12,8 +12,9 @@ import {
 	FieldError,
 	FieldDescription,
 	FieldHint,
+	Accordion,
+	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	useEndpoint,
 	usePermission,
@@ -23,7 +24,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useEffect, useMemo } from 'react';
+import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -145,14 +146,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 	};
 
-	const createTeamFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createTeamFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal
@@ -169,7 +170,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Box fontScale='p2' mbe={16}>
 					{t('Teams_new_description')}
 				</Box>
-				<FieldGroup>
+				<FieldGroup mbe={24}>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
 							{t('Teams_New_Name_Label')}
@@ -179,7 +180,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								id={nameId}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
-									required: t('error-the-field-is-required', { field: t('Name') }),
+									required: t('Required_field', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
 								})}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
@@ -229,62 +230,77 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
 						</FieldDescription>
 					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={readOnlyId}>{t('Teams_New_Read_only_Label')}</FieldLabel>
-							<Controller
-								control={control}
-								name='readOnly'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch
-										id={readOnlyId}
-										aria-describedby={`${readOnlyId}-hint`}
-										disabled={!canChangeReadOnly}
-										onChange={onChange}
-										checked={value}
-										ref={ref}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldDescription id={`${readOnlyId}-hint`}>
-							{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
-						</FieldDescription>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</FieldLabel>
-							<Controller
-								control={control}
-								name='encrypted'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch
-										id={encryptedId}
-										disabled={!canSetReadOnly || !canChangeEncrypted}
-										onChange={onChange}
-										aria-describedby={`${encryptedId}-hint`}
-										checked={value}
-										ref={ref}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</FieldLabel>
-							<Controller
-								control={control}
-								name='broadcast'
-								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch aria-describedby={`${broadcastId}-hint`} id={broadcastId} onChange={onChange} checked={value} ref={ref} />
-								)}
-							/>
-						</FieldRow>
-						{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
-					</Field>
 				</FieldGroup>
+				<Accordion>
+					<AccordionItem title={t('Advanced_settings')}>
+						<FieldGroup>
+							<Box is='h5' fontScale='h5' color='titles-labels'>
+								{t('Security_and_permissions')}
+							</Box>
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={encryptedId}>{t('Teams_New_Encrypted_Label')}</FieldLabel>
+									<Controller
+										control={control}
+										name='encrypted'
+										render={({ field: { onChange, value, ref } }): ReactElement => (
+											<ToggleSwitch
+												id={encryptedId}
+												disabled={!canSetReadOnly || !canChangeEncrypted}
+												onChange={onChange}
+												aria-describedby={`${encryptedId}-hint`}
+												checked={value}
+												ref={ref}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+							</Field>
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={readOnlyId}>{t('Teams_New_Read_only_Label')}</FieldLabel>
+									<Controller
+										control={control}
+										name='readOnly'
+										render={({ field: { onChange, value, ref } }): ReactElement => (
+											<ToggleSwitch
+												id={readOnlyId}
+												aria-describedby={`${readOnlyId}-hint`}
+												disabled={!canChangeReadOnly}
+												onChange={onChange}
+												checked={value}
+												ref={ref}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldDescription id={`${readOnlyId}-hint`}>
+									{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
+								</FieldDescription>
+							</Field>
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={broadcastId}>{t('Teams_New_Broadcast_Label')}</FieldLabel>
+									<Controller
+										control={control}
+										name='broadcast'
+										render={({ field: { onChange, value, ref } }): ReactElement => (
+											<ToggleSwitch
+												aria-describedby={`${broadcastId}-hint`}
+												id={broadcastId}
+												onChange={onChange}
+												checked={value}
+												ref={ref}
+											/>
+										)}
+									/>
+								</FieldRow>
+								{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
+							</Field>
+						</FieldGroup>
+					</AccordionItem>
+				</Accordion>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>

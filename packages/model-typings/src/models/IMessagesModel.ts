@@ -18,7 +18,7 @@ import type {
 	UpdateResult,
 	Document,
 	Filter,
-	ModifyResult,
+	WithId,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -71,7 +71,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage>;
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
@@ -113,6 +118,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
@@ -200,12 +206,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;
 	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findForUpdates(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
+	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
 
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
 
@@ -268,7 +274,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
-	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<ModifyResult<IMessage>>;
+	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>>;
 	findUnreadThreadMessagesByDate(
 		tmid: string,
 		userId: string,
@@ -284,5 +290,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	removeThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
-	decreaseReplyCountById(_id: string, inc?: number): Promise<UpdateResult>;
+	decreaseReplyCountById(_id: string, inc?: number): Promise<IMessage | null>;
+	countPinned(options?: CountDocumentsOptions): Promise<number>;
+	countStarred(options?: CountDocumentsOptions): Promise<number>;
+	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment): Promise<Document | UpdateResult>;
+	clearFilesByMessageIds(_ids: string[]): Promise<Document | UpdateResult>;
 }

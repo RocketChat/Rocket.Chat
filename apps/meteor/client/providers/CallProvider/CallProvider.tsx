@@ -9,9 +9,9 @@ import {
 	isVoipEventCallAbandoned,
 	UserState,
 } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
-import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
+import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
 	useUser,
@@ -22,9 +22,10 @@ import {
 	useSetInputMediaDevice,
 	useSetModal,
 	useTranslation,
+	useCustomSound,
 } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
@@ -36,11 +37,14 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../voip/components/modals/WrapUpCallModal';
-import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
-export const CallProvider: FC = ({ children }) => {
+type CallProviderProps = {
+	children?: ReactNode;
+};
+
+export const CallProvider = ({ children }: CallProviderProps) => {
 	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
 
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -61,7 +65,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
-	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
@@ -69,10 +73,15 @@ export const CallProvider: FC = ({ children }) => {
 
 	const { openDialModal } = useDialModal();
 
-	const voipSounds = useVoipSounds();
+	const { voipSounds } = useCustomSound();
 
 	const closeRoom = useCallback(
-		async (data = {}): Promise<void> => {
+		async (
+			data: {
+				comment?: string;
+				tags?: string[];
+			} = {},
+		): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
@@ -90,15 +99,15 @@ export const CallProvider: FC = ({ children }) => {
 	);
 
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+		setModal(<WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
 
-	const changeAudioOutputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+	const changeAudioOutputDevice = useEffectEvent((selectedAudioDevice: Device): void => {
 		remoteAudioMediaRef?.current &&
 			setOutputMediaDevice({ outputDevice: selectedAudioDevice, HTMLAudioElement: remoteAudioMediaRef.current });
 	});
 
-	const changeAudioInputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+	const changeAudioInputDevice = useEffectEvent((selectedAudioDevice: Device): void => {
 		if (!result.voipClient) {
 			return;
 		}
@@ -327,7 +336,9 @@ export const CallProvider: FC = ({ children }) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
+
 			voipSounds.stopAll();
+
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -368,15 +379,15 @@ export const CallProvider: FC = ({ children }) => {
 		};
 
 		const onRinging = (): void => {
-			voipSounds.play('outbound-call-ringing');
+			voipSounds.playDialer();
 		};
 
 		const onIncomingCallRinging = (): void => {
-			voipSounds.play('telephone');
+			voipSounds.playRinger();
 		};
 
 		const onCallTerminated = (): void => {
-			voipSounds.play('call-ended', false);
+			voipSounds.playCallEnded();
 			voipSounds.stopAll();
 		};
 

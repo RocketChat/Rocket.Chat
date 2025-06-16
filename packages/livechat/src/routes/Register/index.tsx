@@ -1,11 +1,12 @@
 import type { FunctionalComponent } from 'preact';
-import { route } from 'preact-router';
-import { useContext, useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
+import { route } from 'preact-router';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
@@ -19,22 +20,17 @@ import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 import type { StoreState } from '../../store';
-import styles from './styles.scss';
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
+
+export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
 export const Register: FunctionalComponent<{ path: string }> = () => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
-
-	const {
-		handleSubmit,
-		formState: { errors, isDirty, isValid, isSubmitting },
-		control,
-	} = useForm({ mode: 'onChange' });
 
 	const {
 		config: {
@@ -52,6 +48,15 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		dispatch,
 		user,
 	} = useContext(StoreContext);
+
+	const {
+		handleSubmit,
+		formState: { errors, isDirty, isValid, isSubmitting },
+		control,
+		resetField,
+	} = useForm<RegisterFormValues>({
+		mode: 'onChange',
+	});
 
 	const defaultTitle = t('need_help');
 	const defaultMessage = t('please_tell_us_some_information_to_start_the_chat');
@@ -77,17 +82,21 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		department?: string;
 		customFields: FormPayloadCustomField;
 	}) => {
+		const guestDepartment = department || defaultDepartment;
 		const fields = {
 			name,
 			email,
-			...(department && { department }),
+			...(guestDepartment && { department: guestDepartment }),
 		};
 
-		dispatch({ loading: true, department });
+		dispatch({ loading: true });
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+			await dispatch({
+				user,
+				...(user.contactManager && { agent: user.contactManager }),
+			} as Omit<StoreState['user'], 'ts'>);
 
 			parentCall('callback', 'pre-chat-form-submit', fields);
 			Triggers.callbacks?.emit('chat-visitor-registered');
@@ -97,12 +106,14 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		}
 	};
 
-	const getDepartmentDefault = () => {
-		const dept = departments.find((dept) => dept._id === defaultDepartment || dept.name === defaultDepartment);
-		if (dept?._id) {
-			return dept._id;
-		}
-	};
+	const defaultDepartmentId = useMemo(
+		() => departments.find((dept) => dept.name === defaultDepartment || dept._id === defaultDepartment)?._id,
+		[defaultDepartment, departments],
+	);
+
+	useEffect(() => {
+		resetField('department', { defaultValue: defaultDepartmentId });
+	}, [departments, defaultDepartment, resetField, defaultDepartmentId]);
 
 	const availableDepartments = departments.filter((dept) => dept.showOnRegistration);
 
@@ -160,7 +171,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 								<Controller
 									name='department'
 									control={control}
-									defaultValue={getDepartmentDefault()}
+									defaultValue={defaultDepartmentId}
 									render={({ field }) => (
 										<SelectInput
 											options={sortArrayByColumn(availableDepartments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({

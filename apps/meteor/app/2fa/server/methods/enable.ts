@@ -1,10 +1,10 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { TOTP } from '../lib/totp';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'2fa:enable': () => Promise<{ secret: string; url: string }>;
@@ -32,6 +32,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'You need to verify your emails before setting up 2FA', {
 				method: '2fa:enable',
 			});
+		}
+
+		if (user.services?.totp?.enabled) {
+			throw new Meteor.Error('error-2fa-already-enabled');
 		}
 
 		const secret = TOTP.generateSecret();

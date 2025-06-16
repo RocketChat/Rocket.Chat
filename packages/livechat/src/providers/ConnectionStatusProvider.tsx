@@ -1,11 +1,11 @@
 import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import { useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import type { ComponentChildren } from 'preact';
+import { useMemo } from 'preact/hooks';
+import { useSyncExternalStore } from 'react';
 
 import { useSDK } from './SDKProvider';
 
-const ConnectionStatusProvider = ({ children }: { children: ReactNode }) => {
+const ConnectionStatusProvider = ({ children }: { children: ComponentChildren }) => {
 	const sdk = useSDK();
 
 	const status = useSyncExternalStore(
@@ -32,7 +32,7 @@ const ConnectionStatusProvider = ({ children }: { children: ReactNode }) => {
 				status,
 				connected: status === 'connected',
 				reconnect: () => sdk.connection.reconnect(),
-			} as const),
+			}) as const,
 		[status, sdk],
 	);
 

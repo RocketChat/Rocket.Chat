@@ -1,6 +1,5 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useTranslation, useUser, useRoute } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { Page, PageHeader, PageContent } from '../../components/Page';
 

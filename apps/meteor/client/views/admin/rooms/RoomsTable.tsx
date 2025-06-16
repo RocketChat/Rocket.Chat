@@ -1,11 +1,14 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import RoomRow from './RoomRow';
+import RoomsTableFilters from './RoomsTableFilters';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,8 +19,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import RoomRow from './RoomRow';
-import RoomsTableFilters from './RoomsTableFilters';
 
 type RoomFilters = {
 	searchText: string;
@@ -27,14 +28,14 @@ type RoomFilters = {
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
 
 	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
 
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured' | 'ts'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
@@ -56,7 +57,10 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['rooms', query, 'admin'], async () => getAdminRooms(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['rooms', query, 'admin'],
+		queryFn: async () => getAdminRooms(query),
+	});
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -109,6 +113,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					>
 						{t('Featured')}
 					</GenericTableHeaderCell>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
+						{t('Created_at')}
+					</GenericTableHeaderCell>
 				</>
 			)}
 		</>
@@ -121,7 +128,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={mediaQuery ? 6 : 3} />
+						<GenericTableLoadingTable headerCells={mediaQuery ? 7 : 4} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -130,11 +137,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data.rooms?.map((room) => (
-								<RoomRow key={room._id} room={room} />
-							))}
-						</GenericTableBody>
+						<GenericTableBody>{data.rooms?.map((room) => <RoomRow key={room._id} room={room} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

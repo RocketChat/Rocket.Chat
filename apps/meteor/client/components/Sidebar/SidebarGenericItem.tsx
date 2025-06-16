@@ -1,7 +1,7 @@
 import { Box, SidebarItem } from '@rocket.chat/fuselage';
 import type colors from '@rocket.chat/fuselage-tokens/colors';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type SidebarGenericItemProps = {
 	href?: string;

@@ -36,7 +36,7 @@ const mainPino = pino({
 						colorize: true,
 					},
 				},
-		  }
+			}
 		: {}),
 });
 

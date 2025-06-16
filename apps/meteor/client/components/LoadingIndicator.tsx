@@ -1,5 +1,3 @@
-import React from 'react';
-
 const LoadingIndicator = ({ variation }: { variation?: 'medium' | 'large' }) => {
 	return (
 		<div className='loading__animation'>

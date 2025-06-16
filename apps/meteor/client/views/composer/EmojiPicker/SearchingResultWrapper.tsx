@@ -1,8 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import React, { forwardRef } from 'react';
+import type { Ref } from 'react';
+import { forwardRef } from 'react';
 
-const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props, ref: React.Ref<HTMLDivElement>) {
+const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props, ref: Ref<HTMLDivElement>) {
 	const searchResultWrapperStyle = css`
 		button {
 			margin-right: 0.25rem;

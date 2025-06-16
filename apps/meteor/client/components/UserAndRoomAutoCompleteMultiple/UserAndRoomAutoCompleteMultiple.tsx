@@ -5,7 +5,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 

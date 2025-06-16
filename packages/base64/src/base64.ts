@@ -11,23 +11,7 @@ for (let i = 0; i < BASE_64_CHARS.length; i++) {
 	BASE_64_VALS[getChar(i)] = i;
 }
 
-// XXX This is a weird place for this to live, but it's used both by
-// this package and 'ejson', and we can't put it in 'ejson' without
-// introducing a circular dependency. It should probably be in its own
-// package or as a helper in a package that both 'base64' and 'ejson'
-// use.
-const newBinary = (len: number) => {
-	if (typeof Uint8Array === 'undefined' || typeof ArrayBuffer === 'undefined') {
-		const ret = Object.assign(
-			Array.from({ length: len }, () => 0),
-			{
-				$Uint8ArrayPolyfill: true,
-			},
-		);
-		return ret;
-	}
-	return new Uint8Array(new ArrayBuffer(len));
-};
+const newBinary = (len: number) => new Uint8Array(new ArrayBuffer(len));
 
 const encode = (array: ArrayLike<number> | string) => {
 	if (typeof array === 'string') {

@@ -1,7 +1,6 @@
 import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import CreateChannelWithData from '../../../sidebar/header/CreateChannel';

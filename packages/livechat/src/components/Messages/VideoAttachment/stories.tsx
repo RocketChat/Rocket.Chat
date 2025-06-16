@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import VideoAttachment from '.';
@@ -15,7 +15,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof VideoAttachment>>;
 
-const Template: Story<ComponentProps<typeof VideoAttachment>> = (args) => <VideoAttachment {...args} />;
+const Template: StoryFn<ComponentProps<typeof VideoAttachment>> = (args) => <VideoAttachment {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

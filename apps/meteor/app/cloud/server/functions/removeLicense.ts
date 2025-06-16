@@ -1,12 +1,12 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './getWorkspaceAccessToken';
+import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { syncWorkspace } from './syncWorkspace';
 import { callbacks } from '../../../../lib/callbacks';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { settings } from '../../../settings/server';
-import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { syncWorkspace } from './syncWorkspace';
 
 export async function removeLicense() {
 	try {

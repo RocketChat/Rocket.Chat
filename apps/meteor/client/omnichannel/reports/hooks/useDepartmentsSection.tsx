@@ -1,12 +1,13 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
-import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
 	data.map((item) => ({
@@ -15,27 +16,27 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useDepartmentsSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-department-period', PERIOD_OPTIONS);
 	const getConversationsByDepartment = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-department');
 
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 		refetch,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-department', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-department', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByDepartment({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_department');
 	const subtitleTotals = t('__departments__departments_and__count__conversations__period__', {
@@ -57,7 +58,7 @@ export const useDepartmentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -65,6 +66,6 @@ export const useDepartmentsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isPending, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

@@ -3,9 +3,9 @@ import type { OperationParams, OperationResult, PathPattern, UrlParams } from '@
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
-import { getConfig } from '../lib/utils/getConfig';
 import type { AsyncState } from './useAsyncState';
 import { useAsyncState } from './useAsyncState';
+import { getConfig } from '../lib/utils/getConfig';
 
 const log = (name: string): Console['log'] =>
 	process.env.NODE_ENV !== 'production' || getConfig('debug') === 'true'
@@ -20,11 +20,11 @@ const deprecationWarning = log('useEndpointData is deprecated, use @tanstack/rea
  */
 export const useEndpointData = <TPathPattern extends PathPattern>(
 	endpoint: TPathPattern,
-	options: {
+	options: NoInfer<{
 		keys?: UrlParams<TPathPattern>;
 		params?: OperationParams<'GET', TPathPattern>;
 		initialValue?: Serialized<OperationResult<'GET', TPathPattern>> | (() => Serialized<OperationResult<'GET', TPathPattern>>);
-	} = {},
+	}> = {},
 ): AsyncState<Serialized<OperationResult<'GET', TPathPattern>>> & {
 	reload: () => void;
 } => {

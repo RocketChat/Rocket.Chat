@@ -1,6 +1,5 @@
 import { CardTitle, Icon, Palette, CardHeader } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const PlanCardHeader = ({ name }: { name: string }): ReactElement => {
 	return (

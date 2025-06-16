@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { ImageGallery, ImageGalleryError, ImageGalleryLoading } from '../../../components/ImageGallery';
 import { ImageGalleryContext } from '../../../contexts/ImageGalleryContext';

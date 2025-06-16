@@ -157,6 +157,13 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Show_agent_email',
 		});
 
+		await this.add('Omnichannel_allow_visitors_to_close_conversation', true, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_request_comment_when_closing_conversation', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -164,6 +171,15 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Request_comment_when_closing_conversation',
 			i18nDescription: 'Request_comment_when_closing_conversation_description',
 			enableQuery: omnichannelEnabledQuery,
+		});
+
+		await this.add('Omnichannel_allow_force_close_conversations', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'API',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+			alert: 'Omnichannel_allow_force_close_conversations_alert',
 		});
 
 		await this.add('Livechat_conversation_finished_message', '', {
@@ -213,13 +229,6 @@ export const createOmniSettings = () =>
 		});
 
 		await this.add('Livechat_guest_count', 1, { type: 'int', group: 'Omnichannel', hidden: true });
-
-		await this.add('Livechat_Room_Count', 1, {
-			type: 'int',
-			group: 'Omnichannel',
-			i18nLabel: 'Livechat_room_count',
-			hidden: true,
-		});
 
 		await this.add('Livechat_enabled_when_agent_idle', true, {
 			type: 'boolean',
@@ -404,11 +413,29 @@ export const createOmniSettings = () =>
 			enableQuery: [{ _id: 'FileUpload_Enabled', value: true }, omnichannelEnabledQuery],
 		});
 
+		// Making these 2 settings "depend" on each other
+		// Prevents us from having both as true and then asking visitor if it wants a Transcript
+		// But send it anyways because of send_always being enabled. So one can only be turned on
+		// if the other is off.
 		await this.add('Livechat_enable_transcript', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,
 			i18nLabel: 'Transcript_Enabled',
+			enableQuery: [{ _id: 'Livechat_transcript_send_always', value: false }, omnichannelEnabledQuery],
+		});
+
+		await this.add('Livechat_transcript_send_always', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: [{ _id: 'Livechat_enable_transcript', value: false }, omnichannelEnabledQuery],
+		});
+
+		await this.add('Livechat_transcript_show_system_messages', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
 			enableQuery: omnichannelEnabledQuery,
 		});
 
@@ -418,6 +445,13 @@ export const createOmniSettings = () =>
 			public: true,
 			i18nLabel: 'Transcript_message',
 			enableQuery: [{ _id: 'Livechat_enable_transcript', value: true }, omnichannelEnabledQuery],
+		});
+
+		await this.add('Livechat_transcript_email_subject', '', {
+			type: 'string',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
 		});
 
 		await this.add('Omnichannel_enable_department_removal', false, {
@@ -632,6 +666,14 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
 		});
+
+		await this.add('Omnichannel_Metrics_Ignore_Automatic_Messages', false, {
+			type: 'boolean',
+			public: true,
+			group: 'Omnichannel',
+			section: 'Analytics',
+			i18nLabel: 'Omnichannel_Ignore_automatic_responses_for_performance_metrics',
+		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {
 	await this.add('SMS_Enabled', false, {
@@ -815,15 +857,6 @@ await settingsRegistry.addGroup('SMS', async function () {
 		await this.add('Omnichannel_External_Frame_Encryption_JWK', '', {
 			type: 'string',
 			public: true,
-			enableQuery: {
-				_id: 'Omnichannel_External_Frame_Enabled',
-				value: true,
-			},
-		});
-
-		await this.add('Omnichannel_External_Frame_GenerateKey', 'omnichannelExternalFrameGenerateKey', {
-			type: 'action',
-			actionText: 'Generate_new_key',
 			enableQuery: {
 				_id: 'Omnichannel_External_Frame_Enabled',
 				value: true,

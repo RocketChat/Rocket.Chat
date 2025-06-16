@@ -1,5 +1,4 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ErrorPage from './components/ErrorPage';

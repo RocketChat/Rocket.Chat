@@ -1,9 +1,9 @@
 import { api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
+import { dbWatchersDisabled, DatabaseWatcher } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../app/metrics/server/lib/metrics';
-import { DatabaseWatcher } from '../database/DatabaseWatcher';
 import { db } from '../database/utils';
 import { SystemLogger } from '../lib/logger/system';
 import { initWatchers } from '../modules/watchers/watchers.module';
@@ -19,12 +19,17 @@ watcher.watch().catch((err: Error) => {
 	process.exit(1);
 });
 
-setInterval(function _checkDatabaseWatcher() {
-	if (watcher.isLastDocDelayed()) {
-		SystemLogger.error('No real time data received recently');
-	}
-}, 20000);
+if (!dbWatchersDisabled) {
+	setInterval(function _checkDatabaseWatcher() {
+		if (watcher.isLastDocDelayed()) {
+			SystemLogger.error('No real time data received recently');
+		}
+	}, 20000);
+}
 
 export function isLastDocDelayed(): boolean {
+	if (dbWatchersDisabled) {
+		return false;
+	}
 	return watcher.isLastDocDelayed();
 }

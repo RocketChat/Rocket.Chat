@@ -12,11 +12,11 @@ export class OmnichannelManageContact {
 	}
 
 	get inputEmail(): Locator {
-		return this.page.locator('input[name=email]');
+		return this.page.locator('input[name="emails.0.address"]');
 	}
 
 	get inputPhone(): Locator {
-		return this.page.locator('input[name=phone]');
+		return this.page.locator('input[name="phones.0.phoneNumber"]');
 	}
 
 	get inputContactManager(): Locator {
@@ -31,7 +31,15 @@ export class OmnichannelManageContact {
 		return this.page.locator('button >> text="Cancel"');
 	}
 
-	errorMessage(message: string): Locator {
-		return this.page.locator(`.rcx-field__error >> text="${message}"`);
+	get btnAddEmail(): Locator {
+		return this.page.locator('role=button[name="Add email"]');
+	}
+
+	get btnAddPhone(): Locator {
+		return this.page.locator('role=button[name="Add phone"]');
+	}
+
+	getErrorMessage(message: string): Locator {
+		return this.page.locator(`role=alert >> text="${message}"`);
 	}
 }

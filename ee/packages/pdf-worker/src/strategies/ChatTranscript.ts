@@ -22,7 +22,7 @@ export class ChatTranscript implements IStrategy {
 							...quote,
 							ts: moment(quote.ts).tz(timezone).format(timeAndDateFormat),
 						};
-				  })
+					})
 				: undefined;
 
 			if (isDivider) {

@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { FileAttachment } from '.';
@@ -15,7 +15,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof FileAttachment>>;
 
-const Template: Story<ComponentProps<typeof FileAttachment>> = (args) => <FileAttachment {...args} />;
+const Template: StoryFn<ComponentProps<typeof FileAttachment>> = (args) => <FileAttachment {...args} />;
 
 export const PDF = Template.bind({});
 PDF.storyName = 'for pdf';

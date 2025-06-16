@@ -1,22 +1,18 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!(isOmnichannelRoom(room) && room.v.token)) {
-			return message;
-		}
-		if (message.t) {
-			return message;
-		}
-		if (!message.token) {
+	'afterOmnichannelSaveMessage',
+	async (message, { roomUpdater }) => {
+		if (message.t || !isMessageFromVisitor(message)) {
 			return message;
 		}
 
-		await LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
+		await LivechatRooms.getVisitorLastMessageTsUpdateQueryByRoomId(message.ts, roomUpdater);
+
+		return message;
 	},
 	callbacks.priority.HIGH,
 	'save-last-visitor-message-timestamp',

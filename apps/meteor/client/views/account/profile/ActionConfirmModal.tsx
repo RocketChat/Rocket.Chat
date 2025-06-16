@@ -1,7 +1,7 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { useState, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
+import { useState, useCallback, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
 
@@ -11,13 +11,14 @@ type ActionConfirmModalProps = {
 	onCancel: () => void;
 };
 
-const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm, onCancel }) => {
-	const t = useTranslation();
+// TODO: Use react-hook-form
+const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
+	const { t } = useTranslation();
 	const [inputText, setInputText] = useState('');
 	const [inputError, setInputError] = useState<string | undefined>();
 
 	const handleChange = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			e.target.value !== '' && setInputError(undefined);
 			setInputText(e.currentTarget.value);
 		},
@@ -25,7 +26,7 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 	);
 
 	const handleSave = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			e.preventDefault();
 			if (inputText === '') {
 				setInputError(t('Invalid_field'));
@@ -37,6 +38,7 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 		[inputText, onConfirm, onCancel, t],
 	);
 
+	const actionTextId = useId();
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
@@ -47,12 +49,14 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<Box mb={8}>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
+			<Box mb={8} id={actionTextId}>
+				{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}
+			</Box>
 			<FieldGroup w='full'>
 				<Field>
 					<FieldRow>
-						{isPassword && <PasswordInput value={inputText} onChange={handleChange} />}
-						{!isPassword && <TextInput value={inputText} onChange={handleChange} />}
+						{isPassword && <PasswordInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
+						{!isPassword && <TextInput value={inputText} onChange={handleChange} aria-labelledby={actionTextId} />}
 					</FieldRow>
 					<FieldError>{inputError}</FieldError>
 				</Field>

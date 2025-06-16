@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import type { OTRRoom } from '../client/OTRRoom';
 import type { OtrRoomState } from './OtrRoomState';
+import type { OTRRoom } from '../client/OTRRoom';
 
 export interface IOnUserStreamData {
 	roomId: IRoom['_id'];

@@ -1,0 +1,838 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <textarea
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
+        placeholder="Text"
+        rows="1"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-jyts6z"
+      >
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="emoji"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="bold"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="italic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="underline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-underline rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="strike"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="code"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="multiline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+            >
+              ⁅
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="link"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="katex"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="mic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="video"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-4pvxx3"
+            >
+              ❲
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="attachment"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-clip rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="more"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1attbr1"
+      >
+        <span
+          class="rcx-skeleton rcx-skeleton--text rcx-css-17gdwyr"
+        />
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1ifbqvi"
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders ToolbarActions without crashing 1`] = `
+<body>
+  <div>
+    <div
+      aria-orientation="horizontal"
+      class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+      role="toolbar"
+    >
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="emoji"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+      />
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="bold"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="italic"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="underline"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-underline rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="strike"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="code"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="multiline"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+        >
+          ⁅
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="link"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="katex"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <hr
+        class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+      />
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="mic"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="video"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-4pvxx3"
+        >
+          ❲
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="attachment"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-clip rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+        title="more"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithHints without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-r3aouy"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-tag "
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-pencil rcx-icon rcx-css-nbjs1j"
+        >
+          ⦏
+        </i>
+        <span
+          class="rcx-tag__inner"
+        >
+          Editing message
+        </span>
+      </span>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+      >
+        <strong>
+          esc
+        </strong>
+         to cancel · 
+        <strong>
+          enter
+        </strong>
+         to save
+      </div>
+    </div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <textarea
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
+        placeholder="Text"
+        rows="1"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-jyts6z"
+      >
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="emoji"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="bold"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="italic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="underline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-underline rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="strike"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="code"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="multiline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+            >
+              ⁅
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="link"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="katex"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="mic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="video"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-4pvxx3"
+            >
+              ❲
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="attachment"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-clip rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="more"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="group"
+        >
+          <button
+            aria-label="Send"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
+            >
+              〈
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithSubmit without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      role="group"
+    >
+      <textarea
+        class="rcx-box rcx-box--full rcx-css-1fg3rdf rc-message-box__textarea js-input-message rcx-css-2h4snk"
+        placeholder="Text"
+        rows="1"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-jyts6z"
+      >
+        <div
+          aria-orientation="horizontal"
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="toolbar"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="emoji"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-emoji rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="bold"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-bold rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="italic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-italic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="underline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-underline rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="strike"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-strike rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="code"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-code rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="multiline"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-multiline rcx-icon rcx-css-4pvxx3"
+            >
+              ⁅
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="link"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-link rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="katex"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-katex rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-button-group__item rcx-css-e8uboy"
+          />
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="mic"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="video"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-4pvxx3"
+            >
+              ❲
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="attachment"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-clip rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            title="more"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-plus rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Preview
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-button-group__item"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Send
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

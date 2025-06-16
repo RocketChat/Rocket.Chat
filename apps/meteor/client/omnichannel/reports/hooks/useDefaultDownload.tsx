@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Period } from '../../../components/dashboards/periods';
 import { formatAttachmentName } from '../utils/formatAttachmentName';
@@ -13,7 +13,7 @@ type DefaultDownloadHookProps = {
 };
 
 export const useDefaultDownload = ({ columnName, title, period, data }: DefaultDownloadHookProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return useMemo(() => {
 		const { start, end } = formatPeriodRange(period);
 

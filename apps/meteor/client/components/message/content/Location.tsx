@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import MapView from './location/MapView';
 

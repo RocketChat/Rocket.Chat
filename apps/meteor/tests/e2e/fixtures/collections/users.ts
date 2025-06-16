@@ -10,13 +10,13 @@ type UserFixture = IUser & {
 };
 
 export function createUserFixture(user: IUserState): UserFixture {
-	const { username, hashedToken, loginExpire } = user.data;
+	const { username, hashedToken, loginExpire, e2e } = user.data;
 
 	return {
 		_id: `${username}`,
 		type: 'user',
 		active: true,
-		emails: [{ address: `${username}@email.com`, verified: false }],
+		emails: [{ address: `${username}@email.com`, verified: true }],
 		roles: ['user'],
 		name: username,
 		lastLogin: new Date(),
@@ -48,5 +48,6 @@ export function createUserFixture(user: IUserState): UserFixture {
 		createdAt: new Date(),
 		_updatedAt: new Date(),
 		__rooms: ['GENERAL'],
+		e2e,
 	};
 }

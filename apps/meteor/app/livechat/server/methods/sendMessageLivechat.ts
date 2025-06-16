@@ -1,12 +1,12 @@
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/LivechatTyped';
-import type { ILivechatMessage } from '../lib/LivechatTyped';
+import type { ILivechatMessage } from '../lib/localTypes';
+import { sendMessage } from '../lib/messages';
 
 interface ILivechatMessageAgent {
 	agentId: string;
@@ -18,7 +18,7 @@ interface ISendMessageLivechat {
 	agent?: ILivechatMessageAgent;
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendMessageLivechat(message: ILivechatMessage, agent: ILivechatMessageAgent): boolean;
@@ -59,7 +59,7 @@ export const sendMessageLivechat = async ({
 		throw new Meteor.Error('message-length-exceeds-character-limit');
 	}
 
-	return Livechat.sendMessage({
+	return sendMessage({
 		guest,
 		message: {
 			_id,

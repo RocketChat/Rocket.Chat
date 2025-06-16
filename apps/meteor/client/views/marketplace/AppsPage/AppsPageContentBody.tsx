@@ -1,9 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useRef } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useId, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
@@ -11,11 +11,16 @@ import FeaturedAppsSections from './FeaturedAppsSections';
 type AppsPageContentBodyProps = {
 	isMarketplace: boolean;
 	isFiltered: boolean;
-	appsResult?: { items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number };
+	appsResult?: PaginatedResult<{
+		items: App[];
+		shouldShowSearchText: boolean;
+		allApps: App[];
+		totalAppsLength: number;
+	}>;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
-	onSetItemsPerPage: React.Dispatch<React.SetStateAction<25 | 50 | 100>>;
-	onSetCurrent: React.Dispatch<React.SetStateAction<number>>;
+	onSetItemsPerPage: Dispatch<SetStateAction<25 | 50 | 100>>;
+	onSetCurrent: Dispatch<SetStateAction<number>>;
 	paginationProps: {
 		itemsPerPageLabel: () => string;
 		showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
@@ -34,9 +39,9 @@ const AppsPageContentBody = ({
 	paginationProps,
 	noErrorsOcurred,
 }: AppsPageContentBodyProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
-	const appsListId = useUniqueId();
+	const appsListId = useId();
 
 	return (
 		<>

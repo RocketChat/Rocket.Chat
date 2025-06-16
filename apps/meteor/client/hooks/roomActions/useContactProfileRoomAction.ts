@@ -2,7 +2,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const ContactsContextualBar = lazy(() => import('../../views/omnichannel/directory/contacts/contextualBar/ContactsContextualBar'));
+const ContactInfoRouter = lazy(() => import('../../views/omnichannel/contactInfo/ContactInfoRouter'));
 
 export const useContactProfileRoomAction = () => {
 	return useMemo(
@@ -11,7 +11,7 @@ export const useContactProfileRoomAction = () => {
 			groups: ['live' /* , 'voip'*/],
 			title: 'Contact_Info',
 			icon: 'user',
-			tabComponent: ContactsContextualBar,
+			tabComponent: ContactInfoRouter,
 			order: 1,
 		}),
 		[],

@@ -1,9 +1,10 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useState, useMemo } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 
+import { CallTableRow } from './CallTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -11,11 +12,10 @@ import {
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
+	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { CallTableRow } from './CallTableRow';
 
 const CallTable = () => {
 	const t = useTranslation();
@@ -26,34 +26,40 @@ const CallTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'phone' | 'queue' | 'ts' | 'callDuration' | 'direction'>('fname');
 
-	const query = useMemo(
-		() => ({
-			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			open: 'false' as const,
-			roomName: text || '',
-			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				open: 'false' as const,
+				roomName: text || '',
+				agents: userIdLoggedIn ? [userIdLoggedIn] : [],
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text],
+		),
+		500,
 	);
 
-	const onRowClick = useMutableCallback((id, token) => {
+	const onRowClick = useEffectEvent((id: string, token?: string) => {
 		directoryRoute.push(
 			{
-				page: 'calls',
-				bar: 'info',
+				tab: 'calls',
+				context: 'info',
 				id,
 			},
-			{ token },
+			token ? { token } : {},
 		);
 	});
 
 	const getVoipRooms = useEndpoint('GET', '/v1/voip/rooms');
-	const { data, isSuccess, isLoading } = useQuery(['voip-rooms', query], async () => getVoipRooms(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['voip-rooms', query],
+		queryFn: async () => getVoipRooms(query),
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
@@ -95,12 +101,14 @@ const CallTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setText(text)} />}
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={7} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -119,9 +127,7 @@ const CallTable = () => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.rooms.map((room) => (
-								<CallTableRow key={room._id} room={room} onRowClick={onRowClick} />
-							))}
+							{data?.rooms.map((room) => <CallTableRow key={room._id} room={room} onRowClick={onRowClick} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

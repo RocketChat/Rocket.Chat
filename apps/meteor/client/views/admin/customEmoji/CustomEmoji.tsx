@@ -3,8 +3,8 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC, MutableRefObject } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -25,7 +25,7 @@ type CustomEmojiProps = {
 	onClick: (emoji: string) => () => void;
 };
 
-const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
+const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -58,7 +58,10 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['getEmojiList', query], () => getEmojiList(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['getEmojiList', query],
+		queryFn: () => getEmojiList(query),
+	});
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -66,7 +69,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -95,7 +98,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 											<Box withTruncatedText>{emojis.name}</Box>
 										</GenericTableCell>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{emojis.aliases}</Box>
+											<Box withTruncatedText>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Box>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

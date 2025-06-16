@@ -1,7 +1,6 @@
 import { Card, CardTitle, CardBody, CardControls, CardHeader, FramedIcon } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import type { GenericCardButton } from './GenericCardButton';
 
@@ -13,9 +12,9 @@ type GenericCardProps = {
 	type?: 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 } & ComponentProps<typeof Card>;
 
-export const GenericCard: React.FC<GenericCardProps> = ({ title, body, buttons, icon, type, ...props }) => {
-	const cardId = useUniqueId();
-	const descriptionId = useUniqueId();
+export const GenericCard = ({ title, body, buttons, icon, type, ...props }: GenericCardProps) => {
+	const cardId = useId();
+	const descriptionId = useId();
 
 	const iconType = type && {
 		[type]: true,

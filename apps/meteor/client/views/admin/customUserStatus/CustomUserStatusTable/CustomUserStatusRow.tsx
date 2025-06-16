@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { CSSProperties, ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import MarkdownText from '../../../../components/MarkdownText';
@@ -14,6 +14,7 @@ type CustomUserStatusRowProps = {
 
 const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): ReactElement => {
 	const { _id, name, statusType } = status;
+	const { t } = useTranslation();
 
 	return (
 		<GenericTableRow
@@ -29,7 +30,7 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): Rea
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='default' style={style}>
-				{statusType}
+				{t(statusType)}
 			</GenericTableCell>
 		</GenericTableRow>
 	);

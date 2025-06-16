@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
+import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
 	title: 'Components/Data/PositiveGrowthSymbol',
@@ -19,9 +18,9 @@ export default {
 			return <Box color={color}>{fn()}</Box>;
 		},
 	],
-} as ComponentMeta<typeof PositiveGrowthSymbol>;
+} satisfies Meta<typeof PositiveGrowthSymbol>;
 
-const Template: ComponentStory<typeof PositiveGrowthSymbol> = (args) => <PositiveGrowthSymbol {...args} />;
+const Template: StoryFn<typeof PositiveGrowthSymbol> = (args) => <PositiveGrowthSymbol {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'PositiveGrowthSymbol';

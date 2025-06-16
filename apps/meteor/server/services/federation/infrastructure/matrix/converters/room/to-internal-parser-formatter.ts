@@ -1,4 +1,4 @@
-import type { MentionPill as MentionPillType } from '@rocket.chat/forked-matrix-bot-sdk';
+import type { MentionPill as MentionPillType } from '@vector-im/matrix-bot-sdk';
 import { marked } from 'marked';
 
 const INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX = /@([0-9a-zA-Z-_.]+(@([0-9a-zA-Z-_.]+))?):+([0-9a-zA-Z-_.]+)(?=[^<>]*(?:<\w|$))/gm; // @username:server.com excluding any <a> tags
@@ -20,7 +20,7 @@ const replaceMessageMentions = async (
 };
 
 const replaceMentionsFromLocalExternalUsersForExternalFormat = async (message: string): Promise<string> => {
-	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
+	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
 
 	return replaceMessageMentions(message, INTERNAL_MENTIONS_FOR_EXTERNAL_USERS_REGEX, (match: string) =>
 		MentionPill.forUser(match.trimStart()),
@@ -28,7 +28,7 @@ const replaceMentionsFromLocalExternalUsersForExternalFormat = async (message: s
 };
 
 const replaceInternalUsersMentionsForExternalFormat = async (message: string, homeServerDomain: string): Promise<string> => {
-	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
+	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
 
 	return replaceMessageMentions(message, INTERNAL_MENTIONS_FOR_INTERNAL_USERS_REGEX, (match: string) =>
 		MentionPill.forUser(`${match.trimStart()}:${homeServerDomain}`),
@@ -36,7 +36,7 @@ const replaceInternalUsersMentionsForExternalFormat = async (message: string, ho
 };
 
 const replaceInternalGeneralMentionsForExternalFormat = async (message: string, externalRoomId: string): Promise<string> => {
-	const { MentionPill } = await import('@rocket.chat/forked-matrix-bot-sdk');
+	const { MentionPill } = await import('@vector-im/matrix-bot-sdk');
 
 	return replaceMessageMentions(message, INTERNAL_GENERAL_REGEX, () => MentionPill.forRoom(externalRoomId));
 };
@@ -79,7 +79,7 @@ export const toExternalQuoteMessageFormat = async ({
 	message: string;
 	homeServerDomain: string;
 }): Promise<{ message: string; formattedMessage: string }> => {
-	const { RichReply } = await import('@rocket.chat/forked-matrix-bot-sdk');
+	const { RichReply } = await import('@vector-im/matrix-bot-sdk');
 
 	const formattedMessage = convertMarkdownToHTML(message);
 	const finalFormattedMessage = convertMarkdownToHTML(

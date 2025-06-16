@@ -32,7 +32,7 @@ test.describe.serial('message-composer', () => {
 		await page.setViewportSize({ width: 768, height: 600 });
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(5);
+		await expect(poHomeChannel.composerToolbarActions).toHaveCount(6);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe.serial('message-composer', () => {
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		
+
 		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
 	});
 
@@ -63,10 +63,84 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
-		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click()
+		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
-		
+
 		await expect(poHomeChannel.composer).toHaveValue(`[hello composer](${url})`);
+	});
+
+	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @all');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('hello composer @all ');
+
+			await poHomeChannel.composer.fill('');
+		});
+
+		await test.step('emoji popup', async () => {
+			await page.keyboard.type('hello composer :flag_br');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('hello composer :flag_br: ');
+
+			await poHomeChannel.composer.fill('');
+		});
+
+		await test.step('slash command', async () => {
+			await page.keyboard.type('/gim');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('/gimme ');
+
+			await poHomeChannel.composer.fill('');
+		});
+	});
+
+	test('should list popup items correctly', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @rocket.cat');
+
+			await expect(poHomeChannel.composerBoxPopup.getByText('rocket.cat')).toBeVisible();
+		});
+	});
+
+	test.describe('audio recorder', () => {
+		test('should open audio recorder', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+		});
+
+		test('should stop recording when clicking on cancel', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Cancel recording', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).not.toBeVisible();
+		});
+
+		test('should open file modal when clicking on "Finish recording"', async ({ page }) => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.composerToolbar.getByRole('button', { name: 'Audio message', exact: true }).click();
+			await expect(poHomeChannel.audioRecorder).toBeVisible();
+
+			await page.waitForTimeout(1000);
+			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
+			await expect(poHomeChannel.content.fileUploadModal).toBeVisible();
+		});
 	});
 });

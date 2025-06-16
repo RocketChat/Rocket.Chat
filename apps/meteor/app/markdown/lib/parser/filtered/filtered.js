@@ -1,6 +1,7 @@
-/*
+/**
  * Filter markdown tags in message
- *	Use case: notifications
+ * Use case: notifications
+ * @param {string} message
  */
 export const filtered = (
 	message,

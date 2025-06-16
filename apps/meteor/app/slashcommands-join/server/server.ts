@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 slashCommands.add({
 	command: 'join',

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import type { EmojiByCategory } from '../../app/emoji/client';
+import type { EmojiPickerItem, CategoriesIndexes } from '../../app/emoji/client';
 
 type EmojiPickerContextValue = {
 	open: (ref: Element, callback: (emoji: string) => void) => void;
@@ -10,7 +10,7 @@ type EmojiPickerContextValue = {
 	handlePreview: (emoji: string, name: string) => void;
 	handleRemovePreview: () => void;
 	addRecentEmoji: (emoji: string) => void;
-	getEmojiListsByCategory: () => EmojiByCategory[];
+	emojiListByCategory: EmojiPickerItem[];
 	recentEmojis: string[];
 	setRecentEmojis: (emoji: string[]) => void;
 	actualTone: number;
@@ -20,6 +20,7 @@ type EmojiPickerContextValue = {
 	setCustomItemsLimit: (limit: number) => void;
 	setActualTone: (tone: number) => void;
 	quickReactions: { emoji: string; image: string }[];
+	categoriesIndexes: CategoriesIndexes;
 };
 
 export const EmojiPickerContext = createContext<EmojiPickerContextValue | undefined>(undefined);
@@ -49,8 +50,9 @@ export const useEmojiPickerData = () => {
 		actualTone,
 		addRecentEmoji,
 		currentCategory,
+		categoriesIndexes,
 		customItemsLimit,
-		getEmojiListsByCategory,
+		emojiListByCategory,
 		quickReactions,
 		recentEmojis,
 		setActualTone,
@@ -61,11 +63,12 @@ export const useEmojiPickerData = () => {
 
 	return {
 		addRecentEmoji,
-		getEmojiListsByCategory,
+		emojiListByCategory,
 		recentEmojis,
 		setRecentEmojis,
 		actualTone,
 		currentCategory,
+		categoriesIndexes,
 		setCurrentCategory,
 		customItemsLimit,
 		setCustomItemsLimit,

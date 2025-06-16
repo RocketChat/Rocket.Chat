@@ -1,12 +1,12 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
 const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps): ReactElement => {
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
+		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (

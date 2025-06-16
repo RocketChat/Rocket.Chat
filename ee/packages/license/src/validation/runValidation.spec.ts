@@ -2,8 +2,8 @@
  * @jest-environment node
  */
 
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 import { runValidation } from './runValidation';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
 
 describe('Validation behaviors', () => {
 	it('should return a behavior if the license period is invalid', async () => {

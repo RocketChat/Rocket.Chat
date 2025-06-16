@@ -1,21 +1,20 @@
-import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps } from 'react';
-import React from 'react';
+import { useId, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal/GenericModal';
 
 type ReportUserModalProps = {
-	onConfirm: (description: string) => void;
+	onConfirm: (reasonForReport: string) => void;
 	onClose: () => void;
 	displayName: string;
 	username: string;
 };
 
 type ReportUserModalsFields = {
-	description: string;
+	reasonForReport: string;
 };
 
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
@@ -25,16 +24,18 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		formState: { errors },
 	} = useForm<ReportUserModalsFields>({
 		defaultValues: {
-			description: '',
+			reasonForReport: '',
 		},
 	});
 
 	const { t } = useTranslation();
 
+	const reasonForReportId = useId();
+
 	return (
 		<GenericModal
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' onSubmit={handleSubmit(({ description }) => onConfirm(description))} {...props} />
+				<Box is='form' onSubmit={handleSubmit(({ reasonForReport }) => onConfirm(reasonForReport))} {...props} />
 			)}
 			variant='danger'
 			title={t('Report_User')}
@@ -42,26 +43,32 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
+			<Box mbe={16} display='flex' alignItems='center'>
+				<UserAvatar username={username} />
+				<Box mis={8} fontScale='p2b'>
+					{displayName}
+				</Box>
+			</Box>
 			<FieldGroup>
 				<Field>
-					<FieldLabel>
-						<Box mbe='x12' display='flex' alignItems='center'>
-							<UserAvatar username={username} />
-							<Box mis='x12' fontScale='p1' fontWeight='700'>
-								{displayName}
-							</Box>
-						</Box>
-					</FieldLabel>
+					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
+					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 					<FieldRow>
 						<TextAreaInput
+							id={reasonForReportId}
 							rows={3}
-							placeholder={t('Why_do_you_want_to_report_question_mark')}
-							{...register('description', { required: t('Please_fill_out_reason_for_report') })}
+							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
 							width='full'
-							mbe='x4'
+							mbe={4}
+							aria-required='true'
+							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
 						/>
 					</FieldRow>
-					{errors.description && <FieldError>{errors.description.message}</FieldError>}
+					{errors.reasonForReport && (
+						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
+							{errors.reasonForReport.message}
+						</FieldError>
+					)}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

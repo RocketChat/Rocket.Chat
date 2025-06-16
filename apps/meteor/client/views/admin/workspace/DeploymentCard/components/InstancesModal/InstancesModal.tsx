@@ -1,12 +1,11 @@
-import { Accordion } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../../components/GenericModal';
-import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
+import GenericModal from '../../../../../../components/GenericModal';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
 type InstancesModalProps = {
 	instances: IInstance[];
@@ -14,14 +13,14 @@ type InstancesModalProps = {
 };
 
 const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	return (
 		<GenericModal onConfirm={onClose} confirmText={t('Close')} icon={null} title={t('Instances')} onClose={onClose}>
 			<Accordion>
 				{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }) => (
-					<Accordion.Item defaultExpanded title={address} key={address}>
+					<AccordionItem defaultExpanded title={address} key={address}>
 						<DescriptionList>
 							<DescriptionListEntry label={t('Address')}>{address}</DescriptionListEntry>
 							<DescriptionListEntry label={t('Auth')}>{broadcastAuth ? 'true' : 'false'}</DescriptionListEntry>
@@ -81,7 +80,7 @@ const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
 								{formatDateAndTime(instanceRecord?._updatedAt)}
 							</DescriptionListEntry>
 						</DescriptionList>
-					</Accordion.Item>
+					</AccordionItem>
 				))}
 			</Accordion>
 		</GenericModal>

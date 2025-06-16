@@ -1,3 +1,4 @@
+import type { ISetting, IUser } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
 import * as constants from '../config/constants';
@@ -7,7 +8,13 @@ import { Users } from './userStates';
 export default async function injectInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usersFixtures = [createUserFixture(Users.user1), createUserFixture(Users.user2), createUserFixture(Users.user3)];
+	const usersFixtures = [
+		createUserFixture(Users.user1),
+		createUserFixture(Users.user2),
+		createUserFixture(Users.user3),
+		createUserFixture(Users.userE2EE),
+		createUserFixture(Users.userNotAllowedByApp),
+	];
 
 	await Promise.all(
 		usersFixtures.map((user) =>
@@ -17,7 +24,7 @@ export default async function injectInitialData() {
 
 	await connection
 		.db()
-		.collection('users')
+		.collection<IUser>('users')
 		.updateOne(
 			{ username: Users.admin.data.username },
 			{ $addToSet: { 'services.resume.loginTokens': { when: Users.admin.data.loginExpire, hashedToken: Users.admin.data.hashedToken } } },
@@ -58,29 +65,17 @@ export default async function injectInitialData() {
 				value: false,
 			},
 			{
-				_id: 'SAML_Custom_Default_provider',
-				value: 'test-sp',
-			},
-			{
-				_id: 'SAML_Custom_Default_issuer',
-				value: 'http://localhost:3000/_saml/metadata/test-sp',
-			},
-			{
-				_id: 'SAML_Custom_Default_entry_point',
-				value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php',
-			},
-			{
-				_id: 'SAML_Custom_Default_idp_slo_redirect_url',
-				value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php',
-			},
-			{
 				_id: 'Accounts_OAuth_Google',
 				value: false,
+			},
+			{
+				_id: 'Livechat_Require_Contact_Verification',
+				value: 'never',
 			},
 		].map((setting) =>
 			connection
 				.db()
-				.collection('rocketchat_settings')
+				.collection<ISetting>('rocketchat_settings')
 				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
 		),
 	);

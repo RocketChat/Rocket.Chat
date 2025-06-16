@@ -1,9 +1,9 @@
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 
 class RoomCoordinatorServer extends RoomCoordinator {
@@ -50,8 +50,8 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text, name: room.name };
 			},
-			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
-				return Users.findOneById(senderId);
+			getMsgSender(message: IMessage): Promise<IUser | null> {
+				return Users.findOneById(message.u._id);
 			},
 			includeInRoomSearch(): boolean {
 				return false;

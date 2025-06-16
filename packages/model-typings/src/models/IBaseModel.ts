@@ -2,6 +2,7 @@ import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
+	ClientSession,
 	Collection,
 	DeleteOptions,
 	DeleteResult,
@@ -9,12 +10,12 @@ import type {
 	EnhancedOmit,
 	Filter,
 	FindCursor,
+	FindOneAndDeleteOptions,
 	FindOneAndUpdateOptions,
 	FindOptions,
 	InsertManyResult,
 	InsertOneOptions,
 	InsertOneResult,
-	ModifyResult,
 	OptionalId,
 	UpdateFilter,
 	UpdateOptions,
@@ -22,12 +23,14 @@ import type {
 	WithId,
 } from 'mongodb';
 
-export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
+import type { Updater } from '../updater';
+
+export type DefaultFields<Base> = Partial<Record<keyof Base, 1>> | Partial<Record<keyof Base, 0>> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-	? Pick<Defaults, keyof Defaults>
-	: Omit<Defaults, keyof Defaults>;
+		? Pick<Defaults, keyof Defaults>
+		: Omit<Defaults, keyof Defaults>;
 
 export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
@@ -48,8 +51,11 @@ export interface IBaseModel<
 	createIndexes(): Promise<string[] | void>;
 
 	getCollectionName(): string;
+	getUpdater(): Updater<T>;
+	updateFromUpdater(query: Filter<T>, updater: Updater<T>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
+	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<null | WithId<T>>;
+	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<null | WithId<T>>;
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
 	findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
@@ -83,11 +89,13 @@ export interface IBaseModel<
 
 	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>>;
 
-	removeById(_id: T['_id']): Promise<DeleteResult>;
+	removeById(_id: T['_id'], options?: { session?: ClientSession }): Promise<DeleteResult>;
+
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult>;
 
 	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
 
-	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;
+	deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult>;
 
 	// Trash
 	trashFind<P extends TDeleted>(

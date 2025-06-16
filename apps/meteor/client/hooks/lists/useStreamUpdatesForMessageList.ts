@@ -1,10 +1,10 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import type { MessageList } from '../../lib/lists/MessageList';
-import type { FieldExpression, Query } from '../../lib/minimongo';
-import { createFilterFromQuery } from '../../lib/minimongo';
 
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
@@ -17,7 +17,7 @@ type NotifyRoomRidDeleteMessageBulkEvent = {
 };
 
 const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((message: IMessage) => boolean) => {
-	const query: Query<IMessage> = {};
+	const query: Filter<IMessage> = {};
 
 	if (params.ids) {
 		query._id = { $in: params.ids };
@@ -36,7 +36,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((me
 		query['u.username'] = { $in: params.users };
 	}
 
-	return createFilterFromQuery<IMessage>(query);
+	return createPredicateFromFilter<IMessage>(query);
 };
 
 export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {

@@ -1,19 +1,11 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box } from '@rocket.chat/fuselage';
 
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
-
-const hoverClass = css`
-	&:hover {
-		cursor: pointer;
-		background: ${Palette.surface['surface-hover']};
-	}
-`;
+import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
+import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 type FileItemProps = {
 	fileData: IUploadWithUser;
@@ -22,16 +14,19 @@ type FileItemProps = {
 
 const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
-	const { _id, name, url, uploadedAt, type, typeGroup, user } = fileData;
+	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
+
+	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
 
 	return (
-		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>
+		<>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={url} name={name} username={user?.username} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'
 					minWidth={0}
+					aria-label={name}
 					download
 					rel='noopener noreferrer'
 					target='_blank'
@@ -39,8 +34,10 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					display='flex'
 					flexGrow={1}
 					flexShrink={1}
-					href={url}
+					href={path}
+					tabIndex={-1}
 					textDecorationLine='none'
+					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
 					<FileItemIcon type={type} />
 					<Box mis={8} flexShrink={1} overflow='hidden'>
@@ -59,7 +56,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 				</Box>
 			)}
 			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
-		</Box>
+		</>
 	);
 };
 

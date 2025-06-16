@@ -1,6 +1,12 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client/src/types/methods';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
+import type {
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	StreamKeys,
+	StreamNames,
+	StreamerCallbackArgs,
+} from '@rocket.chat/ddp-client';
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
 
@@ -38,6 +44,8 @@ export type ServerContextValue = {
 			retransmitToSelf?: boolean | undefined;
 		},
 	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
+	disconnect: () => void;
+	reconnect: () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -50,4 +58,10 @@ export const ServerContext = createContext<ServerContextValue>({
 		throw new Error('not implemented');
 	},
 	getStream: () => () => (): void => undefined,
+	disconnect: () => {
+		throw new Error('not implemented');
+	},
+	reconnect: () => {
+		throw new Error('not implemented');
+	},
 });

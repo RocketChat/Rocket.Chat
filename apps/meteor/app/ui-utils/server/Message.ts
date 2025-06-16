@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
@@ -11,16 +11,13 @@ export const Message = {
 	parse(msg: IMessage, language: string) {
 		const messageType = MessageTypes.getType(msg);
 		if (messageType) {
-			if (messageType.render) {
-				return messageType.render(msg);
-			}
 			if (messageType.template) {
 				// Render message
 				return;
 			}
 			if (messageType.message) {
 				if (!language) {
-					language = Meteor._localStorage.getItem('userLanguage') || 'en';
+					language = Accounts.storageLocation.getItem('userLanguage') || 'en';
 				}
 				const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
 				return i18n.t(messageType.message, { ...data, lng: language });

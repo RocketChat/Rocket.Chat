@@ -27,8 +27,8 @@ const msgTypesNotRendered = [
 
 export const getHiddenSystemMessages = () => {
 	const { config, iframe } = store.state;
-	const configHiddenSystemMessages = config.settings.hiddenSystemMessages || [];
-	const localHiddenSystemMessages = iframe.hiddenSystemMessages || [];
+	const configHiddenSystemMessages = config?.settings.hiddenSystemMessages || [];
+	const localHiddenSystemMessages = iframe?.hiddenSystemMessages || [];
 
 	return [...configHiddenSystemMessages, ...localHiddenSystemMessages] as string[];
 };

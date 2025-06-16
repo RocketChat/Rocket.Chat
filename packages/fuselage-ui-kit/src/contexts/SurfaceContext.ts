@@ -5,6 +5,7 @@ export type SurfaceContextValue =
   | 'banner'
   | 'message'
   | 'modal'
-  | 'contextualBar';
+  | 'contextualBar'
+  | 'custom';
 
 export const SurfaceContext = createContext<SurfaceContextValue>('message');

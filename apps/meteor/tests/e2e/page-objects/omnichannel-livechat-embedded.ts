@@ -35,6 +35,10 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('div >> text="Chat Finished"');
 	}
 
+	get headerTitle(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="header-title"]');
+	}
+
 	get btnChatNow(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[type="button"] >> text="Chat now"');
 	}
@@ -121,10 +125,10 @@ export class OmnichannelLiveChatEmbedded {
 
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
-		await this.inputName.type(liveChatUser.name);
-		await this.inputEmail.type(liveChatUser.email);
+		await this.inputName.fill(liveChatUser.name);
+		await this.inputEmail.fill(liveChatUser.email);
 		if (isOffline) {
-			await this.textAreaMessage.type('any_message');
+			await this.textAreaMessage.fill('any_message');
 			await this.btnSendMessage(buttonLabel).click();
 			return this.btnFinishOfflineMessage().click();
 		}

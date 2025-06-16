@@ -1,12 +1,12 @@
 import { useStream } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect } from 'preact/hooks';
 
 import store from '../store';
 
 // TODO: optimize this function
 const deleteMessage = (messageId: string) => {
 	store.setState({
-		messages: store.state.messages.filter((message) => message._id !== messageId),
+		messages: store.state.messages?.filter((message) => message._id !== messageId),
 	});
 };
 

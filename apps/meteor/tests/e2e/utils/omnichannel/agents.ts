@@ -1,4 +1,4 @@
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
 export const makeAgentAvailable = async (api: BaseTest['api'], agentId: string) => {
 	await api.post('/users.setStatus', {

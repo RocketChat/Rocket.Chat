@@ -1,17 +1,12 @@
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Suspense } from 'react';
 
-import '@testing-library/jest-dom';
 import { MarkupInteractionContext } from '.';
 import Markup from './Markup';
 
-afterEach(cleanup);
-
-beforeAll(() => {
-	jest.mock('highlight.js', () => ({
-		highlightElement: (): void => undefined,
-	}));
-});
+jest.mock('highlight.js', () => ({
+	highlightElement: (): void => undefined,
+}));
 
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);

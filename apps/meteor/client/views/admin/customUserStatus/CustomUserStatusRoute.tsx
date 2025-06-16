@@ -1,22 +1,16 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarClose,
-	ContextualbarTitle,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
+import { ContextualbarHeader, ContextualbarClose, ContextualbarTitle, ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
@@ -25,7 +19,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
 	const { data: license } = useIsEnterprise();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	useEffect(() => {
 		presenceDisabled && route.push({ context: 'presence-service' });
@@ -75,21 +69,19 @@ const CustomUserStatusRoute = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
-					<Contextualbar>
-						<ContextualbarHeader>
-							<ContextualbarTitle>
-								{context === 'edit' && t('Custom_User_Status_Edit')}
-								{context === 'new' && t('Custom_User_Status_Add')}
-								{context === 'presence-service' && t('Presence_service_cap')}
-							</ContextualbarTitle>
-							<ContextualbarClose onClick={handleClose} />
-						</ContextualbarHeader>
-						{context === 'presence-service' && <CustomUserStatusService />}
-						{(context === 'new' || context === 'edit') && (
-							<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
-						)}
-					</Contextualbar>
+				<ContextualbarDialog onClose={handleClose}>
+					<ContextualbarHeader>
+						<ContextualbarTitle>
+							{context === 'edit' && t('Custom_User_Status_Edit')}
+							{context === 'new' && t('Custom_User_Status_Add')}
+							{context === 'presence-service' && t('Presence_service_cap')}
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleClose} />
+					</ContextualbarHeader>
+					{context === 'presence-service' && <CustomUserStatusService />}
+					{(context === 'new' || context === 'edit') && (
+						<CustomUserStatusFormWithData _id={id} onClose={handleClose} onReload={handleReload} />
+					)}
 				</ContextualbarDialog>
 			)}
 		</Page>

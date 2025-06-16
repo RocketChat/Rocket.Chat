@@ -1,4 +1,4 @@
-import { MeteorError, Team, api } from '@rocket.chat/core-services';
+import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
@@ -19,15 +19,28 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { generatePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/generateToken';
+import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
+import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
+import { registerUser } from '../../../../server/methods/registerUser';
+import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
+import { resetAvatar } from '../../../../server/methods/resetAvatar';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
+import { executeSaveUserProfile } from '../../../../server/methods/saveUserProfile';
+import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
+import { sendForgotPasswordEmail } from '../../../../server/methods/sendForgotPasswordEmail';
+import { executeSetUserActiveStatus } from '../../../../server/methods/setUserActiveStatus';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -35,7 +48,10 @@ import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
 } from '../../../lib/server/functions/checkUsernameAvailability';
+import { deleteUser } from '../../../lib/server/functions/deleteUser';
+import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { getFullUserDataByIdOrUsernameOrImportId } from '../../../lib/server/functions/getFullUserData';
+import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
@@ -43,7 +59,11 @@ import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
+import { validateUsername } from '../../../lib/server/functions/validateUsername';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
+import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
@@ -62,7 +82,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.setHeader('Location', url);
+			this.response.headers.set('Location', url);
 
 			return {
 				statusCode: 307,
@@ -79,7 +99,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const suggestions = await Meteor.callAsync('getAvatarSuggestion');
+			const suggestions = await getAvatarSuggestionForUser(this.user);
 
 			return API.v1.success({ suggestions });
 		},
@@ -93,11 +113,17 @@ API.v1.addRoute(
 		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
-			await saveUser(this.userId, userData);
-
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+			if (userData.name && !validateNameChars(userData.name)) {
+				return API.v1.failure('Name contains invalid characters');
 			}
+			const auditStore = new UserChangedAuditStore({
+				_id: this.user._id,
+				ip: this.requestIp,
+				useragent: this.request.headers.get('user-agent') || '',
+				username: this.user.username || '',
+			});
+
+			await saveUser(this.userId, userData, { auditStore });
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
 				const {
@@ -105,9 +131,9 @@ API.v1.addRoute(
 					data: { active },
 					confirmRelinquish,
 				} = this.bodyParams;
-
-				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
 			}
+
 			const { fields } = await this.parseJsonQuery();
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
@@ -137,15 +163,19 @@ API.v1.addRoute(
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
 
+			if (userData.realname && !validateNameChars(userData.realname)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
 						twoFactorCode: userData.typedPassword,
 						twoFactorMethod: 'password',
-				  };
+					};
 
-			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -211,9 +241,7 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = await (async (): Promise<
-				Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined | null
-			> => {
+			let user = await (async (): Promise<Pick<IUser, '_id' | 'username'> | undefined | null> => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -223,7 +251,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.avatarUrl) {
@@ -247,9 +275,11 @@ API.v1.addRoute(
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
 				if (fields.userId) {
-					user = await Users.findOneById(fields.userId, { projection: { username: 1 } });
+					user = await Users.findOneById<Pick<IUser, '_id' | 'username'>>(fields.userId, { projection: { username: 1 } });
 				} else if (fields.username) {
-					user = await Users.findOneByUsernameIgnoringCase(fields.username, { projection: { username: 1 } });
+					user = await Users.findOneByUsernameIgnoringCase<Pick<IUser, '_id' | 'username'>>(fields.username, {
+						projection: { username: 1 },
+					});
 				}
 
 				if (!user) {
@@ -279,6 +309,10 @@ API.v1.addRoute(
 				this.bodyParams.joinDefaultChannels = true;
 			}
 
+			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
 			if (this.bodyParams.customFields) {
 				validateCustomFields(this.bodyParams.customFields);
 			}
@@ -291,7 +325,7 @@ API.v1.addRoute(
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
-				await Meteor.callAsync('setUserActiveStatus', userId, this.bodyParams.active);
+				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
 			}
 
 			const { fields } = await this.parseJsonQuery();
@@ -308,17 +342,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
-				return API.v1.unauthorized();
-			}
-
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await Meteor.callAsync('deleteUser', user._id, confirmRelinquish);
+			await deleteUser(user._id, confirmRelinquish, this.userId);
 
 			return API.v1.success();
 		},
@@ -340,7 +370,7 @@ API.v1.addRoute(
 
 			const { confirmRelinquish = false } = this.bodyParams;
 
-			await Meteor.callAsync('deleteUserOwnAccount', password, confirmRelinquish);
+			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -349,18 +379,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setActiveStatus',
-	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUserSetActiveStatusParamsPOST,
+		permissionsRequired: {
+			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
+		},
+	},
 	{
 		async post() {
-			if (
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
-				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				return API.v1.unauthorized();
-			}
-
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
+			await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
 
 			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
 			if (!user) {
@@ -375,19 +404,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
+	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { daysIdle, role = 'user' } = this.bodyParams;
 
 			const lastLoggedIn = new Date();
 			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
 
-			const count = (await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false)).modifiedCount;
+			// since we're deactiving users that are not logged in, there is no need to send data through WS
+			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
 			return API.v1.success({
 				count,
@@ -401,8 +427,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = await this.parseJsonQuery();
-
 			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
 				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
@@ -418,7 +442,7 @@ API.v1.addRoute(
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
-			if (fields.userRooms === 1 && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 				return API.v1.success({
 					user: {
 						...user,
@@ -452,18 +476,15 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
+		permissionsRequired: ['view-d-room'],
 	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
-			}
-
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -509,7 +530,7 @@ API.v1.addRoute(
 							{
 								$limit: count,
 							},
-					  ]
+						]
 					: [];
 
 			const result = await Users.col
@@ -572,7 +593,7 @@ API.v1.addRoute(
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -619,21 +640,29 @@ API.v1.addRoute(
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
 		async post() {
+			const { secret: secretURL, ...params } = this.bodyParams;
+
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
+			}
+
+			if (params.name && !validateNameChars(params.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
+			if (!validateUsername(this.bodyParams.username)) {
+				return API.v1.failure(`The username provided is not valid`);
 			}
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
-
-			const { secret: secretURL, ...params } = this.bodyParams;
 
 			if (this.bodyParams.customFields) {
 				try {
@@ -644,10 +673,14 @@ API.v1.addRoute(
 			}
 
 			// Register the user
-			const userId = await Meteor.callAsync('registerUser', {
+			const userId = await registerUser({
 				...params,
 				...(secretURL && { secretURL }),
 			});
+
+			if (typeof userId !== 'string') {
+				return API.v1.failure('Error creating user');
+			}
 
 			// Now set their username
 			const { fields } = await this.parseJsonQuery();
@@ -675,12 +708,12 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.bodyParams);
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				await Meteor.callAsync('resetAvatar');
+				await resetAvatar(this.userId, this.userId);
 			} else if (
 				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
 				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
 			) {
-				await Meteor.callAsync('resetAvatar', user._id);
+				await resetAvatar(this.userId, user._id);
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
 					method: 'users.resetAvatar',
@@ -701,7 +734,7 @@ API.v1.addRoute(
 
 			const data = await generateAccessToken(this.userId, user._id);
 
-			return data ? API.v1.success({ data }) : API.v1.unauthorized();
+			return data ? API.v1.success({ data }) : API.v1.forbidden();
 		},
 	},
 );
@@ -730,12 +763,18 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async post() {
+			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
+
+			if (!isPasswordResetEnabled) {
+				return API.v1.failure('Password reset is not enabled');
+			}
+
 			const { email } = this.bodyParams;
 			if (!email) {
 				return API.v1.failure("The 'email' param is required");
 			}
 
-			await Meteor.callAsync('sendForgotPasswordEmail', email.toLowerCase());
+			await sendForgotPasswordEmail(email.toLowerCase());
 			return API.v1.success();
 		},
 	},
@@ -746,7 +785,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const result = await Meteor.callAsync('getUsernameSuggestion');
+			const result = await generateUsernameSuggestion(this.user);
 
 			return API.v1.success({ result });
 		},
@@ -775,11 +814,11 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			const { tokenName, bypassTwoFactor } = this.bodyParams;
+			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -795,7 +834,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
@@ -804,13 +843,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getPersonalAccessTokens',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
-				throw new Meteor.Error('not-authorized', 'Not Authorized');
-			}
-
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -838,9 +873,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			await Meteor.callAsync('personalAccessTokens:removeToken', {
-				tokenName,
-			});
+			await removePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success();
 		},
@@ -860,14 +893,31 @@ API.v1.addRoute(
 			await Users.enableEmail2FAByUserId(this.userId);
 
 			// When 2FA is enable we logout all other clients
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
-			if (xAuthToken) {
-				const hashedToken = Accounts._hashLoginToken(xAuthToken);
-
-				if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-					throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
-				}
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
+			if (!xAuthToken) {
+				return API.v1.success();
 			}
+
+			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+
+			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+			}
+
+			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+			// instead of having to listen to every watch.users event
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1, 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.resume.loginTokens': user.services?.resume?.loginTokens, 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
@@ -880,6 +930,19 @@ API.v1.addRoute(
 	{
 		async post() {
 			await Users.disableEmail2FAByUserId(this.userId);
+
+			void notifyOnUserChangeAsync(async () => {
+				const user = await Users.findOneById(this.userId, { projection: { 'services.email2fa': 1 } });
+				if (!user) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.email2fa': user.services?.email2fa },
+				};
+			});
 
 			return API.v1.success();
 		},
@@ -923,7 +986,7 @@ API.v1.addRoute(
 		async post() {
 			const { email } = this.bodyParams;
 
-			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
+			if (await sendConfirmationEmail(email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
@@ -990,7 +1053,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { fullExport = false } = this.queryParams;
-			const result = (await Meteor.callAsync('requestDataDownload', { fullExport: fullExport === 'true' })) as {
+			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
 				requested: boolean;
 				exportOperation: IExportOperation;
 			};
@@ -1008,7 +1071,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
 				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
@@ -1021,10 +1084,17 @@ API.v1.addRoute(
 
 			const me = (await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
 
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: this.userId,
+				diff: { 'services.resume.loginTokens': me.services?.resume?.loginTokens },
+			});
+
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
+			const loginExp = settings.get<number>('Accounts_LoginExpiration');
+
+			const tokenExpires = (token && 'when' in token && new Date(token.when.getTime() + getLoginExpirationInMs(loginExp))) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
@@ -1066,7 +1136,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await Meteor.callAsync('removeOtherTokens'));
+			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
 		},
 	},
 );
@@ -1164,13 +1234,15 @@ API.v1.addRoute(
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
+
+			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -1239,8 +1311,10 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
+
+			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
 				await setStatusText(user._id, this.bodyParams.message);
@@ -1271,6 +1345,8 @@ API.v1.addRoute(
 						user: { status, _id, username, statusText, roles, name },
 						previousStatus: user.status,
 					});
+
+					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',

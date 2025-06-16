@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 const validRepoNameRegex = /^[\w.-]+\/[\w.-]+$/;
 
 type RequestData = { kind: 'commit'; repo: string; commit: string } | { kind: 'pull'; repo: string; pull: number };
+type RequestDataResponse = { message: any; author: any; url: string; authorAssociation: any };
 
 type ReposWithCommitsAndPRsToFetch = Record<string, ({ kind: 'commit'; commit: string } | { kind: 'pull'; pull: number })[]>;
 
@@ -73,57 +74,62 @@ function makeQuery(repos: ReposWithCommitsAndPRsToFetch) {
 // 2. batching
 // getReleaseLine will be called a large number of times but it'll be called at the same time
 // so instead of doing a bunch of network requests, we can do a single one.
-const GHDataLoader = new DataLoader(async (requests: RequestData[]) => {
-	if (!process.env.GITHUB_TOKEN) {
-		throw new Error(
-			'Please create a GitHub personal access token at https://github.com/settings/tokens/new with `read:user` and `repo:status` permissions and add it as the GITHUB_TOKEN environment variable',
-		);
-	}
-	const repos: ReposWithCommitsAndPRsToFetch = {};
-	requests.forEach(({ repo, ...data }) => {
-		if (repos[repo] === undefined) {
-			repos[repo] = [];
+const GHDataLoader = new DataLoader<RequestData, RequestDataResponse>(
+	async (requests) => {
+		if (!process.env.GITHUB_TOKEN) {
+			throw new Error(
+				'Please create a GitHub personal access token at https://github.com/settings/tokens/new with `read:user` and `repo:status` permissions and add it as the GITHUB_TOKEN environment variable',
+			);
 		}
-		repos[repo].push(data);
-	});
-
-	const data = await fetch('https://api.github.com/graphql', {
-		method: 'POST',
-		headers: {
-			Authorization: `Token ${process.env.GITHUB_TOKEN}`,
-		},
-		body: JSON.stringify({ query: makeQuery(repos) }),
-	}).then((x: any) => x.json());
-
-	if (data.errors) {
-		throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data.errors, null, 2)}`);
-	}
-
-	// this is mainly for the case where there's an authentication problem
-	if (!data.data) {
-		throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data)}`);
-	}
-
-	const cleanedData: Record<string, { commit: Record<string, any>; pull: Record<string, any> }> = {};
-	Object.keys(repos).forEach((repo, index) => {
-		const output: { commit: Record<string, any>; pull: Record<string, any> } = {
-			commit: {},
-			pull: {},
-		};
-		cleanedData[repo] = output;
-		Object.entries(data.data[`a${index}`]).forEach(([field, value]) => {
-			// this is "a" because that's how it was when it was first written, "a" means it's a commit not a pr
-			// we could change it to commit__ but then we have to get new GraphQL results from the GH API to put in the tests
-			if (field[0] === 'a') {
-				output.commit[field.substring(1)] = value;
-			} else {
-				output.pull[field.replace('pr__', '')] = value;
+		const repos: ReposWithCommitsAndPRsToFetch = {};
+		requests.forEach(({ repo, ...data }) => {
+			if (repos[repo] === undefined) {
+				repos[repo] = [];
 			}
+			repos[repo].push(data);
 		});
-	});
 
-	return requests.map(({ repo, ...data }) => cleanedData[repo][data.kind][data.kind === 'pull' ? data.pull : data.commit]);
-});
+		const data = await fetch('https://api.github.com/graphql', {
+			method: 'POST',
+			headers: {
+				Authorization: `Token ${process.env.GITHUB_TOKEN}`,
+			},
+			body: JSON.stringify({ query: makeQuery(repos) }),
+		}).then((x: any) => x.json());
+
+		if (data.errors) {
+			throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data.errors, null, 2)}`);
+		}
+
+		// this is mainly for the case where there's an authentication problem
+		if (!data.data) {
+			throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data)}`);
+		}
+
+		const cleanedData: Record<string, { commit: Record<string, any>; pull: Record<string, any> }> = {};
+		Object.keys(repos).forEach((repo, index) => {
+			const output: { commit: Record<string, any>; pull: Record<string, any> } = {
+				commit: {},
+				pull: {},
+			};
+			cleanedData[repo] = output;
+			Object.entries(data.data[`a${index}`]).forEach(([field, value]) => {
+				// this is "a" because that's how it was when it was first written, "a" means it's a commit not a pr
+				// we could change it to commit__ but then we have to get new GraphQL results from the GH API to put in the tests
+				if (field[0] === 'a') {
+					output.commit[field.substring(1)] = value;
+				} else {
+					output.pull[field.replace('pr__', '')] = value;
+				}
+			});
+		});
+
+		return requests.map(({ repo, ...data }) => cleanedData[repo][data.kind][data.kind === 'pull' ? data.pull : data.commit]);
+	},
+	{
+		maxBatchSize: 80,
+	},
+);
 
 export async function getCommitInfo(request: { commit: string; repo: string; pr?: number }): Promise<{
 	pull?: {

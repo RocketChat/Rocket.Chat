@@ -1,5 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import type { ExternalModuleName } from './license';
+
 export type AppScreenshot = {
 	id: string;
 	appId: string;
@@ -92,6 +94,8 @@ export type App = {
 	categories: string[];
 	version: string;
 	versionIncompatible?: boolean;
+	addon?: ExternalModuleName;
+	installedAddon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
@@ -125,4 +129,18 @@ export type App = {
 	private: boolean;
 	documentationUrl: string;
 	migrated: boolean;
+	// Status of the app across the cluster (when deployment includes multiple instances)
+	clusterStatus?: {
+		instanceId: string;
+		status: AppStatus;
+	}[];
+};
+
+export type AppCategory = {
+	id: string;
+	title: string;
+	description: string;
+	hidden: boolean;
+	createdDate: string;
+	modifiedDate: string;
 };

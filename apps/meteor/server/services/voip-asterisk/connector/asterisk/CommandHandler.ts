@@ -17,12 +17,12 @@ import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManageme
 import { Logger } from '@rocket.chat/logger';
 import type { Db } from 'mongodb';
 
-import { getManagementServerConfig } from '../../lib/Helper';
-import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import type { Command } from './Command';
 import { CommandType } from './Command';
 import { Commands } from './Commands';
 import type { IConnection } from './IConnection';
+import { getManagementServerConfig } from '../../lib/Helper';
+import { WebsocketConnection } from '../websocket/WebsocketConnection';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 

@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { ButtonGroup } from '.';
@@ -13,7 +13,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof ButtonGroup>>;
 
-export const WithButtonsOfSameSize: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
+export const WithButtonsOfSameSize: StoryFn<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button>Yes</Button>
 		<Button outline>Cancel</Button>
@@ -22,7 +22,7 @@ export const WithButtonsOfSameSize: Story<ComponentProps<typeof ButtonGroup>> = 
 );
 WithButtonsOfSameSize.storyName = 'with buttons of same size';
 
-export const WithButtonsOfDifferentSizes: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
+export const WithButtonsOfDifferentSizes: StoryFn<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small>Yes</Button>
 		<Button outline>Cancel</Button>
@@ -33,7 +33,7 @@ export const WithButtonsOfDifferentSizes: Story<ComponentProps<typeof ButtonGrou
 );
 WithButtonsOfDifferentSizes.storyName = 'with buttons of different sizes';
 
-export const WithOnlySmallButtons: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
+export const WithOnlySmallButtons: StoryFn<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small>Yes</Button>
 		<Button small outline>
@@ -46,7 +46,7 @@ export const WithOnlySmallButtons: Story<ComponentProps<typeof ButtonGroup>> = (
 );
 WithOnlySmallButtons.storyName = 'with only small buttons';
 
-export const WithStackedButtons: Story<ComponentProps<typeof ButtonGroup>> = (args) => (
+export const WithStackedButtons: StoryFn<ComponentProps<typeof ButtonGroup>> = (args) => (
 	<ButtonGroup {...args}>
 		<Button small outline>
 			Rename

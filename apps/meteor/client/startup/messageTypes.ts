@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../app/ui-utils/client';
@@ -23,7 +22,7 @@ Meteor.startup(() => {
 		message: 'room_changed_topic_to',
 		data(message: IMessage) {
 			return {
-				room_topic: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+				room_topic: message.msg || `(${t('None').toLowerCase()})`,
 			};
 		},
 	});
@@ -40,7 +39,7 @@ Meteor.startup(() => {
 		message: 'changed_room_announcement_to__room_announcement_',
 		data(message: IMessage) {
 			return {
-				room_announcement: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+				room_announcement: message.msg || `(${t('None').toLowerCase()})`,
 			};
 		},
 	});
@@ -51,13 +50,19 @@ Meteor.startup(() => {
 		message: 'changed_room_description_to__room_description_',
 		data(message: IMessage) {
 			return {
-				room_description: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+				room_description: message.msg || `(${t('None').toLowerCase()})`,
 			};
 		},
 	});
 
 	MessageTypes.registerType({
 		id: 'message_pinned',
+		system: true,
+		message: 'Pinned_a_message',
+	});
+
+	MessageTypes.registerType({
+		id: 'message_pinned_e2e',
 		system: true,
 		message: 'Pinned_a_message',
 	});

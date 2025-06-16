@@ -2,8 +2,9 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 
+import SendTestButton from './SendTestButton';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,7 +17,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import SendTestButton from './SendTestButton';
 
 const EmailInboxTable = (): ReactElement => {
 	const t = useTranslation();
@@ -25,7 +25,7 @@ const EmailInboxTable = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
-		(_id) => (): void => {
+		(_id: string) => (): void => {
 			router.push({
 				context: 'edit',
 				_id,
@@ -42,7 +42,10 @@ const EmailInboxTable = (): ReactElement => {
 		...(current && { offset: current }),
 	};
 
-	const result = useQuery(['email-list', query], () => endpoint(query));
+	const result = useQuery({
+		queryKey: ['email-list', query],
+		queryFn: () => endpoint(query),
+	});
 
 	const headers = useMemo(
 		() => [
@@ -62,7 +65,7 @@ const EmailInboxTable = (): ReactElement => {
 
 	return (
 		<>
-			{result.isLoading && (
+			{result.isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

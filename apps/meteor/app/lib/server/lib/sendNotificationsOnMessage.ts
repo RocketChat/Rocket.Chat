@@ -12,16 +12,17 @@ import emojione from 'emojione';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
+import { getMentions } from './notifyUsersOnMessage';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
-import { messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
+import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { getMentions } from './notifyUsersOnMessage';
 
 type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
@@ -266,7 +267,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 		return;
 	}
 
-	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message);
 	if (!sender) {
 		return message;
 	}
@@ -406,7 +407,7 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, room) => sendAllNotifications(message, room),
+		(message, { room }) => sendAllNotifications(message, room),
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

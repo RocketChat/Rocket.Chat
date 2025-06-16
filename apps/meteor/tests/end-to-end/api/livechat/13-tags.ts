@@ -12,9 +12,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -68,7 +66,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(monitor);
+			await deleteUser(monitor.user);
 		});
 
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {
@@ -237,8 +235,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should return null when the tag does not exist', async () => {
 			await updatePermission('manage-livechat-tags', ['admin']);
 			await updatePermission('view-l-room', ['livechat-agent']);
-			const response = await request.get(api('livechat/tags/123')).set(credentials).expect('Content-Type', 'application/json').expect(200);
-			expect(response.body.body).to.be.null;
+			await request.get(api('livechat/tags/123')).set(credentials).expect('Content-Type', 'application/json').expect(404);
 		});
 		it('should return a tag', async () => {
 			const tag = await saveTags();

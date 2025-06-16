@@ -1,5 +1,4 @@
-import { createContext, useCallback, useContext } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore } from 'react';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
 
@@ -11,7 +10,7 @@ export const SelectedMessageContext = createContext({
 	selectedMessageStore,
 } as SelectMessageContextValue);
 
-export const useIsSelectedMessage = (mid: string): boolean => {
+export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	const subscribe = useCallback(
@@ -21,7 +20,19 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 
 	const getSnapshot = (): boolean => selectedMessageStore.isSelected(mid);
 
-	return useSyncExternalStore(subscribe, getSnapshot);
+	const isSelected = useSyncExternalStore(subscribe, getSnapshot);
+
+	useEffect(() => {
+		if (isSelected || omit) {
+			return;
+		}
+
+		selectedMessageStore.addAvailableMessage(mid);
+
+		return () => selectedMessageStore.removeAvailableMessage(mid);
+	}, [mid, selectedMessageStore, isSelected, omit]);
+
+	return isSelected;
 };
 
 export const useIsSelecting = (): boolean => {
@@ -44,6 +55,20 @@ export const useToggleSelect = (mid: string): (() => void) => {
 	}, [mid, selectedMessageStore]);
 };
 
+export const useToggleSelectAll = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.toggleAll(Array.from(selectedMessageStore.availableMessages));
+	}, [selectedMessageStore]);
+};
+
+export const useClearSelection = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.clearStore();
+	}, [selectedMessageStore]);
+};
+
 export const useCountSelected = (): number => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
@@ -53,6 +78,19 @@ export const useCountSelected = (): number => {
 	);
 
 	const getSnapshot = (): number => selectedMessageStore.count();
+
+	return useSyncExternalStore(subscribe, getSnapshot);
+};
+
+export const useAvailableMessagesCount = () => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),
+		[selectedMessageStore],
+	);
+
+	const getSnapshot = () => selectedMessageStore.availableMessagesCount();
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

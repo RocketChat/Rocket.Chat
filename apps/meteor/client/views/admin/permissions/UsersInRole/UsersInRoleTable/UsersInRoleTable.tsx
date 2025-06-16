@@ -1,11 +1,13 @@
-import type { IRole, IRoom } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import UsersInRoleTableRow from './UsersInRoleTableRow';
 import GenericError from '../../../../../components/GenericError';
 import GenericModal from '../../../../../components/GenericModal';
 import GenericNoResults from '../../../../../components/GenericNoResults';
@@ -17,7 +19,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import UsersInRoleTableRow from './UsersInRoleTableRow';
 
 type UsersInRoleTableProps = {
 	roleName: IRole['name'];
@@ -27,7 +28,7 @@ type UsersInRoleTableProps = {
 };
 
 const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTableProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -47,9 +48,11 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 		[itemsPerPage, current, rid, roleId],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError } = useQuery(['getUsersInRole', roleId, query], async () =>
-		getUsersInRoleEndpoint(query),
-	);
+	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
+		queryKey: ['getUsersInRole', roleId, query],
+
+		queryFn: async () => getUsersInRoleEndpoint(query),
+	});
 
 	const users =
 		data?.users?.map((user) => ({
@@ -58,12 +61,16 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 			_updatedAt: new Date(user._updatedAt),
 		})) || [];
 
-	const handleRemove = useEffectEvent((username) => {
+	const handleRemove = useEffectEvent((username: IUserInRole['username']) => {
 		const remove = async () => {
 			try {
+				if (!username) throw new Error('Username is required');
+
 				await removeUserFromRoleEndpoint({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-				queryClient.invalidateQueries(['getUsersInRole']);
+				queryClient.invalidateQueries({
+					queryKey: ['getUsersInRole'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
@@ -73,7 +80,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 
 		setModal(
 			<GenericModal variant='danger' onConfirm={remove} onCancel={() => setModal(null)} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName)}
+				{t('The_user_s_will_be_removed_from_role_s', { postProcess: 'sprintf', sprintf: [username, description || roleName] })}
 			</GenericModal>,
 		);
 	});
@@ -101,9 +108,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{users?.map((user) => (
-								<UsersInRoleTableRow onRemove={handleRemove} key={user?._id} user={user} />
-							))}
+							{users?.map((user) => <UsersInRoleTableRow onRemove={handleRemove} key={user?._id} user={user} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

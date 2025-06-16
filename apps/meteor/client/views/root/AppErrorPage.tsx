@@ -1,6 +1,5 @@
-import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { ErrorInfo, ReactElement } from 'react';
-import React from 'react';
 
 type AppErrorPageProps = {
 	error: Error;
@@ -15,6 +14,22 @@ const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
 				<StatesIcon name='error-circle' />
 				<StatesTitle>Application Error</StatesTitle>
 				<StatesSubtitle>The application GUI just crashed.</StatesSubtitle>
+
+				<StatesActions>
+					<StatesAction
+						onClick={() => {
+							const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
+							result.onsuccess = () => {
+								window.location.reload();
+							};
+							result.onerror = () => {
+								window.location.reload();
+							};
+						}}
+					>
+						Reload Application
+					</StatesAction>
+				</StatesActions>
 			</States>
 		</Box>
 	);

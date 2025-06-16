@@ -1,11 +1,12 @@
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import * as Mailer from '../../app/mailer/server/api';
-import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
 import { isUserIdFederated } from './isUserIdFederated';
+import { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
+import * as Mailer from '../../app/mailer/server/api';
+import { settings } from '../../app/settings/server';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById(uid, {});
@@ -19,7 +20,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = (s: string): string => i18n.t(s, { lng: language });
+	const t = i18n.getFixedT(language);
 	const text = `
 	${t('Your_e2e_key_has_been_reset')}
 
@@ -66,14 +67,18 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	}
 
 	// force logout the live sessions
-
 	await api.broadcast('user.forceLogout', uid);
 
-	await Users.resetE2EKey(uid);
-	await Subscriptions.resetUserE2EKey(uid);
+	const responses = await Promise.all([Users.resetE2EKey(uid), Subscriptions.resetUserE2EKey(uid), Rooms.removeUserFromE2EEQueue(uid)]);
+
+	if (responses[1]?.modifiedCount) {
+		void notifyOnSubscriptionChangedByUserId(uid);
+	}
 
 	// Force the user to logout, so that the keys can be generated again
 	await Users.unsetLoginTokens(uid);
+
+	void notifyOnUserChange({ clientAction: 'updated', id: uid, diff: { 'services.resume.loginTokens': [] } });
 
 	return true;
 }

@@ -1,6 +1,6 @@
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { HomeChannel, HomeDiscussion } from './page-objects';
 import { createTargetChannel, createTargetTeam } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
@@ -8,6 +8,7 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.admin.state });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
+	let poHomeDiscussion: HomeDiscussion;
 	let targetChannel: string;
 	let forwardChannel: string;
 	let forwardTeam: string;
@@ -18,6 +19,7 @@ test.describe.serial('message-actions', () => {
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		poHomeDiscussion = new HomeDiscussion(page);
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
@@ -38,6 +40,71 @@ test.describe.serial('message-actions', () => {
 
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 	});
+
+	// with thread open we listen to the subscription and update the collection from there
+	test('expect follow/unfollow message with thread open', async ({ page }) => {
+		await test.step('start thread', async () => {
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await page.locator('[data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Reply in thread"]').click();
+			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+		});
+
+		await test.step('unfollow thread', async () => {
+			const unFollowButton = page
+				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
+				.last()
+				.getByRole('button', { name: 'Following' });
+			await expect(unFollowButton).toBeVisible();
+			await unFollowButton.click();
+		});
+
+		await test.step('follow thread', async () => {
+			const followButton = page
+				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Not following' }) })
+				.last()
+				.getByRole('button', { name: 'Not following' });
+			await expect(followButton).toBeVisible();
+			await followButton.click();
+			await expect(
+				page
+					.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
+					.last()
+					.getByRole('button', { name: 'Following' }),
+			).toBeVisible();
+		});
+	});
+
+	// with thread closed we depend on message changed updates
+	test('expect follow/unfollow message with thread closed', async ({ page }) => {
+		await test.step('start thread', async () => {
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await page.locator('[data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Reply in thread"]').click();
+			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+		});
+
+		// close thread before testing because the behavior changes
+		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
+
+		await test.step('unfollow thread', async () => {
+			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
+			await expect(unFollowButton).toBeVisible();
+			await unFollowButton.click();
+		});
+
+		await test.step('follow thread', async () => {
+			const followButton = page.locator('[data-qa-type="message"]').last().getByTitle('Not following');
+			await expect(followButton).toBeVisible();
+			await followButton.click();
+			await expect(page.locator('[data-qa-type="message"]').last().getByTitle('Following')).toBeVisible();
+		});
+	});
+
 	test('expect edit the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('This is a message to edit');
 		await poHomeChannel.content.openLastMessageMenu();
@@ -70,6 +137,24 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
+	test('expect create a discussion from message', async ({ page }) => {
+		const message = `Message for discussion - ${Date.now()}`;
+		const discussionName = `Discussion Name - ${Date.now()}`;
+
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		const createButton = poHomeDiscussion.btnCreate;
+		// Name should be prefilled thus making the create button enabled
+		await expect(createButton).not.toBeDisabled();
+		await poHomeDiscussion.inputName.fill(discussionName);
+		await createButton.click();
+		await expect(page.locator('header h1')).toHaveText(discussionName);
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		// Should fail if more than one discussion has been created
+		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
+	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
@@ -86,7 +171,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Copy text"]').click();
 
-		const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+		const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 		expect(clipboardText).toBe('Message to copy');
 	});
 
@@ -128,7 +213,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward message to team', async () => {
 		const message = 'this is a message to forward to team';
@@ -137,7 +222,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward message to direct message', async () => {
 		const message = 'this is a message to forward to direct message';
@@ -149,7 +234,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward text file to channel', async () => {
 		const filename = 'any_file.txt';
@@ -161,7 +246,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward image file to channel', async () => {
 		const filename = 'test-image.jpeg';
@@ -173,7 +258,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward pdf file to channel', async () => {
 		const filename = 'test_pdf_file.pdf';
@@ -185,7 +270,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward audio message to channel', async () => {
 		const filename = 'sample-audio.mp3';
@@ -197,7 +282,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward video message to channel', async () => {
 		const filename = 'test_video.mp4';
@@ -209,5 +294,5 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 });

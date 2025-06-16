@@ -1,6 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
-import { db } from '../../../server/database/utils';
 import { LivechatTagRaw } from './raw/LivechatTag';
+import { db } from '../../../server/database/utils';
 
 registerModel('ILivechatTagModel', new LivechatTagRaw(db));

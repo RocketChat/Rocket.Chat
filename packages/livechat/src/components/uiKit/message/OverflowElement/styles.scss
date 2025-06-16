@@ -1,9 +1,9 @@
-@import '../../../../styles/colors';
+@use '../../../../styles/colors';
 
 .uikit-overflow {
 	&__trigger {
 		padding: 0;
 
-		border-color: $bg-color-grey;
+		border-color: colors.$bg-color-grey;
 	}
 }

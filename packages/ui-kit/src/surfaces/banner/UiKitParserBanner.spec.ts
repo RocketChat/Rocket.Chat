@@ -1,7 +1,7 @@
-import type { PlainText } from '../../blocks/text/PlainText';
-import { BlockContext } from '../../rendering/BlockContext';
 import { UiKitParserBanner } from './UiKitParserBanner';
 import { uiKitBanner } from './uiKitBanner';
+import type { PlainText } from '../../blocks/text/PlainText';
+import { BlockContext } from '../../rendering/BlockContext';
 
 class TestParser extends UiKitParserBanner<unknown> {
 	plain_text = (element: any, context: any, index: any): any => ({

@@ -1,6 +1,7 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
+import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
 import { SystemLogger } from './logger/system';
@@ -40,6 +41,8 @@ export async function sendMessagesToAdmins({
 
 	const users = await (await Roles.findUsersInRole('admin')).toArray();
 
+	const notifyAdmins: string[] = [];
+
 	for await (const adminUser of users) {
 		if (fromUser) {
 			try {
@@ -53,6 +56,29 @@ export async function sendMessagesToAdmins({
 			}
 		}
 
-		await Promise.all((await getData<Banner>(banners, adminUser)).map((banner) => Users.addBannerById(adminUser._id, banner)));
+		const updates = await Promise.all(
+			(await getData<Banner>(banners, adminUser)).map((banner) => Users.addBannerById(adminUser._id, banner)),
+		);
+
+		const hasUpdated = updates.some(({ modifiedCount }) => modifiedCount > 0);
+		if (hasUpdated) {
+			notifyAdmins.push(adminUser._id);
+		}
 	}
+
+	if (notifyAdmins.length === 0) {
+		return;
+	}
+
+	void notifyOnUserChangeAsync(async () => {
+		const results = await Users.findByIds<Pick<IUser, '_id' | 'banners'>>(notifyAdmins, { projection: { banners: 1 } }).toArray();
+
+		return results.map(({ _id, banners }) => ({
+			id: _id,
+			clientAction: 'updated',
+			diff: {
+				banners,
+			},
+		}));
+	});
 }

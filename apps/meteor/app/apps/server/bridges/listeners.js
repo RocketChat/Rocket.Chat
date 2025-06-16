@@ -10,6 +10,7 @@ export class AppListenerBridge {
 		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
+				case AppInterface.IPostSystemMessageSent:
 				case AppInterface.IPreMessageSentPrevent:
 				case AppInterface.IPreMessageSentExtend:
 				case AppInterface.IPreMessageSentModify:
@@ -41,6 +42,7 @@ export class AppListenerBridge {
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
 				 */
 				case AppInterface.ILivechatRoomClosedHandler:
+				case AppInterface.IPreLivechatRoomCreatePrevent:
 				case AppInterface.IPostLivechatRoomStarted:
 				case AppInterface.IPostLivechatRoomClosed:
 				case AppInterface.IPostLivechatAgentAssigned:
@@ -48,6 +50,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatRoomTransferred:
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
+				case AppInterface.IPostLivechatDepartmentRemoved:
+				case AppInterface.IPostLivechatDepartmentDisabled:
 					return 'livechatEvent';
 				case AppInterface.IPostUserCreated:
 				case AppInterface.IPostUserUpdated:
@@ -143,10 +147,11 @@ export class AppListenerBridge {
 					};
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
-					const [leavingUser] = payload;
+					const [leavingUser, removedBy] = payload;
 					return {
 						room: rm,
 						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
+						removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 					};
 				default:
 					return rm;
@@ -194,6 +199,16 @@ export class AppListenerBridge {
 					.getManager()
 					.getListenerManager()
 					.executeListener(inte, await this.orch.getConverters().get('rooms').convertById(data));
+			case AppInterface.IPostLivechatDepartmentDisabled:
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, await this.orch.getConverters().get('departments').convertDepartment(data));
+			case AppInterface.IPostLivechatDepartmentRemoved:
+				return this.orch
+					.getManager()
+					.getListenerManager()
+					.executeListener(inte, await this.orch.getConverters().get('departments').convertDepartment(data));
 			default:
 				const room = await this.orch.getConverters().get('rooms').convertRoom(data);
 

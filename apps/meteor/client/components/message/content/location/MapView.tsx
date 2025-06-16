@@ -1,6 +1,5 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import MapViewFallback from './MapViewFallback';
 import MapViewImage from './MapViewImage';
@@ -11,8 +10,8 @@ type MapViewProps = {
 	longitude: number;
 };
 
-const MapView: FC<MapViewProps> = ({ latitude, longitude }) => {
-	const googleMapsApiKey = useSetting<string>('MapView_GMapsAPIKey');
+const MapView = ({ latitude, longitude }: MapViewProps) => {
+	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
 
 	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 

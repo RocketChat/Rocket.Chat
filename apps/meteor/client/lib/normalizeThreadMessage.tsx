@@ -2,7 +2,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import GazzodownText from '../components/GazzodownText';

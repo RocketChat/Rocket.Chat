@@ -22,6 +22,7 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 				nameFieldRegistrationForm,
 				emailFieldRegistrationForm,
 				limitTextLength,
+				visitorsCanCloseChat,
 			},
 			messages: { conversationFinishedMessage },
 			theme: { title = '' } = {},
@@ -83,7 +84,7 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 							spot: queueInfo.spot,
 							estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
 							message: queueInfo.message,
-					  }
+						}
 					: undefined
 			}
 			registrationFormEnabled={registrationForm}
@@ -94,6 +95,7 @@ export const ChatConnector: FunctionalComponent<{ path: string; default: boolean
 			ongoingCall={ongoingCall}
 			messageListPosition={messageListPosition}
 			theme={theme}
+			visitorsCanCloseChat={visitorsCanCloseChat}
 		/>
 	);
 };
