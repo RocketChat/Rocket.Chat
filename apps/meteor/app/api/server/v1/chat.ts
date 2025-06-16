@@ -56,6 +56,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -201,6 +202,7 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
+			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  }
@@ -210,104 +212,53 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
+			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  };
 
 const ChatPostMessageSchema = {
+	type: 'object',
+	additionalProperties: false,
+	properties: {
+		roomId: {
+			oneOf: [
+				{ type: 'string' },
+				{
+					type: 'array',
+					items: { type: 'string' },
+				},
+			],
+		},
+		channel: {
+			oneOf: [
+				{ type: 'string' },
+				{
+					type: 'array',
+					items: { type: 'string' },
+				},
+			],
+		},
+		text: { type: 'string', nullable: true },
+		alias: { type: 'string', nullable: true },
+		emoji: { type: 'string', nullable: true },
+		avatar: { type: 'string', nullable: true },
+		tmid: { type: 'string', nullable: true },
+		attachments: {
+			type: 'array',
+			items: { type: 'object' },
+			nullable: true,
+		},
+		customFields: { type: 'object', nullable: true },
+	},
 	oneOf: [
 		{
-			type: 'object',
-			properties: {
-				roomId: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				tmid: {
-					type: 'string',
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
 			required: ['roomId'],
-			additionalProperties: false,
+			not: { required: ['channel'] },
 		},
 		{
-			type: 'object',
-			properties: {
-				channel: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
 			required: ['channel'],
-			additionalProperties: false,
+			not: { required: ['roomId'] },
 		},
 	],
 };
@@ -316,7 +267,6 @@ export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessa
 
 const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
 		authRequired: true,
 		validateParams: isChatPostMessageProps,
