@@ -9027,6 +9027,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
     "@types/express": "npm:^4.17.21"
     "@types/jest": "npm:~29.5.14"
     "@types/supertest": "npm:^6.0.3"
