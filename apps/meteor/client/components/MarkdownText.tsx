@@ -42,9 +42,20 @@ const listItemMarked = (text: string): string => {
 	return `<li>${cleanText}</li>`;
 };
 const horizontalRuleMarked = (): string => '';
+const codeMarked = (code: string, language: string | undefined, _isEscaped: boolean): string => {
+	if (language) {
+		return `<pre><code class="language-${language}">${code} </code></pre>`;
+	}
+	return `<pre><code>${code} </code></pre>`;
+};
+const codespanMarked = (code: string): string => {
+	return `<code>${code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')}</code>`;
+};
 
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
+documentRenderer.code = codeMarked;
+documentRenderer.codespan = codespanMarked;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
