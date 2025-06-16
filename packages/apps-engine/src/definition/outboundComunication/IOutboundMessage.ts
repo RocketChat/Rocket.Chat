@@ -1,4 +1,3 @@
-// Template from RC to App
 export interface IOutboundMessage {
 	to: string;
 	type: 'template';
