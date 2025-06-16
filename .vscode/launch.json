@@ -11,6 +11,11 @@
                     "<node_internals>/**"
             ],
             "name": "Attach to Process",
+			"outFiles": [
+				"${workspaceFolder}/**/*.(m|c|)js|ts",
+				"!**/node_modules/**"
+			],
+			"cwd": "${workspaceFolder}/apps/meteor",
             "port": 9229
         }
     ]
