@@ -28,6 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -96,7 +97,12 @@ export const RoutingManager: Routing = {
 	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
+		if (
+			!agent ||
+			(agent.username &&
+				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
+				!(await allowAgentSkipQueue(agent)))
+		) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
@@ -175,7 +181,7 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
 			if (queuedInquiry) {
 				inquiry = queuedInquiry;
 				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
@@ -264,14 +270,7 @@ export const RoutingManager: Routing = {
 		}
 
 		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-		callbacks.runAsync(
-			'livechat.afterTakeInquiry',
-			{
-				inquiry: returnedInquiry,
-				room: roomAfterUpdate,
-			},
-			agent,
-		);
+		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
@@ -301,7 +300,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await beforeDelegateAgent(agent, {
 			department: inquiry?.department,
 		});
 

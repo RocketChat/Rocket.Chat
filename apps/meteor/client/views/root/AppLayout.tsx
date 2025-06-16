@@ -2,16 +2,14 @@ import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
+import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
+import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
+import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
-import { useOTRMessaging } from './hooks/useOTRMessaging';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import { useStoreCookiesOnLogin } from './hooks/useStoreCookiesOnLogin';
-import { useUpdateVideoConfUser } from './hooks/useUpdateVideoConfUser';
-import { useWebRTC } from './hooks/useWebRTC';
 import { useWordPressOAuth } from './hooks/useWordPressOAuth';
-import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useDolphin } from '../../../app/dolphin/client/hooks/useDolphin';
 import { useDrupal } from '../../../app/drupal/client/hooks/useDrupal';
@@ -21,8 +19,9 @@ import { useGitLabAuth } from '../../../app/gitlab/client/hooks/useGitLabAuth';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useNextcloud } from '../../../app/nextcloud/client/useNextcloud';
 import { useTokenPassAuth } from '../../../app/tokenpass/client/hooks/useTokenPassAuth';
+import { useIframeLoginListener } from '../../hooks/iframe/useIframeLoginListener';
 import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
-import { useNotifyUser } from '../../hooks/notification/useNotifyUser';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
@@ -39,13 +38,13 @@ const AppLayout = () => {
 		};
 	}, []);
 
+	useIframeLoginListener();
 	useMessageLinkClicks();
 	useGoogleTagManager();
 	useAnalytics();
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
-	useNotifyUser();
 	useNotificationPermission();
 	useEmojiOne();
 	useRedirectToSetupWizard();
@@ -60,11 +59,10 @@ const AppLayout = () => {
 	useWordPressOAuth();
 	useCustomOAuth();
 	useCorsSSLConfig();
-	useOTRMessaging();
-	useUpdateVideoConfUser();
-	useWebRTC();
-	useStoreCookiesOnLogin();
 	useAutoupdate();
+	useCodeHighlight();
+	useLoginViaQuery();
+	useLoadMissedMessages();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

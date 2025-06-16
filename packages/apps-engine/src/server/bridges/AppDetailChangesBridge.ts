@@ -8,9 +8,9 @@ import type { ISetting } from '../../definition/settings';
  * changes.
  */
 export abstract class AppDetailChangesBridge extends BaseBridge {
-    public doOnAppSettingsChange(appId: string, setting: ISetting): void {
-        return this.onAppSettingsChange(appId, setting);
-    }
+	public doOnAppSettingsChange(appId: string, setting: ISetting): void {
+		return this.onAppSettingsChange(appId, setting);
+	}
 
-    protected abstract onAppSettingsChange(appId: string, setting: ISetting): void;
+	protected abstract onAppSettingsChange(appId: string, setting: ISetting): void;
 }

@@ -1,4 +1,4 @@
-import { isOmnichannelRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
+import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -10,6 +10,7 @@ import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -90,7 +91,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			const sub = Subscriptions.findOne({ rid: room._id });
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
-			if (user && !sub && !hasPreviewPermission && !isOmnichannelRoom(room)) {
+			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 
@@ -119,7 +120,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
 				Rooms.remove(reference);
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
-				queryClient.removeQueries({ queryKey: ['/v1/rooms.info', reference] });
+				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });
 			}
 		}
 	}, [error, queryClient, reference, type]);

@@ -1,11 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { legacyJumpToMessage } from '../../../../lib/utils/legacyJumpToMessage';
 
-export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
+export const useLoadSurroundingMessages = () => {
+	const msgId = useSearchParameter('msg');
+	const jumpToRef = useRef<HTMLElement>(undefined);
+
 	const queryClient = useQueryClient();
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 
@@ -13,6 +16,11 @@ export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
 		if (!msgId) {
 			return;
 		}
+
+		if (jumpToRef.current) {
+			return;
+		}
+
 		const abort = new AbortController();
 
 		queryClient
@@ -36,4 +44,6 @@ export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
 			abort.abort();
 		};
 	}, [msgId, queryClient, getMessage]);
+
+	return { jumpToRef };
 };

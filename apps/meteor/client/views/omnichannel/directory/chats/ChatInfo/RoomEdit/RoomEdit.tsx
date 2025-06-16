@@ -9,6 +9,7 @@ import { useController, useForm } from 'react-hook-form';
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
+import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
 import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
@@ -102,9 +103,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries({
-					queryKey: ['/v1/rooms.info', room._id],
-				});
+				await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(room._id) });
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();
