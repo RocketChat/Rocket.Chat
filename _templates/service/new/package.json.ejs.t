@@ -43,7 +43,7 @@ to: ee/apps/<%= name %>/package.json
 		"@types/polka": "^0.5.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/<%= name %>/src/service.js",
 	"files": [

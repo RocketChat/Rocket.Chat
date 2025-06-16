@@ -12,7 +12,7 @@ to: packages/<%= name %>/package.json
 		"@types/jest": "~29.5.12",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.0",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
