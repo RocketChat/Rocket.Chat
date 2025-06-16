@@ -1,4 +1,5 @@
 import type { AppStatus } from '../../definition/AppStatus';
+import type { AppDesiredStatus } from '../../definition/AppDesiredStatus';
 import type { IAppInfo } from '../../definition/metadata';
 import type { IPermission } from '../../definition/permissions/IPermission';
 import type { ISetting } from '../../definition/settings';
@@ -9,7 +10,12 @@ export interface IAppStorageItem {
 	id: string;
 	createdAt?: Date;
 	updatedAt?: Date;
+	/** @deprecated Use desiredStatus and initStatus instead */
 	status: AppStatus;
+	/** The desired state of the app as expressed by administrators */
+	desiredStatus: AppDesiredStatus;
+	/** The actual runtime initialization state of the app in this instance */
+	initStatus: AppStatus;
 	info: IAppInfo;
 	installationSource: AppInstallationSource;
 	/**

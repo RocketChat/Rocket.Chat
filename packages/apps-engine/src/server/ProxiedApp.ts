@@ -2,6 +2,7 @@ import * as mem from 'mem';
 
 import type { AppManager } from './AppManager';
 import { AppStatus } from '../definition/AppStatus';
+import { AppDesiredStatus } from '../definition/AppDesiredStatus';
 import { AppsEngineException } from '../definition/exceptions';
 import type { IAppAuthorInfo, IAppInfo } from '../definition/metadata';
 import { AppMethod } from '../definition/metadata';
@@ -11,6 +12,7 @@ import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
+import { AppStatusMigration } from './storage/AppStatusMigration';
 
 export class ProxiedApp {
 	private previousStatus: AppStatus;
@@ -89,6 +91,71 @@ export class ProxiedApp {
 		mem.clear(this.getStatus);
 		if (!silent) {
 			await this.manager.getBridges().getAppActivationBridge().doAppStatusChanged(this, status);
+		}
+	}
+
+	/**
+	 * Gets the desired status of the app (what administrators want)
+	 */
+	public getDesiredStatus(): AppDesiredStatus {
+		// Migrate legacy status if needed
+		if (AppStatusMigration.needsMigration(this.storageItem)) {
+			AppStatusMigration.migrateLegacyStatus(this.storageItem);
+		}
+		return this.storageItem.desiredStatus;
+	}
+
+	/**
+	 * Gets the actual runtime initialization status of the app
+	 */
+	public async getInitStatus(): Promise<AppStatus> {
+		return this.getStatus();
+	}
+
+	/**
+	 * Sets the initialization status (runtime state) of the app
+	 * This should be called by the apps engine during runtime operations
+	 */
+	public async setInitStatus(status: AppStatus, silent?: boolean): Promise<void> {
+		this.storageItem.initStatus = status;
+		this.storageItem.status = status; // Keep legacy field in sync
+		await this.setStatus(status, silent);
+	}
+
+	/**
+	 * Sets the desired status (administrative intent) of the app
+	 * This should be called by administrative actions
+	 */
+	public async setDesiredStatus(desiredStatus: AppDesiredStatus): Promise<void> {
+		this.storageItem.desiredStatus = desiredStatus;
+		// Update storage asynchronously
+		await this.manager.getStorage().update(this.storageItem).catch((e) => {
+			console.warn(`Failed to update desired status for app "${this.getName()}":`, e);
+		});
+	}
+
+	/**
+	 * Checks if the app's current state matches its desired state
+	 */
+	public async isInDesiredState(): Promise<boolean> {
+		const currentStatus = await this.getStatus();
+		const desiredStatus = this.getDesiredStatus();
+
+		switch (desiredStatus) {
+			case AppDesiredStatus.ENABLED:
+				return currentStatus === AppStatus.AUTO_ENABLED || currentStatus === AppStatus.MANUALLY_ENABLED;
+			case AppDesiredStatus.DISABLED:
+				return currentStatus === AppStatus.MANUALLY_DISABLED || 
+				       currentStatus === AppStatus.DISABLED ||
+				       currentStatus === AppStatus.COMPILER_ERROR_DISABLED ||
+				       currentStatus === AppStatus.ERROR_DISABLED ||
+				       currentStatus === AppStatus.INVALID_LICENSE_DISABLED ||
+				       currentStatus === AppStatus.INVALID_INSTALLATION_DISABLED ||
+				       currentStatus === AppStatus.INVALID_SETTINGS_DISABLED;
+			case AppDesiredStatus.UNINSTALLED:
+				return false; // If the app exists, it's not uninstalled
+			default:
+				return false;
 		}
 	}
 

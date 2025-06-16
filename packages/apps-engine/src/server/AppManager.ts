@@ -5,6 +5,7 @@ import { ProxiedApp } from './ProxiedApp';
 import type { PersistenceBridge, UserBridge } from './bridges';
 import { AppBridges } from './bridges';
 import { AppStatus, AppStatusUtils } from '../definition/AppStatus';
+import { AppDesiredStatus, AppDesiredStatusUtils } from '../definition/AppDesiredStatus';
 import type { IAppInfo } from '../definition/metadata';
 import { AppMethod } from '../definition/metadata';
 import type { IPermission } from '../definition/permissions/IPermission';
@@ -36,6 +37,8 @@ import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
 import { AppInstallationSource } from './storage/IAppStorageItem';
+import { AppStatusMigration } from './storage/AppStatusMigration';
+import { AppStatusReconciliationService } from './AppStatusReconciliationService';
 
 export interface IAppInstallParameters {
 	enable: boolean;
@@ -101,6 +104,8 @@ export class AppManager {
 
 	private readonly runtime: AppRuntimeManager;
 
+	private readonly reconciliationService: AppStatusReconciliationService;
+
 	private isLoaded: boolean;
 
 	constructor({ metadataStorage, logStorage, bridges, sourceStorage }: IAppManagerDeps) {
@@ -149,6 +154,8 @@ export class AppManager {
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
+
+		this.reconciliationService = new AppStatusReconciliationService(this);
 
 		this.isLoaded = false;
 		AppManager.Instance = this;
@@ -233,6 +240,10 @@ export class AppManager {
 		return this.runtime;
 	}
 
+	public getReconciliationService(): AppStatusReconciliationService {
+		return this.reconciliationService;
+	}
+
 	/** Gets whether the Apps have been loaded or not. */
 	public areAppsLoaded(): boolean {
 		return this.isLoaded;
@@ -257,6 +268,15 @@ export class AppManager {
 		const items: Map<string, IAppStorageItem> = await this.appMetadataStorage.retrieveAll();
 
 		for (const item of items.values()) {
+			// Migrate legacy status if needed
+			if (AppStatusMigration.needsMigration(item)) {
+				AppStatusMigration.migrateLegacyStatus(item);
+				// Update storage with migrated status
+				await this.appMetadataStorage.update(item).catch((e) => {
+					console.warn(`Failed to update migrated status for app "${item.info.name}":`, e);
+				});
+			}
+
 			try {
 				const appPackage = await this.appSourceStorage.fetch(item);
 				const unpackageResult = await this.getParser().unpackageApp(appPackage);
@@ -280,6 +300,10 @@ export class AppManager {
 		}
 
 		this.isLoaded = true;
+		
+		// Start the reconciliation service after apps are loaded
+		this.reconciliationService.start();
+		
 		return true;
 	}
 
@@ -356,6 +380,9 @@ export class AppManager {
 
 		// Remove all the apps from the system now that we have unloaded everything
 		this.apps.clear();
+
+		// Stop the reconciliation service
+		this.reconciliationService.stop();
 
 		this.isLoaded = false;
 	}
@@ -436,13 +463,13 @@ export class AppManager {
 			throw new Error(`No App by the id "${id}" exists.`);
 		}
 
-		const status = await rl.getStatus();
+		const currentInitStatus = await rl.getStatus();
 
-		if (AppStatusUtils.isEnabled(status)) {
+		if (AppStatusUtils.isEnabled(currentInitStatus)) {
 			return true;
 		}
 
-		if (status === AppStatus.COMPILER_ERROR_DISABLED) {
+		if (currentInitStatus === AppStatus.COMPILER_ERROR_DISABLED) {
 			throw new Error('The App had compiler errors, can not enable it.');
 		}
 
@@ -452,10 +479,19 @@ export class AppManager {
 			throw new Error(`Could not enable an App with the id of "${id}" as it doesn't exist.`);
 		}
 
+		// Migrate legacy status if needed
+		if (AppStatusMigration.needsMigration(storageItem)) {
+			AppStatusMigration.migrateLegacyStatus(storageItem);
+		}
+
+		// Set desired status to enabled
+		storageItem.desiredStatus = AppDesiredStatus.ENABLED;
+
 		const isSetup = await this.runStartUpProcess(storageItem, rl, true, false);
 
 		if (isSetup) {
-			storageItem.status = await rl.getStatus();
+			storageItem.initStatus = await rl.getStatus();
+			storageItem.status = storageItem.initStatus; // Keep legacy field in sync
 			// This is async, but we don't care since it only updates in the database
 			// and it should not mutate any properties we care about
 			await this.appMetadataStorage.update(storageItem).catch();
@@ -485,10 +521,23 @@ export class AppManager {
 
 		const storageItem = await this.appMetadataStorage.retrieveOne(id);
 
+		if (!storageItem) {
+			throw new Error(`Could not disable an App with the id of "${id}" as it doesn't exist in storage.`);
+		}
+
+		// Migrate legacy status if needed
+		if (AppStatusMigration.needsMigration(storageItem)) {
+			AppStatusMigration.migrateLegacyStatus(storageItem);
+		}
+
+		// Set desired status to disabled
+		storageItem.desiredStatus = AppDesiredStatus.DISABLED;
+
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
 		await app.validateLicense().catch();
 
-		storageItem.status = await app.getStatus();
+		storageItem.initStatus = await app.getStatus();
+		storageItem.status = storageItem.initStatus; // Keep legacy field in sync
 		// This is async, but we don't care since it only updates in the database
 		// and it should not mutate any properties we care about
 		await this.appMetadataStorage.update(storageItem).catch();
@@ -562,6 +611,8 @@ export class AppManager {
 			id: result.info.id,
 			info: result.info,
 			status: AppStatus.UNKNOWN,
+			desiredStatus: enable ? AppDesiredStatus.ENABLED : AppDesiredStatus.DISABLED,
+			initStatus: AppStatus.UNKNOWN,
 			settings: {},
 			implemented: result.implemented.getValues(),
 			installationSource: marketplaceInfo ? AppInstallationSource.MARKETPLACE : AppInstallationSource.PRIVATE,
@@ -640,6 +691,10 @@ export class AppManager {
 		} else {
 			await this.initializeApp(created, app, true);
 		}
+
+		// Update the storage item with the final status
+		created.initStatus = await app.getStatus();
+		await this.appMetadataStorage.update(created).catch();
 
 		return aff;
 	}
@@ -837,6 +892,53 @@ export class AppManager {
 		return langs;
 	}
 
+	/**
+	 * Changes the desired status of an app (new dual-status approach)
+	 * @param appId The ID of the app
+	 * @param desiredStatus The desired status to set
+	 * @returns The ProxiedApp instance
+	 */
+	public async changeDesiredStatus(appId: string, desiredStatus: AppDesiredStatus): Promise<ProxiedApp> {
+		const app = this.apps.get(appId);
+
+		if (!app) {
+			throw new Error('Can not change the desired status of an App which does not currently exist.');
+		}
+
+		const storageItem = await this.appMetadataStorage.retrieveOne(appId);
+		if (!storageItem) {
+			throw new Error(`Could not find storage item for app "${appId}".`);
+		}
+
+		// Migrate legacy status if needed
+		if (AppStatusMigration.needsMigration(storageItem)) {
+			AppStatusMigration.migrateLegacyStatus(storageItem);
+		}
+
+		// Update desired status
+		storageItem.desiredStatus = desiredStatus;
+
+		// Attempt to achieve the desired status
+		switch (desiredStatus) {
+			case AppDesiredStatus.ENABLED:
+				await this.enable(appId);
+				break;
+			case AppDesiredStatus.DISABLED:
+				await this.disable(appId, AppStatus.MANUALLY_DISABLED);
+				break;
+			case AppDesiredStatus.UNINSTALLED:
+				await this.remove(appId);
+				break;
+			default:
+				throw new Error(`Invalid desired status: ${desiredStatus}`);
+		}
+
+		return app;
+	}
+
+	/**
+	 * @deprecated Use changeDesiredStatus instead for new implementations
+	 */
 	public async changeStatus(appId: string, status: AppStatus): Promise<ProxiedApp> {
 		switch (status) {
 			case AppStatus.MANUALLY_DISABLED:
