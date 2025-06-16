@@ -18,14 +18,15 @@ const translationOptions = [
   'Spanish', 'Chinese', 'Japanese', 'Russian', 'Portuguese', 'Hindi', 'Arabic', 'Dutch'
 ] as const;
 
-// API call simulation function
+// Simulates an API call with a random delay
 const simulateApiCall = (output: string, delay: number): Promise<string> =>
   new Promise((resolve) => setTimeout(() => resolve(output), delay));
 
+const placeholderPattern = (type: EnhancementOption) => `<aienhanced placeholder data-type="${type}">{{text}}</aienhanced placeholder>`;
+
 const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancementToolbarProps) => {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const [enhancementCount, setEnhancementCount] = useState(0);
 
   const handleEnhancement = async (type: EnhancementOption, option?: string) => {
     const fullText = composer.text;
@@ -33,8 +34,15 @@ const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancem
 
     const { start, end } = composer.selection ?? { start: 0, end: fullText.length };
     const selectedText = fullText.slice(start, end);
+    console.log('Selected text:', JSON.stringify(selectedText));
     if (!selectedText) return;
 
+    // setLoading(true);
+
+    // Wrap selected text with placeholder tags using wrapSelection
+    composer.wrapSelection(placeholderPattern(type));
+
+    // Simulate API response label
     let apiLabel = '';
     switch (type) {
       case 'tone': apiLabel = 'Tone_Enhanced'; break;
@@ -42,59 +50,42 @@ const MessageBoxEnhancementToolbar = ({ composer, disabled }: MessageBoxEnhancem
       case 'summarize': apiLabel = 'Summarized_Text'; break;
     }
 
-    setEnhancementCount(count => count + 1);
-    const placeholderTagStart = `<aienhanced placeholder>`;
-    const placeholderTagEnd = `</aienhanced placeholder>`;
-
-    // Split on newline to preserve <br> positions
-    const lines = selectedText.split('\n');
-    const placeholderLines = lines.map(line => 
-      `${placeholderTagStart}${line}${placeholderTagEnd}`
-    );
-    const placeholderText = placeholderLines.join('\n');
-
-    setLoading(true);
     try {
-      // Wrap selected text in placeholder tags
-      composer.replaceText(placeholderText, { start, end });
-
-      // Simulate API delay
       const delay = Math.floor(Math.random() * 15000) + 15000;
       const response = await simulateApiCall(apiLabel, delay);
 
-      // Build response lines: add dashes equal to original line length around response
-      const responseLines = lines.map(line => {
-        const dashCount = line.length;
-        const dashes = '-'.repeat(dashCount);
-        return `${dashes}${response}${dashes}`;
-      });
-      const finalText = responseLines.join('\n');
+      // Build final replacement: add dashes around the response text
+      const responseWrapped = selectedText.split('\n')
+        .map(line => '-'.repeat(line.length) + response + '-'.repeat(line.length))
+        .join('\n');
 
-      // Replace placeholder-wrapped text in composer
-      const currentText = composer.text;
-      const selStart = currentText.indexOf(placeholderTagStart, start);
-      const selEnd = selStart + placeholderText.length;
-      if (selStart !== -1) {
-        composer.replaceText(finalText, { start: selStart, end: selEnd });
+      // Now replace placeholder block with the API response
+      const current = composer.text;
+      const placeholderStart = `<aienhanced placeholder data-type=\"${type}\">`;// I need to put different id for every placeholder to avoid conflicts
+      const startIndex = current.indexOf(placeholderStart);
+      if (startIndex !== -1) {
+        const endIndex = current.indexOf(`</aienhanced placeholder>`, startIndex) + `</aienhanced placeholder>`.length;
+        composer.replaceText(responseWrapped, { start: startIndex, end: endIndex });
       } else {
-        composer.insertText(finalText);
+        // Fallback: insert response after
+        composer.insertText(responseWrapped);
       }
-    } catch (err) {
-      console.error(err);
-      // On error, restore original selected text
+    } catch (error) {
+      console.error('Enhancement failed:', error);
+      // On error, restore original selection
       composer.replaceText(selectedText, { start, end });
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   return (
     <>
-      {loading && (
+      {/* {loading && (
         <Box position="absolute" style={{ top: 8, right: 8, paddingInline: 24, paddingBlock: 12 }}>
           <Throbber size='x12' />
         </Box>
-      )}
+      )} */}
 
       <MessageComposerAction
         icon='sheet'
