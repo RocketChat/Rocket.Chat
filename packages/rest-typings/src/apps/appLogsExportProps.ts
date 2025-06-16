@@ -1,7 +1,7 @@
 import type { AppLogsProps } from './appLogsProps';
 import { ajv } from '../v1/Ajv';
 
-export type AppLogsExportProps = Omit<AppLogsProps, 'offset' | 'query'> & {
+export type AppLogsExportProps = Omit<AppLogsProps, 'appId' | 'offset' | 'query'> & {
 	type: 'json' | 'csv';
 };
 

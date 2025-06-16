@@ -109,7 +109,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/:id/export-logs': {
-		GET: (params: Omit<AppLogsExportProps, 'appId'>) => Buffer;
+		GET: (params: AppLogsExportProps) => Buffer;
 	};
 
 	'/apps/:id/apis': {
