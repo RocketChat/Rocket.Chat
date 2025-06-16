@@ -3,6 +3,7 @@
 	"version": "0.1.25",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
 		"typescript": "~5.8.3"
 	},
