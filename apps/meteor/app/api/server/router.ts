@@ -32,29 +32,27 @@ export class RocketChatAPIRouter<
 	} = NonNullable<unknown>,
 > extends Router<TBasePath, TOperations, APIActionHandler> {
 	protected convertActionToHandler(action: APIActionHandler): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
-		return (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
-			return new Promise(async (resolve) => {
-				const { req, res } = c;
-				const queryParams = this.parseQueryParams(req);
-				const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
-					request: req,
-					extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
-				});
-				const request = req.raw.clone();
-
-				const context = {
-					requestIp: c.get('remoteAddress'),
-					urlParams: req.param(),
-					queryParams,
-					bodyParams,
-					request,
-					path: req.path,
-					response: res,
-					route: req.routePath,
-				} as APIActionContext;
-
-				resolve(await action.apply(context, [request]));
+		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
+			const { req, res } = c;
+			const queryParams = this.parseQueryParams(req);
+			const bodyParams = await this.parseBodyParams<{ bodyParamsOverride: Record<string, any> }>({
+				request: req,
+				extra: { bodyParamsOverride: c.var['bodyParams-override'] || {} },
 			});
+			const request = req.raw.clone();
+
+			const context = {
+				requestIp: c.get('remoteAddress'),
+				urlParams: req.param(),
+				queryParams,
+				bodyParams,
+				request,
+				path: req.path,
+				response: res,
+				route: req.routePath,
+			} as APIActionContext;
+
+			return action.apply(context, [request]);
 		};
 	}
 }
