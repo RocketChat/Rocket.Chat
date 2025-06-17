@@ -2,7 +2,6 @@ import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useLayout } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -185,12 +184,8 @@ export const useUnreadOnlyToggle = (): [boolean, () => void] => {
 export const useSwitchSidePanelTab = () => {
 	const { setFilter } = useRoomsListContext();
 	const [, unread] = useSidePanelFilter();
-	const {
-		sidePanel: { openSidePanel },
-	} = useLayout();
 
 	return (tab: SidePanelFiltersKeys) => {
-		openSidePanel();
 		setFilter(tab, unread);
 	};
 };
