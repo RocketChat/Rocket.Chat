@@ -1,3 +1,5 @@
-import { useAuthenticationContext } from '../AuthenticationContext';
+import { useContext } from 'react';
 
-export const useUnstoreLoginToken = (): ((callback: () => void) => () => void) => useAuthenticationContext().unstoreLoginToken;
+import { AuthenticationContext } from '../AuthenticationContext';
+
+export const useUnstoreLoginToken = (): ((callback: () => void) => () => void) => useContext(AuthenticationContext).unstoreLoginToken;
