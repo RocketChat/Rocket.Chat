@@ -113,5 +113,5 @@ export function parseEventLeg(
 		raw: filterOutEmptyValues(rawLegData),
 	};
 
-	return filterOutMissingData(leg) as typeof leg;
+	return filterOutMissingData(leg);
 }

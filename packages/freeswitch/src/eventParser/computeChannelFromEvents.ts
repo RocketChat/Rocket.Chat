@@ -33,7 +33,7 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 	let firstEvent: Date | undefined;
 
 	const flattened = allEvents.reduce(
-		(state: Record<string, any>, nextEvent: IFreeSwitchChannelEvent): Record<string, any> => {
+		(state, nextEvent: IFreeSwitchChannelEvent) => {
 			const { _id, channelUniqueId, _updatedAt, metadata, eventName, sequence, firedAt, receivedAt, callee, caller, ...eventData } =
 				nextEvent;
 
