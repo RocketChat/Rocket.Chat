@@ -83,7 +83,7 @@ const AddToken = ({ reload }: AddTokenProps) => {
 						<Controller
 							name='name'
 							control={control}
-							rules={{ required: t('Please_provide_a_name_for_your_token') }}
+							rules={{ validate: (value) => (value.trim() ? undefined : t('Please_provide_a_name_for_your_token')) }}
 							render={({ field }) => (
 								<TextInput
 									aria-describedby={nameErrorId}
