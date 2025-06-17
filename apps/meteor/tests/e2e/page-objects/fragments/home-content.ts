@@ -184,11 +184,27 @@ export class HomeContent {
 		return this.page.getByRole('blockquote');
 	}
 
-	get linkPreview(): Locator {
-		return this.page.getByText('Link Preview');
+	lastQuotedFileDescription(fileDescription: string): Locator {
+		return this.quotePreview.getByText(fileDescription).last();
 	}
 
-	linkQuotePreview(name: string): Locator {
+	lastQuotedFileName(fileName: string): Locator {
+		return this.quotePreview.getByTitle(fileName).last();
+	}
+
+	lastThreadQuotedFileDescription(fileDescription: string): Locator {
+		return this.threadQuotePreview.getByText(fileDescription).last();
+	}
+
+	lastThreadQuotedFileName(fileName: string): Locator {
+		return this.threadQuotePreview.getByTitle(fileName).last();
+	}
+
+	get linkPreview(): Locator {
+		return this.lastUserMessage.getByText('Link Preview');
+	}
+
+	quotedLinkText(name: string): Locator {
 		return this.quotePreview.getByRole('link', { name: `${name}` });
 	}
 

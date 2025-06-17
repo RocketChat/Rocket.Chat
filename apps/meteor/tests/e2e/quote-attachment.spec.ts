@@ -8,7 +8,7 @@ const fileDescription = `Message for quote - ${Date.now()}`;
 const quotedMessage = 'Quoting the attachment';
 const threadQuoteMessage = 'Quoting in thread';
 
-test.describe('Quote Attachment', () => {
+test.describe.parallel('Quote Attachment', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
@@ -26,10 +26,11 @@ test.describe('Quote Attachment', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('should show file preview and description when quoting a message with attachment', async ({ page }) => {
+	test('should show file preview and description when quoting a message with attachment', async () => {
+		const imageFileName = 'test-image.jpeg';
 		await test.step('Send message with attachment in the channel', async () => {
-			await poHomeChannel.content.sendFileMessage('test-image.jpeg');
-			await poHomeChannel.content.fileNameInput.fill('test-image.jpeg');
+			await poHomeChannel.content.sendFileMessage(imageFileName);
+			await poHomeChannel.content.fileNameInput.fill(imageFileName);
 			await poHomeChannel.content.descriptionInput.fill(fileDescription);
 			await poHomeChannel.content.btnModalConfirm.click();
 
@@ -43,24 +44,24 @@ test.describe('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview.getByTitle('test-image.jpeg')).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview.getByText(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastQuotedFileName(imageFileName)).toBeVisible();
 
 			// Send the quoted message
-			await poHomeChannel.content.inputMessage.fill(quotedMessage);
-			await page.keyboard.press('Enter');
+			await poHomeChannel.content.sendMessage(quotedMessage);
 		});
 		await test.step('Verify the quoted message appears correctly', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(fileDescription);
+			await expect(poHomeChannel.content.lastQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastQuotedFileName(imageFileName)).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
 		});
 	});
 
-	test('should quote attachment file within a thread', async ({ page }) => {
+	test('should show file preview and description when quoting attachment file within a thread', async ({ page }) => {
+		const textFileName = 'any_file1.txt';
+
 		await test.step('Send initial message in channel', async () => {
 			await poHomeChannel.content.sendMessage('Initial message for thread test');
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
 		});
 
 		await test.step('Create thread and send message with attachment', async () => {
@@ -71,11 +72,11 @@ test.describe('Quote Attachment', () => {
 
 			await poHomeChannel.content.dragAndDropTxtFileToThread();
 			await poHomeChannel.content.descriptionInput.fill(fileDescription);
-			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			await poHomeChannel.content.fileNameInput.fill(textFileName);
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText(fileDescription);
-			await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
+			await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(textFileName);
 		});
 
 		await test.step('Quote the message with attachment in thread', async () => {
@@ -84,28 +85,26 @@ test.describe('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.threadQuotePreview).toBeVisible();
-			await expect(poHomeChannel.content.threadQuotePreview.getByTitle('any_file1.txt')).toBeVisible();
-			await expect(poHomeChannel.content.threadQuotePreview.getByText(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadQuotedFileName(textFileName)).toBeVisible();
 
 			// Send the quoted message in thread
-			await poHomeChannel.content.inputThreadMessage.fill(threadQuoteMessage);
-			await page.keyboard.press('Enter');
+			await poHomeChannel.content.sendMessageInThread(threadQuoteMessage);
 		});
 
 		await test.step('Verify the quoted message appears correctly in thread', async () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText(fileDescription);
-			await expect(poHomeChannel.content.lastThreadMessageFileName).toHaveText('any_file1.txt');
+			await expect(poHomeChannel.content.lastThreadQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadQuotedFileName(textFileName)).toBeVisible();
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(threadQuoteMessage);
 		});
 	});
 
-	test('should quote a link with preview', async ({ page }) => {
+	test('should show link preview when quoting a link with preview', async () => {
 		const testLink = 'https://rocket.chat';
 
 		await test.step('Send link message in channel', async () => {
 			await poHomeChannel.content.sendMessage(testLink);
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
 			await expect(poHomeChannel.content.linkPreview).toBeVisible();
 		});
@@ -115,17 +114,15 @@ test.describe('Quote Attachment', () => {
 			await poHomeChannel.content.btnQuoteMessage.click();
 
 			// Verify the quote preview shows the link
-			await expect(poHomeChannel.content.linkQuotePreview(testLink)).toBeVisible();
+			await expect(poHomeChannel.content.quotedLinkText(testLink)).toBeVisible();
 
 			// Send the quoted message
-			await poHomeChannel.content.inputMessage.fill(quotedMessage);
-			await page.keyboard.press('Enter');
+			await poHomeChannel.content.sendMessage(quotedMessage);
 		});
 
 		await test.step('Verify the quoted message appears correctly', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
+			await expect(poHomeChannel.content.quotedLinkText(testLink)).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
 		});
 	});
 });
