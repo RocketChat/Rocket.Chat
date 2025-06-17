@@ -1,3 +1,3 @@
 export { PrivateCachedCollection, PublicCachedCollection } from './CachedCollection';
 export { CachedCollectionManager } from './CachedCollectionManager';
-export * from './pipe';
+export { pipe } from './pipe';
