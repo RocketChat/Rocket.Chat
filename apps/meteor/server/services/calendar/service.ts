@@ -294,11 +294,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await CalendarEvent.updateEvent(event._id, { previousStatus: user.status });
 		}
 
-		logger.debug(
-			`Applying status change for event ${event._id} at ${event.startTime} ${event.endTime ? `to ${event.endTime}` : ''} to ${UserStatus.BUSY}`,
-		);
 		await applyStatusChange({
+			eventId: event._id,
 			uid: event.uid,
+			startTime: event.startTime,
+			endTime: event.endTime,
 			status: UserStatus.BUSY,
 		});
 	}
@@ -318,11 +318,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		// 2. We have a previousStatus stored from before the event started
 
 		if (user.status === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.status) {
-			logger.debug(
-				`Applying status change for event ${event._id} at ${event.startTime} ${event.endTime ? `to ${event.endTime}` : ''} to ${event.previousStatus}`,
-			);
 			await applyStatusChange({
+				eventId: event._id,
 				uid: event.uid,
+				startTime: event.startTime,
+				endTime: event.endTime,
 				status: event.previousStatus,
 			});
 		} else {

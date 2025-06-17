@@ -14,11 +14,7 @@
 		"noImplicitAny": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"strictNullChecks": true,
-
-		"sourceMap": true,
-		"declaration": true,
-		"declarationMap": true,
+		"strictNullChecks": true
 	},
 	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }
