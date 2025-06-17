@@ -13,7 +13,14 @@ import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, SettingsContextQuery, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type {
+	Device,
+	LoginService,
+	ModalContextValue,
+	SettingsContextQuery,
+	SubscriptionWithRoom,
+	TranslationKey,
+} from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -196,13 +203,18 @@ export class MockedAppRootBuilder {
 		},
 	};
 
+	private authServices: LoginService[] = [];
+
 	private authentication: ContextType<typeof AuthenticationContext> = {
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
-		queryLoginServices: () => [() => () => undefined, () => []],
+		queryLoginServices: {
+			getCurrentValue: () => this.authServices,
+			subscribe: () => () => undefined,
+		},
 		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 

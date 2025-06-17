@@ -13,7 +13,10 @@ export type AuthenticationContextValue = {
 	loginWithIframe: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
 	loginWithTokenRoute: (token: string, callback?: (error: Error | null | undefined) => void) => Promise<void>;
 	unstoreLoginToken: (callback: () => void) => () => void;
-	queryLoginServices: () => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => LoginService[]];
+	queryLoginServices: {
+		getCurrentValue: () => LoginService[];
+		subscribe: (onStoreChange: () => void) => () => void;
+	};
 };
 
 export const AuthenticationContext = createContext<AuthenticationContextValue | undefined>(undefined);
