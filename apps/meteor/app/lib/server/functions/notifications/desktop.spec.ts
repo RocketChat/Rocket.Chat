@@ -7,20 +7,26 @@ import sinon from 'sinon';
 const broadcastStub = sinon.stub();
 const settingsGetStub = sinon.stub();
 
+const { buildNotificationDetails } = proxyquire.noCallThru().load('../../../../../server/lib/rooms/buildNotificationDetails.ts', {
+	'../../../app/settings/server': { settings: { get: settingsGetStub } },
+});
 const { roomCoordinator } = proxyquire.noCallThru().load('../../../../../server/lib/rooms/roomCoordinator.ts', {
 	'../../../app/settings/server': { settings: { get: settingsGetStub } },
+	'./buildNotificationDetails': { buildNotificationDetails },
 });
 
 ['public', 'private', 'voip', 'livechat'].forEach((type) => {
 	proxyquire.noCallThru().load(`../../../../../server/lib/rooms/roomTypes/${type}.ts`, {
 		'../../../../app/settings/server': { settings: { get: settingsGetStub } },
 		'../roomCoordinator': { roomCoordinator },
+		'../buildNotificationDetails': { buildNotificationDetails },
 	});
 });
 
 proxyquire.noCallThru().load('../../../../../server/lib/rooms/roomTypes/direct.ts', {
 	'../../../../app/settings/server': { settings: { get: settingsGetStub } },
 	'../roomCoordinator': { roomCoordinator },
+	'../buildNotificationDetails': { buildNotificationDetails },
 	'meteor/meteor': { Meteor: { userId: () => 'user123' } },
 	'@rocket.chat/models': {
 		Subscription: {
@@ -97,22 +103,26 @@ const createTestData = (t: IRoom['t'] = 'c', showPushMessage = false, showUserOr
 		}
 	}
 
-	let expectedNotificationMessage = 'You have a new message';
-	if (showPushMessage) {
-		if (t === 'd' && uids && uids.length > 2) {
-			expectedNotificationMessage = `${sender.username}: ${message.msg}`;
-		} else {
-			switch (t) {
-				case 'c':
-				case 'p':
-					expectedNotificationMessage = `${sender.username}: ${message.msg}`;
-					break;
-				case 'l':
-				case 'v':
-				case 'd':
-					expectedNotificationMessage = message.msg;
-					break;
-			}
+	let expectedNotificationMessage: string;
+
+	if (!showPushMessage) {
+		expectedNotificationMessage = 'You have a new message';
+	} else if (!showUserOrRoomName) {
+		// No prefix if showUserOrRoomName is false
+		expectedNotificationMessage = message.msg;
+	} else if (t === 'd' && uids && uids.length > 2) {
+		expectedNotificationMessage = `${sender.username}: ${message.msg}`;
+	} else {
+		switch (t) {
+			case 'c':
+			case 'p':
+				expectedNotificationMessage = `${sender.username}: ${message.msg}`;
+				break;
+			case 'l':
+			case 'v':
+			case 'd':
+				expectedNotificationMessage = message.msg;
+				break;
 		}
 	}
 

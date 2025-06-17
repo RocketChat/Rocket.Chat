@@ -8,7 +8,7 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { Federation } from '../../../services/federation/Federation';
-import { i18n } from '../../i18n';
+import { buildNotificationDetails } from '../buildNotificationDetails';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -94,32 +94,17 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	async getNotificationDetails(room, sender, notificationMessage, userId, language) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
-		const showPushMessage = settings.get<boolean>('Push_show_message');
-		const showUserOrRoomName = settings.get<boolean>('Push_show_username_room');
-
 		const displayRoomName = await this.roomName(room, userId);
 		const senderDisplayName = getUserDisplayName(sender.name, sender.username, useRealName);
 
-		let text;
-		let title;
-		let name;
-		if (showPushMessage) {
-			text = this.isGroupChat(room) ? `${senderDisplayName}: ${notificationMessage}` : notificationMessage;
-		} else {
-			const lng = language || settings.get('Language') || 'en';
-			text = i18n.t('You_have_a_new_message', { lng });
-		}
-
-		if (showUserOrRoomName) {
-			name = room.name || displayRoomName;
-			title = this.isGroupChat(room) ? displayRoomName : senderDisplayName;
-		}
-
-		return {
-			title,
-			text,
-			name,
-		};
+		return buildNotificationDetails({
+			expectedNotificationMessage: notificationMessage,
+			room,
+			sender,
+			expectedTitle: this.isGroupChat(room) ? displayRoomName : senderDisplayName,
+			language,
+			senderNameExpectedInMessage: this.isGroupChat(room),
+		});
 	},
 
 	includeInDashboard() {

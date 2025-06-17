@@ -2,11 +2,10 @@ import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
-import { i18n } from '../../i18n';
+import { buildNotificationDetails } from '../buildNotificationDetails';
 import { roomCoordinator } from '../roomCoordinator';
 
 const LivechatRoomType = getLivechatRoomType(roomCoordinator);
@@ -33,27 +32,15 @@ roomCoordinator.add(LivechatRoomType, {
 		return token && rid && !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
 	},
 
-	async getNotificationDetails(room, _sender, notificationMessage, userId, language) {
-		const showPushMessage = settings.get<boolean>('Push_show_message');
-		const showUserOrRoomName = settings.get<boolean>('Push_show_username_room');
-		const lng = language || settings.get('Language') || 'en';
-
-		let roomName;
-		let text;
-		let title;
-
-		if (showPushMessage) {
-			text = notificationMessage;
-		} else {
-			text = i18n.t('You_have_a_new_message', { lng });
-		}
-
-		if (showUserOrRoomName) {
-			roomName = await this.roomName(room, userId);
-			title = `[Omnichannel] ${roomName}`;
-		}
-
-		return { title, text, name: roomName };
+	async getNotificationDetails(room, sender, notificationMessage, userId, language) {
+		return buildNotificationDetails({
+			expectedNotificationMessage: notificationMessage,
+			sender,
+			room,
+			expectedTitle: `[Omnichannel] ${await this.roomName(room, userId)}`,
+			language,
+			senderNameExpectedInMessage: false,
+		});
 	},
 
 	async getMsgSender(message) {

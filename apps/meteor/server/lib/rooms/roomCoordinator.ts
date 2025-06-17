@@ -1,11 +1,9 @@
-import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { buildNotificationDetails } from './buildNotificationDetails';
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { i18n } from '../i18n';
 
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
@@ -43,28 +41,15 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				notificationMessage: string,
 				userId: string,
 				language?: string,
-			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
-				const showPushMessage = settings.get<boolean>('Push_show_message');
-				const showUserOrRoomName = settings.get<boolean>('Push_show_username_room');
-				const lng = language || settings.get('Language') || 'en';
-
-				let text;
-				let title;
-				let name;
-				if (showPushMessage) {
-					const useRealName = settings.get<boolean>('UI_Use_Real_Name');
-					const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
-					text = `${senderName}: ${notificationMessage}`;
-				} else {
-					text = i18n.t('You_have_a_new_message', { lng });
-				}
-
-				if (showUserOrRoomName) {
-					title = `#${await this.roomName(room, userId)}`;
-					name = room.name;
-				}
-
-				return { title, text, name };
+			) {
+				return buildNotificationDetails({
+					expectedNotificationMessage: notificationMessage,
+					sender,
+					senderNameExpectedInMessage: true,
+					language,
+					expectedTitle: `#${await this.roomName(room, userId)}`,
+					room,
+				});
 			},
 			getMsgSender(message: IMessage): Promise<IUser | null> {
 				return Users.findOneById(message.u._id);
