@@ -151,8 +151,8 @@ export class FreeSwitchESLClient extends Emitter<FreeSwitchESLClientEvents> {
 		});
 	}
 
-	public async endConnection(): Promise<void> {
+	public endConnection(): void {
 		this.expectingEnd = true;
-		await wrapExceptions(async () => this.response.end()).suppress();
+		wrapExceptions(() => this.response.end()).suppress();
 	}
 }

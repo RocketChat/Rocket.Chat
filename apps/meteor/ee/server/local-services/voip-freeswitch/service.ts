@@ -150,7 +150,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			return;
 		}
 
-		void this.eventClient.endConnection();
+		this.eventClient.endConnection();
 		this.wasEverConnected = false;
 		this.eventClient = null;
 	}
