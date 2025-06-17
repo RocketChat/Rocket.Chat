@@ -458,7 +458,7 @@ describe('[Direct Messages]', () => {
 
 		describe('with deactived users', async () => {
 			before(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: false }));
-			after(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: false }));
+			after(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: true }));
 			it('should not include deactivated users in members count', async () => {
 				// Deactivate the second user
 
