@@ -240,11 +240,11 @@ describe('[Incoming Integrations]', () => {
 				.end(done);
 		});
 		it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
-			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			const successfulMessage = `Message sent successfully at #${Date.now()}`;
 			void request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(200)
 				.end(() => {
@@ -259,7 +259,7 @@ describe('[Incoming Integrations]', () => {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
 						})
 						.end(done);
 				});
@@ -285,11 +285,11 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
 				});
-			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			const successfulMessage = `Message sent successfully at #${Date.now()}`;
 			await request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 					channel: [testChannelName],
 				})
 				.expect(200);
@@ -305,7 +305,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
+					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
 				});
 		});
 
@@ -769,11 +769,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should send messages to the channel under the updated username', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(200);
 
@@ -788,7 +788,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage);
+					const message = (res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage);
 					expect(message?.u).have.property('username', senderUser.username);
 				});
 		});
@@ -1010,11 +1010,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should not send a message in public room if token is invalid', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration4._id}/invalid-token`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1032,16 +1032,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not send a message in private room if token is invalid', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/invalid-token`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1059,16 +1059,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not send a message to a private rooms on behalf of a non member', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/${integration2.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1085,16 +1085,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not add non member to private rooms when sending message', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration2._id}/${integration2.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1116,11 +1116,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should not send a message to public channel of a private team on behalf of a non team member', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration3._id}/${integration3.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1137,16 +1137,16 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.undefined;
 				});
 		});
 
 		it('should not add non team member to the public channel in a private team when sending message', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration3._id}/${integration3.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(400)
 				.expect((res) => {
@@ -1168,11 +1168,11 @@ describe('[Incoming Integrations]', () => {
 		});
 
 		it('should send messages from non-members to public rooms and add them as room members', async () => {
-			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request
 				.post(`/hooks/${integration4._id}/${integration4.token}`)
 				.send({
-					text: successfulMesssage,
+					text: successfulMessage,
 				})
 				.expect(200);
 
@@ -1187,7 +1187,7 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).not.to.be.undefined;
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).not.to.be.undefined;
 				});
 
 			await request
