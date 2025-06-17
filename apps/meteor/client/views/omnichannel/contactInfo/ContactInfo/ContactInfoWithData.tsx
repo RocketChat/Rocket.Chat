@@ -21,7 +21,7 @@ const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProp
 	});
 
 	if (isPending) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError || !data?.contact) {
