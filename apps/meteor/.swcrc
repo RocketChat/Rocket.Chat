@@ -1,7 +1,6 @@
 {
 	"jsc": {
 		"parser": {
-			"syntax": "emcascript",
 			"jsx": true
 		}
 	}
