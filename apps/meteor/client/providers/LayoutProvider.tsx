@@ -19,7 +19,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const [displaySidePanel, setDisplaySidePanel] = useState(true);
-	const [isInternalScope, setIsInternalScope] = useState(false);
+	const [overlayed, setOverlayed] = useState(false);
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
@@ -63,8 +63,6 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 			children={children}
 			value={useMemo(
 				() => ({
-					isInternalScope,
-					setIsInternalScope,
 					isMobile,
 					isTablet,
 					isEmbedded,
@@ -75,6 +73,8 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
 					},
 					sidebar: {
+						overlayed,
+						setOverlayed,
 						isCollapsed,
 						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
@@ -87,7 +87,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						openSidePanel: () => setDisplaySidePanel(true),
 					},
 					size: {
-						sidebar: '240px',
+						sidebar: isTablet ? '280px' : '240px',
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
@@ -98,12 +98,12 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					hiddenActions,
 				}),
 				[
-					isInternalScope,
 					isMobile,
 					isTablet,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					navBarSearchExpanded,
+					overlayed,
 					isCollapsed,
 					shouldToggle,
 					shouldDisplaySidePanel,

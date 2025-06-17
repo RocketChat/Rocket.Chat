@@ -12,7 +12,6 @@ const SidebarRegion = () => {
 		isTablet,
 		sidebar,
 		sidePanel: { displaySidePanel },
-		isInternalScope,
 	} = useLayout();
 	const { sidebar: sidebarSize } = useLayoutSizes();
 
@@ -39,17 +38,9 @@ const SidebarRegion = () => {
 		position: relative;
 		z-index: 2;
 		display: flex;
-		/* flex-direction: column; */
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
-
-		/* > .rcx-sidebar:not(:last-child) {
-			visibility: hidden;
-		} */
-		/* .rcx-sidebar {
-			
-		} */
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
@@ -95,7 +86,7 @@ const SidebarRegion = () => {
 		<FocusScope>
 			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && sidebarMobileClass].filter(Boolean)}>
 				{showSideBar && (
-					<Box className={[sidebarStyle, isInternalScope && 'collapsed']}>
+					<Box className={[sidebarStyle, sidebar.overlayed && isTablet && 'collapsed']}>
 						<Sidebar />
 					</Box>
 				)}

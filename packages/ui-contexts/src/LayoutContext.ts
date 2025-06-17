@@ -6,14 +6,14 @@ export type SizeLayout = {
 };
 
 export type LayoutContextValue = {
-	isInternalScope: boolean;
-	setIsInternalScope: (value: boolean) => void;
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isTablet: boolean;
 	isMobile: boolean;
 	roomToolboxExpanded: boolean;
 	sidebar: {
+		overlayed: boolean;
+		setOverlayed: (value: boolean) => void;
 		isCollapsed: boolean;
 		toggle: () => void;
 		collapse: () => void;
@@ -42,8 +42,6 @@ export type LayoutContextValue = {
 };
 
 export const LayoutContext = createContext<LayoutContextValue>({
-	isInternalScope: false,
-	setIsInternalScope: () => undefined,
 	isEmbedded: false,
 	showTopNavbarEmbeddedLayout: false,
 	isTablet: false,
@@ -55,6 +53,8 @@ export const LayoutContext = createContext<LayoutContextValue>({
 		collapseSearch: () => undefined,
 	},
 	sidebar: {
+		overlayed: false,
+		setOverlayed: () => undefined,
 		isCollapsed: false,
 		toggle: () => undefined,
 		collapse: () => undefined,

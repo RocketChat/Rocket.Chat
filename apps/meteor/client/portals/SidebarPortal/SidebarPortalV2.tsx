@@ -8,15 +8,15 @@ type SidebarPortalProps = { children?: ReactNode };
 
 const SidebarPortal = ({ children }: SidebarPortalProps) => {
 	const sidebarRoot = document.getElementById('navigation-region');
-	const { setIsInternalScope } = useLayout();
+	const { sidebar } = useLayout();
 
 	useEffect(() => {
 		if (sidebarRoot) {
-			setIsInternalScope(true);
+			sidebar.setOverlayed(true);
 		}
 
-		return () => setIsInternalScope(false);
-	}, [setIsInternalScope, sidebarRoot]);
+		return () => sidebar.setOverlayed(false);
+	}, [sidebar, sidebarRoot]);
 
 	if (!sidebarRoot) {
 		return null;
