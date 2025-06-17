@@ -25,7 +25,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.15.33",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
