@@ -783,6 +783,11 @@ export class APIClass<
 					async function _internalRouteActionHandler() {
 						let result;
 
+						if (options.authRequired || options.authOrAnonRequired) {
+							const authToken = this.request.headers.get('x-auth-token');
+							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
+						}
+
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
 						this.connection = connection;
 
@@ -791,8 +796,6 @@ export class APIClass<
 								const user = await api.authenticatedRoute.call(this, this.request);
 								this.user = user!;
 								this.userId = String(this.request.headers.get('x-user-id'));
-								const authToken = this.request.headers.get('x-auth-token');
-								this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 							}
 
 							if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
