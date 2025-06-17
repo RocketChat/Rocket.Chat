@@ -4,10 +4,10 @@ import { useLayout, useLayoutSizes } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { FocusScope } from 'react-aria';
 
-import Sidebar from './Sidebar';
-import SidePanel from '../views/navigation/sidepanel';
+import SidePanel from './sidepanel';
+import Sidebar from '../../sidebarv2';
 
-const SidebarRegion = () => {
+const NavigationRegion = () => {
 	const {
 		isTablet,
 		sidebar,
@@ -99,4 +99,4 @@ const SidebarRegion = () => {
 	);
 };
 
-export default memo(SidebarRegion);
+export default memo(NavigationRegion);
