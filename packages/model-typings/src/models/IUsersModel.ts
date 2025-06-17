@@ -89,7 +89,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
 
 	findConnectedLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
