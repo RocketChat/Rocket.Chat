@@ -1,6 +1,6 @@
 import type { IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
 
-import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
+import { filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
 import { parseChannelUsername } from './parseChannelUsername';
 import { parseEventCallId } from './parseEventCallId';
@@ -74,8 +74,8 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 		([key, value]) => {
 			return [key.replace('variable_', ''), value || ''];
 		},
-	);
-	const metadata = filterStringList(eventData, (key) => isMetadata(key));
+	) as Record<string, string | string[]>;
+	const metadata = filterStringList(eventData, (key) => isMetadata(key)) as Record<string, string>;
 	const unusedRawData = filterStringList(rawEventData, (key) => {
 		if (isMetadata(key)) {
 			return false;
@@ -99,7 +99,7 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 		}
 
 		return true;
-	});
+	}) as Record<string, string>;
 
 	const event: Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'> = {
 		channelUniqueId,
@@ -124,9 +124,9 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 		...(bridgeUniqueIds.length && { bridgeUniqueIds }),
 		bridgedTo,
 		legs,
-		metadata: filterOutEmptyValues(metadata),
-		...((Object.keys(variables).length && { variables }) as { variables: IFreeSwitchChannelEvent['variables'] } | undefined),
-		raw: filterOutEmptyValues(unusedRawData),
+		metadata: filterOutMissingData(metadata),
+		...(Object.keys(variables).length && { variables }),
+		raw: filterOutMissingData(unusedRawData),
 
 		codecs: {
 			...{

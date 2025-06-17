@@ -1,4 +1,4 @@
-import { filterOutMissingData, filterOutEmptyValues } from '../../src/eventParser/filterOutMissingData';
+import { filterOutMissingData } from '../../src/eventParser/filterOutMissingData';
 
 describe('filterOutMissingData', () => {
 	test.each([
@@ -10,15 +10,5 @@ describe('filterOutMissingData', () => {
 		['case-6', {}, {}],
 	])('should filter out missing data for test %# (%s)', (_caseId, input, expected) => {
 		expect(filterOutMissingData(input)).toEqual(expected);
-	});
-});
-
-describe('filterOutEmptyValues', () => {
-	test.each([
-		['case-1', { a: '1', b: '', c: '0', d: undefined }, { a: '1' }],
-		['case-2', { a: 'test', b: '', c: undefined }, { a: 'test' }],
-		['case-3', {}, {}],
-	])('should filter out empty values for test %# (%s)', (_caseId, input, expected) => {
-		expect(filterOutEmptyValues(input)).toEqual(expected);
 	});
 });

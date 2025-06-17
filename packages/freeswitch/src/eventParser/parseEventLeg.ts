@@ -1,6 +1,6 @@
 import type { AtLeast, IFreeSwitchChannelEventLeg, IFreeSwitchChannelEventLegProfile } from '@rocket.chat/core-typings';
 
-import { filterOutEmptyValues, filterOutMissingData } from './filterOutMissingData';
+import { filterOutMissingData } from './filterOutMissingData';
 import { filterStringList } from './filterStringList';
 import type { EventData } from './parseEventData';
 import { parseTimestamp } from './parseTimestamp';
@@ -15,7 +15,7 @@ export function parseEventLeg(
 		([key, value]) => {
 			return [key.replace(`${legName}-`, ''), value];
 		},
-	);
+	) as Record<string, string>;
 
 	const legType = legName === 'Other-Leg' ? eventData['Other-Type'] : undefined;
 
@@ -110,7 +110,7 @@ export function parseEventLeg(
 		privacyHideName,
 		privacyHideNumber,
 
-		raw: filterOutEmptyValues(rawLegData),
+		raw: filterOutMissingData(rawLegData),
 	};
 
 	return filterOutMissingData(leg);
