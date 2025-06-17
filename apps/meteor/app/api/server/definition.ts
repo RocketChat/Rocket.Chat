@@ -88,12 +88,14 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-export type Options = (
+export type Options = SharedOptions<Method>;
+
+export type SharedOptions<TMethod extends string> = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
@@ -110,8 +112,8 @@ export type Options = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
@@ -131,7 +133,7 @@ export type Options = (
 	/**
 	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
 	 */
-	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
+	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
 		version: string;
@@ -150,9 +152,11 @@ export type PartialThis = {
 	readonly queryOperations?: string[];
 	readonly queryFields?: string[];
 	readonly logger: Logger;
+	readonly route: string;
 };
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -215,7 +219,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 				readonly token?: string;
 			});
 
-export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> = (
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
@@ -223,7 +227,10 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| {
 			statusCode: number;
 			body: unknown;
-	  };
+	  }
+) & {
+	headers?: Record<string, string>;
+};
 
 export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
@@ -263,6 +270,7 @@ type Range<N extends number, Result extends number[] = []> = Result['length'] ex
 	: Range<N, [...Result, Result['length']]>;
 
 type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
+
 export type TypedOptions = {
 	response: {
 		[K in HTTPStatusCodes]?: ValidateFunction;
@@ -272,7 +280,7 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
-} & Options;
+} & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;

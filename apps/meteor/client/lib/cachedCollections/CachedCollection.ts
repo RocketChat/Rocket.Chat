@@ -1,15 +1,15 @@
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import type { MinimongoCollection } from '../../definitions/MinimongoCollection';
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedCollectionManager } from './CachedCollectionManager';
+import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -36,10 +36,10 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export abstract class CachedCollection<T extends { _id: string }, U = T> {
+export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
-	public collection: MinimongoCollection<T>;
+	public collection = new MinimongoCollection<T>();
 
 	public ready = new ReactiveVar(false);
 
@@ -56,8 +56,6 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	private timer: ReturnType<typeof setTimeout>;
 
 	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
-		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
-
 		this.name = name;
 		this.eventType = eventType;
 
@@ -111,13 +109,9 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection._collection._docs._map = new Map(
-			deserializedRecords.filter(hasId).map((record) => [this.collection._collection._docs._idStringify(record._id), record]),
-		);
+		this.collection.state.replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
-
-		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
 
 		return true;
 	}
@@ -153,32 +147,32 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
-		data.forEach((record) => {
-			const newRecord = this.handleLoadFromServer(record);
-			if (!hasId(newRecord)) {
-				return;
+		const newRecords = data.map((record) => {
+			const mapped = this.mapRecord(record);
+
+			if (hasUpdatedAt(mapped) && mapped._updatedAt > this.updatedAt) {
+				this.updatedAt = mapped._updatedAt;
 			}
 
-			const { _id } = newRecord;
-			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
-
-			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
-				this.updatedAt = newRecord._updatedAt;
-			}
+			return mapped;
 		});
+
+		this.collection.state.storeMany(newRecords);
+		this.handleLoadedFromServer(newRecords);
+
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	protected handleLoadFromServer(record: U): T {
+	protected mapRecord(record: U): T {
 		return record as unknown as T;
 	}
 
-	protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleLoadedFromServer(_records: T[]): void {
+		// This method can be overridden to handle records after they are loaded from the server
 	}
 
-	protected handleSync(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {
+		// This method can be overridden to handle sync events
 	}
 
 	private async loadFromServerAndPopulate() {
@@ -188,12 +182,11 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.find().fetch();
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: data,
+			records: Array.from(this.collection.state.records.values()),
 		});
 		this.log('saving cache (done)');
 	});
@@ -203,32 +196,25 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.remove({});
+		this.collection.state.replaceAll([]);
 	}
 
 	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
+		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
-		const newRecord = this.handleReceived(record, action);
-
-		if (!hasId(newRecord)) {
-			return;
-		}
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
+		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
-			this.collection.remove(newRecord._id);
+			this.collection.state.delete(newRecord._id);
 		} else {
-			const { _id } = newRecord;
-			if (!_id) {
-				return;
-			}
-			this.collection.upsert({ _id } as any, newRecord);
+			this.collection.state.store(newRecord);
 		}
+
 		await this.save();
 	}
 
@@ -259,21 +245,16 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		if (data.update && data.update.length > 0) {
 			this.log(`${data.update.length} records updated in sync`);
 			for (const record of data.update) {
-				const action = 'changed';
-				const newRecord = this.handleSync(record, action);
-
-				if (!hasId(newRecord)) {
-					continue;
-				}
+				const newRecord = this.mapRecord(record);
 
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						const { _id } = newRecord;
-						this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+						this.collection.state.store(newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('changed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -283,21 +264,20 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 		if (data.remove && data.remove.length > 0) {
 			this.log(`${data.remove.length} records removed in sync`);
 			for (const record of data.remove) {
-				const action = 'removed';
-				const newRecord = this.handleSync(record, action);
+				const newRecord = this.mapRecord(record);
 
-				if (!hasId(newRecord) || !hasDeletedAt(newRecord)) {
+				if (!hasDeletedAt(newRecord)) {
 					continue;
 				}
 
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						const { _id } = newRecord;
-						this.collection.remove({ _id } as Mongo.Selector<T>);
+						this.collection.state.delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('removed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -344,7 +324,7 @@ export abstract class CachedCollection<T extends { _id: string }, U = T> {
 	private reconnectionComputation: Tracker.Computation | undefined;
 }
 
-export class PublicCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected getToken() {
 		return undefined;
 	}
@@ -354,7 +334,7 @@ export class PublicCachedCollection<T extends { _id: string }, U = T> extends Ca
 	}
 }
 
-export class PrivateCachedCollection<T extends { _id: string }, U = T> extends CachedCollection<T, U> {
+export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected getToken() {
 		return Accounts._storedLoginToken();
 	}

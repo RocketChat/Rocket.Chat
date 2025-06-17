@@ -3,7 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { subscriptionsQueryKeys } from '../../../../../../lib/queryKeys';
+import { roomsQueryKeys, subscriptionsQueryKeys } from '../../../../../../lib/queryKeys';
 
 export const usePutChatOnHoldMutation = (
 	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,
@@ -19,7 +19,7 @@ export const usePutChatOnHoldMutation = (
 		...options,
 		onSuccess: async (data, rid, context) => {
 			await queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-			await queryClient.invalidateQueries({ queryKey: ['rooms', rid] });
+			await queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(rid) });
 			await queryClient.invalidateQueries({ queryKey: subscriptionsQueryKeys.subscription(rid) });
 			return options?.onSuccess?.(data, rid, context);
 		},

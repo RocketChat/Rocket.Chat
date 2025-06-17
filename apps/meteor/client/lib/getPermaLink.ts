@@ -18,7 +18,7 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 
 	const { Messages, Rooms, Subscriptions } = await import('../../app/models/client');
 
-	const msg = Messages.findOne(msgId) || (await getMessage(msgId));
+	const msg = Messages.state.get(msgId) || (await getMessage(msgId));
 	if (!msg) {
 		throw new Error('message-not-found');
 	}

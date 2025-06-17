@@ -130,6 +130,16 @@ declare module 'meteor/meteor' {
 					config: (config: { onlineOnly: string[] }) => void;
 			  }
 			| undefined;
+
+		function _isPromise(obj: unknown): obj is Promise<unknown>;
+
+		function _runFresh(func: () => void): void;
+
+		class _SynchronousQueue {
+			queueTask(arg0: () => void): void;
+
+			drain(): unknown;
+		}
 	}
 
 	// eslint-disable-next-line no-var

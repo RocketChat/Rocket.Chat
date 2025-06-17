@@ -3,13 +3,13 @@ import type { MarketplaceSubscriptionStatus } from './MarketplaceSubscriptionSta
 import type { MarketplaceSubscriptionType } from './MarketplaceSubscriptionType';
 
 export interface IMarketplaceSubscriptionInfo {
-    seats: number;
-    maxSeats: number;
-    startDate: string;
-    periodEnd: string;
-    isSubscripbedViaBundle: boolean;
-    endDate?: string;
-    typeOf: MarketplaceSubscriptionType;
-    status: MarketplaceSubscriptionStatus;
-    license: IAppLicenseMetadata;
+	seats: number;
+	maxSeats: number;
+	startDate: string;
+	periodEnd: string;
+	isSubscripbedViaBundle: boolean;
+	endDate?: string;
+	typeOf: MarketplaceSubscriptionType;
+	status: MarketplaceSubscriptionStatus;
+	license: IAppLicenseMetadata;
 }

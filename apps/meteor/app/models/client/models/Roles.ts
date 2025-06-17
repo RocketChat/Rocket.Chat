@@ -1,17 +1,12 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { Subscriptions } from './Subscriptions';
 import { Users } from './Users';
-import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
+import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
 
-class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollection<IRole> {
+class RolesCollection extends MinimongoCollection<IRole> {
 	ready = new ReactiveVar(false);
-
-	constructor() {
-		super(null);
-	}
 
 	isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][] | IRole['_id'], scope?: string, ignoreSubscriptions = false) {
 		roles = Array.isArray(roles) ? roles : [roles];
@@ -31,10 +26,6 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 			}
 		});
 	}
-
-	public declare _collection: MinimongoCollection<IRole>['_collection'];
-
-	public declare queries: MinimongoCollection<IRole>['queries'];
 }
 
 /** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
