@@ -128,6 +128,7 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 							onRestore={onRestore}
 							onOpenWindow={onOpenWindow}
 							queueInfo={queueInfo}
+							hideExpandChat={theme.hideExpandChat}
 						/>
 					)}
 
