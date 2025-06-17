@@ -199,7 +199,7 @@ jobs:
         uses: ./.github/actions/setup-node
         if: github.event.action != 'closed'
         with:
-          node-version: 22.14.0
+          node-version: 22.16.0
           deno-version: 1.43.5
           cache-modules: true
           install: true
@@ -306,7 +306,7 @@ jobs:
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4.4.0
         with:
-          node-version: '22.14.0'
+          node-version: 22.16.0
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         uses: actions-rust-lang/setup-rust-toolchain@v1

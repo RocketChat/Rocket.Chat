@@ -49,7 +49,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.15.33",
 		"@types/polka": "^0.5.7",
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
