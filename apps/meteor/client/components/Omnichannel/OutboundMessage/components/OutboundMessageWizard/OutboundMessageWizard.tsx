@@ -4,13 +4,10 @@ import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
+import type { SubmitPayload } from './forms';
+import { PreviewStep } from './steps';
 import GenericError from '../../../../GenericError';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
-
-type SubmitPayload = {
-	contactId: string;
-	providerId: string;
-};
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId'>>;
@@ -18,7 +15,8 @@ type OutboundMessageWizardProps = {
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
-	const [, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
 
 	const wizardApi = useWizard({
 		steps: [
@@ -34,6 +32,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		setState((state) => ({ ...state, ...values }));
 	});
 
+	const handleSend = useEffectEvent(() => {
+		console.log('Message sent with values:', state);
+	});
+
 	return (
 		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
 			<Wizard api={wizardApi}>
@@ -43,7 +45,22 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 					<WizardContent id='recipient'>Recipient Content</WizardContent>
 					<WizardContent id='message'>Message Content</WizardContent>
 					<WizardContent id='replies'>Replies Content</WizardContent>
-					<WizardContent id='preview'>Preview Content</WizardContent>
+
+					<WizardContent id='preview'>
+						<PreviewStep
+							sender={sender}
+							recipient={recipient}
+							contactName={contact?.name}
+							departmentName={department?.name}
+							providerType={provider?.providerType}
+							providerName={provider?.providerName}
+							agentName={agent?.name}
+							agentUsername={agent?.username}
+							template={template}
+							templateParameters={templateParameters}
+							onSend={handleSend}
+						/>
+					</WizardContent>
 				</Box>
 			</Wizard>
 		</ErrorBoundary>
