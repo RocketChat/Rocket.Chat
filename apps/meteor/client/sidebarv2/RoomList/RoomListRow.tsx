@@ -4,7 +4,6 @@ import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type RoomListRowProps = {
@@ -12,7 +11,6 @@ type RoomListRowProps = {
 		extended: boolean;
 		t: TFunction;
 		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
-		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
@@ -21,7 +19,8 @@ type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+	console.log('RoomListRow', { data, item });
+	const { extended, t, SidebarItemTemplate, openedRoom, sidebarViewMode } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -45,7 +44,6 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			room={item}
 			extended={extended}
 			SidebarItemTemplate={SidebarItemTemplate}
-			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 		/>
 	);

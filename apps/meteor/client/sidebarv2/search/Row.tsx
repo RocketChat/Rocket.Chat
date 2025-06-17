@@ -13,7 +13,7 @@ type RowProps = {
 const Row = ({ item, data }: RowProps): ReactElement => {
 	const { t, SidebarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
 
-	if (item.t === 'd' && !item.u) {
+	if (item.t === 'd') {
 		return (
 			<UserItem
 				id={`search-${item._id}`}
@@ -32,7 +32,6 @@ const Row = ({ item, data }: RowProps): ReactElement => {
 			t={t}
 			room={item}
 			SidebarItemTemplate={SidebarItemTemplate}
-			AvatarTemplate={AvatarTemplate}
 		/>
 	);
 };

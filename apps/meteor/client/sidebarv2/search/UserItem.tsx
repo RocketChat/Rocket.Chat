@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { memo } from 'react';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
@@ -20,7 +21,7 @@ type UserItemProps = {
 	useRealName?: boolean;
 };
 
-const UserItem = ({ item, id, style, t, SidebarItemTemplate, AvatarTemplate, useRealName }: UserItemProps) => {
+const UserItem = ({ item, id, style, t, SidebarItemTemplate, useRealName }: UserItemProps) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
 	const icon = <SidebarV2ItemIcon icon={<ReactiveUserStatus uid={item._id} />} />;
 	const href = roomCoordinator.getRouteLink(item.t, { name: item.name });
@@ -33,7 +34,7 @@ const UserItem = ({ item, id, style, t, SidebarItemTemplate, AvatarTemplate, use
 			href={href}
 			title={title}
 			subtitle={t('No_messages_yet')}
-			avatar={AvatarTemplate && <AvatarTemplate {...item} />}
+			avatar={<RoomAvatar size='x20' room={item} />}
 			icon={icon}
 		/>
 	);
