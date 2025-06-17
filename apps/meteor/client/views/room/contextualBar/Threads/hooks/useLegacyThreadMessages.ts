@@ -1,11 +1,11 @@
 import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { Messages } from '../../../../../../app/models/client';
 import { upsertMessageBulk } from '../../../../../../app/ui-utils/client/lib/RoomHistoryManager';
-import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 
 export const useLegacyThreadMessages = (
 	tmid: IThreadMainMessage['_id'],
@@ -13,27 +13,19 @@ export const useLegacyThreadMessages = (
 	messages: Array<IThreadMessage | IThreadMainMessage>;
 	loading: boolean;
 } => {
-	const messages = useReactiveValue(
-		useCallback(() => {
-			return Messages.find(
-				{
-					$or: [{ tmid }, { _id: tmid }],
-					_hidden: { $ne: true },
-					tmid,
-					_id: { $ne: tmid },
-				},
-				{
-					fields: {
-						collapsed: 0,
-						threadMsg: 0,
-						repliesCount: 0,
-					},
-					sort: { ts: 1 },
-				},
-			)
-				.fetch()
-				.filter(isThreadMessage);
-		}, [tmid]),
+	const messages = Messages.use(
+		useShallow((state) =>
+			state
+				.filter(
+					(record): record is IThreadMessage =>
+						(record.tmid === tmid || record._id === tmid) &&
+						record._hidden !== true &&
+						record.tmid === tmid &&
+						record._id !== tmid &&
+						isThreadMessage(record),
+				)
+				.sort((a, b) => a.ts.getTime() - b.ts.getTime()),
+		),
 	);
 
 	const [loading, setLoading] = useState(messages.length === 0);
@@ -41,10 +33,11 @@ export const useLegacyThreadMessages = (
 	const getThreadMessages = useMethod('getThreadMessages');
 
 	useEffect(() => {
-		getThreadMessages({ tmid }).then((messages) => {
-			upsertMessageBulk({ msgs: messages }, Messages);
-			setLoading(false);
-		});
+		getThreadMessages({ tmid })
+			.then((messages) => upsertMessageBulk({ msgs: messages }))
+			.then(() => {
+				setLoading(false);
+			});
 	}, [getThreadMessages, tmid]);
 
 	return { messages, loading };

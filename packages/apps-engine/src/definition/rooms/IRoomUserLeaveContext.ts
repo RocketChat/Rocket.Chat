@@ -7,17 +7,17 @@ import type { IRoom } from './IRoom';
  * - IPostRoomUserLeave
  */
 export interface IRoomUserLeaveContext {
-    /**
-     * The user that is leaving the room
-     */
-    leavingUser: IUser;
-    /**
-     * The room that the user is leaving
-     */
-    room: IRoom;
+	/**
+	 * The user that is leaving the room
+	 */
+	leavingUser: IUser;
+	/**
+	 * The room that the user is leaving
+	 */
+	room: IRoom;
 
-    /**
-     * The user that removed the room member
-     */
-    removedBy?: IUser;
+	/**
+	 * The user that removed the room member
+	 */
+	removedBy?: IUser;
 }
