@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, AnimatedVisibility } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo, useEffect } from 'react';
@@ -22,7 +22,16 @@ const SidebarPortal = ({ children }: SidebarPortalProps) => {
 		return null;
 	}
 
-	return <>{createPortal(<Box className='rcx-sidebar flex-nav'>{children}</Box>, sidebarRoot)}</>;
+	return (
+		<>
+			{createPortal(
+				<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
+					<Box className='rcx-sidebar flex-nav'>{children}</Box>
+				</AnimatedVisibility>,
+				sidebarRoot,
+			)}
+		</>
+	);
 };
 
 export default memo(SidebarPortal);

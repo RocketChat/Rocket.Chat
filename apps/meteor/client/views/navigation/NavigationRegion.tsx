@@ -15,7 +15,7 @@ const NavigationRegion = () => {
 	} = useLayout();
 	const { sidebar: sidebarSize } = useLayoutSizes();
 
-	const sidebarMobileClass = css`
+	const navMobileStyle = css`
 		position: absolute;
 		user-select: none;
 		transform: translate3d(-100%, 0, 0);
@@ -48,7 +48,7 @@ const NavigationRegion = () => {
 		}
 	`;
 
-	const sidebarWrapStyle = css`
+	const navBackdropStyle = css`
 		position: absolute;
 		z-index: 1;
 		top: 0;
@@ -67,7 +67,7 @@ const NavigationRegion = () => {
 		}
 	`;
 
-	const sidebarStyle = css`
+	const sidebarWrapStyle = css`
 		width: ${sidebarSize};
 		min-width: ${sidebarSize};
 		transition: transform 0.3s;
@@ -84,16 +84,16 @@ const NavigationRegion = () => {
 
 	return (
 		<FocusScope>
-			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && sidebarMobileClass].filter(Boolean)}>
+			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
 				{showSideBar && (
-					<Box className={[sidebarStyle, sidebar.overlayed && isTablet && 'collapsed']}>
+					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed']}>
 						<Sidebar />
 					</Box>
 				)}
 				{displaySidePanel && <SidePanel />}
 			</Box>
 			{isTablet && (
-				<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()} />
+				<Box className={[navBackdropStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()} />
 			)}
 		</FocusScope>
 	);
