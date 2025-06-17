@@ -1016,9 +1016,10 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMesssage,
 				})
-				.expect(500)
+				.expect(400)
 				.expect((res) => {
-					expect(res.text).to.be.equal('Internal Server Error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid integration id or token provided.');
 				});
 			await request
 				.get(api('channels.messages'))
@@ -1042,9 +1043,10 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMesssage,
 				})
-				.expect(500)
+				.expect(400)
 				.expect((res) => {
-					expect(res.text).to.be.equal('Internal Server Error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid integration id or token provided.');
 				});
 			await request
 				.get(api('groups.messages'))
