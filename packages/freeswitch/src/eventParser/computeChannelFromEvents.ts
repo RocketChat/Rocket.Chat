@@ -80,7 +80,7 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 				modifiedValues: convertPathsIntoSubObjects(changedExistingValues),
 			};
 
-			deltas.push(filterOutMissingData(delta) as IFreeSwitchChannelEventDeltaData);
+			deltas.push(filterOutMissingData(delta));
 
 			return {
 				channelUniqueId,

@@ -1,7 +1,6 @@
-import type { DeepPartial } from '@rocket.chat/core-typings';
 import { objectMap } from '@rocket.chat/tools';
 
-export function filterOutMissingData<T extends Record<string, any>>(data: T): DeepPartial<T> {
+export function filterOutMissingData<T extends Record<string, any>>(data: T): T {
 	return objectMap(
 		data,
 		({ key, value }) => {
@@ -18,7 +17,7 @@ export function filterOutMissingData<T extends Record<string, any>>(data: T): De
 			return { key, value };
 		},
 		true,
-	) as DeepPartial<T>;
+	) as T;
 }
 
 export function filterOutEmptyValues<T extends Record<string, string | undefined>>(data: T): Record<keyof T, string> {

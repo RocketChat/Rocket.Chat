@@ -1,10 +1,7 @@
 export function convertPathsIntoSubObjects(object: Record<string, any>): Record<string, any> {
 	const newObject: Record<string, any> = {};
 
-	for (const key in object) {
-		if (!(key in object)) {
-			continue;
-		}
+	for (const key of Object.keys(object)) {
 		const value = object[key];
 		if (!value && typeof value !== 'boolean') {
 			continue;

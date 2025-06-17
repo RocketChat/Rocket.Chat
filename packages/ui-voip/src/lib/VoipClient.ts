@@ -949,7 +949,7 @@ class VoipClient extends Emitter<VoipEvents> {
 			const url = new URL(this.config.siteUrl);
 			return url.hostname;
 		} catch {
-			//
+			return undefined;
 		}
 	}
 

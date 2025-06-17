@@ -150,7 +150,7 @@ export function parseEventData(eventName: string, eventData: EventData): Omit<IF
 	};
 
 	const filteredEvent = {
-		...(filterOutMissingData(event) as typeof event),
+		...filterOutMissingData(event),
 		channelName,
 		channelCallState,
 		channelState,
