@@ -45,8 +45,8 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	};
 };
 
-const withAsyncTOTP = (callAsync: (name: string, ...args: any[]) => Promise<any>) => {
-	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<unknown> {
+const withAsyncTOTP = <TResult>(callAsync: (name: string, ...args: any[]) => Promise<TResult>) => {
+	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<TResult> {
 		try {
 			return await callAsync(methodName, ...args);
 		} catch (error: unknown) {
