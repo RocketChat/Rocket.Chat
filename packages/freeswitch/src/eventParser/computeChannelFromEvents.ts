@@ -2,14 +2,36 @@ import type {
 	IFreeSwitchChannel,
 	IFreeSwitchChannelEvent,
 	IFreeSwitchChannelEventDeltaData,
+	IFreeSwitchChannelEventHeader,
 	IFreeSwitchChannelEventMutable,
 } from '@rocket.chat/core-typings';
-import { convertPathsIntoSubObjects } from '@rocket.chat/tools';
+import { convertPathsIntoSubObjects, convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import { computeChannelProfiles } from './computeChannelProfiles';
-import { convertEventDataIntoPaths } from './convertEventDataIntoPaths';
 import { extractChannelChangesFromEvent } from './extractChannelChangesFromEvent';
 import { filterOutMissingData } from './filterOutMissingData';
+import { insertDataIntoEventProfile } from './insertDataIntoEventProfile';
+
+function splitEventDataSections(event: IFreeSwitchChannelEvent): {
+	header: IFreeSwitchChannelEventHeader;
+	eventData: IFreeSwitchChannelEventMutable;
+	channelUniqueId: string;
+} {
+	const { _id, channelUniqueId, _updatedAt, metadata, eventName, sequence, firedAt, receivedAt, callee, caller, ...eventData } = event;
+
+	return {
+		channelUniqueId,
+		header: {
+			sequence,
+			eventName,
+			firedAt,
+			receivedAt,
+			callee,
+			caller,
+		},
+		eventData,
+	};
+}
 
 export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEvent[]): Promise<
 	| {
@@ -24,62 +46,60 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 	}
 
 	const deltas: IFreeSwitchChannelEventDeltaData[] = [];
-	const uniqueId = allEvents[0].channelUniqueId;
+	const { channelUniqueId: uniqueId, firedAt: firstEvent } = allEvents[0];
 	const callDirections: string[] = [];
 	const callers: string[] = [];
 	const callees: string[] = [];
 	const bridgedTo: string[] = [];
 
-	let firstEvent: Date | undefined;
+	for (const event of allEvents) {
+		const { callee, caller, bridgeUniqueIds, bridgedTo: eventBridgedTo } = event;
+
+		if (event.callDirection && !callDirections.includes(event.callDirection)) {
+			callDirections.push(event.callDirection);
+		}
+		if (callee && !callees.includes(callee)) {
+			callees.push(callee);
+		}
+		if (caller && !callers.includes(caller)) {
+			callers.push(caller);
+		}
+
+		if (bridgeUniqueIds) {
+			for (const bridgeUniqueId of bridgeUniqueIds) {
+				if (bridgeUniqueId && !bridgedTo.includes(bridgeUniqueId) && bridgeUniqueId !== uniqueId) {
+					bridgedTo.push(bridgeUniqueId);
+				}
+			}
+		}
+		if (eventBridgedTo && !bridgedTo.includes(eventBridgedTo)) {
+			bridgedTo.push(eventBridgedTo);
+		}
+	}
 
 	const flattened = allEvents.reduce(
 		(state, nextEvent: IFreeSwitchChannelEvent) => {
-			const { _id, channelUniqueId, _updatedAt, metadata, eventName, sequence, firedAt, receivedAt, callee, caller, ...eventData } =
-				nextEvent;
+			const { header, eventData, channelUniqueId } = splitEventDataSections(nextEvent);
+			const { callee, eventName, sequence } = header;
 
-			if (firedAt && (!firstEvent || firstEvent > firedAt)) {
-				firstEvent = firedAt;
-			}
-			if (receivedAt && (!firstEvent || firstEvent > receivedAt)) {
-				firstEvent = receivedAt;
-			}
+			// Inserts the callee and bridgedTo attributes into the profile of this event
+			const eventDataEx = insertDataIntoEventProfile(channelUniqueId, eventData, { callee, bridgedTo: eventData.bridgedTo });
 
-			if (nextEvent.callDirection && !callDirections.includes(nextEvent.callDirection)) {
-				callDirections.push(nextEvent.callDirection);
-			}
-			if (callee && !callees.includes(callee)) {
-				callees.push(callee);
-			}
-			if (caller && !callers.includes(caller)) {
-				callers.push(caller);
-			}
+			// Make a list with every value from the event, except for the headers;
+			const eventValues = convertSubObjectsIntoPaths(eventDataEx);
 
-			if (eventData.bridgeUniqueIds) {
-				for (const bridgeUniqueId of eventData.bridgeUniqueIds) {
-					if (bridgeUniqueId && !bridgedTo.includes(bridgeUniqueId) && bridgeUniqueId !== uniqueId) {
-						bridgedTo.push(bridgeUniqueId);
-					}
-				}
-			}
-			if (eventData.bridgedTo && !bridgedTo.includes(eventData.bridgedTo)) {
-				bridgedTo.push(eventData.bridgedTo);
-			}
-
-			const eventValues = convertEventDataIntoPaths(channelUniqueId, eventData, { callee, bridgedTo: eventData.bridgedTo });
-
+			// Compare the event's list of values with the full list from all past events
 			const { changedValues, newValues, changedExistingValues } = extractChannelChangesFromEvent(state, eventName, eventValues);
+
+			// Generate a "delta" entry with the data that has changed in this event
 			const delta: IFreeSwitchChannelEventDeltaData = {
-				eventName,
-				sequence,
-				firedAt,
-				receivedAt,
-				caller,
-				callee,
+				...header,
 
 				newValues: convertPathsIntoSubObjects(newValues),
 				modifiedValues: convertPathsIntoSubObjects(changedExistingValues),
 			};
 
+			// Store this delta in a list
 			deltas.push(filterOutMissingData(delta));
 
 			return {
@@ -108,8 +128,8 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 			bridgedTo,
 			...{
 				...computedProfiles,
-				// If we couldn't parse a startedAt, use the time of the first event; Current date is just a default for a hypothetical "no events" case,
-				startedAt: computedProfiles.startedAt || firstEvent || new Date(),
+				// If we couldn't parse a startedAt, use the time of the first event
+				startedAt: computedProfiles.startedAt || firstEvent,
 			},
 			kind: 'internal',
 		},

@@ -1,17 +1,17 @@
-import type { IFreeSwitchChannelEvent, IFreeSwitchChannelEventLegProfile } from '@rocket.chat/core-typings';
-import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
+import type { IFreeSwitchChannelEventMutable, IFreeSwitchChannelEventLegProfile } from '@rocket.chat/core-typings';
 
-export function convertEventDataIntoPaths(
+/**
+ * Returns a soft-copy of the eventData, with the specified data inserted into the profile of the channel's main leg, if it exists.
+ * While this returns a new object and the original is not mutated, the result is not a complete hard copy and may still include references to the original
+ */
+export function insertDataIntoEventProfile(
 	channelUniqueId: string,
-	eventData: Omit<
-		IFreeSwitchChannelEvent,
-		'_id' | 'channelUniqueId' | '_updatedAt' | 'metadata' | 'eventName' | 'sequence' | 'firedAt' | 'receivedAt' | 'callee' | 'caller'
-	>,
+	eventData: IFreeSwitchChannelEventMutable,
 	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee'>>,
-): Record<string, any> {
+): IFreeSwitchChannelEventMutable {
 	const clonedData = {
 		...eventData,
-		// Clone each leg individually, as we will mutate it later
+		// Clone each leg individually, as we might mutate it
 		legs: Object.fromEntries(Object.entries(eventData.legs || {}).map(([key, leg]) => [key, { ...leg }])),
 	};
 
@@ -28,5 +28,5 @@ export function convertEventDataIntoPaths(
 		}
 	}
 
-	return convertSubObjectsIntoPaths(clonedData);
+	return clonedData;
 }

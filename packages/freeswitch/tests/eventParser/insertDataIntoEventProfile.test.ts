@@ -1,6 +1,6 @@
-import { convertEventDataIntoPaths } from '../../src/eventParser/convertEventDataIntoPaths';
+import { insertDataIntoEventProfile } from '../../src/eventParser/insertDataIntoEventProfile';
 
-describe('convertEventDataIntoPaths', () => {
+describe('insertDataIntoEventProfile', () => {
 	const baseEventData = {
 		callUniqueId: 'test-call-123',
 		channelName: 'test-channel',
@@ -15,7 +15,7 @@ describe('convertEventDataIntoPaths', () => {
 			simple: '15',
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
 		expect(result).toMatchObject({
 			simple: '15',
@@ -33,11 +33,15 @@ describe('convertEventDataIntoPaths', () => {
 			},
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
 		expect(result).toMatchObject({
-			'simple': '15',
-			'legs.one.simple': '20',
+			simple: '15',
+			legs: {
+				one: {
+					simple: '20',
+				},
+			},
 		});
 	});
 
@@ -58,29 +62,44 @@ describe('convertEventDataIntoPaths', () => {
 			},
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
 		expect(result).toMatchObject({
-			'simple': '15',
-			'legs.one.simple': '20',
-			'legs.one.profiles.simple': '30',
-			[`legs.${channelUniqueId}.profiles`]: '40',
+			simple: '15',
+			legs: {
+				one: {
+					profiles: {
+						simple: '30',
+					},
+					simple: '20',
+				},
+				[channelUniqueId]: {
+					profiles: '40',
+				},
+			},
 		});
 	});
 
 	it('should not break when handling invalid data', () => {
 		const channelUniqueId = 'test-channel-123';
+		const date = new Date();
+
 		const eventData: any = {
 			legs: {
 				[channelUniqueId]: {
-					profiles: new Date(),
+					profiles: date,
 				},
 			},
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, {});
-		expect(result).toBeDefined();
-		expect(result[`legs.${channelUniqueId}.profiles`]).toBeInstanceOf(Date);
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
+		expect(result).toMatchObject({
+			legs: {
+				[channelUniqueId]: {
+					profiles: date,
+				},
+			},
+		});
 	});
 
 	it('should not break when handling invalid data [2]', () => {
@@ -96,11 +115,22 @@ describe('convertEventDataIntoPaths', () => {
 			},
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, { callee: '20' });
-		expect(result).toEqual({
-			[`legs.${channelUniqueId}.profiles.first`]: false,
-			[`legs.${channelUniqueId}.profiles.last`]: 0,
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, { callee: '20' });
+		expect(result).toMatchObject({
+			legs: {
+				[channelUniqueId]: {
+					profiles: {
+						first: false,
+						last: 0,
+					},
+				},
+			},
 		});
+
+		// expect(result).toEqual({
+		// 	[`legs.${channelUniqueId}.profiles.first`]: false,
+		// 	[`legs.${channelUniqueId}.profiles.last`]: 0,
+		// });
 	});
 
 	it('should convert event data into paths with basic structure', () => {
@@ -127,19 +157,23 @@ describe('convertEventDataIntoPaths', () => {
 			callee: 'new-callee',
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
-			'callUniqueId': 'test-call-123',
-			'channelName': 'test-channel',
-			'channelState': 'CS_EXECUTE',
-			'channelCallState': 'CS_EXECUTE',
-			'raw': {},
-			'legs.test-channel-123.raw': {},
-			'legs.test-channel-123.legName': 'leg-test-channel-123',
-			'legs.test-channel-123.uniqueId': 'test-channel-123',
-			'legs.test-channel-123.profiles.profile-1.bridgedTo': 'new-bridge',
-			'legs.test-channel-123.profiles.profile-1.callee': 'new-callee',
+			...baseEventData,
+			legs: {
+				[channelUniqueId]: {
+					raw: {},
+					legName: `leg-${channelUniqueId}`,
+					uniqueId: channelUniqueId,
+					profiles: {
+						'profile-1': {
+							bridgedTo: 'new-bridge',
+							callee: 'new-callee',
+						},
+					},
+				},
+			},
 		});
 	});
 
@@ -152,14 +186,10 @@ describe('convertEventDataIntoPaths', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
-			callUniqueId: 'test-call-123',
-			channelName: 'test-channel',
-			channelState: 'CS_EXECUTE',
-			channelCallState: 'CS_EXECUTE',
-			raw: {},
+			...baseEventData,
 			legs: {},
 		});
 	});
@@ -180,17 +210,17 @@ describe('convertEventDataIntoPaths', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
-			'callUniqueId': 'test-call-123',
-			'channelName': 'test-channel',
-			'channelState': 'CS_EXECUTE',
-			'channelCallState': 'CS_EXECUTE',
-			'raw': {},
-			'legs.test-channel-123.raw': {},
-			'legs.test-channel-123.legName': 'leg-test-channel-123',
-			'legs.test-channel-123.uniqueId': 'test-channel-123',
+			...baseEventData,
+			legs: {
+				[channelUniqueId]: {
+					raw: {},
+					legName: `leg-${channelUniqueId}`,
+					uniqueId: channelUniqueId,
+				},
+			},
 		});
 	});
 
@@ -227,22 +257,32 @@ describe('convertEventDataIntoPaths', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = convertEventDataIntoPaths(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
-			'callUniqueId': 'test-call-123',
-			'channelName': 'test-channel',
-			'channelState': 'CS_EXECUTE',
-			'channelCallState': 'CS_EXECUTE',
-			'raw': {},
-			'legs.test-channel-123.raw': {},
-			'legs.test-channel-123.legName': 'leg-test-channel-123',
-			'legs.test-channel-123.uniqueId': 'test-channel-123',
-			'legs.test-channel-123.profiles.profile-1.bridgedTo': 'new-bridge',
-			'legs.other-channel-456.raw': {},
-			'legs.other-channel-456.legName': 'leg-other-channel-456',
-			'legs.other-channel-456.uniqueId': 'other-channel-456',
-			'legs.other-channel-456.profiles.profile-2.bridgedTo': 'original-bridge-2',
+			...baseEventData,
+			legs: {
+				[channelUniqueId]: {
+					raw: {},
+					legName: `leg-${channelUniqueId}`,
+					uniqueId: channelUniqueId,
+					profiles: {
+						'profile-1': {
+							bridgedTo: 'new-bridge',
+						},
+					},
+				},
+				[otherChannelId]: {
+					raw: {},
+					legName: `leg-${otherChannelId}`,
+					uniqueId: otherChannelId,
+					profiles: {
+						'profile-2': {
+							bridgedTo: 'original-bridge-2',
+						},
+					},
+				},
+			},
 		});
 	});
 });

@@ -163,5 +163,5 @@ export interface IFreeSwitchChannelEventLeg {
 	privacyHideName?: string;
 	privacyHideNumber?: string;
 
-	raw: Record<string, string>;
+	raw?: Record<string, string>;
 }

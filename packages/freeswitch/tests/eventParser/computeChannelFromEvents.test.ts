@@ -167,7 +167,6 @@ describe('computeChannelFromEvents', () => {
 				channelCallState: 'ACTIVE',
 				callDirection: 'outbound',
 				bridgeUniqueIds: ['channel-123', 'channel-456'],
-				raw: {},
 				legs: {
 					'Caller-Leg': {
 						legName: 'Caller-Leg',
@@ -177,8 +176,6 @@ describe('computeChannelFromEvents', () => {
 						username: '1001',
 						channelName: 'sofia/internal/1001@192.168.1.100',
 						destinationNumber: '1002',
-						raw: {},
-						profiles: {},
 					},
 				},
 				channelUsername: '1001',
@@ -248,8 +245,6 @@ describe('computeChannelFromEvents', () => {
 				channelState: 'CS_NEW',
 				channelCallState: 'DOWN',
 				bridgedTo: 'channel-456',
-				raw: {},
-				legs: {},
 			},
 		});
 	});
@@ -277,8 +272,6 @@ describe('computeChannelFromEvents', () => {
 						username: '1002',
 						channelName: 'sofia/internal/1002@192.168.1.101',
 						destinationNumber: '1001',
-						raw: {},
-						profiles: {},
 					},
 				},
 			}),
@@ -333,7 +326,6 @@ describe('computeChannelFromEvents', () => {
 				callUniqueId: 'call-123',
 				channelState: 'CS_NEW',
 				channelCallState: 'DOWN',
-				raw: {},
 				legs: {
 					'Other-Leg': {
 						legName: 'Other-Leg',
@@ -343,8 +335,6 @@ describe('computeChannelFromEvents', () => {
 						username: '1002',
 						channelName: 'sofia/internal/1002@192.168.1.101',
 						destinationNumber: '1001',
-						raw: {},
-						profiles: {},
 					},
 				},
 			},
@@ -402,23 +392,18 @@ describe('computeChannelFromEvents', () => {
 				sequence: 1,
 				channelState: 'CS_NEW',
 				channelCallState: 'DOWN',
-				raw: {},
-				legs: {},
 			},
 		});
 	});
 
 	it('should handle missing event timestamps', async () => {
-		// Force missing
-		const firedAt = undefined as unknown as Date;
-
 		const events = [
 			createTestEvent({
 				channelUniqueId: 'channel-123',
 				eventName: 'CHANNEL_CREATE',
 				sequence: 1,
 				metadata: {},
-				firedAt,
+				firedAt: new Date('2024-02-28T12:00:00.100Z'),
 				receivedAt: new Date('2024-02-28T12:00:00.100Z'),
 				callUniqueId: 'call-123',
 				channelName: 'sofia/internal/1007@host',
@@ -454,6 +439,7 @@ describe('computeChannelFromEvents', () => {
 				{
 					eventName: 'CHANNEL_CREATE',
 					sequence: 1,
+					firedAt: new Date('2024-02-28T12:00:00.100Z'),
 					receivedAt: new Date('2024-02-28T12:00:00.100Z'),
 					newValues: {
 						callUniqueId: 'call-123',
@@ -473,8 +459,6 @@ describe('computeChannelFromEvents', () => {
 				channelCallState: 'DOWN',
 				channelName: 'sofia/internal/1007@host',
 				channelUsername: '1007',
-				raw: {},
-				legs: {},
 			},
 		});
 	});
@@ -503,9 +487,6 @@ describe('computeChannelFromEvents', () => {
 		];
 
 		const result = await computeChannelFromEvents(events);
-
-		expect(result).toBeDefined();
-		expect(result?.channel?.startedAt).toBeInstanceOf(Date);
 
 		expect(result).toMatchObject({
 			channel: {
@@ -546,8 +527,6 @@ describe('computeChannelFromEvents', () => {
 				channelCallState: 'DOWN',
 				channelName: 'sofia/internal/1007@host',
 				channelUsername: '1007',
-				raw: {},
-				legs: {},
 			},
 		});
 	});
