@@ -442,4 +442,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
+	countActiveUsersByNotDMRoomId(rid: string): Promise<number>;
+	countActiveUsersByDMRoomId(rid: string): Promise<number>;
 }
