@@ -1,15 +1,14 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentType } from 'react';
 import { useMemo } from 'react';
 
 import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
 import Medium from '../Item/Medium';
 
-export const useTemplateByViewMode = (): ComponentType<any> => {
+export const useTemplateByViewMode = (viewMode?: string): typeof Condensed | typeof Extended | typeof Medium => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	return useMemo(() => {
-		switch (sidebarViewMode) {
+		switch (viewMode || sidebarViewMode) {
 			case 'extended':
 				return Extended;
 			case 'medium':
@@ -18,5 +17,5 @@ export const useTemplateByViewMode = (): ComponentType<any> => {
 			default:
 				return Condensed;
 		}
-	}, [sidebarViewMode]);
+	}, [sidebarViewMode, viewMode]);
 };
