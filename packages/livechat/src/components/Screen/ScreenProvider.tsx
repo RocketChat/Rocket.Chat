@@ -1,10 +1,9 @@
 import type { FunctionalComponent } from 'preact';
 import { createContext } from 'preact';
-import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
-import { createOrUpdateGuest, evaluateChangesAndLoadConfigByFields } from '../../lib/hooks';
 import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
@@ -63,21 +62,11 @@ export const ScreenContext = createContext<ScreenContextValue>({
 } as ScreenContextValue);
 
 export const ScreenProvider: FunctionalComponent = ({ children }) => {
-	const {
-		dispatch,
-		config,
-		sound,
-		minimized = true,
-		undocked,
-		expanded = false,
-		alerts,
-		modal,
-		iframe,
-		...store
-	} = useContext(StoreContext);
+	const store = useContext(StoreContext);
+	const { token, dispatch, config, sound, minimized = true, undocked, expanded = false, alerts, modal, iframe, customFieldsQueue } = store;
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
-	const { livechatLogo, hideWatermark = false, registrationForm } = config.settings || {};
+	const { livechatLogo, hideWatermark = false } = config.settings || {};
 
 	const {
 		color: customColor,
@@ -128,7 +117,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	};
 
 	const handleOpenWindow = () => {
-		parentCall('openPopout', store.token);
+		parentCall('openPopout', { token, iframe, customFieldsQueue });
 		dispatch({ undocked: true, minimized: false });
 	};
 
@@ -138,30 +127,14 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 
 	const dismissNotification = () => !isActiveSession();
 
-	const checkPoppedOutWindow = useCallback(async () => {
+	useEffect(() => {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const poppedOut = parse(window.location.search).mode === 'popout';
-		const { token = '' } = parse(window.location.search);
 		setPopedOut(poppedOut);
-
 		if (poppedOut) {
 			dispatch({ minimized: false, undocked: true });
 		}
-
-		if (token && typeof token === 'string') {
-			if (registrationForm && !name && !email) {
-				dispatch({ token });
-				return;
-			}
-			await evaluateChangesAndLoadConfigByFields(async () => {
-				await createOrUpdateGuest({ token });
-			});
-		}
-	}, [dispatch, email, name, registrationForm]);
-
-	useEffect(() => {
-		checkPoppedOutWindow();
-	}, [checkPoppedOutWindow]);
+	}, [dispatch]);
 
 	const screenProps = {
 		theme: {

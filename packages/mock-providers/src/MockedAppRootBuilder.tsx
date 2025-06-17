@@ -11,9 +11,9 @@ import type {
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
-import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Device, ModalContextValue, SettingsContextQuery, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -40,13 +40,6 @@ import { MockedDeviceContext } from './MockedDeviceContext';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
-};
-
-export type SettingsContextQuery = {
-	readonly _id?: ISetting['_id'][] | RegExp;
-	readonly group?: ISetting['_id'];
-	readonly section?: string;
-	readonly tab?: ISetting['_id'];
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -85,6 +78,8 @@ export class MockedAppRootBuilder {
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
+		disconnect: () => Promise.reject(new Error('not implemented')),
+		reconnect: () => Promise.reject(new Error('not implemented')),
 		info: undefined,
 	};
 
@@ -112,6 +107,7 @@ export class MockedAppRootBuilder {
 
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
+		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
 		querySubscription: () => [() => () => undefined, () => undefined],
@@ -416,8 +412,7 @@ export class MockedAppRootBuilder {
 		this.settings.querySettings = (query: SettingsContextQuery) => {
 			const filter =
 				cache.get(query) ??
-				createFilterFromQuery({
-					...query,
+				createPredicateFromFilter({
 					...(query._id ? { _id: { $in: query._id } } : {}),
 				} as any);
 			cache.set(query, filter);
@@ -654,7 +649,7 @@ export class MockedAppRootBuilder {
 																	</VideoConfContext.Provider>
 																</ActionManagerContext.Provider>
 															</UserPresenceContext.Provider>
-															{/* 		
+															{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
 														</AuthorizationContext.Provider>

@@ -47,6 +47,11 @@ test.describe.serial('Threads', () => {
 		const messageLink = `/channel/${targetChannel.name}?msg=${mainMessage._id}`;
 		await page.goto(messageLink);
 
+		await expect(async () => {
+			await page.waitForSelector('#main-content');
+			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
+		}).toPass();
+
 		const message = page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
 
 		await expect(message).toBeVisible();
@@ -54,8 +59,28 @@ test.describe.serial('Threads', () => {
 	});
 
 	test('expect to jump scroll to thread message on opening its message link', async ({ page }) => {
+		const threadMessageLink = `/channel/${targetChannel.name}?msg=${threadMessage._id}`;
+		await page.goto(threadMessageLink);
+
+		await expect(async () => {
+			await page.waitForSelector('#main-content');
+			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
+		}).toPass();
+
+		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
+
+		await expect(message).toBeVisible();
+		await expect(message).toBeInViewport();
+	});
+
+	test('expect to jump scroll to thread message on opening its message link from a different channel', async ({ page }) => {
 		const threadMessageLink = `/channel/general?msg=${threadMessage._id}`;
 		await page.goto(threadMessageLink);
+
+		await expect(async () => {
+			await page.waitForSelector('#main-content');
+			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
+		}).toPass();
 
 		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
 

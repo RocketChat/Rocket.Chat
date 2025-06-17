@@ -80,20 +80,16 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 	const fromText = `${name} - ${email} <${from}>`;
 	const replyTo = `${name} <${email}>`;
 	const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-	await sendEmail(fromText, emailTo, replyTo, subject, html);
-
-	setImmediate(() => {
-		void callbacks.run('livechat.offlineMessage', data);
-	});
-}
-
-async function sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): Promise<void> {
 	await Mailer.send({
-		to,
-		from,
+		to: emailTo,
+		from: fromText,
 		replyTo,
 		subject,
 		html,
+	});
+
+	setImmediate(() => {
+		void callbacks.run('livechat.offlineMessage', data);
 	});
 }
 
@@ -147,11 +143,9 @@ export async function sendMessage({
 	agent?: SelectedAgent;
 }) {
 	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
-	if (guest.name) {
-		message.alias = guest.name;
-	}
-	return Object.assign(await sendMessageFunc(guest, { ...message, token: guest.token }, room), {
+	return {
+		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
 		newRoom,
 		showConnecting: showConnecting(),
-	});
+	};
 }

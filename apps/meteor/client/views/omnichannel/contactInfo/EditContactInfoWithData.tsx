@@ -1,10 +1,9 @@
-import { ContextualbarContent } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';
-import { FormSkeleton } from '../directory/components/FormSkeleton';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 type EditContactInfoWithDataProps = {
 	id: string;
@@ -20,11 +19,7 @@ const EditContactInfoWithData = ({ id, onClose, onCancel }: EditContactInfoWithD
 	});
 
 	if (isPending) {
-		return (
-			<ContextualbarContent>
-				<FormSkeleton />
-			</ContextualbarContent>
-		);
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError) {
