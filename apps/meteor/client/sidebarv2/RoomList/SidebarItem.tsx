@@ -2,7 +2,7 @@ import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMen
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
-type CondensedProps = {
+type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
@@ -17,7 +17,7 @@ type CondensedProps = {
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
+const SidebarItem = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: SidebarItemProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleFocus = () => setMenuVisibility(true);
@@ -39,4 +39,4 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 	);
 };
 
-export default memo(Condensed);
+export default memo(SidebarItem);
