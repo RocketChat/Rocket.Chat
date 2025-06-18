@@ -788,7 +788,7 @@ export class APIClass<
 							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
-						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						const connection = { ...generateConnection(this.requestIp, this.request.headers) };
 						this.connection = connection;
 
 						try {
@@ -874,7 +874,7 @@ export class APIClass<
 									request: this.request,
 									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
-									connection: connection as unknown as IMethodConnection,
+									connection,
 								}));
 
 							this.queryOperations = options.queryOperations;
