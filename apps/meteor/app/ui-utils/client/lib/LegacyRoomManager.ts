@@ -189,19 +189,9 @@ const computation = Tracker.autorun(() => {
 						const predicate = createPredicateFromFilter(query);
 
 						if (params.filesOnly) {
-							const msgs = Messages.state.filter(predicate);
-							for (const msg of msgs) {
-								const { files, attachments } = modifyMessageOnFilesDelete(msg, params.replaceFileAttachmentsWith);
-								Messages.state.update(
-									(record) => record._id === msg._id,
-									({ file: _, ...record }) => ({
-										...record,
-										files,
-										attachments,
-									}),
-								);
+							if (params.filesOnly) {
+								return Messages.state.update(predicate, (record) => modifyMessageOnFilesDelete(record, params.replaceFileAttachmentsWith));
 							}
-							return;
 						}
 
 						if (params.showDeletedStatus) {
