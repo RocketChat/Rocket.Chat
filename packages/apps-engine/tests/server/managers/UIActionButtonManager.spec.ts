@@ -23,7 +23,11 @@ export class UIActionButtonManagerTestFixture {
 
 	private mockActivationBridge: AppActivationBridge;
 
-	private spies: Array<RestorableFunctionSpy>;
+	private hasPermissionSpy: RestorableFunctionSpy;
+
+	private notifyAboutErrorSpy: RestorableFunctionSpy;
+
+	private doActionsChangedSpy: RestorableFunctionSpy;
 
 	@SetupFixture
 	public setupFixture() {
@@ -72,15 +76,16 @@ export class UIActionButtonManagerTestFixture {
 
 	@Setup
 	public setup() {
-		this.spies = [];
-		this.spies.push(SpyOn(this.mockActivationBridge, 'doActionsChanged'));
-		this.spies.push(SpyOn(AppPermissionManager, 'hasPermission'));
-		this.spies.push(SpyOn(AppPermissionManager, 'notifyAboutError'));
+		this.notifyAboutErrorSpy = SpyOn(AppPermissionManager, 'notifyAboutError');
+		this.hasPermissionSpy = SpyOn(AppPermissionManager, 'hasPermission');
+		this.doActionsChangedSpy = SpyOn(this.mockActivationBridge, 'doActionsChanged');
 	}
 
 	@Teardown
 	public teardown() {
-		this.spies.forEach((s) => s.restore());
+		this.notifyAboutErrorSpy.restore();
+		this.hasPermissionSpy.restore();
+		this.doActionsChangedSpy.restore();
 	}
 
 	@Test()
@@ -96,7 +101,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@Test()
 	public registerActionButtonWithPermission() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button: IUIActionButtonDescriptor = {
@@ -108,7 +113,7 @@ export class UIActionButtonManagerTestFixture {
 		const result = manager.registerActionButton('testing-app', button);
 
 		Expect(result).toBe(true);
-		Expect(AppPermissionManager.hasPermission).toHaveBeenCalledWith('testing-app', AppPermissions.ui.registerButtons);
+		Expect(this.hasPermissionSpy).toHaveBeenCalledWith('testing-app', AppPermissions.ui.registerButtons);
 		Expect(this.mockActivationBridge.doActionsChanged).toHaveBeenCalled();
 		Expect((manager as any).registeredActionButtons.size).toBe(1);
 		Expect((manager as any).registeredActionButtons.get('testing-app').size).toBe(1);
@@ -117,8 +122,8 @@ export class UIActionButtonManagerTestFixture {
 
 	@Test()
 	public registerActionButtonWithoutPermission() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(false);
-		(AppPermissionManager.notifyAboutError as unknown as RestorableFunctionSpy).andCall(() => {});
+		this.hasPermissionSpy.andReturn(false);
+		this.notifyAboutErrorSpy.andCall(() => {});
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button: IUIActionButtonDescriptor = {
@@ -130,15 +135,15 @@ export class UIActionButtonManagerTestFixture {
 		const result = manager.registerActionButton('testing-app', button);
 
 		Expect(result).toBe(false);
-		Expect(AppPermissionManager.hasPermission).toHaveBeenCalledWith('testing-app', AppPermissions.ui.registerButtons);
-		Expect(AppPermissionManager.notifyAboutError).toHaveBeenCalled();
+		Expect(this.hasPermissionSpy).toHaveBeenCalledWith('testing-app', AppPermissions.ui.registerButtons);
+		Expect(this.notifyAboutErrorSpy).toHaveBeenCalled();
 		Expect(this.mockActivationBridge.doActionsChanged).not.toHaveBeenCalled();
 		Expect((manager as any).registeredActionButtons.size).toBe(0);
 	}
 
 	@Test()
 	public registerMultipleButtonsForSameApp() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button1: IUIActionButtonDescriptor = {
@@ -163,7 +168,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@Test()
 	public clearAppActionButtons() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button: IUIActionButtonDescriptor = {
@@ -183,7 +188,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@Test()
 	public getAppActionButtons() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button: IUIActionButtonDescriptor = {
@@ -196,8 +201,8 @@ export class UIActionButtonManagerTestFixture {
 
 		const buttons = manager.getAppActionButtons('testing-app');
 		Expect(buttons).toBeDefined();
-		Expect(buttons!.size).toBe(1);
-		Expect(buttons!.get('test-action')).toBe(button);
+		Expect(buttons?.size).toBe(1);
+		Expect(buttons?.get('test-action')).toBe(button);
 
 		const nonExistentButtons = manager.getAppActionButtons('non-existent');
 		Expect(nonExistentButtons).toBe(undefined);
@@ -205,7 +210,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@AsyncTest()
 	public async getAllActionButtonsFromEnabledApp() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const spy = SpyOn(this.mockApp, 'getStatus');
 
@@ -234,7 +239,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@AsyncTest()
 	public async getAllActionButtonsFromDisabledApp() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const spy = SpyOn(this.mockApp, 'getStatus');
 
@@ -259,7 +264,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@AsyncTest()
 	public async getAllActionButtonsFromNonExistentApp() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const manager = new UIActionButtonManager(this.mockManager);
 		const button: IUIActionButtonDescriptor = {
@@ -278,7 +283,8 @@ export class UIActionButtonManagerTestFixture {
 
 	@AsyncTest()
 	public async getAllActionButtonsWithStatusError() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
+
 		const spy = SpyOn(this.mockApp, 'getStatus');
 
 		spy.andReturn(Promise.reject(new Error('Status error')));
@@ -302,7 +308,7 @@ export class UIActionButtonManagerTestFixture {
 
 	@AsyncTest()
 	public async getAllActionButtonsFromMultipleApps() {
-		(AppPermissionManager.hasPermission as unknown as RestorableFunctionSpy).andReturn(true);
+		this.hasPermissionSpy.andReturn(true);
 
 		const button1: IUIActionButtonDescriptor = {
 			actionId: 'action-1',
@@ -314,8 +320,6 @@ export class UIActionButtonManagerTestFixture {
 			context: UIActionButtonContext.ROOM_ACTION,
 			labelI18n: 'test.label2',
 		};
-
-		SpyOn(this.mockManager, 'getOneById');
 
 		const manager = new UIActionButtonManager(this.mockManager);
 
