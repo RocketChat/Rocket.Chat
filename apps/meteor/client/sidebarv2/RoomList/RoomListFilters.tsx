@@ -10,7 +10,6 @@ import {
 	SIDE_PANEL_GROUPS,
 	TEAM_COLLAB_GROUPS,
 	useSwitchSidePanelTab,
-	useSidePanelFilter,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
 
 const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrapper(_, ref) {
@@ -18,7 +17,6 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const switchSidePanelTab = useSwitchSidePanelTab();
-	const [currentTab] = useSidePanelFilter();
 
 	if (Object.values(SIDE_PANEL_GROUPS).length === 0) {
 		return null;
@@ -31,7 +29,6 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 					<RoomListFiltersItem
 						key={group}
 						group={group}
-						selected={currentTab === group}
 						icon={sidePanelFiltersConfig[group].icon}
 						onClick={() => switchSidePanelTab(group)}
 					/>
@@ -45,7 +42,6 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 							<RoomListFiltersItem
 								key={group}
 								group={group}
-								selected={currentTab === group}
 								icon={sidePanelFiltersConfig[group].icon}
 								onClick={() => switchSidePanelTab(group)}
 							/>
