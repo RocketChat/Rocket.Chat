@@ -14,7 +14,7 @@ import Header from '../Header';
 import Tooltip from '../Tooltip';
 import type { ScreenContextValue } from './ScreenProvider';
 
-type screenHeaderProps = {
+type ScreenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
 	agent: Agent;
 	notificationsEnabled: boolean;
@@ -31,6 +31,7 @@ type screenHeaderProps = {
 		spot: number;
 	};
 	title: string;
+	hideExpandChat: boolean;
 };
 
 const ScreenHeader = ({
@@ -48,7 +49,8 @@ const ScreenHeader = ({
 	onOpenWindow,
 	queueInfo,
 	title,
-}: screenHeaderProps) => {
+	hideExpandChat,
+}: ScreenHeaderProps) => {
 	const { t } = useTranslation();
 	const headerRef = useRef<HTMLElement>(null);
 
@@ -114,7 +116,7 @@ const ScreenHeader = ({
 							</Header.Action>
 						</Tooltip.Trigger>
 					)}
-					{!expanded && !windowed && (
+					{!hideExpandChat && !expanded && !windowed && (
 						<Tooltip.Trigger content={t('expand_chat')} placement='bottom-left'>
 							<Header.Action aria-label={t('expand_chat')} onClick={onOpenWindow}>
 								<OpenWindowIcon width={20} height={20} />

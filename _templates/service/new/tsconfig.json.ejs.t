@@ -2,7 +2,7 @@
 to: ee/apps/<%= name %>/tsconfig.json
 ---
 {
-	"extends": "../../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"outDir": "./dist"
 	},
