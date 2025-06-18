@@ -25,12 +25,12 @@ export const usePermissionsAndRoles = (
 		[filteredIds, type],
 	);
 
-	const { apply: sortAndPaginate } = pipe<IPermission>().sortByField('_id', 1).slice(skip, limit);
-	const permissions = Permissions.use(useShallow((state) => state.filter(predicate)));
-	const permissionsTotal = permissions.length;
+	const { apply: transform } = pipe<IPermission>().sortByField('_id', 1).slice(skip, limit);
+	const permissions = Permissions.use(useShallow((state) => transform(state.filter(predicate))));
+	const permissionsTotal = Permissions.use(useShallow((state) => state.count(predicate)));
 
 	const rolesMap = Roles.use(useShallow((state) => state.records)).values();
 	const roleList = useMemo(() => Array.from(rolesMap), [rolesMap]);
 
-	return { permissions: sortAndPaginate(permissions), total: permissionsTotal, roleList };
+	return { permissions, total: permissionsTotal, roleList };
 };
