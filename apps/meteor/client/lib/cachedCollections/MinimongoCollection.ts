@@ -47,6 +47,9 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 * A Zustand store that holds the records of the collection.
 	 *
 	 * It should be used as a hook in React components to access the collection's records and methods.
+	 *
+	 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
+	 * queries that depend on the changed documents.
 	 */
 	readonly use = createDocumentMapStore<T>({
 		onInvalidateAll: () => {
@@ -72,6 +75,9 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 * Returns the Zustand store state that holds the records of the collection.
 	 *
 	 * It's a convenience method to access the Zustand store directly i.e. outside of React components.
+	 *
+	 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
+	 * queries that depend on the changed documents.
 	 */
 	get state() {
 		return this.use.getState();
