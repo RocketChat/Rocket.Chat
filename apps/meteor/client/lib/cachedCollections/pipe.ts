@@ -1,9 +1,15 @@
 interface IPipeReturn<D> {
 	slice(skip: number, limit: number): IPipeReturn<D>;
 	sortByField(fieldName: keyof D, direction?: 1 | -1): IPipeReturn<D>;
-	apply(arg: D[]): D[];
-	readonly acc: PipeFunction<D>;
+	apply(): D[];
 	pipe(p: IPipeReturn<D>): IPipeReturn<D>;
+}
+
+interface IPipeReturnNoInitialData<D> {
+	slice(skip: number, limit: number): IPipeReturnNoInitialData<D>;
+	sortByField(fieldName: keyof D, direction?: 1 | -1): IPipeReturnNoInitialData<D>;
+	apply(arg: D[]): D[];
+	pipe(p: IPipeReturnNoInitialData<D>): IPipeReturnNoInitialData<D>;
 }
 
 type PipeFunction<D> = (arg: D[]) => D[];
@@ -13,17 +19,28 @@ const merge =
 	(args) =>
 		fn(inner(args));
 
-export const pipe = <D>(acc: PipeFunction<D> = (arg) => [...arg]) => {
+export function pipe<D>(): IPipeReturnNoInitialData<D>;
+export function pipe<D>(initialData: D[]): IPipeReturn<D>;
+export function pipe<D>(initialData: D[], acc: PipeFunction<D>): IPipeReturn<D>;
+
+export function pipe<D>(
+	initialData?: any,
+	acc: PipeFunction<D> = (arg) => [...arg],
+): typeof initialData extends undefined ? IPipeReturnNoInitialData<D> : IPipeReturn<D> {
 	return {
 		slice(skip = 0, limit: number) {
-			return pipe<D>(merge<D>((arr) => arr.slice(skip, skip + limit), acc));
+			return pipe<D>(
+				initialData,
+				merge<D>((arr: D[]) => arr.slice(skip, skip + limit), acc),
+			);
 		},
 
 		sortByField(fieldName: keyof D, direction: 1 | -1 = 1) {
 			return pipe<D>(
+				initialData,
 				merge(
 					(arr: D[]) =>
-						arr.sort((a, b) => {
+						[...arr].sort((a, b) => {
 							const aValue = a[fieldName];
 							const bValue = b[fieldName];
 
@@ -40,10 +57,11 @@ export const pipe = <D>(acc: PipeFunction<D> = (arg) => [...arg]) => {
 			);
 		},
 
-		apply: acc,
-		acc,
+		apply: (arg: D[]) => {
+			return acc(initialData ?? arg);
+		},
 		pipe(p: IPipeReturn<D>) {
-			return pipe<D>(merge(p.acc, acc));
+			return pipe<D>(initialData, merge(p.apply, acc));
 		},
 	};
-};
+}

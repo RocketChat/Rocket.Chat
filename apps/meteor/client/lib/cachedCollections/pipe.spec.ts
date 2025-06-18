@@ -157,4 +157,19 @@ describe('pipe', () => {
 		expect(sampleData).toEqual(originalData);
 		expect(result).not.toEqual(originalData);
 	});
+
+	describe('inferred type by initial data', () => {
+		it('should return the original array if no operations are applied', () => {
+			const result = pipe(sampleData).apply();
+			expect(result).toEqual(sampleData);
+		});
+
+		it('should slice the array with skip and limit', () => {
+			const result = pipe(sampleData).slice(1, 2).apply();
+			expect(result).toEqual([
+				{ _id: 2, name: 'Charlie', ts: 25 },
+				{ _id: 3, name: 'Bob', ts: 35 },
+			]);
+		});
+	});
 });
