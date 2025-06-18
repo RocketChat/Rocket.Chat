@@ -44,8 +44,8 @@ test.describe.parallel('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.quotedFileName(imageFileName)).toBeVisible();
+			await expect(poHomeChannel.content.quotePreview).toContainText(fileDescription);
+			await expect(poHomeChannel.content.quotePreview).toContainText(imageFileName);
 
 			// Send the quoted message
 			await poHomeChannel.content.sendMessage(quotedMessage);
@@ -85,11 +85,12 @@ test.describe.parallel('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.threadQuotePreview).toBeVisible();
-			await expect(poHomeChannel.content.threadMessageQuotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.threadMessageQuotedFileName(textFileName)).toBeVisible();
+			await expect(poHomeChannel.content.threadQuotePreview).toContainText(fileDescription);
+			await expect(poHomeChannel.content.threadQuotePreview).toContainText(textFileName);
 
 			// Send the quoted message in thread
 			await poHomeChannel.content.sendMessageInThread(threadQuoteMessage);
+			await poHomeChannel.content.threadQuotePreview.waitFor({ state: 'hidden' });
 		});
 
 		await test.step('Verify the quoted message appears correctly in thread', async () => {
@@ -114,7 +115,8 @@ test.describe.parallel('Quote Attachment', () => {
 			await poHomeChannel.content.btnQuoteMessage.click();
 
 			// Verify the quote preview shows the link
-			await expect(poHomeChannel.content.quotedLinkText(testLink)).toBeVisible();
+			await expect(poHomeChannel.content.quotePreview).toBeVisible();
+			await expect(poHomeChannel.content.quotePreview).toContainText(testLink);
 
 			// Send the quoted message
 			await poHomeChannel.content.sendMessage(quotedMessage);

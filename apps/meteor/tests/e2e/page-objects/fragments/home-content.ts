@@ -181,23 +181,27 @@ export class HomeContent {
 	}
 
 	get quotePreview(): Locator {
+		return this.page.locator('footer blockquote');
+	}
+
+	get quotedMessage(): Locator {
 		return this.page.getByRole('blockquote');
 	}
 
 	quotedFileDescription(fileDescription: string): Locator {
-		return this.quotePreview.getByText(fileDescription);
+		return this.quotedMessage.getByText(fileDescription);
 	}
 
 	quotedFileName(fileName: string): Locator {
-		return this.quotePreview.getByTitle(fileName);
+		return this.quotedMessage.getByTitle(fileName);
 	}
 
 	threadMessageQuotedFileDescription(fileDescription: string): Locator {
-		return this.threadQuotePreview.getByText(fileDescription);
+		return this.threadQuotedMessage.getByText(fileDescription);
 	}
 
 	threadMessageQuotedFileName(fileName: string): Locator {
-		return this.threadQuotePreview.getByTitle(fileName);
+		return this.threadQuotedMessage.getByTitle(fileName);
 	}
 
 	get linkPreview(): Locator {
@@ -205,11 +209,15 @@ export class HomeContent {
 	}
 
 	quotedLinkText(name: string): Locator {
-		return this.quotePreview.getByRole('link', { name });
+		return this.quotedMessage.getByRole('link', { name });
+	}
+
+	get threadQuotedMessage(): Locator {
+		return this.page.getByRole('dialog').getByRole('blockquote');
 	}
 
 	get threadQuotePreview(): Locator {
-		return this.page.getByRole('dialog').getByRole('blockquote');
+		return this.page.getByRole('dialog').locator('footer blockquote');
 	}
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
