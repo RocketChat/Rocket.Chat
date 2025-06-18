@@ -62,7 +62,7 @@ export const useItemData = (
 					cl={cl}
 					name={title}
 					hideDefaultOptions={isQueued}
-					href={href || false}
+					href={href || undefined}
 				/>
 			) : undefined,
 		[alert, cl, isAnonymous, isPriorityEnabled, isQueued, openedRoom, rid, title, type, unread, unreadCount.threads, href],
