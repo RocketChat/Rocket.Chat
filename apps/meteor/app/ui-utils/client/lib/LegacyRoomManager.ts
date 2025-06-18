@@ -239,7 +239,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 	const [streamRoomMessages] = streams;
 
 	void streamRoomMessages.ready().then(() => {
-		record.streamActive = true;
+		setPropertyByRid(record.rid, 'streamActive', true);
 	});
 
 	record.stream = {
