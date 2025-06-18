@@ -48,7 +48,7 @@ export const useRoomMenuActions = ({
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
 	const canFavorite = useSetting('Favorite_Rooms') as boolean;
-	const isNotificationEnabled = !!subscription?.disableNotifications;
+	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -64,7 +64,7 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
-	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled });
+	const handleToggleNotification = useToggleNotificationAction({ rid, isNotificationEnabled, roomName: name });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -122,8 +122,8 @@ export const useRoomMenuActions = ({
 		return [
 			{
 				id: 'turnOnNotifications',
-				icon: isNotificationEnabled ? 'bell-off' : 'bell',
-				content: isNotificationEnabled ? t('Turn_ON') : t('Turn_OFF'),
+				icon: isNotificationEnabled ? 'bell' : 'bell-off',
+				content: isNotificationEnabled ? t('Turn_OFF') : t('Turn_ON'),
 				onClick: handleToggleNotification,
 			},
 			{
