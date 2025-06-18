@@ -21,15 +21,14 @@ export const useReplyInDMAction = (
 
 	const roomPredicate = useCallback(
 		(record: IRoom): boolean => {
-			if (!!user && user._id !== message.u._id && canCreateDM) {
-				const ids = [user._id, message.u._id].sort().join('');
-				return ids.includes(record._id);
-			}
-			return false;
+			const ids = [user?._id, message.u._id].sort().join('');
+			return ids.includes(record._id);
 		},
-		[canCreateDM, message.u._id, user],
+		[message.u._id, user],
 	);
-	const dmRoom = Rooms.use(useShallow((state) => state.find(roomPredicate)));
+
+	const shouldFindRoom = useMemo(() => !!user && canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
+	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
 		(record: SubscriptionWithRoom) => record.rid === dmRoom?._id || record.u._id === user?._id,
