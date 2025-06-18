@@ -16,7 +16,7 @@ type RoomMenuProps = {
 	cl?: boolean;
 	name?: string;
 	hideDefaultOptions: boolean;
-	href: LocationPathname | false;
+	href: LocationPathname | undefined;
 };
 
 const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '', hideDefaultOptions = false, href }: RoomMenuProps) => {

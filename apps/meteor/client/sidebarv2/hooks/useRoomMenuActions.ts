@@ -27,7 +27,7 @@ type RoomMenuActionsProps = {
 	cl?: boolean;
 	roomOpen?: boolean;
 	hideDefaultOptions: boolean;
-	href: LocationPathname | false;
+	href: LocationPathname | undefined;
 };
 
 export const useRoomMenuActions = ({
