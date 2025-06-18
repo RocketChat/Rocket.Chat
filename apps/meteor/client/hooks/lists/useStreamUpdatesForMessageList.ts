@@ -68,11 +68,12 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${rid}/deleteMessageBulk`, (params) => {
 			const matchDeleteCriteria = createDeleteCriteria(params);
 			if (params.filesOnly) {
-				const items = messageList.items.filter(matchDeleteCriteria).map((message) => {
-					return modifyMessageOnFilesDelete(message, params.replaceFileAttachmentsWith);
+				return messageList.batchHandle(async () => {
+					const items = messageList.items.filter(matchDeleteCriteria).map((message) => {
+						return modifyMessageOnFilesDelete(message, params.replaceFileAttachmentsWith);
+					});
+					return { items };
 				});
-
-				return messageList.batchHandle(() => Promise.resolve({ items }));
 			}
 			messageList.prune(matchDeleteCriteria);
 		});
