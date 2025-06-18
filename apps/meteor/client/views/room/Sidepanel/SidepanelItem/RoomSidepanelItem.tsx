@@ -28,10 +28,7 @@ type RoomSidepanelItemProps = {
 const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
 	// const SidepanelItem = useTemplateByViewMode();
 
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, {
-		viewMode: 'condensed',
-		openedRoom,
-	});
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
 
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
