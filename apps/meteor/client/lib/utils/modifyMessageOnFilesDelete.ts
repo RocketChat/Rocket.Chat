@@ -16,20 +16,15 @@ import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
  */
 
 export const modifyMessageOnFilesDelete = <T extends IMessage = IMessage>(message: T, replaceFileAttachmentsWith?: MessageAttachment) => {
-	const updated = structuredClone(message);
-	delete updated.file;
-	let { attachments } = message;
+	const { attachments, file: _, ...rest } = message;
 
-	if (replaceFileAttachmentsWith) {
-		attachments = attachments?.map((att) => (isFileAttachment(att) ? replaceFileAttachmentsWith : att));
-	} else {
-		attachments = attachments?.filter((att) => !isFileAttachment(att));
+	if (!attachments?.length) {
+		return message;
 	}
 
-	Object.assign(updated, {
-		files: [],
-		...(attachments && { attachments }),
-	});
+	if (replaceFileAttachmentsWith) {
+		return { ...rest, files: [], attachments: attachments?.map((att) => (isFileAttachment(att) ? replaceFileAttachmentsWith : att)) };
+	}
 
-	return updated;
+	return { ...rest, files: [], attachments: attachments?.filter((att) => !isFileAttachment(att)) };
 };
