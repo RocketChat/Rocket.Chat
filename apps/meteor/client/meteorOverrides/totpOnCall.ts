@@ -45,8 +45,8 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	};
 };
 
-const withAsyncTOTP = <TResult>(callAsync: (name: string, ...args: any[]) => Promise<TResult>) => {
-	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<TResult> {
+const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>(callAsync: T): T => {
+	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<ReturnType<T>> {
 		try {
 			return await callAsync(methodName, ...args);
 		} catch (error: unknown) {
@@ -56,7 +56,7 @@ const withAsyncTOTP = <TResult>(callAsync: (name: string, ...args: any[]) => Pro
 				emailOrUsername: undefined,
 			});
 		}
-	};
+	} as T;
 };
 
 Meteor.call = withSyncTOTP(Meteor.call);
