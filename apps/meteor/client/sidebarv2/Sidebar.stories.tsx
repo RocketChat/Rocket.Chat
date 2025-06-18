@@ -41,7 +41,6 @@ const userPreferences: Record<string, unknown> = {
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
 	sidebarShowUnread: true,
-	sidebarSortby: 'activity',
 };
 
 const subscriptions: SubscriptionWithRoom[] = [
