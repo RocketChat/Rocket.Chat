@@ -70,6 +70,10 @@ export type AppsEndpoints = {
 		}>;
 	};
 
+	'/apps/logs/instanceIds': {
+		GET: () => { success: boolean; instanceIds: string[] };
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
