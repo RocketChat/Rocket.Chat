@@ -21,6 +21,7 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	updateAsync<U extends T>(predicate: (record: T) => record is U, modifier: (record: U) => Promise<U>): Promise<void>;
 	updateAsync(predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>): Promise<void>;
 	remove(predicate: (record: T) => boolean): void;
+	count(predicate: (record: T) => boolean): number;
 }
 
 export const createDocumentMapStore = <T extends { _id: string }>({
@@ -153,5 +154,14 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 				return { records };
 			});
 			onInvalidate?.(...affected);
+		},
+		count: (predicate: (record: T) => boolean) => {
+			let results = 0;
+			for (const record of get().records.values()) {
+				if (predicate(record)) {
+					results += 1;
+				}
+			}
+			return results;
 		},
 	}));
