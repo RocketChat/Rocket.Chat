@@ -23,18 +23,27 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 					'appId': 1,
 					'_updatedAt': -1,
 					'entries.severity': 1,
+					'instanceId': 1,
 					'method': 1,
 				},
-				name: 'appId_indexed_query',
+				name: 'appId_indexed_query_v2',
 			},
 			// Index for queries on general logs endpoint
 			{
 				key: {
 					'_updatedAt': -1,
 					'entries.severity': 1,
+					'instanceId': 1,
 					'method': 1,
 				},
-				name: 'general_logs_index',
+				name: 'general_logs_index_v2',
+			},
+			// Index for distinct instanceId values
+			{
+				key: {
+					instanceId: 1,
+				},
+				name: 'distinct_instanceId',
 			},
 		];
 	}
