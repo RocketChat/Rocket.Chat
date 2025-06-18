@@ -1,4 +1,5 @@
 import type { IFreeSwitchChannelEventMutable, IFreeSwitchChannelEventLegProfile } from '@rocket.chat/core-typings';
+import { isRecord } from '@rocket.chat/tools';
 
 /**
  * Returns a soft-copy of the eventData, with the specified data inserted into the profile of the channel's main leg, if it exists.
@@ -9,14 +10,23 @@ export function insertDataIntoEventProfile(
 	eventData: IFreeSwitchChannelEventMutable,
 	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee'>>,
 ): IFreeSwitchChannelEventMutable {
+	if (!isRecord(eventData.legs)) {
+		return eventData;
+	}
+
 	const clonedData = {
 		...eventData,
 		// Clone each leg individually, as we might mutate it
-		legs: Object.fromEntries(Object.entries(eventData.legs || {}).map(([key, leg]) => [key, { ...leg }])),
+		legs: Object.fromEntries(
+			Object.entries(eventData.legs).map(([key, leg]) => [
+				key,
+				{ ...leg, ...(isRecord(leg.profiles) && { profiles: { ...leg.profiles } }) },
+			]),
+		),
 	};
 
 	const leg = clonedData.legs[channelUniqueId];
-	if (leg?.profiles && typeof leg.profiles === 'object' && Object.getOwnPropertySymbols(leg.profiles).length === 0) {
+	if (isRecord(leg?.profiles)) {
 		// The raw event can never have more than one profile at the same time, it's only a record because the key for the profile can change between events
 		const legProfileKey = Object.keys(leg.profiles).pop();
 

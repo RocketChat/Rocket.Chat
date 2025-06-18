@@ -17,7 +17,7 @@ describe('insertDataIntoEventProfile', () => {
 
 		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			simple: '15',
 		});
 	});
@@ -35,7 +35,7 @@ describe('insertDataIntoEventProfile', () => {
 
 		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			simple: '15',
 			legs: {
 				one: {
@@ -64,7 +64,7 @@ describe('insertDataIntoEventProfile', () => {
 
 		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			simple: '15',
 			legs: {
 				one: {
@@ -93,7 +93,7 @@ describe('insertDataIntoEventProfile', () => {
 		};
 
 		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			legs: {
 				[channelUniqueId]: {
 					profiles: date,
@@ -116,7 +116,7 @@ describe('insertDataIntoEventProfile', () => {
 		};
 
 		const result = insertDataIntoEventProfile(channelUniqueId, eventData, { callee: '20' });
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			legs: {
 				[channelUniqueId]: {
 					profiles: {
@@ -126,11 +126,6 @@ describe('insertDataIntoEventProfile', () => {
 				},
 			},
 		});
-
-		// expect(result).toEqual({
-		// 	[`legs.${channelUniqueId}.profiles.first`]: false,
-		// 	[`legs.${channelUniqueId}.profiles.last`]: 0,
-		// });
 	});
 
 	it('should convert event data into paths with basic structure', () => {
@@ -190,7 +185,6 @@ describe('insertDataIntoEventProfile', () => {
 
 		expect(result).toEqual({
 			...baseEventData,
-			legs: {},
 		});
 	});
 

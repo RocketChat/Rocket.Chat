@@ -37,7 +37,13 @@ describe('computeChannelFromEvents', () => {
 						channelName: 'sofia/internal/1001@192.168.1.100',
 						destinationNumber: '1002',
 						raw: {},
-						profiles: {},
+						profiles: {
+							1: {
+								profileIndex: '1',
+								channelCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+								profileCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+							},
+						},
 					},
 				},
 			}),
@@ -65,7 +71,14 @@ describe('computeChannelFromEvents', () => {
 						channelName: 'sofia/internal/1001@192.168.1.100',
 						destinationNumber: '1002',
 						raw: {},
-						profiles: {},
+						profiles: {
+							1: {
+								profileIndex: '1',
+								channelCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+								profileCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+								channelAnsweredTime: new Date('2024-02-28T12:00:01.000Z'),
+							},
+						},
 					},
 				},
 			}),
@@ -88,7 +101,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				name: 'sofia/internal/1001@192.168.1.100',
@@ -126,6 +139,13 @@ describe('computeChannelFromEvents', () => {
 								uniqueId: 'channel-123',
 								direction: 'outbound',
 								logicalDirection: 'outbound',
+								profiles: {
+									1: {
+										profileIndex: '1',
+										channelCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+										profileCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+									},
+								},
 								username: '1001',
 								channelName: 'sofia/internal/1001@192.168.1.100',
 								destinationNumber: '1002',
@@ -138,7 +158,18 @@ describe('computeChannelFromEvents', () => {
 					sequence: 2,
 					firedAt: new Date('2024-02-28T12:00:01.000Z'),
 					receivedAt: new Date('2024-02-28T12:00:01.100Z'),
-					newValues: { channelUsername: '1001' },
+					newValues: {
+						channelUsername: '1001',
+						legs: {
+							'Caller-Leg': {
+								profiles: {
+									1: {
+										channelAnsweredTime: new Date('2024-02-28T12:00:01.000Z'),
+									},
+								},
+							},
+						},
+					},
 					modifiedValues: {
 						channelState: { oldValue: 'CS_NEW', newValue: 'CS_EXECUTE' },
 						channelCallState: { oldValue: 'DOWN', newValue: 'RINGING' },
@@ -176,6 +207,14 @@ describe('computeChannelFromEvents', () => {
 						username: '1001',
 						channelName: 'sofia/internal/1001@192.168.1.100',
 						destinationNumber: '1002',
+						profiles: {
+							1: {
+								profileIndex: '1',
+								channelCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+								profileCreatedTime: new Date('2024-02-28T12:00:00.000Z'),
+								channelAnsweredTime: new Date('2024-02-28T12:00:01.000Z'),
+							},
+						},
 					},
 				},
 				channelUsername: '1001',
@@ -204,7 +243,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				name: 'sofia/internal/1001@192.168.1.100',
@@ -279,7 +318,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				callDirection: '',
@@ -361,7 +400,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				callDirection: '',
@@ -417,7 +456,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				callDirection: '',
@@ -488,7 +527,7 @@ describe('computeChannelFromEvents', () => {
 
 		const result = await computeChannelFromEvents(events);
 
-		expect(result).toMatchObject({
+		expect(result).toEqual({
 			channel: {
 				uniqueId: 'channel-123',
 				callDirection: '',

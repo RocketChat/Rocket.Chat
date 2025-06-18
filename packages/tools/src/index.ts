@@ -11,3 +11,4 @@ export * from './getLoginExpiration';
 export * from './converter';
 export * from './removeEmpty';
 export * from './isObject';
+export * from './isRecord';
