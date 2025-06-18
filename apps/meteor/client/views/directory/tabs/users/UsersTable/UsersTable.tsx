@@ -1,7 +1,7 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -11,9 +11,9 @@ import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
+	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
-	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
@@ -131,10 +131,13 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
+						paginationAriaLabel={t('Page_numbering')}
+						pageAriaLabel={t('Page_number')}
 						{...paginationProps}
 					/>
 				</>
 			)}
+
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
