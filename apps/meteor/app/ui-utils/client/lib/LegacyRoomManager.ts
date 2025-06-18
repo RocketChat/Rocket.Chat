@@ -14,24 +14,16 @@ import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 
-class UnreadSince extends Emitter<{
-	changed: Date | undefined;
+type ListenRoomPropsByRidProps = keyof OpenedRoom;
+type ListenRoomPropsByRidPropsEvent = `${string}/${ListenRoomPropsByRidProps}`;
+
+const listener = new (class ListenRoomPropsByRid extends Emitter<{
+	[key in ListenRoomPropsByRidPropsEvent]: undefined;
 }> {
-	private unreadSince: Date | undefined;
-
-	set(since: Date | undefined) {
-		if (this.unreadSince === since) {
-			return;
-		}
-
-		this.unreadSince = since;
-		this.emit('changed', since);
+	constructor() {
+		super();
 	}
-
-	get() {
-		return this.unreadSince;
-	}
-}
+})();
 
 type OpenedRoom = {
 	typeName: string;
@@ -40,7 +32,7 @@ type OpenedRoom = {
 	active: boolean;
 	dom?: Node;
 	streamActive?: boolean;
-	unreadSince: UnreadSince;
+	unreadSince: Date | undefined;
 	lastSeen: Date;
 	unreadFirstId?: string;
 	stream?: {
@@ -83,6 +75,39 @@ async function closeAllRooms() {
 	for await (const openedRoom of Object.values(openedRooms)) {
 		await close(openedRoom.typeName);
 	}
+}
+
+function listenRoomPropsByRid<T extends ListenRoomPropsByRidProps>(
+	rid: IRoom['_id'],
+	prop: T,
+): {
+	subscribe: (cb: () => void) => () => void;
+	getSnapshotValue: () => OpenedRoom[T];
+} {
+	return {
+		subscribe: (cb: () => void) => {
+			return listener.on(`${rid}/${prop}`, cb);
+		},
+		getSnapshotValue: (): OpenedRoom[T] => {
+			return getOpenedRoomByRid(rid)?.[prop] as OpenedRoom[T];
+		},
+	};
+}
+
+function setPropertyByRid<T extends ListenRoomPropsByRidProps>(room: OpenedRoom, prop: T, value: OpenedRoom[T]): OpenedRoom[T] | undefined;
+function setPropertyByRid<T extends ListenRoomPropsByRidProps>(rid: IRoom['_id'], prop: T, value: OpenedRoom[T]): OpenedRoom[T] | undefined;
+function setPropertyByRid<T extends ListenRoomPropsByRidProps>(
+	ridOrRoom: IRoom['_id'] | OpenedRoom,
+	prop: T,
+	value: OpenedRoom[T],
+): OpenedRoom[T] | undefined {
+	const room = typeof ridOrRoom === 'string' ? getOpenedRoomByRid(ridOrRoom) : ridOrRoom;
+	const rid = typeof ridOrRoom === 'string' ? ridOrRoom : room?.rid;
+	if (!room) {
+		return;
+	}
+	room[prop] = value;
+	listener.emit(`${rid}/${prop}`);
 }
 
 function getOpenedRoomByRid(rid: IRoom['_id']) {
@@ -233,7 +258,7 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 			rid,
 			active: false,
 			ready: false,
-			unreadSince: new UnreadSince(),
+			unreadSince: undefined,
 			lastSeen: new Date(),
 		};
 	}
@@ -266,7 +291,8 @@ export const LegacyRoomManager = {
 	get openedRooms() {
 		return openedRooms;
 	},
-
+	listenRoomPropsByRid,
+	setPropertyByRid,
 	getOpenedRoomByRid,
 
 	close,
