@@ -39,6 +39,10 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 		];
 	}
 
+	distinctInstanceIds(): Promise<string[]> {
+		return this.col.distinct('instanceId');
+	}
+
 	remove(query: Filter<any>): Promise<DeleteResult> {
 		return this.col.deleteMany(query);
 	}
