@@ -2,6 +2,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { createDocumentMapStore } from './DocumentMapStore';
 import { LocalCollection } from './LocalCollection';
+import type { Query } from './Query';
 
 /**
  * Implements a minimal version of a MongoDB collection using Zustand for state management.
@@ -9,23 +10,61 @@ import { LocalCollection } from './LocalCollection';
  * It's a middle layer between the Mongo.Collection and Zustand aiming for complete migration to Zustand.
  */
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
+	private pendingRecomputations = new Set<Query<T>>();
+
+	private pendingRecomputationsTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+
+	private cancelPendingRecomputations() {
+		if (this.pendingRecomputationsTimer) {
+			clearTimeout(this.pendingRecomputationsTimer);
+			this.pendingRecomputationsTimer = undefined;
+		}
+	}
+
+	private recomputeAll() {
+		this.cancelPendingRecomputations();
+		this.pendingRecomputations.clear();
+
+		for (const query of this._collection.queries) {
+			this._collection.recomputeQuery(query);
+		}
+	}
+
+	private scheduleRecomputationsFor(docs: T[]) {
+		for (const query of this._collection.queries) {
+			if (this.pendingRecomputations.has(query)) continue;
+
+			if (docs.some((doc) => query.predicate(doc))) {
+				this.scheduleRecomputation(query);
+			}
+		}
+	}
+
+	private scheduleRecomputation(query: Query<T>) {
+		this.pendingRecomputations.add(query);
+
+		this.cancelPendingRecomputations();
+
+		this.pendingRecomputationsTimer = setTimeout(() => {
+			this.pendingRecomputations.forEach((query) => {
+				this._collection.recomputeQuery(query);
+			});
+			this.pendingRecomputations.clear();
+			this.pendingRecomputationsTimer = undefined;
+		}, 0);
+	}
+
 	/**
 	 * A Zustand store that holds the records of the collection.
 	 *
 	 * It should be used as a hook in React components to access the collection's records and methods.
 	 */
 	readonly use = createDocumentMapStore<T>({
-		onInvalidate: (...docs) => {
-			for (const query of this._collection.queries) {
-				if (docs.some((doc) => query.predicate(doc))) {
-					this._collection.recomputeQuery(query);
-				}
-			}
-		},
 		onInvalidateAll: () => {
-			for (const query of this._collection.queries) {
-				this._collection.recomputeQuery(query);
-			}
+			this.recomputeAll();
+		},
+		onInvalidate: (...docs) => {
+			this.scheduleRecomputationsFor(docs);
 		},
 	});
 
