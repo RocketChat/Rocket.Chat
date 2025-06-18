@@ -252,18 +252,19 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			nextProcessTime = nextEndTime;
 		} else {
 			// This should never happen due to the earlier check, but just in case
+			logger.error(`Unexpected state: nextStartEvent=${nextStartEvent}, nextEndTime=${nextEndTime}`);
 			return;
 		}
 
-		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime());
+		logger.debug(`Next status change scheduled for ${nextProcessTime}`);
+		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime(nextProcessTime));
 	}
 
-	private async processStatusChangesAtTime(): Promise<void> {
-		const processTime = new Date();
-
+	private async processStatusChangesAtTime(processTime: Date): Promise<void> {
 		const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 		for await (const event of eventsStartingNow) {
 			if (event.busy === false) {
+				logger.debug(`Not processing event start for user ${event.uid}`, event);
 				continue;
 			}
 			await this.processEventStart(event);
@@ -272,6 +273,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const eventsEndingNow = await CalendarEvent.findEventsEndingNow({ now: processTime, offset: 5000 }).toArray();
 		for await (const event of eventsEndingNow) {
 			if (event.busy === false) {
+				logger.debug(`Not processing event end for user ${event.uid}`, event);
 				continue;
 			}
 			await this.processEventEnd(event);
@@ -290,20 +292,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
-			.sort({ startTime: -1 })
-			.toArray();
-		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.status;
-
-		if (previousStatus) {
-			await CalendarEvent.updateEvent(event._id, { previousStatus });
+		if (user.status) {
+			await CalendarEvent.updateEvent(event._id, { previousStatus: user.status });
 		}
 
+		logger.debug(`Setting status for user ${event.uid} to BUSY for event ${event._id}`);
 		await applyStatusChange({
-			eventId: event._id,
 			uid: event.uid,
-			startTime: event.startTime,
-			endTime: event.endTime,
 			status: UserStatus.BUSY,
 		});
 	}
@@ -318,20 +313,30 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime).toArray();
+		const earliestOverlappingEvent = overlappingEvents.reduce(
+			(earliest, current) => {
+				if (!current.endTime) {
+					return earliest;
+				}
+				return current.startTime.getTime() < earliest.startTime.getTime() ? current : earliest;
+			},
+			overlappingEvents.at(0) ?? event,
+		);
+
+		const { previousStatus } = earliestOverlappingEvent;
+
 		// Only restore status if:
 		// 1. The current status is BUSY (meaning it was set by our system, not manually changed by user)
 		// 2. We have a previousStatus stored from before the event started
-
-		if (user.status === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.status) {
+		if (user.status !== previousStatus) {
+			logger.debug(`Restoring status for user ${event.uid} from ${user.status} to ${previousStatus} after event ${event._id}`);
 			await applyStatusChange({
-				eventId: event._id,
 				uid: event.uid,
-				startTime: event.startTime,
-				endTime: event.endTime,
-				status: event.previousStatus,
+				status: previousStatus,
 			});
 		} else {
-			logger.debug(`Not restoring status for user ${event.uid}: current=${user.status}, stored=${event.previousStatus}`);
+			logger.debug(`Not restoring status for user ${event.uid} after event ${event._id}, current status is already ${user.status}`);
 		}
 	}
 
