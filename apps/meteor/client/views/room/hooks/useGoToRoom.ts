@@ -15,7 +15,7 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 			return;
 		}
 
-		const subscription: ISubscription | undefined = Subscriptions.findOne({ rid });
+		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === rid);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), { replace });

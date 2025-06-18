@@ -41,6 +41,7 @@ import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
+import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
@@ -85,7 +86,7 @@ export const prepareLivechatRoom = async (
 		}),
 	);
 
-	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 	const source = extraRoomInfo.source || roomInfo.source;
@@ -412,7 +413,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	setImmediate(() => callbacks.run('livechat.chatQueued', room));
+	void afterRoomQueued(room);
 
 	if (RoutingManager.getConfig()?.autoAssignAgent) {
 		return;
@@ -479,7 +480,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	if (!agentId) {
 		throw new Error('error-invalid-agent');
 	}
-	const user = await Users.findOneOnlineAgentById(agentId);
+	const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
 		throw new Error('error-user-is-offline');
@@ -602,7 +603,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
-		const user = await Users.findOneOnlineAgentById(agentId);
+		const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
@@ -749,7 +750,7 @@ const parseFromIntOrStr = (value: string | number) => {
 export const updateDepartmentAgents = async (
 	departmentId: string,
 	agents: {
-		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
+		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId'> & { count?: number; order?: number })[];
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 	departmentEnabled: boolean,

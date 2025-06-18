@@ -4,7 +4,7 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
-import { Fragment, useRef } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
@@ -12,6 +12,7 @@ import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { BubbleDate } from '../../../BubbleDate';
+import { useJumpToMessageImperative } from '../../../MessageList/hooks/useJumpToMessage';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
@@ -55,11 +56,11 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 
-	const {
-		listWrapperRef: listWrapperScrollRef,
-		listRef: listScrollRef,
-		onScroll: handleScroll,
-	} = useLegacyThreadMessageListScrolling(mainMessage);
+	const { innerRef: listScrollRef, jumpToRef } = useLegacyThreadMessageListScrolling(mainMessage);
+
+	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
+
+	const customScrollbarsRef = useMergedRefs(listScrollRef, jumpToRefGetMoreImperativeInnerRef);
 
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -68,18 +69,16 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 
 	const { messageListRef } = useMessageListNavigation();
 
-	const ref = useRef<HTMLElement | null>(null);
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, messageListRef);
-	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef, ref);
+	const jumpToRefMessageListProvider = useMergedRefs(jumpToRef, jumpToRefGetMoreImperative);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomScrollbars ref={scrollRef} onScroll={handleScroll} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
+			<CustomScrollbars ref={customScrollbarsRef} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<Box
 					is='ul'
 					className={[listStyle, 'thread']}
-					ref={listRef}
+					ref={messageListRef}
 					aria-label={t('Thread_message_list')}
 					style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
 				>
@@ -88,7 +87,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider messageListRef={ref}>
+						<MessageListProvider messageListRef={jumpToRefMessageListProvider}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
