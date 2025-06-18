@@ -12,17 +12,7 @@ import type { Query } from './Query';
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
 	private pendingRecomputations = new Set<Query<T>>();
 
-	private pendingRecomputationsTimer: ReturnType<typeof setTimeout> | undefined = undefined;
-
-	private cancelPendingRecomputations() {
-		if (this.pendingRecomputationsTimer) {
-			clearTimeout(this.pendingRecomputationsTimer);
-			this.pendingRecomputationsTimer = undefined;
-		}
-	}
-
 	private recomputeAll() {
-		this.cancelPendingRecomputations();
 		this.pendingRecomputations.clear();
 
 		for (const query of this._collection.queries) {
@@ -43,15 +33,14 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	private scheduleRecomputation(query: Query<T>) {
 		this.pendingRecomputations.add(query);
 
-		this.cancelPendingRecomputations();
+		queueMicrotask(() => {
+			if (this.pendingRecomputations.size === 0) return;
 
-		this.pendingRecomputationsTimer = setTimeout(() => {
 			this.pendingRecomputations.forEach((query) => {
 				this._collection.recomputeQuery(query);
 			});
 			this.pendingRecomputations.clear();
-			this.pendingRecomputationsTimer = undefined;
-		}, 0);
+		});
 	}
 
 	/**
