@@ -187,21 +187,18 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = {
-		queryPermission: () => [() => () => undefined, () => false],
-		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-		queryAllPermissions: () => [() => () => undefined, () => false],
-		queryRole: () => [() => () => undefined, () => false],
-		roleStore: {
-			roles: {},
-			emit: () => undefined,
-			on: () => () => undefined,
-			off: () => undefined,
-			events: (): Array<'change'> => ['change'],
-			has: () => false,
-			once: () => () => undefined,
-		},
-	};
+	private authorization: ContextType<typeof AuthorizationContext> = (() => {
+		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+
+		return {
+			queryPermission: () => [() => () => undefined, () => false],
+			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+			queryAllPermissions: () => [() => () => undefined, () => false],
+			queryRole: () => [() => () => undefined, () => false],
+			getRoles: () => dummyRolesMap,
+			subscribeToRoles: () => () => undefined,
+		};
+	})();
 
 	private authServices: LoginService[] = [];
 
