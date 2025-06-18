@@ -185,7 +185,9 @@ export const useSwitchSidePanelTab = () => {
 	const { setFilter } = useRoomsListContext();
 	const [, unread] = useSidePanelFilter();
 
-	return (tab: SidePanelFiltersKeys) => setFilter(tab, unread);
+	return (tab: SidePanelFiltersKeys) => {
+		setFilter(tab, unread);
+	};
 };
 
 export const useUnreadGroupData = (key: SidePanelFiltersKeys) => useRoomsListContext().unreadGroupData.get(key) || getEmptyUnreadInfo();

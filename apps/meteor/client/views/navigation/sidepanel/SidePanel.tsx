@@ -1,5 +1,5 @@
-import { Box, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -25,6 +25,11 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 	const ref = useRef(null);
 	const unreadFieldId = useId();
 	const parentRid = useOpenedRoom();
+	const {
+		isTablet,
+		sidePanel: { closeSidePanel },
+	} = useLayout();
+
 	const secondLevelOpenedRoom = useSecondLevelOpenedRoom() ?? parentRid;
 
 	usePreventDefault(ref);
@@ -32,6 +37,7 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 	return (
 		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
+				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 				<SidepanelHeaderTitle>{t(sidePanelFiltersConfig[currentTab].title)}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
