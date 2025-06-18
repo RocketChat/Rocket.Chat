@@ -1,6 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -96,7 +95,7 @@ const SidebarItemTemplateWithData = ({ room, id, selected, style, t, isAnonymous
 			icon={icon}
 			style={style}
 			badges={badges}
-			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
+			room={room}
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))

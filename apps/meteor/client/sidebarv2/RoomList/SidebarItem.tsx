@@ -1,11 +1,12 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
-	avatar: ReactNode;
 	icon?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
@@ -15,9 +16,10 @@ type SidebarItemProps = {
 	selected?: boolean;
 	badges?: ReactNode;
 	clickable?: boolean;
+	room: SubscriptionWithRoom;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const SidebarItem = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: SidebarItemProps) => {
+const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...props }: SidebarItemProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleFocus = () => setMenuVisibility(true);
@@ -25,7 +27,9 @@ const SidebarItem = ({ icon, title, avatar, actions, unread, menu, badges, ...pr
 
 	return (
 		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
-			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+			<SidebarV2ItemAvatarWrapper>
+				<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+			</SidebarV2ItemAvatarWrapper>
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 			{badges}
