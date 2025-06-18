@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -29,6 +29,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/addon-essentials": "^8.6.14",
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react": "^8.6.14",
@@ -40,7 +41,7 @@
 		"@types/react-dom": "~18.3.5",
 		"buffer": "~6.0.3",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
+		"jest": "~30.0.0",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",
 		"typescript": "~5.8.3"
