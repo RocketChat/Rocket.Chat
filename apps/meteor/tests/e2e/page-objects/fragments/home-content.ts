@@ -184,20 +184,20 @@ export class HomeContent {
 		return this.page.getByRole('blockquote');
 	}
 
-	lastQuotedFileDescription(fileDescription: string): Locator {
-		return this.quotePreview.getByText(fileDescription).last();
+	quotedFileDescription(fileDescription: string): Locator {
+		return this.quotePreview.getByText(fileDescription);
 	}
 
-	lastQuotedFileName(fileName: string): Locator {
-		return this.quotePreview.getByTitle(fileName).last();
+	quotedFileName(fileName: string): Locator {
+		return this.quotePreview.getByTitle(fileName);
 	}
 
-	lastThreadQuotedFileDescription(fileDescription: string): Locator {
-		return this.threadQuotePreview.getByText(fileDescription).last();
+	threadMessageQuotedFileDescription(fileDescription: string): Locator {
+		return this.threadQuotePreview.getByText(fileDescription);
 	}
 
-	lastThreadQuotedFileName(fileName: string): Locator {
-		return this.threadQuotePreview.getByTitle(fileName).last();
+	threadMessageQuotedFileName(fileName: string): Locator {
+		return this.threadQuotePreview.getByTitle(fileName);
 	}
 
 	get linkPreview(): Locator {
@@ -205,7 +205,7 @@ export class HomeContent {
 	}
 
 	quotedLinkText(name: string): Locator {
-		return this.quotePreview.getByRole('link', { name: `${name}` });
+		return this.quotePreview.getByRole('link', { name });
 	}
 
 	get threadQuotePreview(): Locator {

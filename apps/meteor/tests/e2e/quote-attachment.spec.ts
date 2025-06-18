@@ -44,15 +44,15 @@ test.describe.parallel('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.lastQuotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.lastQuotedFileName(imageFileName)).toBeVisible();
+			await expect(poHomeChannel.content.quotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.quotedFileName(imageFileName)).toBeVisible();
 
 			// Send the quoted message
 			await poHomeChannel.content.sendMessage(quotedMessage);
 		});
 		await test.step('Verify the quoted message appears correctly', async () => {
-			await expect(poHomeChannel.content.lastQuotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.lastQuotedFileName(imageFileName)).toBeVisible();
+			await expect(poHomeChannel.content.quotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.quotedFileName(imageFileName)).toBeVisible();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
 		});
 	});
@@ -85,8 +85,8 @@ test.describe.parallel('Quote Attachment', () => {
 
 			// Verify the quote preview shows both file and description
 			await expect(poHomeChannel.content.threadQuotePreview).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadQuotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadQuotedFileName(textFileName)).toBeVisible();
+			await expect(poHomeChannel.content.threadMessageQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.threadMessageQuotedFileName(textFileName)).toBeVisible();
 
 			// Send the quoted message in thread
 			await poHomeChannel.content.sendMessageInThread(threadQuoteMessage);
@@ -94,8 +94,8 @@ test.describe.parallel('Quote Attachment', () => {
 
 		await test.step('Verify the quoted message appears correctly in thread', async () => {
 			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadQuotedFileDescription(fileDescription)).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadQuotedFileName(textFileName)).toBeVisible();
+			await expect(poHomeChannel.content.threadMessageQuotedFileDescription(fileDescription)).toBeVisible();
+			await expect(poHomeChannel.content.threadMessageQuotedFileName(textFileName)).toBeVisible();
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(threadQuoteMessage);
 		});
 	});
