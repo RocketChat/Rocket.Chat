@@ -3411,11 +3411,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	countActiveUsersByNotDMRoomId(rid: string) {
+	countActiveUsersInNonDMRoom(rid: string) {
 		return this.countDocuments({ active: true, __rooms: rid });
 	}
 
-	async countActiveUsersByDMRoomId(rid: string) {
+	async countActiveUsersInDMRoom(rid: string) {
 		const room = await Rooms.findOneById(rid, { projection: { uids: 1 } });
 		if (!room?.uids?.length) {
 			return 0;
