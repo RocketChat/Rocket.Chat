@@ -226,11 +226,13 @@ const RichTextMessageBox = ({
 
 	const handleSendMessage = useEffectEvent(() => {
 		const text = chat.composer?.text ?? '';
+		// Sanitize the innerText by reducing multiple instances of linebreaks
+		const cleanedText = text.replace(/\n{2,}/g, (match) => '\n'.repeat((match.length + 1) / 2));
 		chat.composer?.clear();
 		popup.clear();
 
 		onSend?.({
-			value: text,
+			value: cleanedText,
 			tshow,
 			previewUrls,
 			isSlashCommandAllowed,
