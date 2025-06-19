@@ -27,7 +27,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"dependencies": {
 		"@rocket.chat/password-policies": "workspace:^"

@@ -67,8 +67,8 @@
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"react": "~17.0.2",
-		"react-dom": "^17.0.2"
+		"react": "*",
+		"react-dom": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"

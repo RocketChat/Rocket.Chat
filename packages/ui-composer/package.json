@@ -58,8 +58,8 @@
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
-		"react": "^17.0.2",
-		"react-dom": "^17.0.2"
+		"react": "*",
+		"react-dom": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"

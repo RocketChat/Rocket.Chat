@@ -8884,7 +8884,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/ui-contexts": "workspace:^"
-    react: ~17.0.2
+    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -8984,8 +8984,8 @@ __metadata:
     "@react-aria/toolbar": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/icons": "*"
-    react: ^17.0.2
-    react-dom: ^17.0.2
+    react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -9017,7 +9017,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:^"
-    react: ~17.0.2
+    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -9132,8 +9132,8 @@ __metadata:
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    react: ~17.0.2
-    react-dom: ^17.0.2
+    react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -9201,9 +9201,9 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    react: ~17.0.2
+    react: "*"
     react-aria: ~3.23.1
-    react-dom: ^17.0.2
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
