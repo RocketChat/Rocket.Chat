@@ -1,21 +1,19 @@
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import { memo, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import { memo, useState } from 'react';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
-type AutoCompleteMultipleAgentProps = {
-	value: PaginatedMultiSelectOption[];
-	error?: boolean;
-	placeholder?: string;
+type AutoCompleteMultipleAgentProps = Omit<
+	ComponentProps<typeof PaginatedMultiSelectFiltered>,
+	'options' | 'renderItem' | 'setFilter' | 'filter' | 'endReached' | 'value' | 'onChange'
+> & {
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
-	withTitle?: boolean;
+	value: PaginatedMultiSelectOption[];
 	onChange: (value: PaginatedMultiSelectOption[]) => void;
 };
 
@@ -28,22 +26,22 @@ const AutoCompleteMultipleAgent = ({
 	onlyAvailable = false,
 	withTitle = false,
 	onChange,
+	...props
 }: AutoCompleteMultipleAgentProps): ReactElement => {
 	const [agentsFilter, setAgentsFilter] = useState<string>('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
-	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
-		useMemo(
-			() => ({ text: debouncedAgentsFilter, onlyAvailable, excludeId, showIdleAgents }),
-			[debouncedAgentsFilter, excludeId, onlyAvailable, showIdleAgents],
-		),
-	);
-
-	const { phase: agentsPhase, itemCount: agentsTotal, items: agentsItems } = useRecordList(AgentsList);
+	const { data: agentsItems, fetchNextPage } = useAgentsList({
+		filter: debouncedAgentsFilter,
+		onlyAvailable,
+		excludeId,
+		showIdleAgents,
+	});
 
 	return (
 		<PaginatedMultiSelectFiltered
+			{...props}
 			withTitle={withTitle}
 			value={value}
 			error={error}
@@ -56,9 +54,7 @@ const AutoCompleteMultipleAgent = ({
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
 			data-qa='autocomplete-multiple-agent'
-			endReached={
-				agentsPhase === AsyncStatePhase.LOADING ? (): void => undefined : (start): void => loadMoreAgents(start!, Math.min(50, agentsTotal))
-			}
+			endReached={() => fetchNextPage()}
 		/>
 	);
 };

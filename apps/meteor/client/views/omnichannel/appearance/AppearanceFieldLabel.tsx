@@ -9,17 +9,17 @@ type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
 	children: string;
 };
 
-const AppearanceFieldLabel = ({ children, premium = false }: AppearanceFieldLabelProps) => {
+const AppearanceFieldLabel = ({ children, premium = false, ...props }: AppearanceFieldLabelProps) => {
 	const { t } = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const shouldDisableEnterprise = premium && !hasLicense;
 
 	if (!shouldDisableEnterprise) {
-		return <FieldLabel>{children}</FieldLabel>;
+		return <FieldLabel {...props}>{children}</FieldLabel>;
 	}
 
 	return (
-		<FieldLabel>
+		<FieldLabel {...props}>
 			<Box is='span' mie={4}>
 				{children}
 			</Box>

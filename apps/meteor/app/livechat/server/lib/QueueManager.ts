@@ -424,10 +424,14 @@ export class QueueManager {
 		};
 
 		let defaultAgent: SelectedAgent | undefined;
-		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
+		const isAgentAvailable = (username: string) =>
+			Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1 } }, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+
+		if (servedBy?.username && (await isAgentAvailable(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
+		// TODO: unarchive to return updated room
 		await LivechatRooms.unarchiveOneById(rid);
 		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {
