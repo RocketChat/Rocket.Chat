@@ -24,6 +24,7 @@
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
+		"@babel/core": "~7.26.10",
 		"@babel/eslint-parser": "~7.25.9",
 		"@babel/preset-env": "~7.26.9",
 		"@babel/preset-typescript": "~7.26.0",
@@ -40,6 +41,7 @@
 		"@storybook/preact": "^8.6.14",
 		"@storybook/preact-webpack5": "^8.6.14",
 		"@storybook/theming": "^8.6.14",
+		"@types/babel__core": "^7",
 		"@types/crypto-js": "~4.2.2",
 		"@types/markdown-it": "^14.1.2",
 		"@types/mini-css-extract-plugin": "~2.5.1",

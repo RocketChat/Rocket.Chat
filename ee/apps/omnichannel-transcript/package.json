@@ -51,7 +51,9 @@
 		"@types/gc-stats": "^1.4.3",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
 		"@types/polka": "^0.5.7",
+		"@types/react": "~18.3.23",
 		"eslint": "~8.45.0",
+		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.8.3"
 	},

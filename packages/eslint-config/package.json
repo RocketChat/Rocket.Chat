@@ -34,5 +34,8 @@
 		"/style",
 		"/variables",
 		"react.js"
-	]
+	],
+	"devDependencies": {
+		"typescript": "~5.8.3"
+	}
 }

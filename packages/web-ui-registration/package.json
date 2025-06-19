@@ -22,6 +22,7 @@
 		"@babel/preset-react": "~7.25.9",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/fuselage-hooks": "^0.36.0",
