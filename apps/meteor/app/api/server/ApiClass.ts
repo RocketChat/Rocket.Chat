@@ -666,6 +666,10 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
+		| ({
+				method: 'POST';
+				path: TPathPattern;
+		  } & Omit<TOptions, 'response'>)
 		| Prettify<
 				{
 					method: 'POST';
