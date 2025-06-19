@@ -99,6 +99,7 @@ export interface IFreeSwitchChannelEventLegProfile {
 	// Those are pulled from other places so that the profile can be mapped to specific calls
 	// They'll never be present on the raw events, only on the channel.events and channel.finalState.events
 	bridgedTo?: string;
+	caller?: string;
 	callee?: string;
 }
 

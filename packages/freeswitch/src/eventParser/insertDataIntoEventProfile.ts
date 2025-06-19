@@ -6,9 +6,8 @@ import { isRecord } from '@rocket.chat/tools';
  * While this returns a new object and the original is not mutated, the result is not a complete hard copy and may still include references to the original
  */
 export function insertDataIntoEventProfile(
-	channelUniqueId: string,
 	eventData: IFreeSwitchChannelEventMutable,
-	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee'>>,
+	dataToInsertIntoProfile: Partial<Pick<IFreeSwitchChannelEventLegProfile, 'bridgedTo' | 'callee' | 'caller'>>,
 ): IFreeSwitchChannelEventMutable {
 	if (!isRecord(eventData.legs)) {
 		return eventData;
@@ -25,12 +24,15 @@ export function insertDataIntoEventProfile(
 		),
 	};
 
-	const leg = clonedData.legs[channelUniqueId];
-	if (isRecord(leg?.profiles)) {
+	for (const leg of Object.values(clonedData.legs)) {
+		if (!isRecord(leg?.profiles)) {
+			continue;
+		}
+
 		// The raw event can never have more than one profile at the same time, it's only a record because the key for the profile can change between events
 		const legProfileKey = Object.keys(leg.profiles).pop();
 
-		if (legProfileKey && leg.profiles[legProfileKey]) {
+		if (legProfileKey && isRecord(leg.profiles[legProfileKey])) {
 			leg.profiles[legProfileKey] = {
 				...leg.profiles[legProfileKey],
 				...dataToInsertIntoProfile,

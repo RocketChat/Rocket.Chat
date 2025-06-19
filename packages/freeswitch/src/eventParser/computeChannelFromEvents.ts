@@ -80,10 +80,10 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 	const flattened = allEvents.reduce(
 		(state, nextEvent: IFreeSwitchChannelEvent) => {
 			const { header, eventData, channelUniqueId } = splitEventDataSections(nextEvent);
-			const { callee, eventName, sequence } = header;
+			const { caller, callee, eventName, sequence } = header;
 
 			// Inserts the callee and bridgedTo attributes into the profile of this event
-			const eventDataEx = insertDataIntoEventProfile(channelUniqueId, eventData, { callee, bridgedTo: eventData.bridgedTo });
+			const eventDataEx = insertDataIntoEventProfile(eventData, { caller, callee, bridgedTo: eventData.bridgedTo });
 
 			// Make a list with every value from the event, except for the headers;
 			const eventValues = convertSubObjectsIntoPaths(eventDataEx);

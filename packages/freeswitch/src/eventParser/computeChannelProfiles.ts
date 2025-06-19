@@ -2,7 +2,7 @@
 import type { IFreeSwitchChannelEventLegProfile, IFreeSwitchChannelProfile } from '@rocket.chat/core-typings';
 
 function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IFreeSwitchChannelEventLegProfile {
-	const { profileIndex, profileCreatedTime, channelCreatedTime, bridgedTo, callee, ...timestamps } = profile;
+	const { profileIndex, profileCreatedTime, channelCreatedTime, bridgedTo, caller, callee, ...timestamps } = profile;
 
 	// Don't mutate anything if it's the first profile
 	if (!profileIndex || profileIndex === '1') {
@@ -14,6 +14,7 @@ function adjustProfileTimestamps(profile: IFreeSwitchChannelEventLegProfile): IF
 		profileIndex,
 		bridgedTo,
 		callee,
+		caller,
 	};
 
 	// If we don't know when the profile was created, drop every other timestamp

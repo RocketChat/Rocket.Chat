@@ -10,12 +10,11 @@ describe('insertDataIntoEventProfile', () => {
 	};
 
 	it('should handle simple object', () => {
-		const channelUniqueId = 'test-channel-123';
 		const eventData: any = {
 			simple: '15',
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(eventData, {});
 
 		expect(result).toEqual({
 			simple: '15',
@@ -23,7 +22,6 @@ describe('insertDataIntoEventProfile', () => {
 	});
 
 	it('should handle simple object with legs', () => {
-		const channelUniqueId = 'test-channel-123';
 		const eventData: any = {
 			simple: '15',
 			legs: {
@@ -33,7 +31,7 @@ describe('insertDataIntoEventProfile', () => {
 			},
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(eventData, {});
 
 		expect(result).toEqual({
 			simple: '15',
@@ -62,7 +60,7 @@ describe('insertDataIntoEventProfile', () => {
 			},
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(eventData, {});
 
 		expect(result).toEqual({
 			simple: '15',
@@ -92,7 +90,7 @@ describe('insertDataIntoEventProfile', () => {
 			},
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, {});
+		const result = insertDataIntoEventProfile(eventData, {});
 		expect(result).toEqual({
 			legs: {
 				[channelUniqueId]: {
@@ -115,7 +113,7 @@ describe('insertDataIntoEventProfile', () => {
 			},
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, { callee: '20' });
+		const result = insertDataIntoEventProfile(eventData, { callee: '20' });
 		expect(result).toEqual({
 			legs: {
 				[channelUniqueId]: {
@@ -152,7 +150,7 @@ describe('insertDataIntoEventProfile', () => {
 			callee: 'new-callee',
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
 			...baseEventData,
@@ -173,7 +171,6 @@ describe('insertDataIntoEventProfile', () => {
 	});
 
 	it('should handle event data without legs', () => {
-		const channelUniqueId = 'test-channel-123';
 		const eventData: any = {
 			...baseEventData,
 		};
@@ -181,7 +178,7 @@ describe('insertDataIntoEventProfile', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
 			...baseEventData,
@@ -204,7 +201,7 @@ describe('insertDataIntoEventProfile', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
 			...baseEventData,
@@ -218,7 +215,7 @@ describe('insertDataIntoEventProfile', () => {
 		});
 	});
 
-	it('should handle event data with multiple legs but only update the specified channel', () => {
+	it('should handle event data with multiple legs', () => {
 		const channelUniqueId = 'test-channel-123';
 		const otherChannelId = 'other-channel-456';
 		const eventData: any = {
@@ -230,7 +227,7 @@ describe('insertDataIntoEventProfile', () => {
 					uniqueId: channelUniqueId,
 					profiles: {
 						'profile-1': {
-							bridgedTo: 'original-bridge-1',
+							profileIndex: 'profile-1',
 						},
 					},
 				},
@@ -240,7 +237,7 @@ describe('insertDataIntoEventProfile', () => {
 					uniqueId: otherChannelId,
 					profiles: {
 						'profile-2': {
-							bridgedTo: 'original-bridge-2',
+							profileIndex: 'profile-2',
 						},
 					},
 				},
@@ -251,7 +248,7 @@ describe('insertDataIntoEventProfile', () => {
 			bridgedTo: 'new-bridge',
 		};
 
-		const result = insertDataIntoEventProfile(channelUniqueId, eventData, dataToInsertIntoProfile);
+		const result = insertDataIntoEventProfile(eventData, dataToInsertIntoProfile);
 
 		expect(result).toEqual({
 			...baseEventData,
@@ -262,6 +259,7 @@ describe('insertDataIntoEventProfile', () => {
 					uniqueId: channelUniqueId,
 					profiles: {
 						'profile-1': {
+							profileIndex: 'profile-1',
 							bridgedTo: 'new-bridge',
 						},
 					},
@@ -272,7 +270,8 @@ describe('insertDataIntoEventProfile', () => {
 					uniqueId: otherChannelId,
 					profiles: {
 						'profile-2': {
-							bridgedTo: 'original-bridge-2',
+							profileIndex: 'profile-2',
+							bridgedTo: 'new-bridge',
 						},
 					},
 				},
