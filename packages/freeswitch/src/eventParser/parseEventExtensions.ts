@@ -1,4 +1,4 @@
-import type { IFreeSwitchChannelEvent } from '@rocket.chat/core-typings';
+import type { AtLeast, IFreeSwitchChannelEvent, IFreeSwitchChannelEventLeg } from '@rocket.chat/core-typings';
 
 import { parseChannelUsername, parseContactUsername } from './parseChannelUsername';
 
@@ -37,35 +37,65 @@ function getMostLikelyUsername(valueList: (string | undefined)[]): string | unde
 	return parsedValues.shift();
 }
 
+function getOriginatorLeg(
+	event: Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'>,
+): AtLeast<IFreeSwitchChannelEventLeg, 'legName' | 'uniqueId' | 'raw'> | undefined {
+	const legs = event.legs && Object.values(event.legs);
+	if (!legs?.length) {
+		return undefined;
+	}
+
+	const selfLeg = event.legs[event.channelUniqueId];
+	const originator = legs.find((leg) => leg.type === 'originator');
+
+	if (event.callDirection === 'inbound') {
+		return originator || selfLeg;
+	}
+
+	if (originator) {
+		return originator;
+	}
+
+	const originatee = legs.find((leg) => leg.type === 'originatee');
+	if (originatee && selfLeg && selfLeg.type !== 'originatee') {
+		return selfLeg;
+	}
+
+	return undefined;
+}
+
 export function parseEventExtensions(
 	event: Omit<IFreeSwitchChannelEvent, '_id' | '_updatedAt'>,
 ): { caller?: string; callee?: string } | undefined {
 	const legs = event.legs && Object.values(event.legs);
 	const selfLeg = event.legs?.[event.channelUniqueId];
 
-	// The username of every leg seems to always be that of the caller
-	const anyUsername = legs
-		?.map(({ username }) => username)
-		.filter((username) => username)
-		.pop();
 	const allDestinationNumbers = legs?.map(({ destinationNumber }) => destinationNumber) || [];
+	const allCallerNumbers = legs?.map(({ callerNumber }) => callerNumber) || [];
 
+	// The dialed_extension variable is only available in a few specific events, but when it's there, it's ALWAYS right.
 	// It won't ever be an array, but just to be type-safe
 	const dialedExtension = Array.isArray(event.variables?.dialed_extension)
 		? event.variables.dialed_extension.shift()
 		: event.variables?.dialed_extension;
 
-	if (event.callDirection === 'outbound') {
-		const originator = legs?.find((leg) => leg.type === 'originator');
-
+	const originator = getOriginatorLeg(event);
+	if (event.callDirection === 'outbound' && originator) {
+		// If we have an originator, use it as the source of truth
 		return {
-			// Still need to validate this with external calls
-			caller: getMostLikelyUsername([originator?.channelName, originator?.username, anyUsername]),
-			callee: getMostLikelyUsername([dialedExtension, event.channelUsername, originator?.destinationNumber, ...allDestinationNumbers]),
+			caller: getMostLikelyUsername([originator.channelName]),
+			callee: getMostLikelyUsername([dialedExtension, originator.destinationNumber]),
 		};
 	}
 
+	// If the channel is inbound, then it has never received any call, only initiated.
 	if (event.callDirection === 'inbound') {
+		// The username of every leg is always the original caller
+		const anyUsername = legs
+			?.map(({ username }) => username)
+			.filter((username) => username)
+			.pop();
+
 		return {
 			caller: getMostLikelyUsername([event.channelUsername, selfLeg?.username, anyUsername]),
 			// Callee might not be available at all if the state is still CS_NEW
@@ -73,8 +103,11 @@ export function parseEventExtensions(
 		};
 	}
 
+	// Caller-Number and Destination-Number always have some sort of identification of the right caller/destination
+	// For rocket.chat internal calls, we'll always be able to parse it into an extension number
+	// For external calls, this might not be identifying the extension at all.
 	return {
-		caller: getMostLikelyUsername([anyUsername]),
+		caller: getMostLikelyUsername([...allCallerNumbers]),
 		callee: getMostLikelyUsername([dialedExtension, ...allDestinationNumbers]),
 	};
 }
