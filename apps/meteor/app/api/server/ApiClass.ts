@@ -73,7 +73,13 @@ type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
 		[K2 in TRoute['method']]: K2 extends 'GET'
 			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
-			: (params: ExtractValidation<TRoute['body']>) => ExtractValidation<TRoute['response'][200 | 201]>;
+			: (
+					params: ExtractValidation<TRoute['body']>,
+				) => 200 extends keyof TRoute['response']
+					? ExtractValidation<TRoute['response'][200]>
+					: 201 extends keyof TRoute['response']
+						? ExtractValidation<TRoute['response'][201]>
+						: never;
 	};
 };
 
@@ -622,10 +628,12 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: Method;
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: Method;
+					path: TPathPattern;
+				} & Omit<TOptions, 'response'>
+		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
