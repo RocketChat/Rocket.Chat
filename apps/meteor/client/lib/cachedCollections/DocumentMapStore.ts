@@ -11,6 +11,7 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	findFirst(predicate: (record: T) => boolean, comparator: (a: T, b: T) => number): T | undefined;
 	filter<U extends T>(predicate: (record: T) => record is U): U[];
 	filter(predicate: (record: T) => boolean): T[];
+	indexBy<TKey extends keyof T>(key: TKey): Map<T[TKey], T>;
 	replaceAll(records: T[]): void;
 	store(doc: T): void;
 	storeMany(docs: Iterable<T>): void;
@@ -60,6 +61,16 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 				}
 			}
 			return results;
+		},
+		indexBy: <TKey extends keyof T>(key: TKey) => {
+			const index = new Map<T[TKey], T>();
+
+			for (const record of get().records.values()) {
+				const keyValue = record[key];
+				index.set(keyValue, record);
+			}
+
+			return index;
 		},
 		replaceAll: (records: T[]) => {
 			set({ records: new Map(records.map((record) => [record._id, record])) });

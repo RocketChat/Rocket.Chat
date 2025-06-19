@@ -20,20 +20,8 @@ class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoo
 		});
 	}
 
-	protected handleLoadFromServer(record: ISubscription) {
-		return this.mergeWithRoom(record);
-	}
-
-	protected handleReceived(record: ISubscription) {
-		return this.mergeWithRoom(record);
-	}
-
-	protected handleSync(record: ISubscription) {
-		return this.mergeWithRoom(record);
-	}
-
-	private mergeWithRoom(subscription: ISubscription): SubscriptionWithRoom {
-		const room = CachedChatRoom.collection.state.find((record) => record._id === subscription.rid);
+	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
+		const room = CachedChatRoom.collection.state.find((r) => r._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 

@@ -1,8 +1,8 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { Roles } from '../../../../../app/models/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { RoomRoles } from '../../../../hooks/useRoomRolesQuery';
 import { useRoomRolesQuery } from '../../../../hooks/useRoomRolesQuery';
 import type { UserRoles } from '../../../../hooks/useUserRolesQuery';
@@ -19,31 +19,12 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 		enabled: shouldLoadRoles && !!userId,
 	});
 
-	return useReactiveValue(
-		useCallback(() => {
-			if (!shouldLoadRoles || !userId) {
-				return [];
-			}
-
-			const roles = [...(userRoles ?? []), ...(roomRoles ?? [])];
-
-			const result = Roles.find(
-				{
-					_id: {
-						$in: roles,
-					},
-					description: {
-						$exists: true,
-						$ne: '',
-					},
-				},
-				{
-					fields: {
-						description: 1,
-					},
-				},
-			).fetch();
-			return result.map(({ description }) => description);
-		}, [userId, shouldLoadRoles, userRoles, roomRoles]),
+	const predicate = useCallback(
+		(record: IRole): boolean => {
+			return !!record.description && [...(userRoles ?? []), ...(roomRoles ?? [])].includes(record._id);
+		},
+		[roomRoles, userRoles],
 	);
+
+	return Roles.use(useShallow((state) => state.filter(predicate).map(({ description }) => description)));
 };

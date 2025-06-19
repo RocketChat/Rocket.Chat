@@ -13,7 +13,14 @@ import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, SettingsContextQuery, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type {
+	Device,
+	LoginService,
+	ModalContextValue,
+	SettingsContextQuery,
+	SubscriptionWithRoom,
+	TranslationKey,
+} from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -25,6 +32,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 	UserPresenceContext,
+	AuthenticationContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -179,20 +187,32 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = {
-		queryPermission: () => [() => () => undefined, () => false],
-		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-		queryAllPermissions: () => [() => () => undefined, () => false],
-		queryRole: () => [() => () => undefined, () => false],
-		roleStore: {
-			roles: {},
-			emit: () => undefined,
-			on: () => () => undefined,
-			off: () => undefined,
-			events: (): Array<'change'> => ['change'],
-			has: () => false,
-			once: () => () => undefined,
+	private authorization: ContextType<typeof AuthorizationContext> = (() => {
+		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+
+		return {
+			queryPermission: () => [() => () => undefined, () => false],
+			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+			queryAllPermissions: () => [() => () => undefined, () => false],
+			queryRole: () => [() => () => undefined, () => false],
+			getRoles: () => dummyRolesMap,
+			subscribeToRoles: () => () => undefined,
+		};
+	})();
+
+	private authServices: LoginService[] = [];
+
+	private authentication: ContextType<typeof AuthenticationContext> = {
+		loginWithPassword: () => Promise.resolve(),
+		loginWithToken: () => Promise.resolve(),
+		loginWithService: () => () => Promise.resolve(true),
+		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
+		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		queryLoginServices: {
+			getCurrentValue: () => this.authServices,
+			subscribe: () => () => undefined,
 		},
+		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -535,6 +555,7 @@ export class MockedAppRootBuilder {
 			wrappers,
 			audioInputDevices,
 			audioOutputDevices,
+			authentication,
 		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
@@ -610,51 +631,53 @@ export class MockedAppRootBuilder {
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
 											<UserContext.Provider value={user}>
-												<MockedDeviceContext
-													availableAudioInputDevices={audioInputDevices}
-													availableAudioOutputDevices={audioOutputDevices}
-												>
-													<ModalContext.Provider value={modal}>
-														<AuthorizationContext.Provider value={authorization}>
-															{/* <EmojiPickerProvider>
+												<AuthenticationContext.Provider value={authentication}>
+													<MockedDeviceContext
+														availableAudioInputDevices={audioInputDevices}
+														availableAudioOutputDevices={audioOutputDevices}
+													>
+														<ModalContext.Provider value={modal}>
+															<AuthorizationContext.Provider value={authorization}>
+																{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-															<UserPresenceContext.Provider value={userPresence}>
-																<ActionManagerContext.Provider
-																	value={{
-																		generateTriggerId: () => '',
-																		emitInteraction: () => Promise.reject(new Error('not implemented')),
-																		getInteractionPayloadByViewId: () => undefined,
-																		handleServerInteraction: () => undefined,
-																		off: () => undefined,
-																		on: () => undefined,
-																		openView: () => undefined,
-																		disposeView: () => undefined,
-																		notifyBusy: () => undefined,
-																		notifyIdle: () => undefined,
-																	}}
-																>
-																	<VideoConfContext.Provider value={videoConf}>
-																		{/* <CallProvider>
+																<UserPresenceContext.Provider value={userPresence}>
+																	<ActionManagerContext.Provider
+																		value={{
+																			generateTriggerId: () => '',
+																			emitInteraction: () => Promise.reject(new Error('not implemented')),
+																			getInteractionPayloadByViewId: () => undefined,
+																			handleServerInteraction: () => undefined,
+																			off: () => undefined,
+																			on: () => undefined,
+																			openView: () => undefined,
+																			disposeView: () => undefined,
+																			notifyBusy: () => undefined,
+																			notifyIdle: () => undefined,
+																		}}
+																	>
+																		<VideoConfContext.Provider value={videoConf}>
+																			{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																		{wrappers.reduce<ReactNode>(
-																			(children, wrapper) => wrapper(children),
-																			<>
-																				{children}
-																				{modal.currentModal.component}
-																			</>,
-																		)}
-																		{/* </OmnichannelProvider>
+																			{wrappers.reduce<ReactNode>(
+																				(children, wrapper) => wrapper(children),
+																				<>
+																					{children}
+																					{modal.currentModal.component}
+																				</>,
+																			)}
+																			{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																	</VideoConfContext.Provider>
-																</ActionManagerContext.Provider>
-															</UserPresenceContext.Provider>
-															{/*
+																		</VideoConfContext.Provider>
+																	</ActionManagerContext.Provider>
+																</UserPresenceContext.Provider>
+																{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-														</AuthorizationContext.Provider>
-													</ModalContext.Provider>
-												</MockedDeviceContext>
+															</AuthorizationContext.Provider>
+														</ModalContext.Provider>
+													</MockedDeviceContext>
+												</AuthenticationContext.Provider>
 											</UserContext.Provider>
 											{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>

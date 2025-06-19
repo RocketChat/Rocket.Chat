@@ -119,6 +119,10 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('footer div div div:nth-child(3) button');
 	}
 
+	get btnExpandChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').getByRole('button', { name: 'Expand chat', exact: true });
+	}
+
 	get firstAutoMessage(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('div.message-text__WwYco p');
 	}
