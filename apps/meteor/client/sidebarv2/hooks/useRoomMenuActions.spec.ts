@@ -1,15 +1,19 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { renderHook } from '@testing-library/react';
 
 import { useRoomMenuActions } from './useRoomMenuActions';
+import { createFakeRoom, createFakeSubscription } from '../../../tests/mocks/data';
 
-const mockSubscription = { name: 'room1', t: 'c', f: true, disableNotifications: false };
+const mockRoom = createFakeRoom({ _id: 'room1', t: 'c', name: 'room1', fname: 'Room 1' });
+const mockSubscription = createFakeSubscription({ name: 'room1', t: 'c', disableNotifications: false, rid: 'room1' });
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	usePermission: jest.fn(() => true),
-	useRouter: jest.fn(() => ({ navigate: jest.fn() })),
-	useSetting: jest.fn(() => true),
-	useUserSubscription: jest.fn(() => mockSubscription),
-}));
+// jest.mock('@rocket.chat/ui-contexts', () => ({
+// 	usePermission: jest.fn(() => true),
+// 	useRouter: jest.fn(() => ({ navigate: jest.fn() })),
+// 	useSetting: jest.fn(() => true),
+// 	useUserSubscription: jest.fn(() => mockSubscription),
+// }));
 
 jest.mock('../../hooks/menuActions/useLeaveRoom', () => ({
 	useLeaveRoomAction: jest.fn(() => jest.fn()),
@@ -23,6 +27,7 @@ jest.mock('../../hooks/menuActions/useToggleNotificationsAction', () => ({
 jest.mock('../../hooks/menuActions/useToggleReadAction', () => ({
 	useToggleReadAction: jest.fn(() => jest.fn()),
 }));
+
 jest.mock('../../hooks/useHideRoomAction', () => ({
 	useHideRoomAction: jest.fn(() => jest.fn()),
 }));
@@ -42,15 +47,17 @@ const mockHookProps = {
 } as const;
 
 describe('useRoomMenuActions', () => {
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it('returns all menu options for normal rooms', () => {
-		const { result } = renderHook(() => useRoomMenuActions(mockHookProps));
+		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
+			wrapper: mockAppRoot()
+				.withSubscriptions([{ ...mockSubscription, rid: 'room1' }] as unknown as SubscriptionWithRoom[])
+				.withPermission('leave-c')
+				.withPermission('leave-p')
+				.withSetting('Favorite_Rooms', true)
+				.build(),
+		});
 
 		const actions = result.current;
-
 		expect(actions).toHaveLength(2);
 		expect(actions[0].items).toHaveLength(4);
 		expect(actions[1].title).toBe('Notifications');
@@ -58,7 +65,14 @@ describe('useRoomMenuActions', () => {
 	});
 
 	it('returns priorities section for omnichannel room', () => {
-		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, type: 'l' }));
+		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, type: 'l' }), {
+			wrapper: mockAppRoot()
+				.withSubscriptions([{ ...mockSubscription, ...mockRoom, t: 'l' }] as unknown as SubscriptionWithRoom[])
+				.withPermission('leave-c')
+				.withPermission('leave-p')
+				.withSetting('Favorite_Rooms', true)
+				.build(),
+		});
 
 		expect(result.current.length).toBe(2);
 		expect(result.current[1].title).toBe('Priorities');
@@ -68,10 +82,35 @@ describe('useRoomMenuActions', () => {
 	});
 
 	it('does not return any menu options if hideDefaultOptions', () => {
-		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, hideDefaultOptions: true }));
+		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, hideDefaultOptions: true }), {
+			wrapper: mockAppRoot()
+				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
+				.withPermission('leave-c')
+				.withPermission('leave-p')
+				.withSetting('Favorite_Rooms', true)
+				.build(),
+		});
 
 		expect(result.current).toHaveLength(1);
 		expect(result.current[0].items).toHaveLength(0);
 		expect(result.current[0].title).toBe('');
+	});
+
+	it('does not return favortite room option if setting is disabled', () => {
+		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
+			wrapper: mockAppRoot()
+				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
+				.withPermission('leave-c')
+				.withPermission('leave-p')
+				.withSetting('Favorite_Rooms', false)
+				.build(),
+		});
+
+		const actions = result.current;
+		expect(actions).toHaveLength(2);
+		expect(actions[0].items).toHaveLength(3);
+		expect(actions[0].items.some((item) => item.id === 'toggleFavorite')).toBe(false);
+		expect(actions[1].title).toBe('Notifications');
+		expect(actions[1].items).toHaveLength(2);
 	});
 });
