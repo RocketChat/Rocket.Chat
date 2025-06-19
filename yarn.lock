@@ -8617,7 +8617,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings":
+"@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings, @rocket.chat/rest-typings@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
@@ -8983,11 +8983,15 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": "npm:~0.31.25"
+    "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/fuselage": "npm:^0.64.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
+    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@types/react": "npm:~18.3.23"
+    "@types/react-dom": "npm:~18.3.7"
     eslint: "npm:~8.45.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-react: "npm:~7.37.5"
@@ -8995,7 +8999,10 @@ __metadata:
     eslint-plugin-testing-library: "npm:^6.4.0"
     react: "npm:~18.3.1"
     react-docgen-typescript-plugin: "npm:~1.0.8"
+    react-dom: "npm:~18.3.1"
+    react-virtuoso: "npm:^4.12.0"
     typescript: "npm:~5.8.3"
+    webpack: "npm:~5.96.1"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9015,6 +9022,8 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.64.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
+    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/styled": "npm:~0.32.0"
@@ -9032,6 +9041,7 @@ __metadata:
     "@types/jest": "npm:~29.5.14"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~18.3.23"
+    "@types/react-dom": "npm:~18.3.7"
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
@@ -9039,8 +9049,11 @@ __metadata:
     jest: "npm:~30.0.2"
     jest-axe: "npm:~10.0.0"
     react: "npm:~18.3.1"
+    react-dom: "npm:~18.3.1"
+    react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.8.3"
+    webpack: "npm:~5.96.1"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9067,6 +9080,8 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.64.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
+    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
@@ -9086,6 +9101,7 @@ __metadata:
     "@storybook/test": "npm:^8.6.14"
     "@storybook/test-runner": "npm:^0.22.1"
     "@tanstack/react-query": "npm:~5.65.1"
+    "@testing-library/dom": "npm:~10.4.0"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
     "@types/jest": "npm:~29.5.14"
@@ -9096,10 +9112,13 @@ __metadata:
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
     eslint-plugin-storybook: "npm:^0.11.6"
+    i18next: "npm:~23.4.9"
     jest: "npm:~30.0.2"
     jest-axe: "npm:~10.0.0"
     react: "npm:~18.3.1"
+    react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
+    react-virtuoso: "npm:^4.12.0"
     sip.js: "npm:^0.21.2"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.8.3"
@@ -9128,6 +9147,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.2.1"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
+    "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/fuselage": "npm:^0.64.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
@@ -9174,9 +9194,17 @@ __metadata:
     "@babel/preset-env": "npm:~7.26.9"
     "@babel/preset-react": "npm:~7.25.9"
     "@babel/preset-typescript": "npm:~7.26.0"
+    "@rocket.chat/core-typings": "workspace:~"
+    "@rocket.chat/emitter": "npm:~0.31.25"
+    "@rocket.chat/fuselage": "npm:^0.64.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
+    "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
+    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
+    "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/layout": "npm:^0.33.0"
     "@rocket.chat/mock-providers": "workspace:~"
+    "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9188,14 +9216,19 @@ __metadata:
     "@storybook/react-webpack5": "npm:^8.6.14"
     "@storybook/theming": "npm:^8.6.14"
     "@tanstack/react-query": "npm:~5.65.1"
+    "@testing-library/dom": "npm:~10.4.0"
     "@testing-library/react": "npm:~16.0.1"
     "@types/dompurify": "npm:^3.0.5"
     "@types/react": "npm:~18.3.23"
+    "@types/react-dom": "npm:~18.3.7"
     dompurify: "npm:^3.2.6"
     eslint: "npm:~8.45.0"
+    i18next: "npm:~23.4.9"
     react: "npm:~18.3.1"
+    react-dom: "npm:~18.3.1"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
+    react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.8.3"
@@ -10374,7 +10407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:10.4.0":
+"@testing-library/dom@npm:10.4.0, @testing-library/dom@npm:~10.4.0":
   version: 10.4.0
   resolution: "@testing-library/dom@npm:10.4.0"
   dependencies:
