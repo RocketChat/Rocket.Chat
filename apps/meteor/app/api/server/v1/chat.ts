@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
