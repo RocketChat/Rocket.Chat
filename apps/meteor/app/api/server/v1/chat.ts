@@ -359,7 +359,13 @@ export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessa
 // TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+<<<<<<< HEAD
 	interface Endpoints extends ChatPostMessageEndpoints {}
+||||||| parent of 3fb845438f (refactor: rename ChatEndpoint interface to IChatPostMessageEndpoints for clarity)
+	interface ChatEndpoint extends ChatPostMessageEndpoints {}
+=======
+	interface IChatPostMessageEndpoints extends ChatPostMessageEndpoints {}
+>>>>>>> 3fb845438f (refactor: rename ChatEndpoint interface to IChatPostMessageEndpoints for clarity)
 }
 
 API.v1.addRoute(
