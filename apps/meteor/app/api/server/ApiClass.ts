@@ -71,17 +71,21 @@ export type ExtractRoutesFromAPI<T> =
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in TRoute['method']]: K2 extends 'GET'
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
 			? (
-					params: ExtractValidation<TRoute['query']>,
-				) => 200 extends keyof TRoute['response'] ? ExtractValidation<TRoute['response'][200]> : never
-			: (
-					params: ExtractValidation<TRoute['body']>,
-				) => 200 extends keyof TRoute['response']
-					? ExtractValidation<TRoute['response'][200]>
-					: 201 extends keyof TRoute['response']
-						? ExtractValidation<TRoute['response'][201]>
-						: never;
+					params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>,
+				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
+			: K2 extends 'POST'
+				? (
+						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+					) => ExtractValidation<
+						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
+							: 201 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+								? Extract<TRoute, { path: K; method: K2 }>['response'][201]
+								: never
+					>
+				: never;
 	};
 };
 
