@@ -72,7 +72,9 @@ export type ExtractRoutesFromAPI<T> =
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
 		[K2 in TRoute['method']]: K2 extends 'GET'
-			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
+			? (
+					params: ExtractValidation<TRoute['query']>,
+				) => 200 extends keyof TRoute['response'] ? ExtractValidation<TRoute['response'][200]> : never
 			: (
 					params: ExtractValidation<TRoute['body']>,
 				) => 200 extends keyof TRoute['response']
