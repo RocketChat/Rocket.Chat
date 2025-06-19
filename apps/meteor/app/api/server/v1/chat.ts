@@ -318,21 +318,130 @@ const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
-		async post() {
-			const { text, attachments } = this.bodyParams;
-			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+		authRequired: true,
+		validateParams: isChatPostMessageProps,
+		body: isChatPostMessageProps,
+		response: {
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'string' },
+					details: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<{
+				ts: number;
+				channel: string | string[];
+				message: IMessage;
+				success: boolean;
+			}>({
+				type: 'object',
+				properties: {
+					ts: { type: 'number' },
+					channel: { type: 'string' },
+					message: {
+						// ? Accepts any type for message
+						type: 'object',
+						properties: {
+							alias: { type: 'string' },
+							msg: { type: 'string' },
+							attachments: { type: 'array' },
+							parseUrls: { type: 'boolean' },
+							groupable: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							ts: {
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							rid: { type: 'string' },
+							_id: { type: 'string' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							_updatedAt: {
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
+							},
+							urls: { type: 'array', items: { type: 'string' } },
+							mentions: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							md: { type: 'array' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
+							emoji: { type: 'string' },
+							// ? Should customFields have properties implement in the IMessageCustomFields interface and ensure it is not empty?
+							customFields: {
+								type: 'object',
+								properties: {},
+								additionalProperties: true,
+							},
+						},
+						required: ['msg', '_updatedAt'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['ts', 'channel', 'message', 'success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const { text, attachments } = this.bodyParams;
+		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
-			if (text && text.length > maxAllowedSize) {
-				return API.v1.failure('error-message-size-exceeded');
-			}
+		if (text && text.length > maxAllowedSize) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
 
-			if (attachments && attachments.length > 0) {
-				for (const attachment of attachments) {
-					if (attachment.text && attachment.text.length > maxAllowedSize) {
-						return API.v1.failure('error-message-size-exceeded');
-					}
+		if (attachments && attachments.length > 0) {
+			for (const attachment of attachments) {
+				if (attachment.text && attachment.text.length > maxAllowedSize) {
+					return API.v1.failure('error-message-size-exceeded');
 				}
 			}
+		}
 
 		const messageReturn = (
 			await applyAirGappedRestrictionsValidation(() =>
@@ -340,11 +449,11 @@ const chatPostMessageEndpoints = API.v1.post(
 			)
 		)[0];
 
-			if (!messageReturn) {
-				return API.v1.failure('unknown-error');
-			}
+		if (!messageReturn) {
+			return API.v1.failure('unknown-error');
+		}
 
-			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
+		const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
 
 		return API.v1.success({
 			ts: Date.now(),
@@ -359,13 +468,7 @@ export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessa
 // TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-<<<<<<< HEAD
 	interface Endpoints extends ChatPostMessageEndpoints {}
-||||||| parent of 3fb845438f (refactor: rename ChatEndpoint interface to IChatPostMessageEndpoints for clarity)
-	interface ChatEndpoint extends ChatPostMessageEndpoints {}
-=======
-	interface IChatPostMessageEndpoints extends ChatPostMessageEndpoints {}
->>>>>>> 3fb845438f (refactor: rename ChatEndpoint interface to IChatPostMessageEndpoints for clarity)
 }
 
 API.v1.addRoute(
