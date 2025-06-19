@@ -231,12 +231,24 @@ const RichTextMessageBox = ({
 		chat.composer?.clear();
 		popup.clear();
 
-		onSend?.({
-			value: cleanedText,
-			tshow,
-			previewUrls,
-			isSlashCommandAllowed,
-		});
+		/* TODO: Develop the parser function that will render inside the RichTextComposer component */
+		// This if-else block temporarily solves the problem of editing a message
+		// When a message is being edited, it is a flat text structure without any DOM tree
+		if (chat.currentEditing) {
+			onSend?.({
+				value: text,
+				tshow,
+				previewUrls,
+				isSlashCommandAllowed,
+			});
+		} else {
+			onSend?.({
+				value: cleanedText,
+				tshow,
+				previewUrls,
+				isSlashCommandAllowed,
+			});
+		}
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
