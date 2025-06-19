@@ -61,8 +61,8 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
-		"@rocket.chat/tools": "0.2.2",
-		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/tools": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",
