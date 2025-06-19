@@ -42,11 +42,11 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "4.9.1",
+		"yarn": "4.9.2",
 		"node": "22.14.0",
 		"npm": "Use yarn instead"
 	},
-	"packageManager": "yarn@4.9.1",
+	"packageManager": "yarn@4.9.2",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
