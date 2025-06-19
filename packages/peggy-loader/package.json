@@ -51,7 +51,7 @@
     "prettier": "~3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "~5.8.3",
-    "webpack": "~5.96.1"
+    "webpack": "~5.99.9"
   },
   "volta": {
     "extends": "../../package.json"
