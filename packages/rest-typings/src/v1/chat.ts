@@ -1,11 +1,4 @@
-import type {
-	IMessage,
-	IRoom,
-	ReadReceipt,
-	OtrSystemMessages,
-	MessageUrl,
-	IThreadMainMessage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ReadReceipt, OtrSystemMessages, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -762,8 +755,6 @@ const ChatGetDeletedMessagesSchema = {
 };
 
 export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
-
-
 
 type ChatGetURLPreview = {
 	roomId: IRoom['_id'];
