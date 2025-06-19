@@ -1,3 +1,4 @@
+import type { AtLeast } from '@rocket.chat/core-typings';
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
@@ -16,7 +17,7 @@ type SidebarItemProps = {
 	selected?: boolean;
 	badges?: ReactNode;
 	clickable?: boolean;
-	room: SubscriptionWithRoom;
+	room: AtLeast<SubscriptionWithRoom, '_id' | 't'>;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
 const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...props }: SidebarItemProps) => {

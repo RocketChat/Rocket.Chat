@@ -12,9 +12,7 @@ const Sidebar = () => {
 	return (
 		<SidebarV2
 			aria-label='sidebar'
-			className={['rcx-sidebar--main', 'rcx-sidebar rcx-sidebar--condensed', sidebarHideAvatar && 'rcx-sidebar--hide-avatar']
-				.filter(Boolean)
-				.join(' ')}
+			className={['rcx-sidebar--main', 'rcx-sidebar', sidebarHideAvatar && 'rcx-sidebar--hide-avatar'].filter(Boolean).join(' ')}
 		>
 			<BannerSection />
 			<SidebarRoomList />

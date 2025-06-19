@@ -3,7 +3,7 @@ import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfInc
 import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
-import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
+import SidebarItemWithData from './SidebarItemWithData';
 
 type RoomListRowProps = {
 	data: {
@@ -31,7 +31,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	return <SidebarItemTemplateWithData selected={item.rid === openedRoom} t={t} room={item} videoConfActions={videoConfActions} />;
+	return <SidebarItemWithData selected={item.rid === openedRoom} t={t} room={item} videoConfActions={videoConfActions} />;
 };
 
 export default memo(RoomListRow);

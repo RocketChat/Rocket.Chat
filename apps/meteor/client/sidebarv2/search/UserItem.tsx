@@ -1,43 +1,29 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { memo } from 'react';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import SidebarItem from '../RoomList/SidebarItem';
 
 type UserItemProps = {
 	item: {
 		name?: string;
 		fname?: string;
 		_id: IUser['_id'];
-		t: string;
+		t: IRoom['t'];
 	};
-	t: (value: string) => string;
-	SidebarItemTemplate: any;
-	AvatarTemplate: any;
 	id: string;
 	style?: CSSStyleRule;
 	useRealName?: boolean;
 };
 
-const UserItem = ({ item, id, style, t, SidebarItemTemplate, useRealName }: UserItemProps) => {
+const UserItem = ({ item, id, style, useRealName }: UserItemProps) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
 	const icon = <SidebarV2ItemIcon icon={<ReactiveUserStatus uid={item._id} />} />;
 	const href = roomCoordinator.getRouteLink(item.t, { name: item.name });
 
-	return (
-		<SidebarItemTemplate
-			is='a'
-			style={{ height: '100%', ...style }}
-			id={id}
-			href={href}
-			title={title}
-			subtitle={t('No_messages_yet')}
-			avatar={<RoomAvatar size='x20' room={item} />}
-			icon={icon}
-		/>
-	);
+	return <SidebarItem style={{ height: '100%', ...style }} id={id} href={href || undefined} title={title} icon={icon} room={item} />;
 };
 
 export default memo(UserItem);

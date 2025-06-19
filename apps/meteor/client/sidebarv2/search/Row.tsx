@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import UserItem from './UserItem';
-import SidebarItemTemplateWithData from '../RoomList/SidebarItemTemplateWithData';
+import SidebarItemWithData from '../RoomList/SidebarItemWithData';
 
 type RowProps = {
 	item: SubscriptionWithRoom;
@@ -11,29 +11,12 @@ type RowProps = {
 };
 
 const Row = ({ item, data }: RowProps): ReactElement => {
-	const { t, SidebarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
+	const { useRealName, t } = data;
 
 	if (item.t === 'd') {
-		return (
-			<UserItem
-				id={`search-${item._id}`}
-				useRealName={useRealName}
-				t={t}
-				item={item}
-				SidebarItemTemplate={SidebarItemTemplate}
-				AvatarTemplate={AvatarTemplate}
-			/>
-		);
+		return <UserItem id={`search-${item._id}`} useRealName={useRealName} item={item} />;
 	}
-	return (
-		<SidebarItemTemplateWithData
-			id={`search-${item._id}`}
-			extended={extended}
-			t={t}
-			room={item}
-			SidebarItemTemplate={SidebarItemTemplate}
-		/>
-	);
+	return <SidebarItemWithData id={`search-${item._id}`} t={t} room={item} />;
 };
 
 export default memo(Row);

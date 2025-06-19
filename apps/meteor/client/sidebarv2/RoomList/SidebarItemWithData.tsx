@@ -32,7 +32,7 @@ type RoomListRowProps = {
 	};
 };
 
-const SidebarItemTemplateWithData = ({ room, id, selected, style, t, isAnonymous, videoConfActions }: RoomListRowProps) => {
+const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoConfActions }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
@@ -79,6 +79,26 @@ const SidebarItemTemplateWithData = ({ room, id, selected, style, t, isAnonymous
 		</>
 	);
 
+	const menu = useMemo(
+		() =>
+			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+				? (): ReactElement => (
+						<RoomMenu
+							alert={alert}
+							threadUnread={unreadCount.threads > 0}
+							rid={rid}
+							unread={!!unread}
+							roomOpen={selected}
+							type={type}
+							cl={cl}
+							name={title}
+							hideDefaultOptions={isQueued}
+						/>
+					)
+				: undefined,
+		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title],
+	);
+
 	return (
 		<SidebarItem
 			id={id}
@@ -97,23 +117,7 @@ const SidebarItemTemplateWithData = ({ room, id, selected, style, t, isAnonymous
 			badges={badges}
 			room={room}
 			actions={actions}
-			menu={
-				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
-							<RoomMenu
-								alert={alert}
-								threadUnread={unreadCount.threads > 0}
-								rid={rid}
-								unread={!!unread}
-								roomOpen={selected}
-								type={type}
-								cl={cl}
-								name={title}
-								hideDefaultOptions={isQueued}
-							/>
-						)
-					: undefined
-			}
+			menu={menu}
 		/>
 	);
 };
@@ -128,7 +132,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'selected', 't', 'videoConfActions'];
 
 // eslint-disable-next-line react/no-multi-comp
-export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
+export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}
