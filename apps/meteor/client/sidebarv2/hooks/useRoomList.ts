@@ -9,6 +9,7 @@ import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEna
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
 
 const query = { open: { $ne: false } };
+const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -43,7 +44,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const rooms = useUserSubscriptions(query, { sort: { lm: -1 } });
+	const rooms = useUserSubscriptions(query, sortOptions);
 
 	const inquiries = useQueuedInquiries();
 

@@ -5,6 +5,8 @@ import { useEffect, useMemo } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
 
+const sortOptions = { sort: { lm: -1 } } as const;
+
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
 	teamId?: string | null,
@@ -35,7 +37,7 @@ export const useTeamsListChildrenUpdate = (
 
 	const result = useQuery({
 		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
-		queryFn: () => Subscriptions.find(query, { sort: { lm: -1 } }).fetch(),
+		queryFn: () => Subscriptions.find(query, sortOptions).fetch(),
 		enabled: sidepanelItems !== null && teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
 		placeholderData: keepPreviousData,

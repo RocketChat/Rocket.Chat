@@ -13,6 +13,7 @@ import { RoomsNavigationContext, SIDE_PANEL_GROUPS, SIDE_BAR_GROUPS, getEmptyUnr
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 
 const query = { open: { $ne: false } };
+const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -51,7 +52,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	// const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const rooms = useUserSubscriptions(query, { sort: { lm: -1 } });
+	const rooms = useUserSubscriptions(query, sortOptions);
 
 	const inquiries = useQueuedInquiries();
 
