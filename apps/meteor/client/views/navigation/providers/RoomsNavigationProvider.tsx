@@ -8,7 +8,6 @@ import { useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
-import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
 import { RoomsNavigationContext, SIDE_PANEL_GROUPS, SIDE_BAR_GROUPS, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
@@ -52,9 +51,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	// const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const options = useSortQueryOptions();
-
-	const rooms = useUserSubscriptions(query, options);
+	const rooms = useUserSubscriptions(query, { sort: { lm: -1 } });
 
 	const inquiries = useQueuedInquiries();
 
