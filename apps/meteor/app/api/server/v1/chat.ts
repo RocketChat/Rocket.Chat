@@ -1,5 +1,11 @@
 import { Message } from '@rocket.chat/core-services';
+<<<<<<< HEAD
 import type { IMessage, IUser, IRoom, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
+||||||| parent of 0b105aaa5b (refactor: remove unused IRoom type import from chat.ts)
+import type { IMessage, IThreadMainMessage, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
+=======
+import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
+>>>>>>> 0b105aaa5b (refactor: remove unused IRoom type import from chat.ts)
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
