@@ -622,10 +622,12 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: Method;
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: Method;
+					path: TPathPattern;
+				} & Omit<TOptions, 'response'>
+		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
@@ -656,10 +658,12 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: 'POST';
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'POST';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('POST', subpath, options, action);
 	}
