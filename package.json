@@ -21,8 +21,10 @@
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
+		"@types/node": "~22.14.1",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.5.4"
+		"turbo": "^2.5.4",
+		"typescript": "~5.8.3"
 	},
 	"workspaces": [
 		"apps/*",

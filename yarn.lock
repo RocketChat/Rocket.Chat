@@ -31081,10 +31081,12 @@ __metadata:
     "@changesets/cli": "npm:^2.27.11"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
+    "@types/node": "npm:~22.14.1"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.5.4"
+    typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
 
