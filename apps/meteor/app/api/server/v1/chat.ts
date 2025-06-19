@@ -264,7 +264,7 @@ const ChatPostMessageSchema = {
 };
 
 export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
@@ -291,18 +291,22 @@ const chatPostMessageEndpoints = API.v1.post(
 			401: ajv.compile({
 				type: 'object',
 				properties: {
-					status: { type: 'string' },
-					message: { type: 'string' },
+					error: { type: 'string' },
 					success: {
 						type: 'boolean',
 						enum: [false],
 						description: 'Indicates if the request was successful.',
 					},
 				},
-				required: ['message', 'status', 'success'],
+				required: ['error', 'success'],
 				additionalProperties: false,
 			}),
-			200: ajv.compile({
+			200: ajv.compile<{
+				ts: number;
+				channel: string | string[];
+				message: IMessage;
+				success: boolean;
+			}>({
 				type: 'object',
 				properties: {
 					ts: { type: 'number' },
@@ -405,19 +409,11 @@ const chatPostMessageEndpoints = API.v1.post(
 	},
 );
 
-export type ChatPostMessageEndpoints = {
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
-		};
-	};
-};
-
+export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
+// TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatPostMessageEndpoints {}
+	interface ChatEndpoint extends ChatPostMessageEndpoints {}
 }
 
 API.v1.addRoute(
