@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "run-s .:build:clean .:build:watch",
 		"testunit": "run-p .:test:node .:test:deno",
-		".:test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
+		".:test:node": "NODE_ENV=test ts-node --transpileOnly ./tests/runner.ts",
 		".:test:deno": "cd deno-runtime && deno task test",
 		".:lint:eslint": "eslint .",
 		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
