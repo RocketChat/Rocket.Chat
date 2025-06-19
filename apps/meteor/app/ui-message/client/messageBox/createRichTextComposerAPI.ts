@@ -340,7 +340,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		blur: () => input.blur(),
 
 		substring: (start: number, end?: number) => {
-			return input.innerText.substring(start, end);
+			// Sanitize the innerText by reducing multiple instances of linebreaks
+			const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+			return cleanedInitText.substring(start, end);
 		},
 
 		getCursorPosition: () => {
