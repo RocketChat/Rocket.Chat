@@ -2005,6 +2005,7 @@
   "Export": "Export",
   "Export_Messages": "Export messages",
   "Export_My_Data": "Export My Data (JSON)",
+  "export-messages-as-pdf": "Export messages as PDF",
   "Export_as_PDF": "Export as PDF",
   "Export_as_file": "Export as file",
   "Export_conversation_transcript_as_PDF": "Export conversation transcript as PDF",
