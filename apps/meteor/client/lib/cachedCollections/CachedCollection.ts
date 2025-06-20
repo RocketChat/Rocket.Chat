@@ -382,7 +382,7 @@ export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends
 		});
 
 		Accounts.onLogout(() => {
-			this.ready.set(false);
+			this.release();
 		});
 	}
 }
