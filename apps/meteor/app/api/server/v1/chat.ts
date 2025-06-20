@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -334,7 +334,17 @@ const chatPostMessageEndpoints = API.v1.post(
 				}
 			}
 
+<<<<<<< HEAD
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+||||||| parent of cc5fed4aac (refactor: fix the ci error)
+		const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+=======
+		const messageReturn = (
+			await applyAirGappedRestrictionsValidation(() =>
+				processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
+			)
+		)[0];
+>>>>>>> cc5fed4aac (refactor: fix the ci error)
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
@@ -350,8 +360,25 @@ const chatPostMessageEndpoints = API.v1.post(
 	},
 );
 
+<<<<<<< HEAD
 export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
 
+||||||| parent of cc5fed4aac (refactor: fix the ci error)
+export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
+=======
+export type ChatPostMessageEndpoints =
+	| ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>
+	| {
+			'/v1/chat.postMessage': {
+				POST: (params: ChatPostMessage) => {
+					ts: number;
+					channel: IRoom;
+					message: IMessage;
+					success: boolean;
+				};
+			};
+	  };
+>>>>>>> cc5fed4aac (refactor: fix the ci error)
 // TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
