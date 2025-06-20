@@ -2898,6 +2898,7 @@
   "Last_message__date__": "Last message: {{date}}",
   "Last_seen": "Last seen",
   "Last_token_part": "Last token part",
+  "Last_message_received__time__": "Last message received {{time}}",
   "Latest": "Latest",
   "Launched_successfully": "Launched successfully",
   "Layout": "Layout",
