@@ -202,7 +202,6 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
-			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  }
@@ -212,53 +211,104 @@ type ChatPostMessage =
 			alias?: string;
 			emoji?: string;
 			avatar?: string;
-			tmid?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
 	  };
 
 const ChatPostMessageSchema = {
-	type: 'object',
-	additionalProperties: false,
-	properties: {
-		roomId: {
-			oneOf: [
-				{ type: 'string' },
-				{
-					type: 'array',
-					items: { type: 'string' },
-				},
-			],
-		},
-		channel: {
-			oneOf: [
-				{ type: 'string' },
-				{
-					type: 'array',
-					items: { type: 'string' },
-				},
-			],
-		},
-		text: { type: 'string', nullable: true },
-		alias: { type: 'string', nullable: true },
-		emoji: { type: 'string', nullable: true },
-		avatar: { type: 'string', nullable: true },
-		tmid: { type: 'string', nullable: true },
-		attachments: {
-			type: 'array',
-			items: { type: 'object' },
-			nullable: true,
-		},
-		customFields: { type: 'object', nullable: true },
-	},
 	oneOf: [
 		{
+			type: 'object',
+			properties: {
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				tmid: {
+					type: 'string',
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
 			required: ['roomId'],
-			not: { required: ['channel'] },
+			additionalProperties: false,
 		},
 		{
+			type: 'object',
+			properties: {
+				channel: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
 			required: ['channel'],
-			not: { required: ['roomId'] },
+			additionalProperties: false,
 		},
 	],
 };
