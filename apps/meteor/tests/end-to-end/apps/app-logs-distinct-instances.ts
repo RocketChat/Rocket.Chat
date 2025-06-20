@@ -21,8 +21,8 @@ import { IS_EE } from '../../e2e/config/constants';
 		void request
 			.get(apps('/logs/instanceIds'))
 			.set(credentials)
-			.expect('Content-Type', 'application/json')
 			.expect(200)
+			.expect('Content-Type', 'application/json')
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', true);
 				expect(res.body).to.have.a.property('instanceIds').that.is.an('array');
@@ -39,8 +39,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	it('should require authentication', (done) => {
 		void request
 			.get(apps('/logs/instanceIds'))
-			.expect('Content-Type', 'application/json')
 			.expect(401)
+			.expect('Content-Type', 'application/json')
 			.expect((res) => {
 				expect(res.body).to.have.a.property('success', false);
 				expect(res.body).to.have.a.property('error');
@@ -54,12 +54,13 @@ import { IS_EE } from '../../e2e/config/constants';
 				void request
 					.get(apps('/logs/instanceIds'))
 					.set(credentials)
-					.expect('Content-Type', 'application/json')
 					.expect(403)
+					.expect('Content-Type', 'application/json')
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', false);
 					})
-					.end(() => void updatePermission('manage-apps', ['admin']).then(done)),
+					// Doing the `updatePermission` call here pollutes the error reporting, but we shouldn't call `done` before doing it.
+					.end((err) => void updatePermission('manage-apps', ['admin']).then(() => void done(err))),
 		);
 	});
 
@@ -69,8 +70,8 @@ import { IS_EE } from '../../e2e/config/constants';
 			void request
 				.get(apps('/logs/instanceIds'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
 				.expect(200)
+				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('instanceIds').that.is.an('array');
