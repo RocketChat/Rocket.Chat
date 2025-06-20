@@ -1,34 +1,46 @@
-/** @type {import('eslint').ESLint.ConfigData} */
-const config = {
-	plugins: ['react', 'react-hooks', 'jsx-a11y'],
-	extends: ['plugin:jsx-a11y/recommended'],
-	rules: {
-		'react-hooks/exhaustive-deps': 'error',
-		'react-hooks/rules-of-hooks': 'error',
-		'react/display-name': 'error',
-		'react/jsx-curly-brace-presence': 'error',
-		'react/jsx-fragments': ['error', 'syntax'],
-		'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-		'react/jsx-no-undef': 'error',
-		'react/jsx-uses-react': 'error',
-		'react/jsx-uses-vars': 'error',
-		'react/no-multi-comp': 'error',
-		'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
-	},
-	settings: {
-		react: {
-			version: 'detect',
+// @ts-check
+
+import tseslint from 'typescript-eslint';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import { config as baseConfig } from './base.js';
+
+/**
+ * A shared ESLint configuration for the repository
+ */
+export const config = tseslint.config(
+	baseConfig,
+	{
+		plugins: {
+			'jsx-a11y': jsxA11y,
+			'react': react,
+			'react-hooks': reactHooks,
 		},
-	},
-	overrides: [
-		{
-			files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
-			rules: {
-				'react/display-name': 'off',
-				'react/no-multi-comp': 'off',
+		rules: {
+			'react-hooks/exhaustive-deps': 'error',
+			'react-hooks/rules-of-hooks': 'error',
+			'react/display-name': 'error',
+			'react/jsx-curly-brace-presence': 'error',
+			'react/jsx-fragments': ['error', 'syntax'],
+			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
+			'react/jsx-no-undef': 'error',
+			'react/jsx-uses-react': 'error',
+			'react/jsx-uses-vars': 'error',
+			'react/no-multi-comp': 'error',
+			'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
+		},
+		settings: {
+			react: {
+				version: 'detect',
 			},
 		},
-	],
-};
-
-module.exports = config;
+	},
+	{
+		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
+		rules: {
+			'react/display-name': 'off',
+			'react/no-multi-comp': 'off',
+		},
+	},
+);

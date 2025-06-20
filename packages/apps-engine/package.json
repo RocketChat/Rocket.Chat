@@ -69,7 +69,7 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/eslint-config": "*",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@types/adm-zip": "^0.5.6",
 		"@types/debug": "^4.1.12",
@@ -83,7 +83,7 @@
 		"@typescript-eslint/parser": "~5.60.1",
 		"alsatian": "^2.4.0",
 		"browserify": "^16.5.2",
-		"eslint": "~8.45.0",
+		"eslint": "^9.29.0",
 		"nedb": "^1.8.0",
 		"npm-run-all": "^4.1.5",
 		"nyc": "^17.1.0",

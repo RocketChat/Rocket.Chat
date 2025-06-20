@@ -2,11 +2,12 @@
 	"name": "@rocket.chat/ddp-client",
 	"version": "0.3.25",
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "*",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"@types/ws": "^8.5.13",
-		"eslint": "~8.45.0",
+		"eslint": "^9.29.0",
 		"jest": "~30.0.0",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3",

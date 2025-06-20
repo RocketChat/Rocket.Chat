@@ -1,0 +1,80 @@
+// @ts-check
+
+import eslint from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
+
+/**
+ * A shared ESLint configuration for the repository
+ */
+export const config = tseslint.config(
+	[
+		eslint.configs.recommended,
+		{
+			rules: {
+				'no-unused-expressions': 'off',
+				'no-async-promise-executor': 'off',
+				'no-case-declarations': 'off',
+				'no-prototype-builtins': 'off',
+			},
+		},
+	],
+	prettier,
+	[
+		...tseslint.configs.recommended,
+		{
+			rules: {
+				'@typescript-eslint/no-explicit-any': 'off',
+				'@typescript-eslint/no-empty-object-type': 'off',
+				'@typescript-eslint/naming-convention': [
+					'error',
+					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
+					{
+						selector: ['variable'],
+						format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+						leadingUnderscore: 'allowSingleOrDouble',
+					},
+					{
+						selector: ['function'],
+						format: ['camelCase', 'PascalCase'],
+						leadingUnderscore: 'allowSingleOrDouble',
+					},
+					{
+						selector: 'parameter',
+						format: ['camelCase'],
+						modifiers: ['unused'],
+						leadingUnderscore: 'require',
+					},
+					{
+						selector: 'interface',
+						format: ['PascalCase'],
+						custom: {
+							regex: '^I[A-Z]',
+							match: true,
+						},
+					},
+				],
+				'@typescript-eslint/no-unused-vars': [
+					'error',
+					{
+						argsIgnorePattern: '^_',
+						ignoreRestSiblings: true,
+						caughtErrors: 'none',
+					},
+				],
+				'@typescript-eslint/no-unused-expressions': 'off',
+			},
+		},
+	],
+	{
+		ignores: ['**/dist/**',],
+	},
+	{
+		files: ['babel.config.js'],
+		languageOptions: {
+			globals: {
+				module: 'readonly',
+			},
+		},
+	},
+);

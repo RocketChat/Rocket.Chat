@@ -3,8 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "*",
 		"@types/jest": "~29.5.14",
-		"eslint": "~8.45.0",
+		"eslint": "^9.29.0",
 		"jest": "~30.0.0",
 		"ts-jest": "~29.4.0",
 		"typescript": "~5.8.3"

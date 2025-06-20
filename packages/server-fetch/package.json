@@ -3,8 +3,9 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "*",
 		"@types/node-fetch": "~2.6.11",
-		"eslint": "~8.45.0",
+		"eslint": "^9.29.0",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
