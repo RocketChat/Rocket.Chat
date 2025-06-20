@@ -295,6 +295,8 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		return true;
 	}
 
+	private listenerUnsubscriber: (() => void) | undefined;
+
 	private async performInitialization() {
 		if (await this.loadFromCache()) {
 			this.trySync();
@@ -318,7 +320,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 		});
 
-		this.setupListener();
+		const subscription = this.setupListener();
+		this.listenerUnsubscriber = () => {
+			subscription.stop();
+			this.listenerUnsubscriber = undefined;
+		};
 	}
 
 	private initializationPromise: Promise<void> | undefined;
@@ -340,6 +346,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			await this.initializationPromise;
 		}
 
+		this.listenerUnsubscriber?.();
 		this.ready.set(false);
 	}
 
