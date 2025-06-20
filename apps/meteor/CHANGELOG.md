@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 7.8.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36263](https://github.com/RocketChat/Rocket.Chat/pull/36263)) Fixes an issue, where multiple reconnections would subscribe multiple times to the same stream, only a frontend issue, since the stream cache prevents sending multiple times to the backend, but does not prevent running the callback multiple times
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.1
+  - @rocket.chat/rest-typings@7.8.0-rc.1
+  - @rocket.chat/license@1.0.17-rc.1
+  - @rocket.chat/omnichannel-services@0.3.23-rc.1
+  - @rocket.chat/pdf-worker@0.3.5-rc.1
+  - @rocket.chat/presence@0.2.26-rc.1
+  - @rocket.chat/api-client@0.2.26-rc.1
+  - @rocket.chat/apps@0.5.5-rc.1
+  - @rocket.chat/core-services@0.9.5-rc.1
+  - @rocket.chat/cron@0.1.26-rc.1
+  - @rocket.chat/freeswitch@1.2.13-rc.1
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.1
+  - @rocket.chat/gazzodown@20.0.0-rc.1
+  - @rocket.chat/http-router@7.8.0-rc.1
+  - @rocket.chat/model-typings@1.6.5-rc.1
+  - @rocket.chat/ui-contexts@20.0.0-rc.1
+  - @rocket.chat/models@1.5.5-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.1
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.1
+  - @rocket.chat/ui-client@20.0.0-rc.1
+  - @rocket.chat/ui-video-conf@20.0.0-rc.1
+  - @rocket.chat/ui-voip@10.0.0-rc.1
+  - @rocket.chat/web-ui-registration@20.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.26-rc.1
+  </details>
+
 ## 7.8.0-rc.0
 
 ### Minor Changes
