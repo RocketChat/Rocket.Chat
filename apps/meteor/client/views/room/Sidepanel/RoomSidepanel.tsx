@@ -1,6 +1,5 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Sidepanel, SidepanelListItem } from '@rocket.chat/fuselage';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -24,8 +23,6 @@ const RoomSidepanel = () => {
 };
 
 const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
-
 	const roomInfo = useRoomInfoEndpoint(parentRid);
 	const sidepanelItems = roomInfo.data?.room?.sidepanel?.items || roomInfo.data?.parent?.sidepanel?.items;
 
@@ -55,9 +52,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 						totalCount={result.data.length}
 						data={result.data}
 						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
-						itemContent={(_, data) => (
-							<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
-						)}
+						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} />}
 					/>
 				</VirtualizedScrollbars>
 			</Box>

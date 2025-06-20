@@ -15,25 +15,17 @@ import { memo, useState } from 'react';
 
 import SidePanelParentRoom from './SidePanelParentRoom';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
-// import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
 import { useItemData } from '../hooks/useItemData';
 
 type RoomSidepanelItemProps = {
 	openedRoom?: string;
 	room: SubscriptionWithRoom;
 	parentRid?: string;
-	viewMode?: 'extended' | 'medium' | 'condensed';
 };
 
 const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
-	// const SidepanelItem = useTemplateByViewMode();
-
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
 	const { sidebar } = useLayout();
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, {
-		viewMode: 'condensed',
-		openedRoom,
-	});
-
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
