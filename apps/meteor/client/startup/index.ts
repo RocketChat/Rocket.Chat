@@ -1,6 +1,5 @@
 import '../lib/rooms/roomTypes';
 import './absoluteUrl';
-import './afterLogoutCleanUp';
 import './appRoot';
 import './audit';
 import './callbacks';

@@ -71,7 +71,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Security', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('account/security');
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 		});
 
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
@@ -108,6 +108,11 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
 			await poAccountProfile.btnTokenAddedOk.click();
+		});
+
+		await test.step('should not allow add new personal with no name', async () => {
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
 		});
 
 		await test.step('should not allow add new personal token with same name', async () => {
