@@ -288,35 +288,10 @@ class VoipClient extends Emitter<VoipEvents> {
 			throw new Error('Peer connection closed.');
 		}
 
-		try {
-			const options: SessionInviteOptions = {
-				requestDelegate: {
-					onAccept: (): void => {
-						this.muted = mute;
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('stateChanged');
-					},
-					onReject: (): void => {
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('muteerror');
-					},
-				},
-			};
-
-			await this.session.invite(options);
-
-			this.toggleMediaStreamTracks('sender', !this.muted);
-			this.toggleMediaStreamTracks('receiver', !this.muted);
-		} catch (error) {
-			if (error instanceof RequestPendingError) {
-				console.error(`[${this.session?.id}] A mute request is already in progress.`);
-			}
-
-			this.emit('muteerror');
-			throw error;
-		}
+		const enableTracks = !mute;
+		this.toggleMediaStreamTracks('sender', enableTracks);
+		this.muted = mute;
+		this.emit('stateChanged');
 	};
 
 	public setHold = async (hold: boolean): Promise<void> => {
