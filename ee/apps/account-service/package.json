@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.4.24",
+	"version": "0.4.25",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -42,6 +42,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/gc-stats": "^1.4.3",
 		"@types/polka": "^0.5.7",

@@ -201,7 +201,7 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Users.countActiveUsersInDMRoom(room._id);
 			}
 
 			return API.v1.success({

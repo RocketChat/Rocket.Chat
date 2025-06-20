@@ -11,7 +11,7 @@ export default {
 			{
 				sourceMaps: true,
 				jsc: {
-					target: 'es2015',
+					target: 'es2020',
 					parser: {
 						syntax: 'typescript',
 						decorators: false,
