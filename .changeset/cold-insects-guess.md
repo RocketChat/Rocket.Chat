@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes missing UI updates after files-only message pruning by extending the deleteMessageBulk event to also handle files-only deletions.
+Fixes missing UI updates after pruning messages with "Files only" enabled.
