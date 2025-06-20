@@ -39,6 +39,8 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
+
 		await poHomeChannel.content.getMessageByText('hello world').click();
 		await poHomeChannel.tabs.exportMessages.btnSend.click();
 
