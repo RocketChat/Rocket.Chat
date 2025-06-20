@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -393,7 +393,11 @@ const chatPostMessageEndpoints = API.v1.post(
 			}
 		}
 
-		const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+		const messageReturn = (
+			await applyAirGappedRestrictionsValidation(() =>
+				processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
+			)
+		)[0];
 
 		if (!messageReturn) {
 			return API.v1.failure('unknown-error');
@@ -409,7 +413,18 @@ const chatPostMessageEndpoints = API.v1.post(
 	},
 );
 
-export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
+export type ChatPostMessageEndpoints =
+	| ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>
+	| {
+			'/v1/chat.postMessage': {
+				POST: (params: ChatPostMessage) => {
+					ts: number;
+					channel: IRoom;
+					message: IMessage;
+					success: boolean;
+				};
+			};
+	  };
 // TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
