@@ -1,5 +1,5 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
@@ -29,8 +29,7 @@ export const usePermissionsAndRoles = (
 	const permissions = Permissions.use(useShallow((state) => transform(state.filter(predicate))));
 	const permissionsTotal = Permissions.use(useShallow((state) => state.count(predicate)));
 
-	const rolesMap = Roles.use(useShallow((state) => state.records)).values();
-	const roleList = useMemo(() => Array.from(rolesMap), [rolesMap]);
+	const roleList = Roles.use(useShallow((state) => Array.from(state.records.values())));
 
 	return { permissions, total: permissionsTotal, roleList };
 };
