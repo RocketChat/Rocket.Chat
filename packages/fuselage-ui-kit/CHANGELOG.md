@@ -1,5 +1,19 @@
 # Change Log
 
+## 20.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5ac20e2a84200f8002ce454df693ada2653f3827, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.0
+  - @rocket.chat/core-typings@7.8.0-rc.0
+  - @rocket.chat/ui-contexts@20.0.0-rc.0
+  - @rocket.chat/gazzodown@20.0.0-rc.0
+  - @rocket.chat/ui-avatar@16.0.0-rc.0
+  - @rocket.chat/ui-video-conf@20.0.0-rc.0
+  </details>
+
 ## 19.0.1
 
 ### Patch Changes
