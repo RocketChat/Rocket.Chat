@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Fixes and issue, were multiple reconnections would subscribe multiple times the same stream, only frontend issue, since the stream cache prevents from sending multiple times to the backend, but not prevent from runnning the callback multiple times
+Fixes an issue, where multiple reconnections would subscribe multiple times to the same stream, only a frontend issue, since the stream cache prevents sending multiple times to the backend, but does not prevent running the callback multiple times
