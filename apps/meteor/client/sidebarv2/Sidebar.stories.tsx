@@ -5,7 +5,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 
-import Sidebar from './SidebarRegion';
+import Sidebar from './Sidebar';
 
 export default {
 	title: 'SidebarV2',

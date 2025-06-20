@@ -3,7 +3,6 @@ import { useSession, useSessionDispatch, useUserPreference, useUserSubscriptions
 import { useEffect } from 'react';
 
 import { useFireGlobalEvent } from './useFireGlobalEvent';
-import { Rooms } from '../../app/models/client';
 
 const query = { open: { $ne: false }, hideUnreadStatus: { $ne: true }, archived: { $ne: true } };
 const options = { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1, fname: 1, prid: 1 } };
@@ -23,11 +22,7 @@ export const useUnread = () => {
 		let unreadAlert: false | '•' = false;
 
 		const unreadCount = subscriptions.reduce((ret, subscription) => {
-			const room = Rooms.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
-			fireEventUnreadChangedBySubscription({
-				...subscription,
-				usersCount: room?.usersCount,
-			});
+			fireEventUnreadChangedBySubscription(subscription);
 
 			if (subscription.alert || subscription.unread > 0) {
 				// Increment the total unread count.
