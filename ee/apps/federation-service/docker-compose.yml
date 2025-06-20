@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  federation-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3030:3030"
+      - "4000:4000"
+    environment:
+      - TRANSPORTER=nats://nats:4222
+      - FEDERATION_SERVICE_PORT=3030
+      - FEDERATION_SERVICE_HOST=0.0.0.0
+      - FEDERATION_ROUTE_PREFIX=/federation
+      - HEALTH_PORT=4000
+      - LOG_LEVEL=debug
+      - NODE_ENV=development
+    volumes:
+      - ./src:/app/src:ro
+    networks:
+      - rocketchat
+
+networks:
+  rocketchat:
+    external: true
