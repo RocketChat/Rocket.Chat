@@ -199,8 +199,8 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		this.collection.state.replaceAll([]);
 	}
 
-	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
+	protected setupListener() {
+		return sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
@@ -295,7 +295,9 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		return true;
 	}
 
-	async init() {
+	private listenerUnsubscriber: (() => void) | undefined;
+
+	private async performInitialization() {
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
@@ -318,7 +320,34 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 		});
 
-		return this.setupListener();
+		const subscription = this.setupListener();
+		this.listenerUnsubscriber = () => {
+			subscription.stop();
+			this.listenerUnsubscriber = undefined;
+		};
+	}
+
+	private initializationPromise: Promise<void> | undefined;
+
+	init() {
+		if (this.initializationPromise) {
+			return this.initializationPromise;
+		}
+
+		this.initializationPromise = this.performInitialization().finally(() => {
+			this.initializationPromise = undefined;
+		});
+
+		return this.initializationPromise;
+	}
+
+	async release() {
+		if (this.initializationPromise) {
+			await this.initializationPromise;
+		}
+
+		this.listenerUnsubscriber?.();
+		this.ready.set(false);
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
@@ -353,7 +382,7 @@ export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends
 		});
 
 		Accounts.onLogout(() => {
-			this.ready.set(false);
+			this.release();
 		});
 	}
 }

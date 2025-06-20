@@ -11,12 +11,16 @@ class PrivateSettingsCachedCollection extends PrivateCachedCollection<ISetting> 
 		});
 	}
 
-	async setupListener(): Promise<void> {
-		sdk.stream('notify-logged', [this.eventName as 'private-settings-changed'], async (t: string, { _id, ...record }: { _id: string }) => {
-			this.log('record received', t, { _id, ...record });
-			this.collection.update({ _id }, { $set: record }, { upsert: true });
-			this.sync();
-		});
+	override setupListener() {
+		return sdk.stream(
+			'notify-logged',
+			[this.eventName as 'private-settings-changed'],
+			async (t: string, { _id, ...record }: { _id: string }) => {
+				this.log('record received', t, { _id, ...record });
+				this.collection.update({ _id }, { $set: record }, { upsert: true });
+				this.sync();
+			},
+		);
 	}
 }
 
