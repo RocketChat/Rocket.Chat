@@ -20,6 +20,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import {
@@ -123,16 +124,19 @@ const ExportMessages = () => {
 			setValue('format', 'html');
 		}
 
-		if (type === 'download') {
-			setValue('format', 'json');
-		}
-
 		setValue('messagesCount', messageCount, { shouldDirty: true });
 	}, [type, setValue, messageCount]);
+
+	const { mutate: exportAsPDF } = useExportMessagesAsPDFMutation();
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
+		// Override everything just for the PoC
+		exportAsPDF(messages);
+		return;
+
+		// eslint-disable-next-line no-unreachable
 		if (type === 'download') {
 			return downloadExportMutation.mutateAsync({
 				mids: messages,
