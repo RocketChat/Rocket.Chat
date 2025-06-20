@@ -296,6 +296,10 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	}
 
 	async init() {
+		if (this.ready.get()) {
+			return;
+		}
+
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
