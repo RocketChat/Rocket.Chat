@@ -366,7 +366,7 @@ const ExportMessages = () => {
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button disabled={messageCount === 0} loading={isSubmitting} form={formId} primary type='submit'>
+					<Button disabled={!isDirty} loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>
