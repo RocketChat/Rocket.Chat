@@ -26,9 +26,7 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Models.Permissions.findOne(permissionId, {
-				fields: { roles: 1 },
-			});
+			const permission = Models.Permissions.state.get(permissionId);
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
