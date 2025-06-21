@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -222,14 +222,21 @@ API.v1.addRoute(
 
 			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
 
-			return API.v1.success({
-				ts: Date.now(),
-				channel: messageReturn.channel,
-				message,
-			});
-		},
+		return API.v1.success({
+			ts: Date.now(),
+			channel: messageReturn.channel,
+			message,
+		});
 	},
 );
+
+export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
+
+// TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatPostMessageEndpoints {}
+}
 
 API.v1.addRoute(
 	'chat.search',
