@@ -1,5 +1,5 @@
 import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 import AdminSidebarPages from './AdminSidebarPages';
 import PlanTag from '../../../components/PlanTag';
@@ -8,10 +8,12 @@ import SettingsProvider from '../../../providers/SettingsProvider';
 
 const AdminSidebar = () => {
 	const t = useTranslation();
-
-	const { sidebar } = useLayout();
-
+	const { sidebar, isMobile } = useLayout();
 	const currentPath = useCurrentRoutePath();
+
+	useEffect(() => {
+		if (isMobile && !sidebar.isCollapsed) sidebar.collapse();
+	}, [currentPath, isMobile]);
 
 	// TODO: uplift this provider
 	return (
