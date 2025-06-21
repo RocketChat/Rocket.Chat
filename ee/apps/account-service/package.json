@@ -41,12 +41,12 @@
 		"uuid": "^11.0.3"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/eslint-config": "*",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/gc-stats": "^1.4.3",
 		"@types/polka": "^0.5.7",
-		"eslint": "~8.45.0",
+		"eslint": "^9.29.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.8.3"
 	},

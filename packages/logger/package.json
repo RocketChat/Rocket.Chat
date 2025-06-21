@@ -3,7 +3,8 @@
 	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.45.0",
+		"@rocket.chat/eslint-config": "*",
+		"eslint": "^9.29.0",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

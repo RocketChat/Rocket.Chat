@@ -1,0 +1,90 @@
+// {
+// 	"extends": [
+// 		"plugin:@typescript-eslint/recommended",
+// 		"plugin:@typescript-eslint/eslint-recommended",
+// 		"@rocket.chat/eslint-config/original",
+// 		"@rocket.chat/eslint-config/react",
+// 		"prettier",
+// 		"plugin:anti-trojan-source/recommended",
+// 		"plugin:react/jsx-runtime",
+// 		"plugin:storybook/recommended"
+// 	],
+// 	"parser": "@typescript-eslint/parser",
+// 	"plugins": ["@typescript-eslint", "prettier"],
+// 	"rules": {
+// 		"func-call-spacing": "off",
+// 		"import/named": "error",
+// 		"import/order": [
+// 			"error",
+// 			{
+// 				"newlines-between": "always",
+// 				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+// 				"alphabetize": {
+// 					"order": "asc"
+// 				}
+// 			}
+// 		],
+// 		"indent": "off",
+// 		"jsx-quotes": ["error", "prefer-single"],
+// 		"new-cap": ["error"],
+// 		"no-extra-parens": "off",
+// 		"no-spaced-func": "off",
+// 		"no-undef": "off",
+// 		"no-unused-vars": "off",
+// 		"no-useless-constructor": "off",
+// 		"no-use-before-define": "off",
+// 		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+// 		"prettier/prettier": 2
+// 	},
+// 	"settings": {
+// 		"import/resolver": {
+// 			"node": {
+// 				"extensions": [".js", ".ts", ".tsx"]
+// 			}
+// 		}
+// 	},
+// 	"ignorePatterns": ["**/dist"],
+// 	"overrides": [
+// 		{
+// 			"files": ["*.ts", "*.tsx"],
+// 			"rules": {
+// 				"@typescript-eslint/ban-ts-ignore": "off",
+// 				"@typescript-eslint/explicit-function-return-type": "off",
+// 				"@typescript-eslint/indent": "off",
+// 				"@typescript-eslint/no-extra-parens": "off",
+// 				"@typescript-eslint/no-explicit-any": "off",
+// 				"@typescript-eslint/no-unused-vars": [
+// 					"error",
+// 					{
+// 						"argsIgnorePattern": "^_"
+// 					}
+// 				],
+// 				"@typescript-eslint/prefer-optional-chain": "warn"
+// 			}
+// 		}
+// 	]
+// }
+
+import { config } from '@rocket.chat/eslint-config/react';
+import storybook from 'eslint-plugin-storybook';
+
+export default [
+	...config,
+	...storybook.configs['flat/recommended'],
+	{
+		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx', '.storybook/preview.tsx'],
+		rules: {
+			'react/display-name': 'off',
+			'react/no-multi-comp': 'off',
+			'@typescript-eslint/naming-convention': 'off',
+		},
+		plugins: {
+			storybook,
+		},
+		settings: {
+			storybook: {
+				version: '6.0.0',
+			},
+		},
+	}
+];
