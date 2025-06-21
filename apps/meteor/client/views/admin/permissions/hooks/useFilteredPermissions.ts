@@ -9,7 +9,7 @@ export const useFilteredPermissions = ({ filter }: { filter: string }) => {
 	const { t } = useTranslation();
 
 	const mappedPermissionKeys = useMemo(() => {
-		const permissions = Permissions.find().fetch();
+		const permissions = Array.from(Permissions.state.records.values());
 		return mapPermissionKeys({ t, permissions });
 	}, [t]);
 
