@@ -17,8 +17,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
-		"@babel/preset-env": "~7.26.0",
+		"@babel/core": "~7.26.10",
+		"@babel/preset-env": "~7.26.9",
 		"@babel/preset-react": "~7.25.9",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/i18n": "workspace:~",
@@ -37,7 +37,7 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/react": "~16.0.1",
 		"@types/dompurify": "^3.0.5",
-		"@types/react": "~18.3.17",
+		"@types/react": "~18.3.23",
 		"babel-loader": "~9.2.1",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
@@ -60,6 +60,6 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"dompurify": "^3.2.4"
+		"dompurify": "^3.2.6"
 	}
 }
