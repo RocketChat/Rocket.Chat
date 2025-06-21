@@ -18,10 +18,10 @@
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.2.0",
 		"@testing-library/react-hooks": "^8.0.1",
-		"@types/react": "~18.3.17",
-		"@types/react-dom": "~18.3.5",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"react": "~18.3.1",
 		"typescript": "~5.8.3"
 	},
