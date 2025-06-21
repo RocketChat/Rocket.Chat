@@ -5,7 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

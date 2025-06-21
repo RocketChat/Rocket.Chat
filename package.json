@@ -22,7 +22,7 @@
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.5.3"
+		"turbo": "^2.5.4"
 	},
 	"workspaces": [
 		"apps/*",

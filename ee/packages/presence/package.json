@@ -3,16 +3,16 @@
 	"version": "0.2.25",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
-		"@babel/preset-env": "~7.26.0",
+		"@babel/core": "~7.26.10",
+		"@babel/preset-env": "~7.26.9",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/node": "~22.14.0",
-		"babel-jest": "~30.0.0",
+		"@types/node": "~22.14.1",
+		"babel-jest": "~30.0.2",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
