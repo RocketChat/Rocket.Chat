@@ -29,7 +29,6 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
 	'roles': [
 		{

@@ -16,6 +16,7 @@ export const config = tseslint.config(
 				'no-async-promise-executor': 'off',
 				'no-case-declarations': 'off',
 				'no-prototype-builtins': 'off',
+				'no-await-in-loop': 'error',
 			},
 		},
 	],
