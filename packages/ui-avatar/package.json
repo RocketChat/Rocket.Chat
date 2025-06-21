@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "14.0.0",
+	"version": "15.0.1",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.0",
-		"@rocket.chat/fuselage": "~0.62.0",
+		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
@@ -14,7 +14,7 @@
 		"eslint-plugin-storybook": "~0.11.4",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"react": "~18.3.1",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

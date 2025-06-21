@@ -60,7 +60,7 @@ test.describe('prune-messages', () => {
 				await pruneMessages.doNotPrunePinned.check({ force: true });
 				await pruneMessages.filesOnly.check({ force: true });
 				await pruneMessages.prune();
-				await expect(alert).toHaveText('1 message pruned');
+				await expect(alert).toHaveText('1 file pruned');
 				await dismiss.click();
 				await expect(pruneMessages.filesOnly, 'Checkbox is reset after success').not.toBeChecked();
 				await expect(pruneMessages.doNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
@@ -70,7 +70,7 @@ test.describe('prune-messages', () => {
 				await pruneMessages.doNotPrunePinned.check({ force: true });
 				await pruneMessages.filesOnly.check({ force: true });
 				await pruneMessages.prune();
-				await expect(alert).toHaveText('No messages found to prune');
+				await expect(alert).toHaveText('No files found to prune');
 				await dismiss.click();
 				await expect(pruneMessages.filesOnly, 'Checkbox retains value after error').toBeChecked();
 				await expect(pruneMessages.doNotPrunePinned, 'Checkbox retains value after error').toBeChecked();

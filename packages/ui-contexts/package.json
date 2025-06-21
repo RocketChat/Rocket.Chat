@@ -1,21 +1,21 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "18.0.0",
+	"version": "19.0.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "~0.35.0",
+		"@rocket.chat/fuselage-hooks": "^0.36.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^5.0.0",
-		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
+		"mongodb": "6.10.0",
 		"react": "~18.3.1",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",

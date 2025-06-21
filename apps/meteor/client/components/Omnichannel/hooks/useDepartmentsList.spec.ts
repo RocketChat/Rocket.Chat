@@ -1,109 +1,140 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, waitFor } from '@testing-library/react';
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
+import { MockedAppRootBuilder } from '@rocket.chat/mock-providers/dist/MockedAppRootBuilder';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useDepartmentsList } from './useDepartmentsList';
+import { createFakeDepartment } from '../../../../tests/mocks/data';
 
-const initialDepartmentsListMock = Array.from(Array(25)).map((_, index) => {
-	return {
-		_id: `${index}`,
-		name: `test_department_${index}`,
-		enabled: true,
-		email: `test${index}@email.com`,
-		showOnRegistration: false,
-		showOnOfflineForm: false,
-		type: 'd',
-		_updatedAt: '2024-09-26T20:05:31.330Z',
-		offlineMessageChannelName: '',
-		numAgents: 0,
-		ancestors: undefined,
-		parentId: undefined,
-	};
+const formatDepartmentItem = (department: Serialized<ILivechatDepartment>) => ({
+	_id: department._id,
+	label: department.archived ? `${department.name} [Archived]` : department.name,
+	value: department._id,
 });
 
-it('should not fetch and add selected department if it is already in the departments list on first fetch', async () => {
-	const selectedDepartmentMappedToOption = {
-		_id: '5',
-		label: 'test_department_5',
-		value: '5',
-	};
+const mockGetDepartments = jest.fn();
+const mockGetUnitDepartments = jest.fn();
+const mockGetDepartment = jest.fn();
 
-	const getDepartmentByIdCallback = jest.fn();
+const appRoot = new MockedAppRootBuilder()
+	.withTranslations('en', 'core', { All: 'All', None: 'None', Archived: 'Archived' })
+	.withEndpoint('GET', '/v1/livechat/department', mockGetDepartments)
+	.withEndpoint('GET', '/v1/livechat/units/:unitId/departments/available', mockGetUnitDepartments)
+	.withEndpoint('GET', '/v1/livechat/department/:_id', mockGetDepartment);
 
-	const { result } = renderHook(
-		() =>
-			useDepartmentsList({
-				filter: '',
-				onlyMyDepartments: true,
-				haveAll: true,
-				showArchived: true,
-				selectedDepartment: '5',
-			}),
-		{
-			wrapper: mockAppRoot()
-				.withEndpoint('GET', '/v1/livechat/department', () => ({
-					count: 25,
-					offset: 0,
-					total: 25,
-					departments: initialDepartmentsListMock,
-				}))
-				.withEndpoint('GET', `/v1/livechat/department/:_id`, getDepartmentByIdCallback)
-				.build(),
-		},
-	);
-
-	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
-	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(selectedDepartmentMappedToOption));
-	// The expected length is 26 because the hook will add the 'All' item on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(26));
+afterEach(() => {
+	jest.clearAllMocks();
 });
 
-it('should fetch and add selected department if it is not part of departments list on first fetch', async () => {
-	const missingDepartmentRawMock = {
-		_id: '56f5be8bcf8cd67f9e9bcfdc',
-		name: 'test_department_25',
-		enabled: true,
-		email: 'test25@email.com',
-		showOnRegistration: false,
-		showOnOfflineForm: false,
-		type: 'd',
-		_updatedAt: '2024-09-26T20:05:31.330Z',
-		offlineMessageChannelName: '',
-		numAgents: 0,
-		ancestors: undefined,
-		parentId: undefined,
-	};
+it('should fetch departments', async () => {
+	const limit = 5;
 
-	const missingDepartmentMappedToOption = {
-		_id: '56f5be8bcf8cd67f9e9bcfdc',
-		label: 'test_department_25',
-		value: '56f5be8bcf8cd67f9e9bcfdc',
-	};
+	const data = Array.from({ length: 10 }, () => createFakeDepartment());
 
-	const { result } = renderHook(
-		() =>
-			useDepartmentsList({
-				filter: '',
-				onlyMyDepartments: true,
-				haveAll: true,
-				showArchived: true,
-				selectedDepartment: '56f5be8bcf8cd67f9e9bcfdc',
-			}),
-		{
-			wrapper: mockAppRoot()
-				.withEndpoint('GET', '/v1/livechat/department', () => ({
-					count: 25,
-					offset: 0,
-					total: 25,
-					departments: initialDepartmentsListMock,
-				}))
-				.withEndpoint('GET', `/v1/livechat/department/:_id`, () => ({
-					department: missingDepartmentRawMock,
-				}))
-				.build(),
-		},
-	);
+	mockGetDepartments.mockImplementation(({ offset, count }: { offset: number; count: number }) => {
+		const departments = data.slice(offset, offset + count);
 
-	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(missingDepartmentMappedToOption));
-	// The expected length is 27 because the hook will add the 'All' item and the missing department on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(27));
+		return {
+			departments,
+			count,
+			offset,
+			total: data.length,
+		};
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '', limit }), { wrapper: appRoot.build() });
+
+	await waitFor(() => expect(result.current.data).toEqual(data.slice(0, 5).map(formatDepartmentItem)));
+
+	await act(() => result.current.fetchNextPage());
+
+	await waitFor(() => expect(result.current.data).toEqual(data.map(formatDepartmentItem)));
+
+	await act(() => result.current.fetchNextPage());
+
+	// should not fetch again since total was reached
+	expect(mockGetDepartments).toHaveBeenCalledTimes(2);
+});
+
+it('should fetch unit departments when unitId is provided', async () => {
+	const unitDepartmentsList = Array.from({ length: 10 }, () => createFakeDepartment());
+	const departmentItems = unitDepartmentsList.map(formatDepartmentItem);
+	mockGetUnitDepartments.mockResolvedValue({
+		departments: unitDepartmentsList,
+		count: 5,
+		offset: 0,
+		total: 5,
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '', unitId: '123' }), { wrapper: appRoot.build() });
+
+	await waitFor(() => expect(result.current.data).toEqual(departmentItems));
+
+	expect(mockGetDepartment).not.toHaveBeenCalled();
+	expect(mockGetDepartments).not.toHaveBeenCalled();
+	expect(mockGetUnitDepartments).toHaveBeenCalled();
+});
+
+it('should format archived departments correctly', async () => {
+	mockGetDepartments.mockResolvedValueOnce({
+		departments: [createFakeDepartment({ name: 'Test Department', archived: true })],
+		count: 1,
+		offset: 0,
+		total: 1,
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '' }), { wrapper: appRoot.build() });
+
+	await waitFor(() => expect(result.current.data.length).toBe(1));
+	expect(result.current.data[0].label).toBe('Test Department [Archived]');
+});
+
+it('should include "All" item if haveAll is true', async () => {
+	mockGetDepartments.mockResolvedValueOnce({
+		departments: Array.from({ length: 5 }, () => createFakeDepartment()),
+		count: 5,
+		offset: 0,
+		total: 5,
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '', haveAll: true }), { wrapper: appRoot.build() });
+
+	await waitFor(() => expect(result.current.data[0].label).toBe('All'));
+});
+
+it('should include "None" item if haveNone is true', async () => {
+	mockGetDepartments.mockResolvedValueOnce({
+		departments: Array.from({ length: 5 }, () => createFakeDepartment()),
+		count: 5,
+		offset: 0,
+		total: 5,
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '', haveNone: true }), { wrapper: appRoot.build() });
+
+	await waitFor(() => expect(result.current.data[0].label).toBe('None'));
+});
+
+it('should fetch the selected department if selectedDepartmentId is provided', async () => {
+	const departmentsList = Array.from({ length: 10 }, () => createFakeDepartment());
+	const departmentItems = departmentsList.map(formatDepartmentItem);
+	const selectedDepartmentMock = createFakeDepartment({ _id: 'selected-department-id' });
+	const selectedDepartmentItem = formatDepartmentItem(selectedDepartmentMock);
+
+	mockGetDepartment.mockResolvedValueOnce({ department: selectedDepartmentMock });
+
+	mockGetDepartments.mockResolvedValueOnce({
+		departments: [...departmentsList, createFakeDepartment({ _id: 'selected-department-id' })],
+		count: 10,
+		offset: 0,
+		total: 10,
+	});
+
+	const { result } = renderHook(() => useDepartmentsList({ filter: '', selectedDepartmentId: selectedDepartmentMock._id }), {
+		wrapper: appRoot.build(),
+	});
+
+	await waitFor(() => expect(result.current.data).toEqual([...departmentItems, selectedDepartmentItem]));
+
+	expect(mockGetDepartments).toHaveBeenCalled();
+	expect(mockGetDepartment).toHaveBeenCalled();
 });

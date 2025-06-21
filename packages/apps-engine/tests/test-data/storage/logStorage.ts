@@ -3,23 +3,26 @@ import type { IAppLogStorageFindOptions } from '../../../src/server/storage';
 import { AppLogStorage } from '../../../src/server/storage';
 
 export class TestsAppLogStorage extends AppLogStorage {
-    constructor() {
-        super('nothing');
-    }
+	constructor() {
+		super('nothing');
+	}
 
-    public find(query: { [field: string]: any }, options?: IAppLogStorageFindOptions): Promise<Array<ILoggerStorageEntry>> {
-        return Promise.resolve([]);
-    }
+	public find(
+		query: { [field: string]: any },
+		options?: IAppLogStorageFindOptions,
+	): Promise<{ logs: ILoggerStorageEntry[]; total: number }> {
+		return Promise.resolve({ logs: [], total: 0 });
+	}
 
-    public storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
-        return Promise.resolve({} as ILoggerStorageEntry);
-    }
+	public storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
+		return Promise.resolve({} as ILoggerStorageEntry);
+	}
 
-    public getEntriesFor(appId: string): Promise<Array<ILoggerStorageEntry>> {
-        return Promise.resolve([]);
-    }
+	public getEntriesFor(appId: string): Promise<Array<ILoggerStorageEntry>> {
+		return Promise.resolve([]);
+	}
 
-    public removeEntriesFor(appId: string): Promise<void> {
-        return Promise.resolve();
-    }
+	public removeEntriesFor(appId: string): Promise<void> {
+		return Promise.resolve();
+	}
 }

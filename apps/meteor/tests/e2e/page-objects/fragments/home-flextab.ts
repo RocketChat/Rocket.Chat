@@ -36,6 +36,10 @@ export class HomeFlextab {
 		this.pruneMessages = new HomeFlextabPruneMessages(page);
 	}
 
+	get toolbarPrimaryActions(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
+	}
+
 	get btnTabMembers(): Locator {
 		return this.page.locator('[data-qa-id=ToolBoxAction-members]');
 	}
@@ -53,7 +57,7 @@ export class HomeFlextab {
 	}
 
 	get kebab(): Locator {
-		return this.page.locator('role=button[name="Options"]');
+		return this.toolbarPrimaryActions.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {

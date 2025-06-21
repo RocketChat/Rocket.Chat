@@ -2,7 +2,7 @@
 to: packages/<%= name %>/tsconfig.json
 ---
 {
-	"extends": "../../tsconfig.base.server.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist"

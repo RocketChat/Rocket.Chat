@@ -15,7 +15,7 @@ const hasIsUserInRole = (
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 

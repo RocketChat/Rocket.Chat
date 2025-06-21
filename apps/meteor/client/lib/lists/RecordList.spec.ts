@@ -57,11 +57,13 @@ describe('RecordList', () => {
 		expect(recordList.emit).toHaveBeenCalledWith('errored', error);
 	});
 
-	test('should batch handle multiple items', async () => {
+	test('should batch handle multiple items the items should be sorted by _updatedAt descending', async () => {
 		const changes = {
 			items: [
-				{ _id: '1', _updatedAt: new Date() },
-				{ _id: '2', _updatedAt: new Date() },
+				{ _id: '1', _updatedAt: new Date('2025-06-11T23:14:00.002Z') },
+				{ _id: '3', _updatedAt: new Date('2025-06-11T23:14:00.004Z') },
+				{ _id: '4', _updatedAt: new Date('2025-06-11T23:14:00.005Z') },
+				{ _id: '2', _updatedAt: new Date('2025-06-11T23:14:00.003Z') },
 			],
 			itemCount: 2,
 		};
@@ -70,10 +72,12 @@ describe('RecordList', () => {
 
 		await recordList.batchHandle(getInfo);
 
-		expect(recordList.items).toEqual(changes.items);
+		expect(recordList.items).toEqual([changes.items[2], changes.items[1], changes.items[3], changes.items[0]]);
 		expect(recordList.itemCount).toBe(changes.itemCount);
 		expect(recordList.emit).toHaveBeenCalledWith('1/inserted', changes.items[0]);
-		expect(recordList.emit).toHaveBeenCalledWith('2/inserted', changes.items[1]);
+		expect(recordList.emit).toHaveBeenCalledWith('3/inserted', changes.items[1]);
+		expect(recordList.emit).toHaveBeenCalledWith('4/inserted', changes.items[2]);
+		expect(recordList.emit).toHaveBeenCalledWith('2/inserted', changes.items[3]);
 		expect(recordList.emit).toHaveBeenCalledWith('mutated', true);
 	});
 

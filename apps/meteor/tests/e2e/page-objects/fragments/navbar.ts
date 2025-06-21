@@ -78,7 +78,7 @@ export class Navbar {
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.pagesGroup.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.pagesGroup.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.pagesGroup.click();
+		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.page.keyboard.press('Escape');
 	}
 }
