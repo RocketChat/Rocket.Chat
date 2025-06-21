@@ -52,6 +52,10 @@ const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
 			);
 		}
 
+		if (text === '>') {
+			return <blockquote>&nbsp;</blockquote>;
+		}
+
 		return text;
 	}, [highlightRegex, markRegex, text, t]);
 
