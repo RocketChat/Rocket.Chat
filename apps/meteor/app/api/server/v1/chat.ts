@@ -30,6 +30,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -172,25 +173,448 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'chat.pinMessage',
-	{ authRequired: true, validateParams: isChatPinMessageProps },
 	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			const pinnedMessage = await pinMessage(msg, this.userId);
-
-			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
-
-			return API.v1.success({
-				message,
-			});
+		authRequired: true,
+		validateParams: isChatPinMessageProps,
+		body: isChatPinMessageProps,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					message: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							_updatedAt: {
+								type: 'object',
+							},
+							editedAt: {
+								type: 'object',
+							},
+							rid: { type: 'string' },
+							msg: { type: 'string' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							ts: {
+								type: 'object',
+							},
+							mentions: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										type: {
+											enum: ['user', 'team'],
+										},
+										_id: { type: 'string' },
+										name: { type: 'string' },
+										username: { type: 'string' },
+										fname: { type: 'string' },
+									},
+									required: ['_id'],
+									additionalProperties: false,
+								},
+							},
+							groupable: { type: 'boolean' },
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+										name: { type: 'string' },
+									},
+									required: ['_id', 'name'],
+									additionalProperties: false,
+								},
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							blocks: { type: 'array' },
+							alias: { type: 'string' },
+							md: { type: 'array' },
+							_hidden: { type: 'boolean' },
+							imported: { type: 'boolean' },
+							replies: { type: 'array' },
+							location: {
+								type: 'object',
+								properties: {
+									type: { const: 'Point' },
+									coordinates: {
+										type: 'array',
+										items: [{ type: 'integer' }, { type: 'integer' }],
+										minItems: 2,
+									},
+								},
+								required: ['type', 'coordinates'],
+								additionalProperties: false,
+							},
+							starred: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+									},
+									required: ['_id'],
+									additionalProperties: false,
+								},
+							},
+							pinned: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							pinnedAt: {
+								type: 'object',
+							},
+							pinnedBy: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'username'],
+								additionalProperties: false,
+							},
+							unread: { type: 'boolean' },
+							temp: { type: 'boolean' },
+							drid: { type: 'string' },
+							tlm: {
+								type: 'string',
+								format: 'date-time',
+							},
+							dcount: { type: 'integer' },
+							tcount: { type: 'integer' },
+							t: {
+								type: 'string',
+								enum: [
+									'e2e',
+									'uj',
+									'ul',
+									'ru',
+									'au',
+									'mute_unmute',
+									'r',
+									'ut',
+									'wm',
+									'rm',
+									'subscription-role-added',
+									'subscription-role-removed',
+									'room-archived',
+									'room-unarchived',
+									'room_changed_privacy',
+									'room_changed_description',
+									'room_changed_announcement',
+									'room_changed_avatar',
+									'room_changed_topic',
+									'room_e2e_enabled',
+									'room_e2e_disabled',
+									'user-muted',
+									'user-unmuted',
+									'room-removed-read-only',
+									'room-set-read-only',
+									'room-allowed-reacting',
+									'room-disallowed-reacting',
+									'command',
+									'videoconf',
+									'message_pinned',
+									'message_pinned_e2e',
+									'new-moderator',
+									'moderator-removed',
+									'new-owner',
+									'owner-removed',
+									'new-leader',
+									'leader-removed',
+									'discussion-created',
+									'removed-user-from-team',
+									'added-user-to-team',
+									'ult',
+									'user-converted-to-team',
+									'user-converted-to-channel',
+									'user-removed-room-from-team',
+									'user-deleted-room-from-team',
+									'user-added-room-to-team',
+									'ujt',
+									'livechat_navigation_history',
+									'livechat_transfer_history',
+									'livechat_transcript_history',
+									'livechat_video_call',
+									'livechat_transfer_history_fallback',
+									'livechat-close',
+									'livechat_webrtc_video_call',
+									'livechat-started',
+									'omnichannel_priority_change_history',
+									'omnichannel_sla_change_history',
+									'omnichannel_placed_chat_on_hold',
+									'omnichannel_on_hold_chat_resumed',
+									'voip-call-started',
+									'voip-call-declined',
+									'voip-call-on-hold',
+									'voip-call-unhold',
+									'voip-call-ended',
+									'voip-call-duration',
+									'voip-call-wrapup',
+									'voip-call-ended-unexpectedly',
+									'otr',
+									'otr-ack',
+									'user_joined_otr',
+									'user_requested_otr_key_refresh',
+									'user_key_refreshed_successfully',
+								],
+							},
+							e2e: {
+								type: 'string',
+								enum: ['pending', 'done'],
+							},
+							e2eMentions: {
+								type: 'object',
+								properties: {
+									e2eUserMentions: { type: 'array', items: { type: 'string' } },
+									e2eChannelMentions: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['e2eUserMentions', 'e2eChannelMentions'],
+								additionalProperties: false,
+							},
+							otrAck: { type: 'string' },
+							urls: { type: 'array', items: { type: 'string' } },
+							/** @deprecated Deprecated */
+							actionLinks: { type: 'array', items: { type: 'object' } },
+							/** @deprecated Deprecated in favor of files */
+							file: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									type: { type: 'string' },
+									format: { type: 'string' },
+									size: { type: 'integer' },
+								},
+								required: ['_id', 'name', 'type', 'format', 'size'],
+								additionalProperties: false,
+							},
+							fileUpload: {
+								type: 'object',
+								properties: {
+									publicFilePath: { type: 'string' },
+									type: { type: 'string' },
+									size: { type: 'integer' },
+								},
+								required: ['publicFilePath'],
+								additionalProperties: false,
+							},
+							files: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										_id: { type: 'string' },
+										name: { type: 'string' },
+										type: { type: 'string' },
+										format: { type: 'string' },
+										size: { type: 'integer' },
+									},
+									required: ['_id', 'name', 'type', 'format', 'size'],
+									additionalProperties: false,
+								},
+							},
+							// TODO: Add the types of object properties of MessageAttachment to the attachments.
+							attachments: { type: 'array' },
+							reactions: {
+								type: 'object',
+								patternProperties: {
+									'.*': {
+										type: 'object',
+										properties: {
+											names: {
+												type: 'array',
+												items: {
+													type: ['string', 'null'],
+												},
+											},
+											usernames: {
+												type: 'array',
+												items: { type: 'string' },
+											},
+											federationReactionEventIds: {
+												type: 'object',
+												additionalProperties: { type: 'string' },
+											},
+										},
+										required: ['usernames'],
+										additionalProperties: false,
+									},
+								},
+								additionalProperties: false,
+							},
+							private: { type: 'boolean' },
+							bot: { type: 'object' },
+							sentByEmail: { type: 'boolean' },
+							webRtcCallEndTs: {
+								type: 'string',
+								format: 'date-time',
+							},
+							role: { type: 'string' },
+							avatar: { type: 'string' },
+							emoji: { type: 'string' },
+							tokens: {
+								type: 'array',
+								items: {
+									type: 'object',
+									properties: {
+										token: { type: 'string' },
+										text: { type: 'string' },
+										type: {
+											type: 'string',
+											enum: ['code', 'inlinecode', 'bold', 'italic', 'strike', 'link'],
+										},
+										noHtml: { type: 'string' },
+										highlight: { type: 'boolean' },
+									},
+									required: ['token', 'text'],
+									additionalProperties: false,
+								},
+							},
+							html: { type: 'string' },
+							token: { type: 'string' },
+							federation: {
+								type: 'object',
+								properties: {
+									eventId: { type: 'string' },
+								},
+								required: ['eventId'],
+								additionalProperties: false,
+							},
+							slaData: {
+								type: 'object',
+								properties: {
+									definedBy: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											username: { type: 'string' },
+										},
+										required: ['_id'],
+										additionalProperties: false,
+									},
+									sla: {
+										type: 'object',
+										properties: {
+											name: { type: 'string' },
+											i18n: { type: 'string' },
+										},
+										required: ['i18n'],
+										additionalProperties: false,
+									},
+								},
+								required: ['definedBy'],
+								additionalProperties: false,
+							},
+							// ? Should customFields have properties implement in the IMessageCustomFields interface and ensure it is not empty?
+							customFields: {
+								type: 'object',
+								properties: {},
+								additionalProperties: true,
+							},
+							content: {
+								type: 'object',
+								properties: {
+									algorithm: { type: 'string' },
+									ciphertext: { type: 'string' },
+								},
+								required: ['algorithm', 'ciphertext'],
+								additionalProperties: false,
+							},
+							priorityData: {
+								type: 'object',
+								properties: {
+									definedBy: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											username: { type: 'string' },
+										},
+										required: ['_id'],
+										additionalProperties: false,
+									},
+									priority: {
+										type: 'object',
+										properties: {
+											name: { type: 'string' },
+											i18n: { type: 'string' },
+										},
+										required: ['i18n'],
+										additionalProperties: false,
+									},
+								},
+								required: ['definedBy'],
+								additionalProperties: false,
+							},
+						},
+						required: ['_id', '_updatedAt', 'rid', 'msg', 'ts', 'u'],
+						// TODO : Set additionalProperties to false
+						// additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					status: { type: 'string' },
+					message: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['message', 'status', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function () {
+		const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			return API.v1.failure('The provided "messageId" does not match any existing message.');
+		}
+
+		const pinnedMessage = await pinMessage(msg, this.userId);
+
+		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
+
+		return API.v1.success({ message });
 	},
 );
 
