@@ -1,2 +1,4 @@
 export * from './commands';
-export * from './listenToEvents';
+export * from './esl';
+export * from './logger';
+export * from './FreeSwitchOptions';
