@@ -20,8 +20,9 @@ export const config = tseslint.config(
 		rules: {
 			'react-hooks/exhaustive-deps': 'error',
 			'react-hooks/rules-of-hooks': 'error',
-			'react/display-name': 'error',
-			'react/jsx-curly-brace-presence': 'error',
+			'react/display-name': 'off',
+
+			'react/jsx-curly-brace-presence': 'off',
 			'react/jsx-fragments': ['error', 'syntax'],
 			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
 			'react/jsx-no-undef': 'error',
@@ -29,6 +30,7 @@ export const config = tseslint.config(
 			'react/jsx-uses-vars': 'error',
 			'react/no-multi-comp': 'error',
 			'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
+			'@typescript-eslint/naming-convention': 'off'
 		},
 		settings: {
 			react: {

@@ -3,6 +3,7 @@
 import eslint from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
+import globals from 'globals';
 
 /**
  * A shared ESLint configuration for the repository
@@ -78,4 +79,10 @@ export const config = tseslint.config(
 			},
 		},
 	},
+	{
+		files: ['**/scripts/**/*.js', '**/scripts/**/*.mjs'],
+		languageOptions: {
+			globals: globals.node
+		}
+	}
 );
