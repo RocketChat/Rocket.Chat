@@ -78,7 +78,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
     apk --no-cache --virtual deps add g++ python3 make py3-setuptools shadow && \
-    yarn workspaces focus --production && \
+    yarn workspaces focus --production || { code=$?; find /tmp -path "/tmp/xfs-*/build.log" -type f -exec cat {} +; exit $code; } && \
     rm -rf /var/cache/apk/* && \
     groupmod -n rocketchat nogroup && \
     useradd -u 65533 -r -g rocketchat rocketchat && \
