@@ -1978,6 +1978,7 @@
   "Error_sending_livechat_offline_message": "Error sending Omnichannel offline message",
   "Error_sending_livechat_transcript": "Error sending Omnichannel transcript",
   "Error_something_went_wrong": "Oops! Something went wrong. Please reload the page or contact an administrator.",
+  "Error_loading__name__information": "Error loading {{name}} information",
   "Errors_and_Warnings": "Errors and Warnings",
   "Esc_to": "Esc to",
   "Estimated_due_time": "Estimated due time",
