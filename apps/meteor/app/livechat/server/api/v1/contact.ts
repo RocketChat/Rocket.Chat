@@ -154,7 +154,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const contact = await LivechatContacts.findOneById(contactId);
+			const contact = await LivechatContacts.findOneEnabledById(contactId);
 
 			if (!contact) {
 				return API.v1.notFound();
