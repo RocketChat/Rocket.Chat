@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 type SerializablePrimitive = boolean | number | string | null;
 
