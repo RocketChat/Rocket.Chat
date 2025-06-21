@@ -1,4 +1,4 @@
-import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -50,7 +50,7 @@ export class LivechatAgentActivityMonitor {
 		await this._startMonitoring();
 
 		// TODO use service event socket.connected instead
-		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
+		Meteor.onConnection((connection) => this._handleMeteorConnection(connection));
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
 		callbacks.add('livechat.setUserStatusLivechat', (...args) => {
 			return this._handleUserStatusLivechatChanged(...args);
@@ -81,7 +81,7 @@ export class LivechatAgentActivityMonitor {
 		}
 	}
 
-	async _handleMeteorConnection(connection: ISocketConnection): Promise<void> {
+	private async _handleMeteorConnection(connection: Meteor.Connection): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
