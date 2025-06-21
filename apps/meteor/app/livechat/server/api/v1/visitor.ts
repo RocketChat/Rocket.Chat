@@ -1,15 +1,16 @@
-import type { IRoom, ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms, LivechatContacts } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { isPOSTLivechatVisitor } from '@rocket.chat/rest-typings';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { updateContactsCustomFields, validateRequiredCustomFields } from '../../lib/custom-fields';
+import { validateRequiredCustomFields } from '../../lib/custom-fields';
 import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
-import { saveRoomInfo } from '../../lib/rooms';
+import { updateRoomsInfoFromVisitorUpdate } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -20,32 +21,11 @@ API.v1.addRoute(
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
 		},
+		validateParams: isPOSTLivechatVisitor,
 	},
 	{
 		async post() {
-			check(this.bodyParams, {
-				visitor: Match.ObjectIncluding({
-					token: String,
-					name: Match.Maybe(String),
-					email: Match.Maybe(String),
-					department: Match.Maybe(String),
-					phone: Match.Maybe(String),
-					username: Match.Maybe(String),
-					customFields: Match.Maybe([
-						Match.ObjectIncluding({
-							key: String,
-							value: String,
-							overwrite: Boolean,
-						}),
-					]),
-				}),
-			});
-
 			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
-
-			if (!token?.trim()) {
-				throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
-			}
 
 			const guest = {
 				token,
@@ -66,82 +46,95 @@ API.v1.addRoute(
 				});
 			}
 
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
-			await Promise.all(
-				rooms.map(
-					(room: IRoom) =>
-						visitor &&
-						saveRoomInfo(room, {
-							_id: visitor._id,
-							name: visitor.name,
-							phone: visitor.phone?.[0]?.phoneNumber,
-							livechatData: visitor.livechatData as { [k: string]: string },
-						}),
-				),
+			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, { projection: { _id: 1 } }).toArray();
+			await updateRoomsInfoFromVisitorUpdate(
+				rooms.map((room) => room._id),
+				{
+					_id: visitor._id,
+					name: visitor.name,
+				},
 			);
 
-			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-				const errors: string[] = [];
-				const keys = customFields.map((field) => field.key);
+			if (!Array.isArray(customFields) || !customFields.length) {
+				return API.v1.success({ visitor });
+			}
 
-				const livechatCustomFields = await LivechatCustomField.findByScope(
-					'visitor',
-					{ projection: { _id: 1, required: 1 } },
-					false,
-				).toArray();
-				validateRequiredCustomFields(keys, livechatCustomFields);
+			const keys = customFields.map((field) => field.key);
 
-				const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
-				const processedKeys = await Promise.all(
-					matchingCustomFields.map(async (field: ILivechatCustomField) => {
-						const customField = customFields.find((f) => f.key === field._id);
-						if (!customField) {
-							return;
+			const livechatCustomFields = await LivechatCustomField.findByScope(
+				'visitor',
+				{ projection: { _id: 1, required: 1 } },
+				false,
+			).toArray();
+			validateRequiredCustomFields(keys, livechatCustomFields);
+
+			const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
+			const validCustomFields = customFields.filter((cf) => matchingCustomFields.find((mcf) => cf.key === mcf._id));
+			if (!validCustomFields.length) {
+				return API.v1.success({ visitor });
+			}
+
+			const visitorCustomFieldsToUpdate = validCustomFields.reduce(
+				(prev, curr) => {
+					if (curr.overwrite) {
+						prev[`livechatData.${curr.key}`] = curr.value;
+						return prev;
+					}
+
+					if (!visitor?.livechatData?.[curr.key]) {
+						prev[`livechatData.${curr.key}`] = curr.value;
+					}
+
+					return prev;
+				},
+				{} as Record<string, string>,
+			);
+
+			if (Object.keys(visitorCustomFieldsToUpdate).length) {
+				await VisitorsRaw.updateAllLivechatDataByToken(visitor.token, visitorCustomFieldsToUpdate);
+			}
+
+			const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+			if (contacts.length) {
+				await Promise.all(
+					contacts.map((contact) => {
+						const contactCustomFieldsToUpdate = validCustomFields.reduce(
+							(prev, curr) => {
+								if (curr.overwrite || !contact?.customFields?.[curr.key]) {
+									prev.customFields ??= {};
+									prev.customFields[curr.key] = curr.value;
+									return prev;
+								}
+								prev.conflictingFields ??= [];
+								prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
+								return prev;
+							},
+							{} as {
+								customFields?: Record<string, string>;
+								conflictingFields?: Array<{ field: `customFields.${string}`; value: string }>;
+							},
+						);
+
+						if (Object.keys(contactCustomFieldsToUpdate).length) {
+							// TODO: model method
+							return LivechatContacts.updateById(contact._id, { $set: contactCustomFieldsToUpdate });
 						}
 
-						const { key, value, overwrite } = customField;
-						// TODO: Change this to Bulk update
-						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-							errors.push(key);
-						}
-
-						// TODO deduplicate this code and the one at the function setCustomFields (apps/meteor/app/livechat/server/lib/custom-fields.ts)
-						const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
-						if (contacts.length > 0) {
-							await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
-						}
-
-						return key;
+						return null;
 					}),
 				);
-
-				if (processedKeys.length !== keys.length) {
-					livechatLogger.warn({
-						msg: 'Some custom fields were not processed',
-						visitorId: visitor._id,
-						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
-					});
-				}
-
-				if (errors.length > 0) {
-					livechatLogger.error({
-						msg: 'Error updating custom fields',
-						visitorId: visitor._id,
-						errors,
-					});
-					throw new Error('error-updating-custom-fields');
-				}
-
-				return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 			}
 
-			if (!visitor) {
-				throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor');
+			if (validCustomFields.length !== keys.length) {
+				livechatLogger.warn({
+					msg: 'Some custom fields were not processed',
+					visitorId: visitor._id,
+					missingKeys: keys.filter((key) => !validCustomFields.map((v) => v.key).includes(key)),
+				});
 			}
 
-			return API.v1.success({ visitor });
+			return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 		},
 	},
 );
