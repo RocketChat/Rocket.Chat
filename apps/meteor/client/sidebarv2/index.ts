@@ -1,1 +1,1 @@
-export { default } from './SidebarRegion';
+export { default } from './Sidebar';
