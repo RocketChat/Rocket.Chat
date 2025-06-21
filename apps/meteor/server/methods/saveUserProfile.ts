@@ -10,6 +10,7 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
@@ -214,6 +215,7 @@ export function executeSaveUserProfile(
 
 Meteor.methods<ServerMethods>({
 	async saveUserProfile(settings, customFields, ...args) {
+		methodDeprecationLogger.method('saveUserProfile', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 

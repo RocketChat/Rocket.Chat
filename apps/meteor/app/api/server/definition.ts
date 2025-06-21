@@ -88,7 +88,7 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-export type Options = SharedOptions<Method>;
+export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type SharedOptions<TMethod extends string> = (
 	| {

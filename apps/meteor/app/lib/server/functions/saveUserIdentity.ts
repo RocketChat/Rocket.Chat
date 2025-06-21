@@ -14,6 +14,7 @@ import {
 	notifyOnRoomChangedByUsernamesOrUids,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByNameAndRoomType,
+	notifyOnUserChange,
 } from '../lib/notifyListener';
 
 /**
@@ -94,6 +95,9 @@ export async function saveUserIdentity({
 			} else {
 				await updateUsernameReferences(handleUpdateParams);
 			}
+		}
+		if (usernameChanged) {
+			void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 		}
 	};
 

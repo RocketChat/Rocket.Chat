@@ -20,7 +20,6 @@ import {
 	useTranslation,
 	useEndpoint,
 	useUser,
-	useMethod,
 	useLayout,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -106,15 +105,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	};
 
 	// FIXME: replace to endpoint
-	const updateOwnBasicInfo = useMethod('saveUserProfile');
+	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
 		try {
-			await updateOwnBasicInfo(
-				{
-					realname: name,
+			await updateOwnBasicInfo({
+				data: {
+					name,
 					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
 					username,
 					statusText,
@@ -123,7 +122,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					bio,
 				},
 				customFields,
-			);
+			});
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
