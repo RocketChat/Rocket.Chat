@@ -24,6 +24,7 @@ import { i18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
+import { relativeTime } from '../lib/utils/relativeTime';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);
 
@@ -70,47 +71,53 @@ const useI18next = (lng: string): typeof i18next => {
 	// This breaks translations because it loads `lng` in the first init but not the second.
 	if (!isI18nInitialized) {
 		isI18nInitialized = true;
-		i18n.init({
-			lng,
-			fallbackLng: 'en',
-			ns: availableTranslationNamespaces,
-			defaultNS: defaultTranslationNamespace,
-			nsSeparator: '.',
-			resources: {
-				en: extractTranslationNamespaces(en),
-			},
-			partialBundledLanguages: true,
-			backend: {
-				loadPath: 'i18n/{{lng}}.json',
-				parse: (data: string, _lngs?: string | string[], namespaces: string | string[] = []) =>
-					extractTranslationKeys(JSON.parse(data), namespaces),
-				request: (_options: unknown, url: string, _payload: unknown, callback: (error: unknown, data: unknown) => void) => {
-					const params = url.split('/');
-
-					const lng = params[params.length - 1];
-
-					let promise = localeCache.get(lng);
-
-					if (!promise) {
-						promise = fetch(getURL(url)).then((res) => res.text());
-						localeCache.set(lng, promise);
-					}
-
-					promise.then(
-						(res) => callback(null, { data: res, status: 200 }),
-						() => callback(null, { data: '', status: 500 }),
-					);
+		i18n
+			.init({
+				lng,
+				fallbackLng: 'en',
+				ns: availableTranslationNamespaces,
+				defaultNS: defaultTranslationNamespace,
+				nsSeparator: '.',
+				resources: {
+					en: extractTranslationNamespaces(en),
 				},
-			},
-			react: {
-				useSuspense: true,
-				bindI18n: 'languageChanged loaded',
-				bindI18nStore: 'added removed',
-			},
-			interpolation: {
-				escapeValue: false,
-			},
-		});
+				partialBundledLanguages: true,
+				backend: {
+					loadPath: 'i18n/{{lng}}.json',
+					parse: (data: string, _lngs?: string | string[], namespaces: string | string[] = []) =>
+						extractTranslationKeys(JSON.parse(data), namespaces),
+					request: (_options: unknown, url: string, _payload: unknown, callback: (error: unknown, data: unknown) => void) => {
+						const params = url.split('/');
+
+						const lng = params[params.length - 1];
+
+						let promise = localeCache.get(lng);
+
+						if (!promise) {
+							promise = fetch(getURL(url)).then((res) => res.text());
+							localeCache.set(lng, promise);
+						}
+
+						promise.then(
+							(res) => callback(null, { data: res, status: 200 }),
+							() => callback(null, { data: '', status: 500 }),
+						);
+					},
+				},
+				react: {
+					useSuspense: true,
+					bindI18n: 'languageChanged loaded',
+					bindI18nStore: 'added removed',
+				},
+				interpolation: {
+					escapeValue: false,
+				},
+			})
+			.then(() => {
+				i18n.services.formatter?.add('relativeTime', (value: string, lng: string | undefined) => {
+					return relativeTime(value, lng || 'en');
+				});
+			});
 	}
 
 	useEffect(() => {

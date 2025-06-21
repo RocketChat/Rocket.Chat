@@ -109,6 +109,7 @@ export type IOutboundProvider = {
 	providerName: string;
 	supportsTemplates: boolean;
 	providerType: 'phone' | 'email';
+	lastChat?: string;
 };
 
 export type IOutboundProviderMetadata = IOutboundProvider & {
