@@ -15,6 +15,7 @@ import {
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -43,6 +44,7 @@ import { applyAirGappedRestrictionsValidation } from '../../../license/server/ai
 import type { NotificationFieldType } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { saveNotificationSettingsMethod } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -372,25 +374,89 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type RoomsFavorite = {
+	favorite: boolean;
+	roomId?: string;
+	roomName?: string;
+};
+
+const RoomsFavoriteSchema = {
+	type: 'object',
+	properties: {
+		favorite: { type: 'boolean' },
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+	},
+	required: ['favorite'],
+	additionalProperties: false,
+};
+
+export const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
+const roomsFavoriteEndpoints = API.v1.post(
 	'rooms.favorite',
-	{ authRequired: true },
 	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsFavoriteProps,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'errorType', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					status: { type: 'string' },
+					message: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['message', 'status', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
+	async function action() {
+		const { favorite } = this.bodyParams;
+
+		if (!this.bodyParams.hasOwnProperty('favorite')) {
+			return API.v1.failure("The 'favorite' param is required");
+		}
+
+		const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+		await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+		return API.v1.success();
+	},
 );
+
+export type RoomsFavoriteEndpoints = ExtractRoutesFromAPI<typeof roomsFavoriteEndpoints>;
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
@@ -1005,3 +1071,8 @@ API.v1.addRoute(
 		},
 	},
 );
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RoomsFavoriteEndpoints {}
+}
