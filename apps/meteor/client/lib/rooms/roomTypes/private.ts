@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { hasPermission } from '../../../../app/authorization/client';
+import { hasPermission } from '../../../../app/authorization/client/hasPermission';
 import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
@@ -83,7 +83,7 @@ roomCoordinator.add(
 
 		condition() {
 			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return groupByType && hasPermission('view-p-room');
+			return groupByType && hasPermission(Meteor.user(), 'view-p-room');
 		},
 
 		getAvatarPath(room) {

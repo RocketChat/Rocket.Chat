@@ -1,6 +1,7 @@
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
 
-import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasPermission } from '../../../app/authorization/client/hasPermission';
 import { settings } from '../../../app/settings/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
@@ -40,13 +41,14 @@ export const {
 		href: '/account/tokens',
 		i18nLabel: 'Personal_Access_Tokens',
 		icon: 'key',
-		permissionGranted: (): boolean => hasPermission('create-personal-access-tokens'),
+		permissionGranted: (): boolean => hasPermission(Meteor.user(), 'create-personal-access-tokens'),
 	},
 	{
 		href: '/account/omnichannel',
 		i18nLabel: 'Omnichannel',
 		icon: 'headset',
-		permissionGranted: (): boolean => hasAtLeastOnePermission(['send-omnichannel-chat-transcript', 'request-pdf-transcript']),
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission(Meteor.user(), ['send-omnichannel-chat-transcript', 'request-pdf-transcript']),
 	},
 	{
 		href: '/account/feature-preview',

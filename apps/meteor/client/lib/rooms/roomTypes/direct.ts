@@ -100,7 +100,7 @@ roomCoordinator.add(
 
 		condition() {
 			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
+			return groupByType && hasAtLeastOnePermission(Meteor.user(), ['view-d-room', 'view-joined-room']);
 		},
 
 		getAvatarPath(room) {
