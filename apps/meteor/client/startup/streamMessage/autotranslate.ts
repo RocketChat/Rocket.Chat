@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { hasPermission } from '../../../app/authorization/client';
+import { hasPermission } from '../../../app/authorization/client/hasPermission';
 import { settings } from '../../../app/settings/client';
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const isEnabled = settings.get('AutoTranslate_Enabled') && hasPermission('auto-translate');
+		const isEnabled = settings.get('AutoTranslate_Enabled') && hasPermission(Meteor.user(), 'auto-translate');
 
 		if (!isEnabled) {
 			callbacks.remove('streamMessage', 'autotranslate-stream');

@@ -3,12 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
+import { hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
+import { hasPermission } from '../../app/authorization/client/hasPermission';
 import { Roles, AuthzCachedCollection } from '../../app/models/client';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 const contextValue = {
-	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) => hasPermission(permission, scope, scopeRoles)),
+	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) =>
+		hasPermission(Meteor.user(), permission, scope, scopeRoles),
+	),
 	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),
 	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(permissions, scope)),
 	queryRole: createReactiveSubscriptionFactory(

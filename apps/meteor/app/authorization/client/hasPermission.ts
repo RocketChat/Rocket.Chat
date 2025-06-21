@@ -1,5 +1,4 @@
 import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import * as Models from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
@@ -14,9 +13,7 @@ const hasIsUserInRole = (
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
-	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
-
+	(permissionIds: IPermission['_id'][], scope: string | undefined, user: IUser, scopedRoles?: IPermission['_id'][]): boolean => {
 		const checkEachPermission = quantifier.bind(permissionIds);
 
 		return checkEachPermission((permissionId) => {
@@ -46,7 +43,7 @@ const createPermissionValidator =
 				}
 
 				if (hasIsUserInRole(model)) {
-					return model.isUserInRole(userId, roleId, scope);
+					return model.isUserInRole(user._id, roleId, scope);
 				}
 
 				return undefined;
@@ -61,18 +58,11 @@ const all = createPermissionValidator(Array.prototype.every);
 const validatePermissions = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope: string | undefined,
-	predicate: (
-		permissionIds: IPermission['_id'][],
-		scope: string | undefined,
-		userId: IUser['_id'],
-		scopedRoles?: IPermission['_id'][],
-	) => boolean,
-	userId?: IUser['_id'] | null,
+	predicate: (permissionIds: IPermission['_id'][], scope: string | undefined, user: IUser, scopedRoles?: IPermission['_id'][]) => boolean,
+	user: IUser | null,
 	scopedRoles?: IPermission['_id'][],
 ): boolean => {
-	userId = userId ?? Meteor.userId();
-
-	if (!userId) {
+	if (!user) {
 		return false;
 	}
 
@@ -80,22 +70,23 @@ const validatePermissions = (
 		return false;
 	}
 
-	return predicate(([] as IPermission['_id'][]).concat(permissions), scope, userId, scopedRoles);
+	return predicate(([] as IPermission['_id'][]).concat(permissions), scope, user, scopedRoles);
 };
 
 export const hasAllPermission = (
+	user: Meteor.User | IUser | null,
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
 	scopedRoles?: IPermission['_id'][],
-): boolean => validatePermissions(permissions, scope, all, undefined, scopedRoles);
+): boolean => validatePermissions(permissions, scope, all, user as IUser, scopedRoles);
 
-export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
-	validatePermissions(permissions, scope, atLeastOne);
-
-export const userHasAllPermission = (
+export const hasAtLeastOnePermission = (
+	user: Meteor.User | IUser | null,
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
-	userId?: IUser['_id'] | null,
-): boolean => validatePermissions(permissions, scope, all, userId);
+): boolean => validatePermissions(permissions, scope, atLeastOne, user as IUser);
+
+export const userHasAllPermission = (user: IUser | null, permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
+	validatePermissions(permissions, scope, all, user);
 
 export const hasPermission = hasAllPermission;
