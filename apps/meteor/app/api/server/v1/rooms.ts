@@ -530,6 +530,66 @@ API.v1.addRoute(
 		},
 	},
 );
+API.v1.addRoute(
+	'rooms.moveDiscussion',
+	{
+		authRequired: true /* , validateParams: isRoomsMoveDiscussionProps */,
+	},
+	{
+		async post() {
+			const { pmid, prid, drid } = this.bodyParams;
+
+			if (!pmid) {
+				return API.v1.failure('Body parameter "pmid" is required.');
+			}
+			if (!prid) {
+				return API.v1.failure('Body parameter "prid" is required.');
+			}
+			if (!drid) {
+				return API.v1.failure('Body parameter "drid" is required.');
+			}
+
+			const droom = await findRoomByIdOrName({ params: { roomId: drid } });
+			const proom = await findRoomByIdOrName({ params: { roomId: prid } });
+			if (
+				!droom ||
+				!proom ||
+				!(await canAccessRoomAsync(droom, { _id: this.userId })) ||
+				!(await canAccessRoomAsync(proom, { _id: this.userId }))
+			) {
+				return API.v1.failure('not-allowed', 'Not Allowed');
+			}
+
+			const parentMessage = await Messages.findOneAndUpdate(
+				{
+					_id: pmid,
+				},
+				{ $set: { rid: prid } },
+				{
+					returnDocument: 'after',
+				},
+			);
+
+			if (!parentMessage) {
+				return API.v1.failure('no-message-found', 'No message found');
+			}
+
+			const discussionRoom = await Rooms.findOneAndUpdate(
+				{
+					_id: drid,
+				},
+				{
+					$set: {
+						prid: prid,
+					},
+				},
+				{ returnDocument: 'after' },
+			);
+
+			return API.v1.success({ discussion: discussionRoom });
+		},
+	},
+);
 
 API.v1.addRoute(
 	'rooms.getDiscussions',

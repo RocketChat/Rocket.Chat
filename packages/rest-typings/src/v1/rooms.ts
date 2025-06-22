@@ -129,6 +129,12 @@ type RoomsCreateDiscussionProps = {
 	topic?: string;
 };
 
+type RoomsMoveDiscussionProps = {
+	prid: IRoom['_id'];
+	drid: IRoom['_id'];
+	pmid: IMessage['_id'];
+};
+
 const RoomsCreateDiscussionSchema = {
 	type: 'object',
 	properties: {
@@ -163,7 +169,26 @@ const RoomsCreateDiscussionSchema = {
 	additionalProperties: false,
 };
 
+const RoomsMoveDiscussionSchema = {
+	type: 'object',
+	properties: {
+		prid: {
+			type: 'string',
+		},
+		pmid: {
+			type: 'string',
+		},
+		drid: {
+			type: 'string',
+		},
+	},
+	required: ['prid', 'pmid', 'drid'],
+	additionalProperties: false,
+};
+
 export const isRoomsCreateDiscussionProps = ajv.compile<RoomsCreateDiscussionProps>(RoomsCreateDiscussionSchema);
+
+export const isRoomsMoveDiscussionProps = ajv.compile<RoomsMoveDiscussionProps>(RoomsMoveDiscussionSchema);
 
 type RoomsExportProps = RoomsExportFileProps | RoomsExportEmailProps;
 
@@ -723,6 +748,12 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.cleanHistory': {
 		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
+	};
+
+	'/v1/rooms.moveDiscussion': {
+		POST: (params: RoomsMoveDiscussionProps) => {
+			discussion: IRoom & { rid: IRoom['_id'] };
+		};
 	};
 
 	'/v1/rooms.createDiscussion': {
