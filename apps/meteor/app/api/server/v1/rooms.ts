@@ -29,7 +29,7 @@ import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite'
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
@@ -56,6 +56,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 
 export async function findRoomByIdOrName({
 	params,
@@ -549,13 +550,11 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "drid" is required.');
 			}
 
-			const droom = await findRoomByIdOrName({ params: { roomId: drid } });
-			const proom = await findRoomByIdOrName({ params: { roomId: prid } });
+			const pmsg = await Messages.findOneById(pmid);
 			if (
-				!droom ||
-				!proom ||
-				!(await canAccessRoomAsync(droom, { _id: this.userId })) ||
-				!(await canAccessRoomAsync(proom, { _id: this.userId }))
+				!pmsg ||
+				!(await hasAtLeastOnePermissionAsync(this.userId, ['start-discussion', 'start-discussion-other-user'], prid)) ||
+				!(await canDeleteMessageAsync(this.userId, { u: pmsg.u, rid: pmsg.rid, ts: pmsg.ts }))
 			) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
