@@ -1,17 +1,18 @@
-import { useId, useMemo } from 'react';
-import { Modal, Box, Field, FieldLabel, FieldRow, Button, Select, SelectOption } from '@rocket.chat/fuselage';
-import { useForm, Controller } from 'react-hook-form';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldLabel, FieldRow, Button, Select } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
-import { goToRoomById } from '/client/lib/utils/goToRoomById';
-import { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { dispatchToastMessage } from '/client/lib/toast';
+import { keepPreviousData, useQuery, useMutation } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-interface MoveDiscussionProps {
+import { dispatchToastMessage } from '../../lib/toast';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
+
+type MoveDiscussionProps = {
 	onClose: () => void;
 	message: IMessage;
-}
+};
 
 const ROOM_AUTOCOMPLETE_PARAMS = {
 	admin: {
@@ -37,7 +38,6 @@ const MoveDiscussion = ({ message: { _id, drid }, onClose }: MoveDiscussionProps
 		formState: { errors },
 		handleSubmit,
 		control,
-		watch,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
