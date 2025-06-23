@@ -79,8 +79,6 @@
 		"@types/semver": "^7.5.8",
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
 		"alsatian": "^2.4.0",
 		"browserify": "^16.5.2",
 		"eslint": "^9.29.0",

@@ -6,7 +6,7 @@ import globals from 'globals';
 
 /**
  * A shared ESLint configuration for the repository
- * 
+ *
  * @type {import('typescript-eslint').ConfigArray}
  */
 export const config = tseslint.config(
@@ -30,6 +30,7 @@ export const config = tseslint.config(
 			rules: {
 				'@typescript-eslint/no-explicit-any': 'off',
 				'@typescript-eslint/no-empty-object-type': 'off',
+				'@typescript-eslint/no-empty-interface': 'warn',
 				'@typescript-eslint/naming-convention': [
 					'error',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
@@ -71,21 +72,15 @@ export const config = tseslint.config(
 		},
 	],
 	{
-		ignores: ['**/dist/**',],
+		ignores: ['**/dist/**'],
 	},
 	{
-		files: ['babel.config.js', 'webpack.config.js'],
+		files: ['babel.config.js', 'webpack.config.js', '**/scripts/**/*.js', '**/scripts/**/*.mjs'],
+		languageOptions: {
+			globals: globals.node,
+		},
 		rules: {
 			'@typescript-eslint/no-require-imports': 'off',
 		},
-		languageOptions: {
-			globals: globals.node
-		},
 	},
-	{
-		files: ['**/scripts/**/*.js', '**/scripts/**/*.mjs'],
-		languageOptions: {
-			globals: globals.node
-		}
-	}
 );

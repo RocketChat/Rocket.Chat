@@ -8599,8 +8599,6 @@ __metadata:
     "@types/semver": "npm:^7.5.8"
     "@types/stack-trace": "npm:0.0.33"
     "@types/uuid": "npm:~10.0.0"
-    "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
-    "@typescript-eslint/parser": "npm:~5.60.1"
     adm-zip: "npm:^0.5.16"
     alsatian: "npm:^2.4.0"
     browserify: "npm:^16.5.2"
