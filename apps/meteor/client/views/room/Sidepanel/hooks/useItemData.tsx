@@ -1,5 +1,6 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,17 +10,12 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../../../../sidebarv2/RoomMenu';
-import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../../navigation/lib/getNavigationMessagePreview';
 
-export const useItemData = (
-	room: SubscriptionWithRoom,
-	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
-) => {
+export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
-	const AvatarTemplate = useAvatarTemplate(viewMode);
 
 	const { unreadTitle, unreadVariant, showUnread, highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
 	const { unread = 0, alert, rid, t: type, cl } = room;
@@ -77,11 +73,11 @@ export const useItemData = (
 			icon,
 			time,
 			badges,
-			avatar: AvatarTemplate && <AvatarTemplate {...room} />,
+			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
 		}),
-		[AvatarTemplate, badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
+		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
 	);
 
 	return itemData;

@@ -10,29 +10,22 @@ import {
 	SidebarV2ItemTitle,
 	// Tag,
 } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useState } from 'react';
 
 import SidePanelParentRoom from './SidePanelParentRoom';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
-// import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
 import { useItemData } from '../hooks/useItemData';
 
 type RoomSidepanelItemProps = {
 	openedRoom?: string;
 	room: SubscriptionWithRoom;
 	parentRid?: string;
-	viewMode?: 'extended' | 'medium' | 'condensed';
 };
 
 const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
-	// const SidepanelItem = useTemplateByViewMode();
-
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, {
-		viewMode: 'condensed',
-		openedRoom,
-	});
-
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
+	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
@@ -42,7 +35,14 @@ const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	return (
-		<SidebarV2Item {...props} href={href} selected={selected} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item
+			{...props}
+			href={href}
+			onClick={() => !selected && sidebar.toggle()}
+			selected={selected}
+			onFocus={handleFocus}
+			onPointerEnter={handlePointerEnter}
+		>
 			<SidebarV2ItemCol>
 				{parentRoomId && (
 					<SidebarV2ItemRow>

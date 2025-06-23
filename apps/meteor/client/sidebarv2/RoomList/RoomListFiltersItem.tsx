@@ -9,19 +9,18 @@ import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarFiltersItemProps = {
 	group: SidePanelFiltersKeys;
-	selected: boolean;
 	icon: IconName;
 	onClick: () => void;
 };
 
-const RoomListFiltersItem = ({ group, selected, icon, onClick }: SidebarFiltersItemProps) => {
+const RoomListFiltersItem = ({ group, icon, onClick }: SidebarFiltersItemProps) => {
 	const { t } = useTranslation();
 	const unreadGroupCount = useUnreadGroupData(group);
 	const roomTitle = sidePanelFiltersConfig[group].title;
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item tabIndex={0} role='tab' selected={selected} onClick={onClick}>
+		<SidebarV2Item tabIndex={0} role='tab' onClick={onClick}>
 			<Icon size='x20' name={icon} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
 			{showUnread && (
