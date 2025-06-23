@@ -8,29 +8,21 @@ import { createFakeRoom, createFakeSubscription } from '../../../tests/mocks/dat
 const mockRoom = createFakeRoom({ _id: 'room1', t: 'c', name: 'room1', fname: 'Room 1' });
 const mockSubscription = createFakeSubscription({ name: 'room1', t: 'c', disableNotifications: false, rid: 'room1' });
 
-// jest.mock('@rocket.chat/ui-contexts', () => ({
-// 	usePermission: jest.fn(() => true),
-// 	useRouter: jest.fn(() => ({ navigate: jest.fn() })),
-// 	useSetting: jest.fn(() => true),
-// 	useUserSubscription: jest.fn(() => mockSubscription),
-// }));
-
-jest.mock('../../hooks/menuActions/useLeaveRoom', () => ({
-	useLeaveRoomAction: jest.fn(() => jest.fn()),
-}));
-jest.mock('../../hooks/menuActions/useToggleFavoriteAction', () => ({
-	useToggleFavoriteAction: jest.fn(() => jest.fn()),
-}));
-jest.mock('../../hooks/menuActions/useToggleNotificationsAction', () => ({
-	useToggleNotificationAction: jest.fn(() => jest.fn()),
-}));
-jest.mock('../../hooks/menuActions/useToggleReadAction', () => ({
-	useToggleReadAction: jest.fn(() => jest.fn()),
+jest.mock('../../../client/lib/rooms/roomCoordinator', () => ({
+	roomCoordinator: {
+		getRoomDirectives: () => ({
+			getUiText: () => 'leaveWarning',
+		}),
+	},
 }));
 
-jest.mock('../../hooks/useHideRoomAction', () => ({
-	useHideRoomAction: jest.fn(() => jest.fn()),
+jest.mock('../../../app/ui-utils/client', () => ({
+	LegacyRoomManager: {
+		close: jest.fn(),
+	},
 }));
+
+// TODO: Update this mock when we get the mocked OmnichannelContext working
 jest.mock('../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
 	useOmnichannelPrioritiesMenu: jest.fn(() => [{ id: 'priority', content: 'Priority', icon: 'priority', onClick: jest.fn() }]),
 }));
@@ -47,7 +39,7 @@ const mockHookProps = {
 } as const;
 
 describe('useRoomMenuActions', () => {
-	it('returns all menu options for normal rooms', () => {
+	it('should return all menu options for normal rooms', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
 				.withSubscriptions([{ ...mockSubscription, rid: 'room1' }] as unknown as SubscriptionWithRoom[])
@@ -64,7 +56,7 @@ describe('useRoomMenuActions', () => {
 		expect(actions[1].items).toHaveLength(2);
 	});
 
-	it('returns priorities section for omnichannel room', () => {
+	it('should return priorities section for omnichannel room', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, type: 'l' }), {
 			wrapper: mockAppRoot()
 				.withSubscriptions([{ ...mockSubscription, ...mockRoom, t: 'l' }] as unknown as SubscriptionWithRoom[])
@@ -81,7 +73,7 @@ describe('useRoomMenuActions', () => {
 		expect(result.current[0].title).toBe('');
 	});
 
-	it('does not return any menu options if hideDefaultOptions', () => {
+	it('should not return any menu option if hideDefaultOptions', () => {
 		const { result } = renderHook(() => useRoomMenuActions({ ...mockHookProps, hideDefaultOptions: true }), {
 			wrapper: mockAppRoot()
 				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
@@ -96,7 +88,7 @@ describe('useRoomMenuActions', () => {
 		expect(result.current[0].title).toBe('');
 	});
 
-	it('does not return favortite room option if setting is disabled', () => {
+	it('should not return favorite room option if setting is disabled', () => {
 		const { result } = renderHook(() => useRoomMenuActions(mockHookProps), {
 			wrapper: mockAppRoot()
 				.withSubscriptions([{ ...mockSubscription, ...mockRoom }] as unknown as SubscriptionWithRoom[])
