@@ -11,7 +11,7 @@ function handleFederationRoutesRegistration(app: Hono) {
 
   for (const route of homeserverRoutes) {
     const method = route.method.toLowerCase() as 'get' | 'post' | 'put' | 'delete';
-    const path = `${config.routePrefix}${route.path}`;
+    const path = route.path;
     
     app[method](path, async (c) => {
       try {
@@ -64,6 +64,33 @@ export async function startMicroservice(options?: HomeserverSetupOptions) {
     await setupHomeserver(options);
 
     const app = new Hono();
+    
+    // Test endpoint to simulate Matrix message events
+    app.post('/test/matrix-message', async (c) => {
+      try {
+        const body = await c.req.json();
+        
+        // Emit a test Matrix message event
+        if (options?.emitter) {
+          options.emitter.emit('homeserver.matrix.message', {
+            event_id: body.event_id || '$test_event_' + Date.now(),
+            room_id: body.room_id || '!testroom:matrix.org',
+            sender: body.sender || '@testuser:matrix.org',
+            origin_server_ts: Date.now(),
+            content: {
+              body: body.message || 'Test message from Matrix',
+              msgtype: 'm.text'
+            }
+          });
+        }
+        
+        return c.json({ success: true, message: 'Matrix message event emitted' });
+      } catch (error) {
+        console.error('Error in test endpoint:', error);
+        return c.json({ error: 'Failed to emit event' }, 500);
+      }
+    });
+    
     const federationServer = handleFederationRoutesRegistration(app);
     handleHealthCheck();
     
