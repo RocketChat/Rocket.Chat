@@ -31,7 +31,7 @@
 		"@types/node": "~22.14.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
-		"event-loop-stats": "^1.4.1",
+		"event-loop-stats": "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch",
 		"eventemitter3": "^5.0.1",
 		"gc-stats": "^1.4.1",
 		"i18next": "~23.4.9",

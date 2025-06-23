@@ -1,0 +1,133 @@
+diff --git a/binding.gyp b/binding.gyp
+index 98541ba5f99c39433c81d1cb7c1c218bf9ff7e45..2939c0a2331440aecce0e539a4a6d778f83d535e 100644
+--- a/binding.gyp
++++ b/binding.gyp
+@@ -4,7 +4,21 @@
+ 		"sources"     : [ "src/eventLoopStats.cc" ],
+ 		"include_dirs" : [
+ 			"src",
+-			"<!(node -e \"require('nan')\")"
+-		]
++			"<!@(node -p \"require('node-addon-api').include\")"
++		],
++		"dependencies": [
++			"<!(node -p \"require('node-addon-api').gyp\")"
++		],
++		"cflags!": [ "-fno-exceptions" ],
++		"cflags_cc!": [ "-fno-exceptions" ],
++		"xcode_settings": {
++			"GCC_ENABLE_CPP_EXCEPTIONS": "YES",
++			"CLANG_CXX_LIBRARY": "libc++",
++			"MACOSX_DEPLOYMENT_TARGET": "10.7"
++		},
++		"msvs_settings": {
++			"VCCLCompilerTool": { "ExceptionHandling": 1 }
++		},
++		"defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ]
+ 	}]
+ }
+diff --git a/package.json b/package.json
+index 4a32339b5a1992e702c0d8ee93844c4a668a3064..c2e77f6f2a01f1f6eb8d7b644a341126bf17a9d0 100644
+--- a/package.json
++++ b/package.json
+@@ -22,16 +22,16 @@
+     "test": "mocha && tsc --noEmit --strict --esModuleInterop --module commonjs test/types.ts"
+   },
+   "engines": {
+-    "node": ">=4.0.0"
++    "node": ">=16.0.0"
+   },
+   "dependencies": {
+-    "nan": "^2.14.0"
++    "node-addon-api": "^8.0.0"
+   },
+   "gypfile": true,
+   "devDependencies": {
+-    "@types/node": "^17.0.10",
++    "@types/node": "^20.0.0",
+     "chai": "4.1.2",
+-    "mocha": "5.2.0",
+-    "typescript": "^4.5.4"
++    "mocha": "10.2.0",
++    "typescript": "^5.0.0"
+   }
+ }
+diff --git a/src/eventLoopStats.cc b/src/eventLoopStats.cc
+index fd44e85005ce6bd7a43a76374e22a25a54fb6759..9fdc3d34cd3d3b402ceb5fb8ca62e9af6551b787 100644
+--- a/src/eventLoopStats.cc
++++ b/src/eventLoopStats.cc
+@@ -1,6 +1,5 @@
+-#include <nan.h>
+-
+-using namespace v8;
++#include <napi.h>
++#include <uv.h>
+ 
+ // Casting -1 to an uint will give the max uint value
+ const uint32_t maxPossibleUint32 = -1;
+@@ -71,53 +70,35 @@ void on_check(uv_check_t* handle) {
+   previous_now = now;
+ }
+ 
++Napi::Value sense(const Napi::CallbackInfo& info) {
++  Napi::Env env = info.Env();
+ 
+-static NAN_METHOD(sense) {
+   // Reset min and max counters when there were no calls.
+   if (num == 0) {
+     min = 0;
+     max = 0;
+   }
+ 
+-  Local<Object> obj = Nan::New<Object>();
+-  Nan::Set(
+-    obj,
+-    Nan::New("min").ToLocalChecked(),
+-    Nan::New<Number>(static_cast<double>(min))
+-  );
+-  Nan::Set(
+-    obj,
+-    Nan::New("max").ToLocalChecked(),
+-    Nan::New<Number>(static_cast<double>(max))
+-  );
+-  Nan::Set(
+-    obj,
+-    Nan::New("num").ToLocalChecked(),
+-    Nan::New<Number>(static_cast<double>(num))
+-  );
+-  Nan::Set(
+-    obj,
+-    Nan::New("sum").ToLocalChecked(),
+-    Nan::New<Number>(static_cast<double>(sum))
+-  );
++  Napi::Object obj = Napi::Object::New(env);
++  obj.Set("min", Napi::Number::New(env, static_cast<double>(min)));
++  obj.Set("max", Napi::Number::New(env, static_cast<double>(max)));
++  obj.Set("num", Napi::Number::New(env, static_cast<double>(num)));
++  obj.Set("sum", Napi::Number::New(env, static_cast<double>(sum)));
+ 
+   reset();
+ 
+-  info.GetReturnValue().Set(obj);
++  return obj;
+ }
+ 
+-
+-NAN_MODULE_INIT(init) {
++Napi::Object Init(Napi::Env env, Napi::Object exports) {
+   reset();
+ 
+   uv_check_init(uv_default_loop(), &check_handle);
+   uv_check_start(&check_handle, reinterpret_cast<uv_check_cb>(on_check));
+   uv_unref(reinterpret_cast<uv_handle_t*>(&check_handle));
+ 
+-  Nan::Set(target,
+-    Nan::New("sense").ToLocalChecked(),
+-    Nan::GetFunction(Nan::New<FunctionTemplate>(sense)).ToLocalChecked()
+-  );
++  exports.Set("sense", Napi::Function::New(env, sense));
++  return exports;
+ }
+ 
+-NODE_MODULE(eventLoopStats, init)
++NODE_API_MODULE(eventLoopStats, Init)

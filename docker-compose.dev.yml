@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # Override for development builds with event-loop-stats
+  ddp-streamer-service:
+    build:
+      context: .
+      dockerfile: ee/apps/ddp-streamer/Dockerfile.dev
+      args:
+        SERVICE: ddp-streamer
+    volumes:
+      # Mount event-loop-stats for development
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  stream-hub-service:
+    build:
+      context: .
+      dockerfile: ee/apps/stream-hub-service/Dockerfile.dev
+      args:
+        SERVICE: stream-hub-service
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  presence-service:
+    build:
+      context: .
+      dockerfile: ee/apps/presence-service/Dockerfile.dev
+      args:
+        SERVICE: presence-service
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  queue-worker-service:
+    build:
+      context: .
+      dockerfile: ee/apps/queue-worker/Dockerfile.dev
+      args:
+        SERVICE: queue-worker
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  authorization-service:
+    build:
+      context: .
+      dockerfile: ee/apps/authorization-service/Dockerfile.dev
+      args:
+        SERVICE: authorization-service
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  account-service:
+    build:
+      context: .
+      dockerfile: ee/apps/account-service/Dockerfile.dev
+      args:
+        SERVICE: account-service
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
+
+  omnichannel-transcript-service:
+    build:
+      context: .
+      dockerfile: ee/apps/omnichannel-transcript/Dockerfile.dev
+      args:
+        SERVICE: omnichannel-transcript
+    volumes:
+      - ./tmp/event-loop-stats:/tmp/event-loop-stats:ro
