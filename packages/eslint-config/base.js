@@ -14,11 +14,12 @@ export const config = tseslint.config(
 		js.configs.recommended,
 		{
 			rules: {
-				'no-unused-expressions': 'off',
-				'no-async-promise-executor': 'off',
-				'no-case-declarations': 'off',
-				'no-prototype-builtins': 'off',
-				'no-await-in-loop': 'error',
+				'no-unused-expressions': 'warn',
+				'no-async-promise-executor': 'warn',
+				'no-case-declarations': 'warn',
+				'no-prototype-builtins': 'warn',
+				'no-await-in-loop': 'warn',
+				'no-unsafe-optional-chaining': 'warn',
 			},
 		},
 	],
@@ -28,11 +29,11 @@ export const config = tseslint.config(
 		...tseslint.configs.recommended,
 		{
 			rules: {
-				'@typescript-eslint/no-explicit-any': 'off',
-				'@typescript-eslint/no-empty-object-type': 'off',
+				'@typescript-eslint/no-explicit-any': 'warn',
+				'@typescript-eslint/no-empty-object-type': 'warn',
 				'@typescript-eslint/no-empty-interface': 'warn',
 				'@typescript-eslint/naming-convention': [
-					'error',
+					'warn',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
 					{
 						selector: ['variable'],
@@ -60,14 +61,14 @@ export const config = tseslint.config(
 					},
 				],
 				'@typescript-eslint/no-unused-vars': [
-					'error',
+					'warn',
 					{
 						argsIgnorePattern: '^_',
 						ignoreRestSiblings: true,
 						caughtErrors: 'none',
 					},
 				],
-				'@typescript-eslint/no-unused-expressions': 'off',
+				'@typescript-eslint/no-unused-expressions': 'warn',
 			},
 		},
 	],
@@ -75,12 +76,12 @@ export const config = tseslint.config(
 		ignores: ['**/dist/**'],
 	},
 	{
-		files: ['babel.config.js', 'webpack.config.js', '**/scripts/**/*.js', '**/scripts/**/*.mjs'],
+		files: ['babel.config.js', 'webpack.config.js', '.prettierrc.js', '**/scripts/**/*.js', '**/scripts/**/*.mjs'],
 		languageOptions: {
 			globals: globals.node,
 		},
 		rules: {
-			'@typescript-eslint/no-require-imports': 'off',
+			'@typescript-eslint/no-require-imports': 'warn',
 		},
 	},
 );

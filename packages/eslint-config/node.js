@@ -12,7 +12,7 @@ export const config = tseslint.config([
 	{
 		files: ['**/*.js', '**/*.cjs'],
 		rules: {
-			'@typescript-eslint/no-require-imports': 'off'
+			'@typescript-eslint/no-require-imports': 'warn',
 		},
 		languageOptions: {
 			globals: globals.node,

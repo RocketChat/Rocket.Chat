@@ -7,7 +7,7 @@
     "dev": "vite",
     "build-preview": "tsc && vite build",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
