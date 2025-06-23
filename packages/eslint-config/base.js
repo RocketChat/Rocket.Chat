@@ -22,6 +22,7 @@ export const config = tseslint.config(
 			},
 		},
 	],
+	tseslint.configs.eslintRecommended,
 	prettier,
 	[
 		...tseslint.configs.recommended,
@@ -73,11 +74,12 @@ export const config = tseslint.config(
 		ignores: ['**/dist/**',],
 	},
 	{
-		files: ['babel.config.js'],
+		files: ['babel.config.js', 'webpack.config.js'],
+		rules: {
+			'@typescript-eslint/no-require-imports': 'off',
+		},
 		languageOptions: {
-			globals: {
-				module: 'readonly',
-			},
+			globals: globals.node
 		},
 	},
 	{
