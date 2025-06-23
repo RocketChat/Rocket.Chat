@@ -1,4 +1,5 @@
 import { Agenda } from '@rocket.chat/agenda';
+import type { Logger } from '@rocket.chat/logger';
 import { CronHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { Db } from 'mongodb';
@@ -59,7 +60,7 @@ export class AgendaCronJobs {
 		return Boolean(this.scheduler);
 	}
 
-	public async start(mongo: Db): Promise<void> {
+	public async start(mongo: Db, logger?: Logger): Promise<void> {
 		this.scheduler = new Agenda({
 			mongo,
 			db: { collection: 'rocketchat_cron' },
@@ -67,6 +68,19 @@ export class AgendaCronJobs {
 			processEvery: '1 minute',
 		});
 		await this.scheduler.start();
+
+		this.scheduler.on('ready', () => {
+			logger?.debug('Cron scheduler is running');
+		});
+		this.scheduler.on('error', (err) => {
+			logger?.error({ msg: 'Error in cron scheduler', err });
+		});
+		this.scheduler.on('fail', (err, job) => {
+			logger?.error({ msg: 'Cron job failed', err, job });
+		});
+		this.scheduler.on('success', (job) => {
+			logger?.debug({ msg: 'Cron job succeeded', job });
+		});
 
 		for await (const job of this.reservedJobs) {
 			if (job.timestamped) {
