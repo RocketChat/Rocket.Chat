@@ -45,7 +45,6 @@ import { useRoom } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
-/* import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow'; */
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
@@ -190,7 +189,6 @@ const RichTextMessageBox = ({
 	const contentEditableRef = useRef<HTMLDivElement>(null);
 
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -364,8 +362,6 @@ const RichTextMessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	/* const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio); */
-
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
 
 	/* const sizes = useContentBoxSize(textareaRef); */
@@ -508,7 +504,6 @@ const RichTextMessageBox = ({
 					onBlur={setLastCursorPosition}
 					onFocus={getLastCursorPosition}
 				/>
-				<div ref={shadowRef} /* style={shadowStyle} */ />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
