@@ -1,16 +1,19 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
 import { MoveDiscussion } from '../../MoveDiscussion';
 
-export const useMoveDiscussionAction = (message: IMessage, userId: IUser['_id']) => {
+export const useMoveDiscussionAction = (message: IMessage) => {
 	const setModal = useSetModal();
+	const userId = useMemo(() => Meteor.userId(), []);
+	const canMoveDiscussion = usePermission('move-discussion', userId || '');
 
 	const { drid } = message;
-	const canMoveDiscussion = usePermission('move-discussion', userId);
+
 	const userOwnsMessage = message.u._id === userId;
 
-	if (!drid || !(canMoveDiscussion || userOwnsMessage)) {
+	if (!userId || !drid || !(canMoveDiscussion || userOwnsMessage)) {
 		return null;
 	}
 
