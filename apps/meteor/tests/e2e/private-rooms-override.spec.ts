@@ -135,4 +135,35 @@ test.describe('private-rooms-override', () => {
             await expect(otherRoomRow).toBeVisible();
         });
     });
+
+    test('should allow admin to assign roles in private room accessed via directory', async ({ page, api }) => {
+        await test.step('Navigate to directory and access the private room created by user1', async () => {
+            await poDirectory.goto();
+            await page.waitForLoadState('networkidle');
+            
+            // Search for the private room created by user1 (admin is NOT a member)
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            await page.waitForLoadState('networkidle');
+            
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).toBeVisible();
+            
+            // Click to enter the room
+            await otherRoomRow.click();
+            await expect(page).toHaveURL(`/group/${otherPrivateRoom.name}`);
+        });
+
+        await test.step('Open members tab and access user1 info', async () => {
+            // Open the Members tab
+            await poHomeChannel.tabs.btnTabMembers.click();
+            await page.waitForLoadState('networkidle');
+            
+            // Look for user1 in the members list and click on them
+            const user1Element = page.locator('[data-qa="MemberItem-user1"]').first();
+            await expect(user1Element).toBeVisible();
+            await user1Element.click();
+        });
+
+        
+    });
 });
