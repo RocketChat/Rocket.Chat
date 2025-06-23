@@ -82,5 +82,12 @@
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",
 		"node-gyp": "^10.2.0"
+	},
+	"packageExtensions": {
+		"event-loop-stats": {
+			"dependencies": {
+				"node-addon-api": "^8.0.0"
+			}
+		}
 	}
 }
