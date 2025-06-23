@@ -21,6 +21,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -33,6 +34,17 @@ type RoomMessageProps = {
 	ignoredUser?: boolean;
 	searchText?: string;
 } & ComponentProps<typeof Message>;
+
+function getAriaLabelledBy(sequential: boolean, readReceiptEnabled: boolean, messageId: string) {
+	if (!sequential) {
+		let lbl = `${messageId}-displayName ${messageId}-time ${messageId}-content`;
+		if (readReceiptEnabled) {
+			lbl += ` ${messageId}-read-status`;
+		}
+		return lbl;
+	}
+	return undefined;
+}
 
 const RoomMessage = ({
 	message,
@@ -58,6 +70,8 @@ const RoomMessage = ({
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
 
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
+
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
 
@@ -68,7 +82,7 @@ const RoomMessage = ({
 			role='listitem'
 			aria-roledescription={t('message')}
 			tabIndex={0}
-			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
+			aria-labelledby={getAriaLabelledBy(sequential, readReceiptEnabled, message._id)}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
