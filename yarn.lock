@@ -8436,7 +8436,7 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
@@ -8572,7 +8572,7 @@ __metadata:
     "@types/polka": "npm:^0.5.7"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
@@ -8745,7 +8745,7 @@ __metadata:
     colorette: "npm:^1.4.0"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     jaeger-client: "npm:^3.19.0"
@@ -9885,7 +9885,7 @@ __metadata:
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     i18next: "npm:~23.4.9"
@@ -10032,7 +10032,7 @@ __metadata:
     "@types/polka": "npm:^0.5.7"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
@@ -10098,7 +10098,7 @@ __metadata:
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
@@ -10279,7 +10279,7 @@ __metadata:
     "@types/polka": "npm:^0.5.7"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    event-loop-stats: "npm:^1.4.1"
+    event-loop-stats: "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch"
     eventemitter3: "npm:^5.0.1"
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
@@ -21755,13 +21755,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"event-loop-stats@npm:^1.4.1":
+"event-loop-stats@npm:1.4.1":
   version: 1.4.1
   resolution: "event-loop-stats@npm:1.4.1"
   dependencies:
     nan: "npm:^2.14.0"
     node-gyp: "npm:latest"
   checksum: 10/f8d0a9246abf2738bde4e1a1e700f2b8a85d77637c3551ce74ad8964e2d64005776f8ba7100e49814512999f9ca0e24d13015bd420313ba5542006b8f5ff6f63
+  languageName: node
+  linkType: hard
+
+"event-loop-stats@patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch":
+  version: 1.4.1
+  resolution: "event-loop-stats@patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch::version=1.4.1&hash=02ed56"
+  dependencies:
+    nan: "npm:^2.14.0"
+    node-gyp: "npm:latest"
+  checksum: 10/b562efbe8055fd6288205b937a3844f1e616159ef2089da4f89f9e107d327fa082530830a9100b36c675c0772770bd06d2985a62972731ba594e22f8346a5892
   languageName: node
   linkType: hard
 
