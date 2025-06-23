@@ -336,7 +336,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 								return true;
 							}
 
-							return hasAtLeastOnePermission(command.permission, rid);
+							return hasAtLeastOnePermission(Meteor.user(), command.permission, rid);
 						})
 						.sort((a, b) => a._id.localeCompare(b._id))
 						.slice(0, 11);

@@ -1,7 +1,7 @@
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
-import { hasAllPermission } from '../../app/authorization/client';
 import { appLayout } from '../lib/appLayout';
 import { onToggledFeature } from '../lib/onToggledFeature';
 import { router } from '../providers/RouterProvider';
@@ -31,7 +31,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 const PermissionGuard = ({ children, permission }: { children: ReactNode; permission: string }) => {
-	const canView = hasAllPermission(permission);
+	const canView = usePermission(permission);
 
 	return <>{canView ? children : <NotAuthorizedPage />}</>;
 };
