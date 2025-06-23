@@ -20,10 +20,10 @@ Meteor.startup(() => {
 	const events: Record<string, ((role: IRole & { type?: ClientAction }) => void) | undefined> = {
 		changed: (role) => {
 			delete role.type;
-			Roles.upsert({ _id: role._id }, role);
+			Roles.state.store(role);
 		},
 		removed: (role) => {
-			Roles.remove({ _id: role._id });
+			Roles.state.delete(role._id);
 		},
 	};
 
