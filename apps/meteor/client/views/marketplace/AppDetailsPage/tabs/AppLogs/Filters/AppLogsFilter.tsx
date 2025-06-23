@@ -52,22 +52,16 @@ export const AppLogsFilter = () => {
 			)}
 			{!compactMode && (
 				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
-					<Label>{t('Severity')}</Label>
-					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
-				</Box>
-			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Time')}</Label>
 					<TimeFilterSelect id='timeFilter' />
 				</Box>
 			)}
 			{!compactMode && (
-				<Button alignSelf='flex-end' secondary width={120} mie='x10'>
-					{t('Expand_all')}
-				</Button>
+				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+					<Label>{t('Severity')}</Label>
+					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
+				</Box>
 			)}
-			{!compactMode && <Button alignSelf='flex-end' icon='download' secondary square mie='x10' onClick={() => undefined} />}
 			{compactMode && (
 				<Button alignSelf='flex-end' icon='customize' secondary mie='x10' onClick={() => openContextualBar()}>
 					{t('Filters')}

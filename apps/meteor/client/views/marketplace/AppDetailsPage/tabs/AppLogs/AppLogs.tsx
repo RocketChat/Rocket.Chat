@@ -13,7 +13,6 @@ import { useLogs } from '../../../hooks/useLogs';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
-	const formatDateAndTime = useFormatDateAndTime();
 
 	const { watch } = useFormContext();
 
