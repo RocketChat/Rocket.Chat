@@ -4,6 +4,8 @@ import tseslint from 'typescript-eslint';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import testingLibrary from 'eslint-plugin-testing-library';
+import globals from 'globals';
 import { config as baseConfig } from './base.js';
 
 /**
@@ -18,31 +20,37 @@ export const config = tseslint.config(
 			'react-hooks': reactHooks,
 		},
 		rules: {
-			'react-hooks/exhaustive-deps': 'error',
-			'react-hooks/rules-of-hooks': 'error',
-			'react/display-name': 'off',
+			'react-hooks/exhaustive-deps': 'warn',
+			'react-hooks/rules-of-hooks': 'warn',
+			'react/display-name': 'warn',
 
-			'react/jsx-curly-brace-presence': 'off',
-			'react/jsx-fragments': ['error', 'syntax'],
-			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-			'react/jsx-no-undef': 'error',
-			'react/jsx-uses-react': 'error',
-			'react/jsx-uses-vars': 'error',
-			'react/no-multi-comp': 'error',
+			'react/jsx-curly-brace-presence': 'warn',
+			'react/jsx-fragments': ['warn', 'syntax'],
+			'react/jsx-key': ['warn', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
+			'react/jsx-no-undef': 'warn',
+			'react/jsx-uses-react': 'warn',
+			'react/jsx-uses-vars': 'warn',
+			'react/no-multi-comp': 'warn',
 			'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
-			'@typescript-eslint/naming-convention': 'off'
+			'@typescript-eslint/naming-convention': 'warn',
 		},
 		settings: {
 			react: {
 				version: 'detect',
 			},
 		},
+		languageOptions: {
+			globals: globals.browser,
+		},
 	},
 	{
 		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
+		plugins: {
+			'testing-library': testingLibrary,
+		},
 		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
+			'react/display-name': 'warn',
+			'react/no-multi-comp': 'warn',
 		},
 	},
 );

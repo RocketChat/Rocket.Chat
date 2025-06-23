@@ -1,8 +1,9 @@
 // @ts-check
 import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
+import prettier from 'eslint-config-prettier/flat';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
+import importPlugin from 'eslint-plugin-import';
 
 /**
  * A shared ESLint configuration for the repository
@@ -20,18 +21,34 @@ export const config = tseslint.config(
 				'no-prototype-builtins': 'warn',
 				'no-await-in-loop': 'warn',
 				'no-unsafe-optional-chaining': 'warn',
+				'no-useless-catch': 'warn',
+				'no-useless-escape': 'warn',
+				'no-constant-binary-expression': 'warn',
 			},
 		},
 	],
 	tseslint.configs.eslintRecommended,
+	importPlugin.flatConfigs.recommended,
+	{
+		rules: {
+			'import/no-unresolved': 'warn',
+			'import/named': 'warn',
+			'import/export': 'warn',
+			'import/default': 'warn',
+		},
+	},
 	prettier,
 	[
 		...tseslint.configs.recommended,
 		{
 			rules: {
+				'@typescript-eslint/ban-ts-comment': 'warn',
 				'@typescript-eslint/no-explicit-any': 'warn',
 				'@typescript-eslint/no-empty-object-type': 'warn',
 				'@typescript-eslint/no-empty-interface': 'warn',
+				'@typescript-eslint/no-unsafe-declaration-merging': 'warn',
+				'@typescript-eslint/no-require-imports': 'warn',
+				'@typescript-eslint/no-this-alias': 'warn',
 				'@typescript-eslint/naming-convention': [
 					'warn',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
@@ -73,15 +90,12 @@ export const config = tseslint.config(
 		},
 	],
 	{
-		ignores: ['**/dist/**'],
+		ignores: ['**/dist/**', '**/public/**', '**/.meteor/**'],
 	},
 	{
-		files: ['babel.config.js', 'webpack.config.js', '.prettierrc.js', '**/scripts/**/*.js', '**/scripts/**/*.mjs'],
+		files: ['babel.config.js', 'webpack.config.js', '.prettierrc.js', '**/scripts/**/*.js', '**/scripts/**/*.mjs', '**/*.mock.js'],
 		languageOptions: {
 			globals: globals.node,
-		},
-		rules: {
-			'@typescript-eslint/no-require-imports': 'warn',
 		},
 	},
 );

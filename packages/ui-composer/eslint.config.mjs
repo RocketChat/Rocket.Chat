@@ -74,17 +74,17 @@ export default [
 	{
 		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx', '.storybook/preview.tsx'],
 		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
-			'@typescript-eslint/naming-convention': 'off',
+			'react/display-name': 'warn',
+			'react/no-multi-comp': 'warn',
+			'@typescript-eslint/naming-convention': 'warn',
 		},
 		plugins: {
 			storybook,
 		},
 		settings: {
 			storybook: {
-				version: '6.0.0',
+				version: '8.0.0',
 			},
 		},
-	}
+	},
 ];

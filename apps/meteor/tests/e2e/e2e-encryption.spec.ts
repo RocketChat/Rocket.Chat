@@ -1099,7 +1099,7 @@ test.describe('e2ee support legacy formats', () => {
 
 		// send old format encrypted message via API
 		const msg = await page.evaluate(async (rid) => {
-			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
+			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-require-imports
 			const { e2e } = require('/app/e2e/client/rocketchat.e2e.ts');
 			const e2eRoom = await e2e.getInstanceByRoomId(rid);
 			return e2eRoom.encrypt({ _id: 'id', msg: 'Old format message' });

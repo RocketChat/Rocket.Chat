@@ -6,7 +6,7 @@ export default [
   reactRefresh.configs.vite,
   {
     rules: {
-      'react/jsx-key': 'off',
+      'react/jsx-key': 'warn',
     },
   },
 ];

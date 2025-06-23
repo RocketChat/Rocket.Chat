@@ -11,7 +11,7 @@ export default tseslint.config([
 	{
 		rules: {
 			'@typescript-eslint/naming-convention': [
-				'error',
+				'warn',
 				{
 					selector: ['function', 'parameter', 'variable'],
 					modifiers: ['destructured'],
@@ -47,10 +47,10 @@ export default tseslint.config([
 					},
 				},
 			],
-			'@typescript-eslint/no-unused-vars': 'off',
-			'@typescript-eslint/no-require-imports': 'off',
-			'no-await-in-loop': 'off',
-			'prefer-const': 'off',
+			'@typescript-eslint/no-unused-vars': 'warn',
+			'@typescript-eslint/no-require-imports': 'warn',
+			'no-await-in-loop': 'warn',
+			'prefer-const': 'warn',
 		},
 	},
 ]);

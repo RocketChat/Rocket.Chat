@@ -41,7 +41,7 @@ export class LoginPage {
 			items.forEach(({ name, value }) => {
 				window.localStorage.setItem(name, value);
 			});
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
 		}, userState.state.origins[0].localStorage);
 
