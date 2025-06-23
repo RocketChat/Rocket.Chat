@@ -1,7 +1,5 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useOmnichannel } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-
-import { useOmnichannel } from '../../../hooks/omnichannel/useOmnichannel';
 
 type Props = {
 	department?: string;
