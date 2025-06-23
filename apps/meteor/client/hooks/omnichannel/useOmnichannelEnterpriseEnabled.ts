@@ -1,4 +1,4 @@
-import { useOmnichannel } from './useOmnichannel';
+import { useOmnichannel } from '@rocket.chat/ui-contexts';
 
 export const useOmnichannelEnterpriseEnabled = (): boolean => {
 	const { enabled: isEnabled, isEnterprise } = useOmnichannel();

@@ -1,6 +1,7 @@
 import type {
 	CallPreferences,
 	DirectCallData,
+	ILivechatPriority,
 	IRoom,
 	ISetting,
 	IUser,
@@ -45,6 +46,7 @@ import { useEffect, useReducer, useSyncExternalStore } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { MockedDeviceContext } from './MockedDeviceContext';
+import { MockedOmnichannelContext } from './MockedOmnichannelContext';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
@@ -534,6 +536,13 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	private livechatPriorities: Serialized<ILivechatPriority>[] = [];
+
+	withOmnichannelLivechatPriorities(livechatPriorities: Serialized<ILivechatPriority>[]): this {
+		this.livechatPriorities = livechatPriorities;
+		return this;
+	}
+
 	build(): JSXElementConstructor<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
@@ -556,6 +565,7 @@ export class MockedAppRootBuilder {
 			audioInputDevices,
 			audioOutputDevices,
 			authentication,
+			livechatPriorities,
 		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
@@ -657,17 +667,17 @@ export class MockedAppRootBuilder {
 																		}}
 																	>
 																		<VideoConfContext.Provider value={videoConf}>
-																			{/* <CallProvider>
-																		<OmnichannelProvider> */}
-																			{wrappers.reduce<ReactNode>(
-																				(children, wrapper) => wrapper(children),
-																				<>
-																					{children}
-																					{modal.currentModal.component}
-																				</>,
-																			)}
-																			{/* </OmnichannelProvider>
-																	</CallProvider> */}
+																			<MockedOmnichannelContext livechatPriorities={livechatPriorities}>
+																				{/* <CallProvider> */}
+																				{wrappers.reduce<ReactNode>(
+																					(children, wrapper) => wrapper(children),
+																					<>
+																						{children}
+																						{modal.currentModal.component}
+																					</>,
+																				)}
+																				{/* </OmnichannelProvider> */}
+																			</MockedOmnichannelContext>
 																		</VideoConfContext.Provider>
 																	</ActionManagerContext.Provider>
 																</UserPresenceContext.Provider>
