@@ -5,6 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.0",

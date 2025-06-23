@@ -1,5 +1,6 @@
 {
-	"extends": "./tsconfig.base.json",
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./base.json",
 	"compilerOptions": {
 		"target": "es2015",
 		"lib": ["dom", "dom.iterable", "esnext"],
@@ -10,5 +11,5 @@
 		"jsx": "react-jsx",
 		"preserveSymlinks": true,
 	},
-	"exclude": ["node_modules", "**/*.spec.ts"]
+	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
 }

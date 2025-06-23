@@ -4,6 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "~29.5.14",
 		"@types/ws": "^8.5.13",

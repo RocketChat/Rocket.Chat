@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -37,8 +38,7 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
-import type { Route } from './router';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -171,7 +171,7 @@ export class APIClass<
 		inviteToken: number;
 	};
 
-	readonly router: Router<any>;
+	readonly router: Router<any, any, any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		this.version = properties.version;
@@ -206,7 +206,7 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();

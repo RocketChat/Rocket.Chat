@@ -460,26 +460,86 @@ describe('[Channels]', () => {
 			})
 			.end(done);
 	});
-	it('/channels.counters', (done) => {
-		void request
-			.get(api('channels.counters'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('joined', true);
-				expect(res.body).to.have.property('members');
-				expect(res.body).to.have.property('unreads');
-				expect(res.body).to.have.property('unreadsFrom');
-				expect(res.body).to.have.property('msgs');
-				expect(res.body).to.have.property('latest');
-				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
+
+	describe('/channels.counters', () => {
+		let room: IRoom;
+		let user1: IUser;
+		let user2: IUser;
+		let user1Creds: { 'X-Auth-Token': string; 'X-User-Id': string };
+
+		before(async () => {
+			// Create two users
+			user1 = await createUser();
+			user2 = await createUser();
+			user1Creds = await login(user1.username, password);
+
+			// Create a new public channel with both users as members
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `counters-test-${Date.now()}`,
+					members: [user1.username as string, user2.username as string],
+				})
+			).body.channel;
+		});
+
+		after(async () => {
+			// Delete room first
+			await deleteRoom({ type: 'c', roomId: room._id });
+			// Then delete users
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should require auth', async () => {
+			await request
+				.get(api('channels.counters'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should require a roomId', async () => {
+			await request
+				.get(api('channels.counters'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return counters for a channel with correct fields', async () => {
+			await request
+				.get(api('channels.counters'))
+				.set(user1Creds)
+				.query({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').that.is.a('number').and.equals(3);
+					expect(res.body).to.have.property('unreads').that.is.a('number');
+					expect(res.body).to.have.property('unreadsFrom');
+					expect(res.body).to.have.property('msgs').that.is.a('number');
+					expect(res.body).to.have.property('latest');
+					expect(res.body).to.have.property('joined', true);
+				});
+		});
+
+		it('should not include deactivated users in members count', async () => {
+			// Deactivate the second user
+			await request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user2._id, activeStatus: false });
+
+			const res = await request.get(api('channels.counters')).set(user1Creds).query({ roomId: room._id });
+
+			expect(res.status).to.equal(200);
+			expect(res.body.success).to.be.true;
+			// Only user1 and admin remain active
+			expect(res.body.members).to.equal(2);
+		});
 	});
 
 	it('/channels.rename', async () => {
