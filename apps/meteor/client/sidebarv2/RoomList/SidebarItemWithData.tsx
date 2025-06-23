@@ -3,44 +3,21 @@ import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIco
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
+import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
-import { getNavigationMessagePreview } from '../../views/navigation/lib/getNavigationMessagePreview';
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
-	extended: boolean;
 	t: TFunction;
-	SidebarItemTemplate: ComponentType<
-		{
-			icon: ReactNode;
-			title: ReactNode;
-			avatar: ReactNode;
-			actions: ReactNode;
-			href: string;
-			time?: Date;
-			menu?: () => ReactNode;
-			menuOptions?: unknown;
-			subtitle?: ReactNode;
-			titleIcon?: ReactNode;
-			badges?: ReactNode;
-			threadUnread?: boolean;
-			unread?: boolean;
-			selected?: boolean;
-			is?: string;
-		} & AllHTMLAttributes<HTMLElement>
-	>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 	openedRoom?: string;
-	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 
 	room: SubscriptionWithRoom;
@@ -50,24 +27,12 @@ type RoomListRowProps = {
 
 	selected?: boolean;
 
-	sidebarViewMode?: unknown;
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
 };
 
-const SidebarItemTemplateWithData = ({
-	room,
-	id,
-	selected,
-	style,
-	extended,
-	SidebarItemTemplate,
-	AvatarTemplate,
-	t,
-	isAnonymous,
-	videoConfActions,
-}: RoomListRowProps) => {
+const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoConfActions }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
@@ -75,7 +40,7 @@ const SidebarItemTemplateWithData = ({
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
+	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const icon = (
 		<SidebarV2ItemIcon
@@ -98,9 +63,6 @@ const SidebarItemTemplateWithData = ({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = extended && getNavigationMessagePreview(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
-
 	const badges = (
 		<>
 			{showUnread && (
@@ -117,9 +79,28 @@ const SidebarItemTemplateWithData = ({
 		</>
 	);
 
+	const menu = useMemo(
+		() =>
+			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+				? (): ReactElement => (
+						<RoomMenu
+							alert={alert}
+							threadUnread={unreadCount.threads > 0}
+							rid={rid}
+							unread={!!unread}
+							roomOpen={selected}
+							type={type}
+							cl={cl}
+							name={title}
+							hideDefaultOptions={isQueued}
+						/>
+					)
+				: undefined,
+		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title],
+	);
+
 	return (
-		<SidebarItemTemplate
-			is='a'
+		<SidebarItem
 			id={id}
 			data-qa='sidebar-item'
 			data-unread={highlighted}
@@ -131,30 +112,12 @@ const SidebarItemTemplateWithData = ({
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
-			time={lastMessage?.ts}
-			subtitle={subtitle}
 			icon={icon}
 			style={style}
 			badges={badges}
-			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
+			room={room}
 			actions={actions}
-			menu={
-				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
-							<RoomMenu
-								alert={alert}
-								threadUnread={unreadCount.threads > 0}
-								rid={rid}
-								unread={!!unread}
-								roomOpen={selected}
-								type={type}
-								cl={cl}
-								name={title}
-								hideDefaultOptions={isQueued}
-							/>
-						)
-					: undefined
-			}
+			menu={menu}
 		/>
 	);
 };
@@ -166,20 +129,10 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = [
-	'id',
-	'style',
-	'extended',
-	'selected',
-	'SidebarItemTemplate',
-	'AvatarTemplate',
-	't',
-	'sidebarViewMode',
-	'videoConfActions',
-];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'selected', 't', 'videoConfActions'];
 
 // eslint-disable-next-line react/no-multi-comp
-export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
+export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}

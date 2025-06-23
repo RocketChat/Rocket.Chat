@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
@@ -14,34 +14,24 @@ import RoomListWrapper from './RoomListWrapper';
 import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useSideBarRoomsList } from '../../views/navigation/contexts/RoomsNavigationContext';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
 	const { roomListGroups, groupCounts, collapsedGroups, handleClick, handleKeyDown, totalCount } = useSideBarRoomsList();
-	const avatarTemplate = useAvatarTemplate('condensed');
-	const sideBarItemTemplate = useTemplateByViewMode('condensed');
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
 
-	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
 		() => ({
-			extended,
 			t,
-			SidebarItemTemplate: sideBarItemTemplate,
-			AvatarTemplate: avatarTemplate,
 			openedRoom,
-			sidebarViewMode,
 			isAnonymous,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
+		[isAnonymous, openedRoom, t],
 	);
 
 	usePreventDefault(ref);
