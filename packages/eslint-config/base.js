@@ -1,16 +1,17 @@
 // @ts-check
-
-import eslint from '@eslint/js';
+import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
 /**
  * A shared ESLint configuration for the repository
+ * 
+ * @type {import('typescript-eslint').ConfigArray}
  */
 export const config = tseslint.config(
 	[
-		eslint.configs.recommended,
+		js.configs.recommended,
 		{
 			rules: {
 				'no-unused-expressions': 'off',
