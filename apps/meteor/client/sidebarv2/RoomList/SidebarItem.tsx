@@ -1,7 +1,7 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 type SidebarItemProps = {
@@ -11,7 +11,7 @@ type SidebarItemProps = {
 	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => ReactNode;
+	menu?: ReactElement;
 	menuOptions?: any;
 	selected?: boolean;
 	badges?: ReactNode;
@@ -36,7 +36,7 @@ const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...prop
 			{actions}
 			{menu && (
 				<SidebarV2ItemMenu>
-					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
+					{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 				</SidebarV2ItemMenu>
 			)}
 		</SidebarV2Item>

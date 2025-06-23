@@ -81,22 +81,20 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 
 	const menu = useMemo(
 		() =>
-			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-				? () => (
-						<RoomMenu
-							alert={alert}
-							threadUnread={unreadCount.threads > 0}
-							rid={rid}
-							unread={!!unread}
-							roomOpen={selected}
-							type={type}
-							cl={cl}
-							name={title}
-							hideDefaultOptions={isQueued}
-							href={href || undefined}
-						/>
-					)
-				: undefined,
+			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
+				<RoomMenu
+					alert={alert}
+					threadUnread={unreadCount.threads > 0}
+					rid={rid}
+					unread={!!unread}
+					roomOpen={selected}
+					type={type}
+					cl={cl}
+					name={title}
+					hideDefaultOptions={isQueued}
+					href={href || undefined}
+				/>
+			) : undefined,
 		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title, href],
 	);
 
