@@ -11,7 +11,7 @@ class RolesCollection extends MinimongoCollection<IRole> {
 	isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][] | IRole['_id'], scope?: string, ignoreSubscriptions = false) {
 		roles = Array.isArray(roles) ? roles : [roles];
 		return roles.some((roleId) => {
-			const role = this.findOne(roleId);
+			const role = this.state.get(roleId);
 			const roleScope = ignoreSubscriptions ? 'Users' : role?.scope || 'Users';
 
 			switch (roleScope) {
