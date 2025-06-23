@@ -1,7 +1,7 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+
 import { MoveDiscussion } from '../../MoveDiscussion';
-import { usePermission } from '@rocket.chat/ui-contexts';
 
 export const useMoveDiscussionAction = (message: IMessage, userId: IUser['_id']) => {
 	const setModal = useSetModal();

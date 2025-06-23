@@ -29,6 +29,7 @@ import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite'
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -56,7 +57,6 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
-import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 
 export async function findRoomByIdOrName({
 	params,
@@ -579,7 +579,7 @@ API.v1.addRoute(
 				},
 				{
 					$set: {
-						prid: prid,
+						prid,
 					},
 				},
 				{ returnDocument: 'after' },
