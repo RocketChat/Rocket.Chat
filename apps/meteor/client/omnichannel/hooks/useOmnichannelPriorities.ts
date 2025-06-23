@@ -1,3 +1,3 @@
-import { useOmnichannel } from '../../hooks/omnichannel/useOmnichannel';
+import { useOmnichannel } from '@rocket.chat/ui-contexts';
 
 export const useOmnichannelPriorities = () => useOmnichannel().livechatPriorities;
