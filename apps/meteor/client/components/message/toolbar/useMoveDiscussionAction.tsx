@@ -1,13 +1,16 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import { MoveDiscussion } from '../../MoveDiscussion';
+import { usePermission } from '@rocket.chat/ui-contexts';
 
-export const useMoveDiscussionAction = (message: IMessage) => {
-	const t = useTranslation();
+export const useMoveDiscussionAction = (message: IMessage, userId: IUser['_id']) => {
 	const setModal = useSetModal();
 
 	const { drid } = message;
-	if (!drid) {
+	const canMoveDiscussion = usePermission('move-discussion', userId);
+	const userOwnsMessage = message.u._id === userId;
+
+	if (!drid || !(canMoveDiscussion || userOwnsMessage)) {
 		return null;
 	}
 
