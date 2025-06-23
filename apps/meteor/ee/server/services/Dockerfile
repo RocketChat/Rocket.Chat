@@ -69,7 +69,7 @@ WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
-    yarn workspaces focus --production && \
+    yarn workspaces focus --production || { code=$?; find /tmp -path "/tmp/xfs-*/build.log" -type f -exec cat {} +; exit $code; } && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies
 
