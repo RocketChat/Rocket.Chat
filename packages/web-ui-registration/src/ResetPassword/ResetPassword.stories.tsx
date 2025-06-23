@@ -4,7 +4,7 @@ import type { Meta } from '@storybook/react';
 import ResetPasswordPage from './ResetPasswordPage';
 
 export default {
-	title: 'Login/ResetPassword',
+	title: 'views/ResetPassword',
 	component: ResetPasswordPage,
 	decorators: [mockAppRoot().buildStoryDecorator()],
 } satisfies Meta<typeof ResetPasswordPage>;

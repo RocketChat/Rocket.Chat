@@ -4,7 +4,7 @@ import type { Meta } from '@storybook/react';
 import LoginForm from './LoginForm';
 
 export default {
-	title: 'Login/LoginForm',
+	title: 'views/LoginForm',
 	component: LoginForm,
 	decorators: [mockAppRoot().buildStoryDecorator()],
 } satisfies Meta<typeof LoginForm>;
