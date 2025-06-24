@@ -1,8 +1,9 @@
-import { API } from '../../../../api/server';
+import { API } from '../../../../../app/api/server';
+import { isGETOutboundProviderParams } from '../outboundcomms/rest';
 
 API.v1.addRoute(
 	'omnichannel/outbound/providers',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGETOutboundProviderParams },
 	{
 		async get() {
 			return API.v1.success({
