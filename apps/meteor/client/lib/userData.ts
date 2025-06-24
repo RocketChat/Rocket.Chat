@@ -1,6 +1,7 @@
 import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { objectKeys } from './objectUtils';
 import { Users } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
@@ -71,7 +72,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 			case 'updated':
 				const { diff } = data;
-				const unset = Object.keys(data.unset) as (keyof IUser)[];
+				const unset = objectKeys(data.unset);
 				Users.state.update(
 					({ _id }) => _id === uid,
 					(record) => {
