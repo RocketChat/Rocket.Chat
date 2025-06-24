@@ -66,25 +66,5 @@
 // }
 
 import { config } from '@rocket.chat/eslint-config/react';
-import storybook from 'eslint-plugin-storybook';
 
-export default [
-	...config,
-	...storybook.configs['flat/recommended'],
-	{
-		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx', '.storybook/preview.tsx'],
-		rules: {
-			'react/display-name': 'warn',
-			'react/no-multi-comp': 'warn',
-			'@typescript-eslint/naming-convention': 'warn',
-		},
-		plugins: {
-			storybook,
-		},
-		settings: {
-			storybook: {
-				version: '8.0.0',
-			},
-		},
-	},
-];
+export default config;

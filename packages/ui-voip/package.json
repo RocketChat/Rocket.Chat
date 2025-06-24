@@ -10,6 +10,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "yarn eslint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"storybook": "storybook dev -p 6006",
@@ -58,9 +59,6 @@
 		"@types/react": "~18.3.17",
 		"@types/react-dom": "~18.3.5",
 		"eslint": "^9.29.0",
-		"eslint-plugin-react": "~7.37.2",
-		"eslint-plugin-react-hooks": "~5.0.0",
-		"eslint-plugin-storybook": "^0.11.4",
 		"jest": "~30.0.0",
 		"jest-axe": "~10.0.0",
 		"react": "~18.3.1",

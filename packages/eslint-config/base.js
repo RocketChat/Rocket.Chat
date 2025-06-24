@@ -3,7 +3,8 @@ import js from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
-import importPlugin from 'eslint-plugin-import';
+import { importX } from 'eslint-plugin-import-x';
+import security from 'eslint-plugin-security';
 
 /**
  * A shared ESLint configuration for the repository
@@ -28,13 +29,13 @@ export const config = tseslint.config(
 		},
 	],
 	tseslint.configs.eslintRecommended,
-	importPlugin.flatConfigs.recommended,
+	importX.flatConfigs.recommended,
+	importX.flatConfigs.typescript,
 	{
 		rules: {
-			'import/no-unresolved': 'warn',
-			'import/named': 'warn',
-			'import/export': 'warn',
-			'import/default': 'warn',
+			'import-x/namespace': 'warn',
+			'import-x/export': 'warn',
+			'import-x/no-unresolved': 'warn',
 		},
 	},
 	prettier,
@@ -89,6 +90,7 @@ export const config = tseslint.config(
 			},
 		},
 	],
+	security.configs.recommended,
 	{
 		ignores: ['**/dist/**', '**/public/**', '**/.meteor/**'],
 	},
