@@ -30,6 +30,7 @@ export type StoreState = {
 			offlineColor?: string;
 			position: 'left' | 'right';
 			background?: string;
+			hideExpandChat?: boolean;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -89,6 +90,7 @@ export type StoreState = {
 			background?: string;
 			hideGuestAvatar?: boolean;
 			hideAgentAvatar?: boolean;
+			hideExpandChat?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
