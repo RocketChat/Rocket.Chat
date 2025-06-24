@@ -11,3 +11,9 @@ export class FormFetchError extends Error {
 		super(message);
 	}
 }
+
+export class FeatureUpsellError extends Error {
+	constructor(message: string) {
+		super(message);
+	}
+}
