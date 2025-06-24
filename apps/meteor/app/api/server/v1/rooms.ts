@@ -357,13 +357,8 @@ API.v1.addRoute(
 			}
 
 			await Promise.all(
-				Object.keys(notifications as Notifications).map(async (notificationKey) =>
-					saveNotificationSettingsMethod(
-						this.userId,
-						roomId,
-						notificationKey as NotificationFieldType,
-						notifications[notificationKey as keyof Notifications],
-					),
+				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
 

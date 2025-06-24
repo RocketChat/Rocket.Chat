@@ -475,13 +475,13 @@ const RoomsIsMemberPropsSchema = {
 export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
-	disableNotifications: string;
-	muteGroupMentions: string;
-	hideUnreadStatus: string;
-	desktopNotifications: string;
-	audioNotificationValue: string;
-	mobilePushNotifications: string;
-	emailNotifications: string;
+	disableNotifications?: string;
+	muteGroupMentions?: string;
+	hideUnreadStatus?: string;
+	desktopNotifications?: string;
+	audioNotificationValue?: string;
+	mobilePushNotifications?: string;
+	emailNotifications?: string;
 };
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;

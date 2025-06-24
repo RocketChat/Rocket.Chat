@@ -27,6 +27,7 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message = getNavigationMessagePreview(room, room.lastMessage, t);
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
+	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 
 	const badges = useMemo(
 		() => (
@@ -57,16 +58,17 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 					cl={cl}
 					name={title}
 					hideDefaultOptions={isQueued}
+					href={href || undefined}
 				/>
 			) : undefined,
-		[alert, cl, isAnonymous, isPriorityEnabled, isQueued, openedRoom, rid, title, type, unread, unreadCount.threads],
+		[alert, cl, isAnonymous, isPriorityEnabled, isQueued, openedRoom, rid, title, type, unread, unreadCount.threads, href],
 	);
 
 	const itemData = useMemo(
 		() => ({
 			unread: highlighted,
 			selected: rid === openedRoom,
-			href: roomCoordinator.getRouteLink(room.t, room) || '',
+			href,
 			title,
 			icon,
 			time,
@@ -75,7 +77,7 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
 		}),
-		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title],
+		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
 	);
 
 	return itemData;

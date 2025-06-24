@@ -5,11 +5,11 @@ import type { Fields } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
-import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
-import { useToggleReadAction } from './menuActions/useToggleReadAction';
-import { useHideRoomAction } from './useHideRoomAction';
-import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { useLeaveRoomAction } from '../../hooks/menuActions/useLeaveRoom';
+import { useToggleFavoriteAction } from '../../hooks/menuActions/useToggleFavoriteAction';
+import { useToggleReadAction } from '../../hooks/menuActions/useToggleReadAction';
+import { useHideRoomAction } from '../../hooks/useHideRoomAction';
+import { useOmnichannelPrioritiesMenu } from '../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 const fields: Fields = {
 	f: true,

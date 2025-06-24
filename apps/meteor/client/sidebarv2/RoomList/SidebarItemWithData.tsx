@@ -3,7 +3,7 @@ import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIco
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ReactElement } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
@@ -81,22 +81,21 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 
 	const menu = useMemo(
 		() =>
-			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-				? (): ReactElement => (
-						<RoomMenu
-							alert={alert}
-							threadUnread={unreadCount.threads > 0}
-							rid={rid}
-							unread={!!unread}
-							roomOpen={selected}
-							type={type}
-							cl={cl}
-							name={title}
-							hideDefaultOptions={isQueued}
-						/>
-					)
-				: undefined,
-		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title],
+			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
+				<RoomMenu
+					alert={alert}
+					threadUnread={unreadCount.threads > 0}
+					rid={rid}
+					unread={!!unread}
+					roomOpen={selected}
+					type={type}
+					cl={cl}
+					name={title}
+					hideDefaultOptions={isQueued}
+					href={href || undefined}
+				/>
+			) : undefined,
+		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title, href],
 	);
 
 	return (
