@@ -229,10 +229,12 @@ const RichTextMessageBox = ({
 		chat.composer?.clear();
 		popup.clear();
 
+		const isFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent);
+
 		/* TODO: Develop the parser function that will render inside the RichTextComposer component */
 		// This if-else block temporarily solves the problem of editing a message
 		// When a message is being edited, it is a flat text structure without any DOM tree
-		if (chat.currentEditing) {
+		if (chat.currentEditing || isFirefox) {
 			onSend?.({
 				value: text,
 				tshow,
