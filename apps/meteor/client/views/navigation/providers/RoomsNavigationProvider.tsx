@@ -97,6 +97,10 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					setGroupRoom(SIDE_PANEL_GROUPS.FAVORITES, room);
 				}
 
+				if (hasMention(room)) {
+					setGroupRoom(SIDE_PANEL_GROUPS.MENTIONS, room);
+				}
+
 				if (room.teamMain) {
 					setGroupRoom(SIDE_PANEL_GROUPS.ALL, room);
 					return setGroupRoom(SIDE_BAR_GROUPS.TEAMS, room);
@@ -104,10 +108,6 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 				if (isDiscussionEnabled && room.prid) {
 					setGroupRoom(SIDE_PANEL_GROUPS.DISCUSSIONS, room);
-				}
-
-				if (hasMention(room)) {
-					setGroupRoom(SIDE_PANEL_GROUPS.MENTIONS, room);
 				}
 
 				if ((room.t === 'c' || room.t === 'p') && !room.prid) {
