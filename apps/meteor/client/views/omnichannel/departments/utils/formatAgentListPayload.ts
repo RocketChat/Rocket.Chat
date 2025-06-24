@@ -8,7 +8,7 @@ export const formatAgentListPayload = (oldAgentList: IDepartmentAgent[], newAgen
 		const initialAgent = agent._id ? oldAgentList.find((initialAgent) => initialAgent._id === agent._id) : undefined;
 
 		if (!initialAgent || agent.count !== initialAgent.count || agent.order !== initialAgent.order) {
-			upsert.push(agent);
+			upsert.push({ agentId: agent.agentId, username: agent.username, count: agent.count, order: agent.order });
 		}
 	}
 
