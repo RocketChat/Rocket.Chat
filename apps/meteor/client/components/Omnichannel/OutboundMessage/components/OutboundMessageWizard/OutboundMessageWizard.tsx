@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import type { SubmitPayload } from './forms';
-import { RecipientStep, MessageStep } from './steps';
+import { RecipientStep, MessageStep, RepliesStep } from './steps';
 import GenericError from '../../../../GenericError';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
 
@@ -51,7 +51,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 						<MessageStep defaultValues={state} contact={contact} templates={templates} onSubmit={handleSubmit} />
 					</WizardContent>
 
-					<WizardContent id='replies'>Replies Content</WizardContent>
+					<WizardContent id='replies'>
+						<RepliesStep defaultValues={state} onSubmit={handleSubmit} />
+					</WizardContent>
+
 					<WizardContent id='preview'>Preview Content</WizardContent>
 				</Box>
 			</Wizard>
