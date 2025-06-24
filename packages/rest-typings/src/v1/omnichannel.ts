@@ -215,6 +215,10 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					order: {
 						type: 'number',
 					},
+					departmentEnabled: { type: 'boolean' },
+					departmentId: { type: 'string' },
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string' },
 				},
 				required: ['agentId', 'username'],
 				additionalProperties: false,
