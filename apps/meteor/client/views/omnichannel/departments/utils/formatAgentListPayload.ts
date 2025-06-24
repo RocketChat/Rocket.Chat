@@ -1,7 +1,7 @@
 import type { IDepartmentAgent } from '../definitions';
 
 export const formatAgentListPayload = (oldAgentList: IDepartmentAgent[], newAgentList: IDepartmentAgent[]) => {
-	const upsert: IDepartmentAgent[] = [];
+	const upsert: Pick<IDepartmentAgent, 'agentId' | 'username' | 'count' | 'order'>[] = [];
 	const remove: Pick<IDepartmentAgent, 'agentId' | 'username'>[] = [];
 
 	for (const agent of newAgentList) {
