@@ -12,6 +12,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import {
 	InfoPanel,
@@ -45,7 +46,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 	const { buttons: actions, menu } = useSplitRoomActions(memoizedActions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
@@ -137,7 +138,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

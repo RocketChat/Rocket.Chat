@@ -46,7 +46,9 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 		[hide, reset, setTone],
 	);
 
-	useEffect(() => setTone(tone), [tone, setTone]);
+	useEffect(() => {
+		setTone(tone);
+	}, [tone, setTone]);
 
 	return (
 		<>

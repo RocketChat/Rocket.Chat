@@ -303,9 +303,10 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.update({ _id }, await this.decryptMessage({ _id, ...msg }));
-		});
+		await Messages.state.updateAsync(
+			(record) => record.rid === this.roomId && record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	// Initiates E2E Encryption

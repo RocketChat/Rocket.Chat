@@ -16,10 +16,12 @@ import {
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { getErrorMessage } from '../../../../lib/errorHandling';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
@@ -117,7 +119,7 @@ const ThreadList = () => {
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='thread' />
 				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
@@ -144,7 +146,7 @@ const ThreadList = () => {
 
 				{error && (
 					<Callout mi={24} type='danger'>
-						{error.toString()}
+						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
 
@@ -182,7 +184,7 @@ const ThreadList = () => {
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

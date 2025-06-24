@@ -7,7 +7,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
@@ -889,7 +889,7 @@ describe('[Incoming Integrations]', () => {
 		});
 	});
 
-	describe('Additional Tests for Message Delivery Permissions', () => {
+	describe('Additional Tests for Message Delivery Permissions And Authentication', () => {
 		let nonMemberUser: IUser;
 		let privateTeam: ITeam;
 		let publicChannelInPrivateTeam: IRoom;
@@ -1007,6 +1007,58 @@ describe('[Incoming Integrations]', () => {
 				),
 				updatePermission('manage-incoming-integrations', ['admin']),
 			]);
+		});
+
+		it('should not send a message in public room if token is invalid', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration4._id}/invalid-token`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(500)
+				.expect((res) => {
+					expect(res.text).to.be.equal('Internal Server Error');
+				});
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
+		});
+
+		it('should not send a message in private room if token is invalid', async () => {
+			const successfulMesssage = `Message sent successfully at #${Random.id()}`;
+			await request
+				.post(`/hooks/${integration2._id}/invalid-token`)
+				.send({
+					text: successfulMesssage,
+				})
+				.expect(500)
+				.expect((res) => {
+					expect(res.text).to.be.equal('Internal Server Error');
+				});
+			await request
+				.get(api('groups.messages'))
+				.set(credentials)
+				.query({
+					roomId: privateRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect((res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.undefined;
+				});
 		});
 
 		it('should not send a message to a private rooms on behalf of a non member', async () => {
@@ -1149,6 +1201,68 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.undefined;
 				});
+		});
+
+		describe('Message Settings', async () => {
+			const maxSize = 5000;
+			before(() => updateSetting('Message_MaxAllowedSize', maxSize));
+			after(() => updateSetting('Message_MaxAllowedSize', maxSize));
+
+			it('should not send a message if message size is greater than the Message_MaxAllowedSize', async () => {
+				const largeMesssage = Array.from({ length: maxSize + 1 })
+					.map(() => 'A')
+					.join('');
+				await request
+					.post(`/hooks/${integration4._id}/${integration4.token}`)
+					.send({
+						text: largeMesssage,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.be.equal('error-message-size-exceeded');
+					});
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: publicRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === largeMesssage)).to.be.undefined;
+					});
+			});
+
+			it('should send a message if message size is less than the Message_MaxAllowedSize', async () => {
+				const smallerMessage = Array.from({ length: maxSize - 1 })
+					.map(() => 'A')
+					.join('');
+				await request
+					.post(`/hooks/${integration4._id}/${integration4.token}`)
+					.send({
+						text: smallerMessage,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: publicRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === smallerMessage)).to.not.be.undefined;
+					});
+			});
 		});
 	});
 });

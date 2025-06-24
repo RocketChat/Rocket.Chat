@@ -11,10 +11,11 @@ type WrapCannedResponseProps = {
 	cannedItem: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
+	onClose: () => void;
 	reload: () => void;
 };
 
-const WrapCannedResponse = ({ allowUse, cannedItem, onClickBack, onClickUse, reload }: WrapCannedResponseProps) => {
+const WrapCannedResponse = ({ allowUse, cannedItem, onClickBack, onClose, onClickUse, reload }: WrapCannedResponseProps) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
 		setModal(<CreateCannedResponse cannedResponseData={cannedItem} onClose={() => setModal(null)} reloadCannedList={reload} />);
@@ -32,6 +33,7 @@ const WrapCannedResponse = ({ allowUse, cannedItem, onClickBack, onClickUse, rel
 			data={cannedItem}
 			onClickBack={onClickBack}
 			onClickEdit={onClickEdit}
+			onClose={onClose}
 			onClickUse={(e): void => {
 				onClickUse(e, cannedItem?.text);
 			}}

@@ -46,9 +46,9 @@
   "API_Upper_Count_Limit_Description": "Số lượng record tối đa mà API REST sẽ trả về (khi có giới hạn)?",
   "API_User_Limit": "Giới hạn người dùng khi thêm tất cả người dùng vào Kênh",
   "API_Wordpress_URL": "URL WordPress",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Một chủ sở hữu mới sẽ được gán tự động cho <span style=\"font-weight: bold;\"> {{count}} </span> phòng.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Một chủ sở hữu mới sẽ được gán tự động cho phòng <span style=\"font-weight: bold;\"> {{roomName}} </span>.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Một chủ sở hữu mới sẽ được gán tự động cho các phòng <span style=\"font-weight: bold;\"> {{count}} </span>: <br/> {{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Một chủ sở hữu mới sẽ được gán tự động cho <bold> {{count}} </bold> phòng.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Một chủ sở hữu mới sẽ được gán tự động cho phòng <bold> {{roomName}} </bold>.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Một chủ sở hữu mới sẽ được gán tự động cho các phòng <bold> {{count}} </bold>: <br/> {{rooms}}.",
   "Accept": "Đồng ý",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Cho phép gửi yêu cầu livechat ngay cả khi không có nhân viên nào online",
   "Accept_with_no_online_agents": "Chấp nhận khi không có nhân viên online",
@@ -2852,6 +2852,6 @@
   "your_message": "tin nhắn của bạn",
   "your_message_optional": "tin nhắn của bạn (tùy chọn)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} phòng trống sẽ được gỡ bỏ tự động.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} phòng trống sẽ được gỡ bỏ tự động: <br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> phòng trống sẽ được gỡ bỏ tự động: <br/> {{rooms}}.",
   "__username__was_set__role__by__user_by_": "{{username}} đã được đặt {{role}} bởi {{user_by}}"
 }

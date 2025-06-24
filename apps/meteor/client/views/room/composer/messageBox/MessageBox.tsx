@@ -44,6 +44,7 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import MessageBoxEnhancementToolbar from './MessageBoxEnhancementToolbar';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -112,7 +113,7 @@ const MessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
@@ -123,9 +124,8 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
-	const shadowRef = useRef<HTMLDivElement>(null);
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -138,9 +138,9 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit));
 		},
-		[chat, storageID],
+		[chat, storageID, quoteChainLimit],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -276,7 +276,7 @@ const MessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
+	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
 
@@ -348,7 +348,14 @@ const MessageBox = ({
 		),
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(popup.callbackRef, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(
+		popup.callbackRef,
+		textareaRef,
+		autoGrowRef,
+		callbackRef,
+		autofocusRef,
+		keyDownHandlerCallbackRef,
+	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
@@ -403,7 +410,6 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
-				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -421,6 +427,11 @@ const MessageBox = ({
 								disabled={isRecording || !canSend}
 							/>
 						)}
+						{/* This is the new enhancement toolbar binding together tone enhancer, summariser and translater buttons */}
+						{chat.composer && (<MessageBoxEnhancementToolbar 
+						composer={chat.composer} 
+						disabled={isRecording || !canSend}   
+						/>)}
 						<MessageBoxActionsToolbar
 							canSend={canSend}
 							typing={typing}

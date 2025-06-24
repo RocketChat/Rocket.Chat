@@ -39,6 +39,8 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
+
 		await poHomeChannel.content.getMessageByText('hello world').click();
 		await poHomeChannel.tabs.exportMessages.btnSend.click();
 
@@ -64,7 +66,7 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.btnExportMessages.click();
 
 		await poHomeChannel.content.getMessageByText('hello world').click();
-		await poHomeChannel.tabs.exportMessages.btnCancel.click();
+		await poHomeChannel.btnContextualbarClose.click();
 		await poHomeChannel.content.sendMessage('hello export');
 
 		await expect(poHomeChannel.content.getMessageByText('hello export')).toBeVisible();

@@ -39,7 +39,14 @@ declare const window: Window & {
 			setGuestName: (name: string) => void;
 			setGuestToken: (token: string) => void;
 			setParentUrl: (url: string) => void;
-			setTheme: (theme: { color?: string; fontColor?: string; iconColor?: string; title?: string; offlineTitle?: string }) => void;
+			setTheme: (theme: {
+				color?: string;
+				fontColor?: string;
+				iconColor?: string;
+				title?: string;
+				offlineTitle?: string;
+				hideExpandChat?: boolean;
+			}) => void;
 			setLanguage: (language: string) => void;
 			transferChat: (department: string) => void;
 			onChatMaximized: (callback: () => void) => void;
@@ -88,9 +95,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterAll(async () => {
-			await agent.delete();
-			await poAuxContext.page.close();
-			await page.close();
+			await Promise.all([poAuxContext.page.close(), agent.delete(), page.close()]);
 		});
 
 		test('OC - Livechat API - Open and Close widget', async () => {
@@ -167,6 +172,20 @@ test.describe('OC - Livechat API', () => {
 				});
 
 				await expect(page.frameLocator('#rocketchat-iframe').locator('header')).toHaveCSS('color', 'rgb(50, 50, 50)');
+			});
+
+			await test.step('expect setTheme set hideExpandChat', async () => {
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+
+				await expect(poLiveChat.btnExpandChat).toBeVisible();
+
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setTheme({ hideExpandChat: true }));
+
+				await expect(poLiveChat.btnExpandChat).not.toBeVisible();
+
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.setTheme({ hideExpandChat: false }));
+
+				await expect(poLiveChat.btnExpandChat).toBeVisible();
 			});
 
 			// TODO: fix iconColor setTheme property
@@ -255,9 +274,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterEach(async () => {
-			await poAuxContext.page.close();
-			await page.close();
-			await pageContext?.close();
+			await Promise.all([poAuxContext.page.close(), page.close(), pageContext?.close()]);
 		});
 
 		test.afterAll(async ({ api }) => {
