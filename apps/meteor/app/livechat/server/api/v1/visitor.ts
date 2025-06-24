@@ -7,7 +7,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
-import { registerGuest, removeGuest, notifyGuestStatusChanged } from '../../lib/guests';
+import { registerGuest, notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
@@ -140,9 +140,9 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
-		const { _id, token } = visitor;
-		const result = await removeGuest({ _id, token });
-		if (!result[0].modifiedCount) {
+		const { _id } = visitor;
+		const result = await removeContactsByVisitorId({ _id });
+		if (!result) {
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 

@@ -78,9 +78,30 @@ export async function saveGuest(
 	return ret;
 }
 
-export async function removeGuest({ _id, token }: { _id: string; token: string }) {
-	await cleanGuestHistory(token);
-	return Promise.all([LivechatVisitors.disableById(_id), LivechatContacts.disableByVisitorId(_id)]);
+async function removeGuest({ _id }: { _id: string }) {
+	await cleanGuestHistory(_id);
+	return LivechatVisitors.disableById(_id);
+}
+
+export async function removeContactsByVisitorId({ _id }: { _id: string }) {
+	// A visitor shouldn't have many contacts associated, so we can remove them like this
+	const contacts = await LivechatContacts.findAllByVisitorId(_id).toArray();
+	if (!contacts.length) {
+		livechatLogger.debug({ msg: 'No contacts found for visitor', visitorId: _id });
+		await removeGuest({ _id });
+	}
+
+	// And a contact shouldn't have many channels associated, so we can do this
+	livechatLogger.debug({ msg: 'Removing channels for contacts', visitorId: _id, contacts: contacts.map(({ _id }) => _id) });
+	for await (const contact of contacts) {
+		for await (const { visitor } of contact.channels) {
+			await removeGuest({ _id: visitor.visitorId });
+		}
+
+		await LivechatContacts.disableByVisitorId(_id);
+	}
+
+	return true;
 }
 
 export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
@@ -123,14 +144,14 @@ export async function registerGuest(newData: RegisterGuestType): Promise<ILivech
 	return visitor;
 }
 
-async function cleanGuestHistory(token: string) {
+async function cleanGuestHistory(_id: string) {
 	// This shouldn't be possible, but just in case
-	if (!token) {
+	if (!_id) {
 		throw new Error('error-invalid-guest');
 	}
 
 	// TODO: optimize function => instead of removing one by one, fetch the _ids of the rooms and then remove them in bulk
-	const cursor = LivechatRooms.findByVisitorToken(token, { projection: { _id: 1 } });
+	const cursor = LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } });
 	for await (const room of cursor) {
 		await Promise.all([
 			Subscriptions.removeByRoomId(room._id, {
@@ -144,9 +165,9 @@ async function cleanGuestHistory(token: string) {
 		]);
 	}
 
-	await LivechatRooms.removeByVisitorToken(token);
+	await LivechatRooms.removeByVisitorId(_id);
 
-	const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+	const livechatInquiries = await LivechatInquiry.findIdsByVisitorId(_id).toArray();
 	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
 	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }
