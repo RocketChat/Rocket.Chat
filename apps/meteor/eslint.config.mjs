@@ -1,20 +1,3 @@
-// /node_modules/
-// #/tests/e2e/
-// /packages/
-// /app/emoji-emojione/generateEmojiIndex.js
-// /public/
-// /private/moment-locales/
-// /imports/
-// /ee/server/services/dist/
-// !/.mocharc.js
-// !/.mocharc.*.js
-// !/.scripts/
-// !/.storybook/
-// !/client/.eslintrc.js
-// !/ee/client/.eslintrc.js
-// /storybook-static/
-// /packages/
-
 import { config as base } from '@rocket.chat/eslint-config/base';
 import { config as jest } from '@rocket.chat/eslint-config/jest';
 import { config as mocha } from '@rocket.chat/eslint-config/mocha';

@@ -1,5 +1,3 @@
-// @ts-check
-
 import { config } from '@rocket.chat/eslint-config/base';
 import tseslint from 'typescript-eslint';
 
