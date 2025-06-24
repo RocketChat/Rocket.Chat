@@ -3,76 +3,76 @@ import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 
 interface IUIKitIncomingInteractionActionButtonBase {
-    triggerId: string;
-    type: 'actionButton';
+	triggerId: string;
+	type: 'actionButton';
 
-    user: IUser;
-    actionId: string;
-    appId: string;
+	user: IUser;
+	actionId: string;
+	appId: string;
 
-    payload: Record<string, any>;
+	payload: Record<string, any>;
 }
 
 interface IUIKitIncomingInteractionActionButtonMessageBox {
-    triggerId: string;
+	triggerId: string;
 
-    type: 'actionButton';
-    room: IRoom;
-    tmid?: string;
+	type: 'actionButton';
+	room: IRoom;
+	tmid?: string;
 
-    user: IUser;
+	user: IUser;
 
-    actionId: string;
-    appId: string;
+	actionId: string;
+	appId: string;
 
-    payload: {
-        context: 'messageBoxAction';
-        message?: string;
-    };
+	payload: {
+		context: 'messageBoxAction';
+		message?: string;
+	};
 }
 
 export const isUIKitIncomingInteractionActionButtonMessageBox = (
-    interaction: IUIKitIncomingInteractionActionButtonBase,
+	interaction: IUIKitIncomingInteractionActionButtonBase,
 ): interaction is IUIKitIncomingInteractionActionButtonMessageBox => {
-    return interaction.payload.context === 'messageBoxAction';
+	return interaction.payload.context === 'messageBoxAction';
 };
 
 interface IUIKitIncomingInteractionActionButtonMessage extends IUIKitIncomingInteractionActionButtonBase {
-    room: IRoom;
-    tmid?: string;
+	room: IRoom;
+	tmid?: string;
 
-    message: IMessage;
+	message: IMessage;
 
-    payload: {
-        context: 'messageAction';
-    };
+	payload: {
+		context: 'messageAction';
+	};
 }
 
 interface IUIKitIncomingInteractionActionButtonRoomSidebar extends IUIKitIncomingInteractionActionButtonBase {
-    room: IRoom;
+	room: IRoom;
 
-    payload: {
-        context: 'roomSideBarAction';
-    };
+	payload: {
+		context: 'roomSideBarAction';
+	};
 }
 
 interface IUIKitIncomingInteractionActionButtonRoom extends IUIKitIncomingInteractionActionButtonBase {
-    room: IRoom;
+	room: IRoom;
 
-    payload: {
-        context: 'roomAction';
-    };
+	payload: {
+		context: 'roomAction';
+	};
 }
 
 interface IUIKitIncomingInteractionActionButtonUserDropdown extends IUIKitIncomingInteractionActionButtonBase {
-    payload: {
-        context: 'userDropdownAction';
-    };
+	payload: {
+		context: 'userDropdownAction';
+	};
 }
 
 export type IUIKitIncomingInteractionActionButton =
-    | IUIKitIncomingInteractionActionButtonMessageBox
-    | IUIKitIncomingInteractionActionButtonMessage
-    | IUIKitIncomingInteractionActionButtonRoomSidebar
-    | IUIKitIncomingInteractionActionButtonRoom
-    | IUIKitIncomingInteractionActionButtonUserDropdown;
+	| IUIKitIncomingInteractionActionButtonMessageBox
+	| IUIKitIncomingInteractionActionButtonMessage
+	| IUIKitIncomingInteractionActionButtonRoomSidebar
+	| IUIKitIncomingInteractionActionButtonRoom
+	| IUIKitIncomingInteractionActionButtonUserDropdown;

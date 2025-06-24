@@ -1,51 +1,56 @@
-import type acorn from "./acorn.d.ts";
+import type acorn from './acorn.d.ts';
 
 export type FullWalkerCallback<TState> = (
-  node: acorn.AnyNode,
-  state: TState,
-  type: string
-) => void
+	node: acorn.AnyNode,
+	state: TState,
+	type: string,
+) => void;
 
 export type FullAncestorWalkerCallback<TState> = (
-  node: acorn.AnyNode,
-  state: TState,
-  ancestors: acorn.AnyNode[],
-  type: string
-) => void
+	node: acorn.AnyNode,
+	state: TState,
+	ancestors: acorn.AnyNode[],
+	type: string,
+) => void;
 
 type AggregateType = {
-  Expression: acorn.Expression,
-  Statement: acorn.Statement,
-  Pattern: acorn.Pattern,
-  ForInit: acorn.VariableDeclaration | acorn.Expression
-}
+	Expression: acorn.Expression;
+	Statement: acorn.Statement;
+	Pattern: acorn.Pattern;
+	ForInit: acorn.VariableDeclaration | acorn.Expression;
+};
 
-export type SimpleVisitors<TState> = {
-  [type in acorn.AnyNode["type"]]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState) => void
-} & {
-  [type in keyof AggregateType]?: (node: AggregateType[type], state: TState) => void
-}
+export type SimpleVisitors<TState> =
+	& {
+		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState) => void;
+	}
+	& {
+		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState) => void;
+	};
 
-export type AncestorVisitors<TState> = {
-  [type in acorn.AnyNode["type"]]?: ( node: Extract<acorn.AnyNode, { type: type }>, state: TState, ancestors: acorn.Node[]
-) => void
-} & {
-  [type in keyof AggregateType]?: (node: AggregateType[type], state: TState, ancestors: acorn.Node[]) => void
-}
+export type AncestorVisitors<TState> =
+	& {
+		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, ancestors: acorn.Node[]) => void;
+	}
+	& {
+		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, ancestors: acorn.Node[]) => void;
+	};
 
-export type WalkerCallback<TState> = (node: acorn.Node, state: TState) => void
+export type WalkerCallback<TState> = (node: acorn.Node, state: TState) => void;
 
-export type RecursiveVisitors<TState> = {
-  [type in acorn.AnyNode["type"]]?: ( node: Extract<acorn.AnyNode, { type: type }>, state: TState, callback: WalkerCallback<TState>) => void
-} &  {
-  [type in keyof AggregateType]?: (node: AggregateType[type], state: TState, callback: WalkerCallback<TState>) => void
-}
+export type RecursiveVisitors<TState> =
+	& {
+		[type in acorn.AnyNode['type']]?: (node: Extract<acorn.AnyNode, { type: type }>, state: TState, callback: WalkerCallback<TState>) => void;
+	}
+	& {
+		[type in keyof AggregateType]?: (node: AggregateType[type], state: TState, callback: WalkerCallback<TState>) => void;
+	};
 
-export type FindPredicate = (type: string, node: acorn.Node) => boolean
+export type FindPredicate = (type: string, node: acorn.Node) => boolean;
 
 export interface Found<TState> {
-  node: acorn.Node,
-  state: TState
+	node: acorn.Node;
+	state: TState;
 }
 
 /**
@@ -56,11 +61,11 @@ export interface Found<TState> {
  * @param state a start state. The default walker will simply visit all statements and expressions and not produce a meaningful state. (An example of a use of state is to track scope at each point in the tree.)
  */
 export function simple<TState>(
-  node: acorn.Node,
-  visitors: SimpleVisitors<TState>,
-  base?: RecursiveVisitors<TState>,
-  state?: TState
-): void
+	node: acorn.Node,
+	visitors: SimpleVisitors<TState>,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): void;
 
 /**
  * does a 'simple' walk over a tree, building up an array of ancestor nodes (including the current node) and passing the array to the callbacks as a third parameter.
@@ -70,11 +75,11 @@ export function simple<TState>(
  * @param state
  */
 export function ancestor<TState>(
-    node: acorn.Node,
-    visitors: AncestorVisitors<TState>,
-    base?: RecursiveVisitors<TState>,
-    state?: TState
-  ): void
+	node: acorn.Node,
+	visitors: AncestorVisitors<TState>,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): void;
 
 /**
  * does a 'recursive' walk, where the walker functions are responsible for continuing the walk on the child nodes of their target node.
@@ -84,11 +89,11 @@ export function ancestor<TState>(
  * @param base provides the fallback walker functions for node types that aren't handled in the {@link functions} object. If not given, the default walkers will be used.
  */
 export function recursive<TState>(
-  node: acorn.Node,
-  state: TState,
-  functions: RecursiveVisitors<TState>,
-  base?: RecursiveVisitors<TState>
-): void
+	node: acorn.Node,
+	state: TState,
+	functions: RecursiveVisitors<TState>,
+	base?: RecursiveVisitors<TState>,
+): void;
 
 /**
  * does a 'full' walk over a tree, calling the {@link callback} with the arguments (node, state, type) for each node
@@ -98,11 +103,11 @@ export function recursive<TState>(
  * @param state
  */
 export function full<TState>(
-  node: acorn.Node,
-  callback: FullWalkerCallback<TState>,
-  base?: RecursiveVisitors<TState>,
-  state?: TState
-): void
+	node: acorn.Node,
+	callback: FullWalkerCallback<TState>,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): void;
 
 /**
  * does a 'full' walk over a tree, building up an array of ancestor nodes (including the current node) and passing the array to the callbacks as a third parameter.
@@ -112,11 +117,11 @@ export function full<TState>(
  * @param state
  */
 export function fullAncestor<TState>(
-  node: acorn.AnyNode,
-  callback: FullAncestorWalkerCallback<TState>,
-  base?: RecursiveVisitors<TState>,
-  state?: TState
-): void
+	node: acorn.AnyNode,
+	callback: FullAncestorWalkerCallback<TState>,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): void;
 
 /**
  * builds a new walker object by using the walker functions in {@link functions} and filling in the missing ones by taking defaults from {@link base}.
@@ -124,9 +129,9 @@ export function fullAncestor<TState>(
  * @param base
  */
 export function make<TState>(
-  functions: RecursiveVisitors<TState>,
-  base?: RecursiveVisitors<TState>
-): RecursiveVisitors<TState>
+	functions: RecursiveVisitors<TState>,
+	base?: RecursiveVisitors<TState>,
+): RecursiveVisitors<TState>;
 
 /**
  * tries to locate a node in a tree at the given start and/or end offsets, which satisfies the predicate test. {@link start} and {@link end} can be either `null` (as wildcard) or a `number`. {@link test} may be a string (indicating a node type) or a function that takes (nodeType, node) arguments and returns a boolean indicating whether this node is interesting. {@link base} and {@link state} are optional, and can be used to specify a custom walker. Nodes are tested from inner to outer, so if two nodes match the boundaries, the inner one will be preferred.
@@ -138,13 +143,13 @@ export function make<TState>(
  * @param state
  */
 export function findNodeAt<TState>(
-  node: acorn.AnyNode,
-  start: number | undefined,
-  end?: number | undefined,
-  type?: FindPredicate | string,
-  base?: RecursiveVisitors<TState>,
-  state?: TState
-): Found<TState> | undefined
+	node: acorn.AnyNode,
+	start: number | undefined,
+	end?: number | undefined,
+	type?: FindPredicate | string,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): Found<TState> | undefined;
 
 /**
  * like {@link findNodeAt}, but will match any node that exists 'around' (spanning) the given position.
@@ -155,16 +160,16 @@ export function findNodeAt<TState>(
  * @param state
  */
 export function findNodeAround<TState>(
-  node: acorn.AnyNode,
-  start: number | undefined,
-  type?: FindPredicate | string,
-  base?: RecursiveVisitors<TState>,
-  state?: TState
-): Found<TState> | undefined
+	node: acorn.AnyNode,
+	start: number | undefined,
+	type?: FindPredicate | string,
+	base?: RecursiveVisitors<TState>,
+	state?: TState,
+): Found<TState> | undefined;
 
 /**
  * similar to {@link findNodeAround}, but will match all nodes after the given position (testing outer nodes before inner nodes).
  */
-export const findNodeAfter: typeof findNodeAround
+export const findNodeAfter: typeof findNodeAround;
 
-export const base: RecursiveVisitors<unknown>
+export const base: RecursiveVisitors<unknown>;

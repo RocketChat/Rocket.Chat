@@ -4,7 +4,7 @@ import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.
 import { expect } from 'chai';
 
 import { api, credentials, methodCall, request } from '../api-data';
-import { createAnOnlineAgent, createAnOfflineAgent } from './users';
+import { createAnOnlineAgent, createAnOfflineAgent, createAnAwayAgent } from './users';
 import type { WithRequiredProperty } from './utils';
 
 const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
@@ -165,6 +165,40 @@ export const createDepartmentWithAnOfflineAgent = async ({
 	};
 }> => {
 	const { user, credentials } = await createAnOfflineAgent();
+
+	const department = (await createDepartmentWithMethod({
+		allowReceiveForwardOffline,
+		fallbackForwardDepartment,
+		departmentsAllowedToForward,
+	})) as ILivechatDepartment;
+
+	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
+
+	return {
+		department,
+		agent: {
+			credentials,
+			user,
+		},
+	};
+};
+
+export const createDepartmentWithAnAwayAgent = async ({
+	allowReceiveForwardOffline = false,
+	fallbackForwardDepartment,
+	departmentsAllowedToForward,
+}: {
+	allowReceiveForwardOffline?: boolean;
+	fallbackForwardDepartment?: string;
+	departmentsAllowedToForward?: string[];
+}): Promise<{
+	department: ILivechatDepartment;
+	agent: {
+		credentials: Credentials;
+		user: WithRequiredProperty<IUser, 'username'>;
+	};
+}> => {
+	const { user, credentials } = await createAnAwayAgent();
 
 	const department = (await createDepartmentWithMethod({
 		allowReceiveForwardOffline,
