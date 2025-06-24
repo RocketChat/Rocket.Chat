@@ -13,4 +13,3 @@ import './v1/contact';
 import './v1/webhooks';
 import './v1/integration';
 import './v1/statistics';
-import './v1/outbound';
