@@ -1,8 +1,7 @@
 import type { Keys } from '@rocket.chat/icons';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
+import { useOmnichannelShowQueueLink } from '@rocket.chat/ui-omnichannel';
 import { useTranslation } from 'react-i18next';
-
-import { useOmnichannelShowQueueLink } from '../../../hooks/omnichannel/useOmnichannelShowQueueLink';
 
 export const useOmnichannelQueueAction = () => {
 	const { t } = useTranslation();

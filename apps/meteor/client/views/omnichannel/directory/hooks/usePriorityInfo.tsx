@@ -1,9 +1,8 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { useQuery } from '@tanstack/react-query';
-
-import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 
 type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 	i18n: TranslationKey;

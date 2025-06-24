@@ -1,12 +1,11 @@
 import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
+import { useQueuedInquiries, useOmnichannelEnabled } from '@rocket.chat/ui-omnichannel';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useEffect } from 'react';
 
 import { useQueryOptions } from './useQueryOptions';
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
 
 const query = { open: { $ne: false } };
 
