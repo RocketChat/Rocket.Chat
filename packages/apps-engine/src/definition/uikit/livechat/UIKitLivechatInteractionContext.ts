@@ -3,31 +3,31 @@ import { UIKitInteractionResponder } from '../UIKitInteractionResponder';
 import type { IUIKitLivechatBaseIncomingInteraction, IUIKitLivechatBlockIncomingInteraction } from './UIKitLivechatIncomingInteractionType';
 
 export abstract class UIKitLivechatInteractionContext {
-    private baseContext: IUIKitLivechatBaseIncomingInteraction;
+	private baseContext: IUIKitLivechatBaseIncomingInteraction;
 
-    private responder: UIKitInteractionResponder;
+	private responder: UIKitInteractionResponder;
 
-    constructor(baseContext: IUIKitLivechatBaseIncomingInteraction) {
-        const { appId, actionId, room, visitor, triggerId } = baseContext;
+	constructor(baseContext: IUIKitLivechatBaseIncomingInteraction) {
+		const { appId, actionId, room, visitor, triggerId } = baseContext;
 
-        this.baseContext = { appId, actionId, room, visitor, triggerId };
+		this.baseContext = { appId, actionId, room, visitor, triggerId };
 
-        this.responder = new UIKitInteractionResponder(this.baseContext as any as IUIKitBaseIncomingInteraction);
-    }
+		this.responder = new UIKitInteractionResponder(this.baseContext as any as IUIKitBaseIncomingInteraction);
+	}
 
-    public getInteractionResponder() {
-        return this.responder;
-    }
+	public getInteractionResponder() {
+		return this.responder;
+	}
 
-    public abstract getInteractionData(): IUIKitLivechatBaseIncomingInteraction;
+	public abstract getInteractionData(): IUIKitLivechatBaseIncomingInteraction;
 }
 
 export class UIKitLivechatBlockInteractionContext extends UIKitLivechatInteractionContext {
-    constructor(private readonly interactionData: IUIKitLivechatBlockIncomingInteraction) {
-        super(interactionData);
-    }
+	constructor(private readonly interactionData: IUIKitLivechatBlockIncomingInteraction) {
+		super(interactionData);
+	}
 
-    public getInteractionData(): IUIKitLivechatBlockIncomingInteraction {
-        return this.interactionData;
-    }
+	public getInteractionData(): IUIKitLivechatBlockIncomingInteraction {
+		return this.interactionData;
+	}
 }

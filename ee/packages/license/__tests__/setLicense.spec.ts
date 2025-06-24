@@ -160,7 +160,7 @@ describe('License set license procedures', () => {
 			license.onValidateLicense(validateCallback);
 			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);
-			expect(validateCallback).toBeCalledTimes(1);
+			expect(validateCallback).toHaveBeenCalledTimes(1);
 		});
 
 		describe('License limits', () => {
@@ -198,7 +198,7 @@ describe('License set license procedures', () => {
 					await expect(licenseManager.setLicense(newToken)).resolves.toBe(true);
 					expect(licenseManager.hasValidLicense()).toBe(false);
 
-					expect(invalidationCallback).toBeCalledTimes(1);
+					expect(invalidationCallback).toHaveBeenCalledTimes(1);
 				});
 			});
 		});

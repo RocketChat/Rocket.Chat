@@ -65,8 +65,14 @@ COPY ./packages/tools/dist packages/tools/dist
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 
+COPY ./packages/tsconfig packages/tsconfig
+
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
+
+COPY ./packages/i18n/package.json packages/i18n/package.json
+COPY ./packages/i18n/dist packages/i18n/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 

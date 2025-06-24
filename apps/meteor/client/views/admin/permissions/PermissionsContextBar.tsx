@@ -5,13 +5,7 @@ import { useEffect } from 'react';
 
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const PermissionsContextBar = (): ReactElement | null => {
@@ -37,14 +31,12 @@ const PermissionsContextBar = (): ReactElement | null => {
 
 	return (
 		(context && (
-			<ContextualbarDialog>
-				<Contextualbar>
-					<ContextualbarHeader>
-						<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
-						<ContextualbarClose onClick={handleCloseContextualbar} />
-					</ContextualbarHeader>
-					<EditRolePageWithData roleId={_id} />
-				</Contextualbar>
+			<ContextualbarDialog onClose={handleCloseContextualbar}>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
+					<ContextualbarClose onClick={handleCloseContextualbar} />
+				</ContextualbarHeader>
+				<EditRolePageWithData roleId={_id} />
 			</ContextualbarDialog>
 		)) ||
 		null

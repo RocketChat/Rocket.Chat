@@ -1,6 +1,7 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import type { UpdateFilter } from 'mongodb';
 
 export class AppRealStorage extends AppMetadataStorage {
@@ -18,10 +19,11 @@ export class AppRealStorage extends AppMetadataStorage {
 			throw new Error('App already exists.');
 		}
 
-		const id = (await this.db.insertOne(item)).insertedId as unknown as string;
-		item._id = id;
+		const nonEmptyItem = removeEmpty(item);
+		const id = (await this.db.insertOne(nonEmptyItem)).insertedId as unknown as string;
+		nonEmptyItem._id = id;
 
-		return item;
+		return nonEmptyItem;
 	}
 
 	public async retrieveOne(id: string): Promise<IAppStorageItem> {

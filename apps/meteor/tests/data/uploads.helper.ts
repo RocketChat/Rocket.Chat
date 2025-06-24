@@ -4,7 +4,7 @@ import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { api, request, credentials } from './api-data';
-import { imgURL } from './interactions';
+import { imgURL, soundURL } from './interactions';
 import { createVisitor } from './livechat/rooms';
 import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
@@ -240,5 +240,88 @@ export async function testFileUploads(
 					expect(file).to.have.property('_id').to.not.be.equal(fileId);
 				});
 			});
+	});
+
+	it('should properly filter files by name or typeGroup', async () => {
+		const fileOneName = 'image-zyxwv.png';
+		const fileTwoName = 'sound-abcde.png';
+		const fileIdsToConfirm: string[] = [];
+
+		// Post 2 files, one image and one audio
+		await Promise.all([
+			request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(credentials)
+				.attach('file', imgURL, { filename: fileOneName })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(typeof res.body?.file?._id).to.equal('string');
+					fileIdsToConfirm.push(res.body.file._id);
+				}),
+			request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(credentials)
+				.attach('file', soundURL, { filename: fileTwoName })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(typeof res.body?.file?._id).to.equal('string');
+					fileIdsToConfirm.push(res.body.file._id);
+				}),
+		]);
+
+		// Confirm the files
+		await Promise.all(
+			fileIdsToConfirm.map((fileId) =>
+				request
+					.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200),
+			),
+		);
+
+		// test filtering by name
+		const nameFilterTest = request
+			.get(api(filesEndpoint))
+			.set(credentials)
+			.query({
+				roomId: testRoom._id,
+				name: fileOneName,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
+
+				const { files } = res.body;
+
+				expect(files[0].name).to.equal(fileOneName);
+			});
+
+		// test filtering by typeGroup
+		const typeGroupFilterTest = request
+			.get(api(filesEndpoint))
+			.set(credentials)
+			.query({
+				roomId: testRoom._id,
+				typeGroup: 'audio',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
+
+				const { files } = res.body;
+
+				expect(files[0].name).to.equal(fileTwoName);
+			});
+
+		await Promise.all([nameFilterTest, typeGroupFilterTest]);
 	});
 }

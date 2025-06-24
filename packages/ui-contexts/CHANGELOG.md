@@ -1,5 +1,144 @@
 # @rocket.chat/ui-contexts
 
+## 19.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [016611917a86c738c22f7da4235e3ad38cf81e2a]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.1
+  - @rocket.chat/ddp-client@0.3.25
+  - @rocket.chat/core-typings@7.7.1
+  </details>
+
+## 19.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [aadc7956bdeb281007ef06f158088640a44171df, 5a74a78a2ba5e5733df7599b22f3ad0504f89a49, fdb3b5783053c2705936ee2941e46f9351901e66, 7f9748374a3b04f7880003227cde7058e5ea9a68, 1c7f00a5edcb070f48a2cb137bf7101a21c3c34a, 7f9748374a3b04f7880003227cde7058e5ea9a68, 996f5b9df477097fe496902b8a2700dee747895b, 6d334f21b97f0cb98d9af03be5167ff60198f6c1]:</summary>
+
+  - @rocket.chat/i18n@1.7.0
+  - @rocket.chat/rest-typings@7.7.0
+  - @rocket.chat/ddp-client@0.3.24
+  - @rocket.chat/core-typings@7.7.0
+  </details>
+
+## 19.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.6
+  - @rocket.chat/rest-typings@7.7.0-rc.6
+  - @rocket.chat/ddp-client@0.3.24-rc.6
+  </details>
+
+## 19.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.5
+  - @rocket.chat/rest-typings@7.7.0-rc.5
+  - @rocket.chat/ddp-client@0.3.24-rc.5
+  </details>
+
+## 19.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1-rc.4
+  - @rocket.chat/rest-typings@7.7.1-rc.4
+  - @rocket.chat/ddp-client@0.3.24-rc.4
+  </details>
+
+## 19.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.0-rc.3
+  - @rocket.chat/rest-typings@7.7.0-rc.3
+  - @rocket.chat/ddp-client@0.3.22-rc.3
+  </details>
+
+## 19.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.0-rc.2
+  - @rocket.chat/rest-typings@7.7.0-rc.2
+  - @rocket.chat/ddp-client@0.3.22-rc.2
+  </details>
+
+## 19.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.1
+  - @rocket.chat/rest-typings@7.7.0-rc.1
+  - @rocket.chat/ddp-client@0.3.22-rc.1
+  </details>
+
+## 19.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [aadc7956bdeb281007ef06f158088640a44171df, 5a74a78a2ba5e5733df7599b22f3ad0504f89a49, fdb3b5783053c2705936ee2941e46f9351901e66, 7f9748374a3b04f7880003227cde7058e5ea9a68, 1c7f00a5edcb070f48a2cb137bf7101a21c3c34a, 7f9748374a3b04f7880003227cde7058e5ea9a68, 996f5b9df477097fe496902b8a2700dee747895b, 6d334f21b97f0cb98d9af03be5167ff60198f6c1]:</summary>
+
+  - @rocket.chat/i18n@1.7.0-rc.0
+  - @rocket.chat/rest-typings@7.7.0-rc.0
+  - @rocket.chat/ddp-client@0.3.22-rc.0
+  - @rocket.chat/core-typings@7.7.0-rc.0
+
+## 18.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.6.2
+  - @rocket.chat/rest-typings@7.6.2
+  - @rocket.chat/ddp-client@0.3.23
+  </details>
+
+## 18.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.6.1
+  - @rocket.chat/rest-typings@7.6.1
+  - @rocket.chat/ddp-client@0.3.22
+   </details>
+
+## 18.0.0
+
+### Minor Changes
+
+- ([#35218](https://github.com/RocketChat/Rocket.Chat/pull/35218)) Adds a new admin page to audit settings changes in a server
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#35807](https://github.com/RocketChat/Rocket.Chat/pull/35807)) Moves the room search functionality from the sidebar to the navbar and reorganize their relative actions
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, f545617c2ac3d67af533e64c2670d8d564a56d15, bffc49f426259925c415651c2b2a58083dac547a, 1eeb139158fcd621a2b8d3a7de5bb512e659261d, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4, cc344bea08c08501f50e9cee620b2926a322a4ee, 4690c55d8e379d0bd5dfa444f3e0a4175e88d8de, be67bb771294c337c28da5e61ae47ab4e32244d1, 895ea3fdbba1d0e3cf1bed03cb8d0abfcca5d351]:</summary>
+
+  - @rocket.chat/core-typings@7.6.0
+  - @rocket.chat/i18n@1.6.0
+  - @rocket.chat/rest-typings@7.6.0
+  - @rocket.chat/ddp-client@0.3.21
+  </details>
+
 ## 18.0.0-rc.8
 
 ### Patch Changes

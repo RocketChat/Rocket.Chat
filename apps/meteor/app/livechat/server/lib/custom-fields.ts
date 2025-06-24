@@ -20,7 +20,9 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 };
 
 export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
-	if (overwrite || !contact.customFields || !contact.customFields[key]) {
+	const shouldUpdateCustomFields = overwrite || !contact.customFields || !contact.customFields[key];
+
+	if (shouldUpdateCustomFields) {
 		contact.customFields ??= {};
 		contact.customFields[key] = value;
 	} else {
@@ -28,7 +30,10 @@ export async function updateContactsCustomFields(contact: ILivechatContact, key:
 		contact.conflictingFields.push({ field: `customFields.${key}`, value });
 	}
 
-	await LivechatContacts.updateContact(contact._id, { customFields: contact.customFields, conflictingFields: contact.conflictingFields });
+	await LivechatContacts.updateContactCustomFields(contact._id, {
+		...(shouldUpdateCustomFields && { customFields: contact.customFields }),
+		...(contact.conflictingFields && { conflictingFields: contact.conflictingFields }),
+	});
 
 	livechatLogger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
 }

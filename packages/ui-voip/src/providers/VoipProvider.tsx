@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import VoipPopup from '../components/VoipPopup';
+import { VoipPopupDraggable } from '../components';
 import VoipPopupPortal from '../components/VoipPopupPortal';
 import type { VoipContextValue } from '../contexts/VoipContext';
 import { VoipContext } from '../contexts/VoipContext';
@@ -69,7 +69,12 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		};
 
 		const onOutgoingCallRinging = (): void => {
-			voipSounds.playDialer();
+			// VoipClient 'outgoingcall' event is emitted when the call is establishing
+			// and that event is also emitted when the call is accepted
+			// to avoid disrupting the VoipClient flow, we check if the call is outgoing here.
+			if (voipClient.isOutgoing()) {
+				voipSounds.playDialer();
+			}
 		};
 
 		const onIncomingCallRinging = (): void => {
@@ -196,7 +201,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 				)}
 
 			<VoipPopupPortal>
-				<VoipPopup position={{ bottom: 132, right: 24 }} />
+				<VoipPopupDraggable initialPosition={{ bottom: 132, right: 24 }} />
 			</VoipPopupPortal>
 		</VoipContext.Provider>
 	);
