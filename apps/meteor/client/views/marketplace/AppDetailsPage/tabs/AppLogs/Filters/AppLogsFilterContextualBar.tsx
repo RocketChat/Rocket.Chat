@@ -35,23 +35,23 @@ const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilter
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form' id={formId}>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Time')}</Label>
 					<TimeFilterSelect id='timeFilter' compactView={true} />
 				</Box>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='instanceFilter'>{t('Instance')}</Label>
 					<Controller control={control} name='instance' render={({ field }) => <InstanceFilterSelect id='instanceFilter' {...field} />} />
 				</Box>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label>{t('Severity')}</Label>
 					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
 				</Box>

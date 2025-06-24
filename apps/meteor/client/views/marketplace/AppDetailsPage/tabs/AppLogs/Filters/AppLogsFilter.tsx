@@ -30,14 +30,14 @@ export const AppLogsFilter = () => {
 
 	return (
 		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
-			<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 				<Label htmlFor='eventFilter'>{t('Event')}</Label>
 				<Controller
 					control={control}
 					name='event'
 					render={({ field }) => (
 						<TextInput
-							addon={<Icon color={Palette.text['font-secondary-info']} name='magnifier' size='x20' />}
+							addon={<Icon color={Palette.text['font-secondary-info']} name='magnifier' size={20} />}
 							id='eventFilter'
 							{...field}
 						/>
@@ -45,25 +45,25 @@ export const AppLogsFilter = () => {
 				/>
 			</Box>
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10}>
 					<Label htmlFor='instanceFilter'>{t('Instance')}</Label>
 					<Controller control={control} name='instance' render={({ field }) => <InstanceFilterSelect id='instanceFilter' {...field} />} />
 				</Box>
 			)}
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Time')}</Label>
 					<TimeFilterSelect id='timeFilter' />
 				</Box>
 			)}
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label>{t('Severity')}</Label>
 					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
 				</Box>
 			)}
 			{compactMode && (
-				<Button alignSelf='flex-end' icon='customize' secondary mie='x10' onClick={() => openContextualBar()}>
+				<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
 					{t('Filters')}
 				</Button>
 			)}

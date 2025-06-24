@@ -33,7 +33,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	return (
 		<>
-			<Box pb='x16'>
+			<Box pb={16}>
 				<AppLogsFilter />
 			</Box>
 			{isLoading && <AccordionLoading />}
