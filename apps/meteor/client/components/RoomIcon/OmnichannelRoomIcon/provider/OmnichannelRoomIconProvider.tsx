@@ -14,7 +14,7 @@ type OmnichannelRoomIconProviderProps = {
 	children?: ReactNode;
 };
 
-export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconProviderProps) => {
+const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconProviderProps) => {
 	const svgIcons = useSyncExternalStore(
 		useCallback(
 			(callback): (() => void) =>
@@ -97,3 +97,5 @@ export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconPro
 		</OmnichannelRoomIconContext.Provider>
 	);
 };
+
+export default OmnichannelRoomIconProvider;
