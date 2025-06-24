@@ -4,15 +4,14 @@ import type { Filter } from 'mongodb';
 import { useEffect, useMemo } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
-import { useSortQueryOptions } from '../../../../hooks/useSortQueryOptions';
+
+const sortOptions = { sort: { lm: -1 } } as const;
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
 	teamId?: string | null,
 	sidepanelItems?: 'channels' | 'discussions' | null,
 ) => {
-	const options = useSortQueryOptions();
-
 	const query = useMemo(() => {
 		const query: Filter<ISubscription> = {
 			$or: [
@@ -37,8 +36,8 @@ export const useTeamsListChildrenUpdate = (
 	}, [parentRid, teamId, sidepanelItems]);
 
 	const result = useQuery({
-		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems, options],
-		queryFn: () => Subscriptions.find(query, options).fetch(),
+		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
+		queryFn: () => Subscriptions.find(query, sortOptions).fetch(),
 		enabled: sidepanelItems !== null && teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
 		placeholderData: keepPreviousData,

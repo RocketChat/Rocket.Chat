@@ -1,23 +1,25 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, ReactNode } from 'react';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
-type CondensedProps = {
+type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
-	avatar: ReactNode;
 	icon?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => ReactNode;
+	menu?: ReactElement;
 	menuOptions?: any;
 	selected?: boolean;
 	badges?: ReactNode;
 	clickable?: boolean;
+	room: SubscriptionWithRoom;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
+const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...props }: SidebarItemProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleFocus = () => setMenuVisibility(true);
@@ -25,18 +27,20 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 
 	return (
 		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
-			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+			<SidebarV2ItemAvatarWrapper>
+				<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+			</SidebarV2ItemAvatarWrapper>
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 			{badges}
 			{actions}
 			{menu && (
 				<SidebarV2ItemMenu>
-					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
+					{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 				</SidebarV2ItemMenu>
 			)}
 		</SidebarV2Item>
 	);
 };
 
-export default memo(Condensed);
+export default memo(SidebarItem);
