@@ -2574,6 +2574,7 @@ describe('Meteor.methods', () => {
 		let testUserCredentials: Credentials;
 		let dmId: IRoom['_id'];
 		let room: IRoom;
+		let privateRoom: IRoom;
 
 		before(async () => {
 			testUser = await createUser();
@@ -2612,6 +2613,49 @@ describe('Meteor.methods', () => {
 				});
 		});
 
+		before(async () => {
+			privateRoom = (
+				await createRoom({
+					type: 'p',
+					name: `private.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.group;
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'c', roomId: room._id }),
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+				updateSetting('Accounts_AllowAnonymousRead', false),
+			]);
+		});
+
+		it('should throw error when anonymous user tries to read private channel with anonymous read enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const payload = {
+				message: JSON.stringify({
+					msg: 'method',
+					id: '2',
+					method: 'getRoomByTypeAndName',
+					params: ['p', privateRoom.name],
+				}),
+			};
+
+			const res = await request.post('/api/v1/method.callAnon/getRoomByTypeAndName').set('Content-Type', 'application/json').send(payload);
+
+			expect(res.body).to.have.property('message');
+			const parsedMessage = JSON.parse(res.body.message);
+
+			expect(parsedMessage).to.have.property('error');
+			expect(parsedMessage.error).to.have.property('error');
+			expect(parsedMessage.error.error).to.equal('error-invalid-user');
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
 		after(() =>
 			Promise.all([
 				deleteRoom({ type: 'd', roomId: dmId }),
