@@ -1,4 +1,12 @@
-import { isOmnichannelRoom, type ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import {
+	isDirectMessageRoom,
+	isDiscussion,
+	isOmnichannelRoom,
+	isPrivateRoom,
+	isPublicRoom,
+	isTeamRoom,
+	type ILivechatInquiryRecord,
+} from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
@@ -93,24 +101,23 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (favoritesEnabled && room.f) {
-					setGroupRoom(SIDE_PANEL_GROUPS.FAVORITES, room);
-				}
-
 				if (hasMention(room)) {
 					setGroupRoom(SIDE_PANEL_GROUPS.MENTIONS, room);
 				}
 
-				if (room.teamMain) {
-					setGroupRoom(SIDE_PANEL_GROUPS.ALL, room);
-					return setGroupRoom(SIDE_BAR_GROUPS.TEAMS, room);
+				if (favoritesEnabled && room.f) {
+					setGroupRoom(SIDE_PANEL_GROUPS.FAVORITES, room);
 				}
 
-				if (isDiscussionEnabled && room.prid) {
+				if (isTeamRoom(room)) {
+					setGroupRoom(SIDE_BAR_GROUPS.TEAMS, room);
+				}
+
+				if (isDiscussionEnabled && isDiscussion(room)) {
 					setGroupRoom(SIDE_PANEL_GROUPS.DISCUSSIONS, room);
 				}
 
-				if ((room.t === 'c' || room.t === 'p') && !room.prid) {
+				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
 					setGroupRoom(SIDE_BAR_GROUPS.CHANNELS, room);
 				}
 
@@ -119,7 +126,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return setGroupRoom(SIDE_PANEL_GROUPS.IN_PROGRESS, room);
 				}
 
-				if (room.t === 'd') {
+				if (isDirectMessageRoom(room)) {
 					setGroupRoom(SIDE_BAR_GROUPS.DIRECT_MESSAGES, room);
 				}
 
