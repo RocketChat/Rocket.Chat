@@ -8,11 +8,11 @@ import {
 	assertHasValidFieldNames,
 	assertIsValidFieldName,
 	clone,
-	entriesOf,
 	isIndexable,
 	isNumericKey,
 	populateDocumentWithQueryFields,
 } from './common';
+import { entriesOf } from '../objectUtils';
 
 export type UpdateModifiers = {
 	[K in keyof typeof Updater.MODIFIERS]?: Parameters<(typeof Updater.MODIFIERS)[K]>[2];

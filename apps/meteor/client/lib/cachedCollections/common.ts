@@ -2,6 +2,7 @@ import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 import { EJSON } from 'meteor/ejson';
 
 import { MinimongoError } from './MinimongoError';
+import { entriesOf } from '../objectUtils';
 
 export const hasOwn = Object.prototype.hasOwnProperty;
 
@@ -314,10 +315,6 @@ export function _selectorIsId(selector: unknown): selector is string | number {
 
 export function isBinary(x: unknown): x is Uint8Array {
 	return typeof x === 'object' && x !== null && x instanceof Uint8Array;
-}
-
-export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {
-	return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
 const invalidCharMsg = {
