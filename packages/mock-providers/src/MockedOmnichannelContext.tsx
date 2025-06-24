@@ -1,5 +1,5 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import { OmnichannelContext } from '@rocket.chat/ui-contexts';
+import { OmnichannelContext } from '@rocket.chat/ui-omnichannel';
 import type { ReactNode } from 'react';
 
 export const MockedOmnichannelContext = ({

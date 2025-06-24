@@ -3,6 +3,7 @@ import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useIsOverMacLimit, useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
@@ -27,9 +28,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
 import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
 
 type DebouncedParams = {
