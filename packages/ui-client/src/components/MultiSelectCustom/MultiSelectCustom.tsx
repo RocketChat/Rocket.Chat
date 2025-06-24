@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
+import { useButtonPattern, useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, FormEvent, ReactElement, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
@@ -96,18 +96,18 @@ export const MultiSelectCustom = ({
 	);
 
 	const selectedOptionsCount = dropdownOptions.filter((option) => option.hasOwnProperty('checked') && option.checked).length;
+	const buttonProps = useButtonPattern(() => toggleCollapsed(!collapsed));
 
 	return (
 		<Box display='flex' position='relative'>
 			<MultiSelectCustomAnchor
 				ref={reference}
 				collapsed={collapsed}
-				onClick={() => toggleCollapsed(!collapsed)}
-				onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && toggleCollapsed(!collapsed)}
 				defaultTitle={defaultTitle}
 				selectedOptionsTitle={selectedOptionsTitle}
 				selectedOptionsCount={selectedOptionsCount}
 				maxCount={dropdownOptions.length}
+				{...buttonProps}
 				{...props}
 			/>
 			{collapsed && (
