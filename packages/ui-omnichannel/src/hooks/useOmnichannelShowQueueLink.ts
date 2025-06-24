@@ -1,3 +1,3 @@
-import { useOmnichannel } from '@rocket.chat/ui-contexts';
+import { useOmnichannel } from './useOmnichannel';
 
 export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;

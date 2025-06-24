@@ -17,7 +17,6 @@ export { UserContext, UserContextValue } from './UserContext';
 export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
-export { OmnichannelContext, OmnichannelContextValue } from './OmnichannelContext';
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
 export { useAssetPath } from './hooks/useAssetPath';
@@ -96,7 +95,6 @@ export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 export { useUserPresence } from './hooks/useUserPresence';
 export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
-export { useOmnichannel } from './hooks/useOmnichannel';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';

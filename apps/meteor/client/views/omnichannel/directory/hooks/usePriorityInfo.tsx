@@ -1,7 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { useQuery } from '@tanstack/react-query';
-
-import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 
 export const usePriorityInfo = (priorityId: string) => {
 	const { enabled } = useOmnichannelPriorities();

@@ -1,11 +1,10 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
+import { useOmnichannelEnabled } from '@rocket.chat/ui-omnichannel';
 import { useVoipState } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 
 type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	voipItems: GenericMenuItemProps[];

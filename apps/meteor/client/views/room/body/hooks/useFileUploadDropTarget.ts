@@ -1,10 +1,10 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useIsRoomOverMacLimit } from '@rocket.chat/ui-omnichannel';
 import type { DragEvent, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { useDropTarget } from './useDropTarget';
-import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
