@@ -2656,6 +2656,14 @@ describe('Meteor.methods', () => {
 
 			await updateSetting('Accounts_AllowAnonymousRead', false);
 		});
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'c', roomId: room._id }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+			]),
+		);
 
 		it("should throw an error if the user isn't logged in", (done) => {
 			void request
