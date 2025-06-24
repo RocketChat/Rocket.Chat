@@ -32,11 +32,11 @@ export const DateTimeModal = ({ onSave, onClose }: DateTimeModalProps): ReactNod
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie='x10' flexGrow={1}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</Box>

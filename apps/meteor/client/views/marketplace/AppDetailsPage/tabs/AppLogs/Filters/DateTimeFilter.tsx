@@ -15,7 +15,7 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 	return (
 		<>
 			<Box display='flex' flexDirection='row' id={id}>
-				<Margins inlineEnd='x4'>
+				<Margins inlineEnd={4}>
 					<Controller
 						control={control}
 						name={type === 'start' ? 'startDate' : 'endDate'}
@@ -23,7 +23,7 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 					/>
 				</Margins>
 
-				<Margins inlineStart='x4'>
+				<Margins inlineStart={4}>
 					<Controller
 						control={control}
 						name={type === 'start' ? 'startTime' : 'endTime'}

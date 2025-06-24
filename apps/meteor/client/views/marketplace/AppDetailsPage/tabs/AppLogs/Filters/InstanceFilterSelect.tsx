@@ -13,8 +13,7 @@ type InstanceFilterSelectProps = {
 // TODO: Requires endpoint to fetch instances
 export const InstanceFilterSelect = ({ id }: InstanceFilterSelectProps) => {
 	const { t } = useTranslation();
-	// @ts-expect-error mock
-	const getOptions = useEndpoint('GET', '/v1/apps/instances') as () => Promise<{ value: string; label: string }[]>;
+	const getOptions = useEndpoint('GET', '/apps/logs/instanceIds');
 
 	const { control } = useFormContext();
 
@@ -24,7 +23,7 @@ export const InstanceFilterSelect = ({ id }: InstanceFilterSelectProps) => {
 	});
 
 	const options: SelectOption[] = useMemo(() => {
-		const mappedData: [string, string][] = data?.map((option) => [option.value, option.label]) || [];
+		const mappedData: [string, string][] = data?.instanceIds?.map((id: string) => [id, id]) || [];
 		return [['all', t('All')], ...mappedData];
 	}, [data, t]);
 
