@@ -3,7 +3,7 @@
 	"version": "7.8.0-develop",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/jest-presets": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/express": "^4.17.21",

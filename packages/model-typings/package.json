@@ -3,7 +3,7 @@
 	"version": "1.6.4",
 	"private": true,
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "^9.29.0",
 		"mongodb": "6.10.0",

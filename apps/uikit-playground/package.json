@@ -42,7 +42,7 @@
     "reactflow": "^11.11.4"
   },
   "devDependencies": {
-    "@rocket.chat/eslint-config": "*",
+    "@rocket.chat/eslint-config": "workspace:*",
     "@rocket.chat/tsconfig": "workspace:*",
     "@types/lodash": "~4.17.13",
     "@types/react": "~18.3.17",

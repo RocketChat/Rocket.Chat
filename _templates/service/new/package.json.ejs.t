@@ -37,12 +37,10 @@ to: ee/apps/<%= name %>/package.json
 		"polka": "^0.5.2"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/eslint": "~8.44.0",
 		"@types/polka": "^0.5.4",
 		"eslint": "^9.29.0",
-"@rocket.chat/eslint-config": "*",
 		"ts-node": "^10.9.1",
 		"typescript": "~5.8.3"
 	},

@@ -46,7 +46,7 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
 		"@types/node": "~22.14.0",

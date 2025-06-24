@@ -12,7 +12,7 @@
 		"mongodb": "6.10.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@types/debug": "^4.1.12",
 		"eslint": "^9.29.0",
 		"typescript": "~5.8.3"

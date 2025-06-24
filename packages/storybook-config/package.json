@@ -15,7 +15,7 @@
 		"storybook-dark-mode": "^4.0.2"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/tsconfig": "workspace:*",

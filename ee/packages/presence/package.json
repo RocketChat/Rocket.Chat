@@ -7,7 +7,7 @@
 		"@babel/preset-env": "~7.26.0",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/apps-engine": "workspace:^",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "~22.14.0",
 		"babel-jest": "~30.0.0",

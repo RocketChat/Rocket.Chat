@@ -42,7 +42,7 @@
     "webpack": "*"
   },
   "devDependencies": {
-    "@rocket.chat/eslint-config": "*",
+    "@rocket.chat/eslint-config": "workspace:*",
     "@rocket.chat/prettier-config": "~0.31.25",
     "@types/node": "~22.14.0",
     "eslint": "^9.29.0",

@@ -18,7 +18,7 @@
 		"@actions/exec": "^1.1.1",
 		"@actions/github": "^6.0.0",
 		"@octokit/plugin-throttling": "^6.1.0",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"eslint": "^9.29.0",
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",

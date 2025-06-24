@@ -24,10 +24,10 @@
 		"typescript-eslint": "^8.35.0"
 	},
 	"exports": {
+		".": "./index.js",
 		"./base": "./base.js",
 		"./jest": "./jest.js",
 		"./mocha": "./mocha.js",
-		"./node": "./node.js",
 		"./react": "./react.js"
 	}
 }

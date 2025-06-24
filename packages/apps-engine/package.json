@@ -9,7 +9,7 @@
 		"testunit": "run-p .:test:node .:test:deno",
 		".:test:node": "NODE_ENV=test ts-node --transpileOnly ./tests/runner.ts",
 		".:test:deno": "cd deno-runtime && deno task test",
-		".:lint:eslint": "eslint .",
+		".:lint:eslint": "eslint . --quiet",
 		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
 		"lint": "yarn .:lint:eslint && yarn .:lint:deno",
 		"fix-lint": "yarn .:eslint:fix && yarn .:deno-fmt:fix",
@@ -69,7 +69,7 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@types/adm-zip": "^0.5.6",
 		"@types/debug": "^4.1.12",

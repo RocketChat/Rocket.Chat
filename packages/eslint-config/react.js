@@ -68,9 +68,6 @@ export const config = tseslint.config(
 				version: 'detect',
 			},
 		},
-		languageOptions: {
-			globals: globals.browser,
-		},
 	},
 	{
 		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
@@ -80,6 +77,11 @@ export const config = tseslint.config(
 		rules: {
 			'react/display-name': 'warn',
 			'react/no-multi-comp': 'warn',
+		},
+	},
+	{
+		languageOptions: {
+			globals: globals.browser,
 		},
 	},
 );

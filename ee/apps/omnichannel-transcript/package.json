@@ -46,7 +46,7 @@
 		"polka": "^0.5.2"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/gc-stats": "^1.4.3",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",

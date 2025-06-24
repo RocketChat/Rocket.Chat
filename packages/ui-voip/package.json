@@ -31,7 +31,7 @@
 		"@playwright/test": "^1.52.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.2",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/fuselage-hooks": "^0.36.0",
 		"@rocket.chat/icons": "^0.43.0",

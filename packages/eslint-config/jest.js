@@ -1,11 +1,20 @@
+// @ts-check
 import jest from 'eslint-plugin-jest';
+import globals from 'globals';
 
+/**
+ * @type {import('typescript-eslint').ConfigWithExtends}
+ */
 export const config = {
-	// update this to match your test files
 	files: ['**/*.spec.js', '**/*.test.js', '**/*.tests.js', '**/*.mock.js'],
 	plugins: { jest },
 	languageOptions: {
-		globals: jest.environments.globals.globals,
+		globals: globals.jest,
+		parserOptions: {
+			projectService: {
+				allowDefaultProject: ['jest.config.js', 'jest.config.mjs'],
+			},
+		},
 	},
 	rules: {
 		'jest/no-disabled-tests': 'warn',

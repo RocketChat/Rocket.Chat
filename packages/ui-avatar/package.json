@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.0",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~18.3.17",

@@ -38,7 +38,7 @@
 		"@babel/core": "~7.26.0",
 		"@babel/plugin-transform-runtime": "~7.25.9",
 		"@babel/preset-env": "~7.26.0",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",

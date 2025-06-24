@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/ddp-client": "workspace:~",
-		"@rocket.chat/eslint-config": "*",
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/mongo-adapter": "workspace:~",
 		"@rocket.chat/ui-video-conf": "workspace:*",
 		"@tanstack/react-query": "~5.65.1",
