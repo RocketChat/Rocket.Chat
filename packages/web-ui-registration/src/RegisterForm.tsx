@@ -158,7 +158,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							/>
 						</FieldRow>
 						{errors.name && (
-							<FieldError aria-live='assertive' id={`${nameId}-error`}>
+							<FieldError role='alert' id={`${nameId}-error`}>
 								{errors.name.message}
 							</FieldError>
 						)}
@@ -185,7 +185,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							/>
 						</FieldRow>
 						{errors.email && (
-							<FieldError aria-live='assertive' id={`${emailId}-error`}>
+							<FieldError role='alert' id={`${emailId}-error`}>
 								{errors.email.message}
 							</FieldError>
 						)}
@@ -208,7 +208,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							/>
 						</FieldRow>
 						{errors.username && (
-							<FieldError aria-live='assertive' id={`${usernameId}-error`}>
+							<FieldError role='alert' id={`${usernameId}-error`}>
 								{errors.username.message}
 							</FieldError>
 						)}
@@ -232,7 +232,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							/>
 						</FieldRow>
 						{errors?.password && (
-							<FieldError aria-live='assertive' id={`${passwordId}-error`}>
+							<FieldError role='alert' id={`${passwordId}-error`}>
 								{errors.password.message}
 							</FieldError>
 						)}
@@ -260,7 +260,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								/>
 							</FieldRow>
 							{errors.passwordConfirmation && (
-								<FieldError aria-live='assertive' id={`${passwordConfirmationId}-error`}>
+								<FieldError role='alert' id={`${passwordConfirmationId}-error`}>
 									{errors.passwordConfirmation.message}
 								</FieldError>
 							)}
@@ -284,7 +284,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								/>
 							</FieldRow>
 							{errors.reason && (
-								<FieldError aria-live='assertive' id={`${reasonId}-error`}>
+								<FieldError role='alert' id={`${reasonId}-error`}>
 									{errors.reason.message}
 								</FieldError>
 							)}
