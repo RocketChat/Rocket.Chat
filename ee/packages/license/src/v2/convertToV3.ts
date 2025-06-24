@@ -50,7 +50,7 @@ export const convertToV3 = (v2: ILicenseV2): ILicenseV3 => {
 		},
 		grantedModules: [
 			...new Set(
-				['teams-voip', 'contact-id-verification', 'hide-watermark', ...v2.modules]
+				['outbound-message', 'teams-voip', 'contact-id-verification', 'hide-watermark', ...v2.modules]
 					.map((licenseModule) => (isBundle(licenseModule) ? getBundleModules(licenseModule) : [licenseModule]))
 					.reduce((prev, curr) => [...prev, ...curr], [])
 					.map((licenseModule) => ({ module: licenseModule as InternalModuleName })),
