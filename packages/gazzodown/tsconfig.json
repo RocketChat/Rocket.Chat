@@ -4,5 +4,6 @@
 		"rootDirs": ["./src", "./"],
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*", "./jest.config.ts", "./.storybook/**/*"]
+	"include": ["./src/**/*", "./jest.config.ts", "./.storybook/**/*"],
+	"exclude": []
 }

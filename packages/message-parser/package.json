@@ -54,6 +54,7 @@
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
+    "@rocket.chat/tsconfig": "workspace:*",
     "@types/jest": "~29.5.14",
     "@types/node": "~22.14.0",
     "babel-loader": "~9.2.1",

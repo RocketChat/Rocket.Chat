@@ -8844,6 +8844,7 @@ __metadata:
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
     "@eslint/js": "npm:^9.29.0"
+    "@types/eslint-plugin-security": "npm:^3.0.0"
     eslint: "npm:^9.29.0"
     eslint-config-prettier: "npm:^10.1.5"
     eslint-import-resolver-typescript: "npm:^4.4.3"
@@ -9377,6 +9378,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/peggy-loader": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
+    "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~29.5.14"
     "@types/node": "npm:~22.14.0"
     babel-loader: "npm:~9.2.1"
@@ -12936,6 +12938,15 @@ __metadata:
   version: 2.2.9
   resolution: "@types/emojione@npm:2.2.9"
   checksum: 10/ec16f96f8d9886dc3f82bd8aa3ee34f320069771d9a82d01c3c20da9c0c13c7b07347eff2912b914caf3416e3cedea4b963ecc3331c23d743270c975a91ff4d4
+  languageName: node
+  linkType: hard
+
+"@types/eslint-plugin-security@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/eslint-plugin-security@npm:3.0.0"
+  dependencies:
+    "@types/eslint": "npm:*"
+  checksum: 10/00ed770a5184cdd7853964c5f7b4ddf782178c29ea2eccd166b67e7f999d5b66fc6d5a4f0913c9d19ad2f495ebe5cf4148a36501bf6bf823f71f245ec8f7d9dc
   languageName: node
   linkType: hard
 

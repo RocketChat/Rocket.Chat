@@ -5,6 +5,7 @@
 	"description": "Rocket.Chat's JS/TS ESLint config",
 	"devDependencies": {
 		"@eslint/js": "^9.29.0",
+		"@types/eslint-plugin-security": "^3.0.0",
 		"eslint": "^9.29.0",
 		"eslint-config-prettier": "^10.1.5",
 		"eslint-import-resolver-typescript": "^4.4.3",

@@ -1,6 +1,11 @@
-import { config } from '@rocket.chat/eslint-config/base';
+import { defineConfig } from '@rocket.chat/eslint-config/base';
 
-/** 
- * @type {import('eslint').Linter.Config}
- */
-export default config;
+export default defineConfig({
+	languageOptions: {
+		parserOptions: {
+			projectService: {
+				allowDefaultProject: ['src/*.spec.ts'],
+			},
+		},
+	},
+});

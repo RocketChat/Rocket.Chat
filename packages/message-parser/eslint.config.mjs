@@ -1,3 +1,3 @@
-import { config } from '@rocket.chat/eslint-config/base';
+import { defineConfig } from '@rocket.chat/eslint-config/base';
 
-export default config;
+export default defineConfig();

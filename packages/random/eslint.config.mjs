@@ -1,12 +1,11 @@
-import { config } from '@rocket.chat/eslint-config/base';
-import pluginJest from 'eslint-plugin-jest';
-export default [
-	...config,
-	{
-		files: ['**/*.spec.ts', '**/*.spec.tsx'],
-		plugins: { jest: pluginJest },
-		languageOptions: {
-			globals: pluginJest.environments.globals.globals,
+import { defineConfig } from '@rocket.chat/eslint-config/base';
+
+export default defineConfig({
+	languageOptions: {
+		parserOptions: {
+			projectService: {
+				allowDefaultProject: ['src/*.spec.ts'],
+			},
 		},
 	},
-];
+});

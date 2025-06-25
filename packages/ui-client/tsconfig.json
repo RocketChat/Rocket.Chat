@@ -5,4 +5,5 @@
 		"outDir": "./dist"
 	},
 	"include": ["./src/**/*", "./.storybook/**/*", "./jest.config.ts"],
+	"exclude": []
 }

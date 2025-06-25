@@ -9,7 +9,7 @@ export default tseslint.config(
 	[
 		...base,
 		{
-			ignores: ['packages/**/*', 'definition/**/*', '.scripts/**/*'],
+			ignores: ['packages/**/*', 'definition/**/*', '.scripts/**/*', 'imports/client/**/*'],
 		},
 	],
 	jest,
