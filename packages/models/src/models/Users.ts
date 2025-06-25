@@ -504,9 +504,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T>(query, options);
 	}
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			ldap: true,
+			active: true,
 			_id: {
 				$nin: userIds,
 			},
