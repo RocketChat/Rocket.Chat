@@ -15,7 +15,6 @@ import {
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';
-import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
@@ -34,7 +33,17 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const formatDate = useFormatDate();
 	const canEditContact = usePermission('edit-omnichannel-contact');
 
-	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
+	const {
+		name,
+		emails,
+		phones,
+		channels,
+		conflictingFields,
+		createdAt,
+		lastChat,
+		contactManager,
+		customFields: userCustomFields,
+	} = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
 	const customFieldEntries = useValidCustomFields(userCustomFields);
@@ -87,15 +96,13 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<TabsItem onClick={() => handleNavigate({ context: 'details' })} selected={context === 'details'}>
 					{t('Details')}
 				</TabsItem>
-				<TabsItem onClick={() => handleNavigate({ context: 'channels' })} selected={context === 'channels'}>
-					{t('Channels')}
-				</TabsItem>
 				<TabsItem onClick={() => handleNavigate({ context: 'history' })} selected={context === 'history'}>
 					{t('History')}
 				</TabsItem>
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
+					channels={channels}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
@@ -103,7 +110,6 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					customFieldEntries={customFieldEntries}
 				/>
 			)}
-			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
 			{context === 'history' && <ContactInfoHistory contact={contact} />}
 		</ContextualbarDialog>
 	);

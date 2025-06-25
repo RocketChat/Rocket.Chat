@@ -1,3 +1,4 @@
+import type { ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
 import { Divider, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -9,8 +10,10 @@ import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
+import ContactInfoChannels from '../ContactInfoChannels';
 
 type ContactInfoDetailsProps = {
+	channels: Serialized<ILivechatContactChannel>[];
 	emails?: string[];
 	phones?: string[];
 	createdAt: string;
@@ -18,7 +21,7 @@ type ContactInfoDetailsProps = {
 	contactManager?: string;
 };
 
-const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({ channels, emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
@@ -41,6 +44,8 @@ const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, con
 					</>
 				)}
 			</Margins>
+
+			{channels.length ? <ContactInfoChannels channels={channels} /> : null}
 		</ContextualbarScrollableContent>
 	);
 };
