@@ -218,6 +218,7 @@
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {
+		"react-easy-crop": "^5.0.5",
 		"@babel/runtime": "~7.26.0",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
