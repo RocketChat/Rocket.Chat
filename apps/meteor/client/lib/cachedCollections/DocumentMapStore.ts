@@ -2,31 +2,172 @@ import { create } from 'zustand';
 
 export interface IDocumentMapStore<T extends { _id: string }> {
 	readonly records: ReadonlyMap<T['_id'], T>;
+	/**
+	 * Checks if a document with the given _id exists in the store.
+	 *
+	 * @param _id - The _id of the document to check.
+	 * @returns true if the document exists, false otherwise.
+	 */
 	has(_id: T['_id']): boolean;
+	/**
+	 * Retrieves a document by its _id.
+	 *
+	 * @param _id - The _id of the document to retrieve.
+	 * @returns The document if found, or undefined if not found.
+	 */
 	get(_id: T['_id']): T | undefined;
+	/**
+	 * Checks if any document in the store satisfies the given predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @returns true if at least one document matches the predicate, false otherwise.
+	 */
 	some(predicate: (record: T) => boolean): boolean;
+	/**
+	 * Finds a document that satisfies the given predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @returns The first document that matches the predicate, or undefined if no document matches.
+	 */
 	find<U extends T>(predicate: (record: T) => record is U): U | undefined;
+	/**
+	 * Finds a document that satisfies the given predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @returns The first document that matches the predicate, or undefined if no document matches.
+	 */
 	find(predicate: (record: T) => boolean): T | undefined;
+	/**
+	 * Finds the first document that satisfies the given predicate, using a comparator to determine the best match.
+	 *
+	 * Usually the "best" document is the first of a ordered set, but it can be any criteria defined by the comparator.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param comparator - A function that compares two documents and returns a negative number if the first is better, zero if they are equal, or a positive number if the second is better.
+	 * @returns The best matching document according to the predicate and comparator, or undefined if no document matches.
+	 */
 	findFirst<U extends T>(predicate: (record: T) => record is U, comparator: (a: T, b: T) => number): U | undefined;
+	/**
+	 * Finds the first document that satisfies the given predicate, using a comparator to determine the best match.
+	 *
+	 * Usually the "best" document is the first of a ordered set, but it can be any criteria defined by the comparator.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param comparator - A function that compares two documents and returns a negative number if the first is better, zero if they are equal, or a positive number if the second is better.
+	 * @returns The best matching document according to the predicate and comparator, or undefined if no document matches.
+	 */
 	findFirst(predicate: (record: T) => boolean, comparator: (a: T, b: T) => number): T | undefined;
+	/**
+	 * Filters documents in the store based on a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @returns An array of documents that match the predicate.
+	 */
 	filter<U extends T>(predicate: (record: T) => record is U): U[];
+	/**
+	 * Filters documents in the store based on a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @returns An array of documents that match the predicate.
+	 */
 	filter(predicate: (record: T) => boolean): T[];
-	indexBy<TKey extends keyof T>(key: TKey): Map<T[TKey], T>;
+	/**
+	 * Creates an index of documents by a specified key.
+	 *
+	 * @param key - The key to index the documents by.
+	 * @returns A Map where the keys are the values of the specified key in the documents, and the values are the documents themselves.
+	 */
+	indexBy<TKey extends keyof T>(key: TKey): ReadonlyMap<T[TKey], T>;
+	/**
+	 * Replaces all documents in the store with the provided records.
+	 *
+	 * @param records - An array of documents to replace the current records in the store.
+	 */
 	replaceAll(records: T[]): void;
+	/**
+	 * Stores a single document in the store.
+	 *
+	 * @param doc - The document to store.
+	 */
 	store(doc: T): void;
+	/**
+	 * Stores multiple documents in the store.
+	 *
+	 * @param docs - An iterable of documents to store.
+	 */
 	storeMany(docs: Iterable<T>): void;
+	/**
+	 * Deletes a document from the store by its _id.
+	 *
+	 * @param _id - The _id of the document to delete.
+	 */
 	delete(_id: T['_id']): void;
+	/**
+	 * Updates documents in the store that match a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param modifier - A function that takes a document and returns the modified document.
+	 * @returns void
+	 */
 	update<U extends T>(predicate: (record: T) => record is U, modifier: (record: U) => U): void;
+	/**
+	 * Updates documents in the store that match a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param modifier - A function that takes a document and returns the modified document.
+	 * @returns void
+	 */
 	update(predicate: (record: T) => boolean, modifier: (record: T) => T): void;
+	/**
+	 * Asynchronously updates documents in the store that match a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param modifier - A function that takes a document and returns a Promise that resolves to the modified document.
+	 * @returns void
+	 */
 	updateAsync<U extends T>(predicate: (record: T) => record is U, modifier: (record: U) => Promise<U>): Promise<void>;
+	/**
+	 * Asynchronously updates documents in the store that match a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 * @param modifier - A function that takes a document and returns a Promise that resolves to the modified document.
+	 * @returns void
+	 */
 	updateAsync(predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>): Promise<void>;
+	/**
+	 * Removes documents from the store that match a predicate.
+	 *
+	 * @param predicate - A function that takes a document and returns true if it matches the condition.
+	 */
 	remove(predicate: (record: T) => boolean): void;
+	count(predicate: (record: T) => boolean): number;
 }
 
+/**
+ * Factory function to create a Zustand store that holds a map of documents.
+ *
+ * @param options - Optional callbacks to handle invalidation of documents.
+ * @returns the Zustand store with methods to manage the document map.
+ */
 export const createDocumentMapStore = <T extends { _id: string }>({
 	onInvalidate,
 	onInvalidateAll,
-}: { onInvalidate?: (...docs: T[]) => void; onInvalidateAll?: () => void } = {}) =>
+}: {
+	/**
+	 * Callback invoked when a document is stored, updated or deleted.
+	 *
+	 * This is useful to recompute Minimongo queries that depend on the changed documents.
+	 * @deprecated prefer subscribing to the store
+	 */
+	onInvalidate?: (...docs: T[]) => void;
+	/**
+	 * Callback invoked when all documents are replaced in the store.
+	 *
+	 * This is useful to recompute Minimongo queries that depend on the changed documents.
+	 * @deprecated prefer subscribing to the store
+	 */
+	onInvalidateAll?: () => void;
+} = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
 		has: (id: T['_id']) => get().records.has(id),
@@ -153,5 +294,14 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 				return { records };
 			});
 			onInvalidate?.(...affected);
+		},
+		count: (predicate: (record: T) => boolean) => {
+			let results = 0;
+			for (const record of get().records.values()) {
+				if (predicate(record)) {
+					results += 1;
+				}
+			}
+			return results;
 		},
 	}));

@@ -42,6 +42,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`button >> text="Yes"`);
 	}
 
+	get btnExpandChat(): Locator {
+		return this.page.getByRole('button', { name: 'Expand chat' });
+	}
+
 	get txtHeaderTitle(): Locator {
 		return this.page.locator('div >> text="Chat Finished"');
 	}

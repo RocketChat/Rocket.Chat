@@ -32,8 +32,7 @@ const createPermissionValidator =
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-				const roleScope = role?.scope;
+				const roleScope = Models.Roles.state.get(roleId)?.scope;
 
 				if (!isValidScope(roleScope)) {
 					return false;
