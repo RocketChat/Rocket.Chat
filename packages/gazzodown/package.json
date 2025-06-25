@@ -32,6 +32,7 @@
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage-hooks": "^0.36.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
