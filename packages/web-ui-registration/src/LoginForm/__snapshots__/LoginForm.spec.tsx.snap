@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <form
+      aria-describedby="welcomeTitle"
+      aria-labelledby=":r0:"
+      class="rcx-box rcx-box--full rcx-tile--elevation-1 rcx-tile rcx-css-vuqkc1"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-heem01"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-18gg2kh"
+          id=":r0:"
+        >
+          registration.component.login
+        </div>
+      </header>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <fieldset
+          class="rcx-box rcx-box--full rcx-field-group"
+          role="group"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+              for=":r1:"
+            >
+              registration.component.form.emailOrUsername
+              <span
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+              >
+                *
+              </span>
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby=":r1:-error"
+                aria-invalid="false"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                id=":r1:"
+                name="usernameOrEmail"
+                placeholder="registration.component.form.emailPlaceholder"
+                size="1"
+                type="text"
+              />
+            </span>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+              for=":r2:"
+            >
+              registration.component.form.password
+              <span
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+              >
+                *
+              </span>
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <label
+                class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+              >
+                <input
+                  aria-describedby=":r2:-error"
+                  aria-invalid="false"
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-password rcx-input-box"
+                  id=":r2:"
+                  name="password"
+                  placeholder=""
+                  size="1"
+                  type="password"
+                />
+                <span
+                  class="rcx-box rcx-box--full rcx-input-box__addon"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-eye-off rcx-icon rcx-css-1bepdyv"
+                  >
+                    
+                  </i>
+                </span>
+              </label>
+            </span>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row rcx-css-17mu816"
+            >
+              <a
+                class="rcx-box rcx-box--full rcx-field__link"
+                href="#"
+                target="_blank"
+              >
+                Forgot your password?
+              </a>
+            </span>
+          </div>
+        </fieldset>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-c21cfe"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+            type="submit"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              registration.component.login
+            </span>
+          </button>
+        </div>
+        <p>
+          New here? 
+          <a
+            class="rcx-box rcx-box--full rcx-css-pn6rem"
+            href="#"
+          >
+            Create an account
+          </a>
+        </p>
+      </footer>
+    </form>
+  </div>
+</body>
+`;

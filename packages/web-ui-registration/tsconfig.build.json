@@ -4,5 +4,5 @@
 		"module": "ESNext"
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["./src/**/*.spec.ts", "./src/**/*.stories.tsx"]
+	"exclude": ["**/*.stories.tsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx", "./.storybook/**/*", "./jest.config.ts"]
 }

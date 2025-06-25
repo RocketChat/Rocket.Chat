@@ -11,18 +11,19 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { Form, ActionLink, FormHeader, FormContainer, FormFooter } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import EmailConfirmationForm from './EmailConfirmationForm';
+import EmailConfirmationForm from '../EmailConfirmationForm';
 import LoginServices from './LoginServices';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import type { DispatchLoginRouter } from '../hooks/useLoginRouter';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -59,7 +60,7 @@ export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | s
 
 export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
-export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const {
 		register,
 		handleSubmit,
@@ -103,13 +104,19 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const usernameId = useId();
 	const passwordId = useId();
-	const loginFormRef = useRef<HTMLElement>(null);
 
-	useEffect(() => {
-		if (loginFormRef.current) {
-			loginFormRef.current.focus();
+	const autoFocusRef = useCallback((node: HTMLElement) => {
+		if (!node) {
+			return;
 		}
-	}, [errorOnSubmit]);
+
+		node.focus();
+	}, []);
+
+	const { ref, ...usernameOrEmailField } = register('usernameOrEmail', {
+		required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
+	});
+	const usernameOrEmailRef = useMergedRefs(autoFocusRef, ref);
 
 	const renderErrorOnSubmit = ([error, message]: Exclude<LoginErrorState, undefined>) => {
 		if (error in LOGIN_SUBMIT_ERRORS) {
@@ -140,19 +147,13 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	}
 
 	return (
-		<Form
-			tabIndex={-1}
-			ref={loginFormRef}
-			aria-labelledby={formLabelId}
-			aria-describedby='welcomeTitle'
-			onSubmit={handleSubmit(async (data) => loginMutation.mutate(data))}
-		>
-			<Form.Header>
+		<Form aria-labelledby={formLabelId} aria-describedby='welcomeTitle' onSubmit={handleSubmit(async (data) => loginMutation.mutate(data))}>
+			<FormHeader>
 				<Form.Title id={formLabelId}>{t('registration.component.login')}</Form.Title>
-			</Form.Header>
+			</FormHeader>
 			{showFormLogin && (
 				<>
-					<Form.Container>
+					<FormContainer>
 						<FieldGroup disabled={loginMutation.isPending}>
 							<Field>
 								<FieldLabel required htmlFor={usernameId}>
@@ -160,9 +161,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								</FieldLabel>
 								<FieldRow>
 									<TextInput
-										{...register('usernameOrEmail', {
-											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
-										})}
+										ref={usernameOrEmailRef}
+										{...usernameOrEmailField}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message}
 										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
@@ -213,8 +213,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							</Field>
 						</FieldGroup>
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
-					</Form.Container>
-					<Form.Footer>
+					</FormContainer>
+					<FormFooter>
 						<ButtonGroup>
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
@@ -225,7 +225,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								New here? <ActionLink onClick={(): void => setLoginRoute('register')}>Create an account</ActionLink>
 							</Trans>
 						</p>
-					</Form.Footer>
+					</FormFooter>
 				</>
 			)}
 			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />

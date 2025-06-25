@@ -2,7 +2,7 @@ import { useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 
 import GuestForm from './GuestForm';
-import { LoginForm } from './LoginForm';
+import LoginForm from './LoginForm';
 import RegisterSecretPageRouter from './RegisterSecretPageRouter';
 import RegisterTemplate from './RegisterTemplate';
 import ResetPasswordForm from './ResetPasswordForm';
