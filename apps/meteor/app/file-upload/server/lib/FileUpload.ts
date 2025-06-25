@@ -657,6 +657,31 @@ export const FileUpload = {
 			}
 		}
 	},
+
+	async removeFilesByRoomIds(rids: string[]) {
+		if (rids.length === 0) {
+			return;
+		}
+		const cursor = Messages.find(
+			{
+				'rid': { $in: rids },
+				'files._id': {
+					$exists: true,
+				},
+			},
+			{
+				projection: {
+					'files._id': 1,
+				},
+			},
+		);
+
+		for await (const document of cursor) {
+			if (document.files) {
+				await Promise.all(document.files.map((file) => FileUpload.getStore('Uploads').deleteById(file._id)));
+			}
+		}
+	},
 };
 
 type FileUploadClassOptions = {

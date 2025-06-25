@@ -79,7 +79,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAllAverageOfServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
-	findByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findByVisitorId(
+		visitorId: string,
+		options: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): FindCursor<IOmnichannelRoom>;
 
 	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
 

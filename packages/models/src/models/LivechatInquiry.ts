@@ -304,6 +304,13 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.deleteOne({ rid }, options);
 	}
 
+	async removeByRoomIds(
+		rids: string[],
+		options?: DeleteOptions & { onTrash: (doc: ILivechatInquiryRecord) => void },
+	): Promise<DeleteResult> {
+		return this.deleteMany({ rid: { $in: rids } }, options);
+	}
+
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
 		return this.find({ status: LivechatInquiryStatus.QUEUED }, options);
 	}
