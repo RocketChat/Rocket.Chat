@@ -9,7 +9,6 @@ import { businessHourLogger } from '../lib/logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
-		businessHourLogger.debug({ msg: 'Opening business hours', day, hour, type: 'Single' });
 		return openBusinessHourDefault();
 	}
 

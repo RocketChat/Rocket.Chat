@@ -62,7 +62,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
-		bhLogger.debug({ msg: 'Opening business hours', day, hour, type: 'Multiple' });
 		const businessHours = await this.BusinessHourRepository.findActiveBusinessHoursToOpen(day, hour, undefined, {
 			projection: {
 				_id: 1,

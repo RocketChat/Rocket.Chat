@@ -81,6 +81,9 @@ export class AgendaCronJobs {
 		this.scheduler.on('success', (job) => {
 			logger?.debug({ msg: 'Cron job succeeded', job });
 		});
+		this.scheduler.on('start', (job) => {
+			logger?.debug({ msg: 'Cron job started', job });
+		});
 
 		for await (const job of this.reservedJobs) {
 			if (job.timestamped) {
