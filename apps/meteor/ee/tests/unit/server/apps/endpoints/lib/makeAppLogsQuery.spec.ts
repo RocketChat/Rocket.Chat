@@ -46,6 +46,15 @@ describe('makeAppLogsQuery', () => {
 		});
 	});
 
+	it('should include instanceId filter when instanceId is provided', () => {
+		const queryParams: AppLogsProps = { instanceId: 'instance123' };
+		const result = makeAppLogsQuery(queryParams);
+
+		expect(result).to.deep.equal({
+			instanceId: 'instance123',
+		});
+	});
+
 	it('should include start date filter when startDate is provided', () => {
 		const startDate = '2024-01-01T00:00:00.000Z';
 		const queryParams: AppLogsProps = { startDate };
