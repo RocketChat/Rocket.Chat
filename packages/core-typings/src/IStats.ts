@@ -175,7 +175,6 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
-		omnichannelPdfTranscriptRequested?: number;
 		omnichannelPdfTranscriptSucceeded?: number;
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;

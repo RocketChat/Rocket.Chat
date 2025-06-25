@@ -68,8 +68,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			// TODO: Remove index on next major
-			// { key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
