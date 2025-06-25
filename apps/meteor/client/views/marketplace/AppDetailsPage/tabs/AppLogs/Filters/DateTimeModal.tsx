@@ -14,7 +14,7 @@ type DateTimeModalProps = {
 export const DateTimeModal = ({ onSave, onClose }: DateTimeModalProps): ReactNode => {
 	const { t } = useTranslation();
 
-	const { control, getValues, getFieldState } = useForm();
+	const { control, getValues, watch } = useForm();
 
 	const handleSave = (): void => {
 		onSave({
@@ -44,7 +44,7 @@ export const DateTimeModal = ({ onSave, onClose }: DateTimeModalProps): ReactNod
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!getFieldState('startDate').isDirty || !getFieldState('endDate').isDirty} onClick={handleSave}>
+					<Button primary disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
 						{t('Apply')}
 					</Button>
 				</Modal.FooterControllers>
