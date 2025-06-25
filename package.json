@@ -25,6 +25,7 @@
 		"turbo": "^2.5.3"
 	},
 	"workspaces": [
+		"homeserver",
 		"apps/*",
 		"packages/*",
 		"ee/apps/*",
