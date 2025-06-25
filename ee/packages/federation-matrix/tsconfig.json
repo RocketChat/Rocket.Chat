@@ -1,0 +1,10 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"strictPropertyInitialization": false,
+		"declaration": true,
+		"rootDir": "./src",
+		"outDir": "./dist"
+	},
+	"files": ["./src/FederationMatrix.ts"]
+}

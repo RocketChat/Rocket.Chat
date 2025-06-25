@@ -11,20 +11,23 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "tsc -p tsconfig.json",
     "ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} bun run --watch src/service.ts",
     "start": "bun run src/service.ts",
     "dev": "bun --watch run src/service.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
-    "typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json",
-    "health-check": "bun run src/health-check.ts"
+    "typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.4",
+    "@rocket.chat/core-services": "workspace:^",
+    "@rocket.chat/core-typings": "workspace:*",
     "@rocket.chat/emitter": "^0.31.25",
-    "@rocket.chat/homeserver": "workspace:*",
+    "@rocket.chat/federation-matrix": "workspace:^",
+    "@rocket.chat/homeserver": "git+https://github.com/RocketChat/homeserver.git#test-lib",
     "@rocket.chat/http-router": "workspace:*",
+    "@rocket.chat/models": "workspace:*",
     "hono": "^3.11.0",
     "pino": "^8.16.0",
     "polka": "^0.5.2",

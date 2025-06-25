@@ -26,7 +26,7 @@ if (!isRunningMs()) {
       //   emitter: homeseverEventHandler.getEmitter(),
       // });
       
-      API.api.use(federationRouter);
+      // API.api.use(federationRouter);
       
       logger.info('Federation router integrated successfully in local broker mode');
     } catch (error) {

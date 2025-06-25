@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, Message, FederationMatrix } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -13,6 +13,7 @@ import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
+import { getFederationVersion } from '../../../../server/services/federation/utils';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -289,6 +290,24 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		// If the message has a type (system message), we should notify the listener about it
 		const messageEvent = message.t ? 'IPostSystemMessageSent' : 'IPostMessageSent';
 		void Apps.getBridges()?.getListenerBridge().messageEvent(messageEvent, message);
+	}
+
+	// Check if this is a federated room and send to Native Federation if enabled
+	const shouldBeHandledByFederation = room.federated === true || user.username.includes(':');
+	const federationVersion = getFederationVersion();
+	
+	if (shouldBeHandledByFederation && federationVersion === 'native') {
+		try {
+			// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
+			// If message is federated, it will save external_message_id like into the message object
+			// if this prop exists here it should not be sent to the federation to avoid loops
+			if (!message.federation?.eventId) {
+				await FederationMatrix.sendMessage(message, room, user);
+			}
+		} catch (error) {
+			// Log the error but don't prevent the message from being sent locally
+			console.error('[sendMessage] Failed to send message to Native Federation:', error);
+		}
 	}
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?

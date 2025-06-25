@@ -85,6 +85,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(fromId, { rid, msg });
 	}
 
+	async receiveMessageFromFederation({ fromId, rid, msg, federation_event_id }: { fromId: string; rid: string; msg: string; federation_event_id: string }): Promise<IMessage> {
+		return executeSendMessage(fromId, { rid, msg, federation: { eventId: federation_event_id } });
+	}
+
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
 		return sendMessage(user, message, room, upsert);
 	}

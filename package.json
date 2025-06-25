@@ -64,7 +64,8 @@
 		"underscore": "1.13.7",
 		"lodash": "4.17.21",
 		"mongodb": "6.10.0",
-		"cross-spawn": "7.0.6"
+		"cross-spawn": "7.0.6",
+		"pino": "8.21.0"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",

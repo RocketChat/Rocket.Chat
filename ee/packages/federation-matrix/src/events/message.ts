@@ -9,5 +9,12 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			sender: data.sender,
 			body: data.content.body
 		});
+
+		// await Message.receiveMessageFromFederation({
+		// 	fromId: data.sender,
+		// 	rid: data.room_id,
+		// 	msg: data.content.body,
+		// 	federation_event_id: data.event_id,
+		// });
 	});
 }

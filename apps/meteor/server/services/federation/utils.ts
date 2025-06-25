@@ -1,5 +1,18 @@
 import { settings } from '../../../app/settings/server';
 
+// TODO: This is not correct, we need to check if the federation service is ready
+export function getFederationVersion(): 'matrix' | 'native' | null {
+	if (settings.get<boolean>('Federation_Matrix_enabled')) {
+		return 'matrix';
+	}
+
+	if (settings.get<boolean>('FEDERATION_Service_Enabled')) {
+		return 'native';
+	}
+
+	return null;
+}
+
 export function isFederationEnabled(): boolean {
 	return settings.get<boolean>('Federation_Matrix_enabled');
 }

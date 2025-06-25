@@ -13,10 +13,6 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "paths": {
-      "@rocket.chat/homeserver": ["../../packages/homeserver"],
-      "@rocket.chat/http-router": ["../../packages/http-router"]
-    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
