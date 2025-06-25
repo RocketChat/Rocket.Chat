@@ -83,19 +83,25 @@ const NavigationRegion = () => {
 	const isSidebarOpen = !sidebar.isCollapsed && isTablet;
 
 	return (
-		<FocusScope>
+		<>
 			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
 				{showSideBar && (
 					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed']}>
-						<Sidebar />
+						<FocusScope>
+							<Sidebar />
+						</FocusScope>
 					</Box>
 				)}
-				{displaySidePanel && <SidePanel />}
+				{displaySidePanel && (
+					<FocusScope>
+						<SidePanel />
+					</FocusScope>
+				)}
 			</Box>
 			{isTablet && (
 				<Box className={[navBackdropStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()} />
 			)}
-		</FocusScope>
+		</>
 	);
 };
 
