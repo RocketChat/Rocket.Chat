@@ -4,7 +4,7 @@ import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { Hono } from 'hono';
 import { config } from './config';
-import type { RouteDefinition, RouteContext } from '@rocket.chat/homeserver';
+import type { RouteDefinition } from '@rocket.chat/homeserver';
 import { serve } from '@hono/node-server';
 
 export function handleFederationRoutesRegistration(app: Hono, homeserverRoutes: RouteDefinition[]): Hono {
@@ -16,14 +16,14 @@ export function handleFederationRoutesRegistration(app: Hono, homeserverRoutes: 
 		app[method](route.path, async (c) => {
 			try {
 				const context = {
-				req: c.req,
-				res: c.res,
-				params: c.req.param(),
-				query: c.req.query(),
-				body: await c.req.json().catch(() => ({})),
+					req: c.req,
+					res: c.res,
+					params: c.req.param(),
+					query: c.req.query(),
+					body: await c.req.json().catch(() => ({})),
 				};
 				
-				const result = await route.handler(context as unknown as RouteContext);
+				const result = await route.handler(context);
 				
 				return c.json(result);
 			} catch (error) {
@@ -49,7 +49,7 @@ function handleHealthCheck(app: Hono) {
 
 (async () => {
 	console.log('Starting federation-service on microservice mode');
-	
+
 	const { db } = await getConnection();
 	registerServiceModels(db, await getTrashCollection());
 
