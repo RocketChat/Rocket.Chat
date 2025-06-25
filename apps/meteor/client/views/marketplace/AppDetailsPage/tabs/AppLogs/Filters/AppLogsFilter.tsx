@@ -45,7 +45,7 @@ export const AppLogsFilter = () => {
 				/>
 			</Box>
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10}>
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='instanceFilter'>{t('Instance')}</Label>
 					<Controller control={control} name='instance' render={({ field }) => <InstanceFilterSelect id='instanceFilter' {...field} />} />
 				</Box>
