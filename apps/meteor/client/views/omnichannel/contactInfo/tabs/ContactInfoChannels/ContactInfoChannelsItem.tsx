@@ -40,12 +40,11 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 
 	return (
 		<Box
+			role='listitem'
 			tabIndex={0}
-			borderBlockEndWidth={1}
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
-			pi={24}
+			flexGrow={1}
+			pi={16}
 			pb={12}
 			display='flex'
 			flexDirection='column'
@@ -56,7 +55,7 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
-					<Box mi={4} fontScale='p2b'>
+					<Box mi={4} fontScale='p2m'>
 						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}
